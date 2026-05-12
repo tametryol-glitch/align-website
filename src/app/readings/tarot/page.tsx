@@ -347,11 +347,11 @@ export default function TarotPage() {
     try {
       await api.streamAIInterpretation(
         {
-          chart_data_text: systemPrompt,
+          chart_data_text: chartContext,
           messages: [
-            { role: 'user', content: 'Read my tarot spread now. Be direct and connect everything to my chart.' },
+            { role: 'user', content: systemPrompt + '\n\nRead my tarot spread now. Be direct and connect everything to my chart.' },
           ],
-          type: 'tarot_personal_reading',
+          type: 'astrologer_chat',
           chart_context: true,
         },
         (chunk) => {
