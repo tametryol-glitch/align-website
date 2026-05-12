@@ -9,6 +9,7 @@ import { ScoreBar } from '@/components/ui/ScoreBar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { computeSoulMemory, confidenceBand } from '@/lib/engines';
 import type { NatalChart, SoulMemoryResult, ScoredArchetype } from '@/lib/engines';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna'];
 
@@ -49,6 +50,7 @@ export default function SoulMemoryPage() {
   }
 
   return (
+    <PaywallGate feature="soul_memory" fallbackTier="light">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <History className="w-8 h-8 text-accent-primary" />
@@ -331,6 +333,7 @@ export default function SoulMemoryPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

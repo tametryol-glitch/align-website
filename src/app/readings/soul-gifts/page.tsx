@@ -9,6 +9,7 @@ import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { computeSoulGifts, scoreBand } from '@/lib/engines';
 import type { NatalChart, SoulGiftsResult, ScoredGift } from '@/lib/engines';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna'];
 
@@ -53,6 +54,7 @@ export default function SoulGiftsPage() {
   }
 
   return (
+    <PaywallGate feature="soul_gifts" fallbackTier="light">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Gem className="w-8 h-8 text-accent-primary" />
@@ -180,6 +182,7 @@ export default function SoulGiftsPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

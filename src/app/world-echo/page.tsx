@@ -5,7 +5,6 @@ import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Globe, Search, Info, X, RefreshCw } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import { PaywallGate } from '@/components/ui/PaywallGate';
 
 // ─── Helpers matching mobile app ─────────────────────────────────
 
@@ -150,7 +149,6 @@ export default function WorldEchoPage() {
   const patterns = (scan?.pattern_results || []).slice(0, 5);
 
   return (
-    <PaywallGate feature="world_echo">
     <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -373,6 +371,5 @@ export default function WorldEchoPage() {
         </div>
       )}
     </div>
-    </PaywallGate>
   );
 }
