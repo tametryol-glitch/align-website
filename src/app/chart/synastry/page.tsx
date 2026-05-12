@@ -12,6 +12,7 @@ import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Sparkles, AlertTriangl
 import { computeSynastryCompatibility } from '@/lib/engines';
 import type { CompatibilityResult } from '@/lib/engines';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const CATEGORY_META: Record<string, { emoji: string; label: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
   Attraction: { emoji: '🔥', label: 'Physical Attraction', color: 'red' },
@@ -98,20 +99,23 @@ export default function SynastryPage() {
 
   if (!hasBirthData) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-          <ArrowLeft className="w-4 h-4" /> My Chart
-        </Link>
-        <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
-          <Heart className="w-7 h-7 text-fire" />
-          Synastry
-        </h1>
-        <BirthDataPrompt message="Birth data required to calculate synastry with another person." />
-      </div>
+      <PaywallGate feature="synastry">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
+            <ArrowLeft className="w-4 h-4" /> My Chart
+          </Link>
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
+            <Heart className="w-7 h-7 text-fire" />
+            Synastry
+          </h1>
+          <BirthDataPrompt message="Birth data required to calculate synastry with another person." />
+        </div>
+      </PaywallGate>
     );
   }
 
   return (
+    <PaywallGate feature="synastry">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
         <ArrowLeft className="w-4 h-4" /> My Chart
@@ -289,6 +293,7 @@ export default function SynastryPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

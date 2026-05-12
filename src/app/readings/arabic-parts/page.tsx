@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
@@ -206,7 +207,7 @@ export default function ArabicPartsPage() {
   const otherParts = arabicParts.filter(p => !KEY_PARTS.includes(p.name));
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to calculate your Arabic Parts (Lots)." />;
+    return <PaywallGate feature="arabic_parts" fallbackTier="pro"><BirthDataPrompt message="Add your birth data to calculate your Arabic Parts (Lots)." /></PaywallGate>;
   }
 
   async function getReading() {
@@ -223,6 +224,7 @@ export default function ArabicPartsPage() {
   }
 
   return (
+    <PaywallGate feature="arabic_parts" fallbackTier="pro">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Star className="w-8 h-8 text-accent-primary" />
@@ -319,6 +321,7 @@ export default function ArabicPartsPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

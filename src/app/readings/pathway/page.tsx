@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Route } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function PathwayPage() {
   const { profile } = useAuthStore();
@@ -13,7 +14,7 @@ export default function PathwayPage() {
   const [error, setError] = useState('');
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to discover your life pathway." />;
+    return <PaywallGate feature="pathway" fallbackTier="pro"><BirthDataPrompt message="Add your birth data to discover your life pathway." /></PaywallGate>;
   }
 
   async function getReading() {
@@ -30,6 +31,7 @@ export default function PathwayPage() {
   }
 
   return (
+    <PaywallGate feature="pathway" fallbackTier="pro">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Route className="w-8 h-8 text-accent-primary" />
@@ -96,5 +98,6 @@ export default function PathwayPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

@@ -7,6 +7,7 @@ import { Clock, Sun, Heart, Briefcase, Sparkles, Baby, Leaf } from 'lucide-react
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getFullDuadCompendium } from '@/lib/engines';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 type ForecastType = 'General' | 'Money' | 'Love' | 'Career' | 'Spiritual Work' | 'Children' | 'Healing';
 
@@ -63,7 +64,7 @@ export default function GalacticForecastPage() {
   const [computed, setComputed] = useState(false);
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to see your personalized timing forecast." />;
+    return <PaywallGate feature="galactic_forecast"><BirthDataPrompt message="Add your birth data to see your personalized timing forecast." /></PaywallGate>;
   }
 
   async function computeForecast() {
@@ -89,6 +90,7 @@ export default function GalacticForecastPage() {
   }
 
   return (
+    <PaywallGate feature="galactic_forecast">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Clock className="w-8 h-8 text-accent-primary" />
@@ -193,6 +195,7 @@ export default function GalacticForecastPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

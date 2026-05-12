@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Wrench } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function RectificationPage() {
   const { profile } = useAuthStore();
@@ -16,7 +17,7 @@ export default function RectificationPage() {
   ]);
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to start birth time rectification." />;
+    return <PaywallGate feature="rectification" fallbackTier="pro"><BirthDataPrompt message="Add your birth data to start birth time rectification." /></PaywallGate>;
   }
 
   function addEvent() {
@@ -51,6 +52,7 @@ export default function RectificationPage() {
   }
 
   return (
+    <PaywallGate feature="rectification" fallbackTier="pro">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Wrench className="w-8 h-8 text-accent-primary" />
@@ -157,5 +159,6 @@ export default function RectificationPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

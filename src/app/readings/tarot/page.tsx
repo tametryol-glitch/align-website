@@ -9,6 +9,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { drawCards as drawLocalCards, type DrawnCard } from '@/lib/tarotDeck';
 import ReactMarkdown from 'react-markdown';
 import ShareButton from '@/components/ui/ShareButton';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 type SpreadType = 'single' | 'three_card' | 'celtic_cross' | 'relationship' | 'career';
 
@@ -405,6 +406,7 @@ export default function TarotPage() {
   }
 
   return (
+    <PaywallGate feature="tarot">
     <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -565,5 +567,6 @@ export default function TarotPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { DollarSign } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function FinancialPage() {
   const { profile } = useAuthStore();
@@ -29,6 +30,7 @@ export default function FinancialPage() {
   }
 
   return (
+    <PaywallGate feature="financial">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <DollarSign className="w-8 h-8 text-accent-primary" />
@@ -71,5 +73,6 @@ export default function FinancialPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

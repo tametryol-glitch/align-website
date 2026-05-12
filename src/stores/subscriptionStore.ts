@@ -45,6 +45,7 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   firdaria: 'pro',
   rectification: 'pro',
   pathway: 'pro',
+  arabic_parts: 'pro',
 };
 
 const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pro: 3 };

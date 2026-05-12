@@ -11,6 +11,7 @@ import { getLunarReturnInterpretation } from '@/lib/interpretations';
 import { MarkdownText } from '@/components/ui/MarkdownText';
 import Link from 'next/link';
 import { ArrowLeft, Moon, ChevronDown } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const ASPECT_SYMBOLS: Record<string, string> = {
   conjunction: '☌',
@@ -69,16 +70,18 @@ export default function LunarReturnPage() {
 
   if (!hasBirthData) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-          <ArrowLeft className="w-4 h-4" /> My Chart
-        </Link>
-        <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
-          <Moon className="w-7 h-7 text-water" />
-          Lunar Return
-        </h1>
-        <BirthDataPrompt message="Birth data required to calculate your Lunar Return chart." />
-      </div>
+      <PaywallGate feature="lunar_return">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
+            <ArrowLeft className="w-4 h-4" /> My Chart
+          </Link>
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
+            <Moon className="w-7 h-7 text-water" />
+            Lunar Return
+          </h1>
+          <BirthDataPrompt message="Birth data required to calculate your Lunar Return chart." />
+        </div>
+      </PaywallGate>
     );
   }
 
@@ -99,6 +102,7 @@ export default function LunarReturnPage() {
   );
 
   return (
+    <PaywallGate feature="lunar_return">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
         <ArrowLeft className="w-4 h-4" /> My Chart
@@ -281,6 +285,7 @@ export default function LunarReturnPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

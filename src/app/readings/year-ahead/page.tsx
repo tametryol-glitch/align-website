@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Calendar } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function YearAheadPage() {
   const { profile } = useAuthStore();
@@ -13,7 +14,7 @@ export default function YearAheadPage() {
   const [error, setError] = useState('');
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to generate your annual forecast." />;
+    return <PaywallGate feature="year_ahead"><BirthDataPrompt message="Add your birth data to generate your annual forecast." /></PaywallGate>;
   }
 
   async function getReading() {
@@ -35,6 +36,7 @@ export default function YearAheadPage() {
   }
 
   return (
+    <PaywallGate feature="year_ahead">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Calendar className="w-8 h-8 text-accent-primary" />
@@ -100,5 +102,6 @@ export default function YearAheadPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

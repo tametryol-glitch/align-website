@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Sparkles } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function StarseedPage() {
   const { profile } = useAuthStore();
@@ -29,6 +30,7 @@ export default function StarseedPage() {
   }
 
   return (
+    <PaywallGate feature="starseed">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Sparkles className="w-8 h-8 text-accent-primary" />
@@ -102,5 +104,6 @@ export default function StarseedPage() {
         );
       })()}
     </div>
+    </PaywallGate>
   );
 }

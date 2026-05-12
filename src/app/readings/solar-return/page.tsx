@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Sun } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function SolarReturnPage() {
   const { profile } = useAuthStore();
@@ -34,6 +35,7 @@ export default function SolarReturnPage() {
   }
 
   return (
+    <PaywallGate feature="solar_return">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Sun className="w-8 h-8 text-gold-primary" />
@@ -87,5 +89,6 @@ export default function SolarReturnPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

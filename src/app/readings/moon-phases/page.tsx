@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Moon } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const PHASE_INFO: Record<string, { emoji: string; meaning: string }> = {
   'New Moon': { emoji: '🌑', meaning: 'Seeds of intention. You are a visionary who thrives on new beginnings.' },
@@ -24,7 +25,7 @@ export default function MoonPhasesPage() {
   const [error, setError] = useState('');
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to discover the moon phase you were born under." />;
+    return <PaywallGate feature="moon_phases" fallbackTier="light"><BirthDataPrompt message="Add your birth data to discover the moon phase you were born under." /></PaywallGate>;
   }
 
   async function getReading() {
@@ -42,6 +43,7 @@ export default function MoonPhasesPage() {
   }
 
   return (
+    <PaywallGate feature="moon_phases" fallbackTier="light">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Moon className="w-8 h-8 text-accent-primary" />
@@ -122,6 +124,7 @@ export default function MoonPhasesPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

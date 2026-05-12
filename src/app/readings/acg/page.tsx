@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { Globe } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function ACGPage() {
   const { profile } = useAuthStore();
@@ -29,6 +30,7 @@ export default function ACGPage() {
   }
 
   return (
+    <PaywallGate feature="acg">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Globe className="w-8 h-8 text-accent-primary" />
@@ -79,5 +81,6 @@ export default function ACGPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
 import { Sparkles } from 'lucide-react';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function FixedStarsPage() {
   const { profile } = useAuthStore();
@@ -32,6 +33,7 @@ export default function FixedStarsPage() {
   }
 
   return (
+    <PaywallGate feature="fixed_stars" fallbackTier="pro">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Sparkles className="w-8 h-8 text-accent-primary" />
@@ -78,5 +80,6 @@ export default function FixedStarsPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }

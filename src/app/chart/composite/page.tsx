@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { getCompositePlacementInterpretation } from '@/lib/compositePlacementInterp';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
@@ -166,20 +167,23 @@ export default function CompositePage() {
 
   if (!hasBirthData) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-          <ArrowLeft className="w-4 h-4" /> My Chart
-        </Link>
-        <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
-          <Heart className="w-7 h-7 text-accent-primary" />
-          Composite Chart
-        </h1>
-        <BirthDataPrompt message="Birth data required to calculate your composite (relationship) chart." />
-      </div>
+      <PaywallGate feature="composite">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
+            <ArrowLeft className="w-4 h-4" /> My Chart
+          </Link>
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
+            <Heart className="w-7 h-7 text-accent-primary" />
+            Composite Chart
+          </h1>
+          <BirthDataPrompt message="Birth data required to calculate your composite (relationship) chart." />
+        </div>
+      </PaywallGate>
     );
   }
 
   return (
+    <PaywallGate feature="composite">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
         <ArrowLeft className="w-4 h-4" /> My Chart
@@ -369,6 +373,7 @@ export default function CompositePage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 

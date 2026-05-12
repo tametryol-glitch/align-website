@@ -11,6 +11,7 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { computeSynastryCompatibility } from '@/lib/engines';
 import type { CompatibilityResult } from '@/lib/engines';
+import { PaywallGate } from '@/components/ui/PaywallGate';
 
 interface PersonInput {
   date: string;
@@ -49,7 +50,7 @@ export default function CompatibilityPage() {
   const [showAspects, setShowAspects] = useState(false);
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <BirthDataPrompt message="Add your birth data to check compatibility with someone special." />;
+    return <PaywallGate feature="compatibility"><BirthDataPrompt message="Add your birth data to check compatibility with someone special." /></PaywallGate>;
   }
 
   async function calculate(e: React.FormEvent) {
@@ -98,6 +99,7 @@ export default function CompatibilityPage() {
   }
 
   return (
+    <PaywallGate feature="compatibility">
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Heart className="w-8 h-8 text-accent-primary" />
@@ -310,6 +312,7 @@ export default function CompatibilityPage() {
         </div>
       )}
     </div>
+    </PaywallGate>
   );
 }
 
