@@ -360,7 +360,7 @@ function generatePersonalReading(cards: DrawnCard[], userQuestion?: string, user
   const reversedCount = cards.filter(c => c.reversed).length;
   const uprightCount = cards.length - reversedCount;
   const allKw = cards.flatMap(c => c.keywords || []);
-  const uniqueThemes = [...new Set(allKw)].slice(0, 5);
+  const uniqueThemes = Array.from(new Set(allKw)).slice(0, 5);
 
   if (majorCards.length >= 3) {
     reading += `${name}, ${majorCards.length} Major Arcana cards in a single spread is significant. This is not a reading about small decisions or daily frustrations — this is a soul-level conversation. The universe is paying close attention to what you do next, because the choices in front of you carry weight that extends far beyond the obvious.\n\n`;
