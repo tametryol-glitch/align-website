@@ -76,7 +76,7 @@ export default function SignupPage() {
           </p>
           <p className="text-text-muted text-sm mt-3">
             Don&apos;t see it? Check your <strong className="text-text-secondary">spam or junk folder</strong>.
-            The email comes from noreply@mail.app.supabase.io.
+            The email comes from onboarding@resend.dev.
           </p>
           <div className="mt-5">
             {resent ? (
