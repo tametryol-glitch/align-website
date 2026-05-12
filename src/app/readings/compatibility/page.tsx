@@ -210,14 +210,6 @@ export default function CompatibilityPage() {
             </div>
           </div>
 
-          {/* Main Scores Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <ScoreCard label="Emotional" value={result.emotional_score} emoji="💙" />
-            <ScoreCard label="Physical" value={result.physical_score} emoji="🔥" />
-            <ScoreCard label="Intellectual" value={result.intellectual_score} emoji="🧠" />
-            <ScoreCard label="Spiritual" value={result.spiritual_score} emoji="✨" />
-          </div>
-
           {/* Strengths */}
           {result.strengths.length > 0 && (
             <div className="card">
@@ -353,12 +345,3 @@ function ShareCompatButton({ score }: { score: number }) {
   );
 }
 
-function ScoreCard({ label, value, emoji }: { label: string; value: number; emoji: string }) {
-  return (
-    <div className="card text-center py-4">
-      <span className="text-2xl block mb-1">{emoji}</span>
-      <p className="text-2xl font-bold text-text-primary">{value}%</p>
-      <p className="text-xs text-text-muted">{label}</p>
-    </div>
-  );
-}

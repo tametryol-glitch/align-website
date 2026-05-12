@@ -212,30 +212,6 @@ export default function SynastryPage() {
             </div>
           </div>
 
-          {/* Score grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="card text-center py-4">
-              <span className="text-2xl block mb-1">💙</span>
-              <p className="text-2xl font-bold text-text-primary">{result.emotional_score}%</p>
-              <p className="text-xs text-text-muted">Emotional</p>
-            </div>
-            <div className="card text-center py-4">
-              <span className="text-2xl block mb-1">🔥</span>
-              <p className="text-2xl font-bold text-text-primary">{result.physical_score}%</p>
-              <p className="text-xs text-text-muted">Physical</p>
-            </div>
-            <div className="card text-center py-4">
-              <span className="text-2xl block mb-1">🧠</span>
-              <p className="text-2xl font-bold text-text-primary">{result.intellectual_score}%</p>
-              <p className="text-xs text-text-muted">Intellectual</p>
-            </div>
-            <div className="card text-center py-4">
-              <span className="text-2xl block mb-1">✨</span>
-              <p className="text-2xl font-bold text-text-primary">{result.spiritual_score}%</p>
-              <p className="text-xs text-text-muted">Spiritual</p>
-            </div>
-          </div>
-
           {/* Strengths */}
           {result.strengths.length > 0 && (
             <div className="card">
