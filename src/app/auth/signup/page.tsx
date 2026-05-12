@@ -75,8 +75,7 @@ export default function SignupPage() {
             We sent a confirmation link to <strong className="text-text-secondary">{email}</strong>
           </p>
           <p className="text-text-muted text-sm mt-3">
-            Don&apos;t see it? Check your <strong className="text-text-secondary">spam or junk folder</strong>.
-            The email comes from onboarding@resend.dev.
+            Don&apos;t see it? Check your <strong className="text-text-secondary">spam or junk folder</strong> — it can take a minute to arrive.
           </p>
           <div className="mt-5">
             {resent ? (
