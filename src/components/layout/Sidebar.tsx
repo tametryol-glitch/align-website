@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useMessagesStore } from '@/stores/messagesStore';
 import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
@@ -33,6 +34,7 @@ const BOTTOM_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
   const { profile } = useAuthStore();
+  const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary flex-col z-40">
@@ -47,6 +49,7 @@ export function Sidebar() {
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/');
+          const showBadge = href === '/messages' && totalUnread > 0;
           return (
             <Link
               key={href}
@@ -59,7 +62,12 @@ export function Sidebar() {
               )}
             >
               <Icon className="w-5 h-5" />
-              {label}
+              <span className="flex-1">{label}</span>
+              {showBadge && (
+                <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
+                  {totalUnread > 99 ? '99+' : totalUnread}
+                </span>
+              )}
             </Link>
           );
         })}

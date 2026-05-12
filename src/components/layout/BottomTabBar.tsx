@@ -4,19 +4,21 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
-import { Home, Newspaper, Sun, BookOpen, User } from 'lucide-react';
+import { useMessagesStore } from '@/stores/messagesStore';
+import { Home, Newspaper, Sun, BookOpen, User, MessageCircle } from 'lucide-react';
 
 const TABS = [
   { href: '/dashboard', label: 'Home', icon: Home },
   { href: '/feed', label: 'Feed', icon: Newspaper },
   { href: '/chart', label: 'Chart', icon: Sun },
-  { href: '/readings', label: 'Readings', icon: BookOpen },
+  { href: '/messages', label: 'Messages', icon: MessageCircle },
   { href: '/profile', label: 'Profile', icon: null },
 ];
 
 export function BottomTabBar() {
   const pathname = usePathname();
   const { profile } = useAuthStore();
+  const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-bg-secondary border-t border-border-primary z-50" role="tablist" aria-label="Main navigation">
@@ -49,7 +51,14 @@ export function BottomTabBar() {
                   )}
                 </div>
               ) : (
-                Icon && <Icon className="w-5 h-5" />
+                <div className="relative">
+                  {Icon && <Icon className="w-5 h-5" />}
+                  {href === '/messages' && totalUnread > 0 && (
+                    <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-accent-primary flex items-center justify-center text-[8px] text-white font-bold">
+                      {totalUnread > 9 ? '9+' : totalUnread}
+                    </span>
+                  )}
+                </div>
               )}
               <span className="text-[11px] font-medium">{label}</span>
             </Link>
