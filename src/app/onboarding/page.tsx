@@ -76,7 +76,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mb-8">
@@ -94,9 +94,8 @@ export default function OnboardingPage() {
           {/* Step 0: Welcome */}
           {step === 0 && (
             <div className="py-8">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-accent flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Align" className="w-16 h-16 rounded-2xl mx-auto mb-6" />
               <h1 className="text-2xl font-display font-bold text-text-primary mb-3">
                 Welcome to Align
               </h1>
@@ -215,7 +214,16 @@ export default function OnboardingPage() {
             <div className="py-8">
               <div className="text-4xl mb-4">✨</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">You&apos;re all set!</h2>
-              <p className="text-sm text-text-tertiary mb-8">
+              {birthDate && (
+                <div className="bg-gradient-cosmic rounded-xl p-4 border border-accent-muted mb-4">
+                  <p className="text-xs text-accent-tertiary uppercase tracking-wider mb-1">Your Sun Sign</p>
+                  <p className="text-2xl font-display font-bold text-text-primary">
+                    {getSignGlyph(getSunSign(birthDate))} {getSunSign(birthDate)}
+                  </p>
+                  <p className="text-xs text-text-tertiary mt-1">Complete your chart to discover your Moon &amp; Rising</p>
+                </div>
+              )}
+              <p className="text-sm text-text-tertiary mb-6">
                 Your cosmic profile is ready. Explore your chart, get readings, and connect with other stargazers.
               </p>
               <button
@@ -234,4 +242,17 @@ export default function OnboardingPage() {
       </div>
     </div>
   );
+}
+
+function getSunSign(dateStr: string): string {
+  const d = new Date(dateStr);
+  const m = d.getMonth(), day = d.getDate();
+  const signs = ['Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius'];
+  const cutoffs = [20,19,20,20,21,21,22,23,23,23,22,22];
+  return day < cutoffs[m] ? signs[m] : signs[(m + 1) % 12];
+}
+
+function getSignGlyph(sign: string): string {
+  const g: Record<string, string> = { Aries:'♈', Taurus:'♉', Gemini:'♊', Cancer:'♋', Leo:'♌', Virgo:'♍', Libra:'♎', Scorpio:'♏', Sagittarius:'♐', Capricorn:'♑', Aquarius:'♒', Pisces:'♓' };
+  return g[sign] || '✦';
 }

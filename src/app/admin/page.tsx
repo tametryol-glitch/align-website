@@ -34,13 +34,27 @@ type Tab = 'moderation' | 'users';
 export default function AdminPage() {
   const { profile } = useAuthStore();
   const [tab, setTab] = useState<Tab>('moderation');
-  const [reports, setReports] = useState<Report[]>([]);
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [verified, setVerified] = useState(false);
 
-  // Guard: only admins
-  if (profile && !profile.is_admin) {
+  // Server-verified admin check via Supabase RLS + direct query
+  useEffect(() => {
+    async function verifyAdmin() {
+      if (!profile?.is_admin) return;
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+      if (data?.is_admin) setVerified(true);
+    }
+    verifyAdmin();
+  }, [profile]);
+
+  // Guard: only verified admins
+  if (!profile || !profile.is_admin || !verified) {
     return (
       <div className="max-w-3xl mx-auto text-center py-20">
         <Shield className="w-12 h-12 text-red-400 mx-auto mb-4" />

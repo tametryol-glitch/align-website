@@ -16,8 +16,11 @@ interface BookmarkedPost {
     content: string;
     type: string;
     created_at: string;
+    user_id: string;
+    image_url: string | null;
     profile?: {
       display_name: string;
+      avatar_url: string | null;
       sun_sign: string | null;
     };
   };
@@ -45,7 +48,7 @@ export default function BookmarksPage() {
       const postIds = data.map(b => b.post_id);
       const { data: posts } = await supabase
         .from('posts')
-        .select('id, content, type, created_at, user_id')
+        .select('id, content, type, created_at, user_id, image_url')
         .in('id', postIds);
 
       let profiles: Record<string, any> = {};
@@ -53,7 +56,7 @@ export default function BookmarksPage() {
         const userIds = Array.from(new Set(posts.map(p => p.user_id)));
         const { data: profs } = await supabase
           .from('profiles')
-          .select('id, display_name, sun_sign')
+          .select('id, display_name, avatar_url, sun_sign')
           .in('id', userIds);
         profs?.forEach(p => { profiles[p.id] = p; });
       }
@@ -102,14 +105,24 @@ export default function BookmarksPage() {
               {b.post ? (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-text-secondary">
+                    <Link href={`/user/${b.post.user_id}`} className="flex items-center gap-2 hover:opacity-80">
+                      <div className="w-7 h-7 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {b.post.profile?.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={b.post.profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <span className="text-[10px] font-bold text-accent-primary">
+                            {(b.post.profile?.display_name || '?')[0].toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors">
                         {b.post.profile?.display_name || 'Unknown'}
                       </span>
                       {b.post.profile?.sun_sign && (
                         <span className="text-[10px] text-text-muted">· {b.post.profile.sun_sign}</span>
                       )}
-                    </div>
+                    </Link>
                     <button
                       onClick={() => removeBookmark(b.id)}
                       className="p-1.5 text-text-muted hover:text-red-400 transition-colors"
@@ -117,8 +130,12 @@ export default function BookmarksPage() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <Link href="/feed" className="block">
+                  <Link href={`/user/${b.post.user_id}`} className="block">
                     <p className="text-sm text-text-primary line-clamp-3">{b.post.content}</p>
+                    {b.post.image_url && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={b.post.image_url} alt="" className="w-full rounded-lg max-h-[200px] object-cover mt-2" />
+                    )}
                   </Link>
                   <p className="text-[10px] text-text-muted mt-2">
                     Saved {new Date(b.created_at).toLocaleDateString()}

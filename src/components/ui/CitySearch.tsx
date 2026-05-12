@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
+import { lookupTimezone } from '@/lib/timezoneOffset';
 
 interface CityData {
   name: string;
@@ -25,14 +26,8 @@ interface CitySearchProps {
   className?: string;
 }
 
-/** Estimate IANA-style timezone from longitude (fallback when tz-lookup unavailable) */
 function estimateTimezone(lat: number, lon: number): string {
-  // Try to use Intl to get the user's local timezone as a reasonable default
-  // For birth location, longitude-based offset is a decent approximation
-  const offsetHours = Math.round(lon / 15);
-  const sign = offsetHours >= 0 ? '+' : '-';
-  const abs = Math.abs(offsetHours);
-  return `UTC${sign}${String(abs).padStart(2, '0')}:00`;
+  return lookupTimezone(lat, lon);
 }
 
 // Lazy-load the city database to avoid blocking initial render

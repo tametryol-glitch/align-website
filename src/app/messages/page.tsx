@@ -309,8 +309,20 @@ export default function MessagesPage() {
                   {messages.map(msg => (
                     <div
                       key={msg.id}
-                      className={`flex ${msg.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
+                      className={`flex items-end gap-2 ${msg.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
                     >
+                      {msg.sender_id !== user.id && (
+                        <div className="w-7 h-7 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          {activeConv.participant_avatar ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={activeConv.participant_avatar} alt="" className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <span className="text-[10px] font-bold text-accent-primary">
+                              {activeConv.participant_name[0].toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
                         msg.sender_id === user.id
                           ? 'bg-accent-primary text-white rounded-br-md'

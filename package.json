@@ -9,28 +9,30 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@revenuecat/purchases-js": "^1.0.0",
+    "@supabase/ssr": "^0.5.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "clsx": "^2.1.0",
+    "date-fns": "^4.0.0",
+    "lucide-react": "^0.400.0",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@supabase/supabase-js": "^2.45.0",
-    "@supabase/ssr": "^0.5.0",
-    "@revenuecat/purchases-js": "^1.0.0",
-    "zustand": "^5.0.0",
-    "date-fns": "^4.0.0",
     "react-markdown": "^9.0.0",
-    "lucide-react": "^0.400.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.3.0"
+    "tailwind-merge": "^2.3.0",
+    "tz-lookup": "^6.1.25",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^5.5.0",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
+    "@types/tz-lookup": "^6.1.2",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
-    "eslint-config-next": "^14.2.0"
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.5.0"
   }
 }

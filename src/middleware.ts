@@ -26,20 +26,20 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Redirect unauthenticated users away from protected routes
   const isProtected = !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/api') &&
     request.nextUrl.pathname !== '/';
 
-  if (!session && isProtected) {
+  if (!user && isProtected) {
     const redirectUrl = new URL('/auth/login', request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
   // Redirect authenticated users away from auth pages
-  if (session && request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.includes('callback')) {
+  if (user && request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.includes('callback')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

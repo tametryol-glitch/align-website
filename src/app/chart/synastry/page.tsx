@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { ScoreBar } from '@/components/ui/ScoreBar';
@@ -58,15 +59,19 @@ export default function SynastryPage() {
       // Fetch both natal charts in parallel
       const [chart1Data, chart2Data] = await Promise.all([
         api.getNatalChart(buildBirthData(profile!)),
-        api.getNatalChart({
-          name: partnerName || '',
-          date: partnerDate,
-          time: partnerTime,
-          latitude: partnerLat || 0,
-          longitude: partnerLng || 0,
-          timezone: partnerTz,
-          location: partnerLocation,
-        }),
+        (() => {
+          const { offset, label } = resolveTimezoneOffset(partnerTz, partnerLng || 0, partnerDate, partnerTime, partnerLat || undefined);
+          return api.getNatalChart({
+            name: partnerName || '',
+            date: partnerDate,
+            time: partnerTime,
+            latitude: partnerLat || 0,
+            longitude: partnerLng || 0,
+            timezone: label,
+            tz_offset: offset,
+            location: partnerLocation,
+          });
+        })(),
       ]);
 
       // Extract positions and house cusps

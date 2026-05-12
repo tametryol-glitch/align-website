@@ -301,11 +301,9 @@ export function buildBirthData(profile: any, overrides?: { house_system?: string
   // Read house system from store (works because zustand getState is sync)
   let houseSystem = overrides?.house_system || 'Whole Sign';
   try {
-    // Dynamic import to avoid circular deps; store is always loaded by this point
     const { useAstrologySettings } = require('@/stores/astrologySettingsStore');
     const stored = useAstrologySettings.getState().houseSystem;
     if (stored && !overrides?.house_system) {
-      // Convert store value to backend format
       const map: Record<string, string> = {
         'placidus': 'Placidus',
         'whole_sign': 'Whole Sign',
@@ -320,13 +318,23 @@ export function buildBirthData(profile: any, overrides?: { house_system?: string
     }
   } catch {}
 
+  const { resolveTimezoneOffset } = require('@/lib/timezoneOffset');
+  const { offset, label } = resolveTimezoneOffset(
+    profile.timezone,
+    profile.longitude,
+    profile.birth_date,
+    profile.birth_time,
+    profile.latitude,
+  );
+
   return {
     name: profile.display_name || '',
     date: profile.birth_date,
     time: profile.birth_time || '12:00',
     latitude: profile.latitude,
     longitude: profile.longitude,
-    timezone: profile.timezone || 'UTC',
+    timezone: label,
+    tz_offset: offset,
     location: profile.birth_location || '',
     house_system: houseSystem,
   };

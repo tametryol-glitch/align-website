@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import { Heart, ChevronDown, ChevronUp, Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
+import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
+import { Heart, ChevronDown, ChevronUp, Sparkles, AlertTriangle, RefreshCw, Share2, UserPlus, Check } from 'lucide-react';
 import { ScoreBar } from '@/components/ui/ScoreBar';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
@@ -59,15 +60,19 @@ export default function CompatibilityPage() {
       // Fetch both natal charts in parallel
       const [chart1Data, chart2Data] = await Promise.all([
         api.getNatalChart(buildBirthData(profile!)),
-        api.getNatalChart({
-          name: '',
-          date: person2.date,
-          time: person2.time,
-          latitude: person2.lat || 0,
-          longitude: person2.lng || 0,
-          timezone: person2.timezone || 'UTC',
-          location: person2.location,
-        }),
+        (() => {
+          const { offset, label } = resolveTimezoneOffset(person2.timezone, person2.lng || 0, person2.date, person2.time, person2.lat || undefined);
+          return api.getNatalChart({
+            name: '',
+            date: person2.date,
+            time: person2.time,
+            latitude: person2.lat || 0,
+            longitude: person2.lng || 0,
+            timezone: label,
+            tz_offset: offset,
+            location: person2.location,
+          });
+        })(),
       ]);
 
       // Extract positions and house cusps for both charts
@@ -284,6 +289,25 @@ export default function CompatibilityPage() {
             </div>
           )}
 
+          {/* Share & Invite */}
+          <div className="grid grid-cols-2 gap-3">
+            <ShareCompatButton score={result.overall_score} />
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/readings/compatibility`;
+                const text = `Check your cosmic compatibility on Align! I got ${result!.overall_score}% — what will you get?`;
+                if (navigator.share) {
+                  navigator.share({ title: 'Check Our Compatibility', text, url }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(`${text}\n${url}`).catch(() => {});
+                }
+              }}
+              className="btn-secondary flex items-center justify-center gap-2 text-sm"
+            >
+              <UserPlus className="w-4 h-4" /> Invite to Compare
+            </button>
+          </div>
+
           {/* Reset */}
           <button
             onClick={() => { setResult(null); setShowAspects(false); }}
@@ -305,6 +329,28 @@ function extractPositions(chartData: any): Array<{ name: string; longitude: numb
     longitude: p.longitude ?? 0,
     house: p.house || undefined,
   }));
+}
+
+function ShareCompatButton({ score }: { score: number }) {
+  const [copied, setCopied] = useState(false);
+  async function handleShare() {
+    const url = `${window.location.origin}/readings/compatibility`;
+    const text = `We scored ${score}% compatibility on Align! Check yours:`;
+    if (navigator.share) {
+      try { await navigator.share({ title: `${score}% Compatible — Align`, text, url }); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  }
+  return (
+    <button onClick={handleShare} className="btn-primary flex items-center justify-center gap-2 text-sm">
+      {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+      {copied ? 'Link Copied!' : 'Share Result'}
+    </button>
+  );
 }
 
 function ScoreCard({ label, value, emoji }: { label: string; value: number; emoji: string }) {

@@ -1,0 +1,87 @@
+import type { MetadataRoute } from 'next';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const base = 'https://align-web.vercel.app';
+  const now = new Date().toISOString();
+
+  const staticRoutes = [
+    '/',
+    '/auth/login',
+    '/auth/signup',
+    '/pricing',
+    '/courses',
+    '/cosmic-index',
+  ];
+
+  const readingRoutes = [
+    '/readings',
+    '/readings/transits',
+    '/readings/compatibility',
+    '/readings/tarot',
+    '/readings/numerology',
+    '/readings/angel-numbers',
+    '/readings/soul-gifts',
+    '/readings/soul-memory',
+    '/readings/starseed',
+    '/readings/human-design',
+    '/readings/financial',
+    '/readings/name-analysis',
+    '/readings/moon-phases',
+    '/readings/planetary-hours',
+    '/readings/cosmic-journal',
+    '/readings/galactic-clock',
+    '/readings/galactic-forecast',
+    '/readings/solar-return',
+    '/readings/midpoints',
+    '/readings/firdaria',
+    '/readings/zodiacal-releasing',
+    '/readings/acg',
+    '/readings/arabic-parts',
+    '/readings/fixed-stars',
+    '/readings/pathway',
+    '/readings/rectification',
+    '/readings/year-ahead',
+  ];
+
+  const featureRoutes = [
+    '/chart',
+    '/feed',
+    '/communities',
+    '/friends',
+    '/messages',
+    '/matches',
+    '/celebrity-matches',
+    '/cosmic-alerts',
+    '/world-echo',
+    '/discover',
+    '/ai',
+    '/polls',
+    '/qa',
+    '/fragments',
+    '/gallery',
+    '/reels',
+    '/bookmarks',
+    '/group-synastry',
+  ];
+
+  return [
+    ...staticRoutes.map((route) => ({
+      url: `${base}${route}`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: route === '/' ? 1.0 : 0.8,
+    })),
+    ...readingRoutes.map((route) => ({
+      url: `${base}${route}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+    ...featureRoutes.map((route) => ({
+      url: `${base}${route}`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
+    })),
+  ];
+}

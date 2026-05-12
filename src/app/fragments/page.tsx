@@ -11,6 +11,7 @@ interface Fragment {
   user_id: string;
   fragment_user_id: string;
   display_name: string;
+  avatar_url: string | null;
   sun_sign: string | null;
   moon_sign: string | null;
   rising_sign: string | null;
@@ -141,10 +142,15 @@ export default function FragmentsPage() {
             >
               <div className="flex items-center gap-4">
                 {/* Avatar */}
-                <div className="w-12 h-12 rounded-full bg-accent-primary/10 flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg font-bold text-accent-primary">
-                    {fragment.display_name.charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-accent-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {fragment.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={fragment.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <span className="text-lg font-bold text-accent-primary">
+                      {fragment.display_name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
 
                 {/* Info */}

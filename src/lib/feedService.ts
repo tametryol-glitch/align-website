@@ -13,6 +13,7 @@ export interface FeedComment {
   id: string;
   userId: string;
   userName: string;
+  userAvatar?: string;
   text: string;
   createdAt: string;
 }
@@ -83,7 +84,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   // Batch-fetch reactions and comments
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name)').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -107,6 +108,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       id: c.id,
       userId: c.user_id,
       userName: profile?.display_name || 'User',
+      userAvatar: profile?.avatar_url || undefined,
       text: c.text,
       createdAt: c.created_at,
     };
@@ -231,7 +233,7 @@ export async function addComment(postId: string, userId: string, text: string) {
   const { data, error } = await supabase
     .from('post_comments')
     .insert({ post_id: postId, user_id: userId, text })
-    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name)')
+    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)')
     .single();
 
   if (error) throw new Error(error.message);
@@ -240,6 +242,7 @@ export async function addComment(postId: string, userId: string, text: string) {
     id: data.id,
     userId: data.user_id,
     userName: profile?.display_name || 'User',
+    userAvatar: profile?.avatar_url || undefined,
     text: data.text,
     createdAt: data.created_at,
   } as FeedComment;
@@ -249,7 +252,7 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('post_comments')
-    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name)')
+    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)')
     .eq('post_id', postId)
     .eq('is_deleted', false)
     .order('created_at', { ascending: true });
@@ -259,6 +262,7 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
     id: c.id,
     userId: c.user_id,
     userName: c.profile?.display_name || 'User',
+    userAvatar: c.profile?.avatar_url || undefined,
     text: c.text,
     createdAt: c.created_at,
   }));
@@ -267,6 +271,43 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
 export async function deletePost(postId: string) {
   const supabase = createClient();
   await supabase.from('posts').update({ is_deleted: true }).eq('id', postId);
+}
+
+export async function editPost(postId: string, content: string) {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('posts')
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq('id', postId);
+  if (error) throw new Error(error.message);
+}
+
+export async function repostPost(userId: string, originalPost: FeedPost) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('posts')
+    .insert({
+      user_id: userId,
+      type: originalPost.type,
+      content: originalPost.content,
+      visibility: 'public',
+      image_url: originalPost.imageUrl || null,
+      video_url: originalPost.videoUrl || null,
+      original_post_id: originalPost.id,
+      original_user_name: originalPost.userName,
+    })
+    .select('*, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function reportPost(postId: string, userId: string, reason: string) {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('reports')
+    .insert({ post_id: postId, reporter_id: userId, reason });
+  if (error) throw new Error(error.message);
 }
 
 export async function toggleBookmark(postId: string, userId: string): Promise<boolean> {

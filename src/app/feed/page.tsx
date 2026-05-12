@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import {
-  getFeed, createPost, uploadPostMedia, toggleReaction, addComment, getComments, deletePost, toggleBookmark, getUserBookmarks,
+  getFeed, createPost, uploadPostMedia, toggleReaction, addComment, getComments, deletePost, editPost, repostPost, reportPost, toggleBookmark, getUserBookmarks,
   type FeedPost, type FeedComment, type ReactionEmoji, type PostReaction,
   REACTION_OPTIONS, POST_STYLE_PRESETS,
 } from '@/lib/feedService';
-import { MessageCircle, Bookmark, Send, MoreHorizontal, X, Plus, Globe, Users, Trash2, Image, BarChart3, FileText } from 'lucide-react';
+import { MessageCircle, Bookmark, Send, MoreHorizontal, X, Plus, Globe, Users, Trash2, Image, BarChart3, FileText, Video, Share2, Repeat2, Flag, Ban, Pencil } from 'lucide-react';
+import Link from 'next/link';
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -30,6 +31,51 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
 };
 
+// ── Dynamic Cosmic Helpers ────────────────────────────────────────
+
+function getFeedMoonPhase() {
+  const synodic = 29.530588853;
+  const known_new = new Date('2024-01-11').getTime();
+  const diff = (Date.now() - known_new) / 86400000;
+  const phase = ((diff % synodic) + synodic) % synodic;
+  if (phase < 1.85) return { emoji: '🌑', name: 'New Moon' };
+  if (phase < 7.38) return { emoji: '🌒', name: 'Waxing Crescent' };
+  if (phase < 11.07) return { emoji: '🌓', name: 'First Quarter' };
+  if (phase < 14.76) return { emoji: '🌔', name: 'Waxing Gibbous' };
+  if (phase < 16.61) return { emoji: '🌕', name: 'Full Moon' };
+  if (phase < 22.14) return { emoji: '🌖', name: 'Waning Gibbous' };
+  if (phase < 25.83) return { emoji: '🌗', name: 'Last Quarter' };
+  return { emoji: '🌘', name: 'Waning Crescent' };
+}
+
+function getFeedSunSign(): string {
+  const m = new Date().getMonth(), d = new Date().getDate();
+  const signs = ['Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius'];
+  const cutoffs = [20,19,20,20,21,21,22,23,23,23,22,22];
+  return d < cutoffs[m] ? signs[m] : signs[(m + 1) % 12];
+}
+
+function FeedCosmicBanner() {
+  const moon = getFeedMoonPhase();
+  const sign = getFeedSunSign();
+  return (
+    <div className="bg-gradient-cosmic rounded-2xl p-4 mb-6 border border-accent-muted flex items-center gap-4">
+      <span className="text-3xl">{moon.emoji}</span>
+      <div className="flex-1">
+        <p className="text-sm font-medium text-text-primary">{moon.name} · {sign} Season</p>
+        <p className="text-xs text-text-tertiary">Sun in {sign} · Check your transits for personalized insights</p>
+      </div>
+    </div>
+  );
+}
+
+function getDynamicTags(): string[] {
+  const sign = getFeedSunSign();
+  const moon = getFeedMoonPhase();
+  const tags = [`#${sign}Season`, `#${moon.name.replace(' ', '')}`, '#Astrology', '#CosmicShift', '#Transits'];
+  return tags;
+}
+
 // ── FeedCard ───────────────────────────────────────────────────────
 
 function FeedCard({
@@ -38,6 +84,8 @@ function FeedCard({
   onReaction,
   onComment,
   onDelete,
+  onEdit,
+  onRepost,
   isBookmarked,
   onBookmark,
 }: {
@@ -46,11 +94,15 @@ function FeedCard({
   onReaction: (postId: string, emoji: ReactionEmoji) => void;
   onComment: (postId: string) => void;
   onDelete: (postId: string) => void;
+  onEdit: (postId: string, currentContent: string) => void;
+  onRepost: (post: FeedPost) => void;
   isBookmarked: boolean;
   onBookmark: (postId: string) => void;
 }) {
   const [showReactions, setShowReactions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showReportMenu, setShowReportMenu] = useState(false);
+  const [reported, setReported] = useState(false);
   const isOwner = post.userId === currentUserId;
 
   const preset = post.style?.preset
@@ -68,7 +120,7 @@ function FeedCard({
     <div className="card !p-0 overflow-hidden relative" style={cardStyle}>
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-5 pb-3">
-        <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
+        <Link href={`/user/${post.userId}`} className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
           {post.userAvatar ? (
             <img src={post.userAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
           ) : (
@@ -76,12 +128,12 @@ function FeedCard({
               {post.userName[0]?.toUpperCase()}
             </span>
           )}
-        </div>
+        </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm" style={textColor ? { color: textColor } : undefined}>
+            <Link href={`/user/${post.userId}`} className="font-semibold text-sm hover:underline" style={textColor ? { color: textColor } : undefined}>
               {post.userName}
-            </span>
+            </Link>
             {post.type !== 'text' && TYPE_BADGES[post.type] && (
               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${TYPE_BADGES[post.type].color}`}>
                 {TYPE_BADGES[post.type].label}
@@ -93,23 +145,46 @@ function FeedCard({
           </div>
           <span className="text-xs text-text-muted">{timeAgo(post.createdAt)}</span>
         </div>
-        {isOwner && (
-          <div className="relative">
-            <button onClick={() => setShowMenu(!showMenu)} className="p-1 text-text-muted hover:text-text-primary">
-              <MoreHorizontal className="w-5 h-5" />
-            </button>
-            {showMenu && (
-              <div className="absolute right-0 top-8 bg-bg-elevated border border-border-primary rounded-xl shadow-lg z-20 py-1 min-w-[140px]">
-                <button
-                  onClick={() => { onDelete(post.id); setShowMenu(false); }}
-                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" /> Delete
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="relative">
+          <button onClick={() => setShowMenu(!showMenu)} className="p-1 text-text-muted hover:text-text-primary">
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 top-8 bg-bg-elevated border border-border-primary rounded-xl shadow-lg z-20 py-1 min-w-[160px]">
+              {isOwner ? (
+                <>
+                  <button
+                    onClick={() => { onEdit(post.id, post.content); setShowMenu(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
+                  >
+                    <Pencil className="w-4 h-4" /> Edit
+                  </button>
+                  <button
+                    onClick={() => { onDelete(post.id); setShowMenu(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => { setShowMenu(false); setShowReportMenu(true); }}
+                    className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
+                  >
+                    <Flag className="w-4 h-4" /> Report
+                  </button>
+                  <button
+                    onClick={() => setShowMenu(false)}
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
+                  >
+                    <Ban className="w-4 h-4" /> Block User
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Repost banner */}
@@ -145,7 +220,9 @@ function FeedCard({
             src={post.videoUrl}
             poster={post.posterUrl}
             controls
-            className="w-full rounded-xl max-h-[400px]"
+            playsInline
+            preload="metadata"
+            className="w-full rounded-xl max-h-[400px] bg-black"
           />
         </div>
       )}
@@ -189,6 +266,13 @@ function FeedCard({
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
+          onClick={() => onRepost(post)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
+        >
+          <Repeat2 className="w-4 h-4" /> Repost
+        </button>
+        <div className="w-px h-5 bg-border-primary" />
+        <button
           onClick={() => onBookmark(post.id)}
           className={cn(
             'flex-1 flex items-center justify-center gap-1.5 py-3 text-xs transition-colors',
@@ -196,6 +280,20 @@ function FeedCard({
           )}
         >
           <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} /> {isBookmarked ? 'Saved' : 'Save'}
+        </button>
+        <div className="w-px h-5 bg-border-primary" />
+        <button
+          onClick={() => {
+            const shareUrl = `${window.location.origin}/feed`;
+            if (navigator.share) {
+              navigator.share({ title: `${post.userName} on Align`, text: post.content.slice(0, 100), url: shareUrl }).catch(() => {});
+            } else {
+              navigator.clipboard.writeText(shareUrl).catch(() => {});
+            }
+          }}
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
+        >
+          <Share2 className="w-4 h-4" /> Share
         </button>
       </div>
 
@@ -220,9 +318,18 @@ function FeedCard({
       {post.comments.length > 0 && (
         <div className="px-5 py-3 border-t border-border-primary space-y-2">
           {post.comments.map((c) => (
-            <div key={c.id} className="text-sm">
-              <span className="font-semibold text-text-primary mr-1.5">{c.userName}</span>
-              <span className="text-text-secondary">{c.text}</span>
+            <div key={c.id} className="flex items-start gap-2 text-sm">
+              <div className="w-5 h-5 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+                {c.userAvatar ? (
+                  <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <span className="text-[9px] font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
+                )}
+              </div>
+              <div>
+                <Link href={`/user/${c.userId}`} className="font-semibold text-text-primary mr-1.5 hover:underline">{c.userName}</Link>
+                <span className="text-text-secondary">{c.text}</span>
+              </div>
             </div>
           ))}
           {post.commentCount > 3 && (
@@ -235,6 +342,42 @@ function FeedCard({
           )}
         </div>
       )}
+
+      {/* Report modal */}
+      {showReportMenu && (
+        <>
+          <div className="fixed inset-0 bg-black/60 z-50" onClick={() => setShowReportMenu(false)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowReportMenu(false)}>
+            <div className="bg-bg-card border border-border rounded-2xl p-5 max-w-xs w-full" onClick={e => e.stopPropagation()}>
+              <h3 className="text-base font-semibold text-text-primary mb-3">Report Post</h3>
+              {reported ? (
+                <p className="text-sm text-green-400 mb-4">Thanks for reporting. We&apos;ll review this post.</p>
+              ) : (
+                <div className="space-y-1 mb-4">
+                  {['Spam', 'Harassment', 'Inappropriate content', 'Misinformation', 'Other'].map(reason => (
+                    <button
+                      key={reason}
+                      onClick={async () => {
+                        try { await reportPost(post.id, currentUserId, reason); } catch { /* */ }
+                        setReported(true);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-bg-secondary rounded-lg transition-colors"
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <button onClick={() => { setShowReportMenu(false); setReported(false); }} className="btn-secondary w-full text-sm">
+                {reported ? 'Done' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Click outside to close menu */}
+      {showMenu && <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />}
     </div>
   );
 }
@@ -290,12 +433,16 @@ function CommentSheet({
           )}
           {comments.map((c) => (
             <div key={c.id} className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
-              </div>
+              <Link href={`/user/${c.userId}`} className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {c.userAvatar ? (
+                  <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <span className="text-xs font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
+                )}
+              </Link>
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold text-text-primary">{c.userName}</span>
+                  <Link href={`/user/${c.userId}`} className="text-sm font-semibold text-text-primary hover:underline">{c.userName}</Link>
                   <span className="text-xs text-text-muted">{timeAgo(c.createdAt)}</span>
                 </div>
                 <p className="text-sm text-text-secondary mt-0.5">{c.text}</p>
@@ -331,11 +478,13 @@ function CommentSheet({
 function CreatePostModal({
   userId,
   userName,
+  userAvatar,
   onClose,
   onCreated,
 }: {
   userId: string;
   userName: string;
+  userAvatar?: string | null;
   onClose: () => void;
   onCreated: (post: any) => void;
 }) {
@@ -344,12 +493,16 @@ function CreatePostModal({
   const [selectedPreset, setSelectedPreset] = useState('default');
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState('');
-  const [postMode, setPostMode] = useState<'text' | 'photo' | 'poll'>('text');
+  const [postMode, setPostMode] = useState<'text' | 'photo' | 'video' | 'poll'>('text');
 
   // Image state
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Video state
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
   // Poll state
   const [pollQuestion, setPollQuestion] = useState('');
@@ -372,11 +525,39 @@ function CreatePostModal({
     setSelectedPreset('default');
   }
 
-  function removeImage() {
+  function clearImage() {
     setImageFile(null);
     if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImagePreview(null);
+  }
+
+  function removeImage() {
+    clearImage();
     setPostMode('text');
+  }
+
+  function clearVideo() {
+    setVideoFile(null);
+    if (videoPreview) URL.revokeObjectURL(videoPreview);
+    setVideoPreview(null);
+  }
+
+  function removeVideo() {
+    clearVideo();
+    setPostMode('text');
+  }
+
+  function handleVideoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 200 * 1024 * 1024) {
+      setError('Video must be under 200 MB');
+      return;
+    }
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+    setPostMode('video');
+    clearImage();
   }
 
   function addPollOption() {
@@ -396,7 +577,7 @@ function CreatePostModal({
         setError('Poll needs a question and at least 2 options');
         return;
       }
-    } else if (!content.trim() && !imageFile) {
+    } else if (!content.trim() && !imageFile && !videoFile) {
       return;
     }
 
@@ -440,19 +621,25 @@ function CreatePostModal({
         onClose();
       } else {
         let imageUrl: string | undefined;
+        let videoUrl: string | undefined;
+        setUploading(true);
         if (imageFile) {
-          setUploading(true);
           imageUrl = await uploadPostMedia(userId, imageFile);
-          setUploading(false);
         }
+        if (videoFile) {
+          videoUrl = await uploadPostMedia(userId, videoFile);
+        }
+        setUploading(false);
 
+        const postType = videoFile ? 'video' : imageFile ? 'photo' : 'text';
         const data = await createPost({
           userId,
-          type: imageFile ? 'photo' : 'text',
+          type: postType,
           content: content.trim(),
           visibility,
           imageUrl,
           mediaKind: imageFile ? 'photo' : undefined,
+          videoUrl,
           style: hasGradient ? { preset: selectedPreset } : null,
         });
         onCreated(data);
@@ -477,10 +664,22 @@ function CreatePostModal({
           </button>
         </div>
 
+        {/* User info */}
+        <div className="flex items-center gap-3 px-5 pt-4 pb-2">
+          <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {userAvatar ? (
+              <img src={userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <span className="text-sm font-bold text-accent-primary">{userName[0]?.toUpperCase()}</span>
+            )}
+          </div>
+          <span className="text-sm font-medium text-text-primary">{userName}</span>
+        </div>
+
         {/* Post type tabs */}
-        <div className="flex gap-1 px-5 pt-4">
+        <div className="flex gap-1 px-5 pt-2">
           <button
-            onClick={() => { setPostMode('text'); removeImage(); }}
+            onClick={() => { setPostMode('text'); clearImage(); clearVideo(); }}
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
               postMode === 'text' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
@@ -489,13 +688,22 @@ function CreatePostModal({
             <FileText className="w-3.5 h-3.5" /> Text
           </button>
           <button
-            onClick={() => setPostMode('photo')}
+            onClick={() => { setPostMode('photo'); clearVideo(); }}
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
               postMode === 'photo' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
             <Image className="w-3.5 h-3.5" /> Photo
+          </button>
+          <button
+            onClick={() => { setPostMode('video'); clearImage(); }}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+              postMode === 'video' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
+            )}
+          >
+            <Video className="w-3.5 h-3.5" /> Video
           </button>
           <button
             onClick={() => setPostMode('poll')}
@@ -558,8 +766,36 @@ function CreatePostModal({
                 </label>
               )}
 
+              {/* Video preview */}
+              {videoPreview && (
+                <div className="relative rounded-xl overflow-hidden border border-border-primary">
+                  <video src={videoPreview} controls className="w-full max-h-[240px]" />
+                  <button
+                    onClick={removeVideo}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Video upload button (for video mode) */}
+              {!videoPreview && postMode === 'video' && (
+                <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
+                  <Video className="w-8 h-8 text-text-muted" />
+                  <span className="text-sm text-text-muted">Click to upload a video</span>
+                  <span className="text-xs text-text-muted">MP4, MOV, WebM up to 200 MB</span>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    onChange={handleVideoSelect}
+                  />
+                </label>
+              )}
+
               {/* Attachment bar (for text mode) */}
-              {postMode === 'text' && !imagePreview && (
+              {postMode === 'text' && !imagePreview && !videoPreview && (
                 <div className="flex items-center gap-2">
                   <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
                     <Image className="w-4 h-4" /> Add Image
@@ -570,11 +806,20 @@ function CreatePostModal({
                       onChange={handleImageSelect}
                     />
                   </label>
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
+                    <Video className="w-4 h-4" /> Add Video
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={handleVideoSelect}
+                    />
+                  </label>
                 </div>
               )}
 
-              {/* Style presets (text only, no image) */}
-              {postMode === 'text' && !imagePreview && (
+              {/* Style presets (text only, no image/video) */}
+              {postMode === 'text' && !imagePreview && !videoPreview && (
                 <div>
                   <p className="text-xs text-text-muted font-medium mb-2">Background Style</p>
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -696,21 +941,21 @@ function CreatePostModal({
             </button>
           </div>
 
-          {error && <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>}
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-border-primary sticky bottom-0 bg-bg-secondary">
+        <div className="px-5 py-4 border-t border-border-primary sticky bottom-0 bg-bg-secondary space-y-3">
+          {error && <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>}
           <button
             onClick={handlePost}
             disabled={
               posting || uploading ||
               (postMode === 'poll' ? (!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2) :
-               (!content.trim() && !imageFile))
+               (!content.trim() && !imageFile && !videoFile))
             }
             className="btn-primary w-full"
           >
-            {uploading ? 'Uploading image...' : posting ? 'Posting...' : postMode === 'poll' ? 'Create Poll' : 'Post'}
+            {uploading ? (videoFile ? 'Uploading video...' : 'Uploading image...') : posting ? 'Posting...' : postMode === 'poll' ? 'Create Poll' : 'Post'}
           </button>
         </div>
       </div>
@@ -721,9 +966,10 @@ function CreatePostModal({
 // ── Main Feed Page ─────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const userId = user?.id || '';
-  const userName = user?.user_metadata?.name || 'Stargazer';
+  const userName = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
+  const userAvatar = profile?.avatar_url || null;
 
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -732,6 +978,9 @@ export default function FeedPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [editingPost, setEditingPost] = useState<{ id: string; content: string } | null>(null);
+  const [editText, setEditText] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
 
   const loadFeed = useCallback(async () => {
     if (!userId) return;
@@ -802,6 +1051,48 @@ export default function FeedPage() {
     });
   }
 
+  async function handleRepost(post: FeedPost) {
+    try {
+      const rawPost = await repostPost(userId, post);
+      const p = rawPost.profile || {};
+      const newPost: FeedPost = {
+        id: rawPost.id,
+        userId: rawPost.user_id,
+        userName: p.display_name || userName,
+        userAvatar: p.avatar_url || undefined,
+        type: rawPost.type,
+        content: rawPost.content || '',
+        imageUrl: rawPost.image_url || undefined,
+        videoUrl: rawPost.video_url || undefined,
+        reactions: [],
+        comments: [],
+        commentCount: 0,
+        createdAt: rawPost.created_at,
+        visibility: rawPost.visibility,
+        originalPostId: rawPost.original_post_id || undefined,
+        originalUserName: rawPost.original_user_name || undefined,
+        style: rawPost.style || null,
+      };
+      setPosts((prev) => [newPost, ...prev]);
+    } catch { /* */ }
+  }
+
+  function handleStartEdit(postId: string, currentContent: string) {
+    setEditingPost({ id: postId, content: currentContent });
+    setEditText(currentContent);
+  }
+
+  async function handleSaveEdit() {
+    if (!editingPost || editSaving) return;
+    setEditSaving(true);
+    try {
+      await editPost(editingPost.id, editText.trim());
+      setPosts((prev) => prev.map((p) => p.id === editingPost.id ? { ...p, content: editText.trim() } : p));
+      setEditingPost(null);
+    } catch { /* */ }
+    setEditSaving(false);
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}
@@ -816,17 +1107,11 @@ export default function FeedPage() {
       </div>
 
       {/* Cosmic Weather Banner */}
-      <div className="bg-gradient-cosmic rounded-2xl p-4 mb-6 border border-accent-muted flex items-center gap-4">
-        <span className="text-3xl">🌙</span>
-        <div className="flex-1">
-          <p className="text-sm font-medium text-text-primary">Waning Gibbous in Scorpio</p>
-          <p className="text-xs text-text-tertiary">Mercury retrograde until May 25 · Venus trine Jupiter today</p>
-        </div>
-      </div>
+      <FeedCosmicBanner />
 
       {/* Trending Tags */}
       <div className="flex gap-2 overflow-x-auto mb-6 scrollbar-hide">
-        {['#FullMoon', '#MercuryRetrograde', '#TaurusSeason', '#CosmicShift', '#Astrology'].map((tag) => (
+        {getDynamicTags().map((tag) => (
           <span
             key={tag}
             className="px-3 py-1.5 rounded-full bg-bg-card border border-border-primary text-xs text-text-secondary whitespace-nowrap"
@@ -875,6 +1160,8 @@ export default function FeedPage() {
             onReaction={handleReaction}
             onComment={setCommentPostId}
             onDelete={handleDelete}
+            onEdit={handleStartEdit}
+            onRepost={handleRepost}
             isBookmarked={bookmarkedIds.has(post.id)}
             onBookmark={handleBookmark}
           />
@@ -895,6 +1182,7 @@ export default function FeedPage() {
         <CreatePostModal
           userId={userId}
           userName={userName}
+          userAvatar={userAvatar}
           onClose={() => setShowCreate(false)}
           onCreated={handlePostCreated}
         />
@@ -907,6 +1195,41 @@ export default function FeedPage() {
           userId={userId}
           onClose={() => setCommentPostId(null)}
         />
+      )}
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setEditingPost(null)} />
+          <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
+              <h3 className="text-lg font-semibold text-text-primary">Edit Post</h3>
+              <button onClick={() => setEditingPost(null)} className="text-text-muted hover:text-text-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-5 py-4">
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                rows={5}
+                maxLength={2000}
+                className="w-full bg-bg-card border border-border-primary rounded-xl p-4 text-sm text-text-primary resize-none outline-none focus:border-accent-primary transition-colors"
+              />
+              <p className="text-xs text-text-muted text-right mt-1">{editText.length}/2000</p>
+            </div>
+            <div className="px-5 py-4 border-t border-border-primary flex gap-3">
+              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">Cancel</button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={editSaving || !editText.trim()}
+                className="btn-primary flex-1 text-sm"
+              >
+                {editSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

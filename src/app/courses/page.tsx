@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 interface Course {
@@ -85,9 +86,9 @@ export default function CoursesPage() {
               </div>
 
               {/* Start button */}
-              <button className="w-full btn-primary py-3 text-sm">
+              <Link href={`/courses/${course.id}`} className="w-full btn-primary py-3 text-sm block text-center">
                 {course.completed > 0 ? 'Continue' : 'Start Course'}
-              </button>
+              </Link>
             </div>
           );
         })}

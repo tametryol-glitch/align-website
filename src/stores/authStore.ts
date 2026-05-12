@@ -20,6 +20,8 @@ export interface UserProfile {
   longitude: number | null;
   timezone: string | null;
   cover_photo_url?: string | null;
+  align_code?: string | null;
+  created_at?: string | null;
   is_subscribed?: boolean | null;
   is_admin?: boolean | null;
 }

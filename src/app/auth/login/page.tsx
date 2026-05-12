@@ -38,12 +38,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-accent mb-4">
-            <Sparkles className="w-8 h-8 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Align" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
           <h1 className="text-3xl font-display font-bold text-text-primary">Welcome back</h1>
           <p className="text-text-tertiary mt-2">Sign in to your Align account</p>
         </div>
