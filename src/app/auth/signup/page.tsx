@@ -13,6 +13,9 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+  const [resendError, setResendError] = useState('');
   const router = useRouter();
 
   async function handleGoogleSignup() {
@@ -46,6 +49,20 @@ export default function SignupPage() {
     }
   }
 
+  async function handleResend() {
+    setResending(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({ type: 'signup', email });
+      if (error) throw error;
+      setResent(true);
+    } catch {
+      setResendError('Could not resend. Please wait a minute and try again.');
+    } finally {
+      setResending(false);
+    }
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -57,6 +74,24 @@ export default function SignupPage() {
           <p className="text-text-tertiary">
             We sent a confirmation link to <strong className="text-text-secondary">{email}</strong>
           </p>
+          <p className="text-text-muted text-sm mt-3">
+            Don&apos;t see it? Check your <strong className="text-text-secondary">spam or junk folder</strong>.
+            The email comes from noreply@mail.app.supabase.io.
+          </p>
+          <div className="mt-5">
+            {resent ? (
+              <p className="text-green-400 text-sm">Confirmation email resent!</p>
+            ) : (
+              <button
+                onClick={handleResend}
+                disabled={resending}
+                className="text-sm text-accent-primary hover:text-accent-secondary underline underline-offset-2"
+              >
+                {resending ? 'Resending...' : 'Resend confirmation email'}
+              </button>
+            )}
+            {resendError && <p className="text-red-400 text-xs mt-2">{resendError}</p>}
+          </div>
           <Link href="/auth/login" className="btn-ghost mt-6 inline-block">
             Back to login
           </Link>
