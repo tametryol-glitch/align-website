@@ -1,241 +1,346 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  browseCommunities, getMyCommunities, joinCommunity, leaveCommunity,
+  COMMUNITY_CATEGORIES, ZODIAC_EMOJIS,
+  type Community, type CommunityCategory,
+} from '@/lib/communityService';
 import Link from 'next/link';
-import { Users, Plus, Search, Globe, Lock } from 'lucide-react';
-import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-
-interface Community {
-  id: string;
-  name: string;
-  description: string | null;
-  category: string;
-  member_count: number;
-  is_private: boolean;
-  icon_url: string | null;
-  created_at: string;
-}
-
-const CATEGORY_ICONS: Record<string, string> = {
-  'Sun Signs': '☉',
-  'Moon Signs': '☽',
-  'Rising Signs': '⬆',
-  'Elements': '🔥',
-  'Modalities': '⚡',
-  'General': '✨',
-  'Beginners': '📚',
-  'Advanced': '🔮',
-  'Relationships': '💕',
-  'Career': '💼',
-};
+import { Search, Plus, Users, Lock, Globe, RefreshCw } from 'lucide-react';
 
 export default function CommunitiesPage() {
   const { user } = useAuthStore();
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [myCommunities, setMyCommunities] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<'discover' | 'mine'>('discover');
+  const [allCommunities, setAllCommunities] = useState<Community[]>([]);
+  const [myCommunities, setMyCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState<CommunityCategory | null>(null);
+  const [joinedIds, setJoinedIds] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    loadCommunities();
-  }, [user]);
-
-  async function loadCommunities() {
+  const loadData = useCallback(async () => {
     setLoading(true);
-    const supabase = createClient();
-
-    const { data } = await supabase
-      .from('communities')
-      .select('*')
-      .order('member_count', { ascending: false });
-
-    if (data) setCommunities(data);
-
-    // Load user's joined communities
-    if (user) {
-      const { data: memberships } = await supabase
-        .from('community_members')
-        .select('community_id')
-        .eq('user_id', user.id);
-      if (memberships) {
-        setMyCommunities(memberships.map(m => m.community_id));
-      }
-    }
+    try {
+      const [all, mine] = await Promise.all([
+        browseCommunities({ category: selectedCategory || undefined, search: search || undefined }),
+        user ? getMyCommunities() : Promise.resolve([]),
+      ]);
+      setAllCommunities(all);
+      setMyCommunities(mine);
+      setJoinedIds(new Set(mine.map(c => c.id)));
+    } catch {}
     setLoading(false);
-  }
+  }, [user, selectedCategory, search]);
 
-  async function joinCommunity(communityId: string) {
-    if (!user) return;
-    const supabase = createClient();
-    await supabase.from('community_members').insert({
-      community_id: communityId,
-      user_id: user.id,
-      role: 'member',
-    });
-    setMyCommunities(prev => [...prev, communityId]);
-    // Update local count
-    setCommunities(prev => prev.map(c =>
-      c.id === communityId ? { ...c, member_count: c.member_count + 1 } : c
-    ));
-  }
+  useEffect(() => { loadData(); }, [loadData]);
 
-  async function leaveCommunity(communityId: string) {
-    if (!user) return;
-    const supabase = createClient();
-    await supabase.from('community_members')
-      .delete()
-      .eq('community_id', communityId)
-      .eq('user_id', user.id);
-    setMyCommunities(prev => prev.filter(id => id !== communityId));
-    setCommunities(prev => prev.map(c =>
-      c.id === communityId ? { ...c, member_count: Math.max(0, c.member_count - 1) } : c
-    ));
-  }
+  const handleJoin = useCallback(async (communityId: string) => {
+    const ok = await joinCommunity(communityId);
+    if (ok) {
+      setJoinedIds(prev => new Set([...Array.from(prev), communityId]));
+      loadData();
+    }
+  }, [loadData]);
 
-  const categories = ['all', ...Array.from(new Set(communities.map(c => c.category).filter(Boolean)))];
+  const handleLeave = useCallback(async (communityId: string) => {
+    if (!confirm('Leave this community?')) return;
+    const ok = await leaveCommunity(communityId);
+    if (ok) {
+      setJoinedIds(prev => { const s = new Set(prev); s.delete(communityId); return s; });
+      loadData();
+    }
+  }, [loadData]);
 
-  const filtered = communities.filter(c => {
-    if (categoryFilter !== 'all' && c.category !== categoryFilter) return false;
-    if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  // Featured = top 4 by members, Trending = next 3
+  const featured = useMemo(() =>
+    [...allCommunities].sort((a, b) => b.member_count - a.member_count).slice(0, 4),
+    [allCommunities],
+  );
 
-  const joined = filtered.filter(c => myCommunities.includes(c.id));
-  const notJoined = filtered.filter(c => !myCommunities.includes(c.id));
+  const discoverList = useMemo(() =>
+    allCommunities.filter(c => !joinedIds.has(c.id)),
+    [allCommunities, joinedIds],
+  );
+
+  const getCategoryEmoji = (cat: string) =>
+    COMMUNITY_CATEGORIES.find(c => c.id === cat)?.emoji || '✨';
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
-          <Users className="w-7 h-7 text-accent-primary" />
-          Communities
-        </h1>
-        <Link href="/communities/create" className="btn-primary text-sm flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Create
-        </Link>
-      </div>
-
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search communities..."
-          className="input pl-10"
-        />
-      </div>
-
-      {/* Category filter */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3 mb-6">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-              categoryFilter === cat
-                ? 'bg-accent-primary/20 text-accent-primary'
-                : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
-            }`}
+    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+      {/* Header */}
+      <div className="card rounded-2xl p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-accent-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-text-primary">Communities</h1>
+              <p className="text-sm text-text-secondary">Find your cosmic tribe</p>
+            </div>
+          </div>
+          <Link
+            href="/communities/create"
+            className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
           >
-            {cat === 'all' ? '✨ All' : `${CATEGORY_ICONS[cat] || '🌟'} ${cat}`}
-          </button>
-        ))}
+            <Plus className="w-4 h-4" /> Create
+          </Link>
+        </div>
       </div>
 
-      {loading ? (
-        <LoadingCosmic label="Loading communities..." />
-      ) : (
+      {/* Tab Switcher */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setActiveTab('discover')}
+          className={`flex-1 py-3 rounded-xl font-medium text-sm transition-all ${
+            activeTab === 'discover'
+              ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+              : 'bg-bg-card text-text-muted border border-border-primary hover:border-border-accent'
+          }`}
+        >
+          🔍 Discover
+        </button>
+        <button
+          onClick={() => setActiveTab('mine')}
+          className={`flex-1 py-3 rounded-xl font-medium text-sm transition-all ${
+            activeTab === 'mine'
+              ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+              : 'bg-bg-card text-text-muted border border-border-primary hover:border-border-accent'
+          }`}
+        >
+          ⭐ My Communities {myCommunities.length > 0 && `(${myCommunities.length})`}
+        </button>
+      </div>
+
+      {/* ═══ DISCOVER TAB ═══ */}
+      {activeTab === 'discover' && (
         <>
-          {/* My Communities */}
-          {joined.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">
-                My Communities ({joined.length})
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {joined.map(community => (
-                  <CommunityCard
-                    key={community.id}
-                    community={community}
-                    isJoined={true}
-                    onLeave={() => leaveCommunity(community.id)}
-                  />
-                ))}
+          {/* Search */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search communities..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 bg-bg-card rounded-xl text-sm text-text-primary placeholder:text-text-muted border border-border-primary focus:border-accent-primary/50 focus:outline-none"
+            />
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                !selectedCategory
+                  ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+                  : 'bg-bg-card text-text-muted border border-border-primary'
+              }`}
+            >
+              All
+            </button>
+            {COMMUNITY_CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+                    : 'bg-bg-card text-text-muted border border-border-primary'
+                }`}
+              >
+                {cat.emoji} {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div className="card rounded-2xl p-12 text-center">
+              <RefreshCw className="w-6 h-6 text-accent-primary animate-spin mx-auto mb-3" />
+              <p className="text-text-muted text-sm">Loading communities...</p>
+            </div>
+          ) : discoverList.length === 0 && myCommunities.length === 0 ? (
+            <div className="card rounded-2xl p-12 text-center">
+              <div className="text-5xl mb-4">🌌</div>
+              <h2 className="text-lg font-semibold text-text-primary mb-2">No Communities Yet</h2>
+              <p className="text-text-secondary mb-6">Be the first to create a cosmic community!</p>
+              <Link
+                href="/communities/create"
+                className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium"
+              >
+                <Plus className="w-4 h-4" /> Create Community
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Featured Section */}
+              {!search && !selectedCategory && featured.length > 0 && (
+                <div>
+                  <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">Featured</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {featured.map(comm => (
+                      <CommunityCard
+                        key={comm.id}
+                        community={comm}
+                        joined={joinedIds.has(comm.id)}
+                        onJoin={() => handleJoin(comm.id)}
+                        onLeave={() => handleLeave(comm.id)}
+                        featured
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All Communities */}
+              <div>
+                {!search && !selectedCategory && <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">All Communities</h2>}
+                <div className="space-y-3">
+                  {(search || selectedCategory ? allCommunities : discoverList).map(comm => (
+                    <CommunityCard
+                      key={comm.id}
+                      community={comm}
+                      joined={joinedIds.has(comm.id)}
+                      onJoin={() => handleJoin(comm.id)}
+                      onLeave={() => handleLeave(comm.id)}
+                    />
+                  ))}
+                  {(search || selectedCategory ? allCommunities : discoverList).length === 0 && (
+                    <div className="card rounded-2xl p-8 text-center">
+                      <p className="text-text-muted text-sm">
+                        {search ? `No communities found for "${search}"` : 'No communities in this category yet.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
+            </>
+          )}
+        </>
+      )}
+
+      {/* ═══ MY COMMUNITIES TAB ═══ */}
+      {activeTab === 'mine' && (
+        <>
+          {loading ? (
+            <div className="card rounded-2xl p-12 text-center">
+              <RefreshCw className="w-6 h-6 text-accent-primary animate-spin mx-auto mb-3" />
+              <p className="text-text-muted text-sm">Loading your communities...</p>
+            </div>
+          ) : myCommunities.length === 0 ? (
+            <div className="card rounded-2xl p-12 text-center">
+              <div className="text-5xl mb-4">🌌</div>
+              <h2 className="text-lg font-semibold text-text-primary mb-2">Your Cosmic Circle Awaits</h2>
+              <p className="text-text-secondary mb-6">Join or create communities to find your tribe.</p>
+              <button
+                onClick={() => setActiveTab('discover')}
+                className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium"
+              >
+                Explore Communities
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {myCommunities.map(comm => (
+                <CommunityCard
+                  key={comm.id}
+                  community={comm}
+                  joined={true}
+                  onJoin={() => {}}
+                  onLeave={() => handleLeave(comm.id)}
+                  showLink
+                />
+              ))}
             </div>
           )}
-
-          {/* Discover */}
-          <div>
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">
-              {joined.length > 0 ? 'Discover More' : 'All Communities'} ({notJoined.length})
-            </h2>
-            {notJoined.length === 0 ? (
-              <div className="card text-center py-10">
-                <Globe className="w-10 h-10 text-text-muted mx-auto mb-3" />
-                <p className="text-text-muted">No communities found</p>
-                <p className="text-xs text-text-muted mt-1">Try a different search or create your own!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {notJoined.map(community => (
-                  <CommunityCard
-                    key={community.id}
-                    community={community}
-                    isJoined={false}
-                    onJoin={() => joinCommunity(community.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
         </>
       )}
     </div>
   );
 }
 
-function CommunityCard({ community, isJoined, onJoin, onLeave }: {
+// ═════════════════════════════════════════════════════════════════════
+// COMMUNITY CARD
+// ═════════════════════════════════════════════════════════════════════
+
+function CommunityCard({
+  community: comm,
+  joined,
+  onJoin,
+  onLeave,
+  featured = false,
+  showLink = false,
+}: {
   community: Community;
-  isJoined: boolean;
-  onJoin?: () => void;
-  onLeave?: () => void;
+  joined: boolean;
+  onJoin: () => void;
+  onLeave: () => void;
+  featured?: boolean;
+  showLink?: boolean;
 }) {
+  const catEmoji = COMMUNITY_CATEGORIES.find(c => c.id === comm.category)?.emoji || '✨';
+  const catLabel = COMMUNITY_CATEGORIES.find(c => c.id === comm.category)?.label || comm.category;
+  const zodiacEmoji = comm.zodiac_sign ? ZODIAC_EMOJIS[comm.zodiac_sign] || '' : '';
+
   return (
-    <div className="card hover:border-accent-primary/30 transition-colors">
+    <div className={`card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors ${featured ? 'bg-gradient-to-br from-bg-card to-accent-primary/5' : ''}`}>
       <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-xl bg-accent-muted flex items-center justify-center flex-shrink-0 text-xl">
-          {CATEGORY_ICONS[community.category] || '✨'}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <Link href={`/communities/${community.id}`} className="text-sm font-semibold text-text-primary hover:text-accent-primary truncate">
-              {community.name}
-            </Link>
-            {community.is_private && <Lock className="w-3 h-3 text-text-muted" />}
-          </div>
-          {community.description && (
-            <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{community.description}</p>
-          )}
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-[10px] text-text-muted flex items-center gap-1">
-              <Users className="w-3 h-3" /> {community.member_count} members
-            </span>
-            {isJoined ? (
-              <button onClick={onLeave} className="text-[10px] text-red-400 hover:text-red-300">
-                Leave
-              </button>
+        {/* Avatar */}
+        <Link href={`/communities/${comm.id}`} className="shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-accent-primary/10 flex items-center justify-center text-2xl">
+            {comm.avatar_url ? (
+              <img src={comm.avatar_url} alt="" className="w-full h-full rounded-xl object-cover" />
             ) : (
-              <button onClick={onJoin} className="text-[10px] text-accent-primary font-medium hover:underline">
-                Join
-              </button>
+              zodiacEmoji || catEmoji
             )}
           </div>
+        </Link>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <Link href={`/communities/${comm.id}`}>
+            <h3 className="text-text-primary font-semibold truncate hover:text-accent-primary transition-colors">
+              {comm.name}
+            </h3>
+          </Link>
+          <p className="text-xs text-text-secondary line-clamp-2 mt-0.5">{comm.description}</p>
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
+            <span className="text-[11px] text-text-muted flex items-center gap-1">
+              <Users className="w-3 h-3" /> {comm.member_count} member{comm.member_count !== 1 ? 's' : ''}
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-bg-tertiary text-text-muted">
+              {catEmoji} {catLabel}
+            </span>
+            {!comm.is_public && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
+                <Lock className="w-3 h-3" /> Private
+              </span>
+            )}
+            {comm.zodiac_sign && (
+              <span className="text-[11px] text-text-muted">{zodiacEmoji} {comm.zodiac_sign}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Join/Leave */}
+        <div className="shrink-0">
+          {joined ? (
+            <button
+              onClick={(e) => { e.preventDefault(); onLeave(); }}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-bg-tertiary text-text-muted hover:bg-red-500/10 hover:text-red-400 transition-colors"
+            >
+              Joined
+            </button>
+          ) : (
+            <button
+              onClick={(e) => { e.preventDefault(); onJoin(); }}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 transition-colors"
+            >
+              Join
+            </button>
+          )}
         </div>
       </div>
     </div>

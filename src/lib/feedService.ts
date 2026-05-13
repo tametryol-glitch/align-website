@@ -196,7 +196,8 @@ export async function createPost(post: {
 export async function toggleReaction(postId: string, userId: string, emoji: ReactionEmoji): Promise<PostReaction[]> {
   const supabase = createClient();
 
-  const { data: existing } = await supabase
+  // Check if user already reacted with THIS emoji (toggle off)
+  const { data: sameEmoji } = await supabase
     .from('post_reactions')
     .select('id')
     .eq('post_id', postId)
@@ -204,9 +205,13 @@ export async function toggleReaction(postId: string, userId: string, emoji: Reac
     .eq('emoji', emoji)
     .maybeSingle();
 
-  if (existing) {
-    await supabase.from('post_reactions').delete().eq('id', existing.id);
+  if (sameEmoji) {
+    // User clicked the same emoji again — remove it (toggle off)
+    await supabase.from('post_reactions').delete().eq('id', sameEmoji.id);
   } else {
+    // Remove any existing reaction from this user on this post (enforce single reaction)
+    await supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId);
+    // Add the new reaction
     await supabase.from('post_reactions').insert({ post_id: postId, user_id: userId, emoji });
   }
 
@@ -266,6 +271,11 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
     text: c.text,
     createdAt: c.created_at,
   }));
+}
+
+export async function deleteComment(commentId: string) {
+  const supabase = createClient();
+  await supabase.from('post_comments').update({ is_deleted: true }).eq('id', commentId);
 }
 
 export async function deletePost(postId: string) {

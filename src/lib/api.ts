@@ -229,6 +229,14 @@ class AlignAPI {
     return this.request('/transits/forecasts/events', { method: 'POST', body: JSON.stringify(data) }, 45000);
   }
 
+  // Forecast events (used by moon phase forecast service)
+  async getForecastEvents(windowDays = 30, startDate?: string) {
+    return this.request('/transits/forecasts/events', {
+      method: 'POST',
+      body: JSON.stringify({ window_days: windowDays, start_date: startDate ?? null }),
+    });
+  }
+
   // Midpoints
   async getMidpoints(data: any) {
     return this.request('/synastry/midpoints', { method: 'POST', body: JSON.stringify(data) });

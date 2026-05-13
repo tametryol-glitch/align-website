@@ -9,7 +9,26 @@ import {
   MessageCircle, Send, ArrowLeft, Search, Plus, Users, X,
   MoreVertical, Pin, BellOff, Archive, Trash2, Pencil, Reply,
   SmilePlus, Check, CheckCheck, Image as ImageIcon, ChevronDown,
+  Forward, Settings2, Smile,
 } from 'lucide-react';
+import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
+import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
+import { AttachmentMenu } from '@/components/chat/AttachmentMenu';
+import { PollCreator } from '@/components/chat/PollCreator';
+import { VoiceMessageBubble } from '@/components/chat/VoiceMessageBubble';
+import { VideoMessageBubble } from '@/components/chat/VideoMessageBubble';
+import { FileBubble } from '@/components/chat/FileBubble';
+import { LocationBubble } from '@/components/chat/LocationBubble';
+import { PollBubble } from '@/components/chat/PollBubble';
+import { CallButton } from '@/components/chat/CallButton';
+import { CallScreen } from '@/components/chat/CallScreen';
+import { GroupSettingsModal } from '@/components/chat/GroupSettingsModal';
+import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
+import { LocationPicker } from '@/components/chat/LocationPicker';
+import { uploadChatFile, uploadVoiceNote } from '@/lib/chatMediaService';
+import { generateChannelName, fetchAgoraToken, createCallClient, type CallState } from '@/lib/callingService';
+import { sendCallSignal, generateSessionId } from '@/lib/callSignalingService';
+import { useCallStore } from '@/stores/callStore';
 import {
   getConversations,
   getMessages,
@@ -88,6 +107,34 @@ export default function MessagesPage() {
   const [editText, setEditText] = useState('');
   const [loadingMore, setLoadingMore] = useState(false);
   const [showScrollDown, setShowScrollDown] = useState(false);
+
+  // New feature state
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showPollCreator, setShowPollCreator] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
+  const [forwardMessage, setForwardMessage] = useState<Message | null>(null);
+  const fileUploadRef = useRef<HTMLInputElement>(null);
+
+  // Call state
+  const [callState, setCallState] = useState<CallState>('idle');
+  const [callType, setCallType] = useState<'voice' | 'video'>('voice');
+  const [callIsOutgoing, setCallIsOutgoing] = useState(true);
+  const [callDuration, setCallDuration] = useState(0);
+  const [callMuted, setCallMuted] = useState(false);
+  const [callCameraOn, setCallCameraOn] = useState(true);
+  // Call store selectors (global listener handles incoming calls)
+  const pendingAcceptedCall = useCallStore((s) => s.pendingAcceptedCall);
+  const activeSignal = useCallStore((s) => s.activeSignal);
+  const clearPendingCall = useCallStore((s) => s.setPendingAcceptedCall);
+
+  const callClientRef = useRef<ReturnType<typeof createCallClient> | null>(null);
+  const callTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const localVideoRef = useRef<HTMLDivElement>(null);
+  const remoteVideoRef = useRef<HTMLDivElement>(null);
+  const callSessionRef = useRef<{ channelName: string; sessionId: string; otherId: string; callType: 'voice' | 'video' } | null>(null);
+  const lastProcessedSignalTs = useRef(0);
 
   // Active conversation from store
   const activeConv = useMemo(() => {
@@ -336,11 +383,16 @@ export default function MessagesPage() {
     setSending(true);
     const url = await uploadChatImage(store.activeConversationId, file);
     if (url) {
-      await sendMsg(store.activeConversationId, url, 'image', { url });
+      const result = await sendMsg(store.activeConversationId, url, 'image', { url });
+      if (result.success && result.message) {
+        store.addMessage(result.message);
+        store.updateConversationPreview(store.activeConversationId, '📷 Image', user.id);
+      }
     }
     setSending(false);
     // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = '';
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   }
 
   // ── Typing indicator ──
@@ -381,6 +433,355 @@ export default function MessagesPage() {
     if (store.activeConversationId) {
       const msgs = await getMessages(store.activeConversationId, 50);
       store.setMessages(msgs);
+    }
+  }
+
+  // ── GIF / Sticker send ──
+  async function handleGifSelect(url: string, _type: 'gif' | 'sticker') {
+    if (!store.activeConversationId || !user) return;
+    setShowGifPicker(false);
+    const result = await sendMsg(store.activeConversationId, '', 'image', { url }, store.replyTo?.id);
+    if (result.success && result.message) {
+      store.addMessage(result.message);
+      store.updateConversationPreview(store.activeConversationId, '📷 GIF', user.id);
+    }
+    store.setReplyTo(null);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── Voice note send ──
+  async function handleVoiceComplete(blob: Blob, duration: number) {
+    if (!store.activeConversationId || !user) return;
+    setSending(true);
+    const uploadResult = await uploadVoiceNote(store.activeConversationId, blob, duration);
+    if (uploadResult) {
+      const msgResult = await sendMsg(store.activeConversationId, '', 'voice_note', { url: uploadResult.url, duration: uploadResult.duration }, store.replyTo?.id);
+      if (msgResult.success && msgResult.message) {
+        store.addMessage(msgResult.message);
+        store.updateConversationPreview(store.activeConversationId, '🎤 Voice message', user.id);
+      }
+      store.setReplyTo(null);
+    }
+    setSending(false);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── File upload (any type) ──
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !store.activeConversationId || !user) return;
+    setSending(true);
+    const uploadResult = await uploadChatFile(store.activeConversationId, file);
+    if (uploadResult) {
+      const msgResult = await sendMsg(store.activeConversationId, file.name, 'file', { url: uploadResult.url, filename: file.name, size: file.size, mime_type: file.type }, store.replyTo?.id);
+      if (msgResult.success && msgResult.message) {
+        store.addMessage(msgResult.message);
+        store.updateConversationPreview(store.activeConversationId, `📎 ${file.name}`, user.id);
+      }
+      store.setReplyTo(null);
+    }
+    setSending(false);
+    if (fileUploadRef.current) fileUploadRef.current.value = '';
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── Location send ──
+  async function handleLocationSelected(location: { latitude: number; longitude: number; address?: string }) {
+    if (!store.activeConversationId || !user) return;
+    setShowLocationPicker(false);
+    const result = await sendMsg(store.activeConversationId, location.address || 'Shared location', 'location', location, store.replyTo?.id);
+    if (result.success && result.message) {
+      store.addMessage(result.message);
+      store.updateConversationPreview(store.activeConversationId, '📍 Location', user.id);
+    }
+    store.setReplyTo(null);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── Poll create ──
+  async function handleCreatePoll(question: string, options: string[]) {
+    if (!store.activeConversationId || !user) return;
+    setShowPollCreator(false);
+    const pollOptions = options.map(text => ({ text, votes: [] as string[] }));
+    const result = await sendMsg(store.activeConversationId, `Poll: ${question}`, 'poll', { question, options: pollOptions }, store.replyTo?.id);
+    if (result.success && result.message) {
+      store.addMessage(result.message);
+      store.updateConversationPreview(store.activeConversationId, `📊 Poll: ${question}`, user.id);
+    }
+    store.setReplyTo(null);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── Poll vote ──
+  async function handlePollVote(messageId: string, optionIndex: number) {
+    if (!user) return;
+    const msg = store.messages.find(m => m.id === messageId);
+    if (!msg?.metadata?.options) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const options = (msg.metadata.options as any[]).map((opt, i) => {
+      const votes = (opt.votes || []).filter((v: string) => v !== user.id);
+      if (i === optionIndex) votes.push(user.id);
+      return { ...opt, votes };
+    });
+    await editMessage(messageId, msg.content);
+    // Optimistic update for metadata
+    store.updateMessage({ ...msg, metadata: { ...msg.metadata, options } });
+  }
+
+  // ── Forward message ──
+  async function handleForwardMessage(conversationId: string) {
+    if (!forwardMessage || !user) return;
+    const result = await sendMsg(conversationId, forwardMessage.content, forwardMessage.type as 'text', forwardMessage.metadata || undefined);
+    if (result.success && result.message) {
+      // Only add to visible messages if forwarding into the active conversation
+      if (conversationId === store.activeConversationId) {
+        store.addMessage(result.message);
+      }
+      store.updateConversationPreview(conversationId, forwardMessage.content, user.id);
+    }
+    setForwardMessage(null);
+  }
+
+  // ── Agora connection helper (used by both caller and callee) ──
+  async function connectToAgoraCall(channelName: string, type: 'voice' | 'video') {
+    try {
+      setCallState('connecting');
+
+      const client = createCallClient();
+      callClientRef.current = client;
+
+      // Numeric UID for Agora (derived from timestamp to keep it unique)
+      const uid = Math.floor(Math.random() * 100000) + 1;
+
+      const token = await fetchAgoraToken(channelName, uid);
+      if (!token) {
+        console.warn('[Call] Failed to get Agora token');
+        handleEndCall();
+        return;
+      }
+
+      // Remote user joins → call is active
+      client.onRemoteUserJoined(() => {
+        setCallState('active');
+        setCallDuration(0);
+        callTimerRef.current = setInterval(() => {
+          setCallDuration(prev => prev + 1);
+        }, 1000);
+
+        // Render remote video if video call
+        if (type === 'video') {
+          setTimeout(() => {
+            const track = client.getRemoteVideoTrack();
+            if (track && remoteVideoRef.current) {
+              track.play(remoteVideoRef.current);
+            }
+          }, 500);
+        }
+      });
+
+      client.onRemoteUserLeft(() => {
+        handleEndCall();
+      });
+
+      const joined = await client.join(channelName, token, uid);
+      if (!joined) {
+        console.warn('[Call] Failed to join Agora channel');
+        handleEndCall();
+        return;
+      }
+
+      // If video call, enable camera and render local preview
+      if (type === 'video') {
+        await client.toggleCamera();
+        setCallCameraOn(true);
+        setTimeout(() => {
+          const localTrack = client.getLocalVideoTrack();
+          if (localTrack && localVideoRef.current) {
+            localTrack.play(localVideoRef.current);
+          }
+        }, 500);
+      }
+    } catch (err) {
+      console.error('[Call] connectToAgoraCall error:', err);
+      handleEndCall();
+    }
+  }
+
+  // ── React to call signals forwarded by GlobalCallListener ──
+  // (incoming-call and call-cancelled are handled globally;
+  //  call-response and call-ended are forwarded via callStore)
+  useEffect(() => {
+    if (!activeSignal || activeSignal._ts <= lastProcessedSignalTs.current) return;
+    lastProcessedSignalTs.current = activeSignal._ts;
+
+    switch (activeSignal.type) {
+      case 'call-response':
+        if (activeSignal.accepted && callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
+          // Other user accepted — connect to Agora
+          connectToAgoraCall(callSessionRef.current.channelName, callSessionRef.current.callType);
+        } else if (!activeSignal.accepted && callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
+          // Other user declined
+          callSessionRef.current = null;
+          setCallState('ended');
+          setTimeout(() => setCallState('idle'), 2000);
+        }
+        break;
+
+      case 'call-ended':
+        if (callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
+          handleEndCall();
+        }
+        break;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSignal]);
+
+  // ── Pick up pending accepted calls from GlobalCallListener ──
+  useEffect(() => {
+    if (!pendingAcceptedCall || !user) return;
+
+    (async () => {
+      // Ensure the conversation with the caller is open so CallScreen renders
+      const convId = await getOrCreateConversation(pendingAcceptedCall.callerId);
+      if (convId) {
+        await loadConversations();
+        store.setActiveConversationId(convId);
+      }
+
+      // Set up call state
+      setCallType(pendingAcceptedCall.callType);
+      setCallIsOutgoing(false);
+      setCallDuration(0);
+      setCallMuted(false);
+      setCallCameraOn(pendingAcceptedCall.callType === 'video');
+
+      callSessionRef.current = {
+        channelName: pendingAcceptedCall.channelName,
+        sessionId: pendingAcceptedCall.sessionId,
+        otherId: pendingAcceptedCall.callerId,
+        callType: pendingAcceptedCall.callType,
+      };
+
+      // Connect to Agora
+      connectToAgoraCall(pendingAcceptedCall.channelName, pendingAcceptedCall.callType);
+
+      // Clear the pending call
+      clearPendingCall(null);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingAcceptedCall, user]);
+
+  // ── Call initiation ──
+  async function handleCallStart(type: 'voice' | 'video') {
+    if (!user || !activeConv) return;
+    const otherId = activeConv.other_user_id;
+    if (!otherId) return;
+
+    setCallType(type);
+    setCallIsOutgoing(true);
+    setCallState('ringing');
+    setCallDuration(0);
+    setCallMuted(false);
+    setCallCameraOn(type === 'video');
+
+    const channelName = generateChannelName(user.id, otherId);
+    const sessionId = generateSessionId();
+
+    // Store session info so the signal-response handler can connect
+    callSessionRef.current = { channelName, sessionId, otherId, callType: type };
+
+    // Send call signal to other user
+    sendCallSignal(otherId, {
+      type: 'incoming-call',
+      callerId: user.id,
+      callerName: user.user_metadata?.display_name || 'User',
+      callType: type,
+      channelName,
+      sessionId,
+    });
+
+    // Also send push notification for mobile users
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (apiUrl) {
+        fetch(`${apiUrl}/agora/signal-call`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            caller_id: user.id,
+            caller_name: user.user_metadata?.display_name || 'User',
+            receiver_id: otherId,
+            channel_name: channelName,
+            call_type: type,
+            session_id: sessionId,
+          }),
+        }).catch(() => {}); // fire-and-forget
+      }
+    } catch {}
+
+    // Auto-cancel after 30 seconds if no answer
+    setTimeout(() => {
+      setCallState(prev => {
+        if (prev === 'ringing') {
+          sendCallSignal(otherId, { type: 'call-cancelled', sessionId });
+          callSessionRef.current = null;
+          setTimeout(() => setCallState('idle'), 3000);
+          return 'ended';
+        }
+        return prev;
+      });
+    }, 30000);
+  }
+
+  async function handleEndCall() {
+    // Send end signal FIRST
+    if (callSessionRef.current) {
+      sendCallSignal(callSessionRef.current.otherId, {
+        type: 'call-ended',
+        sessionId: callSessionRef.current.sessionId,
+      });
+      callSessionRef.current = null;
+    }
+
+    const client = callClientRef.current;
+    callClientRef.current = null; // prevent double-cleanup
+    if (client) {
+      try {
+        await client.leave();
+        await client.destroy();
+      } catch { /* best effort cleanup */ }
+    }
+    if (callTimerRef.current) {
+      clearInterval(callTimerRef.current);
+      callTimerRef.current = null;
+    }
+    setCallState('ended');
+    setTimeout(() => setCallState('idle'), 3000);
+  }
+
+  function handleCallToggleMute() {
+    if (callClientRef.current) {
+      callClientRef.current.toggleMute();
+      setCallMuted(prev => !prev);
+    }
+  }
+
+  async function handleCallToggleCamera() {
+    if (!callClientRef.current) return;
+    const wasOn = callClientRef.current.isCameraOn();
+    await callClientRef.current.toggleCamera();
+    const isNowOn = callClientRef.current.isCameraOn();
+    setCallCameraOn(isNowOn);
+
+    // When camera turns back on, a NEW video track is created.
+    // We must play it into the local PiP element or it stays black.
+    if (!wasOn && isNowOn) {
+      setTimeout(() => {
+        const localTrack = callClientRef.current?.getLocalVideoTrack();
+        if (localTrack && localVideoRef.current) {
+          localTrack.play(localVideoRef.current);
+        }
+      }, 300);
     }
   }
 
@@ -598,6 +999,26 @@ export default function MessagesPage() {
                     className="bg-bg-tertiary border border-border-primary rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted w-48 focus:outline-none focus:border-accent-primary"
                   />
                 </div>
+                {/* Call buttons */}
+                {!activeConv.is_group && (
+                  <CallButton
+                    targetUserId={activeConv.other_user_id || ''}
+                    targetUserName={activeConv.other_user_name}
+                    targetUserAvatar={activeConv.other_user_avatar || undefined}
+                    onCallStart={handleCallStart}
+                    disabled={callState !== 'idle'}
+                  />
+                )}
+                {/* Group settings */}
+                {activeConv.is_group && (
+                  <button
+                    onClick={() => setShowGroupSettings(true)}
+                    className="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center text-text-muted hover:text-accent-primary hover:bg-accent-primary/15 transition-colors"
+                    title="Group settings"
+                  >
+                    <Settings2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
               {/* Messages area */}
@@ -715,8 +1136,50 @@ export default function MessagesPage() {
                                 </div>
                               )}
 
+                              {/* Voice note */}
+                              {msg.type === 'voice_note' && msg.metadata?.url && (
+                                <VoiceMessageBubble
+                                  metadata={{ url: msg.metadata.url as string, duration: (msg.metadata.duration as number) || 0 }}
+                                  isMine={isMine}
+                                />
+                              )}
+
+                              {/* Video message */}
+                              {msg.type === 'video' && msg.metadata?.url && !msg.metadata?.url?.toString().match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
+                                <VideoMessageBubble
+                                  metadata={{ url: msg.metadata.url as string, duration: msg.metadata.duration as number, thumbnail_url: msg.metadata.thumbnail_url as string }}
+                                  isMine={isMine}
+                                />
+                              )}
+
+                              {/* File attachment */}
+                              {msg.type === 'file' && msg.metadata?.url && (
+                                <FileBubble
+                                  metadata={{ url: msg.metadata.url as string, filename: (msg.metadata.filename as string) || 'file', size: msg.metadata.size as number, mime_type: msg.metadata.mime_type as string }}
+                                  isMine={isMine}
+                                />
+                              )}
+
+                              {/* Location */}
+                              {msg.type === 'location' && msg.metadata?.latitude && (
+                                <LocationBubble
+                                  metadata={{ latitude: msg.metadata.latitude as number, longitude: msg.metadata.longitude as number, address: msg.metadata.address as string }}
+                                  isMine={isMine}
+                                />
+                              )}
+
+                              {/* Poll */}
+                              {msg.type === 'poll' && msg.metadata?.question && (
+                                <PollBubble
+                                  message={msg}
+                                  isMine={isMine}
+                                  currentUserId={user.id}
+                                  onVote={handlePollVote}
+                                />
+                              )}
+
                               {/* Text content */}
-                              {msg.content && msg.type !== 'image' && (
+                              {msg.content && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
                                 <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                               )}
 
@@ -841,8 +1304,31 @@ export default function MessagesPage() {
                 </div>
               )}
 
+              {/* GIF/Sticker picker */}
+              {showGifPicker && (
+                <div className="relative">
+                  <GifStickerPicker
+                    isOpen={showGifPicker}
+                    onClose={() => setShowGifPicker(false)}
+                    onSelect={handleGifSelect}
+                  />
+                </div>
+              )}
+
               {/* Input area */}
-              <form onSubmit={handleSend} className="p-3 border-t border-border-primary flex items-center gap-2">
+              <form onSubmit={handleSend} className="p-3 border-t border-border-primary flex items-center gap-1.5">
+                {/* Attachment menu */}
+                <div className="relative">
+                  <input ref={fileUploadRef} type="file" onChange={handleFileUpload} className="hidden" />
+                  <AttachmentMenu
+                    isOpen={showAttachMenu}
+                    onToggle={() => setShowAttachMenu(!showAttachMenu)}
+                    onSelectFile={() => { setShowAttachMenu(false); fileUploadRef.current?.click(); }}
+                    onSelectLocation={() => { setShowAttachMenu(false); setShowLocationPicker(true); }}
+                    onSelectPoll={() => { setShowAttachMenu(false); setShowPollCreator(true); }}
+                  />
+                </div>
+
                 {/* Image upload */}
                 <input
                   ref={fileInputRef}
@@ -857,8 +1343,20 @@ export default function MessagesPage() {
                   className="p-2 text-text-muted hover:text-text-primary transition-colors"
                   title="Send image"
                 >
-                  <ImageIcon className="w-5 h-5" />
+                  <ImageIcon className="w-4 h-4" />
                 </button>
+
+                {/* GIF picker toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowGifPicker(!showGifPicker)}
+                  className={`p-2 transition-colors ${showGifPicker ? 'text-accent-primary' : 'text-text-muted hover:text-text-primary'}`}
+                  title="GIFs & Stickers"
+                >
+                  <Smile className="w-4 h-4" />
+                </button>
+
+                {/* Text input */}
                 <input
                   ref={inputRef}
                   type="text"
@@ -877,16 +1375,26 @@ export default function MessagesPage() {
                       store.setReplyTo(null);
                       store.setEditingMessage(null);
                       setEditText('');
+                      setShowGifPicker(false);
                     }
                   }}
                 />
-                <button
-                  type="submit"
-                  disabled={(!newMessage.trim() && !store.editingMessage) || sending}
-                  className="btn-primary px-4 py-2.5"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+
+                {/* Voice recorder or Send button */}
+                {!newMessage.trim() && !store.editingMessage ? (
+                  <VoiceRecorder
+                    onRecordingComplete={handleVoiceComplete}
+                    disabled={sending}
+                  />
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={(!newMessage.trim() && !store.editingMessage) || sending}
+                    className="btn-primary px-4 py-2.5"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                )}
               </form>
             </>
           ) : (
@@ -946,6 +1454,15 @@ export default function MessagesPage() {
           )}
           <button
             onClick={() => {
+              setForwardMessage(contextMenu.message);
+              setContextMenu(null);
+            }}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+          >
+            <Forward className="w-4 h-4" /> Forward
+          </button>
+          <button
+            onClick={() => {
               navigator.clipboard.writeText(contextMenu.message.content);
               setContextMenu(null);
             }}
@@ -1001,6 +1518,72 @@ export default function MessagesPage() {
           }}
         />
       )}
+
+      {/* ───────────── Poll Creator Modal ───────────── */}
+      {showPollCreator && (
+        <PollCreator
+          isOpen={showPollCreator}
+          onClose={() => setShowPollCreator(false)}
+          onCreatePoll={handleCreatePoll}
+        />
+      )}
+
+      {/* ───────────── Location Picker Modal ───────────── */}
+      {showLocationPicker && (
+        <LocationPicker
+          isOpen={showLocationPicker}
+          onClose={() => setShowLocationPicker(false)}
+          onLocationSelected={handleLocationSelected}
+        />
+      )}
+
+      {/* ───────────── Group Settings Modal ───────────── */}
+      {showGroupSettings && activeConv && (
+        <GroupSettingsModal
+          isOpen={showGroupSettings}
+          onClose={() => setShowGroupSettings(false)}
+          conversationId={activeConv.id}
+          groupName={activeConv.group_name || 'Group'}
+          groupAvatar={activeConv.group_avatar_url || undefined}
+          isAdmin={true}
+          onGroupUpdated={loadConversations}
+        />
+      )}
+
+      {/* ───────────── Forward Message Modal ───────────── */}
+      {forwardMessage && (
+        <ForwardMessageModal
+          isOpen={!!forwardMessage}
+          onClose={() => setForwardMessage(null)}
+          message={forwardMessage}
+          onForward={handleForwardMessage}
+        />
+      )}
+
+      {/* ───────────── Call Screen ───────────── */}
+      {callState !== 'idle' && activeConv && (
+        <CallScreen
+          isOpen={true}
+          callType={callType}
+          callState={callState as 'ringing' | 'connecting' | 'active' | 'ended'}
+          targetUser={{
+            id: activeConv.other_user_id || '',
+            name: activeConv.other_user_name,
+            avatar_url: activeConv.other_user_avatar || undefined,
+          }}
+          isOutgoing={callIsOutgoing}
+          duration={callDuration}
+          isMuted={callMuted}
+          isCameraOn={callCameraOn}
+          localVideoRef={localVideoRef}
+          remoteVideoRef={remoteVideoRef}
+          onToggleMute={handleCallToggleMute}
+          onToggleCamera={handleCallToggleCamera}
+          onEndCall={handleEndCall}
+        />
+      )}
+
+      {/* Incoming Call Overlay is now rendered globally by <GlobalCallListener /> */}
     </div>
   );
 }

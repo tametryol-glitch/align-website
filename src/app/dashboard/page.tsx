@@ -519,34 +519,40 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── Cosmic Weather Widget ──────────────────────────── */}
-      <div className="card rounded-2xl overflow-hidden">
-        <div className="p-4 pb-2">
-          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-            <span className="text-lg">🌤️</span> Cosmic Weather
-          </h3>
+      <Link href="/cosmic-alerts" className="block">
+        <div className="card rounded-2xl overflow-hidden hover:border-accent-primary/30 transition-colors">
+          <div className="p-4 pb-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                <span className="text-lg">⚡</span> Cosmic Weather
+              </h3>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </div>
+          </div>
+          {/* Tabs */}
+          <div className="flex overflow-x-auto scrollbar-hide px-4 gap-1 pb-2">
+            {FORECAST_TABS.map(tab => (
+              <span
+                key={tab}
+                onClick={(e) => { e.preventDefault(); setForecastTab(tab); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                  forecastTab === tab
+                    ? 'bg-accent-primary text-white'
+                    : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
+                }`}
+              >
+                {tab}
+              </span>
+            ))}
+          </div>
+          <div className="px-4 pb-4 pt-2">
+            <p className="text-sm text-text-secondary leading-relaxed">
+              {getCosmicForecast(liveSunSign || sunSign, forecastTab)}
+            </p>
+            <p className="text-xs text-accent-primary mt-2 font-medium">View personalized transit alerts →</p>
+          </div>
         </div>
-        {/* Tabs */}
-        <div className="flex overflow-x-auto scrollbar-hide px-4 gap-1 pb-2">
-          {FORECAST_TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setForecastTab(tab)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                forecastTab === tab
-                  ? 'bg-accent-primary text-white'
-                  : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div className="px-4 pb-4 pt-2">
-          <p className="text-sm text-text-secondary leading-relaxed">
-            {getCosmicForecast(liveSunSign || sunSign, forecastTab)}
-          </p>
-        </div>
-      </div>
+      </Link>
 
       {/* ─── Moon Phase Card ────────────────────────────────── */}
       <Link href="/readings/moon-phases" className="block">

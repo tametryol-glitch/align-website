@@ -81,7 +81,7 @@ export default function FragmentDetailPage() {
     const supabase = createClient();
 
     const { data } = await supabase
-      .from('fragments')
+      .from('user_fragments')
       .select('*')
       .eq('id', id)
       .eq('user_id', user.id)

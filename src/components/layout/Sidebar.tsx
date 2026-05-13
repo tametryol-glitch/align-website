@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
+import { useFriendsStore } from '@/stores/friendsStore';
 import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
-  Users, Bell, Mail,
+  Users, Bell, Mail, Zap,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { href: '/feed', label: 'Cosmic Feed', icon: Globe },
   { href: '/world-echo', label: 'World Echo', icon: Compass },
   { href: '/chart', label: 'My Chart', icon: Star },
+  { href: '/cosmic-alerts', label: 'Cosmic Weather', icon: Zap },
   { href: '/readings', label: 'Readings', icon: Sparkles },
   { href: '/friends', label: 'Friends', icon: Users },
   { href: '/messages', label: 'Messages', icon: Mail },
@@ -35,6 +37,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { profile } = useAuthStore();
   const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
+  const pendingFriendRequests = useFriendsStore((s) => s.pendingRequestCount);
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary flex-col z-40">
@@ -50,6 +53,7 @@ export function Sidebar() {
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/');
           const showBadge = href === '/messages' && totalUnread > 0;
+          const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
           return (
             <Link
               key={href}
@@ -66,6 +70,11 @@ export function Sidebar() {
               {showBadge && (
                 <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
                   {totalUnread > 99 ? '99+' : totalUnread}
+                </span>
+              )}
+              {showFriendBadge && (
+                <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
+                  {pendingFriendRequests > 99 ? '99+' : pendingFriendRequests}
                 </span>
               )}
             </Link>

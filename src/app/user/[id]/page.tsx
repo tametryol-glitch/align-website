@@ -9,6 +9,8 @@ import { ArrowLeft, UserPlus, UserCheck, UserMinus, MessageCircle, Heart, MoreHo
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { sendFriendRequest as sendFriendRequestService, acceptFriendRequest, removeFriend as removeFriendService, cancelFriendRequest, blockUser } from '@/lib/friendService';
+import { getOrCreateConversation } from '@/lib/messagingService';
 
 interface ProfileData {
   id: string;
@@ -253,40 +255,54 @@ export default function UserProfilePage() {
     if (tab === 'reels') loadReels();
   }
 
-  async function sendFriendRequest() {
+  async function handleSendFriendRequest() {
     if (!user) return;
     setSendingRequest(true);
     try {
-      const supabase = createClient();
-      await supabase.from('friendships').insert({
-        user_id: user.id,
-        friend_id: userId,
-        status: 'pending',
-      });
-      setFriendStatus('pending');
+      const result = await sendFriendRequestService(userId);
+      if (result.success) {
+        setFriendStatus('pending');
+        // Re-fetch to get the friendshipId
+        await loadProfile();
+      }
     } catch { /* */ }
     setSendingRequest(false);
   }
 
-  async function acceptFriend() {
+  async function handleCancelRequest() {
     if (!friendshipId) return;
     setSendingRequest(true);
     try {
-      const supabase = createClient();
-      await supabase.from('friendships').update({ status: 'accepted' }).eq('id', friendshipId);
-      setFriendStatus('friends');
+      const result = await cancelFriendRequest(friendshipId);
+      if (result.success) {
+        setFriendStatus('none');
+        setFriendshipId(null);
+      }
     } catch { /* */ }
     setSendingRequest(false);
   }
 
-  async function removeFriend() {
+  async function handleAcceptFriend() {
     if (!friendshipId) return;
     setSendingRequest(true);
     try {
-      const supabase = createClient();
-      await supabase.from('friendships').delete().eq('id', friendshipId);
-      setFriendStatus('none');
-      setFriendshipId(null);
+      const result = await acceptFriendRequest(friendshipId);
+      if (result.success) {
+        setFriendStatus('friends');
+      }
+    } catch { /* */ }
+    setSendingRequest(false);
+  }
+
+  async function handleRemoveFriend() {
+    if (!friendshipId) return;
+    setSendingRequest(true);
+    try {
+      const result = await removeFriendService(friendshipId);
+      if (result.success) {
+        setFriendStatus('none');
+        setFriendshipId(null);
+      }
     } catch { /* */ }
     setSendingRequest(false);
   }
@@ -312,18 +328,31 @@ export default function UserProfilePage() {
   async function handleMessage() {
     if (!user) return;
     try {
-      const supabase = createClient();
-      // Check for existing conversation
-      const { data: existing } = await supabase
-        .from('direct_messages')
-        .select('id')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
-        .limit(1)
-        .maybeSingle();
-      router.push('/messages');
+      const convoId = await getOrCreateConversation(userId);
+      if (convoId) {
+        router.push(`/messages?conversation=${convoId}`);
+      } else {
+        router.push('/messages');
+      }
     } catch {
       router.push('/messages');
     }
+  }
+
+  async function handleBlockUser() {
+    if (!window.confirm(`Are you sure you want to block ${profile?.display_name || 'this user'}? They won't be able to see your profile or contact you.`)) return;
+    try {
+      const result = await blockUser(userId);
+      if (result.success) {
+        setShowMoreMenu(false);
+        await loadProfile();
+      }
+    } catch { /* */ }
+  }
+
+  function handleReportUser() {
+    setShowMoreMenu(false);
+    window.open(`mailto:support@aligncosmic.com?subject=Report User: ${userId}`);
   }
 
   if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading profile..." /></div>;
@@ -352,10 +381,10 @@ export default function UserProfilePage() {
             </button>
             {showMoreMenu && (
               <div className="absolute right-0 top-10 z-50 w-48 rounded-xl border border-border bg-bg-card shadow-lg py-1">
-                <button className="w-full text-left px-4 py-2.5 text-sm text-text-secondary hover:bg-bg-secondary flex items-center gap-2">
+                <button onClick={handleReportUser} className="w-full text-left px-4 py-2.5 text-sm text-text-secondary hover:bg-bg-secondary flex items-center gap-2">
                   <Flag className="w-4 h-4" /> Report User
                 </button>
-                <button className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-bg-secondary flex items-center gap-2">
+                <button onClick={handleBlockUser} className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-bg-secondary flex items-center gap-2">
                   <Ban className="w-4 h-4" /> Block User
                 </button>
               </div>
@@ -449,22 +478,25 @@ export default function UserProfilePage() {
           {!isOwn && (
             <div className="flex items-center justify-center gap-3 mt-4">
               {friendStatus === 'none' && (
-                <button onClick={sendFriendRequest} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
+                <button onClick={handleSendFriendRequest} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
                   <UserPlus className="w-4 h-4" /> {sendingRequest ? 'Sending...' : 'Add Friend'}
                 </button>
               )}
               {friendStatus === 'pending' && (
-                <span className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 cursor-default opacity-80">
-                  <UserCheck className="w-4 h-4" /> Request Sent
-                </span>
+                <button onClick={handleCancelRequest} disabled={sendingRequest} className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 group">
+                  <UserCheck className="w-4 h-4 group-hover:hidden" />
+                  <UserMinus className="w-4 h-4 hidden group-hover:block" />
+                  <span className="group-hover:hidden">{sendingRequest ? 'Cancelling...' : 'Request Sent'}</span>
+                  <span className="hidden group-hover:block text-red-400">Cancel Request</span>
+                </button>
               )}
               {friendStatus === 'incoming' && (
-                <button onClick={acceptFriend} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
+                <button onClick={handleAcceptFriend} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
                   <UserCheck className="w-4 h-4" /> Accept Request
                 </button>
               )}
               {friendStatus === 'friends' && (
-                <button onClick={removeFriend} disabled={sendingRequest} className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 group">
+                <button onClick={handleRemoveFriend} disabled={sendingRequest} className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 group">
                   <UserCheck className="w-4 h-4 group-hover:hidden" />
                   <UserMinus className="w-4 h-4 hidden group-hover:block" />
                   <span className="group-hover:hidden">Friends</span>

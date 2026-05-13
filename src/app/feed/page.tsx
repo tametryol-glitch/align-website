@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import {
-  getFeed, createPost, uploadPostMedia, toggleReaction, addComment, getComments, deletePost, editPost, repostPost, reportPost, toggleBookmark, getUserBookmarks,
+  getFeed, createPost, uploadPostMedia, toggleReaction, addComment, getComments, deleteComment, deletePost, editPost, repostPost, reportPost, toggleBookmark, getUserBookmarks,
   type FeedPost, type FeedComment, type ReactionEmoji, type PostReaction,
   REACTION_OPTIONS, POST_STYLE_PRESETS,
 } from '@/lib/feedService';
-import { MessageCircle, Bookmark, Send, MoreHorizontal, X, Plus, Globe, Users, Trash2, Image, BarChart3, FileText, Video, Share2, Repeat2, Flag, Ban, Pencil } from 'lucide-react';
+import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
+import { MessageCircle, Bookmark, Send, MoreHorizontal, X, Plus, Globe, Users, Trash2, Image, BarChart3, FileText, Video, Share2, Repeat2, Flag, Ban, Pencil, Smile } from 'lucide-react';
 import Link from 'next/link';
 
 // ── Helpers ────────────────────────────────────────────────────────
@@ -30,6 +31,43 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   transit_alert: { label: 'Transit', color: 'bg-green-500/15 text-green-400' },
   compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
 };
+
+// ── YouTube Embed Helpers ─────────────────────────────────────────
+
+const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:\S*)?/gi;
+
+function extractYouTubeId(url: string): string | null {
+  const match = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(url);
+  return match ? match[1] : null;
+}
+
+function extractYouTubeUrls(text: string): string[] {
+  const matches = text.match(YOUTUBE_REGEX);
+  return matches || [];
+}
+
+function YouTubeEmbed({ videoId }: { videoId: string }) {
+  return (
+    <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="YouTube video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="absolute inset-0 w-full h-full border-0 rounded-xl"
+      />
+    </div>
+  );
+}
+
+/** Check if a comment text is a GIF/sticker URL */
+function isGifOrStickerUrl(text: string): boolean {
+  const trimmed = text.trim();
+  return (
+    trimmed.startsWith('https://media') && trimmed.includes('giphy.com') ||
+    /^https?:\/\/\S+\.gif(\?.*)?$/i.test(trimmed)
+  );
+}
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
 
@@ -195,14 +233,32 @@ function FeedCard({
       )}
 
       {/* Content */}
-      {post.content && (
-        <p
-          className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
-          style={textColor ? { color: textColor } : undefined}
-        >
-          {post.content}
-        </p>
-      )}
+      {post.content && (() => {
+        const youtubeUrls = extractYouTubeUrls(post.content);
+        const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
+        // Strip YouTube URLs from display text
+        const displayText = youtubeIds.length > 0
+          ? post.content.replace(YOUTUBE_REGEX, '').trim()
+          : post.content;
+
+        return (
+          <>
+            {displayText && (
+              <p
+                className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
+                style={textColor ? { color: textColor } : undefined}
+              >
+                {displayText}
+              </p>
+            )}
+            {youtubeIds.map((vid, i) => (
+              <div key={vid + i} className="px-5 pb-3">
+                <YouTubeEmbed videoId={vid} />
+              </div>
+            ))}
+          </>
+        );
+      })()}
 
       {/* Media */}
       {post.imageUrl && (
@@ -326,9 +382,13 @@ function FeedCard({
                   <span className="text-[9px] font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
                 )}
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <Link href={`/user/${c.userId}`} className="font-semibold text-text-primary mr-1.5 hover:underline">{c.userName}</Link>
-                <span className="text-text-secondary">{c.text}</span>
+                {isGifOrStickerUrl(c.text) ? (
+                  <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[180px] max-h-[120px] rounded-lg object-contain" />
+                ) : (
+                  <span className="text-text-secondary">{c.text}</span>
+                )}
               </div>
             </div>
           ))}
@@ -386,17 +446,23 @@ function FeedCard({
 
 function CommentSheet({
   postId,
+  postOwnerId,
   userId,
   onClose,
+  onCommentCountChange,
 }: {
   postId: string;
+  postOwnerId: string;
   userId: string;
   onClose: () => void;
+  onCommentCountChange?: (postId: string, delta: number) => void;
 }) {
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     getComments(postId).then((c) => { setComments(c); setLoading(false); });
@@ -409,8 +475,39 @@ function CommentSheet({
       const comment = await addComment(postId, userId, text.trim());
       setComments((prev) => [...prev, comment]);
       setText('');
+      onCommentCountChange?.(postId, 1);
     } catch { /* ignore */ }
     setSending(false);
+  }
+
+  async function handleGifSelect(url: string, _type: 'gif' | 'sticker') {
+    setShowGifPicker(false);
+    setSending(true);
+    try {
+      const comment = await addComment(postId, userId, url);
+      setComments((prev) => [...prev, comment]);
+      onCommentCountChange?.(postId, 1);
+    } catch { /* ignore */ }
+    setSending(false);
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    setDeletingId(commentId);
+    try {
+      await deleteComment(commentId);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      onCommentCountChange?.(postId, -1);
+    } catch { /* ignore */ }
+    setDeletingId(null);
+  }
+
+  /** Can the current user delete this comment? */
+  function canDelete(comment: FeedComment): boolean {
+    // User can delete their own comment on any post
+    if (comment.userId === userId) return true;
+    // Post owner can delete any comment on their post
+    if (postOwnerId === userId) return true;
+    return false;
   }
 
   return (
@@ -432,7 +529,7 @@ function CommentSheet({
             <p className="text-text-muted text-sm text-center py-8">Be the first to share your thoughts</p>
           )}
           {comments.map((c) => (
-            <div key={c.id} className="flex gap-3">
+            <div key={c.id} className="flex gap-3 group">
               <Link href={`/user/${c.userId}`} className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {c.userAvatar ? (
                   <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
@@ -440,33 +537,65 @@ function CommentSheet({
                   <span className="text-xs font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
                 )}
               </Link>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <Link href={`/user/${c.userId}`} className="text-sm font-semibold text-text-primary hover:underline">{c.userName}</Link>
                   <span className="text-xs text-text-muted">{timeAgo(c.createdAt)}</span>
+                  {canDelete(c) && (
+                    <button
+                      onClick={() => handleDeleteComment(c.id)}
+                      disabled={deletingId === c.id}
+                      className="ml-auto opacity-0 group-hover:opacity-100 text-text-muted hover:text-red-400 transition-all"
+                      title="Delete comment"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
-                <p className="text-sm text-text-secondary mt-0.5">{c.text}</p>
+                {isGifOrStickerUrl(c.text) ? (
+                  <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[220px] max-h-[160px] rounded-lg object-contain" />
+                ) : (
+                  <p className="text-sm text-text-secondary mt-0.5">{c.text}</p>
+                )}
               </div>
             </div>
           ))}
         </div>
 
         {/* Input */}
-        <div className="px-5 py-3 border-t border-border-primary flex items-center gap-3">
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Add a comment..."
-            className="input flex-1 !py-2 text-sm"
+        <div className="relative px-5 py-3 border-t border-border-primary">
+          {/* GIF/Sticker Picker */}
+          <GifStickerPicker
+            isOpen={showGifPicker}
+            onClose={() => setShowGifPicker(false)}
+            onSelect={handleGifSelect}
           />
-          <button
-            onClick={handleSend}
-            disabled={!text.trim() || sending}
-            className="btn-primary !px-3 !py-2"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowGifPicker(!showGifPicker)}
+              className={cn(
+                'p-2 rounded-lg transition-colors flex-shrink-0',
+                showGifPicker ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-accent-primary'
+              )}
+              title="Send GIF or Sticker"
+            >
+              <Smile className="w-5 h-5" />
+            </button>
+            <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Add a comment..."
+              className="input flex-1 !py-2 text-sm"
+            />
+            <button
+              onClick={handleSend}
+              disabled={!text.trim() || sending}
+              className="btn-primary !px-3 !py-2"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1189,13 +1318,22 @@ export default function FeedPage() {
       )}
 
       {/* Comment Sheet */}
-      {commentPostId && (
-        <CommentSheet
-          postId={commentPostId}
-          userId={userId}
-          onClose={() => setCommentPostId(null)}
-        />
-      )}
+      {commentPostId && (() => {
+        const commentPost = posts.find(p => p.id === commentPostId);
+        return (
+          <CommentSheet
+            postId={commentPostId}
+            postOwnerId={commentPost?.userId || ''}
+            userId={userId}
+            onClose={() => setCommentPostId(null)}
+            onCommentCountChange={(pid, delta) => {
+              setPosts(prev => prev.map(p =>
+                p.id === pid ? { ...p, commentCount: Math.max(0, p.commentCount + delta) } : p
+              ));
+            }}
+          />
+        );
+      })()}
 
       {/* Edit Post Modal */}
       {editingPost && (

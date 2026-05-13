@@ -1,163 +1,319 @@
 'use client';
 
-import { useState } from 'react';
-import { api, buildBirthData } from '@/lib/api';
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { useAuthStore } from '@/stores/authStore';
-import { Moon } from 'lucide-react';
-import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
+import { api, buildBirthData } from '@/lib/api';
+import { calculateNatalMoonPhase, buildNatalPhaseReading } from '@/lib/moonPhases';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import Link from 'next/link';
 
-const PHASE_INFO: Record<string, { emoji: string; meaning: string }> = {
-  'New Moon': { emoji: '🌑', meaning: 'Seeds of intention. You are a visionary who thrives on new beginnings.' },
-  'Waxing Crescent': { emoji: '🌒', meaning: 'Building momentum. You are resourceful and determined to grow.' },
-  'First Quarter': { emoji: '🌓', meaning: 'Challenge and action. You are courageous and thrive under pressure.' },
-  'Waxing Gibbous': { emoji: '🌔', meaning: 'Refinement. You are a perfectionist who polishes everything to brilliance.' },
-  'Full Moon': { emoji: '🌕', meaning: 'Illumination and fulfillment. You radiate awareness and attract attention.' },
-  'Waning Gibbous': { emoji: '🌖', meaning: 'Sharing wisdom. You are a natural teacher and mentor.' },
-  'Last Quarter': { emoji: '🌗', meaning: 'Release and transition. You are skilled at letting go and transforming.' },
-  'Waning Crescent': { emoji: '🌘', meaning: 'Surrender and rest. You carry ancient wisdom and deep intuition.' },
-};
+const TodayTab = dynamic(() => import('@/components/moonPhases/TodayTab'));
+const CalendarTab = dynamic(() => import('@/components/moonPhases/CalendarTab'));
+const ForecastTab = dynamic(() => import('@/components/moonPhases/ForecastTab'));
+const EclipsesTab = dynamic(() => import('@/components/moonPhases/EclipsesTab'));
+
+type TabKey = 'today' | 'calendar' | 'forecast' | 'eclipses' | 'birth';
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: 'today', label: 'Today' },
+  { key: 'calendar', label: 'Calendar' },
+  { key: 'forecast', label: 'Forecast' },
+  { key: 'eclipses', label: 'Eclipses' },
+  { key: 'birth', label: 'Birth Moon' },
+];
 
 export default function MoonPhasesPage() {
   const { profile } = useAuthStore();
-  const [reading, setReading] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<TabKey>('today');
+  const [natalChart, setNatalChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (!profile?.birth_date || !profile?.latitude) {
-    return <PaywallGate feature="moon_phases" fallbackTier="light"><BirthDataPrompt message="Add your birth data to discover the moon phase you were born under." /></PaywallGate>;
-  }
+  const hasBirthData = !!(profile?.birth_date && profile?.birth_time && profile?.latitude);
 
-  async function getReading() {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await api.getNatalChart(buildBirthData(profile!));
-      const processed = processMoonPhase(data);
-      setReading(processed);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  // Fetch natal chart on mount when birth data is available
+  useEffect(() => {
+    if (!hasBirthData || !profile) return;
+    let cancelled = false;
+
+    async function fetchChart() {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await api.getNatalChart(buildBirthData(profile));
+        if (!cancelled) setNatalChart(data);
+      } catch (err: any) {
+        if (!cancelled) setError(err.message || 'Failed to load natal chart');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-  }
+
+    fetchChart();
+    return () => { cancelled = true; };
+  }, [hasBirthData, profile?.birth_date, profile?.birth_time, profile?.latitude]);
+
+  // Build a NatalChart-shaped object from the API response.
+  // The API returns "positions" but every service expects "planets".
+  const natalPositions = useMemo(() => {
+    if (!natalChart) return null;
+    return {
+      planets: natalChart.positions || natalChart.planets || [],
+      aspects: natalChart.aspects || [],
+      houses: natalChart.houses || [],
+      ascendant: natalChart.ascendant || 0,
+      midheaven: natalChart.midheaven || 0,
+    };
+  }, [natalChart]);
+
+  // Compute natal moon phase from the mapped chart (uses .planets)
+  const natalPhase = useMemo(
+    () => calculateNatalMoonPhase(natalPositions),
+    [natalPositions],
+  );
+
+  const reading = useMemo(
+    () => (natalPhase ? buildNatalPhaseReading(natalPhase) : null),
+    [natalPhase],
+  );
 
   return (
     <PaywallGate feature="moon_phases" fallbackTier="light">
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <Moon className="w-8 h-8 text-accent-primary" />
-        <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Natal Moon Phase</h1>
-          <p className="text-text-tertiary text-sm">The moon phase at your birth reveals your soul&apos;s purpose cycle</p>
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-3xl">🌙</span>
+          <div>
+            <h1 className="text-2xl font-display font-bold text-text-primary">
+              Moon Phases & Eclipses
+            </h1>
+            <p className="text-text-tertiary text-sm">
+              Track lunar cycles, eclipses, and your birth moon phase
+            </p>
+          </div>
         </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-6 pb-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+                activeTab === tab.key
+                  ? 'bg-accent-primary text-white'
+                  : 'bg-bg-tertiary text-text-tertiary hover:text-text-primary'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'today' && <TodayTab natalPositions={natalPositions} />}
+        {activeTab === 'calendar' && <CalendarTab natalPositions={natalPositions} />}
+        {activeTab === 'forecast' && <ForecastTab natalPositions={natalPositions} />}
+        {activeTab === 'eclipses' && <EclipsesTab natalPositions={natalPositions} />}
+        {activeTab === 'birth' && (
+          <BirthMoonContent
+            hasBirthData={hasBirthData}
+            loading={loading}
+            error={error}
+            natalPhase={natalPhase}
+            reading={reading}
+          />
+        )}
       </div>
-
-      {!reading && (
-        <div className="card text-center py-12">
-          <span className="text-5xl block mb-4">🌙</span>
-          <p className="text-text-tertiary mb-6">
-            The phase of the moon at the moment you were born shapes your emotional nature and life purpose.
-          </p>
-          <button onClick={getReading} disabled={loading} className="btn-primary">
-            {loading ? 'Calculating...' : 'Reveal My Moon Phase'}
-          </button>
-          {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
-        </div>
-      )}
-
-      {reading && (
-        <div className="space-y-4">
-          <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted text-center">
-            <span className="text-6xl block mb-3">{reading.emoji}</span>
-            <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
-              {reading.phase}
-            </h2>
-            <p className="text-text-secondary">{reading.meaning}</p>
-          </div>
-
-          <div className="card">
-            <h3 className="font-semibold text-text-primary mb-2">Moon Details</h3>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <span className="text-text-muted">Moon Sign</span>
-                <p className="text-text-primary font-medium">{reading.moonSign}</p>
-              </div>
-              <div>
-                <span className="text-text-muted">Sun Sign</span>
-                <p className="text-text-primary font-medium">{reading.sunSign}</p>
-              </div>
-              <div>
-                <span className="text-text-muted">Phase Angle</span>
-                <p className="text-text-primary font-medium">{reading.angle}°</p>
-              </div>
-              <div>
-                <span className="text-text-muted">Illumination</span>
-                <p className="text-text-primary font-medium">{reading.illumination}%</p>
-              </div>
-            </div>
-          </div>
-
-          {/* All 8 phases overview */}
-          <div className="card">
-            <h3 className="font-semibold text-text-primary mb-3">All 8 Phases</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries(PHASE_INFO).map(([phase, { emoji }]) => (
-                <div
-                  key={phase}
-                  className={`flex items-center gap-2 p-2 rounded-lg text-sm ${
-                    reading.phase === phase ? 'bg-accent-muted border border-accent-primary/40' : ''
-                  }`}
-                >
-                  <span>{emoji}</span>
-                  <span className={reading.phase === phase ? 'text-accent-primary font-medium' : 'text-text-tertiary'}>
-                    {phase}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <button onClick={() => setReading(null)} className="btn-secondary w-full">
-            Calculate Again
-          </button>
-        </div>
-      )}
-    </div>
     </PaywallGate>
   );
 }
 
-function processMoonPhase(chart: any) {
-  const planets = chart?.planets || chart?.positions || [];
-  const sun = planets.find((p: any) => (p.name || p.planet || '').toLowerCase() === 'sun');
-  const moon = planets.find((p: any) => (p.name || p.planet || '').toLowerCase() === 'moon');
+// ═══════════════════════════════════════════════════════════════════
+// Birth Moon Tab — inline
+// ═══════════════════════════════════════════════════════════════════
 
-  const sunLong = sun?.longitude || sun?.degree || 0;
-  const moonLong = moon?.longitude || moon?.degree || 0;
-  let angle = ((moonLong - sunLong + 360) % 360);
-  angle = Math.round(angle * 10) / 10;
+interface BirthMoonContentProps {
+  hasBirthData: boolean;
+  loading: boolean;
+  error: string;
+  natalPhase: any;
+  reading: any;
+}
 
-  let phase = 'New Moon';
-  if (angle >= 0 && angle < 45) phase = 'New Moon';
-  else if (angle < 90) phase = 'Waxing Crescent';
-  else if (angle < 135) phase = 'First Quarter';
-  else if (angle < 180) phase = 'Waxing Gibbous';
-  else if (angle < 225) phase = 'Full Moon';
-  else if (angle < 270) phase = 'Waning Gibbous';
-  else if (angle < 315) phase = 'Last Quarter';
-  else phase = 'Waning Crescent';
+function BirthMoonContent({ hasBirthData, loading, error, natalPhase, reading }: BirthMoonContentProps) {
+  // No birth data — show CTA
+  if (!hasBirthData) {
+    return (
+      <div className="bg-bg-secondary rounded-2xl p-8 text-center">
+        <span className="text-6xl block mb-4">🌑</span>
+        <h2 className="text-xl font-display font-bold text-text-primary mb-3">
+          We need your birth chart first
+        </h2>
+        <p className="text-text-tertiary mb-6 max-w-md mx-auto">
+          Your birth Moon phase is calculated from your natal Sun and Moon
+          positions. Complete your profile with birth date, time, and
+          location to unlock this reading.
+        </p>
+        <Link
+          href="/onboarding"
+          className="btn-primary inline-block px-6 py-3 rounded-xl font-medium"
+        >
+          Complete Profile
+        </Link>
+      </div>
+    );
+  }
 
-  const info = PHASE_INFO[phase] || PHASE_INFO['New Moon'];
-  const illumination = Math.round(((1 - Math.cos(angle * Math.PI / 180)) / 2) * 100);
+  // Loading state
+  if (loading) {
+    return (
+      <div className="bg-bg-secondary rounded-2xl p-8 text-center">
+        <div className="animate-pulse">
+          <div className="w-16 h-16 rounded-full bg-bg-tertiary mx-auto mb-4" />
+          <div className="h-6 bg-bg-tertiary rounded w-48 mx-auto mb-3" />
+          <div className="h-4 bg-bg-tertiary rounded w-64 mx-auto" />
+        </div>
+        <p className="text-text-muted text-sm mt-4">Calculating your birth moon phase...</p>
+      </div>
+    );
+  }
 
-  return {
-    phase,
-    emoji: info.emoji,
-    meaning: info.meaning,
-    moonSign: moon?.sign || 'Unknown',
-    sunSign: sun?.sign || 'Unknown',
-    angle: Math.round(angle),
-    illumination,
-  };
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-bg-secondary rounded-2xl p-8 text-center">
+        <span className="text-4xl block mb-3">⚠️</span>
+        <p className="text-red-400 text-sm">{error}</p>
+      </div>
+    );
+  }
+
+  // No data yet
+  if (!natalPhase || !reading) {
+    return (
+      <div className="bg-bg-secondary rounded-2xl p-8 text-center">
+        <span className="text-5xl block mb-4">🌙</span>
+        <p className="text-text-muted">Unable to compute birth moon phase from chart data.</p>
+      </div>
+    );
+  }
+
+  const illumPct = Math.round(natalPhase.illumination * 100);
+
+  return (
+    <div className="space-y-6">
+      {/* Hero Card */}
+      <div
+        className="rounded-2xl p-8 border border-purple-500/30 text-center"
+        style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.28), rgba(139,92,246,0.06))' }}
+      >
+        <span className="text-7xl block mb-3">{natalPhase.emoji}</span>
+        <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
+          {natalPhase.name}
+        </h2>
+        <p className="text-purple-300 italic text-base">{reading.headline}</p>
+
+        {/* Stats row */}
+        <div className="flex justify-around mt-6 pt-4 border-t border-white/10">
+          <div className="text-center">
+            <p className="text-text-primary font-bold">{natalPhase.moonSign || '—'}</p>
+            <p className="text-text-muted text-xs uppercase tracking-wide mt-1">Moon Sign</p>
+          </div>
+          <div className="text-center">
+            <p className="text-text-primary font-bold">
+              {natalPhase.moonHouse ? String(natalPhase.moonHouse) : '—'}
+            </p>
+            <p className="text-text-muted text-xs uppercase tracking-wide mt-1">Moon House</p>
+          </div>
+          <div className="text-center">
+            <p className="text-text-primary font-bold">{illumPct}%</p>
+            <p className="text-text-muted text-xs uppercase tracking-wide mt-1">Illumination</p>
+          </div>
+        </div>
+      </div>
+
+      {/* In one breath */}
+      <Section title="In one breath">
+        <p className="text-text-secondary leading-relaxed">{reading.summary}</p>
+      </Section>
+
+      {/* Your emotional nature */}
+      <Section title="Your emotional nature">
+        {reading.characterLong.split('\n\n').map((paragraph: string, i: number) => (
+          <p key={i} className="text-text-secondary leading-relaxed mb-3 last:mb-0">
+            {paragraph}
+          </p>
+        ))}
+      </Section>
+
+      {/* How you process emotion */}
+      <Section title="How you process emotion">
+        <p className="text-text-secondary leading-relaxed">{reading.emotionalRhythm}</p>
+      </Section>
+
+      {/* Strengths / Shadow side-by-side */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-bg-secondary rounded-2xl p-6 border-l-4 border-emerald-500/50">
+          <h3 className="text-lg font-semibold text-emerald-400 mb-3">Strengths</h3>
+          <ul className="space-y-2">
+            {reading.strengths.map((s: string, i: number) => (
+              <li key={i} className="text-emerald-200/90 text-sm leading-relaxed">
+                {'• '}{s}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="bg-bg-secondary rounded-2xl p-6 border-l-4 border-red-500/50">
+          <h3 className="text-lg font-semibold text-red-400 mb-3">Shadow side</h3>
+          <ul className="space-y-2">
+            {reading.shadow.map((s: string, i: number) => (
+              <li key={i} className="text-red-200/90 text-sm leading-relaxed">
+                {'• '}{s}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Beginnings */}
+      <Section title="Beginnings">
+        <p className="text-text-secondary leading-relaxed">{reading.beginnings}</p>
+      </Section>
+
+      {/* Pressure & conflict */}
+      <Section title="Pressure & conflict">
+        <p className="text-text-secondary leading-relaxed">{reading.pressure}</p>
+      </Section>
+
+      {/* Endings & closure */}
+      <Section title="Endings & closure">
+        <p className="text-text-secondary leading-relaxed">{reading.closure}</p>
+      </Section>
+
+      {/* In love, work and inner life */}
+      <Section title="In love, work and inner life">
+        <p className="text-text-secondary leading-relaxed">{reading.loveWorkInner}</p>
+      </Section>
+
+      {/* Your growth edge */}
+      <Section title="Your growth edge">
+        <p className="text-text-secondary leading-relaxed">{reading.growth}</p>
+      </Section>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section helper
+// ═══════════════════════════════════════════════════════════════════
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-bg-secondary rounded-2xl p-6">
+      <h3 className="text-lg font-semibold text-text-primary mb-3">{title}</h3>
+      {children}
+    </div>
+  );
 }
