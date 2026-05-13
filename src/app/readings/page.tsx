@@ -26,7 +26,7 @@ const READINGS: ReadingItem[] = [
   { key: 'Moon Phases', href: '/readings/moon-phases', glyph: '🌙', tier: 'light' },
   { key: 'Planetary Hours', href: '/readings/planetary-hours', glyph: '⏰', tier: 'free' },
   { key: 'Cosmic Journal', href: '/readings/cosmic-journal', glyph: '📖', tier: 'free' },
-  { key: 'Dream Oracle', href: '/readings/dream-oracle', glyph: '🌙', tier: 'premium' },
+  { key: 'Dream Oracle', href: '/readings/dream-oracle', glyph: '🔮', tier: 'premium' },
   { key: 'Year Ahead', href: '/readings/year-ahead', glyph: '📅', tier: 'premium' },
   { key: 'Galactic Clock', href: '/readings/galactic-clock', glyph: '🕐', tier: 'free' },
   { key: 'Galactic Forecast', href: '/readings/galactic-forecast', glyph: '🌌', tier: 'premium' },
