@@ -23,6 +23,7 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   moon_phases: 'light',
   // Premium
   ai_astrologer: 'premium',
+  dream_oracle: 'premium',
   synastry: 'premium',
   human_design: 'premium',
   starseed: 'premium',
