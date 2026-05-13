@@ -2,19 +2,22 @@ import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from './api';
 import type { DreamAstrologyContext } from './dreamService';
 
-function findPlanet(planets: any[], name: string): any | undefined {
-  return planets?.find((p: any) => p.name === name);
+const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+function findPlanet(positions: any[], name: string): any | undefined {
+  return positions?.find((p: any) => p.name === name);
 }
 
-function planetsInHouse(planets: any[], house: number): string[] {
-  return (planets || [])
+function planetsInHouse(positions: any[], house: number): string[] {
+  return (positions || [])
     .filter((p: any) => p.house === house && !['Ascendant', 'MC', 'Descendant', 'IC'].includes(p.name))
     .map((p: any) => p.name);
 }
 
-function houseSign(houses: any[], houseNum: number): string | undefined {
-  const cusp = houses?.[houseNum - 1];
-  return cusp?.sign;
+function houseSignFromCusps(cusps: number[], houseNum: number): string | undefined {
+  const lon = cusps?.[houseNum - 1];
+  if (typeof lon !== 'number') return undefined;
+  return SIGNS[Math.floor(lon / 30) % 12];
 }
 
 export async function buildDreamAstrologyContext(): Promise<DreamAstrologyContext | null> {
@@ -24,14 +27,15 @@ export async function buildDreamAstrologyContext(): Promise<DreamAstrologyContex
 
     const birthData = buildBirthData(profile);
     const chart = await api.getNatalChart(birthData);
-    if (!chart?.planets || chart.planets.length === 0) return null;
+    const positions = chart?.positions || chart?.planets || [];
+    if (positions.length === 0) return null;
 
-    const moon = findPlanet(chart.planets, 'Moon');
-    const neptune = findPlanet(chart.planets, 'Neptune');
-    const pluto = findPlanet(chart.planets, 'Pluto');
-    const southNode = findPlanet(chart.planets, 'South Node');
-    const chiron = findPlanet(chart.planets, 'Chiron');
-    const lilith = findPlanet(chart.planets, 'Lilith');
+    const moon = findPlanet(positions, 'Moon');
+    const neptune = findPlanet(positions, 'Neptune');
+    const pluto = findPlanet(positions, 'Pluto');
+    const southNode = findPlanet(positions, 'South Node');
+    const chiron = findPlanet(positions, 'Chiron');
+    const lilith = findPlanet(positions, 'Lilith');
 
     const ctx: DreamAstrologyContext = {};
 
@@ -40,15 +44,16 @@ export async function buildDreamAstrologyContext(): Promise<DreamAstrologyContex
       ctx.natalMoonHouse = moon.house;
     }
 
-    if (chart.houses && chart.houses.length >= 12) {
-      ctx.twelfthHouseSign = houseSign(chart.houses, 12);
-      ctx.eighthHouseSign = houseSign(chart.houses, 8);
-      ctx.fourthHouseSign = houseSign(chart.houses, 4);
+    const cusps: number[] = chart?.house_cusps || [];
+    if (cusps.length >= 12) {
+      ctx.twelfthHouseSign = houseSignFromCusps(cusps, 12);
+      ctx.eighthHouseSign = houseSignFromCusps(cusps, 8);
+      ctx.fourthHouseSign = houseSignFromCusps(cusps, 4);
     }
 
-    ctx.twelfthHousePlanets = planetsInHouse(chart.planets, 12);
-    ctx.eighthHousePlanets = planetsInHouse(chart.planets, 8);
-    ctx.fourthHousePlanets = planetsInHouse(chart.planets, 4);
+    ctx.twelfthHousePlanets = planetsInHouse(positions, 12);
+    ctx.eighthHousePlanets = planetsInHouse(positions, 8);
+    ctx.fourthHousePlanets = planetsInHouse(positions, 4);
 
     if (neptune) ctx.neptune = { sign: neptune.sign, house: neptune.house };
     if (pluto) ctx.pluto = { sign: pluto.sign, house: pluto.house };
@@ -84,8 +89,9 @@ export async function buildDreamAstrologyContext(): Promise<DreamAstrologyContex
         ...birthData,
         target_date: new Date().toISOString().split('T')[0],
       });
-      if (progressedData?.planets) {
-        const progMoon = findPlanet(progressedData.planets, 'Moon');
+      const progPositions = progressedData?.positions || progressedData?.planets || [];
+      if (progPositions.length > 0) {
+        const progMoon = findPlanet(progPositions, 'Moon');
         if (progMoon) {
           ctx.progressedMoonSign = progMoon.sign;
           ctx.progressedMoonHouse = progMoon.house;
