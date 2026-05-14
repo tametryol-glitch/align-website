@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,6 +10,10 @@ export const metadata: Metadata = {
 export default function ReferralPage({ params }: { params: { code: string } }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </Link>
       <div className="w-full max-w-md text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="Align" className="w-20 h-20 rounded-2xl mx-auto mb-6" />

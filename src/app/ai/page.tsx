@@ -4,7 +4,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
-import { MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import {
   voiceService,
@@ -340,6 +341,10 @@ export default function AIAstrologerPage() {
 
   return (
     <div className="max-w-3xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </Link>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 flex-shrink-0">
         <div className="w-10 h-10 rounded-xl bg-gradient-accent flex items-center justify-center">

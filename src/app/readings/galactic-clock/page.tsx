@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
-import { Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   RULERS, RULER_MEANINGS, SEGMENT_ANGLE, TOTAL_RULERS,
   getGalacticSignatureUnified, getClockAnglesUnified,
@@ -223,6 +224,10 @@ export default function GalacticClockPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <Clock className="w-8 h-8 text-accent-primary" />

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Users, Search, Plus, X, Flame, Mountain, Wind, Droplets } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Users, Search, Plus, X, Flame, Mountain, Wind, Droplets } from 'lucide-react';
 
 interface Member {
   id: string;
@@ -119,6 +120,10 @@ export default function GroupSynastryPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </Link>
       <div className="flex items-center gap-3 mb-6">
         <Users className="w-8 h-8 text-accent-primary" />
         <div>

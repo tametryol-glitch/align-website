@@ -7,6 +7,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { calculateNatalMoonPhase, buildNatalPhaseReading } from '@/lib/moonPhases';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 const TodayTab = dynamic(() => import('@/components/moonPhases/TodayTab'));
 const CalendarTab = dynamic(() => import('@/components/moonPhases/CalendarTab'));
@@ -81,6 +82,10 @@ export default function MoonPhasesPage() {
   return (
     <PaywallGate feature="moon_phases" fallbackTier="light">
       <div className="max-w-3xl mx-auto">
+        <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Readings
+        </Link>
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <span className="text-3xl">🌙</span>

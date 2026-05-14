@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   calculatePlanetaryHours,
@@ -338,6 +340,10 @@ export default function PlanetaryHoursPage() {
   if (!hasLocation) {
     return (
       <div className="max-w-3xl mx-auto">
+        <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Readings
+        </Link>
         <div className="mb-6">
           <h1 className="text-2xl font-display font-bold text-text-primary">Planetary Hours</h1>
           <p className="text-text-tertiary text-sm mt-1">Powered by the Align Galactic Clock</p>
@@ -362,6 +368,10 @@ export default function PlanetaryHoursPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       {/* ── 1. Header ── */}
       <div className="mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary">Planetary Hours</h1>

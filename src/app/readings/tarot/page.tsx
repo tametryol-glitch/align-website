@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Star, Sparkles, RotateCcw, Eye, Check, Copy } from 'lucide-react';
+import Link from 'next/link';
+import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
@@ -408,6 +409,10 @@ export default function TarotPage() {
   return (
     <PaywallGate feature="tarot">
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Star className="w-8 h-8 text-accent-primary" />

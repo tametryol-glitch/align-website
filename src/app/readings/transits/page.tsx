@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import StorylineView from '@/components/transits/StorylineView';
@@ -543,6 +545,10 @@ export default function TransitsPage() {
   return (
     <PaywallGate feature="transit_reading">
     <div className="max-w-3xl mx-auto pb-12">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       {/* ── Header ─────────────────────────────────────────────────── */}
       <h1 className="text-2xl font-display font-bold text-text-primary mt-2">
         Your Cycles

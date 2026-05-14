@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { api, buildBirthData } from '@/lib/api';
+import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
 
 interface Report {
   id: string;
@@ -27,9 +29,11 @@ interface UserRow {
   is_admin: boolean;
   sun_sign: string | null;
   birth_date: string | null;
+  birth_time: string | null;
+  birth_location: string | null;
 }
 
-type Tab = 'moderation' | 'users';
+type Tab = 'moderation' | 'users' | 'cosmic-index';
 
 export default function AdminPage() {
   const { profile } = useAuthStore();
@@ -85,10 +89,17 @@ export default function AdminPage() {
         >
           <Users className="w-4 h-4 inline mr-1.5" /> Users
         </button>
+        <button
+          onClick={() => setTab('cosmic-index')}
+          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'cosmic-index' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
+        >
+          <Database className="w-4 h-4 inline mr-1.5" /> Cosmic Index
+        </button>
       </div>
 
       {tab === 'moderation' && <ModerationPanel />}
       {tab === 'users' && <UsersPanel />}
+      {tab === 'cosmic-index' && <CosmicIndexPanel />}
     </div>
   );
 }
@@ -191,7 +202,7 @@ function UsersPanel() {
     const supabase = createClient();
     const { data } = await supabase
       .from('profiles')
-      .select('id, email, display_name, align_code, created_at, is_admin, sun_sign, birth_date')
+      .select('id, email, display_name, align_code, created_at, is_admin, sun_sign, birth_date, birth_time, birth_location')
       .order('created_at', { ascending: false });
 
     if (data) {
@@ -236,28 +247,317 @@ function UsersPanel() {
       {/* User list */}
       <div className="space-y-2">
         {filtered.slice(0, 50).map((user) => (
-          <div key={user.id} className="card flex items-center justify-between py-3">
+          <div key={user.id} className="card py-3 px-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center text-sm font-bold text-accent-primary">
+              <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center text-sm font-bold text-accent-primary flex-shrink-0">
                 {(user.display_name || '?')[0].toUpperCase()}
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-text-primary">{user.display_name || 'No name'}</p>
+                  <p className="text-sm font-medium text-text-primary truncate">{user.display_name || 'No name'}</p>
                   {user.is_admin && (
-                    <span className="text-[9px] font-bold text-accent-primary bg-accent-muted px-1.5 py-0.5 rounded">ADMIN</span>
+                    <span className="text-[9px] font-bold text-accent-primary bg-accent-muted px-1.5 py-0.5 rounded flex-shrink-0">ADMIN</span>
                   )}
+                  {user.sun_sign && <span className="text-xs text-text-tertiary flex-shrink-0">☉ {user.sun_sign}</span>}
                 </div>
                 <p className="text-xs text-text-muted">{user.email}</p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-[11px] text-text-secondary">
+                  {user.birth_date ? (
+                    <span>Born {user.birth_date}</span>
+                  ) : (
+                    <span className="text-text-muted">No birth date</span>
+                  )}
+                  {user.birth_time && <span>at {user.birth_time.slice(0, 5)}</span>}
+                  {user.birth_location && <span className="truncate max-w-[200px]">{user.birth_location}</span>}
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              {user.sun_sign && <p className="text-xs text-text-tertiary">{user.sun_sign}</p>}
-              <p className="text-[10px] text-text-muted">{new Date(user.created_at).toLocaleDateString()}</p>
+              <div className="text-right flex-shrink-0">
+                <p className="text-[10px] text-text-muted">Joined {new Date(user.created_at).toLocaleDateString()}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// =====================================================================
+// Cosmic Index Batch Indexer
+// =====================================================================
+
+interface UnindexedUser {
+  id: string;
+  display_name: string;
+  birth_date: string;
+  birth_time: string | null;
+  latitude: number;
+  longitude: number;
+  timezone: string | null;
+  birth_location: string | null;
+}
+
+function CosmicIndexPanel() {
+  const [unindexed, setUnindexed] = useState<UnindexedUser[]>([]);
+  const [totalIndexed, setTotalIndexed] = useState(0);
+  const [totalWithBirth, setTotalWithBirth] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [successCount, setSuccessCount] = useState(0);
+  const [failCount, setFailCount] = useState(0);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [done, setDone] = useState(false);
+
+  const addLog = useCallback((msg: string) => {
+    setLogs(prev => [...prev.slice(-200), msg]);
+  }, []);
+
+  useEffect(() => { loadStats(); }, []);
+
+  async function loadStats() {
+    setLoading(true);
+    const supabase = createClient();
+
+    const { count: indexedCount } = await supabase
+      .from('planet_placement_index')
+      .select('user_id', { count: 'exact', head: true });
+
+    const { data: withBirth } = await supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: false })
+      .not('birth_date', 'is', null)
+      .not('latitude', 'is', null)
+      .not('longitude', 'is', null);
+
+    const { data: unindexedData, error } = await supabase.rpc('get_unindexed_users_with_birth_data');
+
+    if (!error && unindexedData) {
+      setUnindexed(unindexedData as UnindexedUser[]);
+    } else {
+      // Fallback: manual query if RPC doesn't exist yet
+      const { data: allWithBirth } = await supabase
+        .from('profiles')
+        .select('id, display_name, birth_date, birth_time, latitude, longitude, timezone, birth_location')
+        .not('birth_date', 'is', null)
+        .not('latitude', 'is', null)
+        .not('longitude', 'is', null);
+
+      if (allWithBirth) {
+        const { data: indexedIds } = await supabase
+          .from('planet_placement_index')
+          .select('user_id');
+        const indexedSet = new Set((indexedIds || []).map((r: any) => r.user_id));
+        setUnindexed((allWithBirth as UnindexedUser[]).filter(u => !indexedSet.has(u.id)));
+      }
+    }
+
+    // Deduplicate indexed count (count distinct user_ids)
+    const { data: distinctIndexed } = await supabase
+      .from('planet_placement_index')
+      .select('user_id');
+    const uniqueIndexed = new Set((distinctIndexed || []).map((r: any) => r.user_id));
+    setTotalIndexed(uniqueIndexed.size);
+    setTotalWithBirth(withBirth?.length || 0);
+    setLoading(false);
+  }
+
+  async function runBatchIndex() {
+    if (running || unindexed.length === 0) return;
+    setRunning(true);
+    setProgress(0);
+    setSuccessCount(0);
+    setFailCount(0);
+    setDone(false);
+    setLogs([]);
+
+    const supabase = createClient();
+    const total = unindexed.length;
+    let ok = 0;
+    let fail = 0;
+
+    for (let i = 0; i < total; i++) {
+      const user = unindexed[i];
+      const label = user.display_name || user.id.slice(0, 8);
+
+      try {
+        addLog(`[${i + 1}/${total}] Computing chart for ${label}...`);
+
+        const birthData = buildBirthData(user);
+        const chart = await api.getNatalChart(birthData);
+
+        const positions = chart?.positions || chart?.planets || [];
+        if (!positions.length) {
+          addLog(`  -> Skipped ${label}: no planets returned`);
+          fail++;
+          setFailCount(fail);
+          setProgress(i + 1);
+          continue;
+        }
+
+        const records: any[] = [];
+        for (const p of positions) {
+          if (!(INDEXABLE_PLANETS as readonly string[]).includes(p.name)) continue;
+          const signIndex = (SIGNS as readonly string[]).indexOf(p.sign);
+          if (signIndex < 0) continue;
+          const deg = p.sign_degree ?? p.degree ?? 0;
+          const degreeWhole = Math.floor(deg);
+          const degreeMinute = Math.round((deg - degreeWhole) * 60);
+          records.push({
+            planet_name: p.name,
+            sign_name: p.sign,
+            sign_number: signIndex,
+            house_number: p.house || 1,
+            exact_degree: Math.round(deg * 10000) / 10000,
+            degree_whole: degreeWhole,
+            degree_minute: Math.min(degreeMinute, 59),
+            zodiac_longitude: Math.round(p.longitude * 10000) / 10000,
+            retrograde: p.is_retrograde ?? p.retrograde ?? false,
+          });
+        }
+
+        if (records.length === 0) {
+          addLog(`  -> Skipped ${label}: no indexable placements`);
+          fail++;
+          setFailCount(fail);
+          setProgress(i + 1);
+          continue;
+        }
+
+        // Try admin RPC first, fall back to regular if admin RPC not yet created
+        const { error: rpcError } = await supabase.rpc('admin_upsert_planet_placements', {
+          p_target_user_id: user.id,
+          p_placements: records,
+        });
+
+        if (rpcError) {
+          addLog(`  -> Failed ${label}: ${rpcError.message}`);
+          fail++;
+          setFailCount(fail);
+        } else {
+          addLog(`  -> Indexed ${label}: ${records.length} placements`);
+          ok++;
+          setSuccessCount(ok);
+        }
+      } catch (err: any) {
+        addLog(`  -> Error ${label}: ${err.message || 'unknown'}`);
+        fail++;
+        setFailCount(fail);
+      }
+
+      setProgress(i + 1);
+
+      // Small delay to avoid hammering the API
+      if (i < total - 1) {
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+
+    addLog(`\nDone! ${ok} indexed, ${fail} failed out of ${total} users.`);
+    setDone(true);
+    setRunning(false);
+    loadStats();
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 py-8 justify-center">
+        <Loader2 className="w-5 h-5 text-accent-primary animate-spin" />
+        <span className="text-text-muted text-sm">Loading index stats...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="card text-center py-4">
+          <p className="text-2xl font-extrabold text-accent-primary">{totalWithBirth}</p>
+          <p className="text-xs text-text-muted mt-1">Users with birth data</p>
+        </div>
+        <div className="card text-center py-4">
+          <p className="text-2xl font-extrabold text-green-400">{totalIndexed}</p>
+          <p className="text-xs text-text-muted mt-1">Already indexed</p>
+        </div>
+        <div className="card text-center py-4">
+          <p className="text-2xl font-extrabold text-amber-400">{unindexed.length}</p>
+          <p className="text-xs text-text-muted mt-1">Need indexing</p>
+        </div>
+      </div>
+
+      {/* Action */}
+      {unindexed.length > 0 && !done && (
+        <div className="card p-5">
+          <h3 className="text-base font-bold text-text-primary mb-2">Batch Index Placements</h3>
+          <p className="text-sm text-text-muted mb-4">
+            Compute natal charts and index placements for {unindexed.length} user{unindexed.length > 1 ? 's' : ''} who have birth data but haven{"'"}t been indexed yet.
+          </p>
+
+          {!running ? (
+            <button
+              onClick={runBatchIndex}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-accent-primary to-purple-600 text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            >
+              Index {unindexed.length} Users
+            </button>
+          ) : (
+            <div className="space-y-3">
+              {/* Progress bar */}
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-4 h-4 text-accent-primary animate-spin flex-shrink-0" />
+                <div className="flex-1 h-3 bg-bg-tertiary rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-accent-primary to-purple-500 rounded-full transition-all duration-300"
+                    style={{ width: `${(progress / unindexed.length) * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-text-secondary w-16 text-right">
+                  {progress}/{unindexed.length}
+                </span>
+              </div>
+              <div className="flex gap-4 text-xs">
+                <span className="text-green-400">{successCount} indexed</span>
+                {failCount > 0 && <span className="text-red-400">{failCount} failed</span>}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {done && (
+        <div className="card p-5 text-center">
+          <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+          <h3 className="text-base font-bold text-text-primary">Batch Indexing Complete</h3>
+          <p className="text-sm text-text-muted mt-1">
+            {successCount} users indexed successfully{failCount > 0 ? `, ${failCount} failed` : ''}
+          </p>
+        </div>
+      )}
+
+      {unindexed.length === 0 && !done && (
+        <div className="card p-5 text-center">
+          <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+          <h3 className="text-base font-bold text-text-primary">All Users Indexed</h3>
+          <p className="text-sm text-text-muted mt-1">
+            Every user with birth data is already in the Cosmic Index.
+          </p>
+        </div>
+      )}
+
+      {/* Log output */}
+      {logs.length > 0 && (
+        <div className="card p-4">
+          <p className="text-xs font-bold text-text-muted mb-2">Log</p>
+          <div className="max-h-60 overflow-y-auto bg-bg-tertiary rounded-lg p-3 font-mono text-[11px] text-text-secondary leading-5 space-y-0.5">
+            {logs.map((line, i) => (
+              <p key={i} className={line.includes('Failed') || line.includes('Error') ? 'text-red-400' : line.includes('Indexed') ? 'text-green-400' : ''}>
+                {line}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

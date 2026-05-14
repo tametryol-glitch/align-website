@@ -190,6 +190,23 @@ export default function SettingsPage() {
         </select>
       </div>
 
+      {/* Admin */}
+      {profile?.is_admin && (
+        <div className="card mb-4">
+          <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-accent-primary" /> Admin
+          </h3>
+          <div className="divide-y divide-border-primary -mx-6">
+            <Link href="/admin" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
+              <span className="flex items-center gap-3 text-sm text-text-primary">
+                <Shield className="w-4 h-4 text-text-muted" /> Admin Panel
+              </span>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Logout */}
       <button onClick={handleLogout} className="w-full card flex items-center gap-3 text-red-400 hover:bg-red-400/5">
         <LogOut className="w-5 h-5" />

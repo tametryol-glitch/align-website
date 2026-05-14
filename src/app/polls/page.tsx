@@ -1,263 +1,641 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { BarChart3, Plus, CheckCircle } from 'lucide-react';
+import {
+  BarChart3, Plus, X, Check, Clock, Bookmark, BookmarkCheck,
+  Trash2, RefreshCw, EyeOff, MessageCircle, ChevronRight,
+} from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import {
+  Poll, PollFilter,
+  getPolls, createPoll, votePoll, togglePollBookmark, deletePoll,
+} from '@/lib/pollService';
 
-interface PollOption {
-  id: string;
-  text: string;
-  vote_count: number;
+// ===================================================================
+// Constants
+// ===================================================================
+
+const FILTERS: { key: PollFilter; label: string }[] = [
+  { key: 'newest', label: 'Newest' },
+  { key: 'trending', label: 'Trending' },
+  { key: 'my_polls', label: 'My Polls' },
+  { key: 'voted', label: 'Voted' },
+];
+
+const DURATION_OPTIONS = [
+  { label: 'No limit', hours: 0 },
+  { label: '1 hour', hours: 1 },
+  { label: '6 hours', hours: 6 },
+  { label: '12 hours', hours: 12 },
+  { label: '24 hours', hours: 24 },
+  { label: '3 days', hours: 72 },
+  { label: '7 days', hours: 168 },
+];
+
+// ===================================================================
+// Helpers
+// ===================================================================
+
+function timeAgo(dateStr: string): string {
+  const s = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-interface Poll {
-  id: string;
-  question: string;
-  options: PollOption[];
-  total_votes: number;
-  created_at: string;
-  expires_at: string | null;
-  creator_name: string;
-  user_voted_option: string | null;
+function timeRemaining(expiresAt: string): string {
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  if (ms <= 0) return 'Ended';
+  const h = Math.floor(ms / 3600000);
+  if (h >= 24) return `${Math.floor(h / 24)}d left`;
+  if (h >= 1) return `${h}h left`;
+  const m = Math.floor(ms / 60000);
+  return `${m}m left`;
 }
+
+// ===================================================================
+// PollCard (inline)
+// ===================================================================
+
+function PollCard({
+  poll,
+  onRefresh,
+  onNavigate,
+  currentUserId,
+}: {
+  poll: Poll;
+  onRefresh: () => void;
+  onNavigate: (id: string) => void;
+  currentUserId?: string;
+}) {
+  const [voted, setVoted] = useState(poll.hasVoted);
+  const [selectedOptionId, setSelectedOptionId] = useState(poll.userVoteOptionId);
+  const [totalVotes, setTotalVotes] = useState(poll.totalVotes);
+  const [options, setOptions] = useState(poll.options);
+  const [bookmarked, setBookmarked] = useState(poll.isBookmarked);
+  const [voting, setVoting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Sync state when poll prop changes (e.g. after refresh)
+  useEffect(() => {
+    setVoted(poll.hasVoted);
+    setSelectedOptionId(poll.userVoteOptionId);
+    setTotalVotes(poll.totalVotes);
+    setOptions(poll.options);
+    setBookmarked(poll.isBookmarked);
+  }, [poll]);
+
+  const showResults = voted || poll.isExpired;
+  const isOwner = currentUserId === poll.authorId;
+
+  const handleVote = useCallback(async (optionId: string) => {
+    if (voted || poll.isExpired || voting) return;
+    setVoting(true);
+
+    // Optimistic update
+    const newTotal = totalVotes + 1;
+    setSelectedOptionId(optionId);
+    setVoted(true);
+    setTotalVotes(newTotal);
+    setOptions(prev => prev.map(o => {
+      const newCount = o.id === optionId ? o.voteCount + 1 : o.voteCount;
+      return {
+        ...o,
+        voteCount: newCount,
+        percentage: newTotal > 0 ? Math.round((newCount / newTotal) * 100) : 0,
+      };
+    }));
+
+    const result = await votePoll(poll.id, optionId);
+    if (!result.success) {
+      // Revert
+      setSelectedOptionId(poll.userVoteOptionId);
+      setVoted(poll.hasVoted);
+      setTotalVotes(poll.totalVotes);
+      setOptions(poll.options);
+    }
+    setVoting(false);
+    onRefresh();
+  }, [voted, poll, voting, totalVotes, onRefresh]);
+
+  const handleBookmark = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setBookmarked(!bookmarked);
+    await togglePollBookmark(poll.id);
+  }, [bookmarked, poll.id]);
+
+  const handleDelete = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleting(true);
+    const result = await deletePoll(poll.id);
+    if (result.success) {
+      onRefresh();
+    }
+    setDeleting(false);
+    setShowDeleteConfirm(false);
+  }, [poll.id, onRefresh]);
+
+  return (
+    <div className="bg-bg-card border border-border-primary rounded-2xl p-5 transition-all hover:border-border-secondary">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-3">
+        {!poll.isAnonymous && poll.authorAvatar ? (
+          <img
+            src={poll.authorAvatar}
+            alt={poll.authorName}
+            className="w-8 h-8 rounded-full object-cover border border-border-primary"
+          />
+        ) : !poll.isAnonymous ? (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+            {poll.authorName.charAt(0).toUpperCase()}
+          </div>
+        ) : null}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-text-primary truncate">
+            {poll.isAnonymous ? 'Anonymous Poll' : poll.authorName}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span>{timeAgo(poll.createdAt)}</span>
+            {poll.expiresAt && (
+              <span className={`flex items-center gap-1 ${poll.isExpired ? 'text-text-muted' : 'text-accent-primary'} font-medium`}>
+                <Clock className="w-3 h-3" />
+                {timeRemaining(poll.expiresAt)}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          {isOwner && (
+            <>
+              {showDeleteConfirm ? (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium"
+                  >
+                    {deleting ? '...' : 'Yes'}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
+                    className="p-1.5 rounded-lg bg-bg-tertiary text-text-muted hover:text-text-primary transition-colors text-xs"
+                  >
+                    No
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}
+                  className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-muted hover:text-red-400 transition-colors"
+                  title="Delete poll"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </>
+          )}
+          <button
+            onClick={handleBookmark}
+            className="p-1.5 rounded-lg hover:bg-bg-tertiary transition-colors"
+            title={bookmarked ? 'Remove bookmark' : 'Bookmark'}
+          >
+            {bookmarked
+              ? <BookmarkCheck className="w-4 h-4 text-accent-primary" />
+              : <Bookmark className="w-4 h-4 text-text-muted hover:text-accent-primary" />
+            }
+          </button>
+        </div>
+      </div>
+
+      {/* Question */}
+      <h3 className="text-base font-semibold text-text-primary mb-4 leading-relaxed">
+        {poll.question}
+      </h3>
+
+      {/* Options */}
+      <div className="space-y-2">
+        {options.map((opt) => {
+          const isSelected = opt.id === selectedOptionId;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleVote(opt.id)}
+              disabled={voted || poll.isExpired}
+              className={`
+                w-full relative rounded-xl overflow-hidden text-left transition-all
+                min-h-[44px] border
+                ${isSelected
+                  ? 'border-accent-primary'
+                  : voted || poll.isExpired
+                    ? 'border-border-primary'
+                    : 'border-border-primary hover:border-accent-primary/50 hover:bg-bg-tertiary/50 cursor-pointer'
+                }
+                ${voted || poll.isExpired ? 'cursor-default' : ''}
+              `}
+            >
+              {/* Percentage fill bar */}
+              {showResults && (
+                <div
+                  className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ease-out rounded-xl ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-accent-primary/30 to-purple-600/20'
+                      : 'bg-accent-primary/8'
+                  }`}
+                  style={{ width: `${opt.percentage}%` }}
+                />
+              )}
+              <div className="relative flex items-center justify-between px-4 py-3">
+                <span className={`text-sm flex items-center gap-2 ${isSelected ? 'text-text-primary font-semibold' : 'text-text-secondary'}`}>
+                  {isSelected && <Check className="w-4 h-4 text-accent-primary flex-shrink-0" />}
+                  {opt.text}
+                </span>
+                {showResults && (
+                  <span className={`text-xs font-semibold ml-2 flex-shrink-0 ${isSelected ? 'text-accent-primary' : 'text-text-muted'}`}>
+                    {opt.percentage}%
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-primary/50">
+        <span className="text-xs text-text-muted">
+          {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
+        </span>
+        <button
+          onClick={() => onNavigate(poll.id)}
+          className="text-xs text-text-muted hover:text-accent-primary transition-colors flex items-center gap-1"
+        >
+          View details <ChevronRight className="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ===================================================================
+// Create Poll Modal
+// ===================================================================
+
+function CreatePollModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const [question, setQuestion] = useState('');
+  const [options, setOptions] = useState(['', '']);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [allowComments, setAllowComments] = useState(true);
+  const [durationIdx, setDurationIdx] = useState(4); // 24 hours default
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const addOption = () => {
+    if (options.length >= 4) return;
+    setOptions([...options, '']);
+  };
+
+  const removeOption = (index: number) => {
+    if (options.length <= 2) return;
+    setOptions(options.filter((_, i) => i !== index));
+  };
+
+  const updateOption = (index: number, text: string) => {
+    setOptions(options.map((o, i) => i === index ? text : o));
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!question.trim()) { setError('Please enter a question'); return; }
+
+    const validOpts = options.filter(o => o.trim());
+    if (validOpts.length < 2) { setError('At least 2 options are required'); return; }
+
+    setSubmitting(true);
+    const duration = DURATION_OPTIONS[durationIdx];
+    const result = await createPoll({
+      question: question.trim(),
+      options: validOpts.map(o => o.trim()),
+      isAnonymous,
+      allowComments,
+      expiresInHours: duration.hours || undefined,
+    });
+
+    setSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error || 'Failed to create poll');
+      return;
+    }
+
+    onCreated();
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-border-primary">
+          <h2 className="text-lg font-display font-bold text-text-primary">New Poll</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-muted hover:text-text-primary transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Question */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
+              Question
+            </label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Ask something..."
+              maxLength={300}
+              rows={3}
+              autoFocus
+              className="input resize-none"
+            />
+            <p className="text-right text-xs text-text-muted mt-1">{question.length}/300</p>
+          </div>
+
+          {/* Options */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
+              Options
+            </label>
+            <div className="space-y-2">
+              {options.map((opt, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={opt}
+                    onChange={(e) => updateOption(i, e.target.value)}
+                    placeholder={`Option ${i + 1}`}
+                    maxLength={100}
+                    className="input flex-1"
+                  />
+                  {options.length > 2 && (
+                    <button
+                      onClick={() => removeOption(i)}
+                      className="p-2 rounded-lg hover:bg-bg-tertiary text-text-muted hover:text-red-400 transition-colors flex-shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {options.length < 4 && (
+              <button
+                onClick={addOption}
+                className="mt-2 text-xs font-semibold text-accent-primary hover:text-accent-secondary transition-colors"
+              >
+                + Add Option
+              </button>
+            )}
+          </div>
+
+          {/* Duration */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
+              Duration
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {DURATION_OPTIONS.map((d, i) => (
+                <button
+                  key={d.label}
+                  onClick={() => setDurationIdx(i)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                    durationIdx === i
+                      ? 'bg-accent-primary/15 border-accent-primary text-accent-primary'
+                      : 'bg-bg-card border-border-primary text-text-muted hover:border-border-secondary'
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Toggles */}
+          <div className="space-y-0">
+            <div className="flex items-center justify-between py-3 border-b border-border-primary/50">
+              <div className="flex items-center gap-2">
+                <EyeOff className="w-4 h-4 text-text-muted" />
+                <span className="text-sm text-text-secondary">Anonymous poll</span>
+              </div>
+              <button
+                onClick={() => setIsAnonymous(!isAnonymous)}
+                className={`relative w-11 h-6 rounded-full transition-colors ${
+                  isAnonymous ? 'bg-accent-primary' : 'bg-border-secondary'
+                }`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                  isAnonymous ? 'translate-x-[22px]' : 'translate-x-0.5'
+                }`} />
+              </button>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-text-muted" />
+                <span className="text-sm text-text-secondary">Allow comments</span>
+              </div>
+              <button
+                onClick={() => setAllowComments(!allowComments)}
+                className={`relative w-11 h-6 rounded-full transition-colors ${
+                  allowComments ? 'bg-accent-primary' : 'bg-border-secondary'
+                }`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                  allowComments ? 'translate-x-[22px]' : 'translate-x-0.5'
+                }`} />
+              </button>
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={handleSubmit}
+              disabled={submitting || !question.trim()}
+              className={`btn-primary flex-1 text-sm flex items-center justify-center gap-2 ${
+                submitting || !question.trim() ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Poll'
+              )}
+            </button>
+            <button onClick={onClose} className="btn-secondary text-sm">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===================================================================
+// Main Page
+// ===================================================================
 
 export default function PollsPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [polls, setPolls] = useState<Poll[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filter, setFilter] = useState<PollFilter>('newest');
   const [showCreate, setShowCreate] = useState(false);
-  const [newQuestion, setNewQuestion] = useState('');
-  const [newOptions, setNewOptions] = useState(['', '']);
-  const [creating, setCreating] = useState(false);
+
+  const loadPolls = useCallback(async () => {
+    try {
+      const data = await getPolls(filter);
+      setPolls(data);
+    } catch (err) {
+      console.error('[Polls] load error:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [filter]);
 
   useEffect(() => {
-    loadPolls();
-  }, [user]);
-
-  async function loadPolls() {
     setLoading(true);
-    const supabase = createClient();
-
-    const { data: pollsData } = await supabase
-      .from('polls')
-      .select('id, question, created_at, expires_at, user_id')
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (pollsData) {
-      // Load options, votes, and creators
-      const pollIds = pollsData.map(p => p.id);
-      const creatorIds = Array.from(new Set(pollsData.map(p => p.user_id)));
-
-      const [optionsRes, votesRes, creatorsRes] = await Promise.all([
-        supabase.from('poll_options').select('*').in('poll_id', pollIds),
-        user ? supabase.from('poll_votes').select('poll_id, option_id').eq('user_id', user.id).in('poll_id', pollIds) : { data: [] },
-        supabase.from('profiles').select('id, display_name').in('id', creatorIds),
-      ]);
-
-      const creatorMap: Record<string, string> = {};
-      creatorsRes.data?.forEach((c: any) => { creatorMap[c.id] = c.display_name; });
-
-      const userVotes: Record<string, string> = {};
-      (votesRes.data || []).forEach((v: any) => { userVotes[v.poll_id] = v.option_id; });
-
-      const optionsByPoll: Record<string, PollOption[]> = {};
-      (optionsRes.data || []).forEach((o: any) => {
-        if (!optionsByPoll[o.poll_id]) optionsByPoll[o.poll_id] = [];
-        optionsByPoll[o.poll_id].push({ id: o.id, text: o.text, vote_count: o.vote_count || 0 });
-      });
-
-      setPolls(pollsData.map(p => ({
-        id: p.id,
-        question: p.question,
-        options: optionsByPoll[p.id] || [],
-        total_votes: (optionsByPoll[p.id] || []).reduce((sum, o) => sum + o.vote_count, 0),
-        created_at: p.created_at,
-        expires_at: p.expires_at,
-        creator_name: creatorMap[p.user_id] || 'Unknown',
-        user_voted_option: userVotes[p.id] || null,
-      })));
-    }
-    setLoading(false);
-  }
-
-  async function vote(pollId: string, optionId: string) {
-    if (!user) return;
-    const supabase = createClient();
-
-    await supabase.from('poll_votes').insert({
-      poll_id: pollId,
-      option_id: optionId,
-      user_id: user.id,
-    });
-
-    // Increment vote count
-    await supabase.rpc('increment_poll_vote', { option_id_input: optionId });
-
-    // Update local state
-    setPolls(prev => prev.map(p => {
-      if (p.id !== pollId) return p;
-      return {
-        ...p,
-        user_voted_option: optionId,
-        total_votes: p.total_votes + 1,
-        options: p.options.map(o =>
-          o.id === optionId ? { ...o, vote_count: o.vote_count + 1 } : o
-        ),
-      };
-    }));
-  }
-
-  async function createPoll() {
-    if (!user || !newQuestion.trim() || newOptions.filter(o => o.trim()).length < 2) return;
-    setCreating(true);
-    const supabase = createClient();
-
-    const { data: poll } = await supabase
-      .from('polls')
-      .insert({
-        question: newQuestion.trim(),
-        user_id: user.id,
-      })
-      .select()
-      .single();
-
-    if (poll) {
-      const options = newOptions.filter(o => o.trim()).map(text => ({
-        poll_id: poll.id,
-        text: text.trim(),
-        vote_count: 0,
-      }));
-      await supabase.from('poll_options').insert(options);
-    }
-
-    setNewQuestion('');
-    setNewOptions(['', '']);
-    setShowCreate(false);
-    setCreating(false);
     loadPolls();
-  }
+  }, [loadPolls]);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadPolls();
+  }, [loadPolls]);
+
+  const handleNavigate = useCallback((id: string) => {
+    router.push(`/polls/${id}`);
+  }, [router]);
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <BarChart3 className="w-7 h-7 text-accent-primary" />
           Polls
         </h1>
-        {user && (
-          <button onClick={() => setShowCreate(!showCreate)} className="btn-primary text-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Create Poll
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="p-2.5 rounded-xl border border-border-primary hover:border-border-secondary hover:bg-bg-tertiary text-text-muted hover:text-text-primary transition-all"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
-        )}
-      </div>
-
-      {/* Create form */}
-      {showCreate && (
-        <div className="card mb-6 space-y-4">
-          <input
-            type="text"
-            value={newQuestion}
-            onChange={(e) => setNewQuestion(e.target.value)}
-            placeholder="Ask a question..."
-            className="input"
-            maxLength={200}
-          />
-          {newOptions.map((opt, i) => (
-            <input
-              key={i}
-              type="text"
-              value={opt}
-              onChange={(e) => {
-                const updated = [...newOptions];
-                updated[i] = e.target.value;
-                setNewOptions(updated);
-              }}
-              placeholder={`Option ${i + 1}`}
-              className="input"
-            />
-          ))}
-          {newOptions.length < 6 && (
+          {user && (
             <button
-              onClick={() => setNewOptions([...newOptions, ''])}
-              className="text-xs text-accent-primary hover:underline"
+              onClick={() => setShowCreate(true)}
+              className="btn-primary text-sm flex items-center gap-2"
             >
-              + Add option
+              <Plus className="w-4 h-4" /> Create Poll
             </button>
           )}
-          <div className="flex gap-2">
-            <button onClick={createPoll} disabled={creating} className="btn-primary text-sm flex-1">
-              {creating ? 'Creating...' : 'Create Poll'}
-            </button>
-            <button onClick={() => setShowCreate(false)} className="btn-secondary text-sm">Cancel</button>
-          </div>
         </div>
-      )}
+      </div>
 
+      {/* Filter Tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        {FILTERS.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-4 py-2 rounded-full text-sm font-medium border whitespace-nowrap transition-all ${
+              filter === f.key
+                ? 'bg-accent-primary/15 border-accent-primary text-accent-primary'
+                : 'bg-bg-card border-border-primary text-text-muted hover:border-border-secondary hover:text-text-secondary'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
       {loading ? (
         <LoadingCosmic label="Loading polls..." />
       ) : polls.length === 0 ? (
-        <div className="card text-center py-12">
-          <BarChart3 className="w-12 h-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-muted">No polls yet</p>
-          <p className="text-xs text-text-muted mt-1">Create one and ask the community!</p>
+        <div className="bg-bg-card border border-border-primary rounded-2xl p-12 text-center">
+          <BarChart3 className="w-14 h-14 text-text-muted mx-auto mb-4 opacity-50" />
+          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">No polls yet</h3>
+          <p className="text-sm text-text-muted mb-6">
+            {filter === 'my_polls'
+              ? "You haven't created any polls yet."
+              : filter === 'voted'
+                ? "You haven't voted on any polls yet."
+                : 'Create the first poll and get the community talking!'
+            }
+          </p>
+          {user && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="btn-primary text-sm inline-flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> Create Poll
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
-          {polls.map(poll => {
-            const hasVoted = !!poll.user_voted_option;
-            return (
-              <div key={poll.id} className="card">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs text-text-muted">{poll.creator_name}</span>
-                  <span className="text-[10px] text-text-muted">· {new Date(poll.created_at).toLocaleDateString()}</span>
-                </div>
-                <h3 className="text-sm font-semibold text-text-primary mb-3">{poll.question}</h3>
-
-                <div className="space-y-2">
-                  {poll.options.map(option => {
-                    const pct = poll.total_votes > 0 ? Math.round((option.vote_count / poll.total_votes) * 100) : 0;
-                    const isSelected = poll.user_voted_option === option.id;
-                    return (
-                      <button
-                        key={option.id}
-                        onClick={() => !hasVoted && vote(poll.id, option.id)}
-                        disabled={hasVoted}
-                        className={`w-full relative rounded-xl p-3 text-left transition-colors border ${
-                          isSelected
-                            ? 'border-accent-primary bg-accent-primary/5'
-                            : hasVoted
-                              ? 'border-border-primary bg-bg-tertiary'
-                              : 'border-border-primary hover:border-accent-primary/50 hover:bg-bg-tertiary'
-                        }`}
-                      >
-                        {hasVoted && (
-                          <div
-                            className="absolute left-0 top-0 bottom-0 rounded-xl bg-accent-primary/10 transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
-                        )}
-                        <div className="relative flex items-center justify-between">
-                          <span className="text-sm text-text-primary flex items-center gap-2">
-                            {isSelected && <CheckCircle className="w-4 h-4 text-accent-primary" />}
-                            {option.text}
-                          </span>
-                          {hasVoted && (
-                            <span className="text-xs text-text-muted font-medium">{pct}%</span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <p className="text-[10px] text-text-muted mt-2">{poll.total_votes} votes</p>
-              </div>
-            );
-          })}
+          {polls.map((poll) => (
+            <PollCard
+              key={poll.id}
+              poll={poll}
+              onRefresh={loadPolls}
+              onNavigate={handleNavigate}
+              currentUserId={user?.id}
+            />
+          ))}
         </div>
+      )}
+
+      {/* Create Poll Modal */}
+      {showCreate && (
+        <CreatePollModal
+          onClose={() => setShowCreate(false)}
+          onCreated={loadPolls}
+        />
       )}
     </div>
   );

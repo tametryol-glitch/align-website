@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { Type } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Type } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 
 export default function NameAnalysisPage() {
@@ -28,6 +29,10 @@ export default function NameAnalysisPage() {
   return (
     <PaywallGate feature="name_analysis" fallbackTier="light">
       <div className="max-w-3xl mx-auto">
+        <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Readings
+        </Link>
         <div className="flex items-center gap-3 mb-6">
           <Type className="w-8 h-8 text-accent-primary" />
           <div>

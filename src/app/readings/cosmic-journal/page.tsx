@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
-import { BookOpen } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 
 const PROMPTS = [
@@ -77,6 +78,10 @@ export default function CosmicJournalPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       <div className="flex items-center gap-3 mb-6">
         <BookOpen className="w-8 h-8 text-accent-primary" />
         <div>

@@ -1,379 +1,372 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { HelpCircle, ThumbsUp, MessageCircle, Plus, Clock } from 'lucide-react';
+import {
+  Question, QAFilter, QA_CATEGORIES,
+  getQuestions, createQuestion,
+} from '@/lib/qaService';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import {
+  HelpCircle, Plus, MessageSquare, Eye, Bell,
+  CheckCircle2, Circle, XCircle, X, ToggleLeft, ToggleRight,
+} from 'lucide-react';
 
-interface Question {
-  id: string;
-  title: string;
-  body: string | null;
-  tag: string | null;
-  upvotes: number;
-  answer_count: number;
-  user_upvoted: boolean;
-  created_at: string;
-  author_name: string;
-  author_sign: string | null;
+// ═══════════════════════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════════════════════
+
+function timeAgo(dateStr: string): string {
+  const s = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-interface Answer {
-  id: string;
-  body: string;
-  upvotes: number;
-  user_upvoted: boolean;
-  created_at: string;
-  author_name: string;
-  author_sign: string | null;
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  open: { label: 'Open', className: 'bg-blue-500/15 text-blue-400' },
+  answered: { label: 'Answered', className: 'bg-emerald-500/15 text-emerald-400' },
+  closed: { label: 'Closed', className: 'bg-zinc-500/15 text-zinc-400' },
+};
+
+const FILTERS: { key: QAFilter; label: string }[] = [
+  { key: 'newest', label: 'Newest' },
+  { key: 'trending', label: 'Trending' },
+  { key: 'unanswered', label: 'Unanswered' },
+  { key: 'answered', label: 'Answered' },
+  { key: 'my_questions', label: "My Q's" },
+  { key: 'my_answers', label: "My A's" },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// Question Card
+// ═══════════════════════════════════════════════════════════════════
+
+function QuestionCard({ question, onClick }: { question: Question; onClick: () => void }) {
+  const statusCfg = STATUS_CONFIG[question.status] || STATUS_CONFIG.open;
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left bg-bg-secondary border border-border-primary rounded-xl p-4 hover:border-accent-primary/30 transition-all duration-200 group"
+    >
+      {/* Badges */}
+      <div className="flex items-center gap-2 mb-2.5 flex-wrap">
+        <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${statusCfg.className}`}>
+          {statusCfg.label}
+        </span>
+        {question.category && (
+          <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-accent-primary/10 text-accent-primary">
+            {question.category}
+          </span>
+        )}
+        {question.acceptedAnswerId && (
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+        )}
+      </div>
+
+      {/* Title */}
+      <h3 className="text-[15px] font-semibold text-text-primary leading-snug mb-1 line-clamp-2 group-hover:text-accent-primary transition-colors">
+        {question.title}
+      </h3>
+
+      {/* Body preview */}
+      {question.body && (
+        <p className="text-[13px] text-text-tertiary leading-relaxed mb-3 line-clamp-2">
+          {question.body}
+        </p>
+      )}
+
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-2.5 border-t border-border-primary/50">
+        <div className="flex items-center gap-2">
+          {!question.isAnonymous && (
+            <UserAvatar
+              displayName={question.authorName}
+              avatarUrl={question.authorAvatar}
+              size="xs"
+            />
+          )}
+          <span className="text-xs text-text-secondary">
+            {question.isAnonymous ? 'Anonymous' : question.authorName}
+          </span>
+          <span className="text-text-muted text-[10px]">*</span>
+          <span className="text-[11px] text-text-muted">{timeAgo(question.createdAt)}</span>
+        </div>
+
+        <div className="flex items-center gap-3.5 text-text-muted">
+          <span className="flex items-center gap-1 text-[11px]">
+            <MessageSquare className="w-3 h-3" /> {question.answerCount}
+          </span>
+          <span className="flex items-center gap-1 text-[11px]">
+            <Eye className="w-3 h-3" /> {question.viewCount}
+          </span>
+          <span className="flex items-center gap-1 text-[11px]">
+            <Bell className="w-3 h-3" /> {question.followCount}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
 }
 
-const TAGS = ['All', 'Natal Chart', 'Transits', 'Compatibility', 'Houses', 'Aspects', 'Beginners', 'Advanced'];
+// ═══════════════════════════════════════════════════════════════════
+// Create Question Modal
+// ═══════════════════════════════════════════════════════════════════
+
+function CreateQuestionModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [category, setCategory] = useState<string | undefined>();
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!title.trim()) { setError('Title is required'); return; }
+
+    setSubmitting(true);
+    const result = await createQuestion({
+      title: title.trim(),
+      body: body.trim() || undefined,
+      isAnonymous,
+      category,
+    });
+    setSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error || 'Failed to create question');
+      return;
+    }
+
+    onCreated();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div
+        className="relative w-full max-w-lg bg-bg-primary border border-border-primary rounded-2xl shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
+          <h2 className="text-lg font-bold text-text-primary">Ask a Question</h2>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-bg-tertiary transition-colors">
+            <X className="w-5 h-5 text-text-muted" />
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+          {/* Title */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Title
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="What's your question?"
+              maxLength={200}
+              autoFocus
+              className="w-full bg-bg-secondary border border-border-primary rounded-lg px-3.5 py-2.5 text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/20 transition-colors"
+            />
+            <p className="text-[11px] text-text-muted mt-1 text-right">{title.length}/200</p>
+          </div>
+
+          {/* Body */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Details (optional)
+            </label>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Add context or details..."
+              maxLength={2000}
+              rows={4}
+              className="w-full bg-bg-secondary border border-border-primary rounded-lg px-3.5 py-2.5 text-text-primary text-sm placeholder:text-text-muted resize-none focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/20 transition-colors"
+            />
+            <p className="text-[11px] text-text-muted mt-1 text-right">{body.length}/2000</p>
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Category
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {QA_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(category === cat ? undefined : cat)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    category === cat
+                      ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/40'
+                      : 'bg-bg-tertiary text-text-muted border border-transparent hover:text-text-secondary'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Anonymous toggle */}
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-text-secondary">Post anonymously</span>
+            <button
+              onClick={() => setIsAnonymous(!isAnonymous)}
+              className="text-accent-primary"
+            >
+              {isAnonymous ? (
+                <ToggleRight className="w-8 h-8" />
+              ) : (
+                <ToggleLeft className="w-8 h-8 text-text-muted" />
+              )}
+            </button>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 px-5 py-4 border-t border-border-primary">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2.5 rounded-lg border border-border-primary text-text-secondary text-sm font-medium hover:bg-bg-tertiary transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || !title.trim()}
+            className="flex-1 px-4 py-2.5 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Posting...' : 'Post Question'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Main Page
+// ═══════════════════════════════════════════════════════════════════
 
 export default function QAPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTag, setActiveTag] = useState('All');
-  const [showAsk, setShowAsk] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
-  const [answers, setAnswers] = useState<Answer[]>([]);
-  const [loadingAnswers, setLoadingAnswers] = useState(false);
+  const [filter, setFilter] = useState<QAFilter>('newest');
+  const [showCreate, setShowCreate] = useState(false);
 
-  // Ask form
-  const [askTitle, setAskTitle] = useState('');
-  const [askBody, setAskBody] = useState('');
-  const [askTag, setAskTag] = useState('Natal Chart');
-  const [posting, setPosting] = useState(false);
-
-  // Answer form
-  const [answerText, setAnswerText] = useState('');
-  const [answering, setAnswering] = useState(false);
-
-  useEffect(() => { loadQuestions(); }, []);
-
-  async function loadQuestions() {
+  const load = useCallback(async () => {
     setLoading(true);
-    const supabase = createClient();
-    let query = supabase
-      .from('qa_questions')
-      .select('id, title, body, tag, upvotes, answer_count, created_at, user_id')
-      .order('upvotes', { ascending: false })
-      .limit(30);
-
-    if (activeTag !== 'All') {
-      query = query.eq('tag', activeTag);
+    try {
+      const data = await getQuestions(filter);
+      setQuestions(data);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
     }
+  }, [filter]);
 
-    const { data } = await query;
-    if (data) {
-      const authorIds = Array.from(new Set(data.map(q => q.user_id)));
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, sun_sign')
-        .in('id', authorIds);
-      const profileMap: Record<string, any> = {};
-      profiles?.forEach(p => { profileMap[p.id] = p; });
-
-      // Check user upvotes
-      let userUpvotes: Set<string> = new Set();
-      if (user) {
-        const { data: votes } = await supabase
-          .from('qa_votes')
-          .select('question_id')
-          .eq('user_id', user.id)
-          .in('question_id', data.map(q => q.id));
-        votes?.forEach(v => userUpvotes.add(v.question_id));
-      }
-
-      setQuestions(data.map(q => ({
-        ...q,
-        author_name: profileMap[q.user_id]?.display_name || 'User',
-        author_sign: profileMap[q.user_id]?.sun_sign || null,
-        user_upvoted: userUpvotes.has(q.id),
-      })));
-    }
-    setLoading(false);
-  }
-
-  async function askQuestion() {
-    if (!user || !askTitle.trim()) return;
-    setPosting(true);
-    const supabase = createClient();
-    await supabase.from('qa_questions').insert({
-      user_id: user.id,
-      title: askTitle.trim(),
-      body: askBody.trim() || null,
-      tag: askTag,
-      upvotes: 0,
-      answer_count: 0,
-    });
-    setAskTitle('');
-    setAskBody('');
-    setShowAsk(false);
-    setPosting(false);
-    loadQuestions();
-  }
-
-  async function upvoteQuestion(questionId: string) {
-    if (!user) return;
-    const supabase = createClient();
-    const question = questions.find(q => q.id === questionId);
-    if (!question) return;
-
-    if (question.user_upvoted) {
-      await supabase.from('qa_votes').delete().eq('question_id', questionId).eq('user_id', user.id);
-      setQuestions(prev => prev.map(q =>
-        q.id === questionId ? { ...q, upvotes: q.upvotes - 1, user_upvoted: false } : q
-      ));
-    } else {
-      await supabase.from('qa_votes').insert({ question_id: questionId, user_id: user.id });
-      setQuestions(prev => prev.map(q =>
-        q.id === questionId ? { ...q, upvotes: q.upvotes + 1, user_upvoted: true } : q
-      ));
-    }
-  }
-
-  async function openQuestion(question: Question) {
-    setSelectedQuestion(question);
-    setLoadingAnswers(true);
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('qa_answers')
-      .select('id, body, upvotes, created_at, user_id')
-      .eq('question_id', question.id)
-      .order('upvotes', { ascending: false });
-
-    if (data) {
-      const authorIds = Array.from(new Set(data.map(a => a.user_id)));
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, sun_sign')
-        .in('id', authorIds);
-      const profileMap: Record<string, any> = {};
-      profiles?.forEach(p => { profileMap[p.id] = p; });
-
-      setAnswers(data.map(a => ({
-        ...a,
-        author_name: profileMap[a.user_id]?.display_name || 'User',
-        author_sign: profileMap[a.user_id]?.sun_sign || null,
-        user_upvoted: false,
-      })));
-    }
-    setLoadingAnswers(false);
-  }
-
-  async function submitAnswer() {
-    if (!user || !selectedQuestion || !answerText.trim()) return;
-    setAnswering(true);
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('qa_answers')
-      .insert({
-        question_id: selectedQuestion.id,
-        user_id: user.id,
-        body: answerText.trim(),
-        upvotes: 0,
-      })
-      .select()
-      .single();
-
-    if (data) {
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('display_name, sun_sign')
-        .eq('id', user.id)
-        .single();
-      setAnswers(prev => [...prev, {
-        ...data,
-        author_name: prof?.display_name || 'User',
-        author_sign: prof?.sun_sign || null,
-        user_upvoted: false,
-      }]);
-      // Update answer count
-      await supabase.from('qa_questions').update({ answer_count: selectedQuestion.answer_count + 1 }).eq('id', selectedQuestion.id);
-      setSelectedQuestion(prev => prev ? { ...prev, answer_count: prev.answer_count + 1 } : null);
-    }
-    setAnswerText('');
-    setAnswering(false);
-  }
-
-  useEffect(() => { loadQuestions(); }, [activeTag]);
+  useEffect(() => { load(); }, [load]);
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <HelpCircle className="w-7 h-7 text-accent-primary" />
           Q&A
         </h1>
         {user && (
-          <button onClick={() => setShowAsk(!showAsk)} className="btn-primary text-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Ask
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Ask
           </button>
         )}
       </div>
 
-      {/* Tags */}
+      {/* Filter tabs */}
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3 mb-4">
-        {TAGS.map(tag => (
+        {FILTERS.map((f) => (
           <button
-            key={tag}
-            onClick={() => setActiveTag(tag)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-              activeTag === tag
-                ? 'bg-accent-primary/20 text-accent-primary'
-                : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              filter === f.key
+                ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/40'
+                : 'bg-bg-tertiary text-text-muted hover:text-text-secondary border border-transparent'
             }`}
           >
-            {tag}
+            {f.label}
           </button>
         ))}
       </div>
 
-      {/* Ask form */}
-      {showAsk && (
-        <div className="card mb-6 space-y-3">
-          <input
-            type="text"
-            value={askTitle}
-            onChange={(e) => setAskTitle(e.target.value)}
-            placeholder="What's your question?"
-            className="input"
-            maxLength={200}
-          />
-          <textarea
-            value={askBody}
-            onChange={(e) => setAskBody(e.target.value)}
-            placeholder="Add more details (optional)..."
-            className="input min-h-[80px] resize-none"
-          />
-          <select value={askTag} onChange={(e) => setAskTag(e.target.value)} className="input">
-            {TAGS.filter(t => t !== 'All').map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <div className="flex gap-2">
-            <button onClick={askQuestion} disabled={posting || !askTitle.trim()} className="btn-primary text-sm flex-1">
-              {posting ? 'Posting...' : 'Post Question'}
-            </button>
-            <button onClick={() => setShowAsk(false)} className="btn-secondary text-sm">Cancel</button>
-          </div>
-        </div>
-      )}
-
-      {/* Question detail view */}
-      {selectedQuestion ? (
-        <div>
-          <button onClick={() => setSelectedQuestion(null)} className="text-xs text-accent-primary hover:underline mb-4">
-            ← Back to questions
-          </button>
-          <div className="card mb-4">
-            <h2 className="text-lg font-semibold text-text-primary mb-2">{selectedQuestion.title}</h2>
-            {selectedQuestion.body && (
-              <p className="text-sm text-text-secondary mb-3">{selectedQuestion.body}</p>
-            )}
-            <div className="flex items-center gap-3 text-xs text-text-muted">
-              <span>{selectedQuestion.author_name}</span>
-              {selectedQuestion.tag && (
-                <span className="px-2 py-0.5 rounded-full bg-accent-muted text-accent-primary">{selectedQuestion.tag}</span>
-              )}
-              <span>{selectedQuestion.answer_count} answers</span>
-            </div>
-          </div>
-
-          {/* Answers */}
-          {loadingAnswers ? (
-            <LoadingCosmic label="Loading answers..." />
-          ) : (
-            <div className="space-y-3 mb-4">
-              {answers.length === 0 ? (
-                <p className="text-sm text-text-muted text-center py-6">No answers yet. Be the first!</p>
-              ) : (
-                answers.map(a => (
-                  <div key={a.id} className="card">
-                    <p className="text-sm text-text-primary mb-2">{a.body}</p>
-                    <div className="flex items-center gap-3 text-xs text-text-muted">
-                      <span>{a.author_name}</span>
-                      {a.author_sign && <span>· {a.author_sign}</span>}
-                      <span className="flex items-center gap-1">
-                        <ThumbsUp className="w-3 h-3" /> {a.upvotes}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* Submit answer */}
+      {/* Question list */}
+      {loading ? (
+        <LoadingCosmic label="Loading questions..." />
+      ) : questions.length === 0 ? (
+        <div className="bg-bg-secondary border border-border-primary rounded-xl text-center py-16 px-6">
+          <HelpCircle className="w-14 h-14 text-text-muted mx-auto mb-4 opacity-50" />
+          <h3 className="text-lg font-semibold text-text-primary mb-2">No questions yet</h3>
+          <p className="text-sm text-text-muted mb-6">Ask the first question and get cosmic wisdom!</p>
           {user && (
-            <div className="card">
-              <textarea
-                value={answerText}
-                onChange={(e) => setAnswerText(e.target.value)}
-                placeholder="Write your answer..."
-                className="input min-h-[80px] resize-none mb-3"
-              />
-              <button onClick={submitAnswer} disabled={answering || !answerText.trim()} className="btn-primary text-sm w-full">
-                {answering ? 'Posting...' : 'Post Answer'}
-              </button>
-            </div>
+            <button
+              onClick={() => setShowCreate(true)}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Ask a Question
+            </button>
           )}
         </div>
       ) : (
-        /* Questions list */
-        loading ? (
-          <LoadingCosmic label="Loading questions..." />
-        ) : questions.length === 0 ? (
-          <div className="card text-center py-12">
-            <HelpCircle className="w-12 h-12 text-text-muted mx-auto mb-3" />
-            <p className="text-text-muted">No questions yet</p>
-            <p className="text-xs text-text-muted mt-1">Be the first to ask!</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {questions.map(q => (
-              <button
-                key={q.id}
-                onClick={() => openQuestion(q)}
-                className="card w-full text-left hover:border-accent-primary/30 transition-colors"
-              >
-                <div className="flex gap-3">
-                  {/* Vote column */}
-                  <div className="flex flex-col items-center gap-0.5 pt-0.5">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); upvoteQuestion(q.id); }}
-                      className={`p-1 rounded ${q.user_upvoted ? 'text-accent-primary' : 'text-text-muted hover:text-accent-primary'}`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                    </button>
-                    <span className={`text-xs font-semibold ${q.user_upvoted ? 'text-accent-primary' : 'text-text-secondary'}`}>
-                      {q.upvotes}
-                    </span>
-                  </div>
+        <div className="space-y-2.5">
+          {questions.map((q) => (
+            <QuestionCard
+              key={q.id}
+              question={q}
+              onClick={() => router.push(`/qa/${q.id}`)}
+            />
+          ))}
+        </div>
+      )}
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-text-primary mb-1">{q.title}</h3>
-                    <div className="flex items-center gap-2 text-[10px] text-text-muted">
-                      <span>{q.author_name}</span>
-                      {q.author_sign && <span>· {q.author_sign}</span>}
-                      {q.tag && (
-                        <span className="px-1.5 py-0.5 rounded-full bg-bg-tertiary">{q.tag}</span>
-                      )}
-                      <span className="flex items-center gap-0.5">
-                        <MessageCircle className="w-3 h-3" /> {q.answer_count}
-                      </span>
-                      <span className="flex items-center gap-0.5">
-                        <Clock className="w-3 h-3" /> {new Date(q.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )
+      {/* Create modal */}
+      {showCreate && (
+        <CreateQuestionModal
+          onClose={() => setShowCreate(false)}
+          onCreated={() => {
+            setShowCreate(false);
+            load();
+          }}
+        />
       )}
     </div>
   );

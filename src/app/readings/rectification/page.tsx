@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import { Wrench } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Wrench } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 
@@ -54,6 +55,10 @@ export default function RectificationPage() {
   return (
     <PaywallGate feature="rectification" fallbackTier="pro">
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       <div className="flex items-center gap-3 mb-6">
         <Wrench className="w-8 h-8 text-accent-primary" />
         <div>

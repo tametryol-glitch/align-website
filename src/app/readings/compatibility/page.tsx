@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
-import { Heart, ChevronDown, ChevronUp, Sparkles, AlertTriangle, RefreshCw, Share2, UserPlus, Check } from 'lucide-react';
+import Link from 'next/link';
+import { Heart, ChevronDown, ChevronUp, Sparkles, AlertTriangle, RefreshCw, Share2, UserPlus, Check, ArrowLeft } from 'lucide-react';
 import { ScoreBar } from '@/components/ui/ScoreBar';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
@@ -101,6 +102,10 @@ export default function CompatibilityPage() {
   return (
     <PaywallGate feature="compatibility">
     <div className="max-w-3xl mx-auto">
+      <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Readings
+      </Link>
       <div className="flex items-center gap-3 mb-6">
         <Heart className="w-8 h-8 text-accent-primary" />
         <div>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Camera, ImageIcon } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { indexMyPlacements } from '@/lib/cosmicIndexService';
 
 export default function EditProfilePage() {
   const { user, profile, setProfile } = useAuthStore();
@@ -64,6 +65,9 @@ export default function EditProfilePage() {
 
       if (err) throw err;
       if (data) setProfile(data);
+      if (data?.birth_date && data?.latitude && data?.longitude) {
+        indexMyPlacements().catch(() => {});
+      }
       router.push('/profile');
     } catch (err: any) {
       setError(err.message || 'Failed to save profile');

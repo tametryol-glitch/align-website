@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { indexMyPlacements } from '@/lib/cosmicIndexService';
 
 const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Complete'];
 
@@ -64,6 +65,9 @@ export default function OnboardingPage() {
       .single();
 
     if (data) setProfile(data);
+    if (data?.birth_date && data?.latitude && data?.longitude) {
+      indexMyPlacements().catch(() => {});
+    }
     setSaving(false);
     router.push('/dashboard');
   }
