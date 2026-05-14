@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { Search, ArrowLeft, Globe } from 'lucide-react';
+import { Search, ArrowLeft, Globe, ChevronRight } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -25,29 +25,71 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function formatPretty(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function addDays(d: Date, n: number): Date {
+  const out = new Date(d);
+  out.setDate(out.getDate() + n);
+  return out;
+}
+
+function formatISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 const CATEGORY_EMOJIS: Record<string, string> = {
   war: '⚔️', politics: '🏛️', science: '🔬', culture: '🎭',
   economy: '📈', natural_disaster: '🌋', revolution: '✊', discovery: '🔭',
   religion: '🕊️', technology: '💡', art: '🎨', diplomacy: '🤝',
 };
 
+const EVIDENCE_COLORS: Record<string, string> = {
+  thin: 'bg-amber-500/20 text-amber-400',
+  moderate: 'bg-blue-500/20 text-blue-400',
+  strong: 'bg-emerald-500/20 text-emerald-400',
+  overwhelming: 'bg-purple-500/20 text-purple-400',
+};
+
+type Preset = 'today' | 'tomorrow' | 'week' | 'month' | 'custom';
+
+function resolveDate(preset: Preset, customDate: string): string {
+  const today = new Date();
+  switch (preset) {
+    case 'today':    return formatISODate(today);
+    case 'tomorrow': return formatISODate(addDays(today, 1));
+    case 'week':     return formatISODate(addDays(today, 7));
+    case 'month':    return formatISODate(addDays(today, 30));
+    case 'custom':   return customDate;
+  }
+}
+
 export default function WorldEchoScannerPage() {
-  const [scanDate, setScanDate] = useState(new Date().toISOString().split('T')[0]);
+  const [preset, setPreset] = useState<Preset>('today');
+  const [customDate, setCustomDate] = useState(formatISODate(new Date()));
   const [scanType, setScanType] = useState<'global' | 'personal'>('global');
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const scanDate = resolveDate(preset, customDate);
 
   async function scan() {
     setLoading(true);
     setError('');
+    setActiveCategory(null);
     try {
-      // First try fetching cached result for that date
       let data;
       try {
         data = await api.getWorldEchoDate(scanDate, scanType);
       } catch (e: any) {
-        // If 404 or not found, compute on demand
         if (typeof e?.message === 'string' && (e.message.includes('404') || e.message.includes('not found'))) {
           data = await api.computeWorldEchoScan(scanDate, scanType);
         } else {
@@ -59,6 +101,8 @@ export default function WorldEchoScannerPage() {
       const msg = err?.message ?? '';
       if (msg.includes('429')) {
         setError('Too many scans this hour. Please wait a bit and try again.');
+      } else if (msg.includes('400')) {
+        setError('That date is out of range (max 60 days ahead, 5 years back).');
       } else {
         setError(err.message || 'Scan failed. Please try again.');
       }
@@ -69,6 +113,30 @@ export default function WorldEchoScannerPage() {
 
   const hits = results?.possible_hits_json || [];
   const patterns = (results?.pattern_results || []).slice(0, 5);
+
+  const filteredHits = useMemo(() => {
+    if (!activeCategory) return hits;
+    return hits.filter((h: any) => (h.category || 'other') === activeCategory);
+  }, [hits, activeCategory]);
+
+  const categories = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const h of hits) {
+      const c = h.category || 'other';
+      counts.set(c, (counts.get(c) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([slug, count]) => ({ slug, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [hits]);
+
+  const presets: Array<{ key: Preset; label: string }> = [
+    { key: 'today', label: 'Today' },
+    { key: 'tomorrow', label: 'Tomorrow' },
+    { key: 'week', label: '+7 days' },
+    { key: 'month', label: '+30 days' },
+    { key: 'custom', label: 'Custom' },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -83,14 +151,49 @@ export default function WorldEchoScannerPage() {
       </div>
 
       <div className="card mb-6">
-        <label className="text-sm text-text-secondary font-medium mb-2 block">Select a date to scan</label>
-        <div className="flex gap-3 mb-3">
-          <input
-            type="date"
-            value={scanDate}
-            onChange={(e) => setScanDate(e.target.value)}
-            className="input flex-1"
-          />
+        <label className="text-sm text-text-secondary font-medium mb-3 block">Pick a date</label>
+        <p className="text-xs text-text-muted mb-3">
+          Compute the world echo for any date. Future scans run on demand and cache for an hour.
+        </p>
+
+        {/* Preset buttons */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {presets.map(p => (
+            <button
+              key={p.key}
+              onClick={() => setPreset(p.key)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                preset === p.key
+                  ? 'border-accent-primary bg-accent-primary/15 text-accent-primary'
+                  : 'border-border-primary text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Custom date input */}
+        {preset === 'custom' && (
+          <div className="mb-4">
+            <label className="text-xs text-text-muted mb-1 block">Custom date</label>
+            <input
+              type="date"
+              value={customDate}
+              onChange={(e) => setCustomDate(e.target.value)}
+              className="input w-full"
+            />
+          </div>
+        )}
+
+        {/* Selected date display */}
+        <div className="bg-bg-secondary rounded-lg border border-border-primary p-3 mb-4">
+          <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold">Selected</p>
+          <p className="text-sm font-semibold text-text-primary">{formatPretty(scanDate)}</p>
+          <p className="text-xs text-text-muted">{scanDate}</p>
+        </div>
+
+        <div className="flex gap-3">
           <select
             value={scanType}
             onChange={(e) => setScanType(e.target.value as 'global' | 'personal')}
@@ -99,10 +202,10 @@ export default function WorldEchoScannerPage() {
             <option value="global">Global</option>
             <option value="personal">Personal</option>
           </select>
+          <button onClick={scan} disabled={loading} className="btn-primary flex-1 flex items-center justify-center gap-2">
+            <Search className="w-4 h-4" /> Scan {formatDate(scanDate)}
+          </button>
         </div>
-        <button onClick={scan} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
-          <Search className="w-4 h-4" /> Scan {formatDate(scanDate)}
-        </button>
         {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
       </div>
 
@@ -125,13 +228,17 @@ export default function WorldEchoScannerPage() {
             )}
           </div>
 
-          {/* Dominant patterns */}
+          {/* Dominant patterns — clickable */}
           {patterns.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-text-primary mb-3">Dominant patterns</h3>
               <div className="space-y-2">
                 {patterns.map((p: any) => (
-                  <div key={p.pattern_name} className="card flex items-center gap-3">
+                  <Link
+                    key={p.pattern_name}
+                    href={`/world-echo/pattern/${results.id}/${encodeURIComponent(p.pattern_name)}`}
+                    className="card flex items-center gap-3 hover:border-accent-primary/30 transition-colors"
+                  >
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-text-primary">{p.pattern_name}</p>
                       <p className="text-xs text-text-muted mt-0.5">
@@ -144,22 +251,67 @@ export default function WorldEchoScannerPage() {
                         </p>
                       )}
                     </div>
-                  </div>
+                    {p.evidence_tier && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${EVIDENCE_COLORS[p.evidence_tier] || EVIDENCE_COLORS.thin}`}>
+                        {p.evidence_tier.charAt(0).toUpperCase() + p.evidence_tier.slice(1)}
+                      </span>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
+                  </Link>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Echo cards */}
+          {/* Echo cards with category filter */}
           <div>
-            <h3 className="text-sm font-semibold text-text-primary mb-3">Historical echoes</h3>
-            {hits.length === 0 ? (
+            <div className="flex items-baseline justify-between mb-3">
+              <h3 className="text-sm font-semibold text-text-primary">Historical echoes</h3>
+              {activeCategory && (
+                <span className="text-xs text-text-muted">{filteredHits.length} of {hits.length}</span>
+              )}
+            </div>
+
+            {/* Category filter chips */}
+            {categories.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3">
+                <button
+                  onClick={() => setActiveCategory(null)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                    activeCategory === null
+                      ? 'border-accent-primary bg-accent-primary/15 text-accent-primary'
+                      : 'border-border-primary text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  All
+                </button>
+                {categories.map(c => (
+                  <button
+                    key={c.slug}
+                    onClick={() => setActiveCategory(activeCategory === c.slug ? null : c.slug)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                      activeCategory === c.slug
+                        ? 'border-accent-primary bg-accent-primary/15 text-accent-primary'
+                        : 'border-border-primary text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    {CATEGORY_EMOJIS[c.slug] || '📌'} {prettyCategory(c.slug)} ({c.count})
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {filteredHits.length === 0 ? (
               <div className="card text-center py-8">
-                <p className="text-text-muted">No echoes found for this date. Try a different date.</p>
+                <p className="text-text-muted">
+                  {hits.length === 0
+                    ? 'No echoes found for this date. Try a different date.'
+                    : 'No echoes in this category. Click "All" to see everything.'}
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
-                {hits.map((hit: any, idx: number) => (
+                {filteredHits.map((hit: any, idx: number) => (
                   <Link
                     key={hit.event_id || idx}
                     href={`/world-echo/event/${hit.event_id || idx}`}

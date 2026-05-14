@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { Globe, Search, Info, X, RefreshCw } from 'lucide-react';
+import { Globe, Search, Info, X, RefreshCw, ChevronRight } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 // ─── Helpers matching mobile app ─────────────────────────────────
@@ -244,7 +244,11 @@ export default function WorldEchoPage() {
               <h3 className="text-sm font-semibold text-text-primary mb-3 mt-2">Dominant patterns today</h3>
               <div className="space-y-2">
                 {patterns.map((p: any) => (
-                  <div key={p.pattern_name} className="card flex items-center gap-3">
+                  <Link
+                    key={p.pattern_name}
+                    href={`/world-echo/pattern/${scan.id}/${encodeURIComponent(p.pattern_name)}`}
+                    className="card flex items-center gap-3 hover:border-accent-primary/30 transition-colors"
+                  >
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-text-primary">{p.pattern_name}</p>
                       <p className="text-xs text-text-muted mt-0.5">
@@ -262,7 +266,8 @@ export default function WorldEchoPage() {
                         {p.evidence_tier.charAt(0).toUpperCase() + p.evidence_tier.slice(1)}
                       </span>
                     )}
-                  </div>
+                    <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
+                  </Link>
                 ))}
               </div>
             </div>
