@@ -54,6 +54,8 @@ import {
   getFriends,
   getTotalUnreadCount,
   uploadChatImage,
+  pinMessage,
+  getPinnedMessages,
   type Message,
   type Conversation,
 } from '@/lib/messagingService';
@@ -87,6 +89,54 @@ function formatDateHeader(dateStr: string): string {
 }
 
 const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '🙏', '🔥'];
+
+// ── Smart Reply Helpers ─────────────────────────────────────────────
+
+function getSmartReplies(lastMsg: Message | undefined, myId: string | undefined): string[] {
+  if (!lastMsg || lastMsg.sender_id === myId || lastMsg.type !== 'text') return [];
+  const t = lastMsg.content.toLowerCase();
+  if (/\bhey\b|\bhi\b|\bhello\b|\bwhat'?s up\b/.test(t)) return ['Hey!', 'Hi there!', "What's up?"];
+  if (/\bthank|\bthanks\b/.test(t)) return ["You're welcome!", 'No problem!', 'Anytime!'];
+  if (/\bhow are you\b|\bhow'?s it going\b/.test(t)) return ["I'm good, you?", 'Doing great!', 'Pretty good!'];
+  if (/\?$/.test(t.trim())) return ['Yes', 'No', 'Maybe', "I'll check"];
+  if (/\blol\b|\bhaha\b|😂|🤣/.test(t)) return ['😂', 'Haha!', 'So funny'];
+  if (/\bgood morning\b/.test(t)) return ['Good morning!', 'Morning!'];
+  if (/\bgood night\b/.test(t)) return ['Good night!', 'Sleep well!', 'Nighty night!'];
+  return [];
+}
+
+// ── Link Preview Helpers ────────────────────────────────────────────
+
+interface LinkPreview {
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const URL_REGEX = /https?:\/\/[^\s<>]+/;
+
+function extractFirstUrl(text: string): string | null {
+  const match = text.match(URL_REGEX);
+  return match ? match[0] : null;
+}
+
+const linkPreviewCache = new Map<string, LinkPreview | null>();
+
+async function fetchLinkPreview(url: string): Promise<LinkPreview | null> {
+  if (linkPreviewCache.has(url)) return linkPreviewCache.get(url) ?? null;
+  try {
+    const resp = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) { linkPreviewCache.set(url, null); return null; }
+    const data = await resp.json();
+    const preview: LinkPreview = { url, title: data.title, description: data.description, image: data.image };
+    linkPreviewCache.set(url, preview);
+    return preview;
+  } catch {
+    linkPreviewCache.set(url, null);
+    return null;
+  }
+}
 
 // ── Main Component ───────────────────────────────────────────────────
 
@@ -262,20 +312,46 @@ export default function MessagesPage() {
   // ── Realtime message subscription ──
   useEffect(() => {
     if (!store.activeConversationId || !user) return;
-    const sub = subscribeToMessages(store.activeConversationId, (msg) => {
+    const convId = store.activeConversationId;
+    const sub = subscribeToMessages(convId, (msg) => {
       if (msg._event === 'UPDATE') {
         store.updateMessage(msg);
-      } else if (msg.sender_id !== user.id) {
-        store.addMessage(msg);
+        return;
+      }
+
+      const isFromOther = msg.sender_id !== user.id;
+
+      // Dedupe — already in list (e.g. sendMessage response beat realtime)
+      const existing = useMessagesStore.getState().messages;
+      if (existing.some(m => m.id === msg.id)) return;
+
+      // If this is OUR message arriving via realtime, it may race with the
+      // optimistic flow. Replace the matching optimistic entry instead of
+      // appending a duplicate.
+      if (!isFromOther) {
+        const optimisticMsg = existing.find(
+          m => m.id.startsWith('temp-') && m.content === msg.content,
+        );
+        if (optimisticMsg) {
+          store.removeMessage(optimisticMsg.id);
+        }
+      }
+
+      store.addMessage(msg);
+
+      if (isFromOther) {
         // Mark as read since we're viewing the conversation
-        markAsRead(store.activeConversationId!);
-        // Scroll to bottom if near bottom
-        const container = messagesContainerRef.current;
-        if (container) {
-          const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
-          if (nearBottom) {
-            setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-          }
+        markAsRead(convId);
+        // Update conversation preview + unread
+        store.updateConversationPreview(convId, msg.content, msg.sender_id);
+      }
+
+      // Scroll to bottom if near bottom
+      const container = messagesContainerRef.current;
+      if (container) {
+        const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+        if (nearBottom) {
+          setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
         }
       }
     });
@@ -285,12 +361,16 @@ export default function MessagesPage() {
   // ── Typing indicator subscription ──
   useEffect(() => {
     if (!store.activeConversationId) return;
-    const sub = subscribeToTyping(store.activeConversationId, (userId) => {
-      store.setTypingUser(store.activeConversationId!);
-      // Clear after 3 seconds
-      setTimeout(() => {
-        store.clearTypingUser(store.activeConversationId!);
+    const convId = store.activeConversationId;
+    const sub = subscribeToTyping(convId, (userId) => {
+      store.setTypingUser(convId);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        store.clearTypingUser(convId);
       }, 3000);
+    }, (_userId) => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      store.clearTypingUser(convId);
     });
     return () => sub.unsubscribe();
   }, [store.activeConversationId]);
@@ -341,6 +421,11 @@ export default function MessagesPage() {
     setNewMessage('');
     store.setReplyTo(null);
 
+    // Signal typing stopped
+    if (store.activeConversationId) {
+      sendTypingIndicator(store.activeConversationId, 'typing_stopped');
+    }
+
     // Optimistic update
     const optimistic: Message = {
       id: `temp-${Date.now()}`,
@@ -366,10 +451,12 @@ export default function MessagesPage() {
 
     const result = await sendMsg(store.activeConversationId, content, 'text', {}, replyToId);
     if (result.success && result.message) {
-      store.updateMessage({ ...result.message, id: result.message.id });
-      // Remove optimistic
+      // Replace optimistic message with the real server message
       store.removeMessage(optimistic.id);
       store.addMessage(result.message);
+    } else {
+      // Send failed — remove the optimistic message
+      store.removeMessage(optimistic.id);
     }
     setSending(false);
     inputRef.current?.focus();
@@ -837,6 +924,32 @@ export default function MessagesPage() {
     ? (store.typingUsers[store.activeConversationId] && Date.now() - store.typingUsers[store.activeConversationId] < 3000)
     : false;
 
+  // ── Smart replies ──
+  const smartReplies = useMemo(() => {
+    const lastReceived = [...store.messages].reverse().find(m => m.sender_id !== user?.id);
+    return getSmartReplies(lastReceived, user?.id);
+  }, [store.messages, user?.id]);
+
+  // ── Pin a message ──
+  async function handlePinMessage(msg: Message) {
+    const isPinned = !!msg.metadata?.pinned;
+    const success = await pinMessage(msg.id, !isPinned);
+    if (success) {
+      store.updateMessage({ ...msg, metadata: { ...msg.metadata, pinned: !isPinned } });
+    }
+    setContextMenu(null);
+  }
+
+  // ── Scroll to a specific message (for reply jump) ──
+  function scrollToMessage(messageId: string) {
+    const el = document.getElementById(`msg-${messageId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-accent-primary', 'ring-opacity-50');
+      setTimeout(() => el.classList.remove('ring-2', 'ring-accent-primary', 'ring-opacity-50'), 2000);
+    }
+  }
+
   // ── Close context menus on click outside ──
   useEffect(() => {
     function handleClick() {
@@ -1076,7 +1189,8 @@ export default function MessagesPage() {
                       return (
                         <div
                           key={msg.id}
-                          className={`group flex items-end gap-2 py-0.5 ${isMine ? 'justify-end' : 'justify-start'}`}
+                          id={`msg-${msg.id}`}
+                          className={`group flex items-end gap-2 py-0.5 transition-all ${isMine ? 'justify-end' : 'justify-start'}`}
                           onContextMenu={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -1098,11 +1212,14 @@ export default function MessagesPage() {
                               <p className="text-[10px] text-text-muted mb-0.5 ml-1">{msg.sender_name}</p>
                             )}
 
-                            {/* Reply preview */}
+                            {/* Reply preview (clickable — jumps to original) */}
                             {msg.reply_to && msg.reply_message && (
-                              <div className={`text-[10px] px-3 py-1.5 rounded-t-xl border-l-2 border-accent-primary bg-bg-tertiary/50 mb-0.5 ${
-                                isMine ? 'ml-auto text-right' : ''
-                              }`}>
+                              <div
+                                className={`text-[10px] px-3 py-1.5 rounded-t-xl border-l-2 border-accent-primary bg-bg-tertiary/50 mb-0.5 cursor-pointer hover:bg-bg-tertiary/80 transition-colors ${
+                                  isMine ? 'ml-auto text-right' : ''
+                                }`}
+                                onClick={() => scrollToMessage(msg.reply_to!)}
+                              >
                                 <span className="text-accent-primary font-medium">{msg.reply_message.sender_name}</span>
                                 <p className="text-text-muted truncate max-w-[200px]">{msg.reply_message.content}</p>
                               </div>
@@ -1180,7 +1297,17 @@ export default function MessagesPage() {
 
                               {/* Text content */}
                               {msg.content && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
-                                <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                                <>
+                                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                                  <BubbleLinkPreview text={msg.content} isMine={isMine} />
+                                </>
+                              )}
+
+                              {/* Pinned indicator */}
+                              {msg.metadata?.pinned && (
+                                <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>
+                                  📌 Pinned
+                                </span>
                               )}
 
                               {/* Time + status */}
@@ -1192,7 +1319,10 @@ export default function MessagesPage() {
                                   {formatMessageTime(msg.created_at)}
                                 </span>
                                 {isMine && (
-                                  <span className={`text-[9px] ${read ? 'text-blue-300' : 'text-white/40'}`}>
+                                  <span
+                                    className={`text-[9px] cursor-default ${read ? 'text-blue-300' : 'text-white/40'}`}
+                                    title={read && store.otherReadAt ? `Read ${new Date(store.otherReadAt).toLocaleDateString()} at ${new Date(store.otherReadAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Sent'}
+                                  >
                                     {read ? <CheckCheck className="w-3 h-3 inline" /> : <Check className="w-3 h-3 inline" />}
                                   </span>
                                 )}
@@ -1220,7 +1350,7 @@ export default function MessagesPage() {
                             )}
 
                             {/* Hover actions */}
-                            <div className={`absolute top-0 ${isMine ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5`}>
+                            <div className={`absolute top-0 z-10 ${isMine ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 pointer-events-none group-hover:pointer-events-auto`}>
                               <button
                                 onClick={(e) => { e.stopPropagation(); setReactionPicker(msg); }}
                                 className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
@@ -1312,6 +1442,25 @@ export default function MessagesPage() {
                     onClose={() => setShowGifPicker(false)}
                     onSelect={handleGifSelect}
                   />
+                </div>
+              )}
+
+              {/* Smart reply chips */}
+              {smartReplies.length > 0 && !store.editingMessage && !store.replyTo && (
+                <div className="px-4 py-1.5 border-t border-border-primary bg-bg-secondary flex gap-2 overflow-x-auto">
+                  {smartReplies.map((reply) => (
+                    <button
+                      key={reply}
+                      type="button"
+                      onClick={() => {
+                        setNewMessage(reply);
+                        inputRef.current?.focus();
+                      }}
+                      className="flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border border-accent-primary/30 text-accent-primary bg-accent-primary/10 hover:bg-accent-primary/20 transition-colors"
+                    >
+                      {reply}
+                    </button>
+                  ))}
                 </div>
               )}
 
@@ -1460,6 +1609,12 @@ export default function MessagesPage() {
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
             <Forward className="w-4 h-4" /> Forward
+          </button>
+          <button
+            onClick={() => handlePinMessage(contextMenu.message)}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+          >
+            <Pin className="w-4 h-4" /> {contextMenu.message.metadata?.pinned ? 'Unpin' : 'Pin'}
           </button>
           <button
             onClick={() => {
@@ -1940,5 +2095,49 @@ function NewGroupModal({
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Inline Link Preview Component ───────────────────────────────────
+
+function BubbleLinkPreview({ text, isMine }: { text: string; isMine: boolean }) {
+  const [preview, setPreview] = useState<LinkPreview | null>(null);
+  const url = useMemo(() => extractFirstUrl(text), [text]);
+
+  useEffect(() => {
+    if (!url) return;
+    let cancelled = false;
+    fetchLinkPreview(url).then(p => { if (!cancelled) setPreview(p); });
+    return () => { cancelled = true; };
+  }, [url]);
+
+  if (!preview || (!preview.title && !preview.description)) return null;
+
+  return (
+    <a
+      href={preview.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`block mt-1.5 rounded-lg overflow-hidden border ${
+        isMine ? 'border-white/20 bg-white/10' : 'border-border-primary bg-bg-secondary'
+      } hover:opacity-90 transition-opacity`}
+    >
+      {preview.image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={preview.image} alt="" className="w-full h-28 object-cover" />
+      )}
+      <div className="px-2.5 py-1.5">
+        {preview.title && (
+          <p className={`text-xs font-semibold truncate ${isMine ? 'text-white' : 'text-text-primary'}`}>
+            {preview.title}
+          </p>
+        )}
+        {preview.description && (
+          <p className={`text-[10px] line-clamp-2 ${isMine ? 'text-white/70' : 'text-text-muted'}`}>
+            {preview.description}
+          </p>
+        )}
+      </div>
+    </a>
   );
 }

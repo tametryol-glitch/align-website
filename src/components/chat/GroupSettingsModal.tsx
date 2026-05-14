@@ -19,6 +19,7 @@ import {
   removeGroupMember,
   leaveConversation,
   getFriends,
+  setMemberRole,
   type GroupMember,
 } from '@/lib/messagingService';
 
@@ -43,6 +44,8 @@ interface FriendOption {
 
 type ConfirmAction =
   | { kind: 'remove'; userId: string; displayName: string }
+  | { kind: 'promote'; userId: string; displayName: string }
+  | { kind: 'demote'; userId: string; displayName: string }
   | { kind: 'leave' };
 
 // ── Component ──────────────────────────────────────────────────────
@@ -168,6 +171,22 @@ export function GroupSettingsModal({
         } else {
           setError('Failed to remove member.');
         }
+      } else if (confirmAction.kind === 'promote') {
+        const ok = await setMemberRole(conversationId, confirmAction.userId, 'admin');
+        if (ok) {
+          await fetchMembers();
+          onGroupUpdated();
+        } else {
+          setError('Failed to promote member.');
+        }
+      } else if (confirmAction.kind === 'demote') {
+        const ok = await setMemberRole(conversationId, confirmAction.userId, 'member');
+        if (ok) {
+          await fetchMembers();
+          onGroupUpdated();
+        } else {
+          setError('Failed to demote member.');
+        }
       } else if (confirmAction.kind === 'leave') {
         const ok = await leaveConversation(conversationId);
         if (ok) {
@@ -193,10 +212,16 @@ export function GroupSettingsModal({
 
   if (confirmAction) {
     const isLeave = confirmAction.kind === 'leave';
-    const title = isLeave ? 'Leave Group' : 'Remove Member';
+    const isPromote = confirmAction.kind === 'promote';
+    const isDemote = confirmAction.kind === 'demote';
+    const title = isLeave ? 'Leave Group' : isPromote ? 'Promote to Admin' : isDemote ? 'Demote to Member' : 'Remove Member';
     const body = isLeave
       ? 'Are you sure you want to leave this group? You won\'t be able to see messages or rejoin unless invited.'
-      : `Are you sure you want to remove ${confirmAction.displayName} from this group?`;
+      : isPromote
+      ? `Promote ${(confirmAction as any).displayName} to admin? They will be able to manage members.`
+      : isDemote
+      ? `Demote ${(confirmAction as any).displayName} back to a regular member?`
+      : `Are you sure you want to remove ${(confirmAction as any).displayName} from this group?`;
 
     return (
       <div
@@ -228,10 +253,14 @@ export function GroupSettingsModal({
             <button
               onClick={handleConfirm}
               disabled={actionLoading}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2"
+              className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                isPromote || isDemote
+                  ? 'bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30'
+                  : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+              }`}
             >
               {actionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isLeave ? 'Leave' : 'Remove'}
+              {isLeave ? 'Leave' : isPromote ? 'Promote' : isDemote ? 'Demote' : 'Remove'}
             </button>
           </div>
         </div>
@@ -388,20 +417,53 @@ export function GroupSettingsModal({
                           )}
                         </div>
                       </div>
-                      {isAdmin && !isMe && !isMemberAdmin && (
-                        <button
-                          onClick={() =>
-                            setConfirmAction({
-                              kind: 'remove',
-                              userId: member.user_id,
-                              displayName: member.display_name,
-                            })
-                          }
-                          className="p-1.5 rounded-lg text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                          title="Remove member"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      {isAdmin && !isMe && (
+                        <div className="flex items-center gap-1">
+                          {isMemberAdmin ? (
+                            <button
+                              onClick={() =>
+                                setConfirmAction({
+                                  kind: 'demote',
+                                  userId: member.user_id,
+                                  displayName: member.display_name,
+                                })
+                              }
+                              className="p-1.5 rounded-lg text-text-muted hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+                              title="Demote to member"
+                            >
+                              <Shield className="w-3.5 h-3.5" />
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() =>
+                                  setConfirmAction({
+                                    kind: 'promote',
+                                    userId: member.user_id,
+                                    displayName: member.display_name,
+                                  })
+                                }
+                                className="p-1.5 rounded-lg text-text-muted hover:text-accent-primary hover:bg-accent-primary/10 transition-colors"
+                                title="Promote to admin"
+                              >
+                                <Shield className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setConfirmAction({
+                                    kind: 'remove',
+                                    userId: member.user_id,
+                                    displayName: member.display_name,
+                                  })
+                                }
+                                className="p-1.5 rounded-lg text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                title="Remove member"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
                   );

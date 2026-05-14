@@ -461,14 +461,15 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── Quick Access 2×2 Grid ──────────────────────────── */}
+      {/* ─── Quick Access Grid ──────────────────────────── */}
       <div>
         <h3 className="text-sm font-semibold text-text-primary mb-3">Quick Access</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
           <QuickAccessButton href="/chart" glyph="☉" label="Natal Chart" />
           <QuickAccessButton href="/readings/transits" glyph="♄" label="Transits" />
           <QuickAccessButton href="/readings/tarot" glyph="♠" label="Tarot" />
           <QuickAccessButton href="/readings/compatibility" glyph="♥" label="Compatibility" />
+          <QuickAccessButton href="/readings" glyph="✦" label="All Readings" />
         </div>
       </div>
 

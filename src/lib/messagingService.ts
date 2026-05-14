@@ -459,7 +459,7 @@ export function subscribeToConversations(
 
 // ── Typing Indicator (Broadcast) ─────────────────────────────────────
 
-export function sendTypingIndicator(conversationId: string): void {
+export function sendTypingIndicator(conversationId: string, event: 'typing' | 'typing_stopped' = 'typing'): void {
   const myId = getMyId();
   if (!myId) return;
 
@@ -467,7 +467,7 @@ export function sendTypingIndicator(conversationId: string): void {
   const channel = supabase.channel(`typing:${conversationId}`);
   channel.send({
     type: 'broadcast',
-    event: 'typing',
+    event,
     payload: { user_id: myId, timestamp: Date.now() },
   });
 }
@@ -475,6 +475,7 @@ export function sendTypingIndicator(conversationId: string): void {
 export function subscribeToTyping(
   conversationId: string,
   onTyping: (userId: string) => void,
+  onTypingStopped?: (userId: string) => void,
 ): { unsubscribe: () => void } {
   const supabase = createClient();
   const myId = getMyId();
@@ -485,6 +486,11 @@ export function subscribeToTyping(
     .on('broadcast', { event: 'typing' }, (payload) => {
       if (payload.payload?.user_id && payload.payload.user_id !== myId) {
         onTyping(payload.payload.user_id);
+      }
+    })
+    .on('broadcast', { event: 'typing_stopped' }, (payload) => {
+      if (payload.payload?.user_id && payload.payload.user_id !== myId) {
+        onTypingStopped?.(payload.payload.user_id);
       }
     })
     .subscribe();
@@ -700,6 +706,78 @@ export async function leaveConversation(conversationId: string): Promise<boolean
       .delete()
       .eq('conversation_id', conversationId)
       .eq('user_id', myId);
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ── Pin / Unpin a Message ───────────────────────────────────────────
+
+export async function pinMessage(messageId: string, pin: boolean): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const { data: msg, error: readErr } = await supabase
+      .from('messages')
+      .select('metadata')
+      .eq('id', messageId)
+      .single();
+
+    if (readErr || !msg) return false;
+
+    const metadata = { ...(msg.metadata || {}), pinned: pin };
+    const { error } = await supabase
+      .from('messages')
+      .update({ metadata })
+      .eq('id', messageId);
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+export async function getPinnedMessages(conversationId: string): Promise<Message[]> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:profiles!messages_sender_id_fkey(display_name, avatar_url)
+      `)
+      .eq('conversation_id', conversationId)
+      .eq('is_deleted', false)
+      .contains('metadata', { pinned: true })
+      .order('created_at', { ascending: false });
+
+    if (error || !data) return [];
+
+    return data.map((msg: any) => ({
+      ...msg,
+      sender_name: msg.sender?.display_name || 'Unknown',
+      sender_avatar: msg.sender?.avatar_url || null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// ── Set Member Role ─────────────────────────────────────────────────
+
+export async function setMemberRole(
+  conversationId: string,
+  userId: string,
+  role: 'admin' | 'member',
+): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('conversation_participants')
+      .update({ role })
+      .eq('conversation_id', conversationId)
+      .eq('user_id', userId);
 
     return !error;
   } catch {
