@@ -25,6 +25,7 @@ import { CallScreen } from '@/components/chat/CallScreen';
 import { GroupSettingsModal } from '@/components/chat/GroupSettingsModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
 import { LocationPicker } from '@/components/chat/LocationPicker';
+import { getChatTheme } from '@/data/chatThemes';
 import { uploadChatFile, uploadVoiceNote } from '@/lib/chatMediaService';
 import { generateChannelName, fetchAgoraToken, createCallClient, type CallState } from '@/lib/callingService';
 import { sendCallSignal, generateSessionId } from '@/lib/callSignalingService';
@@ -142,8 +143,9 @@ async function fetchLinkPreview(url: string): Promise<LinkPreview | null> {
 // ── Main Component ───────────────────────────────────────────────────
 
 export default function MessagesPage() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const store = useMessagesStore();
+  const chatTheme = useMemo(() => getChatTheme(profile?.chat_theme), [profile?.chat_theme]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -1148,7 +1150,8 @@ export default function MessagesPage() {
               <div
                 ref={messagesContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto px-4 py-3"
+                className="flex-1 overflow-y-auto px-4 py-3 relative"
+                style={chatTheme ? { background: `linear-gradient(135deg, ${chatTheme.background[0]}, ${chatTheme.background[1]})` } : undefined}
               >
                 {/* Load more indicator */}
                 {loadingMore && (
@@ -1236,11 +1239,18 @@ export default function MessagesPage() {
                             )}
 
                             {/* Message bubble */}
-                            <div className={`px-3.5 py-2 rounded-2xl relative ${
-                              isMine
-                                ? 'bg-accent-primary text-white rounded-br-md'
-                                : 'bg-bg-tertiary text-text-primary rounded-bl-md'
-                            }`}>
+                            <div
+                              className={`px-3.5 py-2 rounded-2xl relative ${
+                                isMine
+                                  ? `${chatTheme ? '' : 'bg-accent-primary'} text-white rounded-br-md`
+                                  : `${chatTheme ? '' : 'bg-bg-tertiary'} text-text-primary rounded-bl-md`
+                              }`}
+                              style={chatTheme ? (
+                                isMine
+                                  ? { background: `linear-gradient(135deg, ${chatTheme.ownBubble[0]}, ${chatTheme.ownBubble[1]})`, color: chatTheme.ownText }
+                                  : { backgroundColor: chatTheme.otherBubble, color: chatTheme.otherText }
+                              ) : undefined}
+                            >
                               {/* Image message */}
                               {msg.type === 'image' && msg.metadata?.url && (
                                 <a href={msg.metadata.url} target="_blank" rel="noopener noreferrer" className="block mb-1">

@@ -5,7 +5,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
 import Link from 'next/link';
-import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck } from 'lucide-react';
+import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck, Palette } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user, profile, logout } = useAuthStore();
@@ -93,6 +93,12 @@ export default function SettingsPage() {
 
       {/* Quick links to sub-settings */}
       <div className="card mb-4 divide-y divide-border-primary">
+        <Link href="/settings/chat-theme" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
+          <span className="flex items-center gap-3 text-sm text-text-primary">
+            <Palette className="w-4 h-4 text-text-muted" /> Chat Theme
+          </span>
+          <ChevronRight className="w-4 h-4 text-text-muted" />
+        </Link>
         <Link href="/settings/notifications" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
             <Bell className="w-4 h-4 text-text-muted" /> Notifications

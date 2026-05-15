@@ -24,6 +24,7 @@ export interface UserProfile {
   created_at?: string | null;
   is_subscribed?: boolean | null;
   is_admin?: boolean | null;
+  chat_theme?: string | null;
 }
 
 interface AuthState {

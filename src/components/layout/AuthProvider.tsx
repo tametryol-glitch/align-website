@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const supabase = createClient();
       const { data } = await supabase
         .from('profiles')
-        .select('id, display_name, username, email, avatar_url, cover_photo_url, bio, sun_sign, moon_sign, rising_sign, starseed, human_design_type, birth_date, birth_time, birth_location, latitude, longitude, timezone, align_code, created_at, is_subscribed, is_admin')
+        .select('id, display_name, username, email, avatar_url, cover_photo_url, bio, sun_sign, moon_sign, rising_sign, starseed, human_design_type, birth_date, birth_time, birth_location, latitude, longitude, timezone, align_code, created_at, is_subscribed, is_admin, chat_theme')
         .eq('id', userId)
         .single();
 
