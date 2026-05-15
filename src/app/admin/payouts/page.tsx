@@ -107,7 +107,7 @@ export default function AdminPayoutsPage() {
       return;
     }
 
-    const creatorIds = [...new Set((data ?? []).map((r: any) => r.creator_id).filter(Boolean))];
+    const creatorIds = Array.from(new Set((data ?? []).map((r: any) => r.creator_id).filter(Boolean)));
     let creatorProfiles: Record<string, any> = {};
     if (creatorIds.length > 0) {
       const { data: cpData } = await supabase
