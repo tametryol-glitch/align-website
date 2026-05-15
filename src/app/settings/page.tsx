@@ -5,7 +5,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
 import Link from 'next/link';
-import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info } from 'lucide-react';
+import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info, Crown, Users, DollarSign, Flag } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user, profile, logout } = useAuthStore();
@@ -216,12 +216,30 @@ export default function SettingsPage() {
       {profile?.is_admin && (
         <div className="card mb-4">
           <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-accent-primary" /> Admin
+            <Crown className="w-4 h-4 text-accent-primary" /> Admin
           </h3>
           <div className="divide-y divide-border-primary -mx-6">
             <Link href="/admin" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
               <span className="flex items-center gap-3 text-sm text-text-primary">
-                <Shield className="w-4 h-4 text-text-muted" /> Admin Panel
+                <Users className="w-4 h-4 text-text-muted" /> Manage User Accounts
+              </span>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+            <Link href="/admin?tab=moderation" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
+              <span className="flex items-center gap-3 text-sm text-text-primary">
+                <Flag className="w-4 h-4 text-text-muted" /> Content Moderation
+              </span>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+            <Link href="/admin/celebrities" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
+              <span className="flex items-center gap-3 text-sm text-text-primary">
+                <Star className="w-4 h-4 text-text-muted" /> Manage Celebrities
+              </span>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+            <Link href="/admin/payouts" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
+              <span className="flex items-center gap-3 text-sm text-text-primary">
+                <DollarSign className="w-4 h-4 text-text-muted" /> Payout Queue
               </span>
               <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2 } from 'lucide-react';
@@ -36,8 +37,20 @@ interface UserRow {
 type Tab = 'moderation' | 'users' | 'cosmic-index';
 
 export default function AdminPage() {
+  return (
+    <Suspense fallback={<p className="text-text-muted text-sm text-center py-12">Loading admin panel...</p>}>
+      <AdminPageContent />
+    </Suspense>
+  );
+}
+
+function AdminPageContent() {
   const { profile } = useAuthStore();
-  const [tab, setTab] = useState<Tab>('moderation');
+  const searchParams = useSearchParams();
+  const initialTab = (['moderation', 'users', 'cosmic-index'] as Tab[]).includes(searchParams.get('tab') as Tab)
+    ? (searchParams.get('tab') as Tab)
+    : 'moderation';
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [verified, setVerified] = useState(false);
 
   // Server-verified admin check via Supabase RLS + direct query
