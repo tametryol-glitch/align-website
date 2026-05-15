@@ -564,6 +564,43 @@ export async function getOtherUserReadAt(conversationId: string): Promise<string
   }
 }
 
+// ── Subscribe to Read Receipts ──────────────────────────────────────
+
+export function subscribeToReadReceipts(
+  conversationId: string,
+  onReadUpdate: (readAt: string) => void,
+): { unsubscribe: () => void } {
+  const supabase = createClient();
+  const myId = getMyId();
+  if (!myId) return { unsubscribe: () => {} };
+
+  const channelName = `read-receipts:${conversationId}:${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  const channel = supabase
+    .channel(channelName)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'conversation_participants',
+        filter: `conversation_id=eq.${conversationId}`,
+      },
+      (payload) => {
+        const row = payload.new as any;
+        if (row.user_id !== myId && row.last_read_at) {
+          onReadUpdate(row.last_read_at);
+        }
+      },
+    )
+    .subscribe();
+
+  return {
+    unsubscribe: () => {
+      supabase.removeChannel(channel);
+    },
+  };
+}
+
 // ── Reactions ────────────────────────────────────────────────────────
 
 export async function addReaction(messageId: string, emoji: string): Promise<boolean> {

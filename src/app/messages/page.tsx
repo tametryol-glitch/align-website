@@ -41,6 +41,7 @@ import {
   sendTypingIndicator,
   subscribeToTyping,
   subscribeToPresence,
+  subscribeToReadReceipts,
   getOtherUserReadAt,
   addReaction,
   getReactionsFromMessage,
@@ -380,6 +381,15 @@ export default function MessagesPage() {
     if (!store.activeConversationId) return;
     const sub = subscribeToPresence(store.activeConversationId, (ids) => {
       store.setOnlineUserIds(ids);
+    });
+    return () => sub.unsubscribe();
+  }, [store.activeConversationId]);
+
+  // ── Read receipt subscription ──
+  useEffect(() => {
+    if (!store.activeConversationId) return;
+    const sub = subscribeToReadReceipts(store.activeConversationId, (readAt) => {
+      store.setOtherReadAt(readAt);
     });
     return () => sub.unsubscribe();
   }, [store.activeConversationId]);
