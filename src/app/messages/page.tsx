@@ -1372,7 +1372,7 @@ export default function MessagesPage() {
                             {/* Hover actions */}
                             <div className={`absolute top-0 z-10 ${isMine ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 pointer-events-none group-hover:pointer-events-auto`}>
                               <button
-                                onClick={(e) => { e.stopPropagation(); setReactionPicker(msg); }}
+                                onClick={(e) => { e.stopPropagation(); setTimeout(() => setReactionPicker(msg), 0); }}
                                 className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
                                 title="React"
                               >
@@ -1388,7 +1388,8 @@ export default function MessagesPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setContextMenu({ message: msg, x: e.clientX, y: e.clientY });
+                                  const rect = (e.target as HTMLElement).getBoundingClientRect();
+                                  setTimeout(() => setContextMenu({ message: msg, x: rect.left, y: rect.bottom }), 0);
                                 }}
                                 className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
                                 title="More"
