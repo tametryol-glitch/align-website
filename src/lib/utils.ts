@@ -29,6 +29,8 @@ export function getPlanetGlyph(planet: string): string {
     venus: '♀', mars: '♂', jupiter: '♃',
     saturn: '♄', uranus: '♅', neptune: '♆',
     pluto: '♇', vesta: '⚶', juno: '⚵',
+    'north node': '☊', 'south node': '☋',
+    ascendant: 'AC', mc: 'MC',
   };
   return glyphs[planet.toLowerCase()] || '';
 }

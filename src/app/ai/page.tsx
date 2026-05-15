@@ -180,8 +180,7 @@ export default function AIAstrologerPage() {
       return;
     }
 
-    const speechVersion = prepareSpeechText(text);
-    const speakText = speechVersion.length > 3000 ? speechVersion.slice(0, 3000) + '...' : speechVersion;
+    const speakText = prepareSpeechText(text);
 
     try {
       setIsSpeaking(true);
@@ -287,8 +286,7 @@ export default function AIAstrologerPage() {
           setStreaming(false);
           // Auto-speak when voice mode is on
           if (voiceMode && fullText && lastAssistantIdRef.current === assistantMessage.id) {
-            const speechVersion = prepareSpeechText(fullText);
-            const speakText = speechVersion.length > 3000 ? speechVersion.slice(0, 3000) + '...' : speechVersion;
+            const speakText = prepareSpeechText(fullText);
             setIsSpeaking(true);
             setSpeakingMsgId(assistantMessage.id);
             voiceService.speak(speakText, selectedVoice, () => {

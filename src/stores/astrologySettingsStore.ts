@@ -6,7 +6,7 @@ import { create } from 'zustand';
 // and are available to all chart API calls.
 // ═══════════════════════════════════════════════════════════════════
 
-export type HouseSystem = 'placidus' | 'whole_sign' | 'koch' | 'campanus' | 'regiomontanus' | 'equal' | 'porphyry' | 'alcabitius';
+export type HouseSystem = 'placidus' | 'whole_sign' | 'koch' | 'campanus' | 'regiomontanus' | 'equal' | 'porphyry' | 'alcabitius' | 'topocentric' | 'morinus' | 'meridian';
 export type ZodiacSystem = 'tropical' | 'sidereal';
 export type JargonMode = 'beginner' | 'standard' | 'advanced';
 export type OrbTightness = 'tight' | 'standard' | 'wide';

@@ -185,11 +185,58 @@ export async function getMessages(
     const { data, error } = await query;
     if (error || !data) return [];
 
-    return data.map((msg: any) => ({
+    const messages = data.map((msg: any) => ({
       ...msg,
       sender_name: msg.sender?.display_name || 'Unknown',
       sender_avatar: msg.sender?.avatar_url || null,
-    })).reverse();
+    }));
+
+    // Batch-fetch reply messages
+    const replyIds = messages
+      .map((m: any) => m.reply_to)
+      .filter((id: string | null): id is string => !!id);
+
+    if (replyIds.length > 0) {
+      const uniqueIds = Array.from(new Set(replyIds));
+      const msgMap = new Map(messages.map((m: any) => [m.id, m]));
+      const missingIds = uniqueIds.filter(id => !msgMap.has(id));
+
+      let replyMap = new Map<string, any>();
+
+      // Add replies from already-fetched messages
+      for (const id of uniqueIds) {
+        if (msgMap.has(id)) {
+          replyMap.set(id, msgMap.get(id));
+        }
+      }
+
+      // Fetch any missing reply messages
+      if (missingIds.length > 0) {
+        const { data: replyData } = await supabase
+          .from('messages')
+          .select('id, content, type, sender_id, sender:profiles!messages_sender_id_fkey(display_name, avatar_url)')
+          .in('id', missingIds);
+
+        if (replyData) {
+          for (const r of replyData) {
+            replyMap.set(r.id, {
+              ...r,
+              sender_name: (r as any).sender?.display_name || 'Unknown',
+              sender_avatar: (r as any).sender?.avatar_url || null,
+            });
+          }
+        }
+      }
+
+      // Attach reply_message to each message
+      for (const msg of messages) {
+        if (msg.reply_to && replyMap.has(msg.reply_to)) {
+          msg.reply_message = replyMap.get(msg.reply_to);
+        }
+      }
+    }
+
+    return messages.reverse();
   } catch {
     return [];
   }
@@ -609,29 +656,10 @@ export async function addReaction(messageId: string, emoji: string): Promise<boo
     if (!myId) return false;
 
     const supabase = createClient();
-    const { data: msg, error: readErr } = await supabase
-      .from('messages')
-      .select('metadata')
-      .eq('id', messageId)
-      .single();
-
-    if (readErr || !msg) return false;
-
-    const metadata = msg.metadata || {};
-    const reactions: Record<string, string[]> = metadata.reactions || {};
-    const users = reactions[emoji] || [];
-
-    if (users.includes(myId)) {
-      reactions[emoji] = users.filter((u: string) => u !== myId);
-      if (reactions[emoji].length === 0) delete reactions[emoji];
-    } else {
-      reactions[emoji] = [...users, myId];
-    }
-
-    const { error } = await supabase
-      .from('messages')
-      .update({ metadata: { ...metadata, reactions } })
-      .eq('id', messageId);
+    const { error } = await supabase.rpc('toggle_reaction', {
+      p_message_id: messageId,
+      p_emoji: emoji,
+    });
 
     return !error;
   } catch {

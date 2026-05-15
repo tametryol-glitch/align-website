@@ -388,3 +388,436 @@ export function generateSolarReturnPrediction(
 
   return r;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NEW: Year Theme Headlines, Aspect Interps, Angle Interps, Retrogrades,
+//      Monthly Timeline, Natal Comparison — shared by web + mobile
+// ═══════════════════════════════════════════════════════════════════════════
+
+// -- Year Theme (based on Sun house) --------
+
+export const YEAR_THEME_HEADLINES: Record<number, { headline: string; emoji: string; keyword: string; description: string }> = {
+  1:  { headline: 'The year you reinvent yourself', emoji: '🔥', keyword: 'Identity', description: 'This is a 1st House year — your identity, appearance, and the way the world perceives you are being completely rewritten. You emerge from this year as someone visibly, undeniably different.' },
+  2:  { headline: 'The year your worth is redefined', emoji: '💎', keyword: 'Resources', description: 'This is a 2nd House year — your relationship with money, possessions, and self-worth undergoes a fundamental shift. What you earn and what you believe you deserve are no longer the same number.' },
+  3:  { headline: 'The year a conversation changes everything', emoji: '💬', keyword: 'Communication', description: 'This is a 3rd House year — your mind is on fire. A conversation, a message, or an idea arrives that splits your timeline into before and after. Siblings and neighbors play pivotal roles.' },
+  4:  { headline: 'The year you rebuild your foundation', emoji: '🏠', keyword: 'Home & Roots', description: 'This is a 4th House year — home, family, and your deepest emotional roots are the center of everything. A move, a family reckoning, or an inner excavation changes what "home" means to you permanently.' },
+  5:  { headline: 'The year love and creativity ignite', emoji: '🎨', keyword: 'Creative Fire', description: 'This is a 5th House year — romance, creative expression, children, and joy demand your attention. Something or someone makes you feel more alive than you have in years. Create boldly.' },
+  6:  { headline: 'The year you master the details', emoji: '⚙️', keyword: 'Health & Work', description: 'This is a 6th House year — your health, daily routines, and work life are being rebuilt from the ground up. The small daily choices you make this year compound into something that reshapes your entire reality.' },
+  7:  { headline: 'The year someone defines your path', emoji: '💞', keyword: 'Partnerships', description: 'This is a 7th House year — there is a person at the center of this year. A partnership begins, deepens, or reaches its moment of truth. Your life is defined by who you choose to stand next to.' },
+  8:  { headline: 'The year of death and rebirth', emoji: '🦋', keyword: 'Transformation', description: 'This is an 8th House year — something dies so something truer can live. Shared finances, intimacy, psychological depth, and power dynamics are the territory. You will weigh less inside by December.' },
+  9:  { headline: 'The year the horizon calls you', emoji: '🌍', keyword: 'Expansion', description: 'This is a 9th House year — travel, education, philosophy, and beliefs shape everything. Your entire framework for understanding the world is disassembled and rebuilt with more honest materials.' },
+  10: { headline: 'The year the world learns your name', emoji: '👑', keyword: 'Career & Legacy', description: 'This is a 10th House year — your career, public reputation, and legacy take center stage. A promotion, pivot, or public moment puts you on a level you will still be talking about a decade from now.' },
+  11: { headline: 'The year your dreams show their first signs', emoji: '⭐', keyword: 'Vision & Community', description: 'This is an 11th House year — your social world reshuffles, a community becomes central to your identity, and a dream you have quietly carried begins showing unmistakable signs of becoming real.' },
+  12: { headline: 'The year of sacred solitude', emoji: '🔮', keyword: 'Inner World', description: 'This is a 12th House year — the most important things happen in silence. Spiritual growth, subconscious patterns, vivid dreams, and the invisible world beneath your waking life demand your attention.' },
+};
+
+// -- Critical Aspect Interpretations --------
+
+export interface SRAspectInterp {
+  title: string;
+  intensity: 'high' | 'medium';
+  interpretation: string;
+}
+
+const ASPECT_WEIGHT: Record<string, number> = {
+  conjunction: 10, opposition: 9, square: 8, trine: 6, sextile: 4,
+};
+const PERSONAL_PLANETS = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars'];
+const OUTER_PLANETS = ['Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+
+const SR_ASPECT_TEXTS: Record<string, Record<string, string>> = {
+  'Sun-Moon': {
+    conjunction: 'Your identity and emotions are fused this year — what you want and what you feel are inseparable. Decisions come from a place of total alignment. You operate with unusual internal coherence, and people sense it.',
+    opposition: 'There is a tug-of-war between what you want to become and what you need emotionally. A relationship or domestic situation pulls against your personal ambitions. The tension is productive if you stop trying to choose one side.',
+    square: 'Internal friction drives this year. Your conscious goals and your emotional needs are at cross-purposes, creating restlessness that forces growth. The discomfort is the catalyst — do not medicate it away.',
+    trine: 'Ease flows between your identity and your emotional life. What you want and what you need are naturally aligned. Opportunities arrive without force. The danger is complacency — this harmony is a platform, not a destination.',
+    sextile: 'Gentle opportunities arise to align your inner world with your outer goals. Small adjustments in how you express yourself emotionally unlock disproportionate results in your public life.',
+  },
+  'Sun-Saturn': {
+    conjunction: 'This is a year of serious reckoning. Responsibilities land on your shoulders that cannot be delegated. The weight is real — but so is the authority you earn by carrying it. By December, you will have aged in wisdom, not just years.',
+    opposition: 'An authority figure or institution stands directly in your path. A boss, a parent, a system — something external demands that you prove yourself. The test is real. Pass it, and the respect you earn is permanent.',
+    square: 'Frustration meets ambition head-on. Every step forward feels like pushing through concrete. Delays, denials, and limitations are not punishments — they are the resistance that builds the muscle you will need for what comes next.',
+  },
+  'Sun-Pluto': {
+    conjunction: 'Power and identity merge. You are being forged in fire this year — a complete psychological overhaul that strips away everything that is not authentically you. People will feel the intensity radiating off you. Some will be drawn closer. Others will back away. Both reactions are correct.',
+    opposition: 'A power struggle defines this year. Someone or something challenges your authority, your identity, or your right to be who you are becoming. The confrontation is not optional. What you discover about yourself in the clash is permanent.',
+    square: 'Transformation comes through crisis. A situation forces you to face something you have been avoiding — a truth about yourself, a dynamic in a relationship, a pattern you have been running on autopilot. The breakdown is the breakthrough.',
+  },
+  'Sun-Jupiter': {
+    conjunction: 'Expansion and confidence surge through your identity. This is one of the luckiest placements in a solar return — doors open, optimism is justified, and the risks you take land. The only danger is overextension. Stay grounded while you grow.',
+    trine: 'Growth comes naturally this year. Opportunities align with your sense of purpose, and the expansion feels organic rather than forced. Travel, education, or a philosophical shift broadens your world in exactly the way you needed.',
+    opposition: 'Others bring the growth. A partner, a mentor, or an opportunity from someone else expands your world — but you may need to check whether the growth is truly yours or borrowed confidence.',
+  },
+  'Sun-Uranus': {
+    conjunction: 'You are the lightning bolt this year. Sudden changes in identity, appearance, or life direction arrive without warning. You may shock people who thought they knew you. The old version of you is being released — the new one does not apologize.',
+    opposition: 'Someone else introduces the disruption. A relationship brings sudden change, or a partner does something that forces you to reconsider who you are. Freedom versus commitment is the central tension.',
+    square: 'Restlessness reaches a breaking point. Something in your life that has been stable suddenly feels like a cage. The urge to break free is overwhelming — and at least one area of your life will look completely different by year end.',
+  },
+  'Moon-Saturn': {
+    conjunction: 'Emotional maturity is demanded this year. Loneliness, responsibility, or a family obligation forces you to grow up emotionally in ways you cannot fake. The heaviness is real — but so is the emotional strength you build.',
+    opposition: 'Your emotional needs and your responsibilities are in direct conflict. Work demands one thing; your heart demands another. Finding balance requires you to stop treating your feelings as less important than your duties.',
+    square: 'Emotional restriction creates pressure. You feel held back, unsupported, or unable to express what you truly feel. The frustration is pointing you toward the exact emotional pattern that needs to be outgrown.',
+  },
+  'Moon-Pluto': {
+    conjunction: 'Emotional intensity reaches volcanic levels. Feelings you have buried surface with force. A relationship reaches a depth that permanently alters your emotional operating system. Nothing stays on the surface this year.',
+    opposition: 'Someone else triggers a deep emotional transformation. A partner, a family member, or an intimate connection brings buried feelings to light — whether you invited them or not.',
+    square: 'Emotional power struggles dominate. Control, jealousy, obsession, or fear of vulnerability create friction that forces you to examine patterns you have been running since childhood.',
+  },
+  'Venus-Mars': {
+    conjunction: 'Desire and attraction are supercharged. Your magnetism is palpable this year — romantic encounters carry unusual intensity, and creative projects burn with passion. What you want and how you pursue it are perfectly fused.',
+    opposition: 'The push-pull between what you desire and how you go after it creates electric tension in relationships. Attraction and conflict are braided together. The passion is undeniable — learning to channel it is the work.',
+    square: 'Frustrated desire drives this year. What you want in love and what you are willing to fight for are out of alignment. The tension creates urgency — and some of the most creatively productive energy available.',
+  },
+  'Venus-Saturn': {
+    conjunction: 'Love gets serious. A relationship solidifies into something permanent, or you realize that what you have been settling for is not enough. Commitment, maturity, and honest assessment of what you truly value define your romantic year.',
+    opposition: 'A partner demands more structure, commitment, or maturity than you feel ready to give — or you demand it from them. The relationship either levels up or its limitations become impossible to ignore.',
+    square: 'Loneliness, rejection, or financial restriction forces you to confront what you actually value versus what you have been performing. The most important love lesson of the year comes through discomfort.',
+  },
+  'Venus-Pluto': {
+    conjunction: 'Love becomes obsession. An attraction arrives with an intensity that bypasses every rational defense you have. A relationship transforms at the deepest level — or ends in a way that transforms you. There is no casual love this year.',
+    opposition: 'Someone else brings the obsessive intensity. A partner reveals hidden depths — or hidden agendas. The power dynamics in your closest relationship undergo a complete restructuring.',
+    square: 'Jealousy, possessiveness, or buried desires create volcanic pressure in relationships. The crisis strips away pretense and forces both people to show who they really are.',
+  },
+  'Mars-Saturn': {
+    conjunction: 'Disciplined action produces lasting results. Your energy is focused, controlled, and strategic. Progress is slow but permanent. Every shortcut is blocked — and every breakthrough is earned.',
+    opposition: 'Your drive meets an immovable obstacle. A system, a person, or a circumstance says no — and you must decide whether to fight harder or redirect. The answer is usually: redirect with more precision.',
+    square: 'Frustration and blocked energy create explosive pressure. Anger, delays, and physical tension demand an outlet. The key is controlled release — exercise, structured projects, strategic patience.',
+  },
+  'Jupiter-Saturn': {
+    conjunction: 'Expansion and contraction meet at the exact same point. A major life structure — career, relationship, belief system — simultaneously grows and is tested. What survives this year is built to last decades.',
+    opposition: 'Optimism and caution pull in opposite directions. A risk that feels right is met with practical objections. The balance point — not too bold, not too cautious — is the year\'s central lesson.',
+    square: 'Growth is frustrated by limitations. Every time you try to expand, a wall appears. The walls are not obstacles — they are guardrails. The expansion that happens within them is the real one.',
+  },
+};
+
+export function getCriticalAspects(
+  aspects: { planet1: string; planet2: string; type: string; orb: number }[],
+): Array<{ planet1: string; planet2: string; type: string; orb: number; interp: SRAspectInterp }> {
+  const scored = aspects
+    .filter(a => {
+      const key = a.type?.toLowerCase().replace(/\s/g, '');
+      return key in ASPECT_WEIGHT;
+    })
+    .map(a => {
+      const key = a.type.toLowerCase().replace(/\s/g, '');
+      const isPersonal = PERSONAL_PLANETS.includes(a.planet1) || PERSONAL_PLANETS.includes(a.planet2);
+      const isCross = (PERSONAL_PLANETS.includes(a.planet1) && OUTER_PLANETS.includes(a.planet2)) ||
+                      (OUTER_PLANETS.includes(a.planet1) && PERSONAL_PLANETS.includes(a.planet2));
+      const weight = (ASPECT_WEIGHT[key] || 0) * (isPersonal ? 2 : 1) * (isCross ? 1.5 : 1) * (1 / (1 + a.orb));
+      return { ...a, weight, aspectKey: key };
+    })
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 5);
+
+  return scored.map(a => {
+    const p1 = a.planet1, p2 = a.planet2;
+    const pairKey = SR_ASPECT_TEXTS[`${p1}-${p2}`] ? `${p1}-${p2}` : SR_ASPECT_TEXTS[`${p2}-${p1}`] ? `${p2}-${p1}` : null;
+    const text = pairKey ? (SR_ASPECT_TEXTS[pairKey][a.aspectKey] || '') : '';
+    const fallback = text || `${p1} ${a.type} ${p2} brings ${a.aspectKey === 'conjunction' ? 'fusion' : a.aspectKey === 'opposition' ? 'tension and awareness' : a.aspectKey === 'square' ? 'friction that forces growth' : a.aspectKey === 'trine' ? 'natural flow and ease' : 'gentle opportunity'} between ${p1} themes and ${p2} energy this year. This aspect activates with an orb of ${a.orb.toFixed(1)}°, making it a defining dynamic of your solar return.`;
+    return {
+      planet1: p1, planet2: p2, type: a.type, orb: a.orb,
+      interp: {
+        title: `${p1} ${a.type} ${p2}`,
+        intensity: (a.weight > 10 ? 'high' : 'medium') as 'high' | 'medium',
+        interpretation: fallback,
+      },
+    };
+  });
+}
+
+// -- Planets on Angles Deep Dive --------
+
+export const ANGLE_PLANET_INTERPS: Record<string, Record<string, string>> = {
+  Ascendant: {
+    Sun: 'Your identity IS the year. You are impossible to ignore — visible, radiant, and operating with a level of personal authority that changes the dynamic of every room you enter. This is a year where people see you, and what they see matters.',
+    Moon: 'Your emotions are written on your face this year. Vulnerability becomes your superpower. People respond to you with unusual tenderness because your unguarded presence gives them permission to drop their own masks.',
+    Mercury: 'Your words define your year. You become the communicator, the messenger, the person whose ideas land with unusual precision. A conversation or piece of writing becomes your calling card.',
+    Venus: 'You are magnetic this year — physically, socially, aesthetically. People are drawn to you. A new look, a new style, a new way of presenting yourself to the world opens doors that were previously invisible.',
+    Mars: 'You are on fire this year. Your energy, your drive, your willingness to fight for what you want is visible from across the room. This is a year of bold action, physical vitality, and refusing to wait for permission.',
+    Jupiter: 'Everything about you is bigger this year — your presence, your optimism, your ability to attract opportunity. You walk into rooms and people sense that you are going somewhere. Growth is not just internal — it is visible.',
+    Saturn: 'You carry weight this year — responsibility, authority, and the kind of gravitas that only comes from someone who has earned their position. People take you seriously because you have stopped pretending to be lighter than you are.',
+    Uranus: 'You shock people this year. Your appearance, your behavior, your decisions — something about you is wildly, refreshingly, perhaps uncomfortably different. The old version of you is gone. The new one does not explain itself.',
+    Neptune: 'You carry an ethereal quality this year — dreamy, artistic, almost otherworldly. People project their fantasies onto you. The gift is inspiration; the danger is that no one sees the real you beneath the shimmer.',
+    Pluto: 'Your presence is transformative this year. People feel changed by encountering you — drawn in by an intensity that is both compelling and slightly intimidating. You operate with a level of psychological depth that makes casual interaction almost impossible.',
+  },
+  Midheaven: {
+    Sun: 'Your career reaches its peak moment. A professional achievement, public recognition, or leadership role puts you in the spotlight. This is not subtle — the world is watching, and what you do this year defines your professional reputation for years.',
+    Moon: 'Your public life and your emotional needs merge. A career move is driven by feeling rather than strategy — and it turns out to be exactly right. The public sees your heart this year, and it earns their trust.',
+    Mercury: 'Your professional reputation is built on your ideas this year. A presentation, a proposal, a published piece, or a strategic insight elevates your standing. Your mind is your most valuable career asset.',
+    Venus: 'Your career benefits from charm, aesthetics, and relationships. A professional connection becomes personally meaningful, or your creative work gains public recognition. Beauty and diplomacy are your professional tools.',
+    Mars: 'Ambition takes the driver\'s seat. You pursue professional goals with a ferocity that surprises even you. Competition, conflict with authority, or a bold career move defines your public year. You will not be ignored.',
+    Jupiter: 'Professional expansion and recognition arrive with unusual ease. A promotion, a new role, an international opportunity, or public acclaim opens a chapter that feels destined. This is one of the most career-fortunate placements possible.',
+    Saturn: 'Professional responsibility intensifies. A position of authority arrives with heavy expectations. The work is demanding, the scrutiny is real, and the respect you earn is permanent. This year builds your legacy.',
+    Uranus: 'A sudden career change — unexpected, unplanned, and ultimately liberating. Your professional path takes a sharp turn toward something that feels more authentically you, even if it confuses everyone who knew your old trajectory.',
+    Neptune: 'Your professional life takes on a spiritual or creative dimension. A career in the arts, healing, or service work feels aligned. The risk: confusion about your professional direction. Trust the vision, but verify the details.',
+    Pluto: 'A power shift in your career — either you rise to a position of significant influence, or a professional crisis forces a complete reinvention. The old career identity dies. What replaces it carries genuine authority.',
+  },
+  Descendant: {
+    Sun: 'A relationship IS the story this year. A partner takes center stage in your life — their needs, their presence, their impact on your identity are impossible to separate from your own evolution.',
+    Moon: 'Emotional intimacy with a partner reaches its deepest level. A relationship becomes your emotional anchor — or its absence becomes the ache that drives every other decision you make.',
+    Venus: 'Love arrives at your doorstep. A partnership begins or deepens with grace, attraction, and genuine reciprocity. If you are already partnered, the relationship enters its most beautiful chapter.',
+    Mars: 'A relationship brings conflict, passion, or both. A partner challenges you in ways that are uncomfortable and necessary. The friction is not a sign that something is wrong — it is a sign that something real is happening.',
+    Saturn: 'A relationship demands maturity. A commitment is tested, formalized, or ended with the sober clarity of two people who finally see each other clearly. What remains after this year is unshakeable.',
+    Pluto: 'A relationship transforms you at the cellular level. Intimacy reaches a depth that permanently rewires how you attach, trust, and give yourself to another person. Nothing about this bond is casual.',
+  },
+  IC: {
+    Sun: 'Your private life, your home, and your inner world are the true center of this year — regardless of what your public life looks like. The most important growth happens behind closed doors.',
+    Moon: 'Home becomes your sanctuary. A family matter, a move, or a deep emotional process rooted in your childhood becomes the engine of your year. Safety and belonging are not luxuries — they are necessities.',
+    Saturn: 'A family responsibility anchors your year. A parent needs you, a property demands attention, or an emotional foundation that has been cracking finally requires repair. The work is heavy but the stability it creates is permanent.',
+    Pluto: 'A family secret surfaces, a home situation undergoes radical transformation, or the psychological foundations of your life are dismantled and rebuilt. The private revolution is more powerful than anything happening in public.',
+  },
+};
+
+export function getAngleInterpretation(planet: string, angle: string): string {
+  const normalizedAngle = angle.includes('ASC') || angle.includes('Asc') ? 'Ascendant'
+    : angle.includes('MC') || angle.includes('Mid') ? 'Midheaven'
+    : angle.includes('DSC') || angle.includes('Desc') || angle.includes('Des') ? 'Descendant'
+    : angle.includes('IC') || angle.includes('Imum') ? 'IC'
+    : angle;
+  return ANGLE_PLANET_INTERPS[normalizedAngle]?.[planet] || `${planet} conjunct the ${normalizedAngle} amplifies ${planet} themes in the most visible and personally defining way possible this year.`;
+}
+
+// -- Retrograde Detection & Meanings --------
+
+export const RETROGRADE_SR_MEANINGS: Record<string, string> = {
+  Mercury: 'Mercury retrograde in your solar return signals a year of reconsidering, revising, and revisiting past decisions. Communication requires extra care — misunderstandings are likely, but so are brilliant insights that only come from looking backward. Old contacts reappear with unfinished business.',
+  Venus: 'Venus retrograde in the solar return is one of the most significant love indicators of the year. Past relationships resurface — an ex, an old flame, or unresolved feelings demand attention. Your values around love and money are being internally audited. What you thought you wanted may not be what you actually need.',
+  Mars: 'Mars retrograde in your solar return means your energy operates differently this year — more internal, more strategic, less impulsive. Anger that has been swallowed may surface unexpectedly. Projects require patience and multiple attempts. The wins come through persistence, not speed.',
+  Jupiter: 'Jupiter retrograde turns growth inward. External expansion slows, but internal wisdom accelerates. The luck this year comes from revisiting opportunities you previously overlooked, not from new ones appearing.',
+  Saturn: 'Saturn retrograde in the solar return means the year\'s lessons are deeply personal and internally driven. The discipline required is not imposed from outside — it comes from your own recognition that a structure in your life needs to be rebuilt from the foundation.',
+  Uranus: 'Uranus retrograde internalizes the revolution. Changes feel more psychological than external. A shift in consciousness precedes any visible life changes. You are being rewired from the inside out.',
+  Neptune: 'Neptune retrograde sharpens spiritual discernment. Illusions you have been carrying are quietly dissolved by an inner knowing that refuses to be fooled any longer. Dreams become more meaningful and less escapist.',
+  Pluto: 'Pluto retrograde deepens the transformation. The power dynamics you confront this year are internal — your own shadow, your own compulsions, your own unconscious patterns. The real power struggle is with yourself.',
+};
+
+export function detectRetrogrades(
+  planets: Array<{ name: string; longitude: number }>,
+  prevPositions?: Array<{ name: string; longitude: number }>,
+): string[] {
+  if (!prevPositions || prevPositions.length === 0) return [];
+  const retro: string[] = [];
+  for (const p of planets) {
+    const prev = prevPositions.find(pp => pp.name === p.name);
+    if (prev && p.longitude < prev.longitude && Math.abs(p.longitude - prev.longitude) < 30) {
+      retro.push(p.name);
+    }
+  }
+  return retro;
+}
+
+// -- Natal vs Solar Return Comparison --------
+
+export interface NatalComparison {
+  planet: string;
+  natalSign: string;
+  natalHouse?: number;
+  srSign: string;
+  srHouse?: number;
+  shifted: boolean;
+  interpretation: string;
+}
+
+const SHIFT_TEMPLATES: Record<string, (ns: string, ss: string) => string> = {
+  Sun: (ns, ss) => `Your natal Sun in ${ns} is your permanent identity — who you are at your core. But this year, your solar return Sun in ${ss} overlays a completely different energy onto that core. You will express yourself through ${ss} themes even though your essential nature remains ${ns}. The contrast between these two energies is where the year's growth lives.`,
+  Moon: (ns, ss) => `Your natal Moon in ${ns} is how you process emotions at the deepest level — it never changes. But this year, the solar return Moon in ${ss} means your emotional needs shift dramatically. What made you feel safe last year will not be enough. You need ${ss}-style nurturing now: different rhythms, different comforts, different people who understand what has changed.`,
+  Venus: (ns, ss) => `Your natal Venus in ${ns} is your permanent love language — how you attract and what you value. This year, with solar return Venus in ${ss}, your taste changes. What you find beautiful, who you find attractive, and what you spend money on will surprise the people who think they know you. Let the shift happen — it is teaching you something about desire you did not know you needed to learn.`,
+  Mars: (ns, ss) => `Your natal Mars in ${ns} is how you fight, chase, and assert yourself — your permanent engine. This year, solar return Mars in ${ss} rewires your drive. Your aggression takes a different form. Your ambition points in a different direction. The things that used to fire you up may leave you cold, while something unexpected lights the match.`,
+  Mercury: (ns, ss) => `Your natal Mercury in ${ns} is how your mind naturally works. This year, solar return Mercury in ${ss} means you think differently — your communication style shifts, your interests change, the conversations that grab you are not the ones you expected. Pay attention to what captures your mind; it is pointing toward the year's most important insights.`,
+};
+
+export function buildNatalComparisons(
+  natalPlanets: Array<{ name: string; sign: string; house?: number }>,
+  srPlanets: Array<{ name: string; sign: string; house?: number }>,
+): NatalComparison[] {
+  const comparisons: NatalComparison[] = [];
+  const trackPlanets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
+  for (const name of trackPlanets) {
+    const natal = natalPlanets.find(p => p.name === name);
+    const sr = srPlanets.find(p => p.name === name);
+    if (!natal || !sr) continue;
+    const shifted = natal.sign !== sr.sign;
+    const template = SHIFT_TEMPLATES[name];
+    const interp = shifted && template
+      ? template(natal.sign, sr.sign)
+      : shifted
+        ? `Your ${name} moves from natal ${natal.sign} to solar return ${sr.sign} — the energy you express through ${name} themes takes on a completely different quality this year.`
+        : `Your ${name} stays in ${natal.sign} in both your natal and solar return charts — this area of life operates with familiar energy this year, reinforcing and deepening patterns you already know.`;
+    comparisons.push({ planet: name, natalSign: natal.sign, natalHouse: natal.house, srSign: sr.sign, srHouse: sr.house, shifted, interpretation: interp });
+  }
+  return comparisons;
+}
+
+// -- Monthly Timeline Generator --------
+
+export interface SRMonthData {
+  month: number;
+  monthName: string;
+  themes: string[];
+  intensity: number; // 1-5
+  keyPlanet: string;
+  description: string;
+}
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const HOUSE_MONTH_THEMES: Record<number, string> = {
+  1: 'Self-expression and personal visibility',
+  2: 'Financial decisions and value shifts',
+  3: 'Important communications and learning',
+  4: 'Home and family developments',
+  5: 'Romance, creativity, and joy',
+  6: 'Health, work, and daily routines',
+  7: 'Partnership dynamics and commitments',
+  8: 'Deep transformation and shared resources',
+  9: 'Travel, education, and belief shifts',
+  10: 'Career moves and public recognition',
+  11: 'Community, friendship, and future vision',
+  12: 'Inner work, spirituality, and release',
+};
+
+export function generateMonthlyTimeline(
+  srPlanets: Array<{ name: string; sign: string; degree: number; house?: number; longitude: number }>,
+  srAspects: Array<{ planet1: string; planet2: string; type: string; orb: number }>,
+  year: number,
+  birthMonth?: number,
+): SRMonthData[] {
+  const startMonth = birthMonth ?? 0;
+  const months: SRMonthData[] = [];
+  const planetHouses: Record<string, number> = {};
+  for (const p of srPlanets) {
+    if (p.house) planetHouses[p.name] = p.house;
+  }
+  const sun = srPlanets.find(p => p.name === 'Sun');
+  const moon = srPlanets.find(p => p.name === 'Moon');
+  const venus = srPlanets.find(p => p.name === 'Venus');
+  const mars = srPlanets.find(p => p.name === 'Mars');
+  const jupiter = srPlanets.find(p => p.name === 'Jupiter');
+  const saturn = srPlanets.find(p => p.name === 'Saturn');
+
+  const tightAspects = srAspects.filter(a => a.orb < 2).length;
+  const hasHardAspects = srAspects.some(a => ['square', 'opposition', 'Square', 'Opposition'].includes(a.type) && a.orb < 3);
+
+  for (let i = 0; i < 12; i++) {
+    const monthIdx = (startMonth + i) % 12;
+    const themes: string[] = [];
+    let intensity = 2;
+    let keyPlanet = 'Sun';
+    const desc: string[] = [];
+
+    if (i === 0) {
+      themes.push('New solar year begins');
+      intensity = 4;
+      desc.push(`Your solar return activates. The themes of this entire year announce themselves in the first few weeks — pay attention to what shows up in ${MONTH_NAMES[monthIdx]}, because it is a preview of the entire year.`);
+    }
+    if (i === 3) {
+      themes.push('First quarter activation');
+      intensity = Math.max(intensity, 3);
+      if (mars) {
+        keyPlanet = 'Mars';
+        desc.push(`Mars themes intensify. The drive and ambition you set in motion at the start of your solar year faces its first real test. Conflicts that have been simmering may surface.`);
+      }
+    }
+    if (i === 6) {
+      themes.push('Midpoint of solar year');
+      intensity = Math.max(intensity, 4);
+      if (saturn) {
+        keyPlanet = 'Saturn';
+        desc.push(`The halfway point of your solar return year. Saturn\'s lessons are fully engaged. What you committed to six months ago is now being tested — are you still in? The answer matters.`);
+      }
+    }
+    if (i === 9) {
+      themes.push('Third quarter — harvest or redirect');
+      intensity = Math.max(intensity, 3);
+      if (jupiter) {
+        keyPlanet = 'Jupiter';
+        desc.push(`Jupiter\'s growth cycle reaches its harvest phase. The seeds you planted are showing results — or showing you that a different approach is needed. Course-correct now or double down.`);
+      }
+    }
+    if (i === 11) {
+      themes.push('Solar year closing');
+      intensity = Math.max(intensity, 3);
+      desc.push(`The final month before your next solar return. Themes that defined this year are reaching resolution. What you carry forward and what you release here shapes the next twelve months.`);
+    }
+
+    // Moon emphasis (emotional peaks at months 1, 4, 7, 10)
+    if (moon && (i === 1 || i === 4 || i === 7 || i === 10)) {
+      const mh = moon.house || 0;
+      themes.push(HOUSE_MONTH_THEMES[mh] || 'Emotional shifts');
+      intensity = Math.max(intensity, 3);
+      keyPlanet = 'Moon';
+      desc.push(`Emotional currents run high. Moon in the ${mh ? mh + ordinalSuffix(mh) : ''} house brings feelings about ${HOUSE_MONTH_THEMES[mh] || 'core life themes'} to the surface.`);
+    }
+
+    // Venus peak (months 2, 5)
+    if (venus && (i === 2 || i === 5)) {
+      themes.push('Love and finances in focus');
+      intensity = Math.max(intensity, 3);
+      keyPlanet = 'Venus';
+      desc.push(`Venus themes peak. Relationships, attraction, and financial matters demand attention. What you value — and who values you — becomes unmistakably clear.`);
+    }
+
+    // Hard aspect activation (month 3, 8)
+    if (hasHardAspects && (i === 3 || i === 8)) {
+      themes.push('Tension and growth');
+      intensity = Math.max(intensity, 4);
+      desc.push(`Hard aspects in your solar return chart activate with force. The friction you feel is not random — it is the specific pressure point where this year\'s most important growth happens.`);
+    }
+
+    if (desc.length === 0) {
+      const sunH = sun?.house || 1;
+      themes.push(HOUSE_MONTH_THEMES[sunH] || 'Core year themes active');
+      desc.push(`The underlying themes of your ${sunH ? sunH + ordinalSuffix(sunH) : ''} house year continue their steady work. Progress may feel invisible, but the foundation is being built.`);
+    }
+
+    months.push({
+      month: monthIdx,
+      monthName: MONTH_NAMES[monthIdx],
+      themes,
+      intensity,
+      keyPlanet,
+      description: desc.join(' '),
+    });
+  }
+  return months;
+}
+
+function ordinalSuffix(n: number): string {
+  if (n === 1) return 'st';
+  if (n === 2) return 'nd';
+  if (n === 3) return 'rd';
+  return 'th';
+}
+
+// -- Multi-Year Pattern --------
+
+export interface YearPattern {
+  lastYear: { house: number; theme: string };
+  thisYear: { house: number; theme: string };
+  nextYear?: { house: number; theme: string };
+  narrative: string;
+}
+
+const YEAR_FLOW_NARRATIVES: Record<string, string> = {
+  '12-1': 'Last year was a 12th house year — a period of endings, withdrawal, and deep inner processing. This year, you emerge. The 1st house year that follows a 12th house year is one of the most powerful identity rebirths in astrology. Everything you dissolved last year makes space for who you are becoming now.',
+  '1-2': 'Last year rewrote your identity. This year, you give that new identity material form — through money, possessions, and a completely recalibrated sense of your own worth.',
+  '4-5': 'Last year was about roots, home, and emotional foundations. This year, that inner stability releases you to play, create, and love with a freedom that was not available before.',
+  '5-6': 'Last year lit you up with creativity and romance. This year asks you to ground that fire — to build the daily habits, the health practices, and the work discipline that sustain what inspiration started.',
+  '6-7': 'Last year rebuilt your routines and your relationship with your own body. This year, the focus shifts to the person standing across from you — partnerships, commitments, and the mirror only another person can hold.',
+  '7-8': 'Last year was about partnership. This year deepens it — shared resources, intimacy, and the psychological depths that only true closeness can access.',
+  '9-10': 'Last year expanded your mind through travel, education, or philosophy. This year, that expanded perspective finds its public expression — career, reputation, and the legacy you are building.',
+  '10-11': 'Last year was about professional achievement. This year, the focus shifts to the community that your work serves — friends, groups, and the dreams that connect your personal success to something larger.',
+  '11-12': 'Last year connected you to community and future vision. This year, you withdraw — not from failure, but from fullness. The inner world needs processing time. What you integrate in silence this year will fuel the reinvention that comes next.',
+};
+
+export function getYearPattern(lastYearSunHouse: number, thisYearSunHouse: number, nextYearSunHouse?: number): YearPattern {
+  const key = `${lastYearSunHouse}-${thisYearSunHouse}`;
+  const narrative = YEAR_FLOW_NARRATIVES[key] ||
+    `Last year was a ${lastYearSunHouse}${ordinalSuffix(lastYearSunHouse)} house year focused on ${HOUSE_MONTH_THEMES[lastYearSunHouse] || 'key themes'}. This year shifts to a ${thisYearSunHouse}${ordinalSuffix(thisYearSunHouse)} house year — the energy moves to ${HOUSE_MONTH_THEMES[thisYearSunHouse] || 'new territory'}. Notice how last year\'s work created the platform for what is emerging now.`;
+
+  return {
+    lastYear: { house: lastYearSunHouse, theme: YEAR_THEME_HEADLINES[lastYearSunHouse]?.headline || '' },
+    thisYear: { house: thisYearSunHouse, theme: YEAR_THEME_HEADLINES[thisYearSunHouse]?.headline || '' },
+    nextYear: nextYearSunHouse ? { house: nextYearSunHouse, theme: YEAR_THEME_HEADLINES[nextYearSunHouse]?.headline || '' } : undefined,
+    narrative,
+  };
+}

@@ -140,6 +140,16 @@ export default function UserProfilePage() {
 
     setLoading(false);
 
+    // Record profile view (fire and forget) - only for other users
+    if (user && userId !== user.id) {
+      supabase.from('profile_views').upsert({
+        profile_id: userId,
+        viewer_id: user.id,
+        viewed_at: new Date().toISOString(),
+        view_date: new Date().toISOString().split('T')[0],
+      }, { onConflict: 'profile_id,viewer_id,view_date' }).then(() => {});
+    }
+
     // Stage 2: Stats + follow + mutual friends + posts (non-blocking)
     if (!user) return;
 

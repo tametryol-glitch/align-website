@@ -53,6 +53,9 @@ export default function AstrologySettingsPage() {
             <option value="equal">Equal House</option>
             <option value="porphyry">Porphyry</option>
             <option value="alcabitius">Alcabitius</option>
+            <option value="topocentric">Topocentric</option>
+            <option value="morinus">Morinus</option>
+            <option value="meridian">Meridian</option>
           </select>
         </div>
 

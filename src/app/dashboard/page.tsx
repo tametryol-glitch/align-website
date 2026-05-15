@@ -448,7 +448,24 @@ export default function DashboardPage() {
                   <UserAvatar avatarUrl={post.userAvatar} displayName={post.userName} size="xs" />
                   <span className="text-xs font-medium text-text-primary truncate">{post.userName}</span>
                 </div>
-                <p className="text-xs text-text-secondary line-clamp-3">{post.content}</p>
+                {(post.imageUrl || post.videoUrl) && (
+                  <div className="relative w-full h-20 mb-2 rounded-lg overflow-hidden bg-white/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.videoUrl ? (post.posterUrl || '') : post.imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    {post.videoUrl && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[10px] border-l-gray-800 ml-0.5" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <p className={`text-xs text-text-secondary ${post.imageUrl || post.videoUrl ? 'line-clamp-2' : 'line-clamp-3'}`}>{post.content}</p>
                 <div className="flex items-center gap-2 mt-2 text-[10px] text-text-muted">
                   {post.reactions.length > 0 && (
                     <span>{post.reactions[0]?.emoji} {post.reactions[0]?.count}</span>

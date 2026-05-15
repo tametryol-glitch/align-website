@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
-import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
 
@@ -38,7 +38,7 @@ export default function OnboardingPage() {
     }
   }, [profile]);
 
-  async function handleComplete() {
+  async function saveProfile(markComplete = true) {
     if (!user) return;
     setSaving(true);
     const supabase = createClient();
@@ -51,10 +51,9 @@ export default function OnboardingPage() {
       latitude: latitude || undefined,
       longitude: longitude || undefined,
       timezone: timezone || undefined,
-      onboarding_completed: true,
     };
+    if (markComplete) updates.onboarding_completed = true;
 
-    // Remove undefined values
     Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
 
     const { data } = await supabase
@@ -69,7 +68,17 @@ export default function OnboardingPage() {
       indexMyPlacements().catch(() => {});
     }
     setSaving(false);
+    return data;
+  }
+
+  async function handleComplete() {
+    await saveProfile(true);
     router.push('/dashboard');
+  }
+
+  async function handleRectification() {
+    await saveProfile(true);
+    router.push('/readings/rectification');
   }
 
   function next() {
@@ -142,7 +151,15 @@ export default function OnboardingPage() {
             <div className="py-6">
               <div className="text-3xl mb-4">🎂</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">When were you born?</h2>
-              <p className="text-sm text-text-tertiary mb-6">Used for your natal chart and Sun sign</p>
+              <p className="text-sm text-text-tertiary mb-4">Your birth date determines your Sun sign and planetary positions</p>
+              <div className="bg-bg-tertiary rounded-xl p-3 mb-4 text-left">
+                <div className="flex items-start gap-2">
+                  <FileText className="w-4 h-4 text-accent-primary mt-0.5 shrink-0" />
+                  <p className="text-xs text-text-secondary">
+                    <span className="font-semibold text-text-primary">Where to find it:</span> Your birth certificate, hospital records, or baby book. Use the exact date — even one day off changes your chart.
+                  </p>
+                </div>
+              </div>
               <input
                 type="date"
                 value={birthDate}
@@ -165,14 +182,35 @@ export default function OnboardingPage() {
             <div className="py-6">
               <Clock className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">What time were you born?</h2>
-              <p className="text-sm text-text-tertiary mb-6">Needed for accurate Rising sign and houses</p>
+              <p className="text-sm text-text-tertiary mb-4">This is the most important piece — it determines your Rising sign, house placements, and planetary angles</p>
+              <div className="bg-bg-tertiary rounded-xl p-3 mb-4 text-left space-y-2">
+                <div className="flex items-start gap-2">
+                  <FileText className="w-4 h-4 text-accent-primary mt-0.5 shrink-0" />
+                  <p className="text-xs text-text-secondary">
+                    <span className="font-semibold text-text-primary">Where to find it:</span> Check your birth certificate — many list the exact time. You can also ask a parent or request hospital records.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <HelpCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                  <p className="text-xs text-text-secondary">
+                    <span className="font-semibold text-text-primary">Why it matters:</span> Even a 15-minute difference can change your Rising sign. Without it, house placements and angles won&apos;t be accurate.
+                  </p>
+                </div>
+              </div>
               <input
                 type="time"
                 value={birthTime}
                 onChange={(e) => setBirthTime(e.target.value)}
-                className="input text-center mb-2"
+                className="input text-center mb-3"
               />
-              <p className="text-xs text-text-muted mb-6">Don&apos;t know? You can add it later</p>
+              <button
+                type="button"
+                onClick={handleRectification}
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-colors mb-4"
+              >
+                <Search className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs font-medium text-amber-400">Don&apos;t know your birth time? Use our Rectification Tool to find it</span>
+              </button>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
@@ -189,7 +227,15 @@ export default function OnboardingPage() {
             <div className="py-6">
               <MapPin className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">Where were you born?</h2>
-              <p className="text-sm text-text-tertiary mb-6">Your birth location determines planetary houses</p>
+              <p className="text-sm text-text-tertiary mb-4">Your birth location sets the angles of your chart — the horizon and meridian at the moment you arrived</p>
+              <div className="bg-bg-tertiary rounded-xl p-3 mb-4 text-left">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-accent-primary mt-0.5 shrink-0" />
+                  <p className="text-xs text-text-secondary">
+                    <span className="font-semibold text-text-primary">Be specific:</span> Search for the city you were born in, not where you grew up. The closer to your actual birthplace, the more accurate your Rising sign and houses.
+                  </p>
+                </div>
+              </div>
               <div className="mb-6">
                 <CitySearch
                   value={birthLocation}

@@ -5,7 +5,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
 import Link from 'next/link';
-import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck, Palette } from 'lucide-react';
+import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Zap, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user, profile, logout } = useAuthStore();
@@ -31,6 +31,22 @@ export default function SettingsPage() {
       }
     } catch {
       window.location.href = '/pricing';
+    }
+  }
+
+  async function handleDeleteAccount() {
+    try {
+      const supabase = createClient();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) return;
+      // Delete profile data
+      await supabase.from('profiles').delete().eq('id', currentUser.id);
+      // Sign out
+      await supabase.auth.signOut();
+      logout();
+      window.location.href = '/';
+    } catch (err) {
+      console.error('Delete account error:', err);
     }
   }
 
@@ -213,11 +229,48 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* About */}
+      <div className="card mb-4">
+        <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <Info className="w-4 h-4" /> About
+        </h2>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-text-secondary">Version</span>
+            <span className="text-sm text-text-muted">2.0.0</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-text-secondary">Powered by</span>
+            <span className="text-sm text-text-muted">Swiss Ephemeris · Claude AI</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-text-secondary">Contact</span>
+            <a href="mailto:tametryol@gmail.com" className="text-sm text-accent-primary hover:underline">tametryol@gmail.com</a>
+          </div>
+        </div>
+      </div>
+
       {/* Logout */}
       <button onClick={handleLogout} className="w-full card flex items-center gap-3 text-red-400 hover:bg-red-400/5">
         <LogOut className="w-5 h-5" />
         <span className="font-medium">Sign Out</span>
       </button>
+
+      {/* Delete Account */}
+      <div className="mt-4">
+        <button
+          onClick={() => {
+            if (confirm('Are you sure you want to delete your account? This will permanently remove all your data including posts, messages, charts, and readings. This action cannot be undone.')) {
+              if (confirm('This is your last chance. Are you absolutely sure you want to delete your account forever?')) {
+                handleDeleteAccount();
+              }
+            }
+          }}
+          className="w-full text-center text-sm text-red-400 hover:text-red-300 py-2"
+        >
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }

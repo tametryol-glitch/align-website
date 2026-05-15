@@ -278,9 +278,9 @@ class VoiceService {
     }
 
     this.audioQueue.push(firstBlobUrl);
-    const playPromise = this.processQueue();
+    this.processQueue();
 
-    // Fetch remaining chunks in parallel
+    // Fetch remaining chunks sequentially while first plays
     if (chunks.length > 1) {
       for (const chunk of chunks.slice(1)) {
         if (this.stopRequested) break;
@@ -298,7 +298,10 @@ class VoiceService {
       }
     }
 
-    await playPromise;
+    // All chunks fetched — wait for playback to fully drain
+    while (!this.stopRequested && (this.audioQueue.length > 0 || this.isProcessingQueue)) {
+      await new Promise(r => setTimeout(r, 100));
+    }
   }
 
   /**

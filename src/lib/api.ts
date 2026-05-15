@@ -220,6 +220,14 @@ class AlignAPI {
     return this.request('/rectification/analyze-direct', { method: 'POST', body: JSON.stringify(data) }, 60000);
   }
 
+  async analyzeRectification(data: any) {
+    return this.request('/rectification/analyze-direct', { method: 'POST', body: JSON.stringify(data) }, 60000);
+  }
+
+  async adaptiveFilter(data: any) {
+    return this.request('/rectification/adaptive-filter', { method: 'POST', body: JSON.stringify(data) });
+  }
+
   // Year Ahead / Galactic Forecast
   async getYearAhead(data: any) {
     return this.request('/transits/forecasts/events', { method: 'POST', body: JSON.stringify(data) }, 45000);

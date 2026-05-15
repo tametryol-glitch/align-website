@@ -69,7 +69,6 @@ function pick<T>(arr: T[]): T {
 // ── Symbol matching ────────────────────────────────────────────────
 
 function matchSymbols(description: string, userSymbols: string[]): { symbol: string; meaning: string }[] {
-  const text = description.toLowerCase();
   const matched = new Map<string, string>();
 
   for (const s of userSymbols) {
@@ -79,10 +78,13 @@ function matchSymbols(description: string, userSymbols: string[]): { symbol: str
     }
   }
 
-  for (const entry of DREAM_SYMBOLS) {
-    if (matched.has(entry.name)) continue;
-    if (text.includes(entry.key.replace('_', ' ')) || text.includes(entry.name.toLowerCase())) {
-      matched.set(entry.name, entry.general);
+  if (matched.size === 0) {
+    const text = description.toLowerCase();
+    for (const entry of DREAM_SYMBOLS) {
+      if (text.includes(entry.key.replace('_', ' ')) || text.includes(entry.name.toLowerCase())) {
+        matched.set(entry.name, entry.general);
+      }
+      if (matched.size >= 8) break;
     }
   }
 

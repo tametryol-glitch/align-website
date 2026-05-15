@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { Pencil, Settings, QrCode, Share2, ChevronRight, Calendar, Image as ImageIcon, Shield, CreditCard } from 'lucide-react';
+import { Pencil, Settings, QrCode, Share2, ChevronRight, Calendar, Image as ImageIcon, Shield, CreditCard, Eye } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -58,6 +58,9 @@ export default function ProfilePage() {
   const [postCount, setPostCount] = useState(0);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [viewCount, setViewCount] = useState(0);
+  const [showViewersModal, setShowViewersModal] = useState(false);
+  const [viewers, setViewers] = useState<Array<{viewer_id: string; display_name: string; avatar_url: string; viewed_at: string}>>([]);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
@@ -87,21 +90,51 @@ export default function ProfilePage() {
     const safeFollowingCount = async (): Promise<number> => {
       try { const r = await supabase.from('follows').select('id', { count: 'exact', head: true }).eq('follower_id', userId); return r.count || 0; } catch { return 0; }
     };
+    const safeViewCount = async (): Promise<number> => {
+      try {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const r = await supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('profile_id', userId).gte('viewed_at', thirtyDaysAgo);
+        return r.count || 0;
+      } catch { return 0; }
+    };
 
-    const [fc, pc, flr, flg] = await Promise.all([
-      safeFriendCount(), safePostCount(), safeFollowerCount(), safeFollowingCount(),
+    const [fc, pc, flr, flg, vc] = await Promise.all([
+      safeFriendCount(), safePostCount(), safeFollowerCount(), safeFollowingCount(), safeViewCount(),
     ]);
 
     setFriendCount(fc);
     setPostCount(pc);
     setFollowerCount(flr);
     setFollowingCount(flg);
+    setViewCount(vc);
     setLoading(false);
 
     loadPosts();
   }, [userId]);
 
   useEffect(() => { loadStats(); }, [loadStats]);
+
+  async function loadViewers() {
+    if (!userId) return;
+    const supabase = createClient();
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { data } = await supabase
+      .from('profile_views')
+      .select('viewer_id, viewed_at, profiles!profile_views_viewer_id_fkey(display_name, avatar_url)')
+      .eq('profile_id', userId)
+      .gte('viewed_at', thirtyDaysAgo)
+      .order('viewed_at', { ascending: false })
+      .limit(50);
+    if (data) {
+      setViewers(data.map((v: any) => ({
+        viewer_id: v.viewer_id,
+        display_name: v.profiles?.display_name || 'Unknown',
+        avatar_url: v.profiles?.avatar_url || '',
+        viewed_at: v.viewed_at,
+      })));
+    }
+    setShowViewersModal(true);
+  }
 
   async function loadPosts() {
     if (!userId) return;
@@ -291,6 +324,11 @@ export default function ProfilePage() {
               <p className="text-lg font-bold text-text-primary">{followingCount}</p>
               <p className="text-xs text-text-tertiary">Following</p>
             </div>
+            <div className="w-px h-8 bg-border" />
+            <button onClick={loadViewers} className="text-center hover:opacity-80 transition-opacity">
+              <p className="text-lg font-bold text-text-primary">{viewCount}</p>
+              <p className="text-xs text-text-tertiary flex items-center justify-center gap-1"><Eye className="w-3 h-3" /> Views</p>
+            </button>
           </div>
 
           {/* Edit Profile button */}
@@ -530,6 +568,33 @@ export default function ProfilePage() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Profile Viewers Modal */}
+      {showViewersModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowViewersModal(false)}>
+          <div className="bg-bg-card border border-border rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-display font-bold text-text-primary flex items-center gap-2"><Eye className="w-5 h-5" /> Profile Views</h3>
+              <button onClick={() => setShowViewersModal(false)} className="text-text-muted hover:text-text-primary text-xl">&times;</button>
+            </div>
+            {viewers.length === 0 ? (
+              <p className="text-center text-text-muted py-8">No profile views yet</p>
+            ) : (
+              <div className="space-y-3">
+                {viewers.map((v, i) => (
+                  <Link key={i} href={`/user/${v.viewer_id}`} className="flex items-center gap-3 hover:bg-bg-secondary rounded-lg p-2 transition-colors">
+                    <UserAvatar displayName={v.display_name} avatarUrl={v.avatar_url} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-text-primary truncate">{v.display_name}</p>
+                      <p className="text-xs text-text-tertiary">{new Date(v.viewed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

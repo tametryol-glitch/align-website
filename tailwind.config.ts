@@ -54,6 +54,15 @@ const config: Config = {
         'gradient-cosmic': 'linear-gradient(135deg, #1E1145 0%, #2D1B69 100%)',
         'gradient-accent': 'linear-gradient(135deg, #9B6FF6 0%, #7C3AED 100%)',
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.4s ease-out forwards',
+      },
     },
   },
   plugins: [],
