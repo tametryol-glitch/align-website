@@ -87,8 +87,7 @@ export default function AdminPayoutsPage() {
       .from('creator_payouts')
       .select(`
         id, creator_id, amount_cents, status, requested_at,
-        profile:profiles!creator_payouts_creator_id_fkey(display_name, email),
-        creator_profile:creator_profiles!creator_payouts_creator_id_fkey(payout_method, tax_form_status, tax_form_url)
+        profile:profiles!creator_payouts_creator_id_fkey(display_name, email)
       `)
       .order('requested_at', { ascending: statusFilter === 'actionable' });
 
@@ -99,7 +98,6 @@ export default function AdminPayoutsPage() {
     } else if (statusFilter === 'failed') {
       query = query.in('status', ['failed', 'cancelled']);
     }
-    // 'all' = no filter
 
     const { data, error: fetchErr } = await query.limit(200);
 
@@ -109,18 +107,33 @@ export default function AdminPayoutsPage() {
       return;
     }
 
-    const mapped: PendingPayoutRow[] = (data ?? []).map((r: any) => ({
-      id: r.id,
-      creator_id: r.creator_id,
-      creator_display_name: r.profile?.display_name ?? null,
-      creator_email: r.profile?.email ?? null,
-      amount_cents: r.amount_cents,
-      status: r.status,
-      requested_at: r.requested_at,
-      payout_method: r.creator_profile?.payout_method ?? null,
-      tax_form_status: r.creator_profile?.tax_form_status ?? null,
-      tax_form_url: r.creator_profile?.tax_form_url ?? null,
-    }));
+    const creatorIds = [...new Set((data ?? []).map((r: any) => r.creator_id).filter(Boolean))];
+    let creatorProfiles: Record<string, any> = {};
+    if (creatorIds.length > 0) {
+      const { data: cpData } = await supabase
+        .from('creator_profiles')
+        .select('id, payout_method, tax_form_status, tax_form_url')
+        .in('id', creatorIds);
+      if (cpData) {
+        for (const cp of cpData) creatorProfiles[cp.id] = cp;
+      }
+    }
+
+    const mapped: PendingPayoutRow[] = (data ?? []).map((r: any) => {
+      const cp = creatorProfiles[r.creator_id];
+      return {
+        id: r.id,
+        creator_id: r.creator_id,
+        creator_display_name: r.profile?.display_name ?? null,
+        creator_email: r.profile?.email ?? null,
+        amount_cents: r.amount_cents,
+        status: r.status,
+        requested_at: r.requested_at,
+        payout_method: cp?.payout_method ?? null,
+        tax_form_status: cp?.tax_form_status ?? null,
+        tax_form_url: cp?.tax_form_url ?? null,
+      };
+    });
 
     setRows(mapped);
     setLoading(false);
