@@ -3,32 +3,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
-import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
+// Note: Supabase calls now routed through journalService
 import { ArrowLeft, BookOpen, Plus, Loader2, ChevronUp, ChevronDown, X, Trash2, Pencil } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-interface JournalTransitTag {
-  transit: string;
-  natal: string;
-  aspect: string;
-  orb?: number;
-  category?: string;
-}
-
-interface JournalEntry {
-  id: string;
-  userId: string;
-  entryDate: string;
-  createdAt: string;
-  updatedAt: string;
-  text: string;
-  mood: number;
-  tags: string[];
-  transitSnapshot: JournalTransitTag[];
-}
+import {
+  listEntries,
+  createEntry,
+  updateEntry,
+  deleteEntry,
+  computePatterns,
+  tagKey,
+  tagLabel,
+  type JournalEntry,
+  type JournalTransitTag,
+  type MoodPattern,
+  type PatternSummary,
+} from '@/lib/journalService';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -48,23 +39,7 @@ const MOOD_OPTIONS = [
   { value: 5, label: 'Great',   color: '#F59E0B' },
 ];
 
-const MIN_OCCURRENCES = 3;
-
 // ─── Helpers ────────────────────────────────────────────────────────────────
-
-function rowToEntry(row: any): JournalEntry {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    entryDate: row.entry_date,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    text: row.text,
-    mood: row.mood,
-    tags: Array.isArray(row.tags) ? row.tags : [],
-    transitSnapshot: Array.isArray(row.transit_snapshot) ? row.transit_snapshot : [],
-  };
-}
 
 function formatEntryDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -73,84 +48,9 @@ function formatEntryDate(iso: string): string {
   return dt.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
-function tagKey(tag: JournalTransitTag): string {
-  const aspect = tag.aspect ? tag.aspect.charAt(0).toUpperCase() + tag.aspect.slice(1).toLowerCase() : '';
-  return `${tag.transit}-${aspect}-${tag.natal}`;
-}
-
-function tagLabel(tag: JournalTransitTag): string {
-  const aspect = tag.aspect ? tag.aspect.charAt(0).toUpperCase() + tag.aspect.slice(1).toLowerCase() : '';
-  return `${tag.transit} ${aspect} ${tag.natal}`;
-}
-
 function moodToColor(mood: number): string {
   const rounded = Math.max(1, Math.min(5, Math.round(mood)));
   return MOOD_META[rounded]?.color || '#9CA3AF';
-}
-
-// ─── Pattern Computation (matches mobile computePatterns) ───────────────────
-
-interface MoodPattern {
-  tag: JournalTransitTag;
-  occurrences: number;
-  meanMood: number;
-  delta: number;
-}
-
-interface PatternSummary {
-  totalEntries: number;
-  baselineMood: number;
-  lifts: MoodPattern[];
-  drops: MoodPattern[];
-  sevenDayTrend: number[];
-}
-
-function computePatterns(entries: JournalEntry[], now: Date = new Date()): PatternSummary {
-  if (entries.length === 0) {
-    return { totalEntries: 0, baselineMood: 0, lifts: [], drops: [], sevenDayTrend: [] };
-  }
-
-  const totalMood = entries.reduce((sum, e) => sum + e.mood, 0);
-  const baselineMood = totalMood / entries.length;
-
-  const byTag = new Map<string, { tag: JournalTransitTag; moods: number[] }>();
-  for (const e of entries) {
-    for (const t of e.transitSnapshot) {
-      const k = tagKey(t);
-      const bucket = byTag.get(k);
-      if (bucket) {
-        bucket.moods.push(e.mood);
-      } else {
-        byTag.set(k, { tag: t, moods: [e.mood] });
-      }
-    }
-  }
-
-  const patterns: MoodPattern[] = [];
-  for (const { tag, moods } of Array.from(byTag.values())) {
-    if (moods.length < MIN_OCCURRENCES) continue;
-    const mean = moods.reduce((a, b) => a + b, 0) / moods.length;
-    patterns.push({ tag, occurrences: moods.length, meanMood: mean, delta: mean - baselineMood });
-  }
-
-  const lifts = patterns.filter((p) => p.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
-  const drops = patterns.filter((p) => p.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
-
-  const sevenDayTrend: number[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const day = new Date(now);
-    day.setDate(day.getDate() - i);
-    const key = day.toISOString().split('T')[0];
-    const dayEntries = entries.filter((e) => e.entryDate === key);
-    if (dayEntries.length === 0) {
-      sevenDayTrend.push(NaN);
-    } else {
-      const avg = dayEntries.reduce((s, e) => s + e.mood, 0) / dayEntries.length;
-      sevenDayTrend.push(avg);
-    }
-  }
-
-  return { totalEntries: entries.length, baselineMood, lifts, drops, sevenDayTrend };
 }
 
 // ─── Snapshot helper ────────────────────────────────────────────────────────
@@ -597,20 +497,12 @@ export default function CosmicJournalPage() {
 
   const load = useCallback(async () => {
     if (!user) return;
-    const supabase = createClient();
-    const { data, error: err } = await supabase
-      .from('journal_entries')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('entry_date', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(50);
-
+    const { entries: loaded, error: err } = await listEntries(user.id);
     if (err) {
-      setError(err.message);
+      setError(err);
     } else {
       setError(null);
-      setEntries((data || []).map(rowToEntry));
+      setEntries(loaded);
     }
   }, [user]);
 
@@ -645,39 +537,25 @@ export default function CosmicJournalPage() {
     entryDate?: string;
   }) => {
     if (!user) throw new Error('Not authenticated');
-    const supabase = createClient();
 
     if (editing) {
-      const { data, error: err } = await supabase
-        .from('journal_entries')
-        .update({
-          text: payload.text,
-          mood: payload.mood,
-          tags: payload.tags,
-        })
-        .eq('id', editing.id)
-        .eq('user_id', user.id)
-        .select('*')
-        .single();
-
-      if (err) throw new Error(err.message);
-      setEntries((prev) => prev.map((e) => (e.id === editing.id ? rowToEntry(data) : e)));
+      const { entry: updated, error: err } = await updateEntry(user.id, editing.id, {
+        text: payload.text,
+        mood: payload.mood,
+        tags: payload.tags,
+      });
+      if (err) throw new Error(err);
+      if (updated) setEntries((prev) => prev.map((e) => (e.id === editing.id ? updated : e)));
     } else {
-      const { data, error: err } = await supabase
-        .from('journal_entries')
-        .insert({
-          user_id: user.id,
-          entry_date: payload.entryDate ?? new Date().toISOString().split('T')[0],
-          text: payload.text,
-          mood: payload.mood,
-          tags: payload.tags,
-          transit_snapshot: payload.transitSnapshot,
-        })
-        .select('*')
-        .single();
-
-      if (err) throw new Error(err.message);
-      setEntries((prev) => [rowToEntry(data), ...prev]);
+      const { entry: created, error: err } = await createEntry(user.id, {
+        text: payload.text,
+        mood: payload.mood,
+        entryDate: payload.entryDate,
+        tags: payload.tags,
+        transitSnapshot: editing ? editing.transitSnapshot : payload.transitSnapshot,
+      });
+      if (err) throw new Error(err);
+      if (created) setEntries((prev) => [created, ...prev]);
     }
   };
 
@@ -685,15 +563,9 @@ export default function CosmicJournalPage() {
     if (!confirm('Delete this entry? This cannot be undone.')) return;
     (async () => {
       if (!user) return;
-      const supabase = createClient();
-      const { error: err } = await supabase
-        .from('journal_entries')
-        .delete()
-        .eq('id', entry.id)
-        .eq('user_id', user.id);
-
+      const { error: err } = await deleteEntry(user.id, entry.id);
       if (err) {
-        alert('Could not delete: ' + err.message);
+        alert('Could not delete: ' + err);
         return;
       }
       setEntries((prev) => prev.filter((e) => e.id !== entry.id));

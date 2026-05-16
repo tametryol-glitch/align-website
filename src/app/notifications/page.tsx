@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck } from 'lucide-react';
+import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 interface Notification {
@@ -22,25 +22,212 @@ interface Notification {
   };
 }
 
+interface NotificationGroup {
+  id: string;
+  type: string;
+  notifications: Notification[];
+  latestAt: string;
+  isRead: boolean;
+}
+
+type TabFilter = 'all' | 'social' | 'cosmic' | 'system';
+
+const TYPE_CATEGORIES: Record<string, 'social' | 'cosmic' | 'system'> = {
+  friend_request: 'social',
+  friend_accepted: 'social',
+  reaction: 'social',
+  comment: 'social',
+  mention: 'social',
+  message: 'social',
+  cosmic_alert: 'cosmic',
+  transit: 'cosmic',
+  moon_phase: 'cosmic',
+  retrograde: 'cosmic',
+  eclipse: 'cosmic',
+  announcement: 'system',
+  account: 'system',
+  subscription: 'system',
+};
+
 const NOTIFICATION_ICONS: Record<string, any> = {
   friend_request: UserPlus,
   friend_accepted: UserPlus,
   reaction: Heart,
   comment: MessageCircle,
   mention: Star,
-  cosmic_alert: Star,
+  message: MessageCircle,
+  cosmic_alert: Zap,
+  transit: Zap,
+  moon_phase: Star,
+  retrograde: Zap,
+  eclipse: Star,
+  announcement: Megaphone,
+  account: Bell,
+  subscription: Bell,
 };
+
+const TABS: { key: TabFilter; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'social', label: 'Social' },
+  { key: 'cosmic', label: 'Cosmic' },
+  { key: 'system', label: 'System' },
+];
+
+const EMPTY_STATES: Record<TabFilter, { icon: any; title: string; subtitle: string }> = {
+  all: {
+    icon: Bell,
+    title: 'No notifications yet',
+    subtitle: 'Friend requests, reactions, and cosmic alerts will appear here',
+  },
+  social: {
+    icon: Heart,
+    title: 'No social notifications',
+    subtitle: 'Reactions, comments, and friend requests will appear here',
+  },
+  cosmic: {
+    icon: Zap,
+    title: 'No cosmic alerts',
+    subtitle: 'Transit alerts, moon phases, and retrogrades will appear here',
+  },
+  system: {
+    icon: Megaphone,
+    title: 'No system notifications',
+    subtitle: 'Announcements and account updates will appear here',
+  },
+};
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDays = Math.floor(diffHr / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
+function groupNotifications(notifications: Notification[]): NotificationGroup[] {
+  const groups: NotificationGroup[] = [];
+  const used = new Set<string>();
+
+  for (let i = 0; i < notifications.length; i++) {
+    if (used.has(notifications[i].id)) continue;
+
+    const current = notifications[i];
+    const targetId = current.data?.post_id || current.data?.target_id;
+
+    if (!targetId) {
+      groups.push({
+        id: current.id,
+        type: current.type,
+        notifications: [current],
+        latestAt: current.created_at,
+        isRead: current.is_read,
+      });
+      used.add(current.id);
+      continue;
+    }
+
+    const grouped: Notification[] = [current];
+    used.add(current.id);
+    const currentTime = new Date(current.created_at).getTime();
+
+    for (let j = i + 1; j < notifications.length; j++) {
+      if (used.has(notifications[j].id)) continue;
+      const candidate = notifications[j];
+      if (candidate.type !== current.type) continue;
+
+      const candidateTarget = candidate.data?.post_id || candidate.data?.target_id;
+      if (candidateTarget !== targetId) continue;
+
+      const candidateTime = new Date(candidate.created_at).getTime();
+      if (Math.abs(currentTime - candidateTime) > 3600000) continue;
+
+      grouped.push(candidate);
+      used.add(candidate.id);
+    }
+
+    groups.push({
+      id: current.id,
+      type: current.type,
+      notifications: grouped,
+      latestAt: current.created_at,
+      isRead: grouped.every(n => n.is_read),
+    });
+  }
+
+  return groups;
+}
+
+function getGroupTitle(group: NotificationGroup): string {
+  if (group.notifications.length === 1) {
+    return group.notifications[0].title;
+  }
+
+  const actors = group.notifications
+    .map(n => n.actor_profile?.display_name)
+    .filter(Boolean);
+  const uniqueActors = Array.from(new Set(actors));
+
+  if (group.type === 'reaction') {
+    if (uniqueActors.length === 1) {
+      return `${uniqueActors[0]} reacted to your post`;
+    }
+    if (uniqueActors.length === 2) {
+      return `${uniqueActors[0]} and ${uniqueActors[1]} reacted to your post`;
+    }
+    return `${uniqueActors[0]}, ${uniqueActors[1]}, and ${uniqueActors.length - 2} others reacted to your post`;
+  }
+
+  if (group.type === 'comment') {
+    return `${group.notifications.length} new comments on your post`;
+  }
+
+  if (uniqueActors.length <= 2) {
+    return `${uniqueActors.join(' and ')} — ${group.notifications[0].title}`;
+  }
+  return `${uniqueActors[0]}, ${uniqueActors[1]}, and ${uniqueActors.length - 2} others`;
+}
+
+function getNotificationLink(n: Notification): string {
+  switch (n.type) {
+    case 'friend_request':
+    case 'friend_accepted':
+      return n.actor_id ? `/user/${n.actor_id}` : '/friends';
+    case 'reaction':
+    case 'comment':
+    case 'mention':
+      return '/feed';
+    case 'message':
+      return '/messages';
+    case 'cosmic_alert':
+    case 'transit':
+    case 'moon_phase':
+    case 'retrograde':
+    case 'eclipse':
+      return '/readings';
+    case 'announcement':
+      return '/settings';
+    case 'account':
+    case 'subscription':
+      return '/settings/account';
+    default:
+      return '#';
+  }
+}
 
 export default function NotificationsPage() {
   const { user } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (user) loadNotifications();
-  }, [user]);
-
-  async function loadNotifications() {
+  const loadNotifications = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     const supabase = createClient();
@@ -50,10 +237,9 @@ export default function NotificationsPage() {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(100);
 
     if (data && data.length > 0) {
-      // Load actor profiles
       const actorIds = Array.from(new Set(data.filter(n => n.actor_id).map(n => n.actor_id)));
       let actorProfiles: Record<string, any> = {};
 
@@ -75,7 +261,49 @@ export default function NotificationsPage() {
       setNotifications([]);
     }
     setLoading(false);
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) loadNotifications();
+  }, [user, loadNotifications]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const newNotification = payload.new as Notification;
+
+          if (newNotification.actor_id) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id, display_name, avatar_url')
+              .eq('id', newNotification.actor_id)
+              .single();
+            if (profile) {
+              newNotification.actor_profile = profile;
+            }
+          }
+
+          setNotifications(prev => [newNotification, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   async function markAllRead() {
     if (!user) return;
@@ -97,34 +325,27 @@ export default function NotificationsPage() {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
   }
 
-  function getNotificationLink(n: Notification): string {
-    switch (n.type) {
-      case 'friend_request':
-      case 'friend_accepted':
-        return n.actor_id ? `/user/${n.actor_id}` : '/friends';
-      case 'reaction':
-      case 'comment':
-      case 'mention':
-        return '/feed';
-      case 'cosmic_alert':
-        return '/readings';
-      default:
-        return '#';
-    }
+  async function markGroupRead(group: NotificationGroup) {
+    const supabase = createClient();
+    const ids = group.notifications.filter(n => !n.is_read).map(n => n.id);
+    if (ids.length === 0) return;
+    await supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .in('id', ids);
+    setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, is_read: true } : n));
   }
 
-  function timeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diffMs = now.getTime() - date.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return 'just now';
-    if (diffMin < 60) return `${diffMin}m ago`;
-    const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr}h ago`;
-    const diffDays = Math.floor(diffHr / 24);
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
+  function toggleGroupExpand(groupId: string) {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
   }
 
   if (!user) {
@@ -135,7 +356,14 @@ export default function NotificationsPage() {
     );
   }
 
+  const filteredNotifications = activeTab === 'all'
+    ? notifications
+    : notifications.filter(n => TYPE_CATEGORIES[n.type] === activeTab);
+
+  const groups = groupNotifications(filteredNotifications);
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  const emptyState = EMPTY_STATES[activeTab];
+  const EmptyIcon = emptyState.icon;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -156,56 +384,143 @@ export default function NotificationsPage() {
         )}
       </div>
 
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
+        {TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              activeTab === tab.key
+                ? 'bg-accent-primary/20 text-accent-primary'
+                : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <LoadingCosmic label="Loading notifications..." />
-      ) : notifications.length === 0 ? (
+      ) : groups.length === 0 ? (
         <div className="card text-center py-12">
-          <Bell className="w-12 h-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-muted mb-1">No notifications yet</p>
-          <p className="text-xs text-text-muted">
-            Friend requests, reactions, and cosmic alerts will appear here
-          </p>
+          <EmptyIcon className="w-12 h-12 text-text-muted mx-auto mb-3" />
+          <p className="text-text-muted mb-1">{emptyState.title}</p>
+          <p className="text-xs text-text-muted">{emptyState.subtitle}</p>
         </div>
       ) : (
         <div className="space-y-1">
-          {notifications.map(n => {
-            const Icon = NOTIFICATION_ICONS[n.type] || Bell;
-            const link = getNotificationLink(n);
+          {groups.map(group => {
+            const isSingle = group.notifications.length === 1;
+            const isExpanded = expandedGroups.has(group.id);
+            const firstNotification = group.notifications[0];
+            const Icon = NOTIFICATION_ICONS[group.type] || Bell;
+
+            if (isSingle) {
+              const n = firstNotification;
+              const link = getNotificationLink(n);
+              return (
+                <Link
+                  key={n.id}
+                  href={link}
+                  onClick={() => !n.is_read && markOneRead(n.id)}
+                  className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${
+                    n.is_read
+                      ? 'bg-bg-card hover:bg-bg-card-hover'
+                      : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
+                    {n.actor_profile?.avatar_url ? (
+                      <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <Icon className="w-5 h-5 text-accent-primary" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${n.is_read ? 'text-text-secondary' : 'text-text-primary font-medium'}`}>
+                      {n.title}
+                    </p>
+                    {n.body && (
+                      <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{n.body}</p>
+                    )}
+                    <p className="text-[10px] text-text-muted mt-1">{timeAgo(n.created_at)}</p>
+                  </div>
+                  {!n.is_read && (
+                    <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />
+                  )}
+                </Link>
+              );
+            }
+
             return (
-              <Link
-                key={n.id}
-                href={link}
-                onClick={() => !n.is_read && markOneRead(n.id)}
-                className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${
-                  n.is_read
-                    ? 'bg-bg-card hover:bg-bg-card-hover'
-                    : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
-                }`}
-              >
-                {/* Avatar or icon */}
-                <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
-                  {n.actor_profile?.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                  ) : (
-                    <Icon className="w-5 h-5 text-accent-primary" />
+              <div key={group.id} className="rounded-xl overflow-hidden">
+                <button
+                  onClick={() => {
+                    toggleGroupExpand(group.id);
+                    if (!group.isRead) markGroupRead(group);
+                  }}
+                  className={`w-full flex items-start gap-3 p-4 rounded-xl transition-colors text-left ${
+                    group.isRead
+                      ? 'bg-bg-card hover:bg-bg-card-hover'
+                      : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
+                  }`}
+                >
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center">
+                      {firstNotification.actor_profile?.avatar_url ? (
+                        <img src={firstNotification.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        <Icon className="w-5 h-5 text-accent-primary" />
+                      )}
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-bold flex items-center justify-center">
+                      +{group.notifications.length - 1}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${group.isRead ? 'text-text-secondary' : 'text-text-primary font-medium'}`}>
+                      {getGroupTitle(group)}
+                    </p>
+                    <p className="text-[10px] text-text-muted mt-1">
+                      {timeAgo(group.latestAt)} · {group.notifications.length} notifications
+                    </p>
+                  </div>
+                  {!group.isRead && (
+                    <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />
                   )}
-                </div>
+                </button>
 
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${n.is_read ? 'text-text-secondary' : 'text-text-primary font-medium'}`}>
-                    {n.title}
-                  </p>
-                  {n.body && (
-                    <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{n.body}</p>
-                  )}
-                  <p className="text-[10px] text-text-muted mt-1">{timeAgo(n.created_at)}</p>
-                </div>
-
-                {!n.is_read && (
-                  <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />
+                {isExpanded && (
+                  <div className="ml-6 border-l border-border-primary pl-4 mt-1 space-y-1">
+                    {group.notifications.map(n => {
+                      const link = getNotificationLink(n);
+                      return (
+                        <Link
+                          key={n.id}
+                          href={link}
+                          className="flex items-start gap-3 p-3 rounded-lg transition-colors bg-bg-card hover:bg-bg-card-hover"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
+                            {n.actor_profile?.avatar_url ? (
+                              <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                              <Icon className="w-4 h-4 text-accent-primary" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-text-secondary">{n.title}</p>
+                            {n.body && (
+                              <p className="text-[11px] text-text-muted mt-0.5 line-clamp-1">{n.body}</p>
+                            )}
+                            <p className="text-[10px] text-text-muted mt-0.5">{timeAgo(n.created_at)}</p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              </Link>
+              </div>
             );
           })}
         </div>

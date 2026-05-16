@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { getSuggestedFriends, type SuggestedUser } from '@/lib/discoveryService';
 import Link from 'next/link';
 import { Search, ChevronRight, Shield } from 'lucide-react';
 
@@ -129,6 +130,7 @@ export default function DiscoverPage() {
   const [trendingPosts, setTrendingPosts] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
   const [newUsers, setNewUsers] = useState<any[]>([]);
+  const [suggestedFriends, setSuggestedFriends] = useState<SuggestedUser[]>([]);
   const [searching, setSearching] = useState(false);
 
   const moon = getMoonPhaseInfo();
@@ -137,7 +139,10 @@ export default function DiscoverPage() {
 
   useEffect(() => {
     loadDiscoverContent();
-  }, []);
+    if (user?.id) {
+      getSuggestedFriends(user.id, 8).then(setSuggestedFriends);
+    }
+  }, [user?.id]);
 
   async function loadDiscoverContent() {
     const supabase = createClient();
@@ -375,6 +380,35 @@ export default function DiscoverPage() {
                 {c.description && (
                   <p className="text-[11px] text-text-muted mt-1 line-clamp-2">{c.description}</p>
                 )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Suggested For You (zodiac compatibility) ── */}
+      {suggestedFriends.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-text-primary mb-3 flex items-center gap-2">
+            <span className="text-xl">💫</span> Suggested For You
+          </h2>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+            {suggestedFriends.map((u) => (
+              <Link
+                key={u.id}
+                href={`/user/${u.id}`}
+                className="flex-shrink-0 w-28 text-center"
+              >
+                <div className="w-14 h-14 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-1.5 text-base font-bold text-accent-primary overflow-hidden">
+                  {u.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={u.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    (u.display_name || '?')[0].toUpperCase()
+                  )}
+                </div>
+                <p className="text-xs text-text-primary font-medium truncate">{u.display_name}</p>
+                <p className="text-[10px] text-accent-primary truncate">{u.reason}</p>
               </Link>
             ))}
           </div>

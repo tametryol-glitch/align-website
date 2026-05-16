@@ -39,6 +39,7 @@ const READINGS: ReadingItem[] = [
   { key: 'Fixed Stars', href: '/readings/fixed-stars', glyph: '★', tier: 'pro' },
   { key: 'Pathway', href: '/readings/pathway', glyph: '🛤️', tier: 'pro' },
   { key: 'Rectification', href: '/readings/rectification', glyph: '🔧', tier: 'pro' },
+  { key: 'Chart Adjuster', href: '/readings/chart-adjuster', glyph: '☉', tier: 'free' },
 ];
 
 const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pro: 3 };
