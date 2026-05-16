@@ -194,7 +194,7 @@ export function computePatterns(entries: JournalEntry[], now: Date = new Date())
   }
 
   const patterns: MoodPattern[] = [];
-  for (const { tag, moods } of byTag.values()) {
+  for (const { tag, moods } of Array.from(byTag.values())) {
     if (moods.length < MIN_OCCURRENCES) continue;
     const mean = moods.reduce((a, b) => a + b, 0) / moods.length;
     patterns.push({ tag, occurrences: moods.length, meanMood: mean, delta: mean - baselineMood });

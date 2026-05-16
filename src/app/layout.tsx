@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/layout/AuthProvider';
 import { GlobalCallListener } from '@/components/GlobalCallListener';
+import I18nProvider from '@/i18n/I18nProvider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://align-web.vercel.app'),
@@ -42,10 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#141826" />
       </head>
       <body className="min-h-screen font-sans">
-        <AuthProvider>
-          <GlobalCallListener />
-          {children}
-        </AuthProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <GlobalCallListener />
+            {children}
+          </AuthProvider>
+        </I18nProvider>
       </body>
     </html>
   );

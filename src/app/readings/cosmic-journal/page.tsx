@@ -552,7 +552,7 @@ export default function CosmicJournalPage() {
         mood: payload.mood,
         entryDate: payload.entryDate,
         tags: payload.tags,
-        transitSnapshot: editing ? editing.transitSnapshot : payload.transitSnapshot,
+        transitSnapshot: payload.transitSnapshot,
       });
       if (err) throw new Error(err);
       if (created) setEntries((prev) => [created, ...prev]);
