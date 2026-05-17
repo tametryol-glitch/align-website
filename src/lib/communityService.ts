@@ -1,3 +1,5 @@
+import { sanitizeSearchInput, validateUpload } from './sanitize';
+
 /**
  * Community Service — Web port
  * All CRUD, discovery, moderation, reactions, comments, and reporting for communities.
@@ -176,6 +178,9 @@ async function getPostCount(communityId: string): Promise<number> {
 
 /** Upload a community banner image */
 export async function uploadCommunityBanner(communityId: string, file: File): Promise<string | null> {
+  const err = validateUpload(file, 'image');
+  if (err) { console.warn('[Community] banner upload rejected:', err); return null; }
+
   const supabase = createClient();
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${communityId}/banner.${ext}`;
@@ -187,6 +192,9 @@ export async function uploadCommunityBanner(communityId: string, file: File): Pr
 
 /** Upload a community avatar image */
 export async function uploadCommunityAvatar(communityId: string, file: File): Promise<string | null> {
+  const err = validateUpload(file, 'image');
+  if (err) { console.warn('[Community] avatar upload rejected:', err); return null; }
+
   const supabase = createClient();
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${communityId}/avatar.${ext}`;
@@ -198,8 +206,11 @@ export async function uploadCommunityAvatar(communityId: string, file: File): Pr
 
 /** Upload media for a community post (image or video) */
 export async function uploadCommunityPostMedia(communityId: string, file: File): Promise<{ url: string; mediaKind: string } | null> {
-  const supabase = createClient();
   const isVideo = file.type.startsWith('video/');
+  const err = validateUpload(file, isVideo ? 'video' : 'image');
+  if (err) { console.warn('[Community] post media upload rejected:', err); return null; }
+
+  const supabase = createClient();
   const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
   const mediaKind = isVideo ? 'video' : 'photo';
   const path = `${communityId}/posts/${Date.now()}.${ext}`;
@@ -315,7 +326,8 @@ export async function browseCommunities(params?: {
 
   if (params?.category) query = query.eq('category', params.category);
   if (params?.search) {
-    query = query.or(`name.ilike.%${params.search}%,description.ilike.%${params.search}%`);
+    const s = sanitizeSearchInput(params.search);
+    query = query.or(`name.ilike.%${s}%,description.ilike.%${s}%`);
   }
 
   const { data, error } = await query;
@@ -556,7 +568,7 @@ export async function getCommunityPosts(
     .order('created_at', { ascending: false })
     .limit(limit);
 
-  if (options?.search) query = query.ilike('content', `%${options.search}%`);
+  if (options?.search) query = query.ilike('content', `%${sanitizeSearchInput(options.search)}%`);
   if (options?.postType) query = query.eq('post_type', options.postType);
 
   const { data: posts, error } = await query;

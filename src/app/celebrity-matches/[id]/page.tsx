@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { getZodiacGlyph, getPlanetGlyph } from '@/lib/utils';
@@ -302,11 +303,13 @@ export default function CelebrityProfilePage() {
       {/* Hero */}
       <div className="flex flex-col items-center mb-6">
         {celebrity.photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={celebrity.photo_url}
             alt={celebrity.name}
+            width={128}
+            height={128}
             className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-[3px] border-[#9B6FF6] mb-4"
+            unoptimized
           />
         ) : (
           <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br ${gradientForName(celebrity.name)} flex items-center justify-center mb-4`}>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -108,8 +109,7 @@ export default function BookmarksPage() {
                     <Link href={`/user/${b.post.user_id}`} className="flex items-center gap-2 hover:opacity-80">
                       <div className="w-7 h-7 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {b.post.profile?.avatar_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={b.post.profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                          <Image src={b.post.profile.avatar_url} alt="User avatar" width={28} height={28} className="w-full h-full rounded-full object-cover" unoptimized />
                         ) : (
                           <span className="text-[10px] font-bold text-accent-primary">
                             {(b.post.profile?.display_name || '?')[0].toUpperCase()}
@@ -133,8 +133,7 @@ export default function BookmarksPage() {
                   <Link href={`/user/${b.post.user_id}`} className="block">
                     <p className="text-sm text-text-primary line-clamp-3">{b.post.content}</p>
                     {b.post.image_url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={b.post.image_url} alt="" className="w-full rounded-lg max-h-[200px] object-cover mt-2" />
+                      <Image src={b.post.image_url} alt="Post image" width={400} height={200} className="w-full rounded-lg max-h-[200px] object-cover mt-2" unoptimized />
                     )}
                   </Link>
                   <p className="text-[10px] text-text-muted mt-2">

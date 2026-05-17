@@ -5,7 +5,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
 import Link from 'next/link';
-import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info, Crown, Users, DollarSign, Flag } from 'lucide-react';
+import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info, Crown, Users, DollarSign, Flag, Gift } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user, profile, logout } = useAuthStore();
@@ -139,6 +139,12 @@ export default function SettingsPage() {
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
+        <Link href="/settings/referrals" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
+          <span className="flex items-center gap-3 text-sm text-text-primary">
+            <Gift className="w-4 h-4 text-accent-primary" /> Referrals
+          </span>
+          <ChevronRight className="w-4 h-4 text-text-muted" />
+        </Link>
         <Link href="/settings/subscription" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
             <CreditCard className="w-4 h-4 text-text-muted" /> Subscription Plans
@@ -200,7 +206,7 @@ export default function SettingsPage() {
           <option value="fr">Français</option>
           <option value="de">Deutsch</option>
           <option value="it">Italiano</option>
-          <option value="pt">Português</option>
+          <option value="pt">Português (Brasil)</option>
           <option value="ja">日本語</option>
           <option value="ko">한국어</option>
           <option value="zh">中文</option>

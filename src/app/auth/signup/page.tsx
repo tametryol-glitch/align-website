@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { Sparkles } from 'lucide-react';
 
 export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupPageInner />
+    </Suspense>
+  );
+}
+
+function SignupPageInner() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,12 +26,17 @@ export default function SignupPage() {
   const [resent, setResent] = useState(false);
   const [resendError, setResendError] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref');
 
   async function handleGoogleSignup() {
     const supabase = createClient();
+    const redirectUrl = referralCode
+      ? `${window.location.origin}/auth/callback?ref=${referralCode}`
+      : `${window.location.origin}/auth/callback`;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: redirectUrl },
     });
   }
 
@@ -32,12 +46,15 @@ export default function SignupPage() {
     setLoading(true);
 
     const supabase = createClient();
+    const emailRedirectUrl = referralCode
+      ? `${window.location.origin}/auth/callback?ref=${referralCode}`
+      : `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: { name, referral_code: referralCode || undefined },
+        emailRedirectTo: emailRedirectUrl,
       },
     });
 
@@ -103,8 +120,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Align" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
+          <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-4" />
           <h1 className="text-3xl font-display font-bold text-text-primary">Create your account</h1>
           <p className="text-text-tertiary mt-2">Start your cosmic journey with Align</p>
         </div>

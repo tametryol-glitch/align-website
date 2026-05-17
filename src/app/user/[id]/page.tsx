@@ -2,15 +2,22 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { ArrowLeft, UserPlus, UserCheck, UserMinus, MessageCircle, Heart, MoreHorizontal, Flag, Ban, Calendar } from 'lucide-react';
+import { ArrowLeft, UserPlus, UserCheck, UserMinus, MessageCircle, Heart, MoreHorizontal, Flag, Ban, Calendar, X } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { sendFriendRequest as sendFriendRequestService, acceptFriendRequest, removeFriend as removeFriendService, cancelFriendRequest, blockUser } from '@/lib/friendService';
 import { getOrCreateConversation } from '@/lib/messagingService';
+import {
+  getUserPosts, toggleReaction, deletePost, editPost, repostPost, toggleBookmark, getUserBookmarks,
+  type FeedPost, type ReactionEmoji,
+} from '@/lib/feedService';
+import { FeedCard } from '@/components/feed/FeedCard';
+import { CommentSheet } from '@/components/feed/CommentSheet';
 
 interface ProfileData {
   id: string;
@@ -28,19 +35,6 @@ interface ProfileData {
   cover_photo_url: string | null;
 }
 
-interface UserPost {
-  id: string;
-  content: string | null;
-  image_url: string | null;
-  video_url: string | null;
-  type: string;
-  created_at: string;
-  updated_at: string;
-  visibility: string;
-  like_count: number;
-  comment_count: number;
-  profile: { display_name: string; avatar_url: string | null } | null;
-}
 
 type ProfileTab = 'posts' | 'photos' | 'reels' | 'about';
 
@@ -51,20 +45,6 @@ const HD_TYPE_EMOJI: Record<string, string> = {
   Manifestor: '⚡',
   Reflector: '🌙',
 };
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d`;
-  const weeks = Math.floor(days / 7);
-  if (weeks < 4) return `${weeks}w`;
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -93,12 +73,19 @@ export default function UserProfilePage() {
 
   // Tabs
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
-  const [posts, setPosts] = useState<UserPost[]>([]);
+  const [posts, setPosts] = useState<FeedPost[]>([]);
   const [photos, setPhotos] = useState<Array<{ id: string; image_url: string }>>([]);
   const [reels, setReels] = useState<Array<{ id: string; video_url: string; thumbnail_url: string | null; views_count: number }>>([]);
   const [postsLoading, setPostsLoading] = useState(false);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [reelsLoading, setReelsLoading] = useState(false);
+
+  // Post interaction state
+  const [commentPostId, setCommentPostId] = useState<string | null>(null);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [editingPost, setEditingPost] = useState<{ id: string; content: string } | null>(null);
+  const [editText, setEditText] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
 
   // More menu
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -194,23 +181,13 @@ export default function UserProfilePage() {
   async function loadPosts() {
     setPostsLoading(true);
     try {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('posts')
-        .select('id, content, image_url, video_url, type, created_at, updated_at, visibility, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
-        .eq('user_id', userId)
-        .eq('is_deleted', false)
-        .order('created_at', { ascending: false })
-        .limit(30);
-      if (data) {
-        const mapped = data.map((p: any) => ({
-          ...p,
-          like_count: 0,
-          comment_count: 0,
-          profile: Array.isArray(p.profile) ? p.profile[0] : p.profile,
-        }));
-        setPosts(mapped);
-      }
+      const currentUserId = user?.id || '';
+      const [feedPosts, bookmarks] = await Promise.all([
+        getUserPosts(userId, currentUserId),
+        currentUserId ? getUserBookmarks(currentUserId) : Promise.resolve(new Set<string>()),
+      ]);
+      setPosts(feedPosts);
+      setBookmarkedIds(bookmarks);
     } catch { /* */ }
     setPostsLoading(false);
   }
@@ -365,6 +342,53 @@ export default function UserProfilePage() {
     window.open(`mailto:support@aligncosmic.com?subject=Report User: ${userId}`);
   }
 
+  const currentUserId = user?.id || '';
+
+  async function handleReaction(postId: string, emoji: ReactionEmoji) {
+    if (!currentUserId) return;
+    const updated = await toggleReaction(postId, currentUserId, emoji);
+    setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, reactions: updated } : p));
+  }
+
+  async function handleDeletePost(postId: string) {
+    await deletePost(postId);
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  }
+
+  async function handleBookmark(postId: string) {
+    if (!currentUserId) return;
+    const result = await toggleBookmark(postId, currentUserId);
+    setBookmarkedIds((prev) => {
+      const next = new Set(prev);
+      if (result) next.add(postId);
+      else next.delete(postId);
+      return next;
+    });
+  }
+
+  async function handleRepost(post: FeedPost) {
+    if (!currentUserId) return;
+    try {
+      await repostPost(currentUserId, post);
+    } catch { /* */ }
+  }
+
+  function handleStartEdit(postId: string, currentContent: string) {
+    setEditingPost({ id: postId, content: currentContent });
+    setEditText(currentContent);
+  }
+
+  async function handleSaveEdit() {
+    if (!editingPost || editSaving) return;
+    setEditSaving(true);
+    try {
+      await editPost(editingPost.id, editText.trim());
+      setPosts((prev) => prev.map((p) => p.id === editingPost.id ? { ...p, content: editText.trim() } : p));
+      setEditingPost(null);
+    } catch { /* */ }
+    setEditSaving(false);
+  }
+
   if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading profile..." /></div>;
   if (!profile) {
     return (
@@ -405,10 +429,9 @@ export default function UserProfilePage() {
 
       {/* Cover Photo + Avatar */}
       <div className="relative mb-6">
-        <div className="h-[140px] sm:h-[180px] rounded-t-2xl overflow-hidden">
+        <div className="h-[140px] sm:h-[180px] rounded-t-2xl overflow-hidden relative">
           {profile.cover_photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.cover_photo_url} alt="" className="w-full h-full object-cover" />
+            <Image src={profile.cover_photo_url} alt="Cover photo" fill className="object-cover" unoptimized />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#1E1440] via-[#2D1B69] to-[#1A1035]" />
           )}
@@ -582,27 +605,18 @@ export default function UserProfilePage() {
             <LoadingCosmic label="Loading posts..." />
           ) : posts.length > 0 ? (
             posts.map(post => (
-              <div key={post.id} className="card p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <UserAvatar
-                    displayName={post.profile?.display_name || profile.display_name}
-                    avatarUrl={post.profile?.avatar_url || profile.avatar_url}
-                    size="sm"
-                  />
-                  <div>
-                    <p className="text-sm font-semibold text-text-primary">{post.profile?.display_name || profile.display_name}</p>
-                    <p className="text-xs text-text-tertiary">{timeAgo(post.created_at)}</p>
-                  </div>
-                </div>
-                {post.content && <p className="text-sm text-text-secondary mb-3">{post.content}</p>}
-                {post.image_url && !post.video_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={post.image_url} alt="" className="w-full rounded-lg max-h-[400px] object-cover mb-3" />
-                )}
-                {post.video_url && (
-                  <video src={post.video_url} controls className="w-full rounded-lg max-h-[400px] mb-3" />
-                )}
-              </div>
+              <FeedCard
+                key={post.id}
+                post={post}
+                currentUserId={currentUserId}
+                onReaction={handleReaction}
+                onComment={setCommentPostId}
+                onDelete={handleDeletePost}
+                onEdit={handleStartEdit}
+                onRepost={handleRepost}
+                isBookmarked={bookmarkedIds.has(post.id)}
+                onBookmark={handleBookmark}
+              />
             ))
           ) : (
             <div className="card p-8 text-center">
@@ -620,13 +634,15 @@ export default function UserProfilePage() {
           ) : photos.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
               {photos.map(photo => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={photo.id}
-                  src={photo.image_url}
-                  alt=""
-                  className="w-full aspect-square object-cover"
-                />
+                <div key={photo.id} className="relative aspect-square">
+                  <Image
+                    src={photo.image_url}
+                    alt="Post photo"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
               ))}
             </div>
           ) : (
@@ -647,8 +663,7 @@ export default function UserProfilePage() {
               {reels.map(reel => (
                 <div key={reel.id} className="relative aspect-[9/16]">
                   {reel.thumbnail_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={reel.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                    <Image src={reel.thumbnail_url} alt="Reel thumbnail" fill className="object-cover" unoptimized />
                   ) : (
                     <div className="w-full h-full bg-bg-secondary flex items-center justify-center">
                       <span className="text-2xl">▶</span>
@@ -719,6 +734,59 @@ export default function UserProfilePage() {
       {/* Click outside to close more menu */}
       {showMoreMenu && (
         <div className="fixed inset-0 z-40" onClick={() => setShowMoreMenu(false)} />
+      )}
+
+      {/* Comment Sheet */}
+      {commentPostId && (() => {
+        const commentPost = posts.find(p => p.id === commentPostId);
+        return (
+          <CommentSheet
+            postId={commentPostId}
+            postOwnerId={commentPost?.userId || ''}
+            userId={currentUserId}
+            onClose={() => setCommentPostId(null)}
+            onCommentCountChange={(pid, delta) => {
+              setPosts(prev => prev.map(p =>
+                p.id === pid ? { ...p, commentCount: Math.max(0, p.commentCount + delta) } : p
+              ));
+            }}
+          />
+        );
+      })()}
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setEditingPost(null)} />
+          <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
+              <h3 className="text-lg font-semibold text-text-primary">Edit Post</h3>
+              <button onClick={() => setEditingPost(null)} className="text-text-muted hover:text-text-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-5 py-4">
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                rows={5}
+                maxLength={2000}
+                className="w-full bg-bg-card border border-border-primary rounded-xl p-4 text-sm text-text-primary resize-none outline-none focus:border-accent-primary transition-colors"
+              />
+              <p className="text-xs text-text-muted text-right mt-1">{editText.length}/2000</p>
+            </div>
+            <div className="px-5 py-4 border-t border-border-primary flex gap-3">
+              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">Cancel</button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={editSaving || !editText.trim()}
+                className="btn-primary flex-1 text-sm"
+              >
+                {editSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

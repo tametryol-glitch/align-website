@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
@@ -41,8 +42,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Align" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
+          <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-4" />
           <h1 className="text-3xl font-display font-bold text-text-primary">Welcome back</h1>
           <p className="text-text-tertiary mt-2">Sign in to your Align account</p>
         </div>

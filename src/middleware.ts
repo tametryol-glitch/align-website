@@ -1,7 +1,35 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const RATE_WINDOW = 60_000;
+const RATE_MAX = 60;
+const hits = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(request: NextRequest): NextResponse | null {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const key = `${ip}:${request.nextUrl.pathname}`;
+  const now = Date.now();
+  let entry = hits.get(key);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + RATE_WINDOW };
+    hits.set(key, entry);
+  }
+  entry.count++;
+  if (entry.count > RATE_MAX) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)) } },
+    );
+  }
+  return null;
+}
+
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    const limited = checkRateLimit(request);
+    if (limited) return limited;
+  }
+
   let response = NextResponse.next({ request: { headers: request.headers } });
 
   const supabase = createServerClient(
@@ -28,10 +56,13 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from protected routes
-  const isProtected = !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/api') &&
-    request.nextUrl.pathname !== '/';
+  const PUBLIC_API_ROUTES = ['/api/og'];
+
+  const pathname = request.nextUrl.pathname;
+  const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
+  const isProtected = !pathname.startsWith('/auth') &&
+    !isPublicApi &&
+    pathname !== '/';
 
   if (!user && isProtected) {
     const redirectUrl = new URL('/auth/login', request.url);
@@ -41,6 +72,20 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (user && request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.includes('callback')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Force onboarding for authenticated users without birth data
+  if (user && isProtected && pathname !== '/onboarding' && !pathname.startsWith('/api')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('birth_date, latitude, longitude, timezone')
+      .eq('id', user.id)
+      .single();
+
+    const needsOnboarding = !profile?.birth_date || profile?.latitude == null || profile?.longitude == null || !profile?.timezone;
+    if (needsOnboarding) {
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
   }
 
   return response;

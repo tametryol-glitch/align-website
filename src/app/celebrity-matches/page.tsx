@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { getZodiacGlyph } from '@/lib/utils';
@@ -68,12 +69,14 @@ function CelebCard({ celebrity, onClick }: { celebrity: Celebrity; onClick: () =
       className="flex-shrink-0 w-[140px] flex flex-col items-center group cursor-pointer"
     >
       {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={celebrity.photo_url}
+        <Image
+          src={celebrity.photo_url!}
           alt={celebrity.name}
+          width={120}
+          height={120}
           className="w-[120px] h-[120px] rounded-xl object-cover bg-bg-secondary group-hover:ring-2 ring-accent-primary/50 transition-all"
           onError={() => setImgFailed(true)}
+          unoptimized
         />
       ) : (
         <div className={`w-[120px] h-[120px] rounded-xl bg-gradient-to-br ${gradientForName(celebrity.name)} flex items-center justify-center group-hover:ring-2 ring-accent-primary/50 transition-all`}>
@@ -116,12 +119,14 @@ function SearchRow({ celebrity, onClick }: { celebrity: Celebrity; onClick: () =
       className="flex items-center gap-3 py-3 border-b border-border-primary/30 w-full text-left hover:bg-bg-secondary/30 transition-colors px-1 rounded"
     >
       {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={celebrity.photo_url}
-          alt=""
+        <Image
+          src={celebrity.photo_url!}
+          alt={celebrity.name}
+          width={48}
+          height={48}
           className="w-12 h-12 rounded-full object-cover flex-shrink-0"
           onError={() => setImgFailed(true)}
+          unoptimized
         />
       ) : (
         <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${gradientForName(celebrity.name)} flex items-center justify-center flex-shrink-0`}>

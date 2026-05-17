@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
@@ -87,8 +88,7 @@ export default function LessonPage() {
 
           {currentSlide?.image_url && (
             <div className="rounded-xl overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={currentSlide.image_url} alt="" className="w-full" />
+              <Image src={currentSlide.image_url} alt="Lesson slide" width={800} height={450} className="w-full" unoptimized />
             </div>
           )}
         </div>

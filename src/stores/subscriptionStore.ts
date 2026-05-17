@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { isTrialActive, getTrialStatus } from '@/lib/trialService';
 
 export type TierLevel = 'free' | 'light' | 'premium' | 'pro';
 
@@ -64,18 +65,41 @@ const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pr
 interface SubscriptionState {
   tier: TierLevel;
   loading: boolean;
+  onTrial: boolean;
+  trialDaysRemaining: number;
   setTier: (tier: TierLevel) => void;
   setLoading: (loading: boolean) => void;
   hasAccess: (feature: string) => boolean;
+  checkTrial: (userId: string) => Promise<void>;
 }
 
 export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   tier: 'free',
   loading: true,
+  onTrial: false,
+  trialDaysRemaining: 0,
   setTier: (tier) => set({ tier }),
   setLoading: (loading) => set({ loading }),
   hasAccess: (feature: string) => {
+    const { tier, onTrial } = get();
+    const effectiveTier = onTrial && TIER_RANK[tier] < TIER_RANK['premium'] ? 'premium' : tier;
     const requiredTier = FEATURE_TIER[feature] || 'free';
-    return TIER_RANK[get().tier] >= TIER_RANK[requiredTier];
+    return TIER_RANK[effectiveTier] >= TIER_RANK[requiredTier];
+  },
+  checkTrial: async (userId: string) => {
+    try {
+      const active = await isTrialActive(userId);
+      if (active) {
+        const status = await getTrialStatus(userId);
+        set({
+          onTrial: true,
+          trialDaysRemaining: status?.daysRemaining ?? 0,
+        });
+      } else {
+        set({ onTrial: false, trialDaysRemaining: 0 });
+      }
+    } catch {
+      set({ onTrial: false, trialDaysRemaining: 0 });
+    }
   },
 }));

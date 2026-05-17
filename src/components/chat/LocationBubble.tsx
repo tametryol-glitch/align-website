@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { MapPin, ExternalLink } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -37,12 +38,13 @@ export function LocationBubble({ metadata, isMine }: LocationBubbleProps) {
     >
       {/* Map image */}
       <div className="relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={mapImageUrl}
           alt={address ?? 'Shared location'}
+          width={300}
+          height={150}
           className="w-full h-[150px] object-cover"
-          loading="lazy"
+          unoptimized
         />
         {/* Pin overlay */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

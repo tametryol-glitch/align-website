@@ -36,14 +36,21 @@ const TYPE_CATEGORIES: Record<string, 'social' | 'cosmic' | 'system'> = {
   friend_request: 'social',
   friend_accepted: 'social',
   reaction: 'social',
+  like: 'social',
   comment: 'social',
   mention: 'social',
   message: 'social',
+  new_message: 'social',
+  follow: 'social',
+  story_reaction: 'social',
   cosmic_alert: 'cosmic',
   transit: 'cosmic',
+  transit_alert: 'cosmic',
   moon_phase: 'cosmic',
   retrograde: 'cosmic',
   eclipse: 'cosmic',
+  cosmic_match_ready: 'cosmic',
+  system: 'system',
   announcement: 'system',
   account: 'system',
   subscription: 'system',
@@ -53,14 +60,21 @@ const NOTIFICATION_ICONS: Record<string, any> = {
   friend_request: UserPlus,
   friend_accepted: UserPlus,
   reaction: Heart,
+  like: Heart,
   comment: MessageCircle,
   mention: Star,
   message: MessageCircle,
+  new_message: MessageCircle,
+  follow: UserPlus,
+  story_reaction: Heart,
   cosmic_alert: Zap,
   transit: Zap,
+  transit_alert: Zap,
   moon_phase: Star,
   retrograde: Zap,
   eclipse: Star,
+  cosmic_match_ready: Star,
+  system: Bell,
   announcement: Megaphone,
   account: Bell,
   subscription: Bell,
@@ -198,25 +212,35 @@ function getNotificationLink(n: Notification): string {
     case 'friend_request':
     case 'friend_accepted':
       return n.actor_id ? `/user/${n.actor_id}` : '/friends';
+    case 'follow':
+      return n.actor_id ? `/user/${n.actor_id}` : '/friends';
     case 'reaction':
+    case 'like':
     case 'comment':
     case 'mention':
+    case 'story_reaction':
       return '/feed';
     case 'message':
-      return '/messages';
+    case 'new_message':
+      return n.data?.conversation_id ? `/messages/${n.data.conversation_id}` : '/messages';
     case 'cosmic_alert':
     case 'transit':
+    case 'transit_alert':
     case 'moon_phase':
     case 'retrograde':
     case 'eclipse':
       return '/readings';
+    case 'cosmic_match_ready':
+      return n.data?.match_id ? `/compatibility/${n.data.match_id}` : '/compatibility';
+    case 'system':
+      return '/dashboard';
     case 'announcement':
       return '/settings';
     case 'account':
     case 'subscription':
       return '/settings/account';
     default:
-      return '#';
+      return '/dashboard';
   }
 }
 

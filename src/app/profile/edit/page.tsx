@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
@@ -93,8 +94,7 @@ export default function EditProfilePage() {
         {/* Cover photo */}
         <div className="h-[140px] sm:h-[180px] rounded-2xl overflow-hidden relative group">
           {profile?.cover_photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.cover_photo_url} alt="" className="w-full h-full object-cover" />
+            <Image src={profile.cover_photo_url} alt="Cover photo" fill className="object-cover" unoptimized />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#1E1440] via-[#2D1B69] to-[#1A1035] flex items-center justify-center">
               <p className="text-text-muted text-xs">Tap to add cover photo</p>
@@ -132,8 +132,7 @@ export default function EditProfilePage() {
           <div className="relative">
             <div className="w-24 h-24 rounded-full border-4 border-bg-card bg-accent-muted flex items-center justify-center overflow-hidden">
               {profile?.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                <Image src={profile.avatar_url} alt="User avatar" width={96} height={96} className="w-full h-full rounded-full object-cover" unoptimized />
               ) : (
                 <span className="text-3xl font-bold text-accent-primary">{initial}</span>
               )}

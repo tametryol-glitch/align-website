@@ -1,26 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
-import { UserAvatar } from '@/components/ui/UserAvatar';
-import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import {
-  MessageCircle, Send, ArrowLeft, Search, Plus, Users, X,
-  MoreVertical, Pin, BellOff, Archive, Trash2, Pencil, Reply,
-  SmilePlus, Check, CheckCheck, Image as ImageIcon, ChevronDown,
-  Forward, Settings2, Smile,
-} from 'lucide-react';
-import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
-import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
-import { AttachmentMenu } from '@/components/chat/AttachmentMenu';
+import { MessageCircle, Plus, Reply, SmilePlus, Pencil, Trash2, Forward, Pin } from 'lucide-react';
 import { PollCreator } from '@/components/chat/PollCreator';
-import { VoiceMessageBubble } from '@/components/chat/VoiceMessageBubble';
-import { VideoMessageBubble } from '@/components/chat/VideoMessageBubble';
-import { FileBubble } from '@/components/chat/FileBubble';
-import { LocationBubble } from '@/components/chat/LocationBubble';
-import { PollBubble } from '@/components/chat/PollBubble';
-import { CallButton } from '@/components/chat/CallButton';
 import { CallScreen } from '@/components/chat/CallScreen';
 import { GroupSettingsModal } from '@/components/chat/GroupSettingsModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
@@ -45,52 +29,21 @@ import {
   subscribeToReadReceipts,
   getOtherUserReadAt,
   addReaction,
-  getReactionsFromMessage,
   getOrCreateConversation,
-  createGroupConversation,
   togglePinConversation,
   toggleMuteConversation,
   toggleArchiveConversation,
   leaveConversation,
-  searchUsers,
-  getFriends,
   getTotalUnreadCount,
   uploadChatImage,
   pinMessage,
-  getPinnedMessages,
   type Message,
-  type Conversation,
 } from '@/lib/messagingService';
 
-// ── Helpers ──────────────────────────────────────────────────────────
-
-function timeAgo(dateStr: string): string {
-  if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
-function formatMessageTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-}
-
-function formatDateHeader(dateStr: string): string {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - d.getTime();
-  if (diff < 86400000 && d.getDate() === now.getDate()) return 'Today';
-  if (diff < 172800000) return 'Yesterday';
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-}
-
-const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '🙏', '🔥'];
+import { ConversationList } from '@/components/messages/ConversationList';
+import { MessageThread } from '@/components/messages/MessageThread';
+import { MessageComposer } from '@/components/messages/MessageComposer';
+import { NewChatModal, NewGroupModal } from '@/components/messages/NewConversationModal';
 
 // ── Smart Reply Helpers ─────────────────────────────────────────────
 
@@ -107,38 +60,7 @@ function getSmartReplies(lastMsg: Message | undefined, myId: string | undefined)
   return [];
 }
 
-// ── Link Preview Helpers ────────────────────────────────────────────
-
-interface LinkPreview {
-  url: string;
-  title?: string;
-  description?: string;
-  image?: string;
-}
-
-const URL_REGEX = /https?:\/\/[^\s<>]+/;
-
-function extractFirstUrl(text: string): string | null {
-  const match = text.match(URL_REGEX);
-  return match ? match[0] : null;
-}
-
-const linkPreviewCache = new Map<string, LinkPreview | null>();
-
-async function fetchLinkPreview(url: string): Promise<LinkPreview | null> {
-  if (linkPreviewCache.has(url)) return linkPreviewCache.get(url) ?? null;
-  try {
-    const resp = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-    if (!resp.ok) { linkPreviewCache.set(url, null); return null; }
-    const data = await resp.json();
-    const preview: LinkPreview = { url, title: data.title, description: data.description, image: data.image };
-    linkPreviewCache.set(url, preview);
-    return preview;
-  } catch {
-    linkPreviewCache.set(url, null);
-    return null;
-  }
-}
+const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '🙏', '🔥'];
 
 // ── Main Component ───────────────────────────────────────────────────
 
@@ -168,7 +90,6 @@ export default function MessagesPage() {
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [forwardMessage, setForwardMessage] = useState<Message | null>(null);
-  const fileUploadRef = useRef<HTMLInputElement>(null);
 
   // Call state
   const [callState, setCallState] = useState<CallState>('idle');
@@ -177,7 +98,6 @@ export default function MessagesPage() {
   const [callDuration, setCallDuration] = useState(0);
   const [callMuted, setCallMuted] = useState(false);
   const [callCameraOn, setCallCameraOn] = useState(true);
-  // Call store selectors (global listener handles incoming calls)
   const pendingAcceptedCall = useCallStore((s) => s.pendingAcceptedCall);
   const activeSignal = useCallStore((s) => s.activeSignal);
   const clearPendingCall = useCallStore((s) => s.setPendingAcceptedCall);
@@ -206,7 +126,6 @@ export default function MessagesPage() {
         c.last_message_preview.toLowerCase().includes(q)
       );
     }
-    // Pinned first
     return convos.sort((a, b) => {
       if (a.is_pinned && !b.is_pinned) return -1;
       if (!a.is_pinned && b.is_pinned) return 1;
@@ -221,20 +140,16 @@ export default function MessagesPage() {
     return store.messages.filter(m => m.content.toLowerCase().includes(q));
   }, [store.messages, store.messageSearchQuery]);
 
-  // Date headers
-  const messagesWithHeaders = useMemo(() => {
-    const result: Array<{ type: 'header'; date: string } | { type: 'message'; message: Message }> = [];
-    let lastDate = '';
-    for (const msg of displayMessages) {
-      const d = new Date(msg.created_at).toDateString();
-      if (d !== lastDate) {
-        result.push({ type: 'header', date: msg.created_at });
-        lastDate = d;
-      }
-      result.push({ type: 'message', message: msg });
-    }
-    return result;
-  }, [displayMessages]);
+  // Typing state for active conversation
+  const isOtherTyping = store.activeConversationId
+    ? (store.typingUsers[store.activeConversationId] && Date.now() - store.typingUsers[store.activeConversationId] < 3000)
+    : false;
+
+  // Smart replies
+  const smartReplies = useMemo(() => {
+    const lastReceived = [...store.messages].reverse().find(m => m.sender_id !== user?.id);
+    return getSmartReplies(lastReceived, user?.id);
+  }, [store.messages, user?.id]);
 
   // ── Load conversations on mount ──
   useEffect(() => {
@@ -255,7 +170,6 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!user) return;
     const sub = subscribeToConversations(() => {
-      // Refresh conversations list on any update
       loadConversations();
     });
     return () => sub.unsubscribe();
@@ -265,12 +179,8 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!store.activeConversationId) return;
     loadThreadMessages(store.activeConversationId);
-
-    // Mark as read
     markAsRead(store.activeConversationId);
     store.decrementUnread(store.activeConversationId);
-
-    // Get read status
     getOtherUserReadAt(store.activeConversationId).then(readAt => {
       store.setOtherReadAt(readAt);
     });
@@ -282,7 +192,6 @@ export default function MessagesPage() {
     store.setMessages(msgs);
     store.setHasMore(msgs.length >= 50);
     store.setMessagesLoading(false);
-    // Scroll to bottom after load
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
     }, 100);
@@ -294,16 +203,12 @@ export default function MessagesPage() {
     setLoadingMore(true);
     const oldest = store.messages[0];
     if (!oldest) { setLoadingMore(false); return; }
-
     const container = messagesContainerRef.current;
     const scrollHeightBefore = container?.scrollHeight || 0;
-
     const older = await getMessages(store.activeConversationId, 50, oldest.created_at);
     store.prependMessages(older);
     store.setHasMore(older.length >= 50);
     setLoadingMore(false);
-
-    // Maintain scroll position
     requestAnimationFrame(() => {
       if (container) {
         const scrollHeightAfter = container.scrollHeight;
@@ -321,16 +226,9 @@ export default function MessagesPage() {
         store.updateMessage(msg);
         return;
       }
-
       const isFromOther = msg.sender_id !== user.id;
-
-      // Dedupe — already in list (e.g. sendMessage response beat realtime)
       const existing = useMessagesStore.getState().messages;
       if (existing.some(m => m.id === msg.id)) return;
-
-      // If this is OUR message arriving via realtime, it may race with the
-      // optimistic flow. Replace the matching optimistic entry instead of
-      // appending a duplicate.
       if (!isFromOther) {
         const optimisticMsg = existing.find(
           m => m.id.startsWith('temp-') && m.content === msg.content,
@@ -339,17 +237,11 @@ export default function MessagesPage() {
           store.removeMessage(optimisticMsg.id);
         }
       }
-
       store.addMessage(msg);
-
       if (isFromOther) {
-        // Mark as read since we're viewing the conversation
         markAsRead(convId);
-        // Update conversation preview + unread
         store.updateConversationPreview(convId, msg.content, msg.sender_id);
       }
-
-      // Scroll to bottom if near bottom
       const container = messagesContainerRef.current;
       if (container) {
         const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
@@ -365,7 +257,7 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!store.activeConversationId) return;
     const convId = store.activeConversationId;
-    const sub = subscribeToTyping(convId, (userId) => {
+    const sub = subscribeToTyping(convId, (_userId) => {
       store.setTypingUser(convId);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
@@ -400,13 +292,9 @@ export default function MessagesPage() {
   function handleScroll() {
     const container = messagesContainerRef.current;
     if (!container) return;
-
-    // Load more when scrolled near top
     if (container.scrollTop < 100 && store.hasMore && !loadingMore) {
       loadMoreMessages();
     }
-
-    // Show/hide scroll-to-bottom button
     const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 300;
     setShowScrollDown(!nearBottom);
   }
@@ -415,8 +303,6 @@ export default function MessagesPage() {
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!user || !store.activeConversationId || (!newMessage.trim() && !store.editingMessage)) return;
-
-    // Edit mode
     if (store.editingMessage) {
       const success = await editMessage(store.editingMessage.id, editText);
       if (success) {
@@ -426,19 +312,14 @@ export default function MessagesPage() {
       }
       return;
     }
-
     setSending(true);
     const content = newMessage.trim();
     const replyToId = store.replyTo?.id;
     setNewMessage('');
     store.setReplyTo(null);
-
-    // Signal typing stopped
     if (store.activeConversationId) {
       sendTypingIndicator(store.activeConversationId, 'typing_stopped');
     }
-
-    // Optimistic update
     const optimistic: Message = {
       id: `temp-${Date.now()}`,
       conversation_id: store.activeConversationId,
@@ -457,17 +338,12 @@ export default function MessagesPage() {
     };
     store.addMessage(optimistic);
     store.updateConversationPreview(store.activeConversationId, content, user.id);
-
-    // Scroll to bottom
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-
     const result = await sendMsg(store.activeConversationId, content, 'text', {}, replyToId);
     if (result.success && result.message) {
-      // Replace optimistic message with the real server message
       store.removeMessage(optimistic.id);
       store.addMessage(result.message);
     } else {
-      // Send failed — remove the optimistic message
       store.removeMessage(optimistic.id);
     }
     setSending(false);
@@ -478,7 +354,6 @@ export default function MessagesPage() {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !store.activeConversationId || !user) return;
-
     setSending(true);
     const url = await uploadChatImage(store.activeConversationId, file);
     if (url) {
@@ -489,7 +364,6 @@ export default function MessagesPage() {
       }
     }
     setSending(false);
-    // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = '';
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   }
@@ -528,7 +402,6 @@ export default function MessagesPage() {
     await addReaction(msgId, emoji);
     setReactionPicker(null);
     setContextMenu(null);
-    // Refresh messages to show updated reactions
     if (store.activeConversationId) {
       const msgs = await getMessages(store.activeConversationId, 50);
       store.setMessages(msgs);
@@ -580,7 +453,6 @@ export default function MessagesPage() {
       store.setReplyTo(null);
     }
     setSending(false);
-    if (fileUploadRef.current) fileUploadRef.current.value = '';
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   }
 
@@ -623,7 +495,6 @@ export default function MessagesPage() {
       return { ...opt, votes };
     });
     await editMessage(messageId, msg.content);
-    // Optimistic update for metadata
     store.updateMessage({ ...msg, metadata: { ...msg.metadata, options } });
   }
 
@@ -632,7 +503,6 @@ export default function MessagesPage() {
     if (!forwardMessage || !user) return;
     const result = await sendMsg(conversationId, forwardMessage.content, forwardMessage.type as 'text', forwardMessage.metadata || undefined);
     if (result.success && result.message) {
-      // Only add to visible messages if forwarding into the active conversation
       if (conversationId === store.activeConversationId) {
         store.addMessage(result.message);
       }
@@ -641,33 +511,25 @@ export default function MessagesPage() {
     setForwardMessage(null);
   }
 
-  // ── Agora connection helper (used by both caller and callee) ──
+  // ── Agora connection helper ──
   async function connectToAgoraCall(channelName: string, type: 'voice' | 'video') {
     try {
       setCallState('connecting');
-
       const client = createCallClient();
       callClientRef.current = client;
-
-      // Numeric UID for Agora (derived from timestamp to keep it unique)
       const uid = Math.floor(Math.random() * 100000) + 1;
-
       const token = await fetchAgoraToken(channelName, uid);
       if (!token) {
         console.warn('[Call] Failed to get Agora token');
         handleEndCall();
         return;
       }
-
-      // Remote user joins → call is active
       client.onRemoteUserJoined(() => {
         setCallState('active');
         setCallDuration(0);
         callTimerRef.current = setInterval(() => {
           setCallDuration(prev => prev + 1);
         }, 1000);
-
-        // Render remote video if video call
         if (type === 'video') {
           setTimeout(() => {
             const track = client.getRemoteVideoTrack();
@@ -677,19 +539,15 @@ export default function MessagesPage() {
           }, 500);
         }
       });
-
       client.onRemoteUserLeft(() => {
         handleEndCall();
       });
-
       const joined = await client.join(channelName, token, uid);
       if (!joined) {
         console.warn('[Call] Failed to join Agora channel');
         handleEndCall();
         return;
       }
-
-      // If video call, enable camera and render local preview
       if (type === 'video') {
         await client.toggleCamera();
         setCallCameraOn(true);
@@ -706,26 +564,20 @@ export default function MessagesPage() {
     }
   }
 
-  // ── React to call signals forwarded by GlobalCallListener ──
-  // (incoming-call and call-cancelled are handled globally;
-  //  call-response and call-ended are forwarded via callStore)
+  // ── React to call signals ──
   useEffect(() => {
     if (!activeSignal || activeSignal._ts <= lastProcessedSignalTs.current) return;
     lastProcessedSignalTs.current = activeSignal._ts;
-
     switch (activeSignal.type) {
       case 'call-response':
         if (activeSignal.accepted && callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
-          // Other user accepted — connect to Agora
           connectToAgoraCall(callSessionRef.current.channelName, callSessionRef.current.callType);
         } else if (!activeSignal.accepted && callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
-          // Other user declined
           callSessionRef.current = null;
           setCallState('ended');
           setTimeout(() => setCallState('idle'), 2000);
         }
         break;
-
       case 'call-ended':
         if (callSessionRef.current && activeSignal.sessionId === callSessionRef.current.sessionId) {
           handleEndCall();
@@ -735,36 +587,27 @@ export default function MessagesPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSignal]);
 
-  // ── Pick up pending accepted calls from GlobalCallListener ──
+  // ── Pick up pending accepted calls ──
   useEffect(() => {
     if (!pendingAcceptedCall || !user) return;
-
     (async () => {
-      // Ensure the conversation with the caller is open so CallScreen renders
       const convId = await getOrCreateConversation(pendingAcceptedCall.callerId);
       if (convId) {
         await loadConversations();
         store.setActiveConversationId(convId);
       }
-
-      // Set up call state
       setCallType(pendingAcceptedCall.callType);
       setCallIsOutgoing(false);
       setCallDuration(0);
       setCallMuted(false);
       setCallCameraOn(pendingAcceptedCall.callType === 'video');
-
       callSessionRef.current = {
         channelName: pendingAcceptedCall.channelName,
         sessionId: pendingAcceptedCall.sessionId,
         otherId: pendingAcceptedCall.callerId,
         callType: pendingAcceptedCall.callType,
       };
-
-      // Connect to Agora
       connectToAgoraCall(pendingAcceptedCall.channelName, pendingAcceptedCall.callType);
-
-      // Clear the pending call
       clearPendingCall(null);
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -775,21 +618,15 @@ export default function MessagesPage() {
     if (!user || !activeConv) return;
     const otherId = activeConv.other_user_id;
     if (!otherId) return;
-
     setCallType(type);
     setCallIsOutgoing(true);
     setCallState('ringing');
     setCallDuration(0);
     setCallMuted(false);
     setCallCameraOn(type === 'video');
-
     const channelName = generateChannelName(user.id, otherId);
     const sessionId = generateSessionId();
-
-    // Store session info so the signal-response handler can connect
     callSessionRef.current = { channelName, sessionId, otherId, callType: type };
-
-    // Send call signal to other user
     sendCallSignal(otherId, {
       type: 'incoming-call',
       callerId: user.id,
@@ -798,8 +635,6 @@ export default function MessagesPage() {
       channelName,
       sessionId,
     });
-
-    // Also send push notification for mobile users
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (apiUrl) {
@@ -814,11 +649,9 @@ export default function MessagesPage() {
             call_type: type,
             session_id: sessionId,
           }),
-        }).catch(() => {}); // fire-and-forget
+        }).catch(() => {});
       }
     } catch {}
-
-    // Auto-cancel after 30 seconds if no answer
     setTimeout(() => {
       setCallState(prev => {
         if (prev === 'ringing') {
@@ -833,7 +666,6 @@ export default function MessagesPage() {
   }
 
   async function handleEndCall() {
-    // Send end signal FIRST
     if (callSessionRef.current) {
       sendCallSignal(callSessionRef.current.otherId, {
         type: 'call-ended',
@@ -841,9 +673,8 @@ export default function MessagesPage() {
       });
       callSessionRef.current = null;
     }
-
     const client = callClientRef.current;
-    callClientRef.current = null; // prevent double-cleanup
+    callClientRef.current = null;
     if (client) {
       try {
         await client.leave();
@@ -871,9 +702,6 @@ export default function MessagesPage() {
     await callClientRef.current.toggleCamera();
     const isNowOn = callClientRef.current.isCameraOn();
     setCallCameraOn(isNowOn);
-
-    // When camera turns back on, a NEW video track is created.
-    // We must play it into the local PiP element or it stays black.
     if (!wasOn && isNowOn) {
       setTimeout(() => {
         const localTrack = callClientRef.current?.getLocalVideoTrack();
@@ -925,23 +753,6 @@ export default function MessagesPage() {
     }
   }
 
-  // ── Read receipts ──
-  const isOtherRead = useCallback((msg: Message) => {
-    if (!store.otherReadAt || msg.sender_id !== user?.id) return false;
-    return new Date(store.otherReadAt) >= new Date(msg.created_at);
-  }, [store.otherReadAt, user?.id]);
-
-  // ── Typing state for active conversation ──
-  const isOtherTyping = store.activeConversationId
-    ? (store.typingUsers[store.activeConversationId] && Date.now() - store.typingUsers[store.activeConversationId] < 3000)
-    : false;
-
-  // ── Smart replies ──
-  const smartReplies = useMemo(() => {
-    const lastReceived = [...store.messages].reverse().find(m => m.sender_id !== user?.id);
-    return getSmartReplies(lastReceived, user?.id);
-  }, [store.messages, user?.id]);
-
   // ── Pin a message ──
   async function handlePinMessage(msg: Message) {
     const isPinned = !!msg.metadata?.pinned;
@@ -950,16 +761,6 @@ export default function MessagesPage() {
       store.updateMessage({ ...msg, metadata: { ...msg.metadata, pinned: !isPinned } });
     }
     setContextMenu(null);
-  }
-
-  // ── Scroll to a specific message (for reply jump) ──
-  function scrollToMessage(messageId: string) {
-    const el = document.getElementById(`msg-${messageId}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.classList.add('ring-2', 'ring-accent-primary', 'ring-opacity-50');
-      setTimeout(() => el.classList.remove('ring-2', 'ring-accent-primary', 'ring-opacity-50'), 2000);
-    }
   }
 
   // ── Close context menus on click outside ──
@@ -986,93 +787,25 @@ export default function MessagesPage() {
     <div className="max-w-6xl mx-auto h-[calc(100vh-120px)] min-h-[500px]">
       <div className="flex h-full gap-0 border border-border-primary rounded-2xl overflow-hidden bg-bg-card">
         {/* ───────────── LEFT: Conversation List ───────────── */}
-        <div className={`w-full sm:w-80 lg:w-96 flex-shrink-0 flex flex-col border-r border-border-primary ${
-          store.activeConversationId ? 'hidden sm:flex' : 'flex'
-        }`}>
-          {/* Header */}
-          <div className="p-4 border-b border-border-primary">
-            <div className="flex items-center justify-between mb-3">
-              <h1 className="text-lg font-display font-bold text-text-primary flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-accent-primary" />
-                Messages
-                {store.totalUnreadMessages > 0 && (
-                  <span className="ml-1 px-2 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold">
-                    {store.totalUnreadMessages > 99 ? '99+' : store.totalUnreadMessages}
-                  </span>
-                )}
-              </h1>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={(e) => { e.stopPropagation(); store.setShowGroupModal(true); }}
-                  className="p-2 rounded-lg hover:bg-bg-tertiary transition-colors text-text-muted hover:text-text-primary"
-                  title="New group"
-                >
-                  <Users className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); store.setShowNewChatModal(true); }}
-                  className="p-2 rounded-lg hover:bg-bg-tertiary transition-colors text-text-muted hover:text-text-primary"
-                  title="New chat"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-              <input
-                type="text"
-                value={store.searchQuery}
-                onChange={(e) => store.setSearchQuery(e.target.value)}
-                placeholder="Search conversations..."
-                className="input pl-9 py-2 text-sm"
-              />
-            </div>
-          </div>
-
-          {/* Conversation list */}
-          <div className="flex-1 overflow-y-auto">
-            {store.conversationsLoading ? (
-              <div className="py-12"><LoadingCosmic label="Loading..." /></div>
-            ) : filteredConversations.length === 0 ? (
-              <div className="text-center py-12 px-4">
-                <MessageCircle className="w-10 h-10 text-text-muted mx-auto mb-3" />
-                <p className="text-sm text-text-muted font-medium">No conversations yet</p>
-                <p className="text-xs text-text-muted mt-1">
-                  Start a new chat to connect with friends
-                </p>
-                <button
-                  onClick={() => store.setShowNewChatModal(true)}
-                  className="btn-primary text-sm mt-4"
-                >
-                  Start a Chat
-                </button>
-              </div>
-            ) : (
-              filteredConversations.map(conv => (
-                <ConversationItem
-                  key={conv.id}
-                  conversation={conv}
-                  isActive={store.activeConversationId === conv.id}
-                  isTyping={store.typingUsers[conv.id] ? Date.now() - store.typingUsers[conv.id] < 3000 : false}
-                  myId={user.id}
-                  onSelect={() => store.setActiveConversationId(conv.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowConvMenu(showConvMenu === conv.id ? null : conv.id);
-                  }}
-                  showMenu={showConvMenu === conv.id}
-                  onPin={() => handleTogglePin(conv.id, !!conv.is_pinned)}
-                  onMute={() => handleToggleMute(conv.id, !!conv.is_muted)}
-                  onArchive={() => handleArchive(conv.id)}
-                  onLeave={() => handleLeave(conv.id)}
-                />
-              ))
-            )}
-          </div>
-        </div>
+        <ConversationList
+          conversations={filteredConversations}
+          loading={store.conversationsLoading}
+          activeConversationId={store.activeConversationId}
+          typingUsers={store.typingUsers}
+          myId={user.id}
+          searchQuery={store.searchQuery}
+          totalUnread={store.totalUnreadMessages}
+          showConvMenu={showConvMenu}
+          onSearchChange={(q) => store.setSearchQuery(q)}
+          onSelect={(id) => store.setActiveConversationId(id)}
+          onNewChat={() => store.setShowNewChatModal(true)}
+          onNewGroup={() => store.setShowGroupModal(true)}
+          onToggleConvMenu={setShowConvMenu}
+          onPin={handleTogglePin}
+          onMute={handleToggleMute}
+          onArchive={handleArchive}
+          onLeave={handleLeave}
+        />
 
         {/* ───────────── RIGHT: Chat Area ───────────── */}
         <div className={`flex-1 flex flex-col min-w-0 ${
@@ -1080,492 +813,60 @@ export default function MessagesPage() {
         }`}>
           {activeConv ? (
             <>
-              {/* Chat header */}
-              <div className="flex items-center gap-3 p-4 border-b border-border-primary">
-                <button
-                  onClick={() => store.setActiveConversationId(null)}
-                  className="sm:hidden p-1 text-text-muted hover:text-text-primary"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div className="relative">
-                  <UserAvatar
-                    avatarUrl={activeConv.other_user_avatar}
-                    displayName={activeConv.other_user_name}
-                    size="sm"
-                  />
-                  {activeConv.other_user_online && (
-                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-bg-card" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-text-primary truncate">
-                    {activeConv.is_group ? activeConv.group_name : activeConv.other_user_name}
-                    {activeConv.is_group && (
-                      <span className="text-xs text-text-muted ml-1">({activeConv.member_count || 'group'})</span>
-                    )}
-                  </p>
-                  <p className="text-[10px] text-text-muted">
-                    {isOtherTyping ? (
-                      <span className="text-accent-primary">typing...</span>
-                    ) : activeConv.other_user_online ? (
-                      <span className="text-green-400">online</span>
-                    ) : null}
-                  </p>
-                </div>
-                {/* Message search */}
-                <div className="relative hidden md:block">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
-                  <input
-                    type="text"
-                    value={store.messageSearchQuery}
-                    onChange={(e) => store.setMessageSearchQuery(e.target.value)}
-                    placeholder="Search messages..."
-                    className="bg-bg-tertiary border border-border-primary rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted w-48 focus:outline-none focus:border-accent-primary"
-                  />
-                </div>
-                {/* Call buttons */}
-                {!activeConv.is_group && (
-                  <CallButton
-                    targetUserId={activeConv.other_user_id || ''}
-                    targetUserName={activeConv.other_user_name}
-                    targetUserAvatar={activeConv.other_user_avatar || undefined}
-                    onCallStart={handleCallStart}
-                    disabled={callState !== 'idle'}
-                  />
-                )}
-                {/* Group settings */}
-                {activeConv.is_group && (
-                  <button
-                    onClick={() => setShowGroupSettings(true)}
-                    className="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center text-text-muted hover:text-accent-primary hover:bg-accent-primary/15 transition-colors"
-                    title="Group settings"
-                  >
-                    <Settings2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-
-              {/* Messages area */}
-              <div
-                ref={messagesContainerRef}
+              <MessageThread
+                activeConv={activeConv}
+                messages={displayMessages}
+                messagesLoading={store.messagesLoading}
+                hasMore={store.hasMore}
+                loadingMore={loadingMore}
+                isOtherTyping={!!isOtherTyping}
+                chatTheme={chatTheme}
+                currentUserId={user.id}
+                otherReadAt={store.otherReadAt}
+                messageSearchQuery={store.messageSearchQuery}
+                callState={callState}
+                showScrollDown={showScrollDown}
+                messagesEndRef={messagesEndRef}
+                messagesContainerRef={messagesContainerRef}
+                onBack={() => store.setActiveConversationId(null)}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto px-4 py-3 relative"
-                style={chatTheme ? { background: `linear-gradient(135deg, ${chatTheme.background[0]}, ${chatTheme.background[1]})` } : undefined}
-              >
-                {/* Load more indicator */}
-                {loadingMore && (
-                  <div className="text-center py-2">
-                    <span className="text-xs text-text-muted">Loading older messages...</span>
-                  </div>
-                )}
-                {store.hasMore && !loadingMore && store.messages.length > 0 && (
-                  <button
-                    onClick={loadMoreMessages}
-                    className="w-full text-center py-2 text-xs text-accent-primary hover:text-accent-secondary"
-                  >
-                    Load earlier messages
-                  </button>
-                )}
+                onLoadMore={loadMoreMessages}
+                onReaction={handleReaction}
+                onReply={handleReply}
+                onContextMenu={(msg, x, y) => setContextMenu({ message: msg, x, y })}
+                onPollVote={handlePollVote}
+                onMessageSearchChange={(q) => store.setMessageSearchQuery(q)}
+                onCallStart={handleCallStart}
+                onGroupSettings={() => setShowGroupSettings(true)}
+                onOpenReactionPicker={setReactionPicker}
+              />
 
-                {store.messagesLoading ? (
-                  <div className="py-12"><LoadingCosmic label="Loading messages..." /></div>
-                ) : (
-                  <div className="space-y-1">
-                    {messagesWithHeaders.map((item, idx) => {
-                      if (item.type === 'header') {
-                        return (
-                          <div key={`h-${idx}`} className="flex items-center justify-center py-3">
-                            <span className="px-3 py-1 rounded-full bg-bg-tertiary text-[10px] text-text-muted font-medium">
-                              {formatDateHeader(item.date)}
-                            </span>
-                          </div>
-                        );
-                      }
-                      const msg = item.message;
-                      const isMine = msg.sender_id === user.id;
-                      const reactions = getReactionsFromMessage(msg);
-                      const hasReactions = Object.keys(reactions).length > 0;
-                      const read = isMine && isOtherRead(msg);
-                      const isLastMine = isMine && idx === messagesWithHeaders.length - 1;
-
-                      if (msg.type === 'system') {
-                        return (
-                          <div key={msg.id} className="flex justify-center py-2">
-                            <span className="text-[10px] text-text-muted italic px-3 py-1 bg-bg-tertiary rounded-full">
-                              {msg.content}
-                            </span>
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <div
-                          key={msg.id}
-                          id={`msg-${msg.id}`}
-                          className={`group flex items-end gap-2 py-0.5 transition-all ${isMine ? 'justify-end' : 'justify-start'}`}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setContextMenu({ message: msg, x: e.clientX, y: e.clientY });
-                          }}
-                        >
-                          {/* Other user avatar */}
-                          {!isMine && (
-                            <UserAvatar
-                              avatarUrl={msg.sender_avatar}
-                              displayName={msg.sender_name}
-                              size="xs"
-                            />
-                          )}
-
-                          <div className={`max-w-[75%] relative ${isMine ? 'items-end' : 'items-start'}`}>
-                            {/* Sender name for groups */}
-                            {!isMine && activeConv.is_group && (
-                              <p className="text-[10px] text-text-muted mb-0.5 ml-1">{msg.sender_name}</p>
-                            )}
-
-                            {/* Reply preview (clickable — jumps to original) */}
-                            {msg.reply_to && msg.reply_message && (
-                              <div
-                                className={`text-[10px] px-3 py-1.5 rounded-t-xl border-l-2 border-accent-primary bg-bg-tertiary/50 mb-0.5 cursor-pointer hover:bg-bg-tertiary/80 transition-colors ${
-                                  isMine ? 'ml-auto text-right' : ''
-                                }`}
-                                onClick={() => scrollToMessage(msg.reply_to!)}
-                              >
-                                <span className="text-accent-primary font-medium">{msg.reply_message.sender_name}</span>
-                                <p className="text-text-muted truncate max-w-[200px]">{msg.reply_message.content}</p>
-                              </div>
-                            )}
-
-                            {/* Message bubble */}
-                            <div
-                              className={`px-3.5 py-2 rounded-2xl relative ${
-                                isMine
-                                  ? `${chatTheme ? '' : 'bg-accent-primary'} text-white rounded-br-md`
-                                  : `${chatTheme ? '' : 'bg-bg-tertiary'} text-text-primary rounded-bl-md`
-                              }`}
-                              style={chatTheme ? (
-                                isMine
-                                  ? { background: `linear-gradient(135deg, ${chatTheme.ownBubble[0]}, ${chatTheme.ownBubble[1]})`, color: chatTheme.ownText }
-                                  : { backgroundColor: chatTheme.otherBubble, color: chatTheme.otherText }
-                              ) : undefined}
-                            >
-                              {/* Image message */}
-                              {msg.type === 'image' && msg.metadata?.url && (
-                                <a href={msg.metadata.url} target="_blank" rel="noopener noreferrer" className="block mb-1">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={msg.metadata.url}
-                                    alt="Shared image"
-                                    className="rounded-lg max-w-full max-h-60 object-cover"
-                                  />
-                                </a>
-                              )}
-
-                              {/* Chart share */}
-                              {msg.type === 'chart_share' && (
-                                <div className="bg-white/10 rounded-lg p-2 mb-1">
-                                  <p className="text-xs font-medium">Shared a chart</p>
-                                  {msg.metadata?.chart_type && (
-                                    <p className="text-[10px] opacity-70">{msg.metadata.chart_type}</p>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Voice note */}
-                              {msg.type === 'voice_note' && msg.metadata?.url && (
-                                <VoiceMessageBubble
-                                  metadata={{ url: msg.metadata.url as string, duration: (msg.metadata.duration as number) || 0 }}
-                                  isMine={isMine}
-                                />
-                              )}
-
-                              {/* Video message */}
-                              {msg.type === 'video' && msg.metadata?.url && !msg.metadata?.url?.toString().match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
-                                <VideoMessageBubble
-                                  metadata={{ url: msg.metadata.url as string, duration: msg.metadata.duration as number, thumbnail_url: msg.metadata.thumbnail_url as string }}
-                                  isMine={isMine}
-                                />
-                              )}
-
-                              {/* File attachment */}
-                              {msg.type === 'file' && msg.metadata?.url && (
-                                <FileBubble
-                                  metadata={{ url: msg.metadata.url as string, filename: (msg.metadata.filename as string) || 'file', size: msg.metadata.size as number, mime_type: msg.metadata.mime_type as string }}
-                                  isMine={isMine}
-                                />
-                              )}
-
-                              {/* Location */}
-                              {msg.type === 'location' && msg.metadata?.latitude && (
-                                <LocationBubble
-                                  metadata={{ latitude: msg.metadata.latitude as number, longitude: msg.metadata.longitude as number, address: msg.metadata.address as string }}
-                                  isMine={isMine}
-                                />
-                              )}
-
-                              {/* Poll */}
-                              {msg.type === 'poll' && msg.metadata?.question && (
-                                <PollBubble
-                                  message={msg}
-                                  isMine={isMine}
-                                  currentUserId={user.id}
-                                  onVote={handlePollVote}
-                                />
-                              )}
-
-                              {/* Text content */}
-                              {msg.content && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
-                                <>
-                                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                                  <BubbleLinkPreview text={msg.content} isMine={isMine} />
-                                </>
-                              )}
-
-                              {/* Pinned indicator */}
-                              {msg.metadata?.pinned && (
-                                <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>
-                                  📌 Pinned
-                                </span>
-                              )}
-
-                              {/* Time + status */}
-                              <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : ''}`}>
-                                {msg.is_edited && (
-                                  <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>edited</span>
-                                )}
-                                <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>
-                                  {formatMessageTime(msg.created_at)}
-                                </span>
-                                {isMine && (
-                                  <span
-                                    className={`text-[9px] cursor-default ${read ? 'text-blue-300' : 'text-white/40'}`}
-                                    title={read && store.otherReadAt ? `Read ${new Date(store.otherReadAt).toLocaleDateString()} at ${new Date(store.otherReadAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Sent'}
-                                  >
-                                    {read ? <CheckCheck className="w-3 h-3 inline" /> : <Check className="w-3 h-3 inline" />}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Reactions display */}
-                            {hasReactions && (
-                              <div className={`flex flex-wrap gap-1 mt-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
-                                {Object.entries(reactions).map(([emoji, users]) => (
-                                  <button
-                                    key={emoji}
-                                    onClick={(e) => { e.stopPropagation(); handleReaction(msg.id, emoji); }}
-                                    className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border transition-colors ${
-                                      users.includes(user.id)
-                                        ? 'border-accent-primary bg-accent-primary/15'
-                                        : 'border-border-primary bg-bg-tertiary hover:border-accent-primary/50'
-                                    }`}
-                                  >
-                                    <span>{emoji}</span>
-                                    {users.length > 1 && <span className="text-[9px] text-text-muted">{users.length}</span>}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Hover actions */}
-                            <div className={`absolute top-0 z-10 ${isMine ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 pointer-events-none group-hover:pointer-events-auto`}>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setTimeout(() => setReactionPicker(msg), 0); }}
-                                className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
-                                title="React"
-                              >
-                                <SmilePlus className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleReply(msg); }}
-                                className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
-                                title="Reply"
-                              >
-                                <Reply className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                  setTimeout(() => setContextMenu({ message: msg, x: rect.left, y: rect.bottom }), 0);
-                                }}
-                                className="p-1 rounded hover:bg-bg-tertiary text-text-muted"
-                                title="More"
-                              >
-                                <MoreVertical className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Typing indicator */}
-                {isOtherTyping && (
-                  <div className="flex items-center gap-2 py-2">
-                    <UserAvatar
-                      avatarUrl={activeConv.other_user_avatar}
-                      displayName={activeConv.other_user_name}
-                      size="xs"
-                    />
-                    <div className="bg-bg-tertiary rounded-2xl rounded-bl-md px-4 py-2">
-                      <div className="flex gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Scroll to bottom button */}
-              {showScrollDown && (
-                <button
-                  onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                  className="absolute bottom-24 right-8 p-2 rounded-full bg-bg-tertiary border border-border-primary shadow-lg hover:bg-bg-secondary transition-colors"
-                >
-                  <ChevronDown className="w-4 h-4 text-text-primary" />
-                </button>
-              )}
-
-              {/* Reply/Edit banner */}
-              {(store.replyTo || store.editingMessage) && (
-                <div className="px-4 py-2 border-t border-border-primary bg-bg-secondary flex items-center gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-accent-primary font-medium">
-                      {store.editingMessage ? 'Editing message' : `Replying to ${store.replyTo?.sender_name}`}
-                    </p>
-                    <p className="text-xs text-text-muted truncate">
-                      {(store.editingMessage || store.replyTo)?.content}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => { store.setReplyTo(null); store.setEditingMessage(null); setEditText(''); }}
-                    className="p-1 text-text-muted hover:text-text-primary"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* GIF/Sticker picker */}
-              {showGifPicker && (
-                <div className="relative">
-                  <GifStickerPicker
-                    isOpen={showGifPicker}
-                    onClose={() => setShowGifPicker(false)}
-                    onSelect={handleGifSelect}
-                  />
-                </div>
-              )}
-
-              {/* Smart reply chips */}
-              {smartReplies.length > 0 && !store.editingMessage && !store.replyTo && (
-                <div className="px-4 py-1.5 border-t border-border-primary bg-bg-secondary flex gap-2 overflow-x-auto">
-                  {smartReplies.map((reply) => (
-                    <button
-                      key={reply}
-                      type="button"
-                      onClick={() => {
-                        setNewMessage(reply);
-                        inputRef.current?.focus();
-                      }}
-                      className="flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border border-accent-primary/30 text-accent-primary bg-accent-primary/10 hover:bg-accent-primary/20 transition-colors"
-                    >
-                      {reply}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Input area */}
-              <form onSubmit={handleSend} className="p-3 border-t border-border-primary flex items-center gap-1.5">
-                {/* Attachment menu */}
-                <div className="relative">
-                  <input ref={fileUploadRef} type="file" onChange={handleFileUpload} className="hidden" />
-                  <AttachmentMenu
-                    isOpen={showAttachMenu}
-                    onToggle={() => setShowAttachMenu(!showAttachMenu)}
-                    onSelectFile={() => { setShowAttachMenu(false); fileUploadRef.current?.click(); }}
-                    onSelectLocation={() => { setShowAttachMenu(false); setShowLocationPicker(true); }}
-                    onSelectPoll={() => { setShowAttachMenu(false); setShowPollCreator(true); }}
-                  />
-                </div>
-
-                {/* Image upload */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-text-muted hover:text-text-primary transition-colors"
-                  title="Send image"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                </button>
-
-                {/* GIF picker toggle */}
-                <button
-                  type="button"
-                  onClick={() => setShowGifPicker(!showGifPicker)}
-                  className={`p-2 transition-colors ${showGifPicker ? 'text-accent-primary' : 'text-text-muted hover:text-text-primary'}`}
-                  title="GIFs & Stickers"
-                >
-                  <Smile className="w-4 h-4" />
-                </button>
-
-                {/* Text input */}
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={store.editingMessage ? editText : newMessage}
-                  onChange={(e) => {
-                    if (store.editingMessage) {
-                      setEditText(e.target.value);
-                    } else {
-                      handleInputChange(e.target.value);
-                    }
-                  }}
-                  placeholder={store.editingMessage ? 'Edit message...' : 'Type a message...'}
-                  className="input flex-1 py-2.5"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      store.setReplyTo(null);
-                      store.setEditingMessage(null);
-                      setEditText('');
-                      setShowGifPicker(false);
-                    }
-                  }}
-                />
-
-                {/* Voice recorder or Send button */}
-                {!newMessage.trim() && !store.editingMessage ? (
-                  <VoiceRecorder
-                    onRecordingComplete={handleVoiceComplete}
-                    disabled={sending}
-                  />
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={(!newMessage.trim() && !store.editingMessage) || sending}
-                    className="btn-primary px-4 py-2.5"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                )}
-              </form>
+              <MessageComposer
+                newMessage={newMessage}
+                editText={editText}
+                editingMessage={store.editingMessage}
+                replyTo={store.replyTo}
+                sending={sending}
+                smartReplies={smartReplies}
+                showGifPicker={showGifPicker}
+                showAttachMenu={showAttachMenu}
+                inputRef={inputRef}
+                onNewMessageChange={handleInputChange}
+                onEditTextChange={setEditText}
+                onSend={handleSend}
+                onCancelReplyEdit={() => { store.setReplyTo(null); store.setEditingMessage(null); setEditText(''); setShowGifPicker(false); }}
+                onImageUpload={handleImageUpload}
+                onFileUpload={handleFileUpload}
+                onGifSelect={handleGifSelect}
+                onVoiceComplete={handleVoiceComplete}
+                onSmartReplySelect={(reply) => { setNewMessage(reply); inputRef.current?.focus(); }}
+                onToggleGifPicker={() => setShowGifPicker(!showGifPicker)}
+                onToggleAttachMenu={() => setShowAttachMenu(!showAttachMenu)}
+                onCloseAttachMenu={() => setShowAttachMenu(false)}
+                onSelectFileFromMenu={() => {}}
+                onSelectLocation={() => setShowLocationPicker(true)}
+                onSelectPoll={() => setShowPollCreator(true)}
+              />
             </>
           ) : (
             /* Empty state */
@@ -1761,404 +1062,5 @@ export default function MessagesPage() {
 
       {/* Incoming Call Overlay is now rendered globally by <GlobalCallListener /> */}
     </div>
-  );
-}
-
-// ── Conversation List Item Component ─────────────────────────────────
-
-function ConversationItem({
-  conversation, isActive, isTyping, myId, onSelect, onContextMenu,
-  showMenu, onPin, onMute, onArchive, onLeave,
-}: {
-  conversation: Conversation;
-  isActive: boolean;
-  isTyping: boolean;
-  myId: string;
-  onSelect: () => void;
-  onContextMenu: (e: React.MouseEvent) => void;
-  showMenu: boolean;
-  onPin: () => void;
-  onMute: () => void;
-  onArchive: () => void;
-  onLeave: () => void;
-}) {
-  const hasUnread = conversation.unread_count > 0;
-  const iSentLast = conversation.last_message_sender_id === myId;
-  const otherRead = conversation.other_last_read_at && conversation.last_message_at
-    && new Date(conversation.other_last_read_at) >= new Date(conversation.last_message_at);
-
-  return (
-    <div className="relative">
-      <button
-        onClick={onSelect}
-        onContextMenu={onContextMenu}
-        className={`w-full flex items-center gap-3 p-3 transition-colors relative ${
-          isActive ? 'bg-accent-muted' : 'hover:bg-bg-tertiary'
-        }`}
-      >
-        {/* Avatar with online dot */}
-        <div className="relative flex-shrink-0">
-          <UserAvatar
-            avatarUrl={conversation.other_user_avatar}
-            displayName={conversation.other_user_name}
-            size="md"
-          />
-          {conversation.other_user_online && !conversation.is_group && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-bg-card" />
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0 text-left">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1 flex-1 min-w-0">
-              {conversation.is_pinned && <span className="text-[10px]">📌</span>}
-              <p className={`text-sm truncate ${hasUnread ? 'font-bold text-text-primary' : 'font-medium text-text-primary'}`}>
-                {conversation.is_group ? conversation.group_name : conversation.other_user_name}
-              </p>
-            </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {conversation.is_muted && <span className="text-[10px]">🔕</span>}
-              <span className="text-[10px] text-text-muted">{timeAgo(conversation.last_message_at)}</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-2 mt-0.5">
-            <div className="flex items-center gap-1 flex-1 min-w-0">
-              {iSentLast && !hasUnread && (
-                <span className={`text-[10px] ${otherRead ? 'text-blue-400' : 'text-text-muted'}`}>
-                  {otherRead ? '✓✓' : '✓'}
-                </span>
-              )}
-              <p className={`text-xs truncate ${
-                isTyping ? 'text-accent-primary italic' : hasUnread ? 'text-text-secondary font-medium' : 'text-text-muted'
-              }`}>
-                {isTyping ? 'typing...' : (conversation.last_message_preview || 'Start a conversation')}
-              </p>
-            </div>
-            {hasUnread && (
-              <span className="w-5 h-5 rounded-full bg-accent-primary flex items-center justify-center text-[9px] text-white font-bold flex-shrink-0">
-                {conversation.unread_count > 99 ? '99+' : conversation.unread_count}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Three-dot menu trigger */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onContextMenu(e);
-          }}
-          className="p-1 opacity-0 group-hover:opacity-100 hover:bg-bg-tertiary rounded transition-all text-text-muted"
-        >
-          <MoreVertical className="w-3.5 h-3.5" />
-        </button>
-      </button>
-
-      {/* Dropdown menu */}
-      {showMenu && (
-        <div
-          className="absolute right-3 top-12 z-40 bg-bg-card border border-border-primary rounded-xl shadow-xl py-1 min-w-[150px]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button onClick={onPin} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <Pin className="w-3.5 h-3.5" /> {conversation.is_pinned ? 'Unpin' : 'Pin'}
-          </button>
-          <button onClick={onMute} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <BellOff className="w-3.5 h-3.5" /> {conversation.is_muted ? 'Unmute' : 'Mute'}
-          </button>
-          <button onClick={onArchive} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <Archive className="w-3.5 h-3.5" /> Archive
-          </button>
-          <button onClick={onLeave} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary">
-            <Trash2 className="w-3.5 h-3.5" /> Leave
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── New Chat Modal ───────────────────────────────────────────────────
-
-function NewChatModal({
-  onClose,
-  onSelectUser,
-}: {
-  onClose: () => void;
-  onSelectUser: (userId: string) => void;
-}) {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Array<{
-    id: string;
-    display_name: string;
-    avatar_url: string | null;
-    username: string | null;
-    sun_sign: string | null;
-  }>>([]);
-  const [friends, setFriends] = useState<Array<{
-    id: string;
-    display_name: string;
-    avatar_url: string | null;
-    sun_sign: string | null;
-  }>>([]);
-  const [loading, setLoading] = useState(false);
-  const [friendsLoading, setFriendsLoading] = useState(true);
-
-  // Load friends on mount
-  useEffect(() => {
-    getFriends().then(f => {
-      setFriends(f);
-      setFriendsLoading(false);
-    });
-  }, []);
-
-  // Search debounce
-  useEffect(() => {
-    if (!query.trim()) { setResults([]); return; }
-    const t = setTimeout(async () => {
-      setLoading(true);
-      const r = await searchUsers(query);
-      setResults(r);
-      setLoading(false);
-    }, 300);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  const displayList = query.trim() ? results : friends;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div
-        className="bg-bg-card border border-border-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-border-primary">
-          <h2 className="text-lg font-display font-bold text-text-primary">New Chat</h2>
-          <button onClick={onClose} className="p-1 text-text-muted hover:text-text-primary">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name or username..."
-              className="input pl-9 py-2.5 text-sm"
-              autoFocus
-            />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-2 pb-4">
-          {!query.trim() && !friendsLoading && friends.length > 0 && (
-            <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">Your Friends</p>
-          )}
-          {(loading || friendsLoading) ? (
-            <div className="text-center py-8">
-              <span className="text-sm text-text-muted">Searching...</span>
-            </div>
-          ) : displayList.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-sm text-text-muted">{query.trim() ? 'No users found' : 'No friends yet'}</p>
-            </div>
-          ) : (
-            displayList.map(u => (
-              <button
-                key={u.id}
-                onClick={() => onSelectUser(u.id)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-bg-tertiary transition-colors"
-              >
-                <UserAvatar avatarUrl={u.avatar_url} displayName={u.display_name} size="sm" />
-                <div className="text-left flex-1 min-w-0">
-                  <p className="text-sm font-medium text-text-primary truncate">{u.display_name}</p>
-                  <p className="text-[10px] text-text-muted">
-                    {u.sun_sign || ('username' in u ? (u as any).username : '') || ''}
-                  </p>
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── New Group Modal ──────────────────────────────────────────────────
-
-function NewGroupModal({
-  onClose,
-  onCreated,
-}: {
-  onClose: () => void;
-  onCreated: (conversationId: string) => void;
-}) {
-  const [groupName, setGroupName] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [friends, setFriends] = useState<Array<{
-    id: string;
-    display_name: string;
-    avatar_url: string | null;
-    sun_sign: string | null;
-  }>>([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    getFriends().then(f => {
-      setFriends(f);
-      setLoading(false);
-    });
-  }, []);
-
-  function toggleMember(id: string) {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
-  }
-
-  async function handleCreate() {
-    if (!groupName.trim() || selectedIds.length < 1) return;
-    setCreating(true);
-    const convId = await createGroupConversation(groupName.trim(), selectedIds);
-    if (convId) {
-      onCreated(convId);
-    }
-    setCreating(false);
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div
-        className="bg-bg-card border border-border-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-border-primary">
-          <h2 className="text-lg font-display font-bold text-text-primary">New Group</h2>
-          <button onClick={onClose} className="p-1 text-text-muted hover:text-text-primary">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-4 space-y-3">
-          <input
-            type="text"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-            placeholder="Group name..."
-            className="input py-2.5 text-sm"
-            autoFocus
-          />
-
-          {/* Selected members */}
-          {selectedIds.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {selectedIds.map(id => {
-                const friend = friends.find(f => f.id === id);
-                return (
-                  <span
-                    key={id}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-accent-muted text-accent-primary text-xs"
-                  >
-                    {friend?.display_name || 'Unknown'}
-                    <button onClick={() => toggleMember(id)}>
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-2 pb-2">
-          <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">Add Members</p>
-          {loading ? (
-            <div className="text-center py-8"><span className="text-sm text-text-muted">Loading friends...</span></div>
-          ) : friends.length === 0 ? (
-            <div className="text-center py-8"><p className="text-sm text-text-muted">No friends yet</p></div>
-          ) : (
-            friends.map(f => (
-              <button
-                key={f.id}
-                onClick={() => toggleMember(f.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors ${
-                  selectedIds.includes(f.id) ? 'bg-accent-muted' : 'hover:bg-bg-tertiary'
-                }`}
-              >
-                <UserAvatar avatarUrl={f.avatar_url} displayName={f.display_name} size="sm" />
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-text-primary">{f.display_name}</p>
-                  {f.sun_sign && <p className="text-[10px] text-text-muted">{f.sun_sign}</p>}
-                </div>
-                {selectedIds.includes(f.id) && (
-                  <span className="w-5 h-5 rounded-full bg-accent-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-white" />
-                  </span>
-                )}
-              </button>
-            ))
-          )}
-        </div>
-
-        <div className="p-4 border-t border-border-primary">
-          <button
-            onClick={handleCreate}
-            disabled={!groupName.trim() || selectedIds.length < 1 || creating}
-            className="btn-primary w-full"
-          >
-            {creating ? 'Creating...' : `Create Group${selectedIds.length > 0 ? ` (${selectedIds.length} members)` : ''}`}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Inline Link Preview Component ───────────────────────────────────
-
-function BubbleLinkPreview({ text, isMine }: { text: string; isMine: boolean }) {
-  const [preview, setPreview] = useState<LinkPreview | null>(null);
-  const url = useMemo(() => extractFirstUrl(text), [text]);
-
-  useEffect(() => {
-    if (!url) return;
-    let cancelled = false;
-    fetchLinkPreview(url).then(p => { if (!cancelled) setPreview(p); });
-    return () => { cancelled = true; };
-  }, [url]);
-
-  if (!preview || (!preview.title && !preview.description)) return null;
-
-  return (
-    <a
-      href={preview.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`block mt-1.5 rounded-lg overflow-hidden border ${
-        isMine ? 'border-white/20 bg-white/10' : 'border-border-primary bg-bg-secondary'
-      } hover:opacity-90 transition-opacity`}
-    >
-      {preview.image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview.image} alt="" className="w-full h-28 object-cover" />
-      )}
-      <div className="px-2.5 py-1.5">
-        {preview.title && (
-          <p className={`text-xs font-semibold truncate ${isMine ? 'text-white' : 'text-text-primary'}`}>
-            {preview.title}
-          </p>
-        )}
-        {preview.description && (
-          <p className={`text-[10px] line-clamp-2 ${isMine ? 'text-white/70' : 'text-text-muted'}`}>
-            {preview.description}
-          </p>
-        )}
-      </div>
-    </a>
   );
 }

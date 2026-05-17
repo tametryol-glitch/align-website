@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useParams } from 'next/navigation';
@@ -162,8 +163,7 @@ export default function FragmentDetailPage() {
       <div className="card flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded-full bg-accent-muted flex items-center justify-center text-2xl font-bold text-accent-primary shrink-0">
           {fragment.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={fragment.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+            <Image src={fragment.avatar_url} alt="Fragment avatar" width={64} height={64} className="w-full h-full rounded-full object-cover" unoptimized />
           ) : (
             (fragment.display_name || '?')[0].toUpperCase()
           )}

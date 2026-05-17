@@ -3,6 +3,9 @@ import './globals.css';
 import { AuthProvider } from '@/components/layout/AuthProvider';
 import { GlobalCallListener } from '@/components/GlobalCallListener';
 import I18nProvider from '@/i18n/I18nProvider';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { CookieConsent } from '@/components/ui/CookieConsent';
+import { BadgeEarnedPopup } from '@/components/ui/BadgeEarnedPopup';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://align-web.vercel.app'),
@@ -43,9 +46,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#141826" />
       </head>
       <body className="min-h-screen font-sans">
+        <GoogleAnalytics />
+        <CookieConsent />
         <I18nProvider>
           <AuthProvider>
             <GlobalCallListener />
+            <BadgeEarnedPopup />
             {children}
           </AuthProvider>
         </I18nProvider>

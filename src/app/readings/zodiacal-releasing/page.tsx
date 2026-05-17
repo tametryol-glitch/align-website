@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { Compass, ArrowLeft, ChevronDown, ChevronUp, Copy, Share2, Sparkles, Loader2, Info, CalendarSearch } from 'lucide-react';
+import { InlineBold } from '@/components/ui/InlineBold';
 import { getZodiacGlyph } from '@/lib/utils';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
@@ -437,20 +438,16 @@ function RenderMarkdown({ text }: { text: string }) {
           return (
             <div key={i} className="flex gap-2 pl-2 mb-1">
               <span className="text-gold-primary">&bull;</span>
-              <span className="text-text-secondary text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: inlineBold(trimmed.slice(2)) }} />
+              <InlineBold text={trimmed.slice(2)} className="text-text-secondary text-sm leading-relaxed" />
             </div>
           );
         } else if (trimmed.length > 0) {
-          return <p key={i} className="text-text-secondary text-sm leading-relaxed mb-1" dangerouslySetInnerHTML={{ __html: inlineBold(trimmed) }} />;
+          return <p key={i} className="text-text-secondary text-sm leading-relaxed mb-1"><InlineBold text={trimmed} /></p>;
         }
         return <div key={i} className="h-2" />;
       })}
     </div>
   );
-}
-
-function inlineBold(text: string): string {
-  return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-text-primary">$1</strong>');
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────

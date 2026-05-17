@@ -145,7 +145,90 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   });
 }
 
+export async function getUserPosts(targetUserId: string, currentUserId: string): Promise<FeedPost[]> {
+  const supabase = createClient();
+
+  const { data: rawPosts, error } = await supabase
+    .from('posts')
+    .select('*, profile:profiles!posts_user_id_fkey(display_name, avatar_url, sun_sign)')
+    .eq('user_id', targetUserId)
+    .eq('is_deleted', false)
+    .order('created_at', { ascending: false })
+    .limit(30);
+
+  if (error || !rawPosts?.length) return [];
+
+  const postIds = rawPosts.map((p: any) => p.id);
+
+  const [reactionsRes, commentsRes] = await Promise.all([
+    supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+  ]);
+
+  const reactionsMap = new Map<string, PostReaction[]>();
+  for (const r of reactionsRes.data || []) {
+    if (!reactionsMap.has(r.post_id)) reactionsMap.set(r.post_id, []);
+    const arr = reactionsMap.get(r.post_id)!;
+    const existing = arr.find((x) => x.emoji === r.emoji);
+    if (existing) {
+      existing.count++;
+      if (r.user_id === currentUserId) existing.userReacted = true;
+    } else {
+      arr.push({ emoji: r.emoji, count: 1, userReacted: r.user_id === currentUserId });
+    }
+  }
+
+  const commentsMap = new Map<string, FeedComment[]>();
+  const commentCountMap = new Map<string, number>();
+  for (const c of commentsRes.data || []) {
+    const profile = c.profile as any;
+    const comment: FeedComment = {
+      id: c.id,
+      userId: c.user_id,
+      userName: profile?.display_name || 'User',
+      userAvatar: profile?.avatar_url || undefined,
+      text: c.text,
+      createdAt: c.created_at,
+    };
+    if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
+    commentsMap.get(c.post_id)!.push(comment);
+    commentCountMap.set(c.post_id, (commentCountMap.get(c.post_id) || 0) + 1);
+  }
+
+  return rawPosts.map((p: any) => {
+    const profile = p.profile as any;
+    const comments = commentsMap.get(p.id) || [];
+    return {
+      id: p.id,
+      userId: p.user_id,
+      userName: profile?.display_name || 'User',
+      userAvatar: profile?.avatar_url || undefined,
+      type: p.type,
+      content: p.content || '',
+      imageUrl: p.image_url || undefined,
+      mediaKind: p.media_kind || undefined,
+      videoUrl: p.video_url || undefined,
+      posterUrl: p.poster_url || undefined,
+      chartData: p.chart_data || undefined,
+      reactions: reactionsMap.get(p.id) || [],
+      comments: comments.slice(0, 3),
+      commentCount: commentCountMap.get(p.id) || 0,
+      createdAt: p.created_at,
+      updatedAt: p.updated_at || undefined,
+      visibility: p.visibility || 'public',
+      originalPostId: p.original_post_id || undefined,
+      originalUserName: p.original_user_name || undefined,
+      style: p.style || null,
+    } as FeedPost;
+  });
+}
+
 export async function uploadPostMedia(userId: string, file: File): Promise<string> {
+  const { validateUpload } = await import('./sanitize');
+  const category = file.type.startsWith('video/') ? 'video' as const : 'image' as const;
+  const err = validateUpload(file, category);
+  if (err) throw new Error(err);
+
   const supabase = createClient();
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${userId}/${Date.now()}.${ext}`;

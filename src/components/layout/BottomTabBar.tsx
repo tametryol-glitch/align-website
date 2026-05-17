@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
@@ -88,8 +89,7 @@ export function BottomTabBar() {
             >
               <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0">
                 {profile?.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                  <Image src={profile.avatar_url} alt="User avatar" width={40} height={40} className="w-full h-full rounded-full object-cover" unoptimized />
                 ) : (
                   <User className="w-5 h-5 text-text-muted" />
                 )}

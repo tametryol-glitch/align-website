@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
 import { formatDate, getZodiacGlyph, getPlanetGlyph } from '@/lib/utils';
@@ -9,6 +10,9 @@ import { getFeed, FeedPost } from '@/lib/feedService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import Link from 'next/link';
 import { Bell, ChevronRight } from 'lucide-react';
+import { StreakBadge } from '@/components/ui/StreakBadge';
+import { useStreakStore } from '@/stores/streakStore';
+import { TrialBanner } from '@/components/ui/TrialBanner';
 
 // ── Astronomical helpers ─────────────────────────────────────────
 
@@ -198,11 +202,12 @@ export default function DashboardPage() {
 
   const hasBirthData = !!(profile?.birth_date && profile?.birth_time && profile?.latitude);
 
-  // Load social + feed data when user is available
+  // Load social + feed + streak data when user is available
   useEffect(() => {
     if (!user) return;
     loadSocialData();
     loadFeedPreview();
+    useStreakStore.getState().fetchStreak(user.id);
 
     // Refresh planetary hour every minute
     const hourInterval = setInterval(() => setPlanetaryHour(getPlanetaryHour()), 60000);
@@ -337,6 +342,8 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Daily streak badge */}
+          <StreakBadge />
           {/* Notification bell */}
           <Link href="/notifications" className="relative p-2">
             <Bell className="w-5 h-5 text-text-muted" />
@@ -357,6 +364,9 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* ─── Trial Banner ──────────────────────────────────── */}
+      <TrialBanner />
 
       {/* ─── Daily Insight Card ─────────────────────────────── */}
       <Link href="/readings/transits" className="block">
@@ -450,11 +460,12 @@ export default function DashboardPage() {
                 </div>
                 {(post.imageUrl || post.videoUrl) && (
                   <div className="relative w-full h-20 mb-2 rounded-lg overflow-hidden bg-white/5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={post.videoUrl ? (post.posterUrl || '') : post.imageUrl}
-                      alt=""
-                      className="w-full h-full object-cover"
+                    <Image
+                      src={post.videoUrl ? (post.posterUrl || '') : post.imageUrl!}
+                      alt="Post media"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                     {post.videoUrl && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">

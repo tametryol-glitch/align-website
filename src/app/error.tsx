@@ -11,6 +11,7 @@ export default function Error({
 }) {
   useEffect(() => {
     console.error('App error:', error);
+    // Sentry.captureException(error) — uncomment after: npm i @sentry/nextjs
   }, [error]);
 
   return (

@@ -2,15 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
+function isSafeUrl(urlString: string): boolean {
+  try {
+    const parsed = new URL(urlString);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+    const host = parsed.hostname.toLowerCase();
+    if (host === 'localhost' || host === '0.0.0.0' || host === '[::1]') return false;
+    if (host.startsWith('127.') || host.startsWith('10.') || host.startsWith('192.168.')) return false;
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return false;
+    if (host.endsWith('.local') || host.endsWith('.internal')) return false;
+    if (parsed.port && !['80', '443', ''].includes(parsed.port)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get('url');
   if (!url) {
     return NextResponse.json({ error: 'Missing url parameter' }, { status: 400 });
   }
 
+  if (!isSafeUrl(url)) {
+    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+  }
+
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'AlignBot/1.0 (link preview)' },
+      redirect: 'manual',
       signal: AbortSignal.timeout(5000),
     });
 

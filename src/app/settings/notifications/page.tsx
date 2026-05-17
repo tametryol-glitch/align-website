@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { PushNotificationToggle } from '@/components/ui/PushNotificationToggle';
 
 interface NotificationPreferences {
   pauseAll: boolean;
@@ -322,6 +323,8 @@ export default function NotificationSettingsPage() {
       </h1>
 
       <div className="space-y-6">
+
+        <PushNotificationToggle />
 
         <SectionCard className="border-2 border-accent-primary/30">
           <ToggleRow

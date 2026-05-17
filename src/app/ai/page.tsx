@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
+import { buildChartContext, buildSuggestedQuestions, type ChartContext } from '@/lib/aiChartContext';
 import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -23,7 +24,7 @@ interface Message {
   content: string;
 }
 
-const SUGGESTED_PROMPTS = [
+const FALLBACK_PROMPTS = [
   'What do my current transits mean for my career?',
   'Explain my Sun-Moon combination',
   'What are my biggest strengths based on my chart?',
@@ -131,6 +132,8 @@ export default function AIAstrologerPage() {
   const [error, setError] = useState('');
   const [chartData, setChartData] = useState<any>(null);
   const [chartLoading, setChartLoading] = useState(false);
+  const [chartCtx, setChartCtx] = useState<ChartContext | null>(null);
+  const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(FALLBACK_PROMPTS);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Voice state
@@ -156,14 +159,35 @@ export default function AIAstrologerPage() {
     setVoiceAuthToken(session?.access_token || null);
   }, [session?.access_token]);
 
-  // Load natal chart once on mount if user has birth data
+  // Load natal chart once on mount if user has birth data,
+  // then build the chart context for personalized prompts
   useEffect(() => {
     if (profile?.birth_date && profile?.latitude && !chartData && !chartLoading) {
       setChartLoading(true);
       api.getNatalChart(buildBirthData(profile))
-        .then(setChartData)
-        .catch(() => {})
+        .then((data) => {
+          setChartData(data);
+          // Build chart context from the fetched data
+          buildChartContext(profile, data).then((ctx) => {
+            setChartCtx(ctx);
+            if (ctx.loaded) {
+              setSuggestedPrompts(buildSuggestedQuestions(ctx));
+            }
+          });
+        })
+        .catch(() => {
+          // Even if API fails, try building context from profile-level data
+          buildChartContext(profile).then((ctx) => {
+            setChartCtx(ctx);
+            if (ctx.loaded) {
+              setSuggestedPrompts(buildSuggestedQuestions(ctx));
+            }
+          });
+        })
         .finally(() => setChartLoading(false));
+    } else if (profile && !profile.birth_date && !chartCtx) {
+      // No birth data — mark context as not loaded
+      setChartCtx({ contextText: '', sunSign: null, sunHouse: null, moonSign: null, moonHouse: null, risingSign: null, venusSign: null, venusHouse: null, marsSign: null, marsHouse: null, placements: [], loaded: false });
     }
   }, [profile?.birth_date, profile?.latitude]);
 
@@ -389,6 +413,24 @@ export default function AIAstrologerPage() {
         </div>
       </div>
 
+      {/* Chart context indicator */}
+      {chartCtx?.loaded && (
+        <div className="flex items-center justify-center mb-2 flex-shrink-0">
+          <span className="inline-flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1 text-xs text-text-muted">
+            <span role="img" aria-label="planet">&#x1FA90;</span>
+            Your chart is loaded
+          </span>
+        </div>
+      )}
+      {chartLoading && (
+        <div className="flex items-center justify-center mb-2 flex-shrink-0">
+          <span className="inline-flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1 text-xs text-text-muted">
+            <div className="w-3 h-3 border-2 border-accent-primary/40 border-t-accent-primary rounded-full animate-spin" />
+            Loading your chart...
+          </span>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.length === 0 && (
@@ -396,11 +438,13 @@ export default function AIAstrologerPage() {
             <MessageCircle className="w-12 h-12 text-accent-muted mx-auto mb-4" />
             <h2 className="text-lg font-semibold text-text-primary mb-2">Ask anything about your chart</h2>
             <p className="text-text-tertiary text-sm mb-8 max-w-md mx-auto">
-              Get AI-powered interpretations of your natal positions, transits, and cosmic patterns.
+              {chartCtx?.loaded
+                ? 'Your natal chart is loaded. Ask personalized questions about your placements, transits, and cosmic patterns.'
+                : 'Get AI-powered interpretations of your natal positions, transits, and cosmic patterns.'}
               {voiceMode && ' Voice mode is on — responses will be spoken aloud.'}
             </p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
-              {SUGGESTED_PROMPTS.map((prompt) => (
+              {suggestedPrompts.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
@@ -524,6 +568,23 @@ export default function AIAstrologerPage() {
       {/* Error */}
       {error && (
         <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg mb-2">{error}</p>
+      )}
+
+      {/* Suggested question chips above input (shown when messages exist) */}
+      {messages.length > 0 && !streaming && chartCtx?.loaded && (
+        <div className="flex-shrink-0 overflow-x-auto pb-2 -mb-1">
+          <div className="flex gap-1.5 min-w-max">
+            {suggestedPrompts.slice(0, 4).map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => handleSend(prompt)}
+                className="text-[11px] text-text-muted whitespace-nowrap px-2.5 py-1 rounded-full border border-border-primary hover:border-accent-primary/50 hover:text-accent-primary transition-colors"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Input */}

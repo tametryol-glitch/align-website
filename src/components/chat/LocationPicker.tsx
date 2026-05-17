@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import {
   X,
   Loader2,
@@ -199,11 +200,13 @@ export function LocationPicker({
             <div className="space-y-4">
               {/* Map preview */}
               <div className="rounded-xl overflow-hidden border border-border-primary bg-bg-tertiary">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={getMapUrl(state.latitude, state.longitude)}
                   alt="Your location on map"
+                  width={400}
+                  height={200}
                   className="w-full h-[200px] object-cover"
+                  unoptimized
                 />
               </div>
 

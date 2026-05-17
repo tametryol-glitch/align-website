@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -40,15 +41,14 @@ export function LinkPreview({ url, preview, isMine }: LinkPreviewProps) {
     >
       {/* Preview image */}
       {image && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={image}
-            alt={title ?? 'Link preview'}
-            className="w-full max-h-32 object-cover"
-            loading="lazy"
-          />
-        </>
+        <Image
+          src={image}
+          alt={title ?? 'Link preview'}
+          width={280}
+          height={128}
+          className="w-full max-h-32 object-cover"
+          unoptimized
+        />
       )}
 
       {/* Content area */}
@@ -74,15 +74,14 @@ export function LinkPreview({ url, preview, isMine }: LinkPreviewProps) {
         {(siteName || favicon) && (
           <div className="flex items-center gap-1.5 mt-1.5">
             {favicon && (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={favicon}
-                  alt=""
-                  className="w-3 h-3 rounded-sm"
-                  loading="lazy"
-                />
-              </>
+              <Image
+                src={favicon}
+                alt="Site icon"
+                width={12}
+                height={12}
+                className="w-3 h-3 rounded-sm"
+                unoptimized
+              />
             )}
             {siteName && (
               <span className={`text-[10px] ${mutedColor}`}>{siteName}</span>

@@ -11,7 +11,9 @@ import {
 } from '@/lib/cosmicMatchService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock } from 'lucide-react';
+import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2 } from 'lucide-react';
+import { CompatibilityCard, ShareButtonWithCard } from '@/components/share';
+import { generateShareUrl } from '@/lib/shareCardUtils';
 
 // ── Constants ──
 
@@ -82,7 +84,7 @@ interface MatchEntry {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function MatchesPage() {
-  const { user, isLoading: authLoading } = useAuthStore();
+  const { user, profile, isLoading: authLoading } = useAuthStore();
   const [entries, setEntries] = useState<MatchEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('overall');
@@ -232,15 +234,40 @@ export default function MatchesPage() {
       ) : (
         <div className="space-y-3 px-4 pb-24">
           {sortedEntries.map((entry) => (
-            <MatchCard
-              key={entry.match.id}
-              entry={entry}
-              category={selectedCategory}
-              onSelect={() => {
-                setShowToxicity(false);
-                setSelectedMatch(entry);
-              }}
-            />
+            <div key={entry.match.id} className="relative">
+              <MatchCard
+                entry={entry}
+                category={selectedCategory}
+                onSelect={() => {
+                  setShowToxicity(false);
+                  setSelectedMatch(entry);
+                }}
+              />
+              {/* Share compatibility card */}
+              <div className="absolute top-3 right-3 z-10">
+                <ShareButtonWithCard
+                  variant="icon"
+                  shareTitle={`${profile?.display_name || 'Me'} & ${entry.friend.display_name} Compatibility`}
+                  shareText={`${profile?.display_name || 'Me'} and ${entry.friend.display_name} are ${entry.match.overall_score ?? 0}% cosmically compatible!`}
+                  shareUrl={generateShareUrl('compatibility', {
+                    user1: profile?.display_name || 'Me',
+                    user1Sign: profile?.sun_sign || '',
+                    user2: entry.friend.display_name,
+                    user2Sign: entry.friend.sun_sign || '',
+                    percentage: entry.match.overall_score ?? 0,
+                  })}
+                  cardElement={
+                    <CompatibilityCard
+                      user1Name={profile?.display_name || 'Me'}
+                      user1Sign={profile?.sun_sign || 'Aries'}
+                      user2Name={entry.friend.display_name}
+                      user2Sign={entry.friend.sun_sign || 'Aries'}
+                      percentage={entry.match.overall_score ?? 0}
+                    />
+                  }
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}

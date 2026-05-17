@@ -2,6 +2,7 @@
 // Friend / Connection Service — Supabase-first (Web port)
 // Friend requests, accept/decline, remove, block, search, status
 // ═══════════════════════════════════════════════════════════════════
+import { sanitizeSearchInput } from './sanitize';
 
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -593,7 +594,7 @@ export async function searchUsers(query: string): Promise<SearchUserResult[]> {
   const { data } = await supabase
     .from('profiles')
     .select('id, display_name, username, avatar_url, align_code, bio, sun_sign, moon_sign, rising_sign')
-    .or(`display_name.ilike.%${query}%,username.ilike.%${query}%,align_code.ilike.%${query}%`)
+    .or(`display_name.ilike.%${sanitizeSearchInput(query)}%,username.ilike.%${sanitizeSearchInput(query)}%,align_code.ilike.%${sanitizeSearchInput(query)}%`)
     .neq('id', myId)
     .limit(20);
 

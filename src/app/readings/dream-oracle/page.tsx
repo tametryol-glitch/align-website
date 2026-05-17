@@ -361,12 +361,12 @@ function InterpretationView({ interpretation, astrology, entry, onBack }: {
   onBack: () => void;
 }) {
   const sections: { title: string; glyph: string; content: string }[] = [
-    { title: 'Surface Story', glyph: '📖', content: interpretation.surfaceStory },
-    { title: 'Emotional Meaning', glyph: '💜', content: interpretation.emotionalMeaning },
-    { title: 'Hidden Message', glyph: '🔮', content: interpretation.hiddenMessage },
-    { title: 'Shadow Message', glyph: '🌑', content: interpretation.shadowMessage },
-    { title: 'Spiritual Meaning', glyph: '🙏', content: interpretation.spiritualMeaning },
-    { title: 'Psychological Meaning', glyph: '🧠', content: interpretation.psychologicalMeaning },
+    { title: 'The Core Message', glyph: '🎯', content: interpretation.surfaceStory },
+    { title: 'What Your Subconscious Was Showing You', glyph: '🔮', content: interpretation.hiddenMessage },
+    { title: 'The Symbols That Matter Most', glyph: '🧠', content: interpretation.psychologicalMeaning },
+    { title: 'The Emotional Undercurrent', glyph: '💜', content: interpretation.emotionalMeaning },
+    { title: 'What This Dream Is Asking You To Face', glyph: '🌑', content: interpretation.shadowMessage },
+    { title: "Dream Oracle's Final Message", glyph: '✨', content: interpretation.spiritualMeaning },
     { title: 'Astrological Connection', glyph: '⭐', content: interpretation.astrologicalConnection },
     { title: 'Why You Dreamed This Now', glyph: '⏰', content: interpretation.whyNow },
     { title: 'What To Watch For', glyph: '👁️', content: interpretation.watchFor },

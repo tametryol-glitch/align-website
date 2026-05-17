@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Play } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -50,14 +51,14 @@ export function VideoMessageBubble({ metadata, isMine }: VideoMessageBubbleProps
           type="button"
         >
           {thumbnail_url ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={thumbnail_url}
-                alt="Video thumbnail"
-                className="w-full max-h-60 object-cover rounded-xl"
-              />
-            </>
+            <Image
+              src={thumbnail_url}
+              alt="Video thumbnail"
+              width={400}
+              height={240}
+              className="w-full max-h-60 object-cover rounded-xl"
+              unoptimized
+            />
           ) : (
             /* Placeholder when no thumbnail */
             <div className={`w-full h-36 flex items-center justify-center rounded-xl ${

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { getSuggestedFriends, type SuggestedUser } from '@/lib/discoveryService';
@@ -217,8 +218,7 @@ export default function DiscoverPage() {
               >
                 <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0">
                   {u.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={u.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    <Image src={u.avatar_url} alt="User avatar" width={40} height={40} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
                     <span className="text-sm font-bold text-accent-primary">{(u.display_name || '?')[0].toUpperCase()}</span>
                   )}
@@ -337,8 +337,7 @@ export default function DiscoverPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0">
                       {p?.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                        <Image src={p.avatar_url} alt="User avatar" width={36} height={36} className="w-full h-full rounded-full object-cover" unoptimized />
                       ) : (
                         <span className="text-xs font-bold text-accent-primary">{(p?.display_name || '?')[0].toUpperCase()}</span>
                       )}
@@ -401,8 +400,7 @@ export default function DiscoverPage() {
               >
                 <div className="w-14 h-14 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-1.5 text-base font-bold text-accent-primary overflow-hidden">
                   {u.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={u.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    <Image src={u.avatar_url} alt="User avatar" width={56} height={56} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
                     (u.display_name || '?')[0].toUpperCase()
                   )}
@@ -430,8 +428,7 @@ export default function DiscoverPage() {
               >
                 <div className="w-14 h-14 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-1.5 text-base font-bold text-accent-primary overflow-hidden">
                   {u.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={u.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    <Image src={u.avatar_url} alt="User avatar" width={56} height={56} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
                     (u.display_name || '?')[0].toUpperCase()
                   )}

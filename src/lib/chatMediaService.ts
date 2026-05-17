@@ -5,6 +5,7 @@
 
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { validateUpload } from './sanitize';
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -38,6 +39,9 @@ export async function uploadChatFile(
       console.warn('[ChatMedia] uploadChatFile: not authenticated');
       return null;
     }
+
+    const vErr = validateUpload(file, 'file');
+    if (vErr) { console.warn('[ChatMedia] uploadChatFile rejected:', vErr); return null; }
 
     const supabase = createClient();
     const ext = getExtension(file.name);
@@ -83,6 +87,9 @@ export async function uploadVoiceNote(
       return null;
     }
 
+    const vErr = validateUpload(blob, 'audio');
+    if (vErr) { console.warn('[ChatMedia] uploadVoiceNote rejected:', vErr); return null; }
+
     const supabase = createClient();
     const path = `voice_notes/${conversationId}/${userId}-${Date.now()}.webm`;
 
@@ -127,6 +134,9 @@ export async function uploadVideoNote(
       console.warn('[ChatMedia] uploadVideoNote: not authenticated');
       return null;
     }
+
+    const vErr = validateUpload(blob, 'video');
+    if (vErr) { console.warn('[ChatMedia] uploadVideoNote rejected:', vErr); return null; }
 
     const supabase = createClient();
     const path = `video_notes/${conversationId}/${userId}-${Date.now()}.webm`;

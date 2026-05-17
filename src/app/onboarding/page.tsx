@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
+import { startTrial, hasUsedTrial } from '@/lib/trialService';
 
 const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Complete'];
 
@@ -41,38 +43,54 @@ export default function OnboardingPage() {
   async function saveProfile(markComplete = true) {
     if (!user) return;
     setSaving(true);
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const updates: any = {
-      display_name: displayName.trim() || undefined,
-      birth_date: birthDate || undefined,
-      birth_time: birthTime || undefined,
-      birth_location: birthLocation || undefined,
-      latitude: latitude || undefined,
-      longitude: longitude || undefined,
-      timezone: timezone || undefined,
-    };
-    if (markComplete) updates.onboarding_completed = true;
+      const updates: any = {
+        display_name: displayName.trim() || undefined,
+        birth_date: birthDate || undefined,
+        birth_time: birthTime || undefined,
+        birth_location: birthLocation || undefined,
+        latitude: latitude ?? undefined,
+        longitude: longitude ?? undefined,
+        timezone: timezone || undefined,
+      };
+      if (markComplete) updates.onboarding_completed = true;
 
-    Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
+      Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
 
-    const { data } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', user.id)
-      .select()
-      .single();
+      const { data } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
+        .single();
 
-    if (data) setProfile(data);
-    if (data?.birth_date && data?.latitude && data?.longitude) {
-      indexMyPlacements().catch(() => {});
+      if (data) setProfile(data);
+      if (data?.birth_date && data?.latitude && data?.longitude) {
+        indexMyPlacements().catch(() => {});
+      }
+      return data;
+    } catch (err) {
+      console.error('[Onboarding] saveProfile failed:', err);
+      return null;
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    return data;
   }
 
   async function handleComplete() {
-    await saveProfile(true);
+    try {
+      await saveProfile(true);
+      // Start 7-day premium trial — fire-and-forget so it never blocks navigation
+      if (user) {
+        hasUsedTrial(user.id).then((used) => {
+          if (!used) startTrial(user.id).catch(() => {});
+        }).catch(() => {});
+      }
+    } catch (err) {
+      console.error('[Onboarding] handleComplete failed:', err);
+    }
     router.push('/dashboard');
   }
 
@@ -81,8 +99,16 @@ export default function OnboardingPage() {
     router.push('/readings/rectification');
   }
 
+  function canAdvance(): boolean {
+    switch (step) {
+      case 2: return !!birthDate;
+      case 4: return latitude != null && longitude != null && !!timezone;
+      default: return true;
+    }
+  }
+
   function next() {
-    if (step < STEPS.length - 1) setStep(step + 1);
+    if (step < STEPS.length - 1 && canAdvance()) setStep(step + 1);
   }
   function prev() {
     if (step > 0) setStep(step - 1);
@@ -107,8 +133,7 @@ export default function OnboardingPage() {
           {/* Step 0: Welcome */}
           {step === 0 && (
             <div className="py-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Align" className="w-16 h-16 rounded-2xl mx-auto mb-6" />
+              <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-6" />
               <h1 className="text-2xl font-display font-bold text-text-primary mb-3">
                 Welcome to Align
               </h1>
@@ -170,7 +195,7 @@ export default function OnboardingPage() {
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={next} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                <button onClick={next} disabled={!birthDate} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
                   Next <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -248,11 +273,14 @@ export default function OnboardingPage() {
                   placeholder="Search city, state, or country..."
                 />
               </div>
+              {latitude == null && birthLocation && (
+                <p className="text-xs text-amber-400 mb-3">Please select a city from the dropdown results</p>
+              )}
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={next} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                <button onClick={next} disabled={latitude == null || longitude == null || !timezone} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
                   Next <ChevronRight className="w-4 h-4" />
                 </button>
               </div>

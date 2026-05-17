@@ -3,71 +3,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import {
-  getFeed, createPost, uploadPostMedia, toggleReaction, addComment, getComments, deleteComment, deletePost, editPost, repostPost, reportPost, toggleBookmark, getUserBookmarks,
-  type FeedPost, type FeedComment, type ReactionEmoji, type PostReaction,
-  REACTION_OPTIONS, POST_STYLE_PRESETS,
+  getFeed, createPost, uploadPostMedia, toggleReaction, deletePost, editPost, repostPost, toggleBookmark, getUserBookmarks,
+  type FeedPost, type ReactionEmoji,
+  POST_STYLE_PRESETS,
 } from '@/lib/feedService';
-import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
-import { MessageCircle, Bookmark, Send, MoreHorizontal, X, Plus, Globe, Users, Trash2, Image, BarChart3, FileText, Video, Share2, Repeat2, Flag, Ban, Pencil, Smile } from 'lucide-react';
-import Link from 'next/link';
-
-// ── Helpers ────────────────────────────────────────────────────────
-
-function timeAgo(dateStr: string): string {
-  const s = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (s < 60) return 'just now';
-  if (s < 3600) return `${Math.floor(s / 60)}m`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h`;
-  if (s < 604800) return `${Math.floor(s / 86400)}d`;
-  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
-const TYPE_BADGES: Record<string, { label: string; color: string }> = {
-  chart_share: { label: 'Chart', color: 'bg-accent-muted text-accent-primary' },
-  reading_share: { label: 'Reading', color: 'bg-gold-muted text-gold-primary' },
-  photo: { label: 'Photo', color: 'bg-blue-500/15 text-blue-400' },
-  video: { label: 'Video', color: 'bg-red-500/15 text-red-400' },
-  transit_alert: { label: 'Transit', color: 'bg-green-500/15 text-green-400' },
-  compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
-};
-
-// ── YouTube Embed Helpers ─────────────────────────────────────────
-
-const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:\S*)?/gi;
-
-function extractYouTubeId(url: string): string | null {
-  const match = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(url);
-  return match ? match[1] : null;
-}
-
-function extractYouTubeUrls(text: string): string[] {
-  const matches = text.match(YOUTUBE_REGEX);
-  return matches || [];
-}
-
-function YouTubeEmbed({ videoId }: { videoId: string }) {
-  return (
-    <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="YouTube video"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="absolute inset-0 w-full h-full border-0 rounded-xl"
-      />
-    </div>
-  );
-}
-
-/** Check if a comment text is a GIF/sticker URL */
-function isGifOrStickerUrl(text: string): boolean {
-  const trimmed = text.trim();
-  return (
-    trimmed.startsWith('https://media') && trimmed.includes('giphy.com') ||
-    /^https?:\/\/\S+\.gif(\?.*)?$/i.test(trimmed)
-  );
-}
+import { FeedCard } from '@/components/feed/FeedCard';
+import { CommentSheet } from '@/components/feed/CommentSheet';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video } from 'lucide-react';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
 
@@ -114,493 +58,7 @@ function getDynamicTags(): string[] {
   return tags;
 }
 
-// ── FeedCard ───────────────────────────────────────────────────────
-
-function FeedCard({
-  post,
-  currentUserId,
-  onReaction,
-  onComment,
-  onDelete,
-  onEdit,
-  onRepost,
-  isBookmarked,
-  onBookmark,
-}: {
-  post: FeedPost;
-  currentUserId: string;
-  onReaction: (postId: string, emoji: ReactionEmoji) => void;
-  onComment: (postId: string) => void;
-  onDelete: (postId: string) => void;
-  onEdit: (postId: string, currentContent: string) => void;
-  onRepost: (post: FeedPost) => void;
-  isBookmarked: boolean;
-  onBookmark: (postId: string) => void;
-}) {
-  const [showReactions, setShowReactions] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [showReportMenu, setShowReportMenu] = useState(false);
-  const [reported, setReported] = useState(false);
-  const isOwner = post.userId === currentUserId;
-
-  const preset = post.style?.preset
-    ? POST_STYLE_PRESETS.find((p) => p.id === post.style?.preset)
-    : null;
-  const hasGradient = preset && preset.id !== 'default';
-
-  const cardStyle = hasGradient
-    ? { background: `linear-gradient(135deg, ${preset!.gradient[0]}, ${preset!.gradient[1]})` }
-    : undefined;
-
-  const textColor = hasGradient ? preset!.textColor : undefined;
-
-  return (
-    <div className="card !p-0 overflow-hidden relative" style={cardStyle}>
-      {/* Header */}
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
-        <Link href={`/user/${post.userId}`} className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-          {post.userAvatar ? (
-            <img src={post.userAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-          ) : (
-            <span className="text-sm font-bold text-accent-primary">
-              {post.userName[0]?.toUpperCase()}
-            </span>
-          )}
-        </Link>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <Link href={`/user/${post.userId}`} className="font-semibold text-sm hover:underline" style={textColor ? { color: textColor } : undefined}>
-              {post.userName}
-            </Link>
-            {post.type !== 'text' && TYPE_BADGES[post.type] && (
-              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${TYPE_BADGES[post.type].color}`}>
-                {TYPE_BADGES[post.type].label}
-              </span>
-            )}
-            <span className="text-xs text-text-muted flex items-center gap-1">
-              {post.visibility === 'friends' ? <Users className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-            </span>
-          </div>
-          <span className="text-xs text-text-muted">{timeAgo(post.createdAt)}</span>
-        </div>
-        <div className="relative">
-          <button onClick={() => setShowMenu(!showMenu)} className="p-1 text-text-muted hover:text-text-primary">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 top-8 bg-bg-elevated border border-border-primary rounded-xl shadow-lg z-20 py-1 min-w-[160px]">
-              {isOwner ? (
-                <>
-                  <button
-                    onClick={() => { onEdit(post.id, post.content); setShowMenu(false); }}
-                    className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
-                  >
-                    <Pencil className="w-4 h-4" /> Edit
-                  </button>
-                  <button
-                    onClick={() => { onDelete(post.id); setShowMenu(false); }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
-                  >
-                    <Trash2 className="w-4 h-4" /> Delete
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => { setShowMenu(false); setShowReportMenu(true); }}
-                    className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
-                  >
-                    <Flag className="w-4 h-4" /> Report
-                  </button>
-                  <button
-                    onClick={() => setShowMenu(false)}
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
-                  >
-                    <Ban className="w-4 h-4" /> Block User
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Repost banner */}
-      {post.originalUserName && (
-        <p className="px-5 text-xs text-text-muted mb-1">
-          ↻ Reposted from <span className="font-medium text-accent-secondary">{post.originalUserName}</span>
-        </p>
-      )}
-
-      {/* Content */}
-      {post.content && (() => {
-        const youtubeUrls = extractYouTubeUrls(post.content);
-        const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
-        // Strip YouTube URLs from display text
-        const displayText = youtubeIds.length > 0
-          ? post.content.replace(YOUTUBE_REGEX, '').trim()
-          : post.content;
-
-        return (
-          <>
-            {displayText && (
-              <p
-                className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
-                style={textColor ? { color: textColor } : undefined}
-              >
-                {displayText}
-              </p>
-            )}
-            {youtubeIds.map((vid, i) => (
-              <div key={vid + i} className="px-5 pb-3">
-                <YouTubeEmbed videoId={vid} />
-              </div>
-            ))}
-          </>
-        );
-      })()}
-
-      {/* Media */}
-      {post.imageUrl && (
-        <div className="px-5 pb-3">
-          <img
-            src={post.imageUrl}
-            alt=""
-            className="w-full rounded-xl object-cover max-h-[400px]"
-          />
-        </div>
-      )}
-      {post.videoUrl && (
-        <div className="px-5 pb-3">
-          <video
-            src={post.videoUrl}
-            poster={post.posterUrl}
-            controls
-            playsInline
-            preload="metadata"
-            className="w-full rounded-xl max-h-[400px] bg-black"
-          />
-        </div>
-      )}
-
-      {/* Reactions display */}
-      {post.reactions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-5 pb-2">
-          {post.reactions.map((r) => (
-            <button
-              key={r.emoji}
-              onClick={() => onReaction(post.id, r.emoji)}
-              className={cn(
-                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border transition-colors',
-                r.userReacted
-                  ? 'border-accent-primary bg-accent-muted text-accent-primary'
-                  : 'border-border-primary bg-bg-tertiary text-text-secondary hover:border-accent-primary/50'
-              )}
-            >
-              <span>{r.emoji}</span>
-              <span className="font-medium">{r.count}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Action bar */}
-      <div className="flex items-center border-t border-border-primary">
-        <button
-          onClick={() => setShowReactions(!showReactions)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
-        >
-          <span className="text-base">✨</span> React
-        </button>
-        <div className="w-px h-5 bg-border-primary" />
-        <button
-          onClick={() => onComment(post.id)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
-        >
-          <MessageCircle className="w-4 h-4" />
-          {post.commentCount > 0 ? post.commentCount : 'Comment'}
-        </button>
-        <div className="w-px h-5 bg-border-primary" />
-        <button
-          onClick={() => onRepost(post)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
-        >
-          <Repeat2 className="w-4 h-4" /> Repost
-        </button>
-        <div className="w-px h-5 bg-border-primary" />
-        <button
-          onClick={() => onBookmark(post.id)}
-          className={cn(
-            'flex-1 flex items-center justify-center gap-1.5 py-3 text-xs transition-colors',
-            isBookmarked ? 'text-accent-primary' : 'text-text-muted hover:text-accent-primary'
-          )}
-        >
-          <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} /> {isBookmarked ? 'Saved' : 'Save'}
-        </button>
-        <div className="w-px h-5 bg-border-primary" />
-        <button
-          onClick={() => {
-            const shareUrl = `${window.location.origin}/feed`;
-            if (navigator.share) {
-              navigator.share({ title: `${post.userName} on Align`, text: post.content.slice(0, 100), url: shareUrl }).catch(() => {});
-            } else {
-              navigator.clipboard.writeText(shareUrl).catch(() => {});
-            }
-          }}
-          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
-        >
-          <Share2 className="w-4 h-4" /> Share
-        </button>
-      </div>
-
-      {/* Reaction picker */}
-      {showReactions && (
-        <div className="flex items-center justify-center gap-2 px-5 py-3 border-t border-border-primary bg-bg-elevated/50">
-          {REACTION_OPTIONS.map((r) => (
-            <button
-              key={r.emoji}
-              onClick={() => { onReaction(post.id, r.emoji); setShowReactions(false); }}
-              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-accent-muted transition-colors"
-              title={r.label}
-            >
-              <span className="text-xl">{r.emoji}</span>
-              <span className="text-[9px] text-text-muted">{r.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Inline comments preview */}
-      {post.comments.length > 0 && (
-        <div className="px-5 py-3 border-t border-border-primary space-y-2">
-          {post.comments.map((c) => (
-            <div key={c.id} className="flex items-start gap-2 text-sm">
-              <div className="w-5 h-5 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
-                {c.userAvatar ? (
-                  <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <span className="text-[9px] font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <Link href={`/user/${c.userId}`} className="font-semibold text-text-primary mr-1.5 hover:underline">{c.userName}</Link>
-                {isGifOrStickerUrl(c.text) ? (
-                  <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[180px] max-h-[120px] rounded-lg object-contain" />
-                ) : (
-                  <span className="text-text-secondary">{c.text}</span>
-                )}
-              </div>
-            </div>
-          ))}
-          {post.commentCount > 3 && (
-            <button
-              onClick={() => onComment(post.id)}
-              className="text-xs text-accent-secondary hover:text-accent-primary"
-            >
-              View all {post.commentCount} comments
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Report modal */}
-      {showReportMenu && (
-        <>
-          <div className="fixed inset-0 bg-black/60 z-50" onClick={() => setShowReportMenu(false)} />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowReportMenu(false)}>
-            <div className="bg-bg-card border border-border rounded-2xl p-5 max-w-xs w-full" onClick={e => e.stopPropagation()}>
-              <h3 className="text-base font-semibold text-text-primary mb-3">Report Post</h3>
-              {reported ? (
-                <p className="text-sm text-green-400 mb-4">Thanks for reporting. We&apos;ll review this post.</p>
-              ) : (
-                <div className="space-y-1 mb-4">
-                  {['Spam', 'Harassment', 'Inappropriate content', 'Misinformation', 'Other'].map(reason => (
-                    <button
-                      key={reason}
-                      onClick={async () => {
-                        try { await reportPost(post.id, currentUserId, reason); } catch { /* */ }
-                        setReported(true);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-bg-secondary rounded-lg transition-colors"
-                    >
-                      {reason}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <button onClick={() => { setShowReportMenu(false); setReported(false); }} className="btn-secondary w-full text-sm">
-                {reported ? 'Done' : 'Cancel'}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Click outside to close menu */}
-      {showMenu && <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />}
-    </div>
-  );
-}
-
-// ── Comment Sheet ──────────────────────────────────────────────────
-
-function CommentSheet({
-  postId,
-  postOwnerId,
-  userId,
-  onClose,
-  onCommentCountChange,
-}: {
-  postId: string;
-  postOwnerId: string;
-  userId: string;
-  onClose: () => void;
-  onCommentCountChange?: (postId: string, delta: number) => void;
-}) {
-  const [comments, setComments] = useState<FeedComment[]>([]);
-  const [text, setText] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [showGifPicker, setShowGifPicker] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    getComments(postId).then((c) => { setComments(c); setLoading(false); });
-  }, [postId]);
-
-  async function handleSend() {
-    if (!text.trim() || sending) return;
-    setSending(true);
-    try {
-      const comment = await addComment(postId, userId, text.trim());
-      setComments((prev) => [...prev, comment]);
-      setText('');
-      onCommentCountChange?.(postId, 1);
-    } catch { /* ignore */ }
-    setSending(false);
-  }
-
-  async function handleGifSelect(url: string, _type: 'gif' | 'sticker') {
-    setShowGifPicker(false);
-    setSending(true);
-    try {
-      const comment = await addComment(postId, userId, url);
-      setComments((prev) => [...prev, comment]);
-      onCommentCountChange?.(postId, 1);
-    } catch { /* ignore */ }
-    setSending(false);
-  }
-
-  async function handleDeleteComment(commentId: string) {
-    setDeletingId(commentId);
-    try {
-      await deleteComment(commentId);
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
-      onCommentCountChange?.(postId, -1);
-    } catch { /* ignore */ }
-    setDeletingId(null);
-  }
-
-  /** Can the current user delete this comment? */
-  function canDelete(comment: FeedComment): boolean {
-    // User can delete their own comment on any post
-    if (comment.userId === userId) return true;
-    // Post owner can delete any comment on their post
-    if (postOwnerId === userId) return true;
-    return false;
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-bg-secondary border border-border-primary rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-          <h3 className="text-lg font-semibold text-text-primary">Comments</h3>
-          <button onClick={onClose} className="text-text-muted hover:text-text-primary">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Comments list */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {loading && <p className="text-text-muted text-sm text-center py-8">Loading comments...</p>}
-          {!loading && comments.length === 0 && (
-            <p className="text-text-muted text-sm text-center py-8">Be the first to share your thoughts</p>
-          )}
-          {comments.map((c) => (
-            <div key={c.id} className="flex gap-3 group">
-              <Link href={`/user/${c.userId}`} className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {c.userAvatar ? (
-                  <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <span className="text-xs font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
-                )}
-              </Link>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <Link href={`/user/${c.userId}`} className="text-sm font-semibold text-text-primary hover:underline">{c.userName}</Link>
-                  <span className="text-xs text-text-muted">{timeAgo(c.createdAt)}</span>
-                  {canDelete(c) && (
-                    <button
-                      onClick={() => handleDeleteComment(c.id)}
-                      disabled={deletingId === c.id}
-                      className="ml-auto opacity-0 group-hover:opacity-100 text-text-muted hover:text-red-400 transition-all"
-                      title="Delete comment"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-                {isGifOrStickerUrl(c.text) ? (
-                  <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[220px] max-h-[160px] rounded-lg object-contain" />
-                ) : (
-                  <p className="text-sm text-text-secondary mt-0.5">{c.text}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Input */}
-        <div className="relative px-5 py-3 border-t border-border-primary">
-          {/* GIF/Sticker Picker */}
-          <GifStickerPicker
-            isOpen={showGifPicker}
-            onClose={() => setShowGifPicker(false)}
-            onSelect={handleGifSelect}
-          />
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowGifPicker(!showGifPicker)}
-              className={cn(
-                'p-2 rounded-lg transition-colors flex-shrink-0',
-                showGifPicker ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-accent-primary'
-              )}
-              title="Send GIF or Sticker"
-            >
-              <Smile className="w-5 h-5" />
-            </button>
-            <input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Add a comment..."
-              className="input flex-1 !py-2 text-sm"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!text.trim() || sending}
-              className="btn-primary !px-3 !py-2"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// FeedCard and CommentSheet imported from @/components/feed/
 
 // ── Create Post Modal ──────────────────────────────────────────────
 
@@ -797,7 +255,7 @@ function CreatePostModal({
         <div className="flex items-center gap-3 px-5 pt-4 pb-2">
           <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
             {userAvatar ? (
-              <img src={userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
+              <Image src={userAvatar} alt="User avatar" width={36} height={36} className="w-full h-full rounded-full object-cover" unoptimized />
             ) : (
               <span className="text-sm font-bold text-accent-primary">{userName[0]?.toUpperCase()}</span>
             )}
@@ -823,7 +281,7 @@ function CreatePostModal({
               postMode === 'photo' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
-            <Image className="w-3.5 h-3.5" /> Photo
+            <ImageIcon className="w-3.5 h-3.5" /> Photo
           </button>
           <button
             onClick={() => { setPostMode('video'); clearImage(); }}
@@ -869,8 +327,7 @@ function CreatePostModal({
               {/* Image preview */}
               {imagePreview && (
                 <div className="relative rounded-xl overflow-hidden border border-border-primary">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imagePreview} alt="Preview" className="w-full max-h-[240px] object-cover" />
+                  <Image src={imagePreview} alt="Image preview" width={400} height={240} className="w-full max-h-[240px] object-cover" unoptimized />
                   <button
                     onClick={removeImage}
                     className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
@@ -883,7 +340,7 @@ function CreatePostModal({
               {/* Image upload button (for photo mode or as attachment) */}
               {!imagePreview && postMode === 'photo' && (
                 <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
-                  <Image className="w-8 h-8 text-text-muted" />
+                  <ImageIcon className="w-8 h-8 text-text-muted" />
                   <span className="text-sm text-text-muted">Click to upload an image</span>
                   <span className="text-xs text-text-muted">JPG, PNG, GIF, WebP up to 10 MB</span>
                   <input
@@ -927,7 +384,7 @@ function CreatePostModal({
               {postMode === 'text' && !imagePreview && !videoPreview && (
                 <div className="flex items-center gap-2">
                   <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
-                    <Image className="w-4 h-4" /> Add Image
+                    <ImageIcon className="w-4 h-4" /> Add Image
                     <input
                       type="file"
                       accept="image/*"

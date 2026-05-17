@@ -3,7 +3,7 @@
 // Search, trending endpoints with pagination support
 // ═══════════════════════════════════════════════════════════════════
 
-const GIPHY_API_KEY = 'eAQjSICFiM1x64bkd8k6nqxc6Bv9U8jT';
+const GIPHY_API_KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY || '';
 const GIPHY_BASE_URL = 'https://api.giphy.com/v1';
 const DEFAULT_LIMIT = 25;
 const DEFAULT_RATING = 'pg-13';

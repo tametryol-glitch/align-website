@@ -1,3 +1,5 @@
+import { sanitizeSearchInput } from './sanitize';
+
 /**
  * Celebrity Matches Service (Web)
  *
@@ -182,7 +184,7 @@ export async function searchCelebrities(query: string, limit = 20): Promise<Cele
     const { data, error } = await supabase
       .from('celebrities')
       .select('*')
-      .or(`name.ilike.%${query}%,profession.ilike.%${query}%,tags.cs.{${query.toLowerCase()}}`)
+      .or(`name.ilike.%${sanitizeSearchInput(query)}%,profession.ilike.%${sanitizeSearchInput(query)}%,tags.cs.{${sanitizeSearchInput(query).toLowerCase()}}`)
       .eq('status', 'active')
       .order('popularity_score', { ascending: false })
       .limit(limit);

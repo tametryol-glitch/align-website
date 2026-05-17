@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { Search, Loader2, X } from 'lucide-react';
 import {
   searchGifs,
@@ -218,12 +219,12 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
                 onClick={() => onSelect(item.images.original.url, activeTab === 'gifs' ? 'gif' : 'sticker')}
                 className="relative aspect-square rounded-lg overflow-hidden bg-bg-tertiary hover:ring-2 hover:ring-accent-primary transition-all group"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={item.images.fixed_height.url}
                   alt={item.title || 'GIF'}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                  loading="lazy"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-200"
+                  unoptimized
                 />
               </button>
             ))}

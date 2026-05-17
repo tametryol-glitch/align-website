@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, Star, ChevronDown, ChevronUp, Copy, Sparkles, Loader2, Info, Search } from 'lucide-react';
+import { InlineBold } from '@/components/ui/InlineBold';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { getZodiacGlyph } from '@/lib/utils';
@@ -408,20 +409,16 @@ function RenderMarkdown({ text }: { text: string }) {
           return (
             <div key={i} className="flex gap-2 pl-2 mb-1">
               <span className="text-amber-400">&bull;</span>
-              <span className="text-text-secondary text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: inlineBold(trimmed.slice(2)) }} />
+              <InlineBold text={trimmed.slice(2)} className="text-text-secondary text-sm leading-relaxed" />
             </div>
           );
         } else if (trimmed.length > 0) {
-          return <p key={i} className="text-text-secondary text-sm leading-relaxed mb-1" dangerouslySetInnerHTML={{ __html: inlineBold(trimmed) }} />;
+          return <p key={i} className="text-text-secondary text-sm leading-relaxed mb-1"><InlineBold text={trimmed} /></p>;
         }
         return <div key={i} className="h-2" />;
       })}
     </div>
   );
-}
-
-function inlineBold(text: string): string {
-  return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-text-primary">$1</strong>');
 }
 
 // ─── Calculation Helpers ────────────────────────────────────────────────────
@@ -741,7 +738,7 @@ function PartCard({ part, expanded, onToggle, isKey, firstName }: { part: Arabic
           {meanings && (
             <div className="bg-purple-500/5 rounded-lg p-2 border border-purple-500/10">
               <p className="text-[10px] uppercase text-accent-primary font-semibold mb-0.5">Personalized</p>
-              <p className="text-xs text-text-secondary leading-relaxed" dangerouslySetInnerHTML={{ __html: inlineBold(generatePersonalizedPartInterpretation(part, firstName)) }} />
+              <p className="text-xs text-text-secondary leading-relaxed"><InlineBold text={generatePersonalizedPartInterpretation(part, firstName)} /></p>
             </div>
           )}
           <div className="bg-bg-tertiary rounded-lg p-2">

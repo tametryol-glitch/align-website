@@ -231,8 +231,9 @@
     "free": {
       "name": "Grátis",
       "price": "$0",
-      "tagline": "Explore o cosmos sem custo.",
+      "tagline": "Explore o cosmos sem custo",
       "cta": "Começar grátis",
+      "bestFor": "Para iniciantes curiosos sobre astrologia que querem explorar antes de se comprometer.",
       "features": [
         "Visão geral básica do mapa natal",
         "Horóscopo diário",
@@ -240,65 +241,61 @@
         "Tiragens de uma carta de tarot",
         "Calculadora de horas planetárias",
         "1 perfil salvo"
-      ],
-      "bestFor": "Para iniciantes curiosos sobre astrologia que querem explorar antes de se comprometer."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "A clareza começa aqui.",
+      "tagline": "Seu companheiro cósmico diário",
       "cta": "Começar com Light",
+      "bestFor": "Para exploradores casuais que querem orientação cósmica diária e percepções básicas de seu mapa.",
       "features": [
-        "Insights personalizados diários",
-        "Mapa natal com posições principais",
-        "10 leituras IA por mês",
+        "Tudo incluído no Grátis",
+        "Insights personalizados diários completos",
+        "30 leituras IA por mês",
         "Alertas de trânsitos em tempo real",
-        "Orientação diária de tarot",
-        "Calculadora de horas planetárias",
         "Resumo do caminho de vida numerológico",
         "1 perfil natal salvo"
-      ],
-      "bestFor": "Para exploradores casuais que querem orientação cósmica diária e percepções básicas de seu mapa."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Onde a profundidade encontra a clareza.",
+      "tagline": "Desbloqueie seu plano cósmico completo",
+      "badge": "MAIS POPULAR",
       "cta": "Obter Premium — Melhor valor",
+      "bestFor": "Para entusiastas prontos para mergulhar fundo em seu mapa astrológico completo e relacionamentos.",
       "features": [
         "Tudo incluído no Light",
-        "50 leituras profundas IA por mês",
-        "Mapa completo — aspectos, padrões, estrelas fixas",
-        "Mapas progressados e de revolução solar/lunar",
-        "Sinastria e compatibilidade composta",
-        "Origens estelares e Design Humano",
-        "Todas as 6 tiragens de tarot com IA",
-        "Relatório de astrologia financeira",
-        "Modo linguagem simples — sem jargão",
-        "5 perfis natais salvos",
+        "Mapa completo com aspectos e padrões",
+        "100 leituras IA por mês",
+        "Todos os tipos de mapa (progressado, revoluções, sinastria)",
+        "Compatibilidade e mapas compostos",
+        "Origens estelares, numerologia, Design Humano",
+        "Tiragens de tarot (todos os 5 tipos)",
+        "Alternância de jargão (modo linguagem simples)",
+        "5 perfis salvos",
         "Todos os cursos de astrologia"
-      ],
-      "badge": "MAIS POPULAR",
-      "bestFor": "Para entusiastas prontos para mergulhar fundo em seu mapa astrológico completo e relacionamentos."
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "A imagem completa. Sem restrições.",
+      "tagline": "Para o praticante sério",
       "cta": "Desbloquear acesso Pro",
+      "bestFor": "Para astrólogos profissionais e praticantes dedicados que precisam de todas as ferramentas disponíveis.",
       "features": [
         "Tudo incluído no Premium",
-        "200 leituras IA por mês",
-        "Mapas mundiais de astrocartografia",
+        "300 leituras IA por mês",
+        "Relatório de astrologia financeira",
+        "Astrocartografia (ACG)",
         "Firdaria e liberação zodiacal",
-        "Partes árabes e estrelas fixas em profundidade",
-        "IA prioritária — processamento mais rápido",
-        "Perfis e leituras salvas ilimitadas",
-        "Relatórios profissionais exportáveis",
+        "Estrelas fixas e partes árabes",
+        "Processamento prioritário de IA",
         "Acesso antecipado a novos recursos",
-        "IA em 20 idiomas"
-      ],
-      "bestFor": "Para astrólogos profissionais e praticantes dedicados que precisam de todas as ferramentas disponíveis."
+        "Perfis salvos ilimitados",
+        "Exportar e compartilhar relatórios"
+      ]
     },
     "alerts": {
       "couldNotOpenLink": "Não foi possível abrir o link.",

@@ -3,6 +3,7 @@
 // DMs, groups, realtime delivery, read receipts, typing indicators,
 // unread counts, reactions, replies, message edit/delete, pin/mute/archive
 // ═══════════════════════════════════════════════════════════════════
+import { sanitizeSearchInput, validateUpload } from './sanitize';
 
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -903,7 +904,7 @@ export async function searchUsers(query: string): Promise<Array<{
       .from('profiles')
       .select('id, display_name, avatar_url, username, sun_sign')
       .neq('id', myId)
-      .or(`display_name.ilike.%${query}%,username.ilike.%${query}%`)
+      .or(`display_name.ilike.%${sanitizeSearchInput(query)}%,username.ilike.%${sanitizeSearchInput(query)}%`)
       .limit(20);
 
     if (error || !data) return [];
@@ -957,6 +958,9 @@ export async function uploadChatImage(
   try {
     const myId = getMyId();
     if (!myId) return null;
+
+    const vErr = validateUpload(file, 'image');
+    if (vErr) { console.warn('[Chat] image upload rejected:', vErr); return null; }
 
     const supabase = createClient();
     const ext = file.name.split('.').pop() || 'jpg';

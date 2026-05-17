@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -43,8 +44,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary flex-col z-40">
       <div className="p-6">
         <Link href="/dashboard" className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Align" className="w-10 h-10 rounded-xl" />
+          <Image src="/logo.png" alt="Align logo" width={40} height={40} className="w-10 h-10 rounded-xl" />
           <span className="text-xl font-display font-bold text-text-primary">Align</span>
         </Link>
       </div>
@@ -95,8 +95,7 @@ export function Sidebar() {
         >
           <div className="w-5 h-5 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0">
             {profile?.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+              <Image src={profile.avatar_url} alt="User avatar" width={20} height={20} className="w-full h-full rounded-full object-cover" unoptimized />
             ) : (
               <User className="w-3.5 h-3.5" />
             )}

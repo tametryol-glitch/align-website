@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,8 +13,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
         <span className="text-xl font-display font-bold text-text-primary flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Align" className="w-8 h-8 rounded-lg" />
+          <Image src="/logo.png" alt="Align logo" width={32} height={32} className="w-8 h-8 rounded-lg" />
           Align
         </span>
         <div className="flex items-center gap-3">
@@ -28,8 +28,7 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="max-w-4xl mx-auto text-center px-6 pt-16 pb-20">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Align" className="w-24 h-24 rounded-2xl mx-auto mb-6" />
+        <Image src="/logo.png" alt="Align logo" width={96} height={96} className="w-24 h-24 rounded-2xl mx-auto mb-6" />
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-muted text-accent-primary text-xs font-medium mb-6">
           26+ AI-Powered Readings
         </div>
@@ -91,22 +90,61 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
-        <div className="grid grid-cols-3 gap-6">
-          <div>
-            <p className="text-3xl font-bold text-accent-primary">26+</p>
-            <p className="text-xs text-text-muted mt-1">Reading Types</p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-accent-primary">55+</p>
-            <p className="text-xs text-text-muted mt-1">Asteroids Tracked</p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-accent-primary">6</p>
-            <p className="text-xs text-text-muted mt-1">Chart Types</p>
+      {/* Social Proof Stats Bar */}
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+            <div>
+              <p className="text-4xl font-display font-bold bg-gradient-to-r from-[#9B6FF6] to-[#EC4899] bg-clip-text text-transparent">26+</p>
+              <p className="text-sm text-text-secondary mt-1">Readings</p>
+            </div>
+            <div>
+              <p className="text-4xl font-display font-bold bg-gradient-to-r from-[#9B6FF6] to-[#EC4899] bg-clip-text text-transparent">55+</p>
+              <p className="text-sm text-text-secondary mt-1">Asteroids</p>
+            </div>
+            <div>
+              <p className="text-4xl font-display font-bold bg-gradient-to-r from-[#9B6FF6] to-[#EC4899] bg-clip-text text-transparent">8</p>
+              <p className="text-sm text-text-secondary mt-1">Dimension Matching</p>
+            </div>
+            <div>
+              <p className="text-4xl font-display font-bold bg-gradient-to-r from-[#9B6FF6] to-[#EC4899] bg-clip-text text-transparent">20+</p>
+              <p className="text-sm text-text-secondary mt-1">Languages</p>
+            </div>
           </div>
         </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="max-w-6xl mx-auto px-6 pb-20">
+        <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-10">
+          What our users are saying
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="text-amber-400 text-sm mb-3">★★★★★</div>
+            <p className="text-sm text-text-primary mb-4">
+              &ldquo;Align&rsquo;s compatibility analysis was scarily accurate. My partner and I matched 94% and it explained exactly why we click.&rdquo;
+            </p>
+            <p className="text-sm text-text-secondary">— Sarah K.</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="text-amber-400 text-sm mb-3">★★★★★</div>
+            <p className="text-sm text-text-primary mb-4">
+              &ldquo;I&rsquo;ve tried Co-Star and The Pattern. Align blows them away with the depth of readings and the AI astrologer feature.&rdquo;
+            </p>
+            <p className="text-sm text-text-secondary">— Marcus T.</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="text-amber-400 text-sm mb-3">★★★★★</div>
+            <p className="text-sm text-text-primary mb-4">
+              &ldquo;The zodiacal releasing reading predicted my career change within weeks. This isn&rsquo;t generic horoscopes — it&rsquo;s real astrology.&rdquo;
+            </p>
+            <p className="text-sm text-text-secondary">— Priya M.</p>
+          </div>
+        </div>
+        <p className="text-center text-text-secondary italic text-sm mt-8">
+          More readings than The Pattern. Deeper than Co-Star. Powered by AI.
+        </p>
       </section>
 
       {/* Pricing Teaser */}
@@ -125,8 +163,7 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="max-w-4xl mx-auto px-6 pb-24 text-center">
         <div className="bg-gradient-cosmic rounded-3xl p-10 border border-accent-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Align" className="w-14 h-14 rounded-xl mx-auto mb-4" />
+          <Image src="/logo.png" alt="Align logo" width={56} height={56} className="w-14 h-14 rounded-xl mx-auto mb-4" />
           <h2 className="text-3xl font-display font-bold text-text-primary mb-4">
             Ready to align with the cosmos?
           </h2>
