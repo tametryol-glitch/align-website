@@ -2,11 +2,12 @@
 
 /**
  * ExportTool — export the edited video via FFmpeg-wasm.
- * Shows progress bar during processing and download/upload buttons when done.
+ * Shows progress bar during processing, then download + upload buttons.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
+import { createClient } from '@/lib/supabase';
 import { Download, Upload, Loader2, AlertCircle, Check } from 'lucide-react';
 
 export function ExportTool() {
@@ -19,11 +20,17 @@ export function ExportTool() {
   const setExportedBlobUrl = useVideoEditorStore((s) => s.setExportedBlobUrl);
   const setExportError = useVideoEditorStore((s) => s.setExportError);
 
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const handleExport = useCallback(async () => {
     try {
       setExportState('loading-ffmpeg');
       setExportProgress(0);
       setExportError(null);
+      setUploadedUrl(null);
+      setUploadError(null);
 
       // Dynamically import the export service to keep the main bundle small
       const { exportVideo } = await import('@/lib/videoExportService');
@@ -51,6 +58,47 @@ export function ExportTool() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }, [exportedBlobUrl]);
+
+  const handleUpload = useCallback(async () => {
+    if (!exportedBlobUrl) return;
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setUploadError('Not signed in. Please sign in to upload.');
+        setUploading(false);
+        return;
+      }
+
+      // Fetch the blob from the blob URL
+      const resp = await fetch(exportedBlobUrl);
+      const blob = await resp.blob();
+      const file = new File([blob], `edited-${Date.now()}.mp4`, { type: 'video/mp4' });
+
+      const path = `${user.id}/cosmic-video-${Date.now()}.mp4`;
+      const { error } = await supabase.storage
+        .from('post-media')
+        .upload(path, file, { contentType: 'video/mp4', upsert: false });
+
+      if (error) {
+        console.error('[Export] Upload error:', error.message);
+        setUploadError(error.message);
+        setUploading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage.from('post-media').getPublicUrl(path);
+      setUploadedUrl(urlData.publicUrl);
+      setUploading(false);
+    } catch (err: any) {
+      console.error('[Export] Upload exception:', err);
+      setUploadError(err?.message || 'Upload failed');
+      setUploading(false);
+    }
   }, [exportedBlobUrl]);
 
   return (
@@ -123,6 +171,7 @@ export function ExportTool() {
             />
           </div>
 
+          {/* Download + Upload buttons */}
           <div className="flex gap-2">
             <button
               onClick={handleDownload}
@@ -132,15 +181,57 @@ export function ExportTool() {
               Download
             </button>
             <button
-              onClick={() => {
-                setExportState('idle');
-                setExportProgress(0);
-              }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 text-text-secondary text-sm font-medium hover:bg-white/15 transition-colors"
+              onClick={handleUpload}
+              disabled={uploading || !!uploadedUrl}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 text-text-secondary text-sm font-medium hover:bg-white/15 transition-colors disabled:opacity-50"
             >
-              Re-export
+              {uploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : uploadedUrl ? (
+                <>
+                  <Check className="w-4 h-4 text-green-400" />
+                  Uploaded
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  Save to Cloud
+                </>
+              )}
             </button>
           </div>
+
+          {/* Upload success */}
+          {uploadedUrl && (
+            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+              <p className="text-xs text-green-300">
+                Video saved to your cloud storage. You can use it in posts and messages.
+              </p>
+            </div>
+          )}
+
+          {/* Upload error */}
+          {uploadError && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+              <p className="text-xs text-red-300">{uploadError}</p>
+            </div>
+          )}
+
+          {/* Re-export */}
+          <button
+            onClick={() => {
+              setExportState('idle');
+              setExportProgress(0);
+              setUploadedUrl(null);
+              setUploadError(null);
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 text-text-muted text-sm font-medium hover:bg-white/10 transition-colors"
+          >
+            Re-export
+          </button>
         </div>
       )}
 

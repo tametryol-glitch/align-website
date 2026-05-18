@@ -29,6 +29,74 @@ async function getFFmpeg(): Promise<FFmpeg> {
 }
 
 /**
+ * Probe the source video to get actual width/height.
+ * Falls back to 1080x1920 if probing fails.
+ */
+async function probeVideoDimensions(
+  ff: FFmpeg,
+): Promise<{ width: number; height: number }> {
+  try {
+    // Use ffprobe-style approach: run a quick transcode of 1 frame
+    // and parse the log output for dimensions
+    let logOutput = '';
+    const handler = ({ message }: { message: string }) => {
+      logOutput += message + '\n';
+    };
+    ff.on('log', handler);
+
+    // Run with -t 0 to just read headers
+    await ff.exec(['-i', 'input.mp4', '-t', '0', '-f', 'null', '-']);
+
+    ff.off('log', handler);
+
+    // Parse "Stream #0:0... Video: ... 1080x1920" or similar
+    const match = logOutput.match(/(\d{2,5})x(\d{2,5})/);
+    if (match) {
+      const w = parseInt(match[1], 10);
+      const h = parseInt(match[2], 10);
+      if (w > 0 && h > 0 && w <= 7680 && h <= 7680) {
+        console.log(`[Export] Probed video dimensions: ${w}x${h}`);
+        return { width: w, height: h };
+      }
+    }
+  } catch (e) {
+    console.warn('[Export] Dimension probe failed, using fallback:', e);
+  }
+
+  return { width: 1080, height: 1920 };
+}
+
+/**
+ * Render an emoji to a PNG via an offscreen canvas.
+ * Returns the PNG as a Uint8Array.
+ */
+function renderEmojiToPng(
+  emoji: string,
+  size: number,
+): Uint8Array {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.clearRect(0, 0, size, size);
+  ctx.font = `${Math.floor(size * 0.8)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, size / 2, size / 2);
+
+  // Convert canvas to PNG bytes
+  const dataUrl = canvas.toDataURL('image/png');
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
  * Export the video with all edits applied.
  *
  * @param onProgress - callback with 0-1 progress value
@@ -43,7 +111,13 @@ export async function exportVideo(
     trimStart,
     trimEnd,
     activeFilter,
+    filterIntensity,
+    adjustBrightness,
+    adjustContrast,
+    adjustSaturation,
+    adjustWarmth,
     textOverlays,
+    stickerOverlays,
     transitions,
     originalAudioVolume,
   } = state;
@@ -59,36 +133,122 @@ export async function exportVideo(
   const videoData = await fetchFile(sourceVideoUrl);
   await ff.writeFile('input.mp4', videoData);
 
+  // ── Probe actual video dimensions ───────────────────────────
+  const { width: vw, height: vh } = await probeVideoDimensions(ff);
+
+  // ── Render sticker emojis to PNG and write to FS ────────────
+  const stickerInputs: Array<{
+    filename: string;
+    x: number;
+    y: number;
+    scale: number;
+    startTime: number;
+    endTime: number;
+    size: number;
+  }> = [];
+
+  for (let i = 0; i < stickerOverlays.length; i++) {
+    const sticker = stickerOverlays[i];
+    const baseSize = 128; // base emoji render size
+    const renderSize = Math.round(baseSize * sticker.scale);
+    const clampedSize = Math.max(16, Math.min(512, renderSize));
+
+    const pngBytes = renderEmojiToPng(sticker.emoji, clampedSize);
+    const filename = `sticker_${i}.png`;
+    await ff.writeFile(filename, pngBytes);
+
+    stickerInputs.push({
+      filename,
+      x: sticker.x,
+      y: sticker.y,
+      scale: sticker.scale,
+      startTime: sticker.startTime,
+      endTime: sticker.endTime,
+      size: clampedSize,
+    });
+  }
+
   // ── Build filter chain ──────────────────────────────────────
   const videoFilters: string[] = [];
 
-  // Trim is handled via -ss / -to args, not filters
-
-  // Color filter
-  const colorFilter = FFMPEG_FILTER_MAP[activeFilter];
-  if (colorFilter) {
-    videoFilters.push(colorFilter);
+  // Color filter (only apply when intensity > 10%)
+  if (filterIntensity > 0.1) {
+    const colorFilter = FFMPEG_FILTER_MAP[activeFilter];
+    if (colorFilter) {
+      videoFilters.push(colorFilter);
+    }
   }
 
-  // Text overlays (drawtext)
-  for (const overlay of textOverlays) {
-    // Convert percentage position to pixel position (1080x1920)
-    const x = Math.round((overlay.x / 100) * 1080);
-    const y = Math.round((overlay.y / 100) * 1920);
-    const escapedText = overlay.text
-      .replace(/'/g, "'\\''")
-      .replace(/:/g, '\\:')
-      .replace(/\\/g, '\\\\');
+  // Manual adjustments — convert -1..+1 to FFmpeg eq values
+  const eqParts: string[] = [];
+  if (Math.abs(adjustBrightness) > 0.01) {
+    eqParts.push(`brightness=${(adjustBrightness * 0.5).toFixed(2)}`);
+  }
+  if (Math.abs(adjustContrast) > 0.01) {
+    eqParts.push(`contrast=${(1 + adjustContrast * 0.5).toFixed(2)}`);
+  }
+  if (Math.abs(adjustSaturation) > 0.01) {
+    eqParts.push(`saturation=${(1 + adjustSaturation * 0.8).toFixed(2)}`);
+  }
+  if (eqParts.length > 0) {
+    videoFilters.push(`eq=${eqParts.join(':')}`);
+  }
+  if (Math.abs(adjustWarmth) > 0.01) {
+    const rs = (adjustWarmth * 0.1).toFixed(2);
+    const bs = (-adjustWarmth * 0.1).toFixed(2);
+    videoFilters.push(`colorbalance=rs=${rs}:bs=${bs}`);
+  }
 
-    videoFilters.push(
+  // Text overlays (drawtext) — use actual video dimensions
+  for (const overlay of textOverlays) {
+    const x = Math.round((overlay.x / 100) * vw);
+    const y = Math.round((overlay.y / 100) * vh);
+    // Scale font size relative to video height (preview assumes ~640px tall)
+    const scaledFontSize = Math.round(overlay.fontSize * (vh / 640));
+    const escapedText = overlay.text
+      .replace(/\\/g, '\\\\')
+      .replace(/'/g, "'\\''")
+      .replace(/:/g, '\\:');
+
+    // Map font families to safe FFmpeg names
+    const fontFamilyMap: Record<string, string> = {
+      'Inter': 'Sans',
+      'Playfair Display': 'Serif',
+      'Georgia': 'Serif',
+      'Courier New': 'Mono',
+      'Arial Black': 'Sans',
+      'Trebuchet MS': 'Sans',
+      'Impact': 'Sans',
+      'Comic Sans MS': 'Sans',
+      'Verdana': 'Sans',
+      'Lucida Console': 'Mono',
+    };
+    const ffmpegFont = fontFamilyMap[overlay.fontFamily] || 'Sans';
+
+    let dtFilter =
       `drawtext=text='${escapedText}'` +
-      `:fontsize=${overlay.fontSize * 2}` + // 2x for 1080p
+      `:fontsize=${scaledFontSize}` +
       `:fontcolor=${overlay.color}` +
+      `:font=${ffmpegFont}` +
       `:x=${x}-(tw/2)` +
       `:y=${y}-(th/2)` +
       `:enable='between(t,${overlay.startTime.toFixed(2)},${overlay.endTime.toFixed(2)})'` +
-      `:shadowcolor=black@0.8:shadowx=2:shadowy=2`,
-    );
+      `:shadowcolor=black@0.8:shadowx=2:shadowy=2`;
+
+    // Add background box if bgColor is set
+    if (overlay.bgColor) {
+      const bgHex = overlay.bgColor.replace('#', '').slice(0, 6);
+      const bgAlpha = overlay.bgColor.length > 7 ? overlay.bgColor.slice(7) : 'CC';
+      dtFilter += `:box=1:boxcolor=${bgHex}@0x${bgAlpha}:boxborderw=8`;
+    }
+
+    // Add text outline via borderw + bordercolor
+    if (overlay.strokeWidth > 0 && overlay.strokeColor) {
+      const borderW = Math.round(overlay.strokeWidth * (vh / 640));
+      dtFilter += `:borderw=${borderW}:bordercolor=${overlay.strokeColor.replace('#', '')}`;
+    }
+
+    videoFilters.push(dtFilter);
   }
 
   // Transitions
@@ -112,21 +272,65 @@ export async function exportVideo(
   // ── Build FFmpeg command ────────────────────────────────────
   const args: string[] = [];
 
-  // Input
+  // Input video
   args.push('-i', 'input.mp4');
+
+  // Sticker overlay inputs
+  for (const si of stickerInputs) {
+    args.push('-i', si.filename);
+  }
 
   // Trim
   args.push('-ss', trimStart.toFixed(3));
   args.push('-to', trimEnd.toFixed(3));
 
-  // Video filters
-  if (videoFilters.length > 0) {
-    args.push('-vf', videoFilters.join(','));
-  }
+  // Build the complex filter graph if we have stickers
+  if (stickerInputs.length > 0) {
+    // We need a complex filter graph to overlay stickers
+    const filterParts: string[] = [];
 
-  // Audio filters
-  if (audioFilters.length > 0) {
-    args.push('-af', audioFilters.join(','));
+    // Apply video filters to the base video stream first
+    let currentStream = '[0:v]';
+    if (videoFilters.length > 0) {
+      filterParts.push(`${currentStream}${videoFilters.join(',')}[vfiltered]`);
+      currentStream = '[vfiltered]';
+    }
+
+    // Chain sticker overlays one at a time
+    for (let i = 0; i < stickerInputs.length; i++) {
+      const si = stickerInputs[i];
+      const px = Math.round((si.x / 100) * vw) - Math.round(si.size / 2);
+      const py = Math.round((si.y / 100) * vh) - Math.round(si.size / 2);
+      const outLabel = `[vstk${i}]`;
+      const inputLabel = `[${i + 1}:v]`;
+
+      filterParts.push(
+        `${currentStream}${inputLabel}overlay=` +
+        `x=${px}:y=${py}:` +
+        `enable='between(t,${si.startTime.toFixed(2)},${si.endTime.toFixed(2)})'` +
+        outLabel,
+      );
+      currentStream = outLabel;
+    }
+
+    // Map the final video stream
+    const complexFilter = filterParts.join(';');
+    args.push('-filter_complex', complexFilter);
+    args.push('-map', currentStream);
+    args.push('-map', '0:a?');
+
+    // Audio filters
+    if (audioFilters.length > 0) {
+      args.push('-af', audioFilters.join(','));
+    }
+  } else {
+    // Simple mode: no stickers, use -vf and -af
+    if (videoFilters.length > 0) {
+      args.push('-vf', videoFilters.join(','));
+    }
+    if (audioFilters.length > 0) {
+      args.push('-af', audioFilters.join(','));
+    }
   }
 
   // Output settings
@@ -164,6 +368,9 @@ export async function exportVideo(
   try {
     await ff.deleteFile('input.mp4');
     await ff.deleteFile('output.mp4');
+    for (const si of stickerInputs) {
+      await ff.deleteFile(si.filename);
+    }
   } catch {}
 
   return blobUrl;

@@ -7,7 +7,7 @@
 
 import { useVideoEditorStore, type ActiveTool } from '@/stores/videoEditorStore';
 import {
-  Scissors, Type, Smile, Music, Palette, Sparkles,
+  Scissors, Type, Smile, Music, Palette, SlidersHorizontal, Sparkles,
 } from 'lucide-react';
 
 const TOOLS: { id: ActiveTool; icon: React.ElementType; label: string }[] = [
@@ -16,6 +16,7 @@ const TOOLS: { id: ActiveTool; icon: React.ElementType; label: string }[] = [
   { id: 'sticker', icon: Smile, label: 'Sticker' },
   { id: 'audio', icon: Music, label: 'Audio' },
   { id: 'filter', icon: Palette, label: 'Filter' },
+  { id: 'adjust', icon: SlidersHorizontal, label: 'Adjust' },
   { id: 'transition', icon: Sparkles, label: 'Effects' },
 ];
 

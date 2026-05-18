@@ -11,6 +11,7 @@ import { TextTool } from './TextTool';
 import { StickerTool } from './StickerTool';
 import { AudioTool } from './AudioTool';
 import { FilterTool } from './FilterTool';
+import { AdjustTool } from './AdjustTool';
 import { TransitionTool } from './TransitionTool';
 import { ExportTool } from './ExportTool';
 import { X } from 'lucide-react';
@@ -27,6 +28,7 @@ export function ToolPanel() {
     sticker: 'Stickers',
     audio: 'Audio',
     filter: 'Filters',
+    adjust: 'Adjust',
     transition: 'Transitions',
     export: 'Export Video',
   };
@@ -53,6 +55,7 @@ export function ToolPanel() {
         {activeTool === 'sticker' && <StickerTool />}
         {activeTool === 'audio' && <AudioTool />}
         {activeTool === 'filter' && <FilterTool />}
+        {activeTool === 'adjust' && <AdjustTool />}
         {activeTool === 'transition' && <TransitionTool />}
         {activeTool === 'export' && <ExportTool />}
       </div>

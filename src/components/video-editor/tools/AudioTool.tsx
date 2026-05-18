@@ -1,7 +1,9 @@
 'use client';
 
 /**
- * AudioTool — volume controls for original video audio and background music.
+ * AudioTool — volume controls for original video audio.
+ * Background music picker is marked as coming soon until
+ * the music library + playback engine are built.
  */
 
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
@@ -9,10 +11,7 @@ import { Volume2, VolumeX, Music } from 'lucide-react';
 
 export function AudioTool() {
   const originalAudioVolume = useVideoEditorStore((s) => s.originalAudioVolume);
-  const musicVolume = useVideoEditorStore((s) => s.musicVolume);
-  const musicTrackUrl = useVideoEditorStore((s) => s.musicTrackUrl);
   const setOriginalAudioVolume = useVideoEditorStore((s) => s.setOriginalAudioVolume);
-  const setMusicVolume = useVideoEditorStore((s) => s.setMusicVolume);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
 
   return (
@@ -56,30 +55,18 @@ export function AudioTool() {
         </div>
       </div>
 
-      {/* Music volume */}
-      <div className="space-y-2">
+      {/* Background music — coming soon */}
+      <div className="space-y-2 opacity-60">
         <div className="flex items-center gap-2">
           <Music className="w-4 h-4 text-text-muted" />
           <span className="text-sm text-text-secondary">Background Music</span>
-          <span className="ml-auto text-xs text-text-muted font-mono">
-            {Math.round(musicVolume * 100)}%
+          <span className="ml-auto text-[10px] text-accent-primary font-medium px-1.5 py-0.5 rounded-full bg-accent-primary/10">
+            Coming Soon
           </span>
         </div>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={musicVolume}
-          onChange={(e) => setMusicVolume(parseFloat(e.target.value))}
-          onMouseUp={() => pushHistory()}
-          className="w-full accent-accent-primary"
-        />
-        {!musicTrackUrl && (
-          <p className="text-xs text-text-muted">
-            No background music added. Music from the original render will be included if present.
-          </p>
-        )}
+        <p className="text-xs text-text-muted">
+          Browse and add royalty-free music tracks to your video. This feature is being built.
+        </p>
       </div>
     </div>
   );

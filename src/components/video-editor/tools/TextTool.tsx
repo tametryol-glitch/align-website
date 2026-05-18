@@ -1,13 +1,14 @@
 'use client';
 
 /**
- * TextTool — add and edit text overlays.
- * Controls: text input, font size, color, animation, timing.
+ * TextTool — add and edit text overlays with full styling controls.
+ * Controls: text input, font size, color (presets + custom picker),
+ * font family, animation, text alignment, background, outline, timing.
  */
 
 import { useState } from 'react';
 import { useVideoEditorStore, type TextOverlay } from '@/stores/videoEditorStore';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 
 const FONT_FAMILIES = [
   'Inter',
@@ -15,11 +16,22 @@ const FONT_FAMILIES = [
   'Georgia',
   'Courier New',
   'Arial Black',
+  'Trebuchet MS',
+  'Impact',
+  'Comic Sans MS',
+  'Verdana',
+  'Lucida Console',
 ];
 
 const COLORS = [
   '#FFFFFF', '#FFD700', '#FF6B6B', '#A78BFA', '#34D399',
-  '#60A5FA', '#F472B6', '#FBBF24', '#000000',
+  '#60A5FA', '#F472B6', '#FBBF24', '#000000', '#FF4500',
+  '#00CED1', '#9370DB',
+];
+
+const BG_COLORS = [
+  '', '#000000CC', '#FFFFFFCC', '#FF6B6BCC',
+  '#A78BFACC', '#34D399CC', '#60A5FACC',
 ];
 
 const ANIMATIONS: TextOverlay['animation'][] = [
@@ -53,6 +65,10 @@ export function TextTool() {
       startTime: currentTime,
       endTime: Math.min(currentTime + 5, trimEnd),
       animation: 'fade',
+      bgColor: '',
+      strokeColor: '',
+      strokeWidth: 0,
+      textAlign: 'center',
     };
     addTextOverlay(newOverlay);
     selectOverlay(id);
@@ -135,20 +151,54 @@ export function TextTool() {
             />
           </div>
 
-          {/* Color picker */}
+          {/* Color picker: presets + custom */}
           <div>
             <label className="text-xs text-text-muted block mb-1">Color</label>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
               {COLORS.map((c) => (
                 <button
                   key={c}
                   onClick={() => { update({ color: c }); pushHistory(); }}
-                  className={`w-7 h-7 rounded-full border-2 transition-transform ${
+                  className={`w-6 h-6 rounded-full border-2 transition-transform ${
                     selected.color === c ? 'border-white scale-110' : 'border-transparent'
                   }`}
                   style={{ backgroundColor: c }}
                 />
               ))}
+              {/* Custom color picker */}
+              <label className="relative w-6 h-6 rounded-full overflow-hidden cursor-pointer border-2 border-dashed border-white/30 hover:border-white/60 transition-colors">
+                <input
+                  type="color"
+                  value={selected.color}
+                  onChange={(e) => { update({ color: e.target.value }); }}
+                  onBlur={() => pushHistory()}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <div className="w-full h-full bg-gradient-to-br from-red-500 via-green-500 to-blue-500 rounded-full" />
+              </label>
+            </div>
+          </div>
+
+          {/* Text alignment */}
+          <div>
+            <label className="text-xs text-text-muted block mb-1">Alignment</label>
+            <div className="flex items-center gap-1">
+              {(['left', 'center', 'right'] as const).map((align) => {
+                const Icon = align === 'left' ? AlignLeft : align === 'center' ? AlignCenter : AlignRight;
+                return (
+                  <button
+                    key={align}
+                    onClick={() => { update({ textAlign: align }); pushHistory(); }}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      selected.textAlign === align
+                        ? 'bg-accent-primary/20 text-accent-primary'
+                        : 'bg-white/5 text-text-muted hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -170,6 +220,54 @@ export function TextTool() {
                   {f}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Background color */}
+          <div>
+            <label className="text-xs text-text-muted block mb-1">Background</label>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {BG_COLORS.map((c, i) => (
+                <button
+                  key={i}
+                  onClick={() => { update({ bgColor: c }); pushHistory(); }}
+                  className={`w-6 h-6 rounded-md border-2 transition-transform ${
+                    selected.bgColor === c ? 'border-white scale-110' : 'border-white/20'
+                  } ${!c ? 'bg-transparent' : ''}`}
+                  style={{ backgroundColor: c || undefined }}
+                  title={!c ? 'None' : c}
+                >
+                  {!c && <span className="text-[10px] text-text-muted leading-none">x</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Outline / Stroke */}
+          <div>
+            <label className="text-xs text-text-muted block mb-1">
+              Outline: {selected.strokeWidth}px
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={0}
+                max={4}
+                step={0.5}
+                value={selected.strokeWidth}
+                onChange={(e) => update({ strokeWidth: parseFloat(e.target.value) })}
+                onMouseUp={() => pushHistory()}
+                className="flex-1 accent-accent-primary"
+              />
+              {selected.strokeWidth > 0 && (
+                <input
+                  type="color"
+                  value={selected.strokeColor || '#000000'}
+                  onChange={(e) => { update({ strokeColor: e.target.value }); }}
+                  onBlur={() => pushHistory()}
+                  className="w-7 h-7 rounded cursor-pointer border border-white/20"
+                />
+              )}
             </div>
           </div>
 

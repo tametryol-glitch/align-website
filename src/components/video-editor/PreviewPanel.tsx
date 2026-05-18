@@ -7,10 +7,10 @@
  * not canvas-rendered. This keeps playback hardware-accelerated.
  */
 
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { useVideoPlayback } from './hooks/useVideoPlayback';
-import { useOverlayVisibility } from './hooks/useOverlayVisibility';
+import { useTransitionPreview } from './hooks/useTransitionPreview';
 import { TextOverlayLayer } from './TextOverlayLayer';
 import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { getFilterById } from '@/lib/videoFilters';
@@ -19,24 +19,63 @@ import { Play, Pause } from 'lucide-react';
 export function PreviewPanel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const scrubRef = useRef<HTMLDivElement>(null);
 
   const sourceVideoUrl = useVideoEditorStore((s) => s.sourceVideoUrl);
   const activeFilter = useVideoEditorStore((s) => s.activeFilter);
+  const filterIntensity = useVideoEditorStore((s) => s.filterIntensity);
+  const adjustBrightness = useVideoEditorStore((s) => s.adjustBrightness);
+  const adjustContrast = useVideoEditorStore((s) => s.adjustContrast);
+  const adjustSaturation = useVideoEditorStore((s) => s.adjustSaturation);
+  const adjustWarmth = useVideoEditorStore((s) => s.adjustWarmth);
   const isPlaying = useVideoEditorStore((s) => s.isPlaying);
   const currentTime = useVideoEditorStore((s) => s.currentTime);
   const videoDuration = useVideoEditorStore((s) => s.videoDuration);
   const trimStart = useVideoEditorStore((s) => s.trimStart);
   const trimEnd = useVideoEditorStore((s) => s.trimEnd);
   const setIsPlaying = useVideoEditorStore((s) => s.setIsPlaying);
+  const setCurrentTime = useVideoEditorStore((s) => s.setCurrentTime);
   const selectOverlay = useVideoEditorStore((s) => s.selectOverlay);
 
   // Sync video element with store
   useVideoPlayback(videoRef);
 
-  // Drive overlay visibility based on currentTime
-  useOverlayVisibility();
+  // Drive transition preview overlay
+  const activeTransitionStyle = useTransitionPreview();
 
   const filter = getFilterById(activeFilter);
+
+  // Build combined CSS filter string: preset filter (with intensity) + manual adjustments
+  const combinedCssFilter = useMemo(() => {
+    const parts: string[] = [];
+
+    // Preset filter with intensity blending
+    if (filter.css !== 'none' && filterIntensity > 0) {
+      // We can't easily lerp CSS filter strings, so we apply at full intensity
+      // when > 0.5, and skip when intensity is very low
+      if (filterIntensity > 0.1) {
+        parts.push(filter.css);
+      }
+    }
+
+    // Manual adjustments — convert -1..+1 range to CSS filter values
+    const brightness = 1 + adjustBrightness * 0.5; // 0.5 → 1.5
+    const contrast = 1 + adjustContrast * 0.5;
+    const saturate = 1 + adjustSaturation * 0.8;
+
+    if (Math.abs(adjustBrightness) > 0.01) parts.push(`brightness(${brightness.toFixed(2)})`);
+    if (Math.abs(adjustContrast) > 0.01) parts.push(`contrast(${contrast.toFixed(2)})`);
+    if (Math.abs(adjustSaturation) > 0.01) parts.push(`saturate(${saturate.toFixed(2)})`);
+    if (Math.abs(adjustWarmth) > 0.01) {
+      // Warmth via hue-rotate + sepia blend
+      const hue = adjustWarmth * 15; // -15 to +15 degrees
+      const sepia = Math.max(0, adjustWarmth) * 0.2;
+      parts.push(`hue-rotate(${hue.toFixed(1)}deg)`);
+      if (sepia > 0.01) parts.push(`sepia(${sepia.toFixed(2)})`);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : undefined;
+  }, [filter.css, filterIntensity, adjustBrightness, adjustContrast, adjustSaturation, adjustWarmth]);
 
   const togglePlay = useCallback(() => {
     const vid = videoRef.current;
@@ -54,6 +93,37 @@ export function PreviewPanel() {
       setIsPlaying(true);
     }
   }, [isPlaying, setIsPlaying, trimStart, trimEnd]);
+
+  // ── Progress bar scrubbing ──────────────────────────────────
+  const handleScrub = useCallback(
+    (clientX: number) => {
+      const bar = scrubRef.current;
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      const t = trimStart + pct * (trimEnd - trimStart);
+      const vid = videoRef.current;
+      if (vid) vid.currentTime = t;
+      setCurrentTime(t);
+    },
+    [trimStart, trimEnd, setCurrentTime],
+  );
+
+  const handleScrubDown = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      handleScrub(e.clientX);
+
+      const onMove = (ev: PointerEvent) => handleScrub(ev.clientX);
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    },
+    [handleScrub],
+  );
 
   // Space bar to play/pause
   useEffect(() => {
@@ -109,11 +179,17 @@ export function PreviewPanel() {
           ref={videoRef}
           src={sourceVideoUrl}
           className="absolute inset-0 w-full h-full object-contain"
-          style={{
-            filter: filter.css !== 'none' ? filter.css : undefined,
-          }}
+          style={{ filter: combinedCssFilter }}
           playsInline
         />
+
+        {/* Transition preview overlay */}
+        {activeTransitionStyle && (
+          <div
+            className="absolute inset-0 pointer-events-none z-10"
+            style={activeTransitionStyle}
+          />
+        )}
 
         {/* Text overlay layer */}
         <TextOverlayLayer containerRef={containerRef} />
@@ -137,7 +213,7 @@ export function PreviewPanel() {
         )}
       </div>
 
-      {/* Playback controls */}
+      {/* Playback controls with scrubbing */}
       <div className="flex items-center gap-3 w-full max-w-[360px] shrink-0">
         <button
           onClick={togglePlay}
@@ -152,12 +228,26 @@ export function PreviewPanel() {
         <span className="text-xs text-text-muted font-mono tabular-nums">
           {formatTime(currentTime)}
         </span>
-        <div className="flex-1 h-1 rounded-full bg-white/10 relative">
+        {/* Scrubable progress bar */}
+        <div
+          ref={scrubRef}
+          className="flex-1 h-3 rounded-full bg-white/10 relative cursor-pointer group"
+          onPointerDown={handleScrubDown}
+        >
           <div
-            className="absolute left-0 top-0 h-full rounded-full bg-accent-primary transition-[width] duration-75"
+            className="absolute left-0 top-1 h-1 rounded-full bg-accent-primary transition-[width] duration-75 group-hover:top-0 group-hover:h-3"
             style={{
-              width: videoDuration > 0
+              width: trimEnd > trimStart
                 ? `${((currentTime - trimStart) / (trimEnd - trimStart)) * 100}%`
+                : '0%',
+            }}
+          />
+          {/* Scrub handle dot */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent-primary opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+            style={{
+              left: trimEnd > trimStart
+                ? `calc(${((currentTime - trimStart) / (trimEnd - trimStart)) * 100}% - 6px)`
                 : '0%',
             }}
           />

@@ -10,7 +10,7 @@
  * Coordinate system: time (seconds) → pixels via timelineZoom (px/sec).
  */
 
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useRef, useCallback } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 
 export function TimelinePanel() {
@@ -28,6 +28,8 @@ export function TimelinePanel() {
   const selectedOverlayId = useVideoEditorStore((s) => s.selectedOverlayId);
   const selectOverlay = useVideoEditorStore((s) => s.selectOverlay);
   const setTimelineZoom = useVideoEditorStore((s) => s.setTimelineZoom);
+  const updateTextOverlay = useVideoEditorStore((s) => s.updateTextOverlay);
+  const updateStickerOverlay = useVideoEditorStore((s) => s.updateStickerOverlay);
 
   const totalWidth = videoDuration * timelineZoom;
   const TRACK_HEIGHT = 32;
@@ -90,6 +92,48 @@ export function TimelinePanel() {
       window.addEventListener('pointerup', onUp);
     },
     [videoDuration, timelineZoom, trimStart, trimEnd, setTrimStart, setTrimEnd],
+  );
+
+  // ── Overlay edge drag (resize start/end on timeline) ──────────
+
+  const handleOverlayEdgeDrag = useCallback(
+    (overlayId: string, kind: 'text' | 'sticker', edge: 'start' | 'end', e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const container = containerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      const updateFn = kind === 'text' ? updateTextOverlay : updateStickerOverlay;
+
+      const onMove = (ev: PointerEvent) => {
+        const scrollLeft = container.scrollLeft;
+        const x = ev.clientX - rect.left + scrollLeft - PADDING_LEFT;
+        const t = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+
+        // Get current overlay times from store
+        const state = useVideoEditorStore.getState();
+        const overlays = kind === 'text' ? state.textOverlays : state.stickerOverlays;
+        const overlay = overlays.find((o: any) => o.id === overlayId);
+        if (!overlay) return;
+
+        if (edge === 'start') {
+          updateFn(overlayId, { startTime: Math.min(t, overlay.endTime - 0.2) });
+        } else {
+          updateFn(overlayId, { endTime: Math.max(t, overlay.startTime + 0.2) });
+        }
+      };
+
+      const onUp = () => {
+        useVideoEditorStore.getState().pushHistory();
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
+
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    },
+    [videoDuration, timelineZoom, updateTextOverlay, updateStickerOverlay],
   );
 
   // ── Pinch-to-zoom (mouse wheel) ──────────────────────────────
@@ -220,37 +264,68 @@ export function TimelinePanel() {
         </div>
 
         {/* ── Overlay Tracks ─────────────────────────────── */}
-        {allOverlays.map((overlay, idx) => (
-          <div
-            key={overlay.id}
-            className="relative"
-            style={{
-              height: TRACK_HEIGHT,
-              paddingLeft: PADDING_LEFT,
-              marginTop: 2,
-            }}
-          >
+        {allOverlays.map((overlay, idx) => {
+          const barWidth = Math.max(20, (overlay.endTime - overlay.startTime) * timelineZoom);
+          const barLeft = overlay.startTime * timelineZoom + PADDING_LEFT;
+          const isText = overlay.kind === 'text';
+          const isSelected = selectedOverlayId === overlay.id;
+
+          return (
             <div
-              className={`
-                absolute top-1 rounded-md cursor-pointer text-[10px] font-medium
-                flex items-center px-2 truncate
-                ${overlay.kind === 'text' ? 'bg-purple-500/30 border border-purple-500/50 text-purple-200' : 'bg-yellow-500/30 border border-yellow-500/50 text-yellow-200'}
-                ${selectedOverlayId === overlay.id ? 'ring-1 ring-white/50' : ''}
-              `}
+              key={overlay.id}
+              className="relative"
               style={{
-                left: overlay.startTime * timelineZoom + PADDING_LEFT,
-                width: Math.max(20, (overlay.endTime - overlay.startTime) * timelineZoom),
-                height: TRACK_HEIGHT - 4,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                selectOverlay(overlay.id);
+                height: TRACK_HEIGHT,
+                paddingLeft: PADDING_LEFT,
+                marginTop: 2,
               }}
             >
-              {overlay.kind === 'sticker' ? overlay.emoji : overlay.text}
+              <div
+                className={`
+                  absolute top-1 rounded-md cursor-pointer text-[10px] font-medium
+                  flex items-center px-3 truncate
+                  ${isText ? 'bg-purple-500/30 border border-purple-500/50 text-purple-200' : 'bg-yellow-500/30 border border-yellow-500/50 text-yellow-200'}
+                  ${isSelected ? 'ring-1 ring-white/50' : ''}
+                `}
+                style={{
+                  left: barLeft,
+                  width: barWidth,
+                  height: TRACK_HEIGHT - 4,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectOverlay(overlay.id);
+                }}
+              >
+                {overlay.kind === 'sticker' ? overlay.emoji : overlay.text}
+              </div>
+
+              {/* Left edge drag handle */}
+              <div
+                className="absolute top-1 w-2 cursor-col-resize z-10 flex items-center justify-center hover:bg-white/20 rounded-l-md"
+                style={{
+                  left: barLeft - 1,
+                  height: TRACK_HEIGHT - 4,
+                }}
+                onPointerDown={(e) => handleOverlayEdgeDrag(overlay.id, overlay.kind, 'start', e)}
+              >
+                <div className={`w-0.5 h-3 rounded-full ${isText ? 'bg-purple-400' : 'bg-yellow-400'}`} />
+              </div>
+
+              {/* Right edge drag handle */}
+              <div
+                className="absolute top-1 w-2 cursor-col-resize z-10 flex items-center justify-center hover:bg-white/20 rounded-r-md"
+                style={{
+                  left: barLeft + barWidth - 3,
+                  height: TRACK_HEIGHT - 4,
+                }}
+                onPointerDown={(e) => handleOverlayEdgeDrag(overlay.id, overlay.kind, 'end', e)}
+              >
+                <div className={`w-0.5 h-3 rounded-full ${isText ? 'bg-purple-400' : 'bg-yellow-400'}`} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* ── Playhead ───────────────────────────────────── */}
         <div

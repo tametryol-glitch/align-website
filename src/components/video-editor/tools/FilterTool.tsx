@@ -1,9 +1,7 @@
 'use client';
 
 /**
- * FilterTool — grid of filter presets. Tapping one applies it
- * as a CSS filter on the video preview and stores the selection
- * for FFmpeg export.
+ * FilterTool — grid of filter presets with intensity slider.
  */
 
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
@@ -11,11 +9,13 @@ import { FILTER_PRESETS } from '@/lib/videoFilters';
 
 export function FilterTool() {
   const activeFilter = useVideoEditorStore((s) => s.activeFilter);
+  const filterIntensity = useVideoEditorStore((s) => s.filterIntensity);
   const setActiveFilter = useVideoEditorStore((s) => s.setActiveFilter);
+  const setFilterIntensity = useVideoEditorStore((s) => s.setFilterIntensity);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <p className="text-xs text-text-muted">
         Tap a filter to preview it on the video. Applied during export.
       </p>
@@ -53,6 +53,28 @@ export function FilterTool() {
           );
         })}
       </div>
+
+      {/* Intensity slider — only show when a filter is selected */}
+      {activeFilter !== 'none' && (
+        <div className="space-y-1.5 border-t border-white/10 pt-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-text-muted">Intensity</label>
+            <span className="text-xs text-text-muted font-mono">
+              {Math.round(filterIntensity * 100)}%
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={filterIntensity}
+            onChange={(e) => setFilterIntensity(parseFloat(e.target.value))}
+            onMouseUp={() => pushHistory()}
+            className="w-full accent-accent-primary"
+          />
+        </div>
+      )}
     </div>
   );
 }

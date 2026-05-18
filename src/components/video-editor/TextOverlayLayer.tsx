@@ -9,7 +9,6 @@
 
 import { useCallback, useState, useRef, useEffect } from 'react';
 import { useVideoEditorStore, type TextOverlay } from '@/stores/videoEditorStore';
-import { visibleOverlayIds } from './hooks/useOverlayVisibility';
 
 interface TextOverlayLayerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -131,11 +130,12 @@ function DraggableText({
     }
   }, [overlay.text, onUpdate, onDragEnd]);
 
-  const animationClass = overlay.animation === 'fade'
-    ? 'animate-fadeIn'
-    : overlay.animation === 'scale'
-      ? 'animate-scaleIn'
-      : '';
+  const animationClass =
+    overlay.animation === 'fade' ? 'animate-fadeIn'
+    : overlay.animation === 'scale' ? 'animate-scaleIn'
+    : overlay.animation === 'slide' ? 'animate-slideIn'
+    : overlay.animation === 'typewriter' ? 'animate-typewriter'
+    : '';
 
   return (
     <div
@@ -163,7 +163,13 @@ function DraggableText({
           fontSize: `${overlay.fontSize}px`,
           color: overlay.color,
           fontFamily: overlay.fontFamily,
+          textAlign: overlay.textAlign || 'center',
           textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+          backgroundColor: overlay.bgColor || undefined,
+          WebkitTextStroke: overlay.strokeWidth && overlay.strokeColor
+            ? `${overlay.strokeWidth}px ${overlay.strokeColor}`
+            : undefined,
+          paintOrder: overlay.strokeWidth ? 'stroke fill' : undefined,
           outline: 'none',
         }}
       >

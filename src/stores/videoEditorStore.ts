@@ -26,6 +26,14 @@ export interface TextOverlay {
   startTime: number;
   endTime: number;
   animation: 'none' | 'fade' | 'slide' | 'scale' | 'typewriter';
+  /** Background color behind text (empty string = transparent) */
+  bgColor: string;
+  /** Stroke/outline color (empty string = none) */
+  strokeColor: string;
+  /** Stroke width in px (0 = no stroke) */
+  strokeWidth: number;
+  /** Text alignment */
+  textAlign: 'left' | 'center' | 'right';
 }
 
 export interface StickerOverlay {
@@ -72,6 +80,7 @@ export type ActiveTool =
   | 'sticker'
   | 'audio'
   | 'filter'
+  | 'adjust'
   | 'transition'
   | 'export';
 
@@ -83,6 +92,12 @@ interface HistorySnapshot {
   textOverlays: TextOverlay[];
   stickerOverlays: StickerOverlay[];
   activeFilter: FilterPresetId;
+  filterIntensity: number;
+  adjustBrightness: number;
+  adjustContrast: number;
+  adjustSaturation: number;
+  adjustWarmth: number;
+  musicTrackUrl: string | null;
   musicVolume: number;
   originalAudioVolume: number;
   musicTrimStart: number;
@@ -121,6 +136,14 @@ interface VideoEditorState {
 
   // Filter
   activeFilter: FilterPresetId;
+  /** Filter intensity 0–1 (1 = full strength) */
+  filterIntensity: number;
+
+  // Manual adjustments (range: -1 to +1, 0 = neutral)
+  adjustBrightness: number;
+  adjustContrast: number;
+  adjustSaturation: number;
+  adjustWarmth: number;
 
   // Transitions
   transitions: Transition[];
@@ -175,6 +198,13 @@ interface VideoEditorState {
 
   // Filter
   setActiveFilter: (f: FilterPresetId) => void;
+  setFilterIntensity: (v: number) => void;
+
+  // Manual adjustments
+  setAdjustBrightness: (v: number) => void;
+  setAdjustContrast: (v: number) => void;
+  setAdjustSaturation: (v: number) => void;
+  setAdjustWarmth: (v: number) => void;
 
   // Transitions
   addTransition: (t: Transition) => void;
@@ -219,6 +249,11 @@ const INITIAL_STATE = {
   musicVolume: 0.3,
   originalAudioVolume: 1,
   activeFilter: 'none' as FilterPresetId,
+  filterIntensity: 1,
+  adjustBrightness: 0,
+  adjustContrast: 0,
+  adjustSaturation: 0,
+  adjustWarmth: 0,
   transitions: [] as Transition[],
   timelineZoom: 40,
   activeTool: 'none' as ActiveTool,
@@ -239,6 +274,12 @@ function takeSnapshot(state: VideoEditorState): HistorySnapshot {
     textOverlays: state.textOverlays.map((o) => ({ ...o })),
     stickerOverlays: state.stickerOverlays.map((o) => ({ ...o })),
     activeFilter: state.activeFilter,
+    filterIntensity: state.filterIntensity,
+    adjustBrightness: state.adjustBrightness,
+    adjustContrast: state.adjustContrast,
+    adjustSaturation: state.adjustSaturation,
+    adjustWarmth: state.adjustWarmth,
+    musicTrackUrl: state.musicTrackUrl,
     musicVolume: state.musicVolume,
     originalAudioVolume: state.originalAudioVolume,
     musicTrimStart: state.musicTrimStart,
@@ -313,6 +354,13 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
 
   // Filter
   setActiveFilter: (f) => set({ activeFilter: f }),
+  setFilterIntensity: (v) => set({ filterIntensity: Math.max(0, Math.min(1, v)) }),
+
+  // Manual adjustments
+  setAdjustBrightness: (v) => set({ adjustBrightness: Math.max(-1, Math.min(1, v)) }),
+  setAdjustContrast: (v) => set({ adjustContrast: Math.max(-1, Math.min(1, v)) }),
+  setAdjustSaturation: (v) => set({ adjustSaturation: Math.max(-1, Math.min(1, v)) }),
+  setAdjustWarmth: (v) => set({ adjustWarmth: Math.max(-1, Math.min(1, v)) }),
 
   // Transitions
   addTransition: (t) => set((s) => ({ transitions: [...s.transitions, t] })),

@@ -22,8 +22,8 @@ export const TRANSITION_TYPES: TransitionDef[] = [
 
 /**
  * Build an FFmpeg filter expression for a transition at a given time.
- * For single-clip editing, transitions are implemented as fade-out + fade-in
- * centered on the transition point.
+ * For single-clip editing, transitions are implemented as visually
+ * distinct effects centered on the transition point.
  */
 export function buildTransitionFFmpegFilter(
   type: string,
@@ -36,17 +36,49 @@ export function buildTransitionFFmpegFilter(
 
   switch (type) {
     case 'crossfade':
+      // Smooth opacity dip
+      return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${halfDur.toFixed(2)}:alpha=0,fade=t=in:st=${atTime.toFixed(2)}:d=${halfDur.toFixed(2)}:alpha=0`;
+
     case 'fade-black':
+      // Full fade to black and back
       return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${halfDur.toFixed(2)},fade=t=in:st=${atTime.toFixed(2)}:d=${halfDur.toFixed(2)}`;
+
     case 'slide-left':
-      // Approximate with a quick fade
-      return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${halfDur.toFixed(2)},fade=t=in:st=${atTime.toFixed(2)}:d=${halfDur.toFixed(2)}`;
+      // Horizontal scroll effect using overlay+crop
+      return (
+        `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(halfDur * 0.6).toFixed(2)},` +
+        `fade=t=in:st=${(atTime - halfDur * 0.1).toFixed(2)}:d=${(halfDur * 0.6).toFixed(2)}`
+      );
+
     case 'zoom-blur':
-      return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${halfDur.toFixed(2)},fade=t=in:st=${atTime.toFixed(2)}:d=${halfDur.toFixed(2)}`;
+      // Blur spike + brightness flash
+      return (
+        `gblur=sigma='if(between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)}),` +
+        `8*sin((t-${fadeOutStart.toFixed(2)})/${durSec.toFixed(2)}*PI),0)':enable='between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)})',` +
+        `eq=brightness='if(between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)}),` +
+        `0.15*sin((t-${fadeOutStart.toFixed(2)})/${durSec.toFixed(2)}*PI),0)':eval=frame`
+      );
+
     case 'glitch':
-      return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(halfDur * 0.5).toFixed(2)},fade=t=in:st=${atTime.toFixed(2)}:d=${(halfDur * 0.5).toFixed(2)}`;
+      // Fast color-shift flash + brief blackout
+      return (
+        `hue=h='if(between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)}),` +
+        `360*sin((t-${fadeOutStart.toFixed(2)})/${(durSec * 0.15).toFixed(3)}*PI),0)':enable='between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)})',` +
+        `fade=t=out:st=${(atTime - halfDur * 0.3).toFixed(2)}:d=${(halfDur * 0.3).toFixed(2)},` +
+        `fade=t=in:st=${atTime.toFixed(2)}:d=${(halfDur * 0.3).toFixed(2)}`
+      );
+
     case 'cosmic-wipe':
-      return `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${durSec.toFixed(2)},fade=t=in:st=${atTime.toFixed(2)}:d=${durSec.toFixed(2)}`;
+      // Slow glow-out with saturation boost + fade
+      return (
+        `eq=saturation='if(between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)}),` +
+        `1+1.5*sin((t-${fadeOutStart.toFixed(2)})/${durSec.toFixed(2)}*PI),1)':` +
+        `brightness='if(between(t,${fadeOutStart.toFixed(2)},${(atTime + halfDur).toFixed(2)}),` +
+        `0.3*sin((t-${fadeOutStart.toFixed(2)})/${durSec.toFixed(2)}*PI),0)':eval=frame,` +
+        `fade=t=out:st=${fadeOutStart.toFixed(2)}:d=${durSec.toFixed(2)},` +
+        `fade=t=in:st=${atTime.toFixed(2)}:d=${durSec.toFixed(2)}`
+      );
+
     default:
       return '';
   }
