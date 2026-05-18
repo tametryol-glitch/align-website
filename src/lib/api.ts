@@ -154,7 +154,7 @@ class AlignAPI {
     onChunk: (text: string) => void,
     onDone: () => void
   ) {
-    const url = `${API_BASE}/ai/interpret`;
+    const url = '/api/ai/interpret';
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
 

@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
-import { startTrial, hasUsedTrial } from '@/lib/trialService';
 
 const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Complete'];
 
@@ -17,6 +16,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   // Form data
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
@@ -40,9 +40,13 @@ export default function OnboardingPage() {
     }
   }, [profile]);
 
-  async function saveProfile(markComplete = true) {
-    if (!user) return;
+  async function saveProfile(): Promise<boolean> {
+    if (!user) {
+      setSaveError('You are not signed in. Please refresh and try again.');
+      return false;
+    }
     setSaving(true);
+    setSaveError('');
     try {
       const supabase = createClient();
 
@@ -55,53 +59,56 @@ export default function OnboardingPage() {
         longitude: longitude ?? undefined,
         timezone: timezone || undefined,
       };
-      if (markComplete) updates.onboarding_completed = true;
 
       Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', user.id)
         .select()
         .single();
 
+      if (error) {
+        console.error('[Onboarding] Supabase update error:', error);
+        setSaveError('Could not save your profile. Please try again.');
+        return false;
+      }
+
       if (data) setProfile(data);
       if (data?.birth_date && data?.latitude && data?.longitude) {
         indexMyPlacements().catch(() => {});
       }
-      return data;
+      return true;
     } catch (err) {
       console.error('[Onboarding] saveProfile failed:', err);
-      return null;
+      setSaveError('Network error — check your connection and try again.');
+      return false;
     } finally {
       setSaving(false);
     }
   }
 
   async function handleComplete() {
-    try {
-      await saveProfile(true);
-      // Start 7-day premium trial — fire-and-forget so it never blocks navigation
-      if (user) {
-        hasUsedTrial(user.id).then((used) => {
-          if (!used) startTrial(user.id).catch(() => {});
-        }).catch(() => {});
-      }
-    } catch (err) {
-      console.error('[Onboarding] handleComplete failed:', err);
-    }
+    const saved = await saveProfile();
+    if (!saved) return;
+
     router.push('/dashboard');
   }
 
   async function handleRectification() {
-    await saveProfile(true);
+    const saved = await saveProfile();
+    if (!saved) return;
     router.push('/readings/rectification');
   }
 
   function canAdvance(): boolean {
     switch (step) {
-      case 2: return !!birthDate;
+      case 2: {
+        if (!birthDate) return false;
+        const [y, m, d] = birthDate.split('-').map(Number);
+        return y >= 1900 && y <= 2026 && m >= 1 && m <= 12 && d >= 1 && d <= 31;
+      }
       case 4: return latitude != null && longitude != null && !!timezone;
       default: return true;
     }
@@ -185,12 +192,48 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
-              <input
-                type="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                className="input text-center mb-6"
-              />
+              <div className="flex items-center gap-2 mb-6">
+                <input
+                  type="number"
+                  min={1} max={31}
+                  placeholder="DD"
+                  value={birthDate ? parseInt(birthDate.split('-')[2], 10) : ''}
+                  onChange={(e) => {
+                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                    const d = e.target.value.padStart(2, '0');
+                    if (parts[0] && parts[1]) setBirthDate(`${parts[0]}-${parts[1]}-${d}`);
+                    else setBirthDate(`0000-01-${d}`);
+                  }}
+                  className="input text-center flex-1"
+                />
+                <span className="text-text-tertiary font-bold">/</span>
+                <input
+                  type="number"
+                  min={1} max={12}
+                  placeholder="MM"
+                  value={birthDate ? parseInt(birthDate.split('-')[1], 10) : ''}
+                  onChange={(e) => {
+                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                    const m = e.target.value.padStart(2, '0');
+                    if (parts[0]) setBirthDate(`${parts[0]}-${m}-${parts[2] || '01'}`);
+                    else setBirthDate(`0000-${m}-${parts[2] || '01'}`);
+                  }}
+                  className="input text-center flex-1"
+                />
+                <span className="text-text-tertiary font-bold">/</span>
+                <input
+                  type="number"
+                  min={1900} max={2026}
+                  placeholder="YYYY"
+                  value={birthDate ? parseInt(birthDate.split('-')[0], 10) || '' : ''}
+                  onChange={(e) => {
+                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                    const y = e.target.value;
+                    setBirthDate(`${y}-${parts[1] || '01'}-${parts[2] || '01'}`);
+                  }}
+                  className="input text-center flex-[1.5]"
+                />
+              </div>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
@@ -304,6 +347,9 @@ export default function OnboardingPage() {
               <p className="text-sm text-text-tertiary mb-6">
                 Your cosmic profile is ready. Explore your chart, get readings, and connect with other stargazers.
               </p>
+              {saveError && (
+                <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg mb-4">{saveError}</p>
+              )}
               <button
                 onClick={handleComplete}
                 disabled={saving}

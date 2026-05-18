@@ -264,7 +264,11 @@ export default function NotificationsPage() {
       .limit(100);
 
     if (data && data.length > 0) {
-      const actorIds = Array.from(new Set(data.filter(n => n.actor_id).map(n => n.actor_id)));
+      const actorIds = Array.from(new Set(
+        data
+          .map(n => n.actor_id || n.data?.from_user_id || n.data?.sender_id || n.data?.user_id)
+          .filter(Boolean)
+      ));
       let actorProfiles: Record<string, any> = {};
 
       if (actorIds.length > 0) {
@@ -277,10 +281,14 @@ export default function NotificationsPage() {
         }
       }
 
-      setNotifications(data.map(n => ({
-        ...n,
-        actor_profile: n.actor_id ? actorProfiles[n.actor_id] : undefined,
-      })));
+      setNotifications(data.map(n => {
+        const resolvedActorId = n.actor_id || n.data?.from_user_id || n.data?.sender_id || n.data?.user_id;
+        return {
+          ...n,
+          actor_id: resolvedActorId || n.actor_id,
+          actor_profile: resolvedActorId ? actorProfiles[resolvedActorId] : undefined,
+        };
+      }));
     } else {
       setNotifications([]);
     }

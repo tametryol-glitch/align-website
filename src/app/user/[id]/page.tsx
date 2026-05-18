@@ -105,8 +105,9 @@ export default function UserProfilePage() {
       user && userId !== user.id
         ? supabase
             .from('friendships')
-            .select('id, status, user_id')
+            .select('id, status, initiated_by')
             .or(`and(user_id.eq.${user.id},friend_id.eq.${userId}),and(user_id.eq.${userId},friend_id.eq.${user.id})`)
+            .in('status', ['pending', 'accepted'])
             .maybeSingle()
         : Promise.resolve({ data: null }),
     ]);
@@ -116,12 +117,12 @@ export default function UserProfilePage() {
     }
 
     if (friendResult.data) {
-      const f = friendResult.data as { id: string; status: string; user_id: string };
+      const f = friendResult.data as { id: string; status: string; initiated_by: string };
       setFriendshipId(f.id);
       if (f.status === 'accepted') {
         setFriendStatus('friends');
       } else if (f.status === 'pending') {
-        setFriendStatus(f.user_id === user?.id ? 'pending' : 'incoming');
+        setFriendStatus(f.initiated_by === user?.id ? 'pending' : 'incoming');
       }
     }
 

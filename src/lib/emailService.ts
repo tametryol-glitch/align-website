@@ -17,7 +17,7 @@ function getAdminClient() {
 // ---------------------------------------------------------------------------
 // sendEmail — abstract send that works with Resend, or logs in dev
 // ---------------------------------------------------------------------------
-const FROM_ADDRESS = 'Align <hello@alignapp.co>';
+const FROM_ADDRESS = 'Align <hello@aligncosmic.com>';
 
 export async function sendEmail(
   to: string,
@@ -83,7 +83,7 @@ export async function scheduleOnboardingEmails(
     {
       template_key: 'day7' as EmailTemplateKey,
       send_at: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      context: { name, trialDaysLeft: 0 },
+      context: { name },
     },
   ];
 
@@ -166,10 +166,8 @@ function renderTemplate(
       return EMAIL_TEMPLATES.welcome(name, sunSign);
     case 'day3':
       return EMAIL_TEMPLATES.day3(name, sunSign);
-    case 'day7': {
-      const trialDaysLeft = (context.trialDaysLeft as number) ?? 0;
-      return EMAIL_TEMPLATES.day7(name, trialDaysLeft);
-    }
+    case 'day7':
+      return EMAIL_TEMPLATES.day7(name);
     default:
       console.error(`[Email] Unknown template key: ${key}`);
       return { subject: 'Align', html: '<p>Something went wrong.</p>' };

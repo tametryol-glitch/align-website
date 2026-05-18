@@ -54,6 +54,76 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   );
 }
 
+// ── TikTok URL Detection ──────────────────────────────────────────
+
+const TIKTOK_FULL_REGEX = /(?:https?:\/\/)?(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/(\d+)(?:\S*)?/gi;
+const TIKTOK_SHORT_REGEX = /(?:https?:\/\/)?(?:vm\.tiktok\.com|(?:www\.)?tiktok\.com\/t)\/([\w-]+)\/?(?:\S*)?/gi;
+const TIKTOK_ANY_REGEX = /(?:https?:\/\/)?(?:(?:www\.)?tiktok\.com(?:\/@[\w.-]+\/video\/\d+|\/t\/[\w-]+)|vm\.tiktok\.com\/[\w-]+)\/?(?:\S*)?/gi;
+
+interface TikTokMatch { url: string; videoId: string | null; }
+
+function extractTikTokVideoId(url: string): string | null {
+  TIKTOK_FULL_REGEX.lastIndex = 0;
+  const match = TIKTOK_FULL_REGEX.exec(url);
+  return match ? match[1] : null;
+}
+
+function containsTikTokUrl(text: string): boolean {
+  TIKTOK_ANY_REGEX.lastIndex = 0;
+  return TIKTOK_ANY_REGEX.test(text);
+}
+
+function extractAllTikTokMatches(text: string): TikTokMatch[] {
+  const matches: TikTokMatch[] = [];
+  TIKTOK_FULL_REGEX.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = TIKTOK_FULL_REGEX.exec(text)) !== null) {
+    matches.push({ url: m[0], videoId: m[1] });
+  }
+  TIKTOK_SHORT_REGEX.lastIndex = 0;
+  while ((m = TIKTOK_SHORT_REGEX.exec(text)) !== null) {
+    const already = matches.some(e => m![0].includes(e.url) || e.url.includes(m![0]));
+    if (!already) matches.push({ url: m[0], videoId: null });
+  }
+  return matches;
+}
+
+function stripTikTokUrls(text: string): string {
+  return text.replace(TIKTOK_ANY_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+}
+
+function TikTokEmbed({ videoId, url }: { videoId: string | null; url: string }) {
+  const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+
+  if (!videoId) {
+    return (
+      <a
+        href={fullUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full rounded-xl overflow-hidden bg-black text-center py-12"
+        style={{ aspectRatio: '9/16', maxHeight: 400 }}
+      >
+        <span className="text-xs font-bold text-white bg-black/60 px-2 py-1 rounded">TikTok</span>
+        <span className="block text-3xl text-[#FE2C55] mt-4">▶</span>
+        <span className="block text-xs text-white/60 mt-2">Tap to watch on TikTok</span>
+      </a>
+    );
+  }
+
+  return (
+    <div className="relative w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '9/16', maxHeight: 500 }}>
+      <iframe
+        src={`https://www.tiktok.com/embed/v2/${videoId}`}
+        title="TikTok video"
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+        className="absolute inset-0 w-full h-full border-0"
+      />
+    </div>
+  );
+}
+
 export function isGifOrStickerUrl(text: string): boolean {
   const trimmed = text.trim();
   return (
@@ -184,9 +254,10 @@ export function FeedCard({
       {post.content && (() => {
         const youtubeUrls = extractYouTubeUrls(post.content);
         const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
-        const displayText = youtubeIds.length > 0
-          ? post.content.replace(YOUTUBE_REGEX, '').trim()
-          : post.content;
+        const tiktokMatches = extractAllTikTokMatches(post.content);
+        let displayText = post.content;
+        if (youtubeIds.length > 0) displayText = displayText.replace(YOUTUBE_REGEX, '').trim();
+        if (tiktokMatches.length > 0) displayText = stripTikTokUrls(displayText);
 
         return (
           <>
@@ -203,6 +274,11 @@ export function FeedCard({
                 <YouTubeEmbed videoId={vid} />
               </div>
             ))}
+            {tiktokMatches.map((tt, i) => (
+              <div key={tt.url + i} className="px-5 pb-3">
+                <TikTokEmbed videoId={tt.videoId} url={tt.url} />
+              </div>
+            ))}
           </>
         );
       })()}
@@ -217,18 +293,36 @@ export function FeedCard({
           />
         </div>
       )}
-      {post.videoUrl && (
-        <div className="px-5 pb-3">
-          <video
-            src={post.videoUrl}
-            poster={post.posterUrl}
-            controls
-            playsInline
-            preload="metadata"
-            className="w-full rounded-xl max-h-[400px] bg-black"
-          />
-        </div>
-      )}
+      {post.videoUrl && (() => {
+        const vidYtId = extractYouTubeId(post.videoUrl);
+        if (vidYtId) {
+          return (
+            <div className="px-5 pb-3">
+              <YouTubeEmbed videoId={vidYtId} />
+            </div>
+          );
+        }
+        const vidTtId = extractTikTokVideoId(post.videoUrl);
+        if (vidTtId || containsTikTokUrl(post.videoUrl)) {
+          return (
+            <div className="px-5 pb-3">
+              <TikTokEmbed videoId={vidTtId} url={post.videoUrl} />
+            </div>
+          );
+        }
+        return (
+          <div className="px-5 pb-3">
+            <video
+              src={post.videoUrl}
+              poster={post.posterUrl}
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full rounded-xl max-h-[400px] bg-black"
+            />
+          </div>
+        );
+      })()}
 
       {/* Reactions display */}
       {post.reactions.length > 0 && (

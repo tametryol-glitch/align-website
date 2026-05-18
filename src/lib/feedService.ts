@@ -84,7 +84,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   // Batch-fetch reactions and comments
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -100,10 +100,18 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
     }
   }
 
+  // Batch-fetch commenter profiles
+  const commentUserIds = Array.from(new Set((commentsRes.data || []).map((c: any) => c.user_id)));
+  const commentProfileMap: Record<string, any> = {};
+  if (commentUserIds.length > 0) {
+    const { data: cProfiles } = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', commentUserIds);
+    if (cProfiles) cProfiles.forEach((p: any) => { commentProfileMap[p.id] = p; });
+  }
+
   const commentsMap = new Map<string, FeedComment[]>();
   const commentCountMap = new Map<string, number>();
   for (const c of commentsRes.data || []) {
-    const profile = c.profile as any;
+    const profile = commentProfileMap[c.user_id];
     const comment: FeedComment = {
       id: c.id,
       userId: c.user_id,
@@ -162,7 +170,7 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
 
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -178,10 +186,17 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
     }
   }
 
+  const commentUserIds2 = Array.from(new Set((commentsRes.data || []).map((c: any) => c.user_id)));
+  const commentProfileMap2: Record<string, any> = {};
+  if (commentUserIds2.length > 0) {
+    const { data: cProfiles } = await supabase.from('profiles').select('id, display_name, avatar_url').in('id', commentUserIds2);
+    if (cProfiles) cProfiles.forEach((p: any) => { commentProfileMap2[p.id] = p; });
+  }
+
   const commentsMap = new Map<string, FeedComment[]>();
   const commentCountMap = new Map<string, number>();
   for (const c of commentsRes.data || []) {
-    const profile = c.profile as any;
+    const profile = commentProfileMap2[c.user_id];
     const comment: FeedComment = {
       id: c.id,
       userId: c.user_id,
@@ -318,42 +333,75 @@ export async function toggleReaction(postId: string, userId: string, emoji: Reac
 
 export async function addComment(postId: string, userId: string, text: string) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('post_comments')
-    .insert({ post_id: postId, user_id: userId, text })
-    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)')
-    .single();
 
-  if (error) throw new Error(error.message);
-  const profile = (data as any).profile;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated — please refresh and log in again');
+
+  const effectiveUserId = session.user.id;
+
+  const { error: insertError } = await supabase
+    .from('post_comments')
+    .insert({ post_id: postId, user_id: effectiveUserId, text });
+
+  if (insertError) throw new Error(`Insert failed: ${insertError.message} (code: ${insertError.code})`);
+
+  const [commentRes, profileRes] = await Promise.all([
+    supabase
+      .from('post_comments')
+      .select('id, created_at')
+      .eq('post_id', postId)
+      .eq('user_id', effectiveUserId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', effectiveUserId)
+      .single(),
+  ]);
+
   return {
-    id: data.id,
-    userId: data.user_id,
-    userName: profile?.display_name || 'User',
-    userAvatar: profile?.avatar_url || undefined,
-    text: data.text,
-    createdAt: data.created_at,
+    id: commentRes.data?.id || crypto.randomUUID(),
+    userId: effectiveUserId,
+    userName: profileRes.data?.display_name || 'User',
+    userAvatar: profileRes.data?.avatar_url || undefined,
+    text,
+    createdAt: commentRes.data?.created_at || new Date().toISOString(),
   } as FeedComment;
 }
 
 export async function getComments(postId: string): Promise<FeedComment[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
+  const { data: rows, error } = await supabase
     .from('post_comments')
-    .select('id, user_id, text, created_at, profile:profiles!post_comments_user_id_fkey(display_name, avatar_url)')
+    .select('id, user_id, text, created_at')
     .eq('post_id', postId)
     .eq('is_deleted', false)
     .order('created_at', { ascending: true });
 
-  if (error) return [];
-  return (data || []).map((c: any) => ({
-    id: c.id,
-    userId: c.user_id,
-    userName: c.profile?.display_name || 'User',
-    userAvatar: c.profile?.avatar_url || undefined,
-    text: c.text,
-    createdAt: c.created_at,
-  }));
+  if (error || !rows || rows.length === 0) return [];
+
+  const userIds = Array.from(new Set(rows.map((c: any) => c.user_id)));
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, display_name, avatar_url')
+    .in('id', userIds);
+
+  const profileMap: Record<string, any> = {};
+  if (profiles) profiles.forEach((p: any) => { profileMap[p.id] = p; });
+
+  return rows.map((c: any) => {
+    const p = profileMap[c.user_id];
+    return {
+      id: c.id,
+      userId: c.user_id,
+      userName: p?.display_name || 'User',
+      userAvatar: p?.avatar_url || undefined,
+      text: c.text,
+      createdAt: c.created_at,
+    };
+  });
 }
 
 export async function deleteComment(commentId: string) {

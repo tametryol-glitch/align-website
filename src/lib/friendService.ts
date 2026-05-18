@@ -122,32 +122,39 @@ export async function getIncomingRequests(): Promise<FriendRequest[]> {
     const myId = getMyId();
     if (!myId) return [];
 
-    const { data, error } = await supabase
+    const { data: rows, error } = await supabase
       .from('friendships')
-      .select(`
-        id,
-        initiated_by,
-        created_at,
-        sender:profiles!friendships_initiated_by_fkey(id, display_name, username, avatar_url, sun_sign, moon_sign, rising_sign)
-      `)
+      .select('id, initiated_by, created_at')
       .eq('status', 'pending')
       .neq('initiated_by', myId)
       .or(`user_id.eq.${myId},friend_id.eq.${myId}`);
 
-    if (error || !data) return [];
+    if (error || !rows || rows.length === 0) return [];
 
-    return data.map((row: any) => ({
-      friendship_id: row.id,
-      from_user_id: row.initiated_by,
-      target_user_id: row.initiated_by,
-      display_name: row.sender?.display_name || 'Unknown',
-      username: row.sender?.username || null,
-      avatar_url: row.sender?.avatar_url || null,
-      sun_sign: row.sender?.sun_sign || null,
-      moon_sign: row.sender?.moon_sign || null,
-      rising_sign: row.sender?.rising_sign || null,
-      created_at: row.created_at,
-    }));
+    const senderIds = rows.map((r: any) => r.initiated_by);
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, username, avatar_url, sun_sign, moon_sign, rising_sign')
+      .in('id', senderIds);
+
+    const profileMap: Record<string, any> = {};
+    if (profiles) profiles.forEach((p: any) => { profileMap[p.id] = p; });
+
+    return rows.map((row: any) => {
+      const sender = profileMap[row.initiated_by];
+      return {
+        friendship_id: row.id,
+        from_user_id: row.initiated_by,
+        target_user_id: row.initiated_by,
+        display_name: sender?.display_name || 'Unknown',
+        username: sender?.username || null,
+        avatar_url: sender?.avatar_url || null,
+        sun_sign: sender?.sun_sign || null,
+        moon_sign: sender?.moon_sign || null,
+        rising_sign: sender?.rising_sign || null,
+        created_at: row.created_at,
+      };
+    });
   } catch {
     return [];
   }
@@ -160,25 +167,26 @@ export async function getOutgoingRequests(): Promise<FriendRequest[]> {
     const myId = getMyId();
     if (!myId) return [];
 
-    const { data, error } = await supabase
+    const { data: rows, error } = await supabase
       .from('friendships')
-      .select(`
-        id,
-        user_id,
-        friend_id,
-        created_at,
-        profiles_user:profiles!friendships_user_id_fkey(id, display_name, username, avatar_url, sun_sign),
-        profiles_friend:profiles!friendships_friend_id_fkey(id, display_name, username, avatar_url, sun_sign)
-      `)
+      .select('id, user_id, friend_id, created_at')
       .eq('status', 'pending')
       .eq('initiated_by', myId);
 
-    if (error || !data) return [];
+    if (error || !rows || rows.length === 0) return [];
 
-    return data.map((row: any) => {
-      const isUser = row.user_id === myId;
-      const target = isUser ? row.profiles_friend : row.profiles_user;
-      const targetId = target?.id || (isUser ? row.friend_id : row.user_id);
+    const targetIds = rows.map((r: any) => r.user_id === myId ? r.friend_id : r.user_id);
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, username, avatar_url, sun_sign, moon_sign, rising_sign')
+      .in('id', targetIds);
+
+    const profileMap: Record<string, any> = {};
+    if (profiles) profiles.forEach((p: any) => { profileMap[p.id] = p; });
+
+    return rows.map((row: any) => {
+      const targetId = row.user_id === myId ? row.friend_id : row.user_id;
+      const target = profileMap[targetId];
       return {
         friendship_id: row.id,
         from_user_id: myId,
@@ -187,8 +195,8 @@ export async function getOutgoingRequests(): Promise<FriendRequest[]> {
         username: target?.username || null,
         avatar_url: target?.avatar_url || null,
         sun_sign: target?.sun_sign || null,
-        moon_sign: null,
-        rising_sign: null,
+        moon_sign: target?.moon_sign || null,
+        rising_sign: target?.rising_sign || null,
         created_at: row.created_at,
       };
     });

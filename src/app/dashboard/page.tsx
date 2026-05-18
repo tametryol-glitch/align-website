@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { Bell, ChevronRight } from 'lucide-react';
 import { StreakBadge } from '@/components/ui/StreakBadge';
 import { useStreakStore } from '@/stores/streakStore';
-import { TrialBanner } from '@/components/ui/TrialBanner';
 
 // ── Astronomical helpers ─────────────────────────────────────────
 
@@ -364,9 +363,6 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
-
-      {/* ─── Trial Banner ──────────────────────────────────── */}
-      <TrialBanner />
 
       {/* ─── Daily Insight Card ─────────────────────────────── */}
       <Link href="/readings/transits" className="block">

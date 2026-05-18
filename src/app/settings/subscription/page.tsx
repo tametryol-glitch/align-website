@@ -83,9 +83,9 @@ const faqItems = [
       'Yes, you can upgrade or downgrade your plan at any time. When upgrading, you get immediate access to new features. When downgrading, your current plan remains active until the end of the billing period.',
   },
   {
-    question: 'Is there a free trial?',
+    question: 'Can I try before I subscribe?',
     answer:
-      'New users get a 7-day free trial of the Premium plan. No credit card required to start. You can cancel anytime during the trial without being charged.',
+      'Free users have access to basic charts, planetary hours, and limited readings. Upgrade anytime to unlock the full experience — no commitment required.',
   },
   {
     question: 'Do unused AI questions roll over?',

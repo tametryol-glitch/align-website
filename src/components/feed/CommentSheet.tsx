@@ -39,6 +39,7 @@ export function CommentSheet({
   const [sending, setSending] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     getComments(postId).then((c) => { setComments(c); setLoading(false); });
@@ -47,23 +48,31 @@ export function CommentSheet({
   async function handleSend() {
     if (!text.trim() || sending) return;
     setSending(true);
+    setErrorMsg(null);
     try {
       const comment = await addComment(postId, userId, text.trim());
       setComments((prev) => [...prev, comment]);
       setText('');
       onCommentCountChange?.(postId, 1);
-    } catch { /* ignore */ }
+    } catch (err: any) {
+      console.error('[Comment] send failed:', err);
+      setErrorMsg(`Error: ${err?.message || String(err)} (userId=${userId ? userId.slice(0, 8) : 'EMPTY'})`);
+    }
     setSending(false);
   }
 
   async function handleGifSelect(url: string, _type: 'gif' | 'sticker') {
     setShowGifPicker(false);
     setSending(true);
+    setErrorMsg(null);
     try {
       const comment = await addComment(postId, userId, url);
       setComments((prev) => [...prev, comment]);
       onCommentCountChange?.(postId, 1);
-    } catch { /* ignore */ }
+    } catch (err: any) {
+      console.error('[Comment] gif send failed:', err);
+      setErrorMsg(`Error: ${err?.message || String(err)} (userId=${userId ? userId.slice(0, 8) : 'EMPTY'})`);
+    }
     setSending(false);
   }
 
@@ -84,9 +93,9 @@ export function CommentSheet({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-bg-secondary border border-border-primary rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
+      <div className="relative bg-bg-secondary border border-border-primary rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col pb-safe">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
           <h3 className="text-lg font-semibold text-text-primary">Comments</h3>
@@ -134,6 +143,13 @@ export function CommentSheet({
             </div>
           ))}
         </div>
+
+        {/* Error */}
+        {errorMsg && (
+          <div className="px-5 py-2 bg-red-500/10 border-t border-red-500/20">
+            <p className="text-xs text-red-400">{errorMsg}</p>
+          </div>
+        )}
 
         {/* Input */}
         <div className="relative px-5 py-3 border-t border-border-primary">

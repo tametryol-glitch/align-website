@@ -1,7 +1,7 @@
 // Email onboarding templates — inline-styled HTML for maximum email client compatibility.
 // Dark theme (#141826) matching the Align app, with purple gradient CTAs.
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://alignapp.co';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.aligncosmic.com';
 
 function layout(content: string): string {
   return `<!DOCTYPE html>
@@ -74,7 +74,7 @@ export const EMAIL_TEMPLATES = {
       </table>
       ${ctaButton('See Your Birth Chart', `${APP_URL}/chart`)}
       <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
-        Your 7-day Premium trial is active. Explore everything Align has to offer.
+        Explore everything Align has to offer.
       </p>
     `),
   }),
@@ -107,49 +107,117 @@ export const EMAIL_TEMPLATES = {
       </table>
       ${ctaButton('View Your Transits', `${APP_URL}/readings/transits`)}
       <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
-        This feature is available during your Premium trial.
+        This feature is available with Align Premium.
       </p>
     `),
   }),
 
   /**
-   * Day 7 — Trial urgency, what they lose, upgrade CTA.
+   * Day 7 — Upgrade nudge, highlight premium features.
    */
-  day7: (name: string, trialDaysLeft: number) => ({
-    subject: `${name}, don't miss out — ${trialDaysLeft} days of Premium left`,
+  day7: (name: string) => ({
+    subject: `${name}, unlock the full power of your chart`,
     html: layout(`
-      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Your trial is almost over, ${name}</h1>
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Ready to go deeper, ${name}?</h1>
       <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
-        ${trialDaysLeft > 0
-          ? `You have <strong style="color:#f59e0b;">${trialDaysLeft} day${trialDaysLeft === 1 ? '' : 's'}</strong> left on your Premium trial.`
-          : `Your Premium trial has ended.`}
-        After it expires, you will lose access to:
+        You have been exploring Align for a week now. Premium members unlock features that
+        take their cosmic journey to the next level:
       </p>
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
-          <span style="color:#ef4444;margin-right:8px;">&#10005;</span>
+          <span style="color:#a855f7;font-weight:600;margin-right:8px;">&#10003;</span>
           Personalized daily transit forecasts
         </td></tr>
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
-          <span style="color:#ef4444;margin-right:8px;">&#10005;</span>
+          <span style="color:#a855f7;font-weight:600;margin-right:8px;">&#10003;</span>
           AI-powered chart interpretations
         </td></tr>
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
-          <span style="color:#ef4444;margin-right:8px;">&#10005;</span>
+          <span style="color:#a855f7;font-weight:600;margin-right:8px;">&#10003;</span>
           Compatibility and synastry readings
         </td></tr>
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
-          <span style="color:#ef4444;margin-right:8px;">&#10005;</span>
+          <span style="color:#a855f7;font-weight:600;margin-right:8px;">&#10003;</span>
           Tarot, numerology, and dream oracle
         </td></tr>
       </table>
       <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
-        Keep everything for just <strong style="color:#a855f7;">$9/month</strong> — less than a coffee a week
+        All of this for just <strong style="color:#a855f7;">$9/month</strong> — less than a coffee a week
         for daily cosmic guidance tailored to your exact birth chart.
       </p>
       ${ctaButton('Upgrade to Premium', `${APP_URL}/pricing`)}
       <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
         Questions? Reply to this email — we read every message.
+      </p>
+    `),
+  }),
+
+  birthDataReminder: (name: string) => ({
+    subject: `${name}, your readings won't be accurate without this`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">${name}, we need your birth details</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        We noticed your birth information is incomplete. Without accurate birth data,
+        <strong style="color:#f59e0b;">Align cannot generate accurate readings for you.</strong>
+        Your birth chart, transits, compatibility scores, and every personalized feature
+        depends on having the right details.
+      </p>
+      <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#ffffff;font-weight:600;">
+        What we need from you:
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:12px 0 20px;">
+        <tr><td style="padding:10px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">1.</span>
+          <strong style="color:#ffffff;">Date of Birth</strong> — the exact day, month, and year
+        </td></tr>
+        <tr><td style="padding:10px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">2.</span>
+          <strong style="color:#ffffff;">Time of Birth</strong> — as precise as possible
+        </td></tr>
+        <tr><td style="padding:10px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">3.</span>
+          <strong style="color:#ffffff;">Place of Birth</strong> — the city and country where you were born
+        </td></tr>
+      </table>
+      <!-- Birth time tip -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 8px;font-size:14px;color:#a855f7;font-weight:600;">Don't know your exact birth time?</p>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:#c4c8e0;">
+            An approximate time is always better than no time at all. Check your birth certificate,
+            ask a parent, or look at hospital records. If you truly cannot find it,
+            <strong style="color:#ffffff;">use 12:00 PM (midday)</strong> as a universal default —
+            it will still give you meaningful results for most features.
+          </p>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Updating takes less than a minute. Tap the button below to complete your profile
+        and unlock the full power of your cosmic blueprint.
+      </p>
+      ${ctaButton('Complete My Birth Details', `${APP_URL}/onboarding`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Your readings are only as accurate as the birth data you provide.
+      </p>
+    `),
+  }),
+
+  issueResolved: (name: string) => ({
+    subject: `${name}, we fixed a login issue — you're all set now`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Hey ${name}, we owe you an update</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        We recently discovered a technical issue that was preventing some users from
+        completing the onboarding process. If you experienced trouble getting past the
+        setup screen, <strong style="color:#a855f7;">that has now been fixed.</strong>
+      </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        You can now log in and complete your cosmic profile without any problems.
+        We sincerely apologize for the inconvenience and appreciate your patience.
+      </p>
+      ${ctaButton('Log In to Align', `${APP_URL}/auth/login`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        If you run into any other issues, reply to this email — we read every message.
       </p>
     `),
   }),

@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const PUBLIC_API_ROUTES = ['/api/og'];
+  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron'];
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
@@ -65,8 +65,11 @@ export async function middleware(request: NextRequest) {
     pathname !== '/';
 
   if (!user && isProtected) {
-    const redirectUrl = new URL('/auth/login', request.url);
-    return NextResponse.redirect(redirectUrl);
+    const redirect = NextResponse.redirect(new URL('/auth/login', request.url));
+    response.cookies.getAll().forEach(cookie => {
+      redirect.cookies.set(cookie);
+    });
+    return redirect;
   }
 
   // Redirect authenticated users away from auth pages
@@ -84,7 +87,11 @@ export async function middleware(request: NextRequest) {
 
     const needsOnboarding = !profile?.birth_date || profile?.latitude == null || profile?.longitude == null || !profile?.timezone;
     if (needsOnboarding) {
-      return NextResponse.redirect(new URL('/onboarding', request.url));
+      const redirect = NextResponse.redirect(new URL('/onboarding', request.url));
+      response.cookies.getAll().forEach(cookie => {
+        redirect.cookies.set(cookie);
+      });
+      return redirect;
     }
   }
 
