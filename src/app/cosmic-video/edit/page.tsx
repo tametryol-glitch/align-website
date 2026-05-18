@@ -13,6 +13,61 @@ import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { Loader2 } from 'lucide-react';
 
+/**
+ * Parse MP4 moov/mvhd atom to extract video duration.
+ * Works with the first chunk of the file (faststart MP4s).
+ */
+function parseMp4Duration(data: DataView): number | null {
+  const len = data.byteLength;
+
+  // Walk top-level boxes to find 'moov'
+  function findBox(start: number, end: number, target: string): { offset: number; size: number } | null {
+    let pos = start;
+    while (pos + 8 <= end) {
+      const size = data.getUint32(pos);
+      const type = String.fromCharCode(
+        data.getUint8(pos + 4), data.getUint8(pos + 5),
+        data.getUint8(pos + 6), data.getUint8(pos + 7),
+      );
+      if (size < 8) return null; // invalid box
+      if (type === target) return { offset: pos, size };
+      pos += size;
+    }
+    return null;
+  }
+
+  const moov = findBox(0, len, 'moov');
+  if (!moov) return null;
+
+  const mvhd = findBox(moov.offset + 8, Math.min(moov.offset + moov.size, len), 'mvhd');
+  if (!mvhd) return null;
+
+  const headerStart = mvhd.offset + 8; // skip box size + type
+  if (headerStart + 4 > len) return null;
+
+  const version = data.getUint8(headerStart);
+  // version 0: 4-byte fields; version 1: 8-byte fields
+  if (version === 0) {
+    // creation(4) + modification(4) + timescale(4) + duration(4)
+    const tsOff = headerStart + 4 + 4 + 4; // skip version(1)+flags(3)+creation(4)+modification(4)
+    if (tsOff + 8 > len) return null;
+    const timescale = data.getUint32(tsOff);
+    const duration = data.getUint32(tsOff + 4);
+    return timescale > 0 ? duration / timescale : null;
+  } else if (version === 1) {
+    // creation(8) + modification(8) + timescale(4) + duration(8)
+    const tsOff = headerStart + 4 + 8 + 8; // skip version(1)+flags(3)+creation(8)+modification(8)
+    if (tsOff + 12 > len) return null;
+    const timescale = data.getUint32(tsOff);
+    // Read 64-bit duration (only lower 32 bits for videos < ~49k hours)
+    const durationHi = data.getUint32(tsOff + 4);
+    const durationLo = data.getUint32(tsOff + 8);
+    const duration = durationHi * 0x100000000 + durationLo;
+    return timescale > 0 ? duration / timescale : null;
+  }
+  return null;
+}
+
 function EditorPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -31,34 +86,50 @@ function EditorPageInner() {
       return;
     }
 
-    // Probe the video to get its duration
-    const video = document.createElement('video');
-    video.preload = 'metadata';
+    let cancelled = false;
 
-    video.onloadedmetadata = () => {
-      const duration = video.duration;
-      if (!duration || !isFinite(duration)) {
-        setError('Could not read video duration.');
-        setLoading(false);
-        return;
+    // Parse MP4 duration from file headers via fetch.
+    // This avoids Chrome's <video> element preload issues under COEP/COOP.
+    async function probeDuration() {
+      try {
+        // If duration was passed as a URL param, use it directly
+        const paramDuration = searchParams.get('duration');
+        if (paramDuration) {
+          const d = parseFloat(paramDuration);
+          if (d > 0 && isFinite(d)) {
+            if (!cancelled) { init(videoUrl, d); setLoading(false); }
+            return;
+          }
+        }
+
+        // Fetch first 64KB to find moov/mvhd atoms (faststart MP4s have moov at the start)
+        const resp = await fetch(videoUrl, {
+          mode: 'cors',
+          headers: { Range: 'bytes=0-65535' },
+        });
+        if (!resp.ok && resp.status !== 206) throw new Error('Fetch failed: ' + resp.status);
+        const buf = new DataView(await (await resp.blob()).arrayBuffer());
+
+        const duration = parseMp4Duration(buf);
+        if (duration && duration > 0 && isFinite(duration)) {
+          if (!cancelled) { init(videoUrl, duration); setLoading(false); }
+          return;
+        }
+
+        // Fallback: if moov wasn't in the first 64KB (not faststart),
+        // use a default duration and let the video element update it later
+        if (!cancelled) { init(videoUrl, 30); setLoading(false); }
+      } catch (e) {
+        if (!cancelled) {
+          setError('Failed to load video. The URL may be invalid or expired.');
+          setLoading(false);
+        }
       }
-      init(videoUrl, duration);
-      setLoading(false);
-    };
+    }
 
-    video.onerror = () => {
-      setError('Failed to load video. The URL may be invalid or expired.');
-      setLoading(false);
-    };
-
-    video.src = videoUrl;
-
-    return () => {
-      video.onloadedmetadata = null;
-      video.onerror = null;
-      video.src = '';
-    };
-  }, [videoUrl, init]);
+    probeDuration();
+    return () => { cancelled = true; };
+  }, [videoUrl, searchParams, init]);
 
   if (error) {
     return (

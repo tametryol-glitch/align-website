@@ -883,7 +883,7 @@ export default function CosmicVideoPage() {
           {/* Edit Video button */}
           {currentJob.video_url && (
             <Link
-              href={`/cosmic-video/edit?videoId=${currentJob.id}&url=${encodeURIComponent(currentJob.video_url)}`}
+              href={`/cosmic-video/edit?videoId=${currentJob.id}&url=${encodeURIComponent(currentJob.video_url)}&duration=${currentJob.duration_seconds || durationSeconds}`}
               className="w-full max-w-lg flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-accent-primary to-purple-500 text-white font-medium text-sm hover:opacity-90 transition-opacity mb-3"
             >
               <Scissors className="w-4 h-4" />
