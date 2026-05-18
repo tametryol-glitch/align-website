@@ -12,7 +12,7 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail,
+  Mail, Video,
 } from 'lucide-react';
 
 const TABS = [
@@ -28,6 +28,7 @@ const MORE_ITEMS = [
   { href: '/world-echo', label: 'World Echo', icon: Compass },
   { href: '/cosmic-alerts', label: 'Cosmic Weather', icon: Zap },
   { href: '/readings', label: 'Readings', icon: Sparkles },
+  { href: '/cosmic-video', label: 'Video Creator', icon: Video },
   { href: '/friends', label: 'Friends', icon: Users },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/ai', label: 'AI Astrologer', icon: MessageCircle },

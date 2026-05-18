@@ -294,6 +294,26 @@ class AlignAPI {
     return this.request(`/world-echo/pattern/${encodeURIComponent(scanId)}/${encodeURIComponent(patternName)}`);
   }
 
+  // Cosmic Videos
+  async renderCosmicVideo(data: any) {
+    return this.request('/videos/render', { method: 'POST', body: JSON.stringify(data) });
+  }
+
+  async getVideoRenderStatus(videoId: string) {
+    return this.request(`/videos/status/${videoId}`);
+  }
+
+  async getMyCosmicVideos(limit = 20, offset = 0) {
+    return this.request(`/videos/my-videos?limit=${limit}&offset=${offset}`);
+  }
+
+  async generateVideoScript(templateId: string, astroData: any) {
+    return this.request('/videos/generate-script', {
+      method: 'POST',
+      body: JSON.stringify({ template_id: templateId, astro_data: astroData }),
+    });
+  }
+
   // Profiles
   async getProfile(userId: string) {
     return this.request(`/profiles/${userId}`);
