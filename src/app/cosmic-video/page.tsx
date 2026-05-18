@@ -116,12 +116,13 @@ export default function CosmicVideoPage() {
 
   const handleGenerateScript = useCallback(async () => {
     if (!selectedTemplate) return;
+    setAudioType('tts');
     setIsGeneratingScript(true);
+    setRenderError('');
     try {
       const astroData = buildAstroData();
       const script = await generateScript(selectedTemplate.id, astroData);
       setGeneratedScript(script);
-      setAudioType('tts');
     } catch (err: any) {
       setRenderError(err?.message || 'Failed to generate script');
     } finally {
@@ -184,7 +185,7 @@ export default function CosmicVideoPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedTemplate, audioType, ttsVoice, generatedScript, targetSign, buildAstroData]);
+  }, [selectedTemplate, audioType, ttsVoice, generatedScript, targetSign, buildAstroData, durationSeconds, colorTheme, selectedMusic, musicVolume, textOverlays, arFilter]);
 
   // -- Load my videos ---------------------------------------------------
 
@@ -394,6 +395,22 @@ export default function CosmicVideoPage() {
                 AI Voice
               </button>
             </div>
+
+            {/* Generating indicator */}
+            {isGeneratingScript && !generatedScript && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-text-muted">
+                <Loader2 className="w-4 h-4 animate-spin text-accent-primary" />
+                Generating voiceover script...
+              </div>
+            )}
+
+            {/* Voiceover error */}
+            {renderError && audioType === 'tts' && !generatedScript && (
+              <div className="mt-3 flex items-center gap-2 bg-red-500/10 text-red-400 rounded-xl p-3 text-sm">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {renderError}
+              </div>
+            )}
 
             {/* Generated script preview */}
             {generatedScript && (
