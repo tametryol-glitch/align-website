@@ -26,7 +26,7 @@ import {
   type ARFilterOption,
 } from '@/lib/cosmicVideoService';
 import {
-  Video, ChevronLeft, Play, Download, Share2,
+  Video, ChevronLeft, Play, Download, Share2, Scissors,
   Sparkles, Clock, Loader2, AlertCircle, Check,
   Volume2, VolumeX, RefreshCw, Music, Type, Palette, Plus, X, Sliders, Wand2,
 } from 'lucide-react';
@@ -834,6 +834,17 @@ export default function CosmicVideoPage() {
             <div className="w-full max-w-lg aspect-[9/16] max-h-[60vh] rounded-2xl bg-bg-card border border-border-primary flex items-center justify-center mb-6">
               <Play className="w-12 h-12 text-text-muted" />
             </div>
+          )}
+
+          {/* Edit Video button */}
+          {currentJob.video_url && (
+            <Link
+              href={`/cosmic-video/edit?videoId=${currentJob.id}&url=${encodeURIComponent(currentJob.video_url)}`}
+              className="w-full max-w-lg flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-accent-primary to-purple-500 text-white font-medium text-sm hover:opacity-90 transition-opacity mb-3"
+            >
+              <Scissors className="w-4 h-4" />
+              Edit Video
+            </Link>
           )}
 
           {/* Actions */}

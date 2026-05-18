@@ -10,6 +10,14 @@ const nextConfig = {
   },
   async headers() {
     return [
+      // COOP/COEP for the video editor route (enables SharedArrayBuffer for FFmpeg-wasm)
+      {
+        source: '/cosmic-video/edit',
+        headers: [
+          { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+        ],
+      },
       {
         source: '/:path*',
         headers: [
@@ -23,13 +31,14 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://www.googletagmanager.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.youtube.com https://s.ytimg.com https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co",
               "font-src 'self' data:",
               "connect-src 'self' https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://www.google-analytics.com https://www.googletagmanager.com",
               "frame-src 'self' https://www.youtube.com",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

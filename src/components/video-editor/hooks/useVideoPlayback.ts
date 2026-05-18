@@ -1,0 +1,66 @@
+'use client';
+
+/**
+ * useVideoPlayback — syncs the <video> element with the Zustand store.
+ *
+ * - Updates store.currentTime via rAF during playback
+ * - Enforces trim range (pauses at trimEnd, resets to trimStart)
+ * - Responds to store.isPlaying changes from external controls
+ */
+
+import { useEffect, useRef } from 'react';
+import { useVideoEditorStore } from '@/stores/videoEditorStore';
+
+export function useVideoPlayback(
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+) {
+  const rafRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
+
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+
+    const tick = () => {
+      if (!vid.paused && !vid.ended) {
+        const state = useVideoEditorStore.getState();
+        const t = vid.currentTime;
+
+        // Enforce trim boundary
+        if (t >= state.trimEnd) {
+          vid.pause();
+          vid.currentTime = state.trimStart;
+          useVideoEditorStore.getState().setIsPlaying(false);
+          useVideoEditorStore.getState().setCurrentTime(state.trimStart);
+          return;
+        }
+
+        // Only update if changed (avoid unnecessary re-renders)
+        if (Math.abs(t - lastTimeRef.current) > 0.03) {
+          lastTimeRef.current = t;
+          useVideoEditorStore.getState().setCurrentTime(t);
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [videoRef]);
+
+  // Sync volume with store
+  useEffect(() => {
+    const unsubscribe = useVideoEditorStore.subscribe(
+      (state) => {
+        const vid = videoRef.current;
+        if (vid) {
+          vid.volume = state.originalAudioVolume;
+        }
+      },
+    );
+    return unsubscribe;
+  }, [videoRef]);
+}
