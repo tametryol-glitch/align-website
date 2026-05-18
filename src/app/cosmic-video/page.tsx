@@ -956,28 +956,37 @@ export default function CosmicVideoPage() {
                     </div>
 
                     {vid.video_url && (
-                      <div className="flex gap-2 mt-3">
-                        <a
-                          href={vid.video_url}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
+                      <div className="space-y-2 mt-3">
+                        <Link
+                          href={`/cosmic-video/edit?videoId=${vid.id}&url=${encodeURIComponent(vid.video_url)}`}
+                          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gradient-to-r from-accent-primary to-purple-500 text-white text-xs font-medium hover:opacity-90 transition-opacity"
                         >
-                          Download
-                        </a>
-                        <button
-                          onClick={() => {
-                            if (navigator.share) {
-                              navigator.share({ url: vid.video_url! }).catch(() => {});
-                            } else {
-                              navigator.clipboard.writeText(vid.video_url!);
-                            }
-                          }}
-                          className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
-                        >
-                          Share
-                        </button>
+                          <Scissors className="w-3.5 h-3.5" />
+                          Edit Video
+                        </Link>
+                        <div className="flex gap-2">
+                          <a
+                            href={vid.video_url}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
+                          >
+                            Download
+                          </a>
+                          <button
+                            onClick={() => {
+                              if (navigator.share) {
+                                navigator.share({ url: vid.video_url! }).catch(() => {});
+                              } else {
+                                navigator.clipboard.writeText(vid.video_url!);
+                              }
+                            }}
+                            className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
+                          >
+                            Share
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
