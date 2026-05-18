@@ -311,7 +311,7 @@ class AlignAPI {
     return this.request('/videos/generate-script', {
       method: 'POST',
       body: JSON.stringify({ template_id: templateId, astro_data: astroData }),
-    });
+    }, 60000);
   }
 
   // Profiles

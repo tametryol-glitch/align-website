@@ -124,7 +124,12 @@ export default function CosmicVideoPage() {
       const script = await generateScript(selectedTemplate.id, astroData);
       setGeneratedScript(script);
     } catch (err: any) {
-      setRenderError(err?.message || 'Failed to generate script');
+      const msg = err?.message || 'Failed to generate script';
+      setRenderError(
+        msg === 'Failed to fetch'
+          ? 'Could not reach the server — check your connection and try again.'
+          : msg,
+      );
     } finally {
       setIsGeneratingScript(false);
     }
