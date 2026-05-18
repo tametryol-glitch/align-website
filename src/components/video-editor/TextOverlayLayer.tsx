@@ -143,7 +143,7 @@ function DraggableText({
       style={{
         left: `${overlay.x}%`,
         top: `${overlay.y}%`,
-        transform: 'translate(-50%, -50%)',
+        transform: `translate(-50%, -50%) rotate(${overlay.rotation ?? 0}deg)`,
       }}
       onPointerDown={handlePointerDown}
       onDoubleClick={handleDoubleClick}

@@ -28,10 +28,16 @@ export function useVideoPlayback(
 
         // Enforce trim boundary
         if (t >= state.trimEnd) {
-          vid.pause();
-          vid.currentTime = state.trimStart;
-          useVideoEditorStore.getState().setIsPlaying(false);
-          useVideoEditorStore.getState().setCurrentTime(state.trimStart);
+          if (state.loopPlayback) {
+            // Loop: jump back to trim start and keep playing
+            vid.currentTime = state.trimStart;
+            useVideoEditorStore.getState().setCurrentTime(state.trimStart);
+          } else {
+            vid.pause();
+            vid.currentTime = state.trimStart;
+            useVideoEditorStore.getState().setIsPlaying(false);
+            useVideoEditorStore.getState().setCurrentTime(state.trimStart);
+          }
           return;
         }
 
@@ -51,13 +57,16 @@ export function useVideoPlayback(
     };
   }, [videoRef]);
 
-  // Sync volume with store
+  // Sync volume and playback speed with store
   useEffect(() => {
     const unsubscribe = useVideoEditorStore.subscribe(
       (state) => {
         const vid = videoRef.current;
         if (vid) {
           vid.volume = state.originalAudioVolume;
+          if (vid.playbackRate !== state.playbackSpeed) {
+            vid.playbackRate = state.playbackSpeed;
+          }
         }
       },
     );

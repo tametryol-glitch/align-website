@@ -120,18 +120,27 @@ function DraggableSticker({
       style={{
         left: `${sticker.x}%`,
         top: `${sticker.y}%`,
-        transform: `translate(-50%, -50%) scale(${sticker.scale})`,
+        transform: `translate(-50%, -50%) scale(${sticker.scale}) rotate(${sticker.rotation ?? 0}deg)`,
       }}
       onPointerDown={handlePointerDown}
       onWheel={handleWheel}
     >
       <div
         className={`
-          text-4xl select-none p-1 rounded-lg
+          select-none p-1 rounded-lg
           ${isSelected ? 'ring-2 ring-accent-primary ring-offset-1 ring-offset-transparent' : ''}
         `}
       >
-        {sticker.emoji}
+        {sticker.imageUrl ? (
+          <img
+            src={sticker.imageUrl}
+            alt="sticker"
+            className="w-16 h-16 object-contain pointer-events-none"
+            draggable={false}
+          />
+        ) : (
+          <span className="text-4xl">{sticker.emoji}</span>
+        )}
       </div>
     </div>
   );

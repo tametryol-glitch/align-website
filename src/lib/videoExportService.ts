@@ -120,6 +120,7 @@ export async function exportVideo(
     stickerOverlays,
     transitions,
     originalAudioVolume,
+    playbackSpeed,
   } = state;
 
   const ff = await getFFmpeg();
@@ -263,10 +264,29 @@ export async function exportVideo(
     }
   }
 
+  // Speed adjustment (setpts for video, atempo for audio)
+  if (playbackSpeed !== 1) {
+    const ptsFactor = (1 / playbackSpeed).toFixed(4);
+    videoFilters.push(`setpts=${ptsFactor}*PTS`);
+  }
+
   // ── Build audio filter chain ────────────────────────────────
   const audioFilters: string[] = [];
   if (originalAudioVolume !== 1) {
     audioFilters.push(`volume=${originalAudioVolume.toFixed(2)}`);
+  }
+  // Speed adjustment for audio (atempo supports 0.5-2.0, chain for extremes)
+  if (playbackSpeed !== 1) {
+    let remaining = playbackSpeed;
+    while (remaining > 2.0) {
+      audioFilters.push('atempo=2.0');
+      remaining /= 2.0;
+    }
+    while (remaining < 0.5) {
+      audioFilters.push('atempo=0.5');
+      remaining /= 0.5;
+    }
+    audioFilters.push(`atempo=${remaining.toFixed(4)}`);
   }
 
   // ── Build FFmpeg command ────────────────────────────────────

@@ -7,14 +7,14 @@
  * not canvas-rendered. This keeps playback hardware-accelerated.
  */
 
-import { useRef, useCallback, useEffect, useMemo } from 'react';
+import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { useVideoPlayback } from './hooks/useVideoPlayback';
 import { useTransitionPreview } from './hooks/useTransitionPreview';
 import { TextOverlayLayer } from './TextOverlayLayer';
 import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { getFilterById } from '@/lib/videoFilters';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, Repeat, Gauge } from 'lucide-react';
 
 export function PreviewPanel() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,6 +36,12 @@ export function PreviewPanel() {
   const setIsPlaying = useVideoEditorStore((s) => s.setIsPlaying);
   const setCurrentTime = useVideoEditorStore((s) => s.setCurrentTime);
   const selectOverlay = useVideoEditorStore((s) => s.selectOverlay);
+  const playbackSpeed = useVideoEditorStore((s) => s.playbackSpeed);
+  const setPlaybackSpeed = useVideoEditorStore((s) => s.setPlaybackSpeed);
+  const loopPlayback = useVideoEditorStore((s) => s.loopPlayback);
+  const setLoopPlayback = useVideoEditorStore((s) => s.setLoopPlayback);
+
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
 
   // Sync video element with store
   useVideoPlayback(videoRef);
@@ -214,7 +220,7 @@ export function PreviewPanel() {
       </div>
 
       {/* Playback controls with scrubbing */}
-      <div className="flex items-center gap-3 w-full max-w-[360px] shrink-0">
+      <div className="flex items-center gap-2 w-full max-w-[360px] shrink-0">
         <button
           onClick={togglePlay}
           className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white"
@@ -255,6 +261,55 @@ export function PreviewPanel() {
         <span className="text-xs text-text-muted font-mono tabular-nums">
           {formatTime(trimEnd - trimStart)}
         </span>
+
+        {/* Speed control */}
+        <div className="relative">
+          <button
+            onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+            className={`px-1.5 py-1 rounded-md text-[10px] font-medium transition-colors ${
+              playbackSpeed !== 1
+                ? 'bg-accent-primary/20 text-accent-primary'
+                : 'text-text-muted hover:bg-white/10'
+            }`}
+          >
+            {playbackSpeed}x
+          </button>
+          {showSpeedMenu && (
+            <div className="absolute bottom-full right-0 mb-1 bg-surface-secondary border border-white/10 rounded-lg shadow-xl overflow-hidden z-30">
+              {[0.25, 0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => (
+                <button
+                  key={speed}
+                  onClick={() => {
+                    setPlaybackSpeed(speed);
+                    setShowSpeedMenu(false);
+                    const vid = videoRef.current;
+                    if (vid) vid.playbackRate = speed;
+                  }}
+                  className={`block w-full px-4 py-1.5 text-xs text-left transition-colors ${
+                    playbackSpeed === speed
+                      ? 'bg-accent-primary/20 text-accent-primary'
+                      : 'text-text-secondary hover:bg-white/10'
+                  }`}
+                >
+                  {speed}x{speed === 1 ? ' (Normal)' : speed < 1 ? ' Slow' : ' Fast'}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Loop toggle */}
+        <button
+          onClick={() => setLoopPlayback(!loopPlayback)}
+          className={`p-1.5 rounded-lg transition-colors ${
+            loopPlayback
+              ? 'bg-accent-primary/20 text-accent-primary'
+              : 'text-text-muted hover:bg-white/10'
+          }`}
+          title={loopPlayback ? 'Loop on' : 'Loop off'}
+        >
+          <Repeat className="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
   );

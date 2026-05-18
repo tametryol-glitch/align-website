@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { useVideoEditorStore, type TextOverlay } from '@/stores/videoEditorStore';
-import { Plus, Trash2, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Plus, Trash2, AlignLeft, AlignCenter, AlignRight, RotateCw } from 'lucide-react';
 
 const FONT_FAMILIES = [
   'Inter',
@@ -36,6 +36,54 @@ const BG_COLORS = [
 
 const ANIMATIONS: TextOverlay['animation'][] = [
   'none', 'fade', 'slide', 'scale', 'typewriter',
+];
+
+/** Pre-designed text templates for quick styling */
+const TEXT_TEMPLATES: Array<{
+  label: string;
+  preview: string;
+  style: Partial<TextOverlay>;
+}> = [
+  {
+    label: 'Bold Title',
+    preview: 'TITLE',
+    style: { text: 'YOUR TITLE', fontSize: 48, color: '#FFFFFF', fontFamily: 'Arial Black', animation: 'scale', bgColor: '', strokeColor: '#000000', strokeWidth: 2, textAlign: 'center' },
+  },
+  {
+    label: 'Neon Glow',
+    preview: 'NEON',
+    style: { text: 'Glow Text', fontSize: 36, color: '#00FF88', fontFamily: 'Impact', animation: 'fade', bgColor: '', strokeColor: '#004422', strokeWidth: 1.5, textAlign: 'center' },
+  },
+  {
+    label: 'Cosmic',
+    preview: '✨',
+    style: { text: '✨ Cosmic ✨', fontSize: 32, color: '#A78BFA', fontFamily: 'Playfair Display', animation: 'scale', bgColor: '#1a0533CC', strokeColor: '', strokeWidth: 0, textAlign: 'center' },
+  },
+  {
+    label: 'Subtitle',
+    preview: 'Sub',
+    style: { text: 'Your subtitle here', fontSize: 20, color: '#FFFFFF', fontFamily: 'Inter', animation: 'fade', bgColor: '#000000AA', strokeColor: '', strokeWidth: 0, textAlign: 'center' },
+  },
+  {
+    label: 'Handwritten',
+    preview: 'Hey!',
+    style: { text: 'Hey there!', fontSize: 34, color: '#FFD700', fontFamily: 'Comic Sans MS', animation: 'typewriter', bgColor: '', strokeColor: '', strokeWidth: 0, textAlign: 'left' },
+  },
+  {
+    label: 'News Flash',
+    preview: 'NEWS',
+    style: { text: 'BREAKING NEWS', fontSize: 28, color: '#FFFFFF', fontFamily: 'Impact', animation: 'slide', bgColor: '#FF0000DD', strokeColor: '', strokeWidth: 0, textAlign: 'center' },
+  },
+  {
+    label: 'Minimal',
+    preview: 'abc',
+    style: { text: 'Clean text', fontSize: 24, color: '#E5E5E5', fontFamily: 'Inter', animation: 'fade', bgColor: '', strokeColor: '', strokeWidth: 0, textAlign: 'center' },
+  },
+  {
+    label: 'Quote',
+    preview: '" "',
+    style: { text: '"Your quote here"', fontSize: 26, color: '#FBBF24', fontFamily: 'Georgia', animation: 'fade', bgColor: '#00000088', strokeColor: '', strokeWidth: 0, textAlign: 'center' },
+  },
 ];
 
 export function TextTool() {
@@ -69,6 +117,7 @@ export function TextTool() {
       strokeColor: '',
       strokeWidth: 0,
       textAlign: 'center',
+      rotation: 0,
     };
     addTextOverlay(newOverlay);
     selectOverlay(id);
@@ -98,6 +147,57 @@ export function TextTool() {
         <Plus className="w-4 h-4" />
         Add Text Overlay
       </button>
+
+      {/* Text templates */}
+      <div>
+        <p className="text-xs text-text-muted mb-1.5">Templates</p>
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {TEXT_TEMPLATES.map((tpl) => (
+            <button
+              key={tpl.label}
+              onClick={() => {
+                const id = `text_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                const newOverlay: TextOverlay = {
+                  id,
+                  x: 50,
+                  y: 50,
+                  startTime: currentTime,
+                  endTime: Math.min(currentTime + 5, trimEnd),
+                  rotation: 0,
+                  fontSize: 28,
+                  color: '#FFFFFF',
+                  fontFamily: 'Inter',
+                  animation: 'fade',
+                  bgColor: '',
+                  strokeColor: '',
+                  strokeWidth: 0,
+                  textAlign: 'center',
+                  text: 'Your text here',
+                  ...tpl.style,
+                };
+                addTextOverlay(newOverlay);
+                selectOverlay(id);
+                pushHistory();
+              }}
+              className="flex-shrink-0 w-20 h-14 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex flex-col items-center justify-center gap-0.5"
+            >
+              <span
+                className="text-sm leading-none"
+                style={{
+                  color: tpl.style.color || '#fff',
+                  fontFamily: tpl.style.fontFamily || 'Inter',
+                  backgroundColor: tpl.style.bgColor || undefined,
+                  padding: tpl.style.bgColor ? '0 4px' : undefined,
+                  borderRadius: '2px',
+                }}
+              >
+                {tpl.preview}
+              </span>
+              <span className="text-[9px] text-text-muted">{tpl.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* List of overlays */}
       {textOverlays.length > 0 && (
@@ -268,6 +368,32 @@ export function TextTool() {
                   className="w-7 h-7 rounded cursor-pointer border border-white/20"
                 />
               )}
+            </div>
+          </div>
+
+          {/* Rotation */}
+          <div>
+            <label className="text-xs text-text-muted block mb-1">
+              <RotateCw className="w-3 h-3 inline mr-1" />
+              Rotation: {selected.rotation ?? 0}°
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={-180}
+                max={180}
+                step={1}
+                value={selected.rotation ?? 0}
+                onChange={(e) => update({ rotation: parseInt(e.target.value) })}
+                onMouseUp={() => pushHistory()}
+                className="flex-1 accent-accent-primary"
+              />
+              <button
+                onClick={() => { update({ rotation: 0 }); pushHistory(); }}
+                className="px-2 py-1 text-[10px] rounded bg-white/5 text-text-muted hover:bg-white/10"
+              >
+                Reset
+              </button>
             </div>
           </div>
 

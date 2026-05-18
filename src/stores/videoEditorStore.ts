@@ -34,11 +34,15 @@ export interface TextOverlay {
   strokeWidth: number;
   /** Text alignment */
   textAlign: 'left' | 'center' | 'right';
+  /** Rotation in degrees */
+  rotation: number;
 }
 
 export interface StickerOverlay {
   id: string;
   emoji: string;
+  /** Optional image/GIF URL (when set, renders image instead of emoji) */
+  imageUrl?: string;
   /** X position as percentage (0–100) */
   x: number;
   /** Y position as percentage (0–100) */
@@ -46,6 +50,8 @@ export interface StickerOverlay {
   scale: number;
   startTime: number;
   endTime: number;
+  /** Rotation in degrees */
+  rotation: number;
 }
 
 export type FilterPresetId =
@@ -119,6 +125,8 @@ interface VideoEditorState {
   // Playback
   currentTime: number;
   isPlaying: boolean;
+  playbackSpeed: number; // 0.25, 0.5, 1, 1.5, 2
+  loopPlayback: boolean;
 
   // Text overlays
   textOverlays: TextOverlay[];
@@ -173,6 +181,8 @@ interface VideoEditorState {
   // Playback
   setCurrentTime: (t: number) => void;
   setIsPlaying: (p: boolean) => void;
+  setPlaybackSpeed: (s: number) => void;
+  setLoopPlayback: (l: boolean) => void;
 
   // Trim
   setTrimStart: (t: number) => void;
@@ -240,6 +250,8 @@ const INITIAL_STATE = {
   trimEnd: 0,
   currentTime: 0,
   isPlaying: false,
+  playbackSpeed: 1,
+  loopPlayback: false,
   textOverlays: [] as TextOverlay[],
   selectedOverlayId: null as string | null,
   stickerOverlays: [] as StickerOverlay[],
@@ -308,6 +320,8 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
   // Playback
   setCurrentTime: (t) => set({ currentTime: t }),
   setIsPlaying: (p) => set({ isPlaying: p }),
+  setPlaybackSpeed: (s) => set({ playbackSpeed: s }),
+  setLoopPlayback: (l) => set({ loopPlayback: l }),
 
   // Trim
   setTrimStart: (t) => set({ trimStart: Math.max(0, t) }),
