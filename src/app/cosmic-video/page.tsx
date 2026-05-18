@@ -282,6 +282,28 @@ export default function CosmicVideoPage() {
 
       {/* -- Templates View ---------------------------------------------- */}
       {view === 'templates' && (
+        <div className="space-y-6">
+          {/* Import / Edit your own video */}
+          <Link
+            href="/cosmic-video/edit"
+            className="block bg-gradient-to-r from-accent-primary/10 to-purple-500/10 border border-accent-primary/30 rounded-2xl p-5 hover:border-accent-primary/60 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-accent-primary/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent-primary/30 transition-colors">
+                <Scissors className="w-6 h-6 text-accent-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-text-primary group-hover:text-accent-primary transition-colors">
+                  Edit Your Own Video
+                </h3>
+                <p className="text-text-tertiary text-sm mt-0.5">
+                  Import a video from your device — trim, add text, stickers, filters, cosmic effects, and export.
+                </p>
+              </div>
+              <ChevronLeft className="w-5 h-5 text-text-muted rotate-180 flex-shrink-0" />
+            </div>
+          </Link>
+
         <div className="grid gap-4 sm:grid-cols-2">
           {TEMPLATES.map((tmpl) => (
             <button
@@ -319,6 +341,7 @@ export default function CosmicVideoPage() {
               </div>
             </button>
           ))}
+        </div>
         </div>
       )}
 
