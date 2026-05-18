@@ -417,41 +417,85 @@ export default function CosmicVideoPage() {
               </div>
             )}
 
-            {/* Generated script preview */}
-            {generatedScript && (
+            {/* Script editor — AI-generated or custom */}
+            {audioType === 'tts' && (
               <div className="mt-4 bg-bg-tertiary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-                    Generated Script
+                    {generatedScript && !isGeneratingScript ? 'Voiceover Script' : 'Write Your Script'}
                   </span>
-                  <button
-                    onClick={handleGenerateScript}
-                    disabled={isGeneratingScript}
-                    className="text-xs text-accent-primary hover:underline flex items-center gap-1"
-                  >
-                    <RefreshCw className={`w-3 h-3 ${isGeneratingScript ? 'animate-spin' : ''}`} />
-                    Regenerate
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {generatedScript && (
+                      <button
+                        onClick={() => setGeneratedScript('')}
+                        className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1"
+                      >
+                        <X className="w-3 h-3" />
+                        Clear
+                      </button>
+                    )}
+                    <button
+                      onClick={handleGenerateScript}
+                      disabled={isGeneratingScript}
+                      className="text-xs text-accent-primary hover:underline flex items-center gap-1"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isGeneratingScript ? 'animate-spin' : ''}`} />
+                      {generatedScript ? 'Regenerate' : 'AI Generate'}
+                    </button>
+                  </div>
                 </div>
-                <p className="text-sm text-text-secondary leading-relaxed">{generatedScript}</p>
+
+                {/* Editable textarea */}
+                <textarea
+                  value={generatedScript}
+                  onChange={(e) => {
+                    const maxWords = Math.floor(durationSeconds * 2.5);
+                    const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                    if (words.length <= maxWords || e.target.value.length < generatedScript.length) {
+                      setGeneratedScript(e.target.value);
+                    }
+                  }}
+                  placeholder="Type your voiceover script here, or tap 'AI Generate' to create one automatically..."
+                  rows={4}
+                  className="w-full bg-bg-card border border-border-primary rounded-lg px-3 py-2 text-sm text-text-secondary leading-relaxed placeholder:text-text-muted focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors resize-none"
+                />
+
+                {/* Word counter */}
+                {(() => {
+                  const maxWords = Math.floor(durationSeconds * 2.5);
+                  const wordCount = generatedScript.trim() ? generatedScript.trim().split(/\s+/).length : 0;
+                  const isOver = wordCount > maxWords;
+                  return (
+                    <div className={`mt-2 flex items-center justify-between text-xs ${isOver ? 'text-red-400' : 'text-text-muted'}`}>
+                      <span>
+                        {wordCount}/{maxWords} words ({durationSeconds}s × ~2.5 words/sec)
+                      </span>
+                      {isOver && (
+                        <span className="text-red-400 font-medium">Script too long for video duration</span>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Voice picker */}
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="text-xs text-text-muted">Voice:</span>
-                  {['nova', 'shimmer', 'echo', 'onyx'].map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => setTtsVoice(v)}
-                      className={`px-3 py-1 rounded-lg text-xs font-medium capitalize transition-all ${
-                        ttsVoice === v
-                          ? 'bg-accent-primary/20 text-accent-primary'
-                          : 'bg-bg-card text-text-muted hover:text-text-secondary'
-                      }`}
-                    >
-                      {v}
-                    </button>
-                  ))}
-                </div>
+                {generatedScript && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-xs text-text-muted">Voice:</span>
+                    {['nova', 'shimmer', 'echo', 'onyx'].map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setTtsVoice(v)}
+                        className={`px-3 py-1 rounded-lg text-xs font-medium capitalize transition-all ${
+                          ttsVoice === v
+                            ? 'bg-accent-primary/20 text-accent-primary'
+                            : 'bg-bg-card text-text-muted hover:text-text-secondary'
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
