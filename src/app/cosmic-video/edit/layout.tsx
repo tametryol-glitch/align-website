@@ -6,7 +6,7 @@
 
 export default function EditorLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 bg-[#0a0a14] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-[#0a0a14] flex flex-col overflow-hidden">
       {children}
     </div>
   );
