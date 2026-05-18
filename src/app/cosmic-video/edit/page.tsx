@@ -34,7 +34,6 @@ function EditorPageInner() {
     // Probe the video to get its duration
     const video = document.createElement('video');
     video.preload = 'metadata';
-    video.crossOrigin = 'anonymous';
 
     video.onloadedmetadata = () => {
       const duration = video.duration;

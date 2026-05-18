@@ -113,7 +113,6 @@ export function PreviewPanel() {
             filter: filter.css !== 'none' ? filter.css : undefined,
           }}
           playsInline
-          crossOrigin="anonymous"
         />
 
         {/* Text overlay layer */}
