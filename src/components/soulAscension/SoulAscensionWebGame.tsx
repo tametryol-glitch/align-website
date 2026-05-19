@@ -94,6 +94,8 @@ export default function SoulAscensionWebGame() {
   const [state, setState] = useState<SoulAscensionGameState | null>(null);
   const [activeTab, setActiveTab] = useState<GameTab>('home');
   const [hydrating, setHydrating] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   const canUseProfileChart = !!profile?.birth_date && profile.latitude != null && profile.longitude != null && !!profile.timezone;
 
@@ -158,6 +160,31 @@ export default function SoulAscensionWebGame() {
     if (!state || hydrating) return;
     storage.save(state).catch(() => {});
   }, [hydrating, state]);
+
+  useEffect(() => {
+    if (!state || hydrating) return;
+    if (state.profile.avatarImageUrl) {
+      setAvatarUrl(state.profile.avatarImageUrl);
+      return;
+    }
+    let cancelled = false;
+    setAvatarLoading(true);
+    api.generateSoulAvatar(
+      state.profile.avatarAppearance,
+      state.profile.soulArchetype,
+      state.chart.placements.Sun?.sign || '',
+    ).then((url) => {
+      if (cancelled) return;
+      setAvatarUrl(url);
+      setState((prev) => {
+        if (!prev) return prev;
+        return { ...prev, profile: { ...prev.profile, avatarImageUrl: url } };
+      });
+    }).catch(() => {}).finally(() => {
+      if (!cancelled) setAvatarLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [state?.profile.avatarAppearance, hydrating]);
 
   const choose = (choiceId: string) => {
     setState((current) => current ? chooseMissionOption(current, choiceId) : current);
@@ -257,7 +284,7 @@ export default function SoulAscensionWebGame() {
       {activeTab === 'home' && (
         <HomePanel state={state} onContinue={() => setActiveTab(state.soulReview ? 'review' : 'mission')} onPortal={() => setActiveTab(canReview ? 'review' : 'lifetime')} onReset={resetRun} onReload={loadChart} />
       )}
-      {activeTab === 'avatar' && <AvatarPanel state={state} />}
+      {activeTab === 'avatar' && <AvatarPanel state={state} avatarUrl={avatarUrl} avatarLoading={avatarLoading} />}
       {activeTab === 'lifetime' && <LifetimePanel state={state} />}
       {activeTab === 'mission' && mission && <MissionPanel mission={mission} state={state} onChoose={choose} onContinue={continueMission} />}
       {activeTab === 'review' && <ReviewPanel state={state} onReincarnate={reincarnate} />}
@@ -318,13 +345,23 @@ function HomePanel({
   );
 }
 
-function AvatarPanel({ state }: { state: SoulAscensionGameState }) {
+function AvatarPanel({ state, avatarUrl, avatarLoading }: { state: SoulAscensionGameState; avatarUrl: string | null; avatarLoading: boolean }) {
   const p = state.profile;
   return (
     <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
       <section className="rounded-lg border border-gold-primary/20 bg-black/30 p-5 md:p-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-gold-primary">Soul Avatar</p>
         <h2 className="mt-2 font-display text-3xl font-bold text-text-primary">{p.avatarName}</h2>
+        {avatarLoading && !avatarUrl ? (
+          <div className="my-4 flex aspect-square w-full items-center justify-center rounded-lg bg-white/[0.05]">
+            <div className="text-center">
+              <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-t-gold-primary border-r-transparent border-b-transparent border-l-transparent" />
+              <p className="text-sm text-text-muted">Manifesting your soul&apos;s form...</p>
+            </div>
+          </div>
+        ) : avatarUrl ? (
+          <img src={avatarUrl} alt={p.avatarName} className="my-4 w-full rounded-lg object-cover" />
+        ) : null}
         <p className="mt-3 text-sm leading-7 text-text-secondary">{p.avatarAppearance}</p>
       </section>
       <InfoGrid items={[

@@ -176,6 +176,7 @@ export interface SoulProfile {
   soulArchetype: string;
   avatarName: string;
   avatarAppearance: string;
+  avatarImageUrl?: string;
   emotionalNature: string;
   strengths: string[];
   weaknesses: string[];

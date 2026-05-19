@@ -228,6 +228,14 @@ class AlignAPI {
     return this.request('/rectification/adaptive-filter', { method: 'POST', body: JSON.stringify(data) });
   }
 
+  async generateSoulAvatar(appearance: string, archetype: string, sign: string, userId: string = ''): Promise<string> {
+    const result = await this.request('/ai/generate-avatar', {
+      method: 'POST',
+      body: JSON.stringify({ appearance, archetype, sign, user_id: userId }),
+    }, 60000);
+    return result.image_url;
+  }
+
   // Year Ahead / Galactic Forecast
   async getYearAhead(data: any) {
     return this.request('/transits/forecasts/events', { method: 'POST', body: JSON.stringify(data) }, 45000);
