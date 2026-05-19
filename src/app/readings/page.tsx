@@ -12,6 +12,7 @@ interface ReadingItem {
 }
 
 const READINGS: ReadingItem[] = [
+  { key: 'Soul Ascension', href: '/readings/soul-ascension', glyph: 'SA', tier: 'free' },
   { key: 'Transits', href: '/readings/transits', glyph: '♄', tier: 'free' },
   { key: 'Soul Gifts', href: '/readings/soul-gifts', glyph: '💎', tier: 'free' },
   { key: 'Soul Memory', href: '/readings/soul-memory', glyph: '🌀', tier: 'free' },

@@ -1,0 +1,77 @@
+import type { SoulAscensionChartInput } from './types';
+
+export const SAMPLE_SOUL_ASCENSION_CHARTS: Record<string, SoulAscensionChartInput> = {
+  scorpioTaurus: {
+    placements: [
+      { name: 'Ascendant', sign: 'Cancer', house: 1, degree: 12, longitude: 102 },
+      { name: 'Sun', sign: 'Leo', house: 2, degree: 18, longitude: 138 },
+      { name: 'Moon', sign: 'Scorpio', house: 5, degree: 9, longitude: 219 },
+      { name: 'Mercury', sign: 'Virgo', house: 3, degree: 4, longitude: 154 },
+      { name: 'Venus', sign: 'Libra', house: 4, degree: 21, longitude: 201 },
+      { name: 'Mars', sign: 'Scorpio', house: 5, degree: 7, longitude: 217 },
+      { name: 'Jupiter', sign: 'Pisces', house: 9, degree: 11, longitude: 341 },
+      { name: 'Saturn', sign: 'Capricorn', house: 7, degree: 13, longitude: 283 },
+      { name: 'Uranus', sign: 'Aquarius', house: 8, degree: 2, longitude: 302 },
+      { name: 'Neptune', sign: 'Capricorn', house: 7, degree: 26, longitude: 296 },
+      { name: 'Pluto', sign: 'Scorpio', house: 5, degree: 22, longitude: 232 },
+      { name: 'Vesta', sign: 'Taurus', house: 11, degree: 8, longitude: 38 },
+      { name: 'Juno', sign: 'Scorpio', house: 5, degree: 15, longitude: 225 },
+      { name: 'Chiron', sign: 'Cancer', house: 1, degree: 4, longitude: 94 },
+      { name: 'Lilith', sign: 'Scorpio', house: 5, degree: 28, longitude: 238 },
+      { name: 'North Node', sign: 'Taurus', house: 11, degree: 10, longitude: 40 },
+      { name: 'South Node', sign: 'Scorpio', house: 5, degree: 10, longitude: 220 },
+    ],
+    aspects: [
+      { planet1: 'Mars', planet2: 'South Node', type: 'conjunction', orb: 3 },
+      { planet1: 'Venus', planet2: 'North Node', type: 'trine', orb: 1.7 },
+      { planet1: 'Saturn', planet2: 'North Node', type: 'square', orb: 2.1 },
+    ],
+  },
+  geminiSagittarius: {
+    placements: [
+      { name: 'Ascendant', sign: 'Libra', house: 1, degree: 6, longitude: 186 },
+      { name: 'Sun', sign: 'Aquarius', house: 5, degree: 14, longitude: 314 },
+      { name: 'Moon', sign: 'Cancer', house: 10, degree: 20, longitude: 110 },
+      { name: 'Mercury', sign: 'Aquarius', house: 5, degree: 17, longitude: 317 },
+      { name: 'Venus', sign: 'Pisces', house: 6, degree: 3, longitude: 333 },
+      { name: 'Mars', sign: 'Gemini', house: 9, degree: 22, longitude: 82 },
+      { name: 'Jupiter', sign: 'Sagittarius', house: 3, degree: 18, longitude: 258 },
+      { name: 'Saturn', sign: 'Virgo', house: 12, degree: 11, longitude: 161 },
+      { name: 'Uranus', sign: 'Sagittarius', house: 3, degree: 28, longitude: 268 },
+      { name: 'Neptune', sign: 'Capricorn', house: 4, degree: 7, longitude: 277 },
+      { name: 'Pluto', sign: 'Scorpio', house: 2, degree: 9, longitude: 219 },
+      { name: 'Vesta', sign: 'Gemini', house: 9, degree: 2, longitude: 62 },
+      { name: 'Juno', sign: 'Pisces', house: 6, degree: 25, longitude: 355 },
+      { name: 'Chiron', sign: 'Gemini', house: 9, degree: 15, longitude: 75 },
+      { name: 'Lilith', sign: 'Sagittarius', house: 3, degree: 12, longitude: 252 },
+      { name: 'North Node', sign: 'Sagittarius', house: 3, degree: 16, longitude: 256 },
+      { name: 'South Node', sign: 'Gemini', house: 9, degree: 16, longitude: 76 },
+    ],
+    aspects: [
+      { planet1: 'Jupiter', planet2: 'North Node', type: 'conjunction', orb: 2 },
+      { planet1: 'Chiron', planet2: 'South Node', type: 'conjunction', orb: 1 },
+      { planet1: 'Venus', planet2: 'North Node', type: 'square', orb: 4 },
+    ],
+  },
+  capricornCancerMissingAspects: {
+    placements: [
+      { name: 'Ascendant', sign: 'Virgo', house: 1, degree: 2, longitude: 152 },
+      { name: 'Sun', sign: 'Taurus', house: 9, degree: 19, longitude: 49 },
+      { name: 'Moon', sign: 'Aquarius', house: 6, degree: 5, longitude: 305 },
+      { name: 'Mercury', sign: 'Gemini', house: 10, degree: 12, longitude: 72 },
+      { name: 'Venus', sign: 'Aries', house: 8, degree: 28, longitude: 28 },
+      { name: 'Mars', sign: 'Capricorn', house: 5, degree: 14, longitude: 284 },
+      { name: 'Jupiter', sign: 'Cancer', house: 11, degree: 9, longitude: 99 },
+      { name: 'Saturn', sign: 'Capricorn', house: 5, degree: 26, longitude: 296 },
+      { name: 'Uranus', sign: 'Capricorn', house: 5, degree: 4, longitude: 274 },
+      { name: 'Neptune', sign: 'Capricorn', house: 5, degree: 12, longitude: 282 },
+      { name: 'Pluto', sign: 'Scorpio', house: 3, degree: 16, longitude: 226 },
+      { name: 'Vesta', sign: 'Virgo', house: 1, degree: 19, longitude: 169 },
+      { name: 'Juno', sign: 'Cancer', house: 11, degree: 21, longitude: 111 },
+      { name: 'North Node', sign: 'Cancer', house: 11, degree: 3, longitude: 93 },
+      { name: 'South Node', sign: 'Capricorn', house: 5, degree: 3, longitude: 273 },
+    ],
+  },
+};
+
+export const DEMO_SOUL_ASCENSION_CHART = SAMPLE_SOUL_ASCENSION_CHARTS.scorpioTaurus;
