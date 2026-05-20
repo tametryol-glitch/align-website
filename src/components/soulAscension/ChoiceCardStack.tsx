@@ -59,6 +59,9 @@ export default function ChoiceCardStack({ choices, onChoose, disabled }: Props) 
         const isSelected = selectedId === choice.id;
         const isDimmed = selectedId !== null && !isSelected;
         const color = PATH_COLORS[choice.path];
+        // Hide path identity until after a choice is made
+        const revealed = selectedId !== null;
+        const railColor = revealed ? color : 'rgba(255,255,255,0.15)';
 
         return (
           <button
@@ -86,16 +89,18 @@ export default function ChoiceCardStack({ choices, onChoose, disabled }: Props) 
             }}
           >
             <span
-              className="w-1.5 shrink-0"
-              style={{ backgroundColor: color }}
+              className="w-1.5 shrink-0 transition-colors duration-300"
+              style={{ backgroundColor: railColor }}
             />
             <span className="flex-1 p-4">
-              <span
-                className="block text-[10px] font-black uppercase tracking-[0.15em]"
-                style={{ color }}
-              >
-                {PATH_LABELS[choice.path]}
-              </span>
+              {revealed && (
+                <span
+                  className="block text-[10px] font-black uppercase tracking-[0.15em] animate-in fade-in duration-300"
+                  style={{ color }}
+                >
+                  {PATH_LABELS[choice.path]}
+                </span>
+              )}
               <span className="mt-1.5 block text-sm font-semibold leading-6 text-text-primary sm:text-base">
                 {choice.text}
               </span>
