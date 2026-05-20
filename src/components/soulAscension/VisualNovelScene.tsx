@@ -56,6 +56,7 @@ export default function VisualNovelScene({
   const hasResolution = !!resolution && resolution.mission.id === mission.id;
   const initialPhase: VNPhase = hasResolution ? 'resolution' : 'title_card';
   const [phase, setPhase] = useState<VNPhase>(initialPhase);
+  const [textDone, setTextDone] = useState(false);
 
   const bg = getSceneBackground(mission.chapterType);
 
@@ -83,10 +84,12 @@ export default function VisualNovelScene({
   const advancePhase = useCallback(() => {
     switch (phase) {
       case 'title_card':
+        setTextDone(false);
         setPhase('story_scene');
         break;
       case 'story_scene':
         vnAudio.playSfx('continue');
+        setTextDone(false);
         setPhase('emotional_setup');
         break;
       case 'emotional_setup':
@@ -192,11 +195,22 @@ export default function VisualNovelScene({
                     text={mission.storyScene}
                     textKey={`story-${mission.id}`}
                     speed={36}
-                    onComplete={advancePhase}
+                    onComplete={() => setTextDone(true)}
                   />
-                  <p className="mt-2 text-center text-[10px] tracking-wider text-white/20">
-                    Click text to skip • Auto-advances
-                  </p>
+                  {!textDone && (
+                    <p className="mt-2 text-center text-[10px] tracking-wider text-white/20">
+                      Click text to skip
+                    </p>
+                  )}
+                  {textDone && (
+                    <button
+                      type="button"
+                      onClick={advancePhase}
+                      className="mx-auto mt-4 flex items-center gap-2 rounded-md bg-white/[0.08] px-5 py-2.5 text-sm font-semibold text-teal-100 transition hover:bg-white/[0.14]"
+                    >
+                      Continue ▸
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -206,14 +220,26 @@ export default function VisualNovelScene({
                     text={mission.emotionalSetup}
                     textKey={`setup-${mission.id}`}
                     speed={34}
-                    onComplete={advancePhase}
+                    onComplete={() => setTextDone(true)}
                     className="italic text-teal-100/80"
                   />
+                  {textDone && (
+                    <button
+                      type="button"
+                      onClick={advancePhase}
+                      className="mx-auto mt-4 flex items-center gap-2 rounded-md bg-white/[0.08] px-5 py-2.5 text-sm font-semibold text-teal-100 transition hover:bg-white/[0.14]"
+                    >
+                      Make your choice ▸
+                    </button>
+                  )}
                 </div>
               )}
 
               {phase === 'choices' && (
                 <div className="mx-auto max-w-xl">
+                  <p className="mb-4 px-4 text-sm italic leading-6 text-teal-100/60 sm:px-6">
+                    {mission.emotionalSetup}
+                  </p>
                   <ChoiceCardStack
                     choices={mission.choices}
                     onChoose={handleChoose}
