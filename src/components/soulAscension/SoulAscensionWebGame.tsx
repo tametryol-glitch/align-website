@@ -12,12 +12,14 @@ import {
 } from 'lucide-react';
 
 import { api, buildBirthData } from '@/lib/api';
+import { createClient } from '@/lib/supabase';
 import {
   chooseMissionOption,
   continueAfterMission,
   createSoulAscensionGame,
   createSoulAscensionStorage,
   reincarnateFromReview,
+  upsertLeaderboardScore,
   type ChapterMission,
   type ChoicePath,
   type ScoreState,
@@ -25,9 +27,10 @@ import {
   type SoulAscensionGameState,
 } from '@/lib/soulAscension';
 import { useAuthStore } from '@/stores/authStore';
+import LeaderboardPanel from './LeaderboardPanel';
 import VisualNovelScene from './VisualNovelScene';
 
-type GameTab = 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex';
+type GameTab = 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex' | 'leaderboard';
 
 const SOUL_ASCENSION_ASTEROIDS = ['Vesta', 'Juno', 'Lilith'];
 const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
@@ -39,6 +42,7 @@ const TABS: Array<{ key: GameTab; label: string }> = [
   { key: 'mission', label: 'Mission' },
   { key: 'review', label: 'Review' },
   { key: 'codex', label: 'Codex' },
+  { key: 'leaderboard', label: 'Ranks' },
 ];
 
 function lonToSign(lon: number): string {
@@ -171,6 +175,15 @@ export default function SoulAscensionWebGame() {
     if (!state || hydrating) return;
     storage.save(state).catch(() => {});
   }, [hydrating, state]);
+
+  // Sync scores to leaderboard
+  useEffect(() => {
+    if (!state || hydrating || !profile?.id) return;
+    const sb = createClient();
+    upsertLeaderboardScore(
+      sb, profile.id, profile.display_name, profile.avatar_url ?? null, state,
+    ).catch(() => {});
+  }, [state, hydrating, profile?.id]);
 
   useEffect(() => {
     if (!state || hydrating) return;
@@ -314,6 +327,7 @@ export default function SoulAscensionWebGame() {
       {activeTab === 'mission' && mission && <MissionPanel mission={mission} state={state} onChoose={choose} onContinue={continueMission} />}
       {activeTab === 'review' && <ReviewPanel state={state} onReincarnate={reincarnate} />}
       {activeTab === 'codex' && <CodexPanel state={state} />}
+      {activeTab === 'leaderboard' && <LeaderboardPanel />}
     </main>
   );
 }
