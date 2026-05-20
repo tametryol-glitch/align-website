@@ -183,7 +183,7 @@ export default function VisualNovelScene({
 
           {/* Bottom panel */}
           <div
-            className="relative max-h-[45vh] overflow-y-auto"
+            className="relative max-h-[65vh] overflow-y-auto"
             style={{
               background: 'linear-gradient(to bottom, rgba(6,6,14,0) 0%, rgba(6,6,14,0.88) 15%, rgba(6,6,14,0.96) 40%)',
             }}
