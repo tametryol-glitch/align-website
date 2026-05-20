@@ -7,6 +7,12 @@ import Link from 'next/link';
 import { ArrowLeft, Wrench, Copy, Check, ChevronUp, ChevronDown } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import {
+  type BodyCodeAnswers,
+  type BodyCodeMatchResult,
+  buildBodyCodeMatchResult,
+  scoreBodyCodeCandidate,
+} from '@/lib/engines/bodyCodeRectification';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -167,6 +173,29 @@ const HOURS = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2
 const MINUTES = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
 
 const MODULES: Module[] = [
+  {
+    id: 'body_code',
+    title: 'Ascendant Body-Code',
+    questions: [
+      {
+        id: 'bc_sex',
+        text: 'Were you born male or female?',
+        options: [
+          { label: 'Male', value: 'male' },
+          { label: 'Female', value: 'female' },
+        ],
+      },
+      {
+        id: 'bc_expression',
+        text: 'Throughout your life, has your natural body expression, movement, and mannerism felt more masculine, feminine, or mixed?',
+        options: [
+          { label: 'Masculine', value: 'masculine' },
+          { label: 'Feminine', value: 'feminine' },
+          { label: 'Mixed / both', value: 'mixed' },
+        ],
+      },
+    ],
+  },
   {
     id: 'birth_confidence',
     title: 'Birth Time Confidence',
@@ -623,6 +652,15 @@ export default function RectificationPage() {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
 
     try {
+      const latestAnswers = { ...answers, [questionId]: value };
+      const bodyCodeContext: BodyCodeAnswers = {};
+      if (latestAnswers['bc_sex'] === 'male' || latestAnswers['bc_sex'] === 'female') {
+        bodyCodeContext.birthSex = latestAnswers['bc_sex'] as 'male' | 'female';
+      }
+      if (latestAnswers['bc_expression']) {
+        bodyCodeContext.bodyExpression = latestAnswers['bc_expression'] as 'masculine' | 'feminine' | 'mixed';
+      }
+
       const payload = {
         birth_data: buildBirthData(profile!),
         time_window: {
@@ -632,6 +670,7 @@ export default function RectificationPage() {
         question_id: questionId,
         answer_value: value,
         current_candidates: candidates,
+        body_code_answers: bodyCodeContext,
       };
 
       const data = await api.adaptiveFilter(payload);
@@ -678,7 +717,7 @@ export default function RectificationPage() {
   };
 
   const canProceedFromQuestionnaire = (): boolean => {
-    if (currentModule === 9) {
+    if (MODULES[currentModule]?.id === 'life_events') {
       const validEvents = lifeEvents.filter(e => e.type && e.date);
       return validEvents.length >= 3;
     }
@@ -700,6 +739,14 @@ export default function RectificationPage() {
         .filter(e => e.type && e.date)
         .map(e => ({ ...e, date: toISODate(e.date) }));
 
+      const retryBodyCode: BodyCodeAnswers = {};
+      if (answers['bc_sex'] === 'male' || answers['bc_sex'] === 'female') {
+        retryBodyCode.birthSex = answers['bc_sex'] as 'male' | 'female';
+      }
+      if (answers['bc_expression']) {
+        retryBodyCode.bodyExpression = answers['bc_expression'] as 'masculine' | 'feminine' | 'mixed';
+      }
+
       const payload = {
         birth_data: buildBirthData(profile!),
         time_window: {
@@ -708,6 +755,7 @@ export default function RectificationPage() {
         },
         questionnaire_answers: answers,
         life_events: convertedEvents,
+        body_code_answers: retryBodyCode,
       };
 
       // Simulate phase progression
@@ -940,9 +988,10 @@ Be warm, direct, and specific. Use ${firstName}'s name. No astrology jargon — 
 
         <div className="space-y-3">
           {[
-            { num: '1', label: 'Event Matching', desc: 'Your major life events are tested against candidate birth charts to find the best match.' },
-            { num: '2', label: 'Natal Structure Fit', desc: 'Your personality traits and physical characteristics are compared to chart indicators.' },
-            { num: '3', label: 'Precision Sweep', desc: 'Deeper chart layers are analyzed for the final precision calibration.' },
+            { num: '1', label: 'Body-Code Filter', desc: 'Your birth sex and body expression are used to narrow candidate times using the Ascendant\'s hidden layers.' },
+            { num: '2', label: 'Event Matching', desc: 'Your major life events are tested against candidate birth charts to find the best match.' },
+            { num: '3', label: 'Natal Structure Fit', desc: 'Your personality traits and physical characteristics are compared to chart indicators.' },
+            { num: '4', label: 'Precision Sweep', desc: 'Deeper chart layers are analyzed for the final precision calibration.' },
           ].map(phase => (
             <div key={phase.num} className="flex gap-3">
               <div className="w-7 h-7 rounded-full bg-accent-primary/20 flex items-center justify-center shrink-0">
@@ -1180,7 +1229,7 @@ Be warm, direct, and specific. Use ${firstName}'s name. No astrology jargon — 
 
   const renderQuestionnaire = () => {
     const mod = MODULES[currentModule];
-    const isLifeEvents = currentModule === 9;
+    const isLifeEvents = MODULES[currentModule]?.id === 'life_events';
 
     const visibleQuestions = mod.questions.filter(q => !skippedQuestions.has(q.id));
     const allSkipped = !isLifeEvents && mod.questions.length > 0 && visibleQuestions.length === 0;
@@ -1457,6 +1506,71 @@ Be warm, direct, and specific. Use ${firstName}'s name. No astrology jargon — 
             </div>
           </div>
         )}
+
+        {/* Ascendant Body-Code Match */}
+        {(() => {
+          const bcAnswers: BodyCodeAnswers = {};
+          if (answers['bc_sex'] === 'male' || answers['bc_sex'] === 'female') {
+            bcAnswers.birthSex = answers['bc_sex'] as 'male' | 'female';
+          }
+          if (answers['bc_expression']) {
+            bcAnswers.bodyExpression = answers['bc_expression'] as 'masculine' | 'feminine' | 'mixed';
+          }
+          const bcResult = buildBodyCodeMatchResult(
+            result.rising_degree != null ? result.chart?.ascendant_degree ?? result.rising_degree : undefined,
+            result.rising_sign || result.key_signatures?.asc_sign,
+            bcAnswers,
+          );
+          if (!bcResult) return null;
+          return (
+            <div className="card">
+              <h3 className="font-semibold text-text-primary mb-3">Ascendant Body-Code Match</h3>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="p-3 bg-bg-tertiary rounded-xl text-center">
+                  <p className="text-xs text-text-muted mb-0.5">Rising Sign</p>
+                  <p className="text-sm text-text-primary font-medium">{bcResult.risingSign}</p>
+                </div>
+                <div className="p-3 bg-bg-tertiary rounded-xl text-center">
+                  <p className="text-xs text-text-muted mb-0.5">Rising Duad</p>
+                  <p className="text-sm text-text-primary font-medium">{bcResult.risingDuad}</p>
+                  <p className="text-xs text-text-muted">{bcResult.duadPolarity}</p>
+                </div>
+                <div className="p-3 bg-bg-tertiary rounded-xl text-center">
+                  <p className="text-xs text-text-muted mb-0.5">Rising Compendium</p>
+                  <p className="text-sm text-text-primary font-medium">{bcResult.risingCompendium}</p>
+                  <p className="text-xs text-text-muted">{bcResult.compendiumPolarity}</p>
+                </div>
+              </div>
+              <div className="space-y-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium ${
+                    bcResult.compendiumMatchesBirthSex === true ? 'text-emerald-400' :
+                    bcResult.compendiumMatchesBirthSex === false ? 'text-red-400' :
+                    'text-text-muted'
+                  }`}>
+                    {bcResult.compendiumMatchesBirthSex === true ? '✓ Match' :
+                     bcResult.compendiumMatchesBirthSex === false ? '✗ Mismatch' :
+                     'Not provided'}
+                  </span>
+                  <span className="text-sm text-text-secondary">Compendium / Birth Sex</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium ${
+                    bcResult.duadMatchesBodyExpression === true ? 'text-emerald-400' :
+                    bcResult.duadMatchesBodyExpression === false ? 'text-red-400' :
+                    'text-text-muted'
+                  }`}>
+                    {bcResult.duadMatchesBodyExpression === true ? '✓ Match' :
+                     bcResult.duadMatchesBodyExpression === false ? '✗ Mismatch' :
+                     'Not provided'}
+                  </span>
+                  <span className="text-sm text-text-secondary">Duad / Body Expression</span>
+                </div>
+              </div>
+              <p className="text-sm text-text-secondary">{bcResult.explanation}</p>
+            </div>
+          );
+        })()}
 
         {/* AI Deep Analysis */}
         {!showAi ? (

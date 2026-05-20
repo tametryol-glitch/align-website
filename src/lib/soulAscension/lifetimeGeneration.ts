@@ -83,14 +83,36 @@ export function completeLifetimeProfile(
     : '';
   const contract = avatarCore.soulContracts[0];
 
-  const lifetimeTitle = `The ${axis.northSign} Door`;
+  const li = context?.lifetimeIndex ?? 1;
+
+  const titleTemplates = [
+    `The ${axis.northSign} Door`,
+    `The ${axis.northSign} Awakening`,
+    `The ${axis.northSign} Trial`,
+    `The ${axis.northSign} Passage`,
+    `The ${axis.northSign} Calling`,
+    `The ${axis.northSign} Reckoning`,
+    `The ${axis.northSign} Threshold`,
+    `The ${axis.northSign} Return`,
+  ];
+  const lifetimeTitle = titleTemplates[(li - 1) % titleTemplates.length];
+
   const lifetimeSetting = `${setting}, where ${houseMeaning(north.house).arena} decides who ascends and who repeats.`;
-  const incarnationReveal = `You awaken as ${avatarCore.avatarName}, ${avatarCore.soulArchetype.toLowerCase()}, in ${setting}. The old road is familiar, but it is also the cage. The new road frightens you because it asks for the part of you that was never allowed to live.${inherited}`;
+
+  const revealVariant = (li - 1) % 4;
+  const incarnationReveal = revealVariant === 0
+    ? `You awaken as ${avatarCore.avatarName}, ${avatarCore.soulArchetype.toLowerCase()}, in ${setting}. The old road is familiar, but it is also the cage. The new road frightens you because it asks for the part of you that was never allowed to live.${inherited}`
+    : revealVariant === 1
+    ? `The world takes shape around ${avatarCore.avatarName}, ${avatarCore.soulArchetype.toLowerCase()}, born into ${setting}. Memory stirs beneath the skin. The body knows this pattern, but something in the chest insists on a different ending.${inherited}`
+    : revealVariant === 2
+    ? `${avatarCore.avatarName} opens their eyes in ${setting}. The role of ${avatarCore.soulArchetype.toLowerCase()} fits like an old glove. A quiet voice whispers: this time, you do not have to wear it.${inherited}`
+    : `In ${setting}, a soul arrives wearing the name ${avatarCore.avatarName}. The ${avatarCore.soulArchetype.toLowerCase()} archetype clings to the bones like weather. But beneath the familiar mask, something new is trying to breathe.${inherited}`;
+
   const mainConflict = aspectTheme
     ? `${aspectTheme.storyline}. The enemy remembers what you came here to forget.`
     : `The lifetime is built around ${axis.comfortTrap.toLowerCase()} colliding with ${axis.purposeDemand.toLowerCase()}`;
   const mainPurpose = `Fulfill the ${north.sign} mission: ${axis.purposeDoor}`;
-  const chapterMissions = createChapterMissions(chart, contract, avatarCore.soulScar);
+  const chapterMissions = createChapterMissions(chart, contract, avatarCore.soulScar, li);
 
   return {
     ...avatarCore,

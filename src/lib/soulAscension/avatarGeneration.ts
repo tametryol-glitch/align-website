@@ -14,7 +14,12 @@ function avatarName(chart: NormalizedChart, context?: ReincarnationContext): str
   const moon = chart.placements.Moon.sign;
   const lifetime = context?.lifetimeIndex ?? 1;
   const first = pick(SIGN_TRAITS[asc].names, signSeed(moon) + lifetime);
-  const epithet = pick(['of the Quiet Gate', 'of the Returning Star', 'of the Hidden Vow', 'of the Second Dawn'], signSeed(asc) + lifetime);
+  const epithet = pick([
+    'of the Quiet Gate', 'of the Returning Star', 'of the Hidden Vow', 'of the Second Dawn',
+    'of the Broken Road', 'of the Veiled Flame', 'of the Last Threshold', 'of the Unwritten Name',
+    'of the Burning Silence', 'of the Unchosen Path', 'of the Hollow Crown', 'of the Mended Chain',
+    'of the Waiting Sky', 'of the Forgotten Shore', 'of the Waking Scar', 'of the Starless Hour',
+  ], signSeed(asc) + lifetime);
   return `${first} ${epithet}`;
 }
 
