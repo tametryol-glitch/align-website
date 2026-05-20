@@ -25,6 +25,7 @@ import {
   type SoulAscensionGameState,
 } from '@/lib/soulAscension';
 import { useAuthStore } from '@/stores/authStore';
+import VisualNovelScene from './VisualNovelScene';
 
 type GameTab = 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex';
 
@@ -226,6 +227,20 @@ export default function SoulAscensionWebGame() {
 
   const mission = state.profile.chapterMissions[state.currentChapterIndex];
   const canReview = !!state.soulReview;
+
+  // ── Visual Novel full-screen mode for mission play ──
+  if (activeTab === 'mission' && mission) {
+    return (
+      <VisualNovelScene
+        mission={mission}
+        state={state}
+        onChoose={choose}
+        onContinue={continueMission}
+        onExitVN={() => setActiveTab('home')}
+        avatarUrl={avatarUrl}
+      />
+    );
+  }
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
