@@ -45,6 +45,16 @@ function lonToSign(lon: number): string {
   return SIGNS[Math.floor((((lon % 360) + 360) % 360) / 30) % 12];
 }
 
+/** Map API field names (body1/body2/aspect_name) to game field names (planet1/planet2/type). */
+function normalizeAspectFields(raw: any[]): any[] {
+  return raw.map((a: any) => ({
+    planet1: a.planet1 || a.body1 || '',
+    planet2: a.planet2 || a.body2 || '',
+    type: a.type || a.aspect_name || '',
+    orb: a.orb,
+  }));
+}
+
 function chartInputFromResponse(res: any): SoulAscensionChartInput {
   const placements = (Array.isArray(res?.positions) ? res.positions : res?.planets || []).map((p: any) => {
     const lon = Number(p.longitude ?? 0);
@@ -60,7 +70,7 @@ function chartInputFromResponse(res: any): SoulAscensionChartInput {
 
   return {
     placements,
-    aspects: Array.isArray(res?.aspects) ? res.aspects : [],
+    aspects: Array.isArray(res?.aspects) ? normalizeAspectFields(res.aspects) : [],
     houses: Array.isArray(res?.house_cusps)
       ? res.house_cusps.map((lon: number, i: number) => ({
           house: i + 1,
