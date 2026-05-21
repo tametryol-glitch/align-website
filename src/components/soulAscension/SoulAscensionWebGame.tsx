@@ -281,7 +281,7 @@ export default function SoulAscensionWebGame() {
   const handleFindRival = () => {
     if (!profile?.id || !state) return;
     const sb = createClient();
-    const soulType = getDominantPath(state.scores) || 'Lightbringer';
+    const soulType = getDominantPath(state.choiceHistory)?.path || 'Lightbringer';
     startRivalSearch(sb, profile.id, profile.display_name ?? '', profile.avatar_url, soulType, state.ascensionLevel, state.scores)
       .then((matchId) => {
         if (matchId) {
@@ -298,7 +298,7 @@ export default function SoulAscensionWebGame() {
   const handleCreateLineage = () => {
     if (!profile?.id || !state) return;
     const sb = createClient();
-    const soulType = getDominantPath(state.scores) || 'Lightbringer';
+    const soulType = getDominantPath(state.choiceHistory)?.path || 'Lightbringer';
     dbCreateLineage(sb, `${profile.display_name ?? 'Soul'}'s Lineage`, 'Together we ascend.', profile.id, profile.display_name ?? '', profile.avatar_url, soulType, state.ascensionLevel)
       .then((lin) => {
         setLineage(lin);
