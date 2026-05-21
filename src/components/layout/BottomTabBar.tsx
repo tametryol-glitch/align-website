@@ -12,7 +12,7 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video,
+  Mail, Video, Heart,
 } from 'lucide-react';
 
 const TABS = [
@@ -20,6 +20,7 @@ const TABS = [
   { href: '/feed', label: 'Feed', icon: Newspaper },
   { href: '/chart', label: 'Chart', icon: Sun },
   { href: '/messages', label: 'Chat', icon: MessageCircle },
+  { href: '/dating', label: 'Dating', icon: Heart },
   { href: '#more', label: 'More', icon: Menu },
 ];
 
@@ -141,7 +142,7 @@ export function BottomTabBar() {
 
       {/* Bottom tab bar */}
       <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-bg-secondary border-t border-border-primary z-50" role="tablist" aria-label="Main navigation">
-        <div className="flex items-center justify-around h-[72px] px-2 pb-safe">
+        <div className="flex items-center justify-around h-[72px] px-2 pb-safe overflow-x-auto scrollbar-hide">
           {TABS.map(({ href, label, icon: Icon }) => {
             const isMore = href === '#more';
             const active = isMore

@@ -39,6 +39,9 @@ export default function DatingProfilePage() {
   const [showPromptPicker, setShowPromptPicker] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [voiceUploading, setVoiceUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -90,6 +93,7 @@ export default function DatingProfilePage() {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
       setUploadingPhoto(position);
+      setUploadError(null);
       const result = await uploadDatingPhoto(user.id, file, position);
       if (result.url) {
         const newPhotos = [...photos];
@@ -100,6 +104,8 @@ export default function DatingProfilePage() {
         }
         setPhotos(newPhotos);
         await saveDatingProfile(user.id, { photo_urls: newPhotos });
+      } else {
+        setUploadError(result.error || 'Failed to upload photo. Please try again.');
       }
       setUploadingPhoto(null);
     };
@@ -135,6 +141,11 @@ export default function DatingProfilePage() {
   }
 
   async function startVoiceRecording() {
+    setVoiceError(null);
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setVoiceError('Your browser does not support audio recording. Please use Chrome or Safari.');
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
@@ -144,8 +155,14 @@ export default function DatingProfilePage() {
         stream.getTracks().forEach((t) => t.stop());
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         if (user?.id) {
-          await uploadVoicePrompt(user.id, blob);
-          await loadProfile();
+          setVoiceUploading(true);
+          const result = await uploadVoicePrompt(user.id, blob);
+          if (result.url) {
+            await loadProfile();
+          } else {
+            setVoiceError(result.error || 'Failed to upload voice prompt.');
+          }
+          setVoiceUploading(false);
         }
       };
       recorder.start();
@@ -157,8 +174,12 @@ export default function DatingProfilePage() {
           setIsRecording(false);
         }
       }, 30000);
-    } catch {
-      // microphone permission denied
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError') {
+        setVoiceError('Microphone access denied. Please allow microphone permission in your browser settings.');
+      } else {
+        setVoiceError(err?.message || 'Failed to start recording.');
+      }
     }
   }
 
@@ -281,6 +302,11 @@ export default function DatingProfilePage() {
           </p>
           <p className="text-text-muted text-xs">{photos.length}/6</p>
         </div>
+        {uploadError && (
+          <div className="mb-3 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+            {uploadError}
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="aspect-[3/4] rounded-xl overflow-hidden relative bg-bg-tertiary border border-border-primary">
@@ -398,6 +424,17 @@ export default function DatingProfilePage() {
           Voice Prompt
         </p>
         <p className="text-text-muted text-xs mb-3">Record a 30-second voice intro so matches can hear you</p>
+        {voiceError && (
+          <div className="mb-3 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+            {voiceError}
+          </div>
+        )}
+        {voiceUploading && (
+          <div className="mb-3 flex items-center gap-2 text-text-muted text-xs">
+            <div className="w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
+            Uploading voice prompt...
+          </div>
+        )}
         {datingProfile?.voice_prompt_url ? (
           <div className="flex items-center gap-3">
             <audio src={datingProfile.voice_prompt_url} controls className="flex-1 h-8" />
