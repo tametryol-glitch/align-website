@@ -18,7 +18,7 @@ import { getDatingProfile } from '@/lib/datingProfileService';
 import { DatingProfileCard } from '@/components/dating/DatingProfileCard';
 import { MatchCelebration } from '@/components/dating/MatchCelebration';
 import { DatingFilterDrawer } from '@/components/dating/DatingFilterDrawer';
-import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield } from 'lucide-react';
+import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield, UserCircle } from 'lucide-react';
 
 export default function DatingDiscoveryPage() {
   const router = useRouter();
@@ -224,6 +224,11 @@ export default function DatingDiscoveryPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link href="/dating/profile"
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(155,111,246,0.1)' }}>
+            <UserCircle size={18} color="#9B6FF6" />
+          </Link>
           <button
             onClick={() => setFiltersOpen(true)}
             className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -247,6 +252,10 @@ export default function DatingDiscoveryPage() {
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <Users size={14} /> Matches
+        </Link>
+        <Link href="/dating/profile" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <UserCircle size={14} /> My Profile
         </Link>
       </div>
 
