@@ -42,4 +42,34 @@ export const NOTIFICATION_TEMPLATES = {
     url: '/readings/transits',
     tag: 'mercury-retrograde',
   }),
+  datingLikeReceived: (name: string): NotificationPayload => ({
+    title: '💫 Someone likes you!',
+    body: `${name} is cosmically curious about you.`,
+    url: '/dating/likes',
+    tag: 'dating-like',
+  }),
+  datingMatch: (name: string): NotificationPayload => ({
+    title: '✨ It\'s a Cosmic Match!',
+    body: `You and ${name} are written in the stars.`,
+    url: '/dating/matches',
+    tag: 'dating-match',
+  }),
+  datingCosmicRose: (name: string): NotificationPayload => ({
+    title: '🌹 You received a Cosmic Rose!',
+    body: `${name} sent you a Cosmic Rose — they really stand out.`,
+    url: '/dating/likes',
+    tag: 'dating-rose',
+  }),
+  datingIcebreaker: (name: string): NotificationPayload => ({
+    title: '💬 Icebreaker ready!',
+    body: `The stars have a conversation starter for you and ${name}.`,
+    url: '/dating/matches',
+    tag: 'dating-icebreaker',
+  }),
+  cosmicTimingAlert: (name: string, insight: string): NotificationPayload => ({
+    title: '🌙 Cosmic Timing Alert',
+    body: `${insight} — perfect time to connect with ${name}.`,
+    url: '/dating/matches',
+    tag: 'cosmic-timing',
+  }),
 };

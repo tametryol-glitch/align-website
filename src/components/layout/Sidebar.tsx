@@ -10,7 +10,7 @@ import { useFriendsStore } from '@/stores/friendsStore';
 import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
-  Users, Bell, Mail, Zap, Video,
+  Users, Bell, Mail, Zap, Video, Heart,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { href: '/readings', label: 'Readings', icon: Sparkles },
   { href: '/cosmic-video', label: 'Video Creator', icon: Video },
   { href: '/friends', label: 'Friends', icon: Users },
+  { href: '/dating', label: 'Dating', icon: Heart },
   { href: '/messages', label: 'Messages', icon: Mail },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/ai', label: 'AI Astrologer', icon: MessageCircle },

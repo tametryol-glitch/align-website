@@ -57,6 +57,16 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   firdaria: 'pro',
   rectification: 'pro',
   pathway: 'pro',
+  // Dating features
+  dating_basic: 'free',
+  dating_extended: 'light',
+  dating_premium: 'premium',
+  dating_unlimited: 'pro',
+  cosmic_rose: 'free',
+  dating_video_call: 'premium',
+  dating_icebreakers: 'light',
+  dating_coach: 'premium',
+  dating_concierge: 'pro',
 };
 
 const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pro: 3 };
