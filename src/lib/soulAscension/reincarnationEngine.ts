@@ -65,6 +65,7 @@ export function createSoulAscensionGame(
     choiceHistory: [],
     completedMissionIds: [],
     codex: codex ?? createEmptyCodex(),
+    journalEntries: [],
     phase: 'home',
     createdAt: timestamp,
     updatedAt: timestamp,

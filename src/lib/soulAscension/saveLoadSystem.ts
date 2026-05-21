@@ -22,7 +22,10 @@ export function createSoulAscensionStorage(adapter: SoulAscensionStorageAdapter)
       if (!raw) return null;
       try {
         const parsed = JSON.parse(raw) as SoulAscensionGameState;
-        return parsed?.version === 1 ? parsed : null;
+        if (parsed?.version !== 1) return null;
+        // Backwards-compat: add fields introduced after initial release
+        if (!Array.isArray(parsed.journalEntries)) parsed.journalEntries = [];
+        return parsed;
       } catch {
         return null;
       }

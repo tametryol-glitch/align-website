@@ -20,6 +20,9 @@ import {
   createSoulAscensionStorage,
   reincarnateFromReview,
   upsertLeaderboardScore,
+  generateSoulType,
+  getDominantPath,
+  initPlayerInventory,
   type ChapterMission,
   type ChoicePath,
   type ScoreState,
@@ -27,10 +30,42 @@ import {
   type SoulAscensionGameState,
 } from '@/lib/soulAscension';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  type SoulRival,
+  type RivalMatch,
+  fetchActiveMatch,
+  fetchRivalProfile,
+  startRivalSearch,
+} from '@/lib/soulAscension/soulRivalsEngine';
+import {
+  type SoulLineage,
+  type LineageMember,
+  fetchMyLineage,
+  createLineage as dbCreateLineage,
+} from '@/lib/soulAscension/guildLineageEngine';
+import {
+  type SpectatableRun,
+  type SpectatorEvent,
+  fetchLiveRuns,
+  fetchRunEvents,
+  subscribeToRun,
+  incrementSpectatorCount,
+} from '@/lib/soulAscension/spectatorModeEngine';
+import AnimatedScoreDelta from './AnimatedScoreDelta';
+import AvatarEvolutionCard from './AvatarEvolutionCard';
+import ChapterMap from './ChapterMap';
+import DailyChallengeCard from './DailyChallengeCard';
+import GuildLineagePanel from './GuildLineagePanel';
+import JournalPanel from './JournalPanel';
 import LeaderboardPanel from './LeaderboardPanel';
+import RivalMatchCard from './RivalMatchCard';
+import SeasonalEventBanner from './SeasonalEventBanner';
+import SoulShop from './SoulShop';
+import SoulTypeCard from './SoulTypeCard';
+import SpectatorFeed from './SpectatorFeed';
 import VisualNovelScene from './VisualNovelScene';
 
-type GameTab = 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex' | 'leaderboard';
+type GameTab = 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex' | 'journal' | 'shop' | 'leaderboard' | 'rivals' | 'guild' | 'spectate';
 
 const SOUL_ASCENSION_ASTEROIDS = ['Vesta', 'Juno', 'Lilith'];
 const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
@@ -42,7 +77,12 @@ const TABS: Array<{ key: GameTab; label: string }> = [
   { key: 'mission', label: 'Mission' },
   { key: 'review', label: 'Review' },
   { key: 'codex', label: 'Codex' },
+  { key: 'journal', label: 'Journal' },
+  { key: 'shop', label: 'Shop' },
   { key: 'leaderboard', label: 'Ranks' },
+  { key: 'rivals', label: 'Rivals' },
+  { key: 'guild', label: 'Guild' },
+  { key: 'spectate', label: 'Watch' },
 ];
 
 function lonToSign(lon: number): string {
@@ -111,6 +151,15 @@ export default function SoulAscensionWebGame() {
   const [hydrating, setHydrating] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
+  // ── Social state ──
+  const [rival, setRival] = useState<SoulRival | null>(null);
+  const [rivalMatch, setRivalMatch] = useState<RivalMatch | null>(null);
+  const [lineage, setLineage] = useState<SoulLineage | null>(null);
+  const [lineageMembers, setLineageMembers] = useState<LineageMember[]>([]);
+  const [liveRuns, setLiveRuns] = useState<SpectatableRun[]>([]);
+  const [watchingRun, setWatchingRun] = useState<SpectatableRun | null>(null);
+  const [watchingEvents, setWatchingEvents] = useState<SpectatorEvent[]>([]);
+  const watchSubRef = { current: null as { unsubscribe: () => void } | null };
 
   const canUseProfileChart = !!profile?.birth_date && profile.latitude != null && profile.longitude != null && !!profile.timezone;
 
@@ -210,6 +259,75 @@ export default function SoulAscensionWebGame() {
     return () => { cancelled = true; };
   }, [state?.profile.avatarAppearance, hydrating]);
 
+  // ── Fetch social data ──
+  useEffect(() => {
+    if (!state || hydrating || !profile?.id) return;
+    const sb = createClient();
+    fetchActiveMatch(sb, profile.id).then((match) => {
+      if (!match) return;
+      setRivalMatch(match);
+      const rivalId = match.challengerId === profile.id ? match.defenderId : match.challengerId;
+      fetchRivalProfile(sb, rivalId).then(setRival).catch(() => {});
+    }).catch(() => {});
+    fetchMyLineage(sb, profile.id).then((result) => {
+      if (!result) return;
+      setLineage(result.lineage);
+      setLineageMembers(result.members);
+    }).catch(() => {});
+    fetchLiveRuns(sb).then(setLiveRuns).catch(() => {});
+  }, [state, hydrating, profile?.id]);
+
+  // ── Social handlers ──
+  const handleFindRival = () => {
+    if (!profile?.id || !state) return;
+    const sb = createClient();
+    const soulType = getDominantPath(state.scores) || 'Lightbringer';
+    startRivalSearch(sb, profile.id, profile.display_name ?? '', profile.avatar_url, soulType, state.ascensionLevel, state.scores)
+      .then((matchId) => {
+        if (matchId) {
+          fetchActiveMatch(sb, profile.id).then((m) => {
+            if (!m) return;
+            setRivalMatch(m);
+            const rId = m.challengerId === profile.id ? m.defenderId : m.challengerId;
+            fetchRivalProfile(sb, rId).then(setRival).catch(() => {});
+          }).catch(() => {});
+        }
+      }).catch(() => {});
+  };
+
+  const handleCreateLineage = () => {
+    if (!profile?.id || !state) return;
+    const sb = createClient();
+    const soulType = getDominantPath(state.scores) || 'Lightbringer';
+    dbCreateLineage(sb, `${profile.display_name ?? 'Soul'}'s Lineage`, 'Together we ascend.', profile.id, profile.display_name ?? '', profile.avatar_url, soulType, state.ascensionLevel)
+      .then((lin) => {
+        setLineage(lin);
+        setLineageMembers([{ userId: profile.id, displayName: profile.display_name ?? '', avatarUrl: profile.avatar_url, soulType, ascensionLevel: state.ascensionLevel, lifetimesCompleted: 0, contribution: 0, joinedAt: new Date().toISOString(), role: 'founder' }]);
+      }).catch(() => {});
+  };
+
+  const handleJoinLineage = () => { /* TODO: modal for invite code input */ };
+
+  const handleWatchRun = (runId: string) => {
+    watchSubRef.current?.unsubscribe();
+    const run = liveRuns.find((r) => r.id === runId);
+    if (!run) return;
+    setWatchingRun(run);
+    setWatchingEvents([]);
+    const sb = createClient();
+    incrementSpectatorCount(sb, runId, 1).catch(() => {});
+    fetchRunEvents(sb, runId).then((events) => setWatchingEvents(events.reverse())).catch(() => {});
+    watchSubRef.current = subscribeToRun(sb, runId, (event) => setWatchingEvents((prev) => [...prev, event]), (updated) => setWatchingRun(updated));
+  };
+
+  const handleStopWatching = () => {
+    if (watchingRun) { const sb = createClient(); incrementSpectatorCount(sb, watchingRun.id, -1).catch(() => {}); }
+    watchSubRef.current?.unsubscribe();
+    watchSubRef.current = null;
+    setWatchingRun(null);
+    setWatchingEvents([]);
+  };
+
   const choose = (choiceId: string) => {
     setState((current) => current ? chooseMissionOption(current, choiceId) : current);
   };
@@ -230,6 +348,20 @@ export default function SoulAscensionWebGame() {
   const reincarnate = () => {
     setState((current) => current ? reincarnateFromReview(current) : current);
     setActiveTab('home');
+  };
+
+  const saveJournalEntry = (reflection: string) => {
+    if (!state?.lastResolution) return;
+    const entry = {
+      id: `j-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      missionId: state.lastResolution.mission.id,
+      chapterNumber: state.lastResolution.mission.chapterNumber,
+      chapterTitle: state.lastResolution.mission.title,
+      choicePath: state.lastResolution.choice.path,
+      reflection,
+      timestamp: new Date().toISOString(),
+    };
+    setState((prev) => prev ? { ...prev, journalEntries: [...prev.journalEntries, entry], updatedAt: new Date().toISOString() } : prev);
   };
 
   if (chartLoading || hydrating || !state) {
@@ -261,6 +393,7 @@ export default function SoulAscensionWebGame() {
         onContinue={continueMission}
         onExitVN={() => setActiveTab('home')}
         avatarUrl={avatarUrl}
+        onSaveJournal={saveJournalEntry}
       />
     );
   }
@@ -320,14 +453,19 @@ export default function SoulAscensionWebGame() {
       </div>
 
       {activeTab === 'home' && (
-        <HomePanel state={state} onContinue={() => setActiveTab(state.soulReview ? 'review' : 'mission')} onPortal={() => setActiveTab(canReview ? 'review' : 'lifetime')} onReset={resetRun} onReload={loadChart} />
+        <HomePanel state={state} onContinue={() => setActiveTab(state.soulReview ? 'review' : 'mission')} onPortal={() => setActiveTab(canReview ? 'review' : 'lifetime')} onReset={resetRun} onReload={loadChart} onXpEarned={(xp) => setState((prev) => prev ? { ...prev, soulXp: prev.soulXp + xp, updatedAt: new Date().toISOString() } : prev)} />
       )}
       {activeTab === 'avatar' && <AvatarPanel state={state} avatarUrl={avatarUrl} avatarLoading={avatarLoading} />}
       {activeTab === 'lifetime' && <LifetimePanel state={state} />}
       {activeTab === 'mission' && mission && <MissionPanel mission={mission} state={state} onChoose={choose} onContinue={continueMission} />}
       {activeTab === 'review' && <ReviewPanel state={state} onReincarnate={reincarnate} />}
       {activeTab === 'codex' && <CodexPanel state={state} />}
+      {activeTab === 'journal' && <JournalPanel entries={state.journalEntries} />}
+      {activeTab === 'shop' && <SoulShop inventory={initPlayerInventory()} onPurchase={(id) => { /* TODO: Wire RevenueCat or Stripe */ }} />}
       {activeTab === 'leaderboard' && <LeaderboardPanel />}
+      {activeTab === 'rivals' && <RivalMatchCard rival={rival} match={rivalMatch} onFindRival={handleFindRival} />}
+      {activeTab === 'guild' && <GuildLineagePanel lineage={lineage} members={lineageMembers} onCreateLineage={handleCreateLineage} onJoinLineage={handleJoinLineage} />}
+      {activeTab === 'spectate' && <SpectatorFeed runs={liveRuns} watchingEvents={watchingEvents} watchingRun={watchingRun} onWatch={handleWatchRun} onStopWatching={handleStopWatching} onReact={() => {}} />}
     </main>
   );
 }
@@ -338,16 +476,22 @@ function HomePanel({
   onPortal,
   onReset,
   onReload,
+  onXpEarned,
 }: {
   state: SoulAscensionGameState;
   onContinue: () => void;
   onPortal: () => void;
   onReset: () => void;
   onReload: () => void;
+  onXpEarned: (xp: number) => void;
 }) {
   const mission = state.profile.chapterMissions[state.currentChapterIndex];
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
+      <div className="lg:col-span-2">
+        <SeasonalEventBanner />
+        <DailyChallengeCard state={state} onXpEarned={onXpEarned} />
+      </div>
       <section className="rounded-lg border border-gold-primary/20 bg-black/30 p-5 md:p-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-gold-primary">Current Lifetime</p>
         <h2 className="mt-2 font-display text-3xl font-bold text-text-primary">{state.profile.lifetimeTitle}</h2>
@@ -366,6 +510,7 @@ function HomePanel({
 
       <aside className="space-y-4">
         <ScoreBars scores={state.scores} />
+        <ChapterMap state={state} />
         <Panel title="Purpose Path" body={state.profile.futurePurpose} />
         <Panel title="Daily Soul Mission" body={`Choose one ${state.profile.soulContracts[0].contractType.toLowerCase()} moment without using the old weapon: ${state.profile.mainTemptation}.`} />
         <Panel title="Next Chapter" body={mission ? `${mission.chapterNumber}. ${mission.title}` : 'This lifetime is ready for Soul Review.'} />
@@ -386,8 +531,20 @@ function HomePanel({
 
 function AvatarPanel({ state, avatarUrl, avatarLoading }: { state: SoulAscensionGameState; avatarUrl: string | null; avatarLoading: boolean }) {
   const p = state.profile;
+  const dominant = getDominantPath(state.choiceHistory);
   return (
     <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="space-y-5">
+        <AvatarEvolutionCard
+          ascensionLevel={state.ascensionLevel}
+          lifetimeIndex={state.lifetimeIndex}
+          scores={state.scores}
+          dominantPath={dominant?.path || 'neutral'}
+          bossVictories={0}
+          scarHealed={p.soulScar.status === 'healed'}
+          avatarUrl={avatarUrl}
+        />
+      </div>
       <section className="rounded-lg border border-gold-primary/20 bg-black/30 p-5 md:p-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-gold-primary">Soul Avatar</p>
         <h2 className="mt-2 font-display text-3xl font-bold text-text-primary">{p.avatarName}</h2>
@@ -493,7 +650,9 @@ function MissionPanel({
             <p className="text-xs font-black uppercase tracking-[0.18em] text-teal-100">Consequence</p>
             <h3 className="mt-2 text-lg font-bold text-text-primary">{resolution.choice.text}</h3>
             <p className="mt-3 text-sm leading-6 text-text-secondary">{resolution.choice.consequenceText}</p>
-            <p className="mt-4 text-xs font-bold text-teal-100">{deltaText(resolution.scoresAfter)}</p>
+            <div className="mt-4">
+              <AnimatedScoreDelta before={resolution.scoresBefore} after={resolution.scoresAfter} />
+            </div>
             {resolution.unlockedRelic && <UnlockLine label="Relic unlocked" value={resolution.unlockedRelic.name} />}
             {resolution.unlockedProphecy && <UnlockLine label="Prophecy card" value={resolution.unlockedProphecy.message} />}
             <button type="button" onClick={onContinue} className="mt-5 min-h-11 w-full rounded-md bg-teal-300 px-4 py-3 text-sm font-bold text-[#07110f] transition hover:bg-teal-200">
@@ -549,6 +708,9 @@ function ReviewPanel({ state, onReincarnate }: { state: SoulAscensionGameState; 
           Reincarnate Higher
         </button>
       </section>
+      <div className="lg:col-span-2">
+        <SoulTypeCard result={generateSoulType(state.choiceHistory, state.scores)} />
+      </div>
       <aside className="space-y-4">
         <ListPanel title="What the Soul Learned" items={review.learned} />
         <ListPanel title="What Repeated" items={review.repeated} />

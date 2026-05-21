@@ -233,6 +233,7 @@ export interface ChoiceRecord {
 export interface MissionResolution {
   mission: ChapterMission;
   choice: SoulChoice;
+  scoresBefore: ScoreState;
   scoresAfter: ScoreState;
   unlockedRelic?: SoulRelic;
   unlockedProphecy?: ProphecyCard;
@@ -283,9 +284,20 @@ export interface SoulAscensionGameState {
   lastResolution?: MissionResolution;
   soulReview?: SoulReview;
   codex: SoulCodex;
+  journalEntries: JournalEntry[];
   phase: 'home' | 'avatar' | 'lifetime' | 'mission' | 'review' | 'codex' | 'portal';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface JournalEntry {
+  id: string;
+  missionId: string;
+  chapterNumber: number;
+  chapterTitle: string;
+  choicePath: ChoicePath;
+  reflection: string;
+  timestamp: string;
 }
 
 export interface ReincarnationContext {

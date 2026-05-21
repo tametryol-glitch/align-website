@@ -32,6 +32,7 @@ export function chooseMissionOption(state: SoulAscensionGameState, choiceId: str
   const resolution: MissionResolution = {
     mission,
     choice,
+    scoresBefore: { ...state.scores },
     scoresAfter,
     unlockedRelic,
     unlockedProphecy,

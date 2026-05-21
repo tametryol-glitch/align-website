@@ -18,6 +18,9 @@ import type {
 
 import { getSceneBackground } from './vnSceneBackgrounds';
 import { vnAudio } from './vnAudioManager';
+import AnimatedScoreDelta from './AnimatedScoreDelta';
+import ReflectionJournal from './ReflectionJournal';
+import ShareConsequenceButton from './ShareConsequenceButton';
 import ChapterTitleCard from './ChapterTitleCard';
 import ChoiceCardStack from './ChoiceCardStack';
 import ParticleField from './ParticleField';
@@ -38,10 +41,7 @@ interface Props {
   onContinue: () => void;
   onExitVN: () => void;
   avatarUrl?: string | null;
-}
-
-function deltaText(scores: { karma: number; purpose: number; shadow: number; giftMastery: number }): string {
-  return `Karma ${scores.karma} | Purpose ${scores.purpose} | Shadow ${scores.shadow} | Gift ${scores.giftMastery}`;
+  onSaveJournal?: (reflection: string) => void;
 }
 
 export default function VisualNovelScene({
@@ -51,6 +51,7 @@ export default function VisualNovelScene({
   onContinue,
   onExitVN,
   avatarUrl,
+  onSaveJournal,
 }: Props) {
   const resolution = state.lastResolution;
   const hasResolution = !!resolution && resolution.mission.id === mission.id;
@@ -251,6 +252,7 @@ export default function VisualNovelScene({
                 <ResolutionPanel
                   resolution={resolution}
                   onContinue={onContinue}
+                  onSaveJournal={onSaveJournal}
                 />
               )}
             </div>
@@ -264,9 +266,11 @@ export default function VisualNovelScene({
 function ResolutionPanel({
   resolution,
   onContinue,
+  onSaveJournal,
 }: {
   resolution: MissionResolution;
   onContinue: () => void;
+  onSaveJournal?: (reflection: string) => void;
 }) {
   // Play unlock SFX when resolution mounts
   useEffect(() => {
@@ -286,10 +290,8 @@ function ResolutionPanel({
         {resolution.choice.consequenceText}
       </p>
 
-      <div className="mt-4 rounded-md bg-white/[0.06] px-3 py-2">
-        <p className="text-xs font-bold text-teal-100">
-          {deltaText(resolution.scoresAfter)}
-        </p>
+      <div className="mt-4">
+        <AnimatedScoreDelta before={resolution.scoresBefore} after={resolution.scoresAfter} />
       </div>
 
       {resolution.unlockedRelic && (
@@ -308,6 +310,12 @@ function ResolutionPanel({
           </p>
           <p className="mt-1 text-sm text-text-secondary">{resolution.unlockedProphecy.message}</p>
         </div>
+      )}
+
+      <ShareConsequenceButton resolution={resolution} />
+
+      {onSaveJournal && (
+        <ReflectionJournal onSave={onSaveJournal} />
       )}
 
       <button
