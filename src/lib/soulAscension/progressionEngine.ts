@@ -162,20 +162,27 @@ export function updateCodexFromReview(state: SoulAscensionGameState): SoulCodex 
   const scar = state.profile.soulScar;
   const unlockedRelics = state.profile.relics.filter((relic) => relic.unlocked);
   const unlockedProphecies = state.profile.prophecyCards.filter((card) => card.unlocked);
+
+  // Helper: deduplicate object arrays by id
+  const uniqueById = <T extends { id: string }>(arr: T[]): T[] => {
+    const seen = new Set<string>();
+    return arr.filter((item) => { if (seen.has(item.id)) return false; seen.add(item.id); return true; });
+  };
+
   return {
-    pastLives: [...state.codex.pastLives, state.profile.lifetimeTitle],
-    soulLessons: [...state.codex.soulLessons, ...(review?.learned ?? [])],
-    karmicPatterns: [...state.codex.karmicPatterns, state.profile.pastLifePattern],
-    soulScars: scar.status === 'healed' ? state.codex.soulScars : [...state.codex.soulScars, scar],
-    healedScars: scar.status === 'healed' ? [...state.codex.healedScars, scar] : state.codex.healedScars,
+    pastLives: Array.from(new Set([...state.codex.pastLives, state.profile.lifetimeTitle])),
+    soulLessons: Array.from(new Set([...state.codex.soulLessons, ...(review?.learned ?? [])])),
+    karmicPatterns: Array.from(new Set([...state.codex.karmicPatterns, state.profile.pastLifePattern])),
+    soulScars: scar.status === 'healed' ? state.codex.soulScars : uniqueById([...state.codex.soulScars, scar]),
+    healedScars: scar.status === 'healed' ? uniqueById([...state.codex.healedScars, scar]) : state.codex.healedScars,
     gifts: Array.from(new Set([...state.codex.gifts, state.profile.coreGift, state.profile.hiddenGift, review?.giftAwakened].filter(Boolean) as string[])),
-    relationshipContracts: [...state.codex.relationshipContracts, ...state.profile.soulContracts],
-    prophecyCards: [...state.codex.prophecyCards, ...unlockedProphecies],
-    soulRelics: [...state.codex.soulRelics, ...unlockedRelics],
-    memoryFragments: [
+    relationshipContracts: uniqueById([...state.codex.relationshipContracts, ...state.profile.soulContracts]),
+    prophecyCards: uniqueById([...state.codex.prophecyCards, ...unlockedProphecies]),
+    soulRelics: uniqueById([...state.codex.soulRelics, ...unlockedRelics]),
+    memoryFragments: Array.from(new Set([
       ...state.codex.memoryFragments,
       `${state.profile.avatarName}: ${state.profile.incarnationReveal}`,
       ...(review ? [review.ending.title] : []),
-    ],
+    ])),
   };
 }
