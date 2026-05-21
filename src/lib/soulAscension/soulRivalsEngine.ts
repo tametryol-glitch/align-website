@@ -267,7 +267,7 @@ export async function fetchRivalProfile(
     avatarUrl: data.avatar_url,
     soulType: data.soul_type,
     ascensionLevel: data.ascension_level,
-    scores: { karma: 0, purpose: 0, shadow: 0, relationship: 0, giftMastery: 0 },
+    scores: { karma: 0, purpose: 0, shadow: 0, relationship: 0, giftMastery: 0, soulScarIntensity: 0, futureLifetimeDifficulty: 0 },
     choiceHistory: [],
     currentChapter: 1,
     status: data.status,
