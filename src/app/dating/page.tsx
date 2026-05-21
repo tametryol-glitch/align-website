@@ -14,10 +14,11 @@ import {
   subscribeToDatingMatches,
   subscribeToDatingLikes,
 } from '@/lib/datingDiscoveryService';
+import { getDatingProfile } from '@/lib/datingProfileService';
 import { DatingProfileCard } from '@/components/dating/DatingProfileCard';
 import { MatchCelebration } from '@/components/dating/MatchCelebration';
 import { DatingFilterDrawer } from '@/components/dating/DatingFilterDrawer';
-import { Sparkles, Heart, Users, SlidersHorizontal, Star } from 'lucide-react';
+import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield } from 'lucide-react';
 
 export default function DatingDiscoveryPage() {
   const router = useRouter();
@@ -34,6 +35,16 @@ export default function DatingDiscoveryPage() {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [profileChecked, setProfileChecked] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id || authLoading) return;
+    getDatingProfile(user.id).then((data) => {
+      setHasProfile(!!data?.dating_enabled);
+      setProfileChecked(true);
+    });
+  }, [user?.id, authLoading]);
 
   const loadPicks = useCallback(async () => {
     if (!user?.id) return;
@@ -52,10 +63,10 @@ export default function DatingDiscoveryPage() {
   }, [user?.id, tier, filters, setDailyPicks, setDailyLimits, setDiscoveryLoading]);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && hasProfile) {
       loadPicks();
     }
-  }, [authLoading, user, loadPicks]);
+  }, [authLoading, user, hasProfile, loadPicks]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -149,6 +160,56 @@ export default function DatingDiscoveryPage() {
       router.push('/dating/matches');
     }
   }, [celebrationMatch, dismissCelebration, router]);
+
+  if (!profileChecked || authLoading) {
+    return (
+      <div className="max-w-3xl mx-auto flex items-center justify-center" style={{ minHeight: '80vh' }}>
+        <div className="w-10 h-10 rounded-full border-2 border-accent-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!hasProfile) {
+    return (
+      <div className="max-w-3xl mx-auto" style={{ minHeight: '100vh' }}>
+        <div className="flex flex-col items-center justify-center text-center px-6 py-16">
+          <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
+            style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.2), rgba(236,72,153,0.2))' }}>
+            <Heart size={40} color="#EC4899" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">Cosmic Dating</h1>
+          <p className="text-text-tertiary text-base max-w-sm mb-8">
+            Find meaningful connections written in the stars. Create your dating profile to start discovering cosmically compatible matches.
+          </p>
+
+          <Link href="/dating/profile"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-base font-semibold text-white mb-8"
+            style={{ background: 'linear-gradient(135deg, #9B6FF6, #EC4899)' }}>
+            <Sparkles size={18} />
+            Create Your Dating Profile
+          </Link>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-md">
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <Camera size={20} color="#9B6FF6" />
+              <p className="text-xs text-text-tertiary text-center">Add photos & a voice intro</p>
+            </div>
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <Star size={20} color="#9B6FF6" />
+              <p className="text-xs text-text-tertiary text-center">Get matched by cosmic compatibility</p>
+            </div>
+            <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <Shield size={20} color="#9B6FF6" />
+              <p className="text-xs text-text-tertiary text-center">Safe & verified connections</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto" style={{ minHeight: '100vh' }}>
