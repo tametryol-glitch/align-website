@@ -1,5 +1,9 @@
 import { createClient } from '@/lib/supabase';
-import { isGenderCompatible, isStyleCompatible } from '@/lib/relationshipProfileService';
+import { isGenderCompatible, DEFAULT_IDENTITY_PRIVACY } from '@/lib/relationshipProfileService';
+import type { FieldVisibility } from '@/lib/relationshipProfileService';
+import { triggerCosmicMatchCalculation } from '@/lib/cosmicMatchService';
+import { computePreferenceMatch } from '@/lib/preferenceMatchingEngine';
+import type { PreferenceBreakdown } from '@/lib/preferenceMatchingEngine';
 import type { DatingProfile } from '@/lib/datingProfileService';
 import type { TierLevel } from '@/stores/subscriptionStore';
 
@@ -22,9 +26,17 @@ export interface DatingCandidate {
   avatar_url: string | null;
   gender_identity: string | null;
   relationship_primary_intent: string | null;
+  relationship_secondary_intents: string[] | null;
   relationship_style: string | null;
+  relationship_preferences: string[] | null;
   interested_in_genders: string[] | null;
+  connection_type_wanted: string | null;
+  energetic_pace: string | null;
+  spiritual_openness: string | null;
   compatibility_score: number | null;
+  cosmic_score: number | null;
+  preference_score: number | null;
+  preference_breakdown: PreferenceBreakdown[] | null;
   cosmic_insight: string | null;
 }
 
@@ -99,8 +111,42 @@ const CANDIDATE_FIELDS = [
   'photo_verified', 'age_visible', 'birth_date',
   'sun_sign', 'moon_sign', 'rising_sign', 'avatar_url',
   'gender_identity', 'relationship_primary_intent',
-  'relationship_style', 'interested_in_genders',
+  'relationship_secondary_intents', 'relationship_style',
+  'relationship_preferences', 'interested_in_genders',
+  'connection_type_wanted', 'energetic_pace', 'spiritual_openness',
+  'sexual_orientation', 'identity_privacy_settings',
 ].join(', ');
+
+const PREFERENCE_FIELDS = [
+  'relationship_primary_intent', 'relationship_secondary_intents',
+  'relationship_style', 'relationship_preferences',
+  'connection_type_wanted', 'energetic_pace', 'spiritual_openness',
+  'sexual_orientation', 'interested_in_genders',
+  'identity_privacy_settings',
+].join(', ');
+
+const PRIVACY_FILTERABLE = [
+  'relationship_primary_intent', 'relationship_secondary_intents',
+  'relationship_style', 'relationship_preferences',
+  'connection_type_wanted', 'energetic_pace', 'spiritual_openness',
+  'sexual_orientation', 'interested_in_genders',
+] as const;
+
+function filterByPrivacy(candidate: any, relationship: 'discovery' | 'matched'): any {
+  const privacy = candidate.identity_privacy_settings || DEFAULT_IDENTITY_PRIVACY;
+  const result = { ...candidate };
+  for (const field of PRIVACY_FILTERABLE) {
+    const level: FieldVisibility = privacy[field] || DEFAULT_IDENTITY_PRIVACY[field] || 'show_on_profile';
+    if (level === 'hidden') {
+      result[field] = null;
+    } else if (level === 'match_only' && relationship === 'discovery') {
+      result[field] = null;
+    }
+  }
+  delete result.identity_privacy_settings;
+  delete result.sexual_orientation;
+  return result;
+}
 
 function getSupabase() {
   return createClient();
@@ -137,6 +183,8 @@ export async function getDailyCosmicPicks(
     minAge?: number;
     maxAge?: number;
     minCompatibility?: number;
+    intentFilter?: string[];
+    styleFilter?: string[];
   },
 ): Promise<DatingCandidate[]> {
   try {
@@ -145,10 +193,10 @@ export async function getDailyCosmicPicks(
     const maxPicks = DAILY_PICKS[tier] || 3;
     const fetchLimit = maxPicks * 4;
 
-    // Fetch the current user's profile for compatibility filtering
+    // Fetch the current user's profile for compatibility filtering + preference scoring
     const { data: myProfile } = await supabase
       .from('profiles')
-      .select('sun_sign, interested_in_genders, relationship_style, gender_identity')
+      .select('sun_sign, interested_in_genders, relationship_style, gender_identity, relationship_primary_intent, relationship_secondary_intents, relationship_preferences, connection_type_wanted, energetic_pace, spiritual_openness, sexual_orientation, identity_privacy_settings')
       .eq('id', userId)
       .single();
 
@@ -216,13 +264,19 @@ export async function getDailyCosmicPicks(
     let filtered = candidates.filter((c: any) => {
       if (!isGenderCompatible(myProfile?.interested_in_genders, c.gender_identity)) return false;
       if (!isGenderCompatible(c.interested_in_genders, myProfile?.gender_identity)) return false;
-      if (!isStyleCompatible(myProfile?.relationship_style, c.relationship_style)) return false;
 
       if (filters?.minAge || filters?.maxAge) {
         if (!c.birth_date || !c.age_visible) return true;
         const age = getAge(c.birth_date);
         if (filters.minAge && age < filters.minAge) return false;
         if (filters.maxAge && age > filters.maxAge) return false;
+      }
+
+      if (filters?.intentFilter?.length && c.relationship_primary_intent) {
+        if (!filters.intentFilter.includes(c.relationship_primary_intent)) return false;
+      }
+      if (filters?.styleFilter?.length && c.relationship_style) {
+        if (!filters.styleFilter.includes(c.relationship_style)) return false;
       }
 
       return true;
@@ -251,11 +305,46 @@ export async function getDailyCosmicPicks(
       }
     }
 
-    let scored: DatingCandidate[] = filtered.map((c: any) => ({
-      ...c,
-      compatibility_score: scoreMap.get(c.id) ?? quickCompatibility(myProfile?.sun_sign, c.sun_sign),
-      cosmic_insight: null,
-    }));
+    // Trigger full cosmic match calculations for candidates without existing scores
+    const unscoredIds = filtered
+      .filter((c: any) => !scoreMap.has(c.id))
+      .map((c: any) => c.id as string);
+
+    if (unscoredIds.length > 0) {
+      const withTimeout = (promise: Promise<any>, ms: number) =>
+        Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+
+      const calcResults = await Promise.allSettled(
+        unscoredIds.map((id) =>
+          withTimeout(triggerCosmicMatchCalculation(userId, id), 12000)
+        ),
+      );
+
+      calcResults.forEach((result, i) => {
+        if (result.status === 'fulfilled' && result.value?.overall_score != null) {
+          scoreMap.set(unscoredIds[i], result.value.overall_score);
+        }
+      });
+    }
+
+    // Compute preference scores and blend with cosmic scores
+    let scored: DatingCandidate[] = filtered.map((c: any) => {
+      const cosmicScore = scoreMap.get(c.id) ?? quickCompatibility(myProfile?.sun_sign, c.sun_sign);
+
+      const prefResult = computePreferenceMatch(myProfile || {}, c);
+      const blended = Math.round(cosmicScore * 0.65 + prefResult.score * 0.35);
+
+      const privacyFiltered = filterByPrivacy(c, 'discovery');
+
+      return {
+        ...privacyFiltered,
+        compatibility_score: blended,
+        cosmic_score: cosmicScore,
+        preference_score: prefResult.score,
+        preference_breakdown: prefResult.breakdown,
+        cosmic_insight: null,
+      };
+    });
 
     if (filters?.minCompatibility) {
       scored = scored.filter(c => (c.compatibility_score ?? 0) >= filters.minCompatibility!);

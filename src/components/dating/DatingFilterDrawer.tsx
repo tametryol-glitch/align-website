@@ -2,11 +2,17 @@
 
 import { useState } from 'react';
 import { X, SlidersHorizontal } from 'lucide-react';
+import {
+  PRIMARY_INTENT_OPTIONS,
+  RELATIONSHIP_STYLE_OPTIONS,
+} from '@/lib/relationshipProfileService';
 
 interface DatingFilters {
   minAge?: number;
   maxAge?: number;
   minCompatibility?: number;
+  intentFilter?: string[];
+  styleFilter?: string[];
 }
 
 interface DatingFilterDrawerProps {
@@ -86,6 +92,64 @@ export function DatingFilterDrawer({ filters, onApply, onClose, open }: DatingFi
           <div className="flex justify-between text-xs text-text-muted mt-1">
             <span>Any</span>
             <span>90%+</span>
+          </div>
+        </div>
+
+        {/* Intent filter */}
+        <div className="mb-6">
+          <label className="text-sm font-medium text-text-secondary mb-3 block">Relationship Intent</label>
+          <div className="flex flex-wrap gap-1.5">
+            {PRIMARY_INTENT_OPTIONS.map(opt => {
+              const selected = (local.intentFilter || []).includes(opt);
+              return (
+                <button
+                  key={opt}
+                  onClick={() => setLocal(prev => ({
+                    ...prev,
+                    intentFilter: selected
+                      ? (prev.intentFilter || []).filter(v => v !== opt)
+                      : [...(prev.intentFilter || []), opt],
+                  }))}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    selected
+                      ? 'bg-accent-primary text-white'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                  style={!selected ? { backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(61,71,96,0.5)' } : undefined}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Style filter */}
+        <div className="mb-8">
+          <label className="text-sm font-medium text-text-secondary mb-3 block">Relationship Style</label>
+          <div className="flex flex-wrap gap-1.5">
+            {RELATIONSHIP_STYLE_OPTIONS.filter(o => o !== 'Prefer not to say').map(opt => {
+              const selected = (local.styleFilter || []).includes(opt);
+              return (
+                <button
+                  key={opt}
+                  onClick={() => setLocal(prev => ({
+                    ...prev,
+                    styleFilter: selected
+                      ? (prev.styleFilter || []).filter(v => v !== opt)
+                      : [...(prev.styleFilter || []), opt],
+                  }))}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    selected
+                      ? 'bg-accent-primary text-white'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                  style={!selected ? { backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(61,71,96,0.5)' } : undefined}
+                >
+                  {opt}
+                </button>
+              );
+            })}
           </div>
         </div>
 

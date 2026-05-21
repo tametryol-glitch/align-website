@@ -13,6 +13,23 @@ import {
 } from '@/lib/datingProfileService';
 import type { DatingProfile, DatingPromptAnswer } from '@/lib/datingProfileService';
 import { DATING_PROMPTS, MAX_DATING_PROMPTS, MAX_PROMPT_ANSWER_LENGTH } from '@/data/datingPrompts';
+import {
+  getRelationshipProfile,
+  saveRelationshipProfile,
+  type RelationshipProfile,
+  type FieldVisibility,
+  DEFAULT_IDENTITY_PRIVACY,
+  GENDER_IDENTITY_OPTIONS,
+  SEXUAL_ORIENTATION_OPTIONS,
+  INTERESTED_IN_OPTIONS,
+  PRIMARY_INTENT_OPTIONS,
+  SECONDARY_INTENT_OPTIONS,
+  RELATIONSHIP_STYLE_OPTIONS,
+  DEALBREAKER_OPTIONS,
+  CONNECTION_TYPE_OPTIONS,
+  ENERGETIC_PACE_OPTIONS,
+  SPIRITUAL_OPENNESS_OPTIONS,
+} from '@/lib/relationshipProfileService';
 import Link from 'next/link';
 import {
   ArrowLeft, Camera, Plus, X, Mic, MicOff, Video,
@@ -25,6 +42,19 @@ const SIGN_GLYPHS: Record<string, string> = {
   Leo: '♌', Virgo: '♍', Libra: '♎', Scorpio: '♏',
   Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓',
 };
+
+const PREF_FIELDS: { label: string; field: string; options: readonly string[]; multi: boolean; privacy?: string }[] = [
+  { label: 'Gender Identity', field: 'gender_identity', options: GENDER_IDENTITY_OPTIONS, multi: false },
+  { label: 'Sexual Orientation', field: 'sexual_orientation', options: SEXUAL_ORIENTATION_OPTIONS, multi: true, privacy: 'sexual_orientation' },
+  { label: 'Interested In', field: 'interested_in_genders', options: INTERESTED_IN_OPTIONS, multi: true, privacy: 'interested_in_genders' },
+  { label: 'Primary Intent', field: 'relationship_primary_intent', options: PRIMARY_INTENT_OPTIONS, multi: false, privacy: 'relationship_primary_intent' },
+  { label: 'Secondary Intents', field: 'relationship_secondary_intents', options: SECONDARY_INTENT_OPTIONS, multi: true },
+  { label: 'Relationship Style', field: 'relationship_style', options: RELATIONSHIP_STYLE_OPTIONS, multi: false, privacy: 'relationship_style' },
+  { label: 'Dealbreakers', field: 'relationship_preferences', options: DEALBREAKER_OPTIONS, multi: true },
+  { label: 'Connection Type', field: 'connection_type_wanted', options: CONNECTION_TYPE_OPTIONS, multi: false, privacy: 'connection_type_wanted' },
+  { label: 'Energetic Pace', field: 'energetic_pace', options: ENERGETIC_PACE_OPTIONS, multi: false, privacy: 'energetic_pace' },
+  { label: 'Spiritual Openness', field: 'spiritual_openness', options: SPIRITUAL_OPENNESS_OPTIONS, multi: false, privacy: 'spiritual_openness' },
+];
 
 export default function DatingProfilePage() {
   const { user, profile: authProfile } = useAuthStore();
@@ -44,6 +74,10 @@ export default function DatingProfilePage() {
   const [voiceUploading, setVoiceUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const [relProfile, setRelProfile] = useState<Partial<RelationshipProfile>>({});
+  const [prefsExpanded, setPrefsExpanded] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [privacySettings, setPrivacySettings] = useState<Record<string, FieldVisibility>>({ ...DEFAULT_IDENTITY_PRIVACY });
 
   useEffect(() => {
     if (!user?.id) return;
@@ -61,6 +95,11 @@ export default function DatingProfilePage() {
       setPrompts(data.dating_prompts || []);
       setPhotos(data.photo_urls || []);
       setAgeVisible(data.age_visible);
+    }
+    const relData = await getRelationshipProfile(user.id);
+    if (relData) {
+      setRelProfile(relData);
+      setPrivacySettings(relData.identity_privacy_settings || { ...DEFAULT_IDENTITY_PRIVACY });
     }
     setLoading(false);
   }
@@ -202,6 +241,47 @@ export default function DatingProfilePage() {
       await loadProfile();
     };
     input.click();
+  }
+
+  function updatePref(field: string, value: any) {
+    setRelProfile(prev => ({ ...prev, [field]: value }));
+  }
+
+  function toggleMultiPref(field: string, value: string) {
+    setRelProfile(prev => {
+      const current = ((prev as any)[field] as string[] | null) || [];
+      return { ...prev, [field]: current.includes(value) ? current.filter((v: string) => v !== value) : [...current, value] };
+    });
+  }
+
+  function cyclePrivacy(field: string) {
+    setPrivacySettings(prev => {
+      const current = prev[field] || 'show_on_profile';
+      const next: FieldVisibility = current === 'show_on_profile' ? 'match_only' : current === 'match_only' ? 'hidden' : 'show_on_profile';
+      return { ...prev, [field]: next };
+    });
+  }
+
+  function renderPrivacyToggle(field: string) {
+    const level = privacySettings[field] || DEFAULT_IDENTITY_PRIVACY[field] || 'show_on_profile';
+    return (
+      <button onClick={() => cyclePrivacy(field)} className={`flex items-center gap-1 text-xs transition-colors ${
+        level === 'show_on_profile' ? 'text-green-400' : level === 'match_only' ? 'text-yellow-400' : 'text-red-400/60'
+      }`}>
+        {level === 'show_on_profile' ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+        {level === 'show_on_profile' ? 'Visible' : level === 'match_only' ? 'Match only' : 'Hidden'}
+      </button>
+    );
+  }
+
+  async function handleSavePrefs() {
+    if (!user?.id) return;
+    setSavingPrefs(true);
+    await saveRelationshipProfile(user.id, {
+      ...relProfile,
+      identity_privacy_settings: privacySettings,
+    });
+    setSavingPrefs(false);
   }
 
   function getAge(): number | null {
@@ -522,6 +602,70 @@ export default function DatingProfilePage() {
             </Link>
           )}
         </div>
+      </div>
+
+      {/* Dating Preferences */}
+      <div className="card mb-6 overflow-hidden">
+        <button
+          onClick={() => setPrefsExpanded(!prefsExpanded)}
+          className="w-full flex items-center justify-between p-4"
+        >
+          <span className="text-text-primary font-medium flex items-center gap-2">
+            <Heart className="w-4 h-4 text-pink-400" />
+            Dating Preferences
+          </span>
+          <ChevronDown className={`w-4 h-4 text-text-muted transition-transform duration-200 ${prefsExpanded ? 'rotate-180' : ''}`} />
+        </button>
+
+        {prefsExpanded && (
+          <div className="px-4 pb-4 space-y-5 border-t border-border-primary pt-4">
+            <p className="text-text-muted text-xs">
+              These preferences power your compatibility matching. Tap the eye icon to control who sees each field.
+            </p>
+
+            {PREF_FIELDS.map(({ label, field, options, multi, privacy }) => (
+              <div key={field}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-text-secondary text-sm font-medium">{label}</p>
+                  {privacy && renderPrivacyToggle(privacy)}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {options.map(opt => {
+                    const selected = multi
+                      ? (((relProfile as any)[field] as string[] | null) || []).includes(opt)
+                      : (relProfile as any)[field] === opt;
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => multi ? toggleMultiPref(field, opt) : updatePref(field, opt)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                          selected
+                            ? 'bg-accent-primary text-white'
+                            : 'bg-bg-tertiary text-text-secondary border border-border-primary hover:border-accent-primary/40'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
+            <button
+              onClick={handleSavePrefs}
+              disabled={savingPrefs}
+              className="w-full py-2.5 rounded-xl text-sm font-medium text-white bg-accent-primary hover:bg-accent-secondary transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {savingPrefs ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Check className="w-4 h-4" />
+              )}
+              {savingPrefs ? 'Saving...' : 'Save Preferences'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Save Button */}

@@ -13,6 +13,7 @@ export default function PhotoVerificationPage() {
   const [submitting, setSubmitting] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -28,17 +29,21 @@ export default function PhotoVerificationPage() {
     if (!authLoading && user) loadStatus();
   }, [authLoading, user, loadStatus]);
 
+  useEffect(() => {
+    if (cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+    }
+  }, [cameraStream]);
+
   const startCamera = async () => {
+    setCameraError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: 640, height: 640 },
       });
       setCameraStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
     } catch {
-      // Camera access denied
+      setCameraError('Camera access denied. Please allow camera access in your browser settings.');
     }
   };
 
@@ -160,6 +165,13 @@ export default function PhotoVerificationPage() {
               <li>4. Once approved, you get a verified badge</li>
             </ol>
           </div>
+
+          {cameraError && (
+            <div className="px-4 py-3 rounded-xl text-sm text-red-200 border border-red-500/30"
+              style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
+              {cameraError}
+            </div>
+          )}
 
           {cameraStream ? (
             <div className="space-y-3">

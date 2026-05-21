@@ -187,6 +187,26 @@ export function DatingProfileCard({
           </div>
         )}
 
+        {/* Why You Match tags */}
+        {candidate.preference_breakdown && candidate.preference_breakdown.length > 0 && (() => {
+          const tags = candidate.preference_breakdown!
+            .filter(b => b.alignment === 'strong' || b.alignment === 'moderate')
+            .slice(0, 3);
+          return tags.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {tags.map(t => (
+                <span key={t.category} className="text-xs px-2 py-0.5 rounded-full" style={{
+                  backgroundColor: 'rgba(155,111,246,0.1)',
+                  color: '#C4B5FD',
+                  border: '1px solid rgba(155,111,246,0.15)',
+                }}>
+                  ✓ {t.label}
+                </span>
+              ))}
+            </div>
+          ) : null;
+        })()}
+
         {/* Bio */}
         {candidate.dating_bio && (
           <p className="text-sm text-text-secondary mb-3 line-clamp-3">
