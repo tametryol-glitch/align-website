@@ -35,6 +35,7 @@ export default function DatingDiscoveryPage() {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [profileChecked, setProfileChecked] = useState(false);
   const [hasProfile, setHasProfile] = useState(false);
 
@@ -90,6 +91,7 @@ export default function DatingDiscoveryPage() {
   const handleLike = useCallback(async () => {
     if (!user?.id || !currentPick || actionLoading) return;
     setActionLoading(true);
+    setActionError(null);
     const result = await likeDatingProfile(user.id, currentPick.id, 'standard');
     if (result.success) {
       incrementLikesUsed();
@@ -111,6 +113,12 @@ export default function DatingDiscoveryPage() {
         });
       }
       advancePick();
+    } else {
+      const msg = result.error === 'daily_like_limit'
+        ? `You've reached your daily like limit (${result.limit}). Upgrade for more!`
+        : result.error || 'Something went wrong. Please try again.';
+      setActionError(msg);
+      setTimeout(() => setActionError(null), 4000);
     }
     setActionLoading(false);
   }, [user?.id, currentPick, actionLoading, incrementLikesUsed, advancePick, showCelebration]);
@@ -118,6 +126,7 @@ export default function DatingDiscoveryPage() {
   const handleRose = useCallback(async () => {
     if (!user?.id || !currentPick || actionLoading) return;
     setActionLoading(true);
+    setActionError(null);
     const result = await likeDatingProfile(user.id, currentPick.id, 'cosmic_rose');
     if (result.success) {
       incrementRosesUsed();
@@ -139,6 +148,14 @@ export default function DatingDiscoveryPage() {
         });
       }
       advancePick();
+    } else {
+      const msg = result.error === 'daily_rose_limit'
+        ? `You've used all your Cosmic Roses today (${result.limit}). Upgrade for more!`
+        : result.error === 'daily_like_limit'
+          ? `You've reached your daily like limit (${result.limit}). Upgrade for more!`
+          : result.error || 'Something went wrong. Please try again.';
+      setActionError(msg);
+      setTimeout(() => setActionError(null), 4000);
     }
     setActionLoading(false);
   }, [user?.id, currentPick, actionLoading, incrementRosesUsed, advancePick, showCelebration]);
@@ -258,6 +275,14 @@ export default function DatingDiscoveryPage() {
           <UserCircle size={14} /> My Profile
         </Link>
       </div>
+
+      {/* Error banner */}
+      {actionError && (
+        <div className="mb-4 px-4 py-3 rounded-xl text-sm text-red-200 border border-red-500/30"
+          style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
+          {actionError}
+        </div>
+      )}
 
       {/* Main content */}
       {discoveryLoading ? (
