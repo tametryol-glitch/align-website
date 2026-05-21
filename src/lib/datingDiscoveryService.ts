@@ -143,19 +143,68 @@ export async function getDailyCosmicPicks(
     if (!userId) return [];
     const supabase = getSupabase();
     const maxPicks = DAILY_PICKS[tier] || 3;
+    const fetchLimit = maxPicks * 4;
 
-    const { data: candidateIds, error: rpcError } = await supabase.rpc(
-      'get_dating_candidates',
-      { p_user_id: userId, p_limit: maxPicks * 4 },
-    );
-
-    if (rpcError || !candidateIds || candidateIds.length === 0) return [];
-
+    // Fetch the current user's profile for compatibility filtering
     const { data: myProfile } = await supabase
       .from('profiles')
       .select('sun_sign, interested_in_genders, relationship_style, gender_identity')
       .eq('id', userId)
       .single();
+
+    // Try RPC first (fast path for users with dating_enabled)
+    let candidateIds: string[] = [];
+    const { data: rpcIds } = await supabase.rpc(
+      'get_dating_candidates',
+      { p_user_id: userId, p_limit: fetchLimit },
+    );
+    if (rpcIds && rpcIds.length > 0) {
+      candidateIds = rpcIds;
+    }
+
+    // Fallback: query all profiles with a display name and sun sign
+    // This makes dating open to all users, not just those who toggled dating_enabled
+    if (candidateIds.length < fetchLimit) {
+      const existingIds = new Set(candidateIds);
+
+      // Get IDs to exclude (already liked, passed, matched, blocked)
+      const [likedRes, passedRes, matchedRes, blockedRes] = await Promise.all([
+        supabase.from('dating_likes').select('liked_id').eq('liker_id', userId),
+        supabase.from('dating_passes').select('passed_id').eq('passer_id', userId).gte('expires_at', new Date().toISOString()),
+        supabase.from('dating_matches').select('user_a_id, user_b_id').eq('status', 'active').or(`user_a_id.eq.${userId},user_b_id.eq.${userId}`),
+        supabase.from('blocks').select('blocker_id, blocked_id').or(`blocker_id.eq.${userId},blocked_id.eq.${userId}`),
+      ]);
+
+      const excludeIds = new Set<string>([userId]);
+      likedRes.data?.forEach((r: any) => excludeIds.add(r.liked_id));
+      passedRes.data?.forEach((r: any) => excludeIds.add(r.passed_id));
+      matchedRes.data?.forEach((r: any) => {
+        excludeIds.add(r.user_a_id === userId ? r.user_b_id : r.user_a_id);
+      });
+      blockedRes.data?.forEach((r: any) => {
+        excludeIds.add(r.blocker_id === userId ? r.blocked_id : r.blocker_id);
+      });
+
+      const { data: allProfiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .not('display_name', 'is', null)
+        .not('sun_sign', 'is', null)
+        .neq('id', userId)
+        .order('created_at', { ascending: false })
+        .limit(fetchLimit * 2);
+
+      if (allProfiles) {
+        for (const p of allProfiles) {
+          if (!excludeIds.has(p.id) && !existingIds.has(p.id)) {
+            candidateIds.push(p.id);
+            if (candidateIds.length >= fetchLimit) break;
+          }
+        }
+      }
+    }
+
+    if (candidateIds.length === 0) return [];
 
     const { data: candidates, error: profileError } = await supabase
       .from('profiles')
@@ -178,6 +227,8 @@ export async function getDailyCosmicPicks(
 
       return true;
     });
+
+    if (filtered.length === 0) return [];
 
     const { data: cosmicMatches } = await supabase
       .from('cosmic_matches')

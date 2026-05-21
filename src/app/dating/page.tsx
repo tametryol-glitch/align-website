@@ -41,7 +41,7 @@ export default function DatingDiscoveryPage() {
   useEffect(() => {
     if (!user?.id || authLoading) return;
     getDatingProfile(user.id).then((data) => {
-      setHasProfile(!!data?.dating_enabled);
+      setHasProfile(!!(data?.display_name && data?.sun_sign));
       setProfileChecked(true);
     });
   }, [user?.id, authLoading]);
