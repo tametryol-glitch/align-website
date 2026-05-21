@@ -61,6 +61,7 @@ import LeaderboardPanel from './LeaderboardPanel';
 import RivalMatchCard from './RivalMatchCard';
 import SeasonalEventBanner from './SeasonalEventBanner';
 import SoulShop from './SoulShop';
+import { useSoulShopPurchase } from '@/hooks/useSoulShopPurchase';
 import SoulTypeCard from './SoulTypeCard';
 import SpectatorFeed from './SpectatorFeed';
 import VisualNovelScene from './VisualNovelScene';
@@ -160,6 +161,9 @@ export default function SoulAscensionWebGame() {
   const [watchingRun, setWatchingRun] = useState<SpectatableRun | null>(null);
   const [watchingEvents, setWatchingEvents] = useState<SpectatorEvent[]>([]);
   const watchSubRef = { current: null as { unsubscribe: () => void } | null };
+  // ── Shop state ──
+  const [inventory, setInventory] = useState(initPlayerInventory());
+  const shop = useSoulShopPurchase();
 
   const canUseProfileChart = !!profile?.birth_date && profile.latitude != null && profile.longitude != null && !!profile.timezone;
 
@@ -461,7 +465,7 @@ export default function SoulAscensionWebGame() {
       {activeTab === 'review' && <ReviewPanel state={state} onReincarnate={reincarnate} />}
       {activeTab === 'codex' && <CodexPanel state={state} />}
       {activeTab === 'journal' && <JournalPanel entries={state.journalEntries} />}
-      {activeTab === 'shop' && <SoulShop inventory={initPlayerInventory()} onPurchase={(id) => { /* TODO: Wire RevenueCat or Stripe */ }} />}
+      {activeTab === 'shop' && <SoulShop inventory={inventory} onPurchase={async (id) => { const updated = await shop.purchase(id, inventory); if (updated) setInventory(updated); }} />}
       {activeTab === 'leaderboard' && <LeaderboardPanel />}
       {activeTab === 'rivals' && <RivalMatchCard rival={rival} match={rivalMatch} onFindRival={handleFindRival} />}
       {activeTab === 'guild' && <GuildLineagePanel lineage={lineage} members={lineageMembers} onCreateLineage={handleCreateLineage} onJoinLineage={handleJoinLineage} />}
