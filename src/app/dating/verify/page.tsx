@@ -85,8 +85,8 @@ export default function PhotoVerificationPage() {
       } else {
         setSubmitError(result.error || 'Submission failed. Please try again.');
       }
-    } catch {
-      setSubmitError('Network error. Please check your connection and try again.');
+    } catch (err: any) {
+      setSubmitError(err?.message || 'Network error. Please check your connection and try again.');
     } finally {
       setSubmitting(false);
     }
