@@ -57,6 +57,22 @@ export async function submitVerification(
 
     if (insertError) return { success: false, error: insertError.message };
 
+    const { data: inserted } = await supabase
+      .from('photo_verifications')
+      .select('id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (inserted?.id) {
+      fetch('/api/verify-face', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verificationId: inserted.id }),
+      }).catch(() => {});
+    }
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Verification submission failed' };

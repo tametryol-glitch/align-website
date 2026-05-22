@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2 } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
@@ -34,7 +34,7 @@ interface UserRow {
   birth_location: string | null;
 }
 
-type Tab = 'moderation' | 'users' | 'cosmic-index';
+type Tab = 'moderation' | 'users' | 'verifications' | 'cosmic-index';
 
 export default function AdminPage() {
   return (
@@ -47,7 +47,7 @@ export default function AdminPage() {
 function AdminPageContent() {
   const { profile } = useAuthStore();
   const searchParams = useSearchParams();
-  const initialTab = (['moderation', 'users', 'cosmic-index'] as Tab[]).includes(searchParams.get('tab') as Tab)
+  const initialTab = (['moderation', 'users', 'verifications', 'cosmic-index'] as Tab[]).includes(searchParams.get('tab') as Tab)
     ? (searchParams.get('tab') as Tab)
     : 'moderation';
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -103,6 +103,12 @@ function AdminPageContent() {
           <Users className="w-4 h-4 inline mr-1.5" /> Users
         </button>
         <button
+          onClick={() => setTab('verifications')}
+          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'verifications' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
+        >
+          <Camera className="w-4 h-4 inline mr-1.5" /> Verify
+        </button>
+        <button
           onClick={() => setTab('cosmic-index')}
           className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'cosmic-index' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
         >
@@ -112,6 +118,7 @@ function AdminPageContent() {
 
       {tab === 'moderation' && <ModerationPanel />}
       {tab === 'users' && <UsersPanel />}
+      {tab === 'verifications' && <VerificationsPanel />}
       {tab === 'cosmic-index' && <CosmicIndexPanel />}
     </div>
   );
@@ -291,6 +298,239 @@ function UsersPanel() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// =====================================================================
+// Photo Verification Admin Review
+// =====================================================================
+
+interface VerificationRow {
+  id: string;
+  user_id: string;
+  selfie_url: string;
+  status: string;
+  confidence_score: number | null;
+  ai_result: any;
+  rejection_reason: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+  user_name?: string;
+  photo_urls?: string[];
+}
+
+function VerificationsPanel() {
+  const [items, setItems] = useState<VerificationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'review' | 'all'>('review');
+  const [actioningId, setActioningId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+
+  useEffect(() => { loadVerifications(); }, [filter]);
+
+  async function loadVerifications() {
+    setLoading(true);
+    const supabase = createClient();
+    let query = supabase
+      .from('photo_verifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (filter === 'review') {
+      query = query.in('status', ['pending', 'needs_review']);
+    }
+
+    const { data } = await query;
+    if (!data) { setLoading(false); return; }
+
+    const userIds = Array.from(new Set(data.map((v: any) => v.user_id)));
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, photo_urls')
+      .in('id', userIds);
+
+    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+    setItems(data.map((v: any) => ({
+      ...v,
+      user_name: profileMap.get(v.user_id)?.display_name || 'Unknown',
+      photo_urls: profileMap.get(v.user_id)?.photo_urls || [],
+    })));
+    setLoading(false);
+  }
+
+  async function handleAction(id: string, action: 'approve' | 'reject', reason?: string) {
+    setActioningId(id);
+    const res = await fetch('/api/admin/review-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verificationId: id, action, rejectionReason: reason }),
+    });
+    if (res.ok) {
+      setItems(prev => prev.filter(v => v.id !== id));
+      setRejectingId(null);
+      setRejectReason('');
+    }
+    setActioningId(null);
+  }
+
+  function confidenceBadge(score: number | null) {
+    if (score === null || score === undefined) return null;
+    const rounded = Math.round(score);
+    const color = rounded >= 80 ? 'text-green-400 bg-green-500/10' :
+                  rounded >= 45 ? 'text-yellow-400 bg-yellow-500/10' :
+                  'text-red-400 bg-red-500/10';
+    return (
+      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${color}`}>
+        {rounded}% match
+      </span>
+    );
+  }
+
+  function statusBadge(status: string) {
+    const styles: Record<string, string> = {
+      pending: 'text-blue-400 bg-blue-500/10',
+      needs_review: 'text-yellow-400 bg-yellow-500/10',
+      approved: 'text-green-400 bg-green-500/10',
+      rejected: 'text-red-400 bg-red-500/10',
+    };
+    return (
+      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${styles[status] || 'text-text-muted bg-bg-tertiary'}`}>
+        {status.replace('_', ' ')}
+      </span>
+    );
+  }
+
+  if (loading) return <p className="text-text-muted text-sm">Loading verifications...</p>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setFilter('review')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === 'review' ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted'}`}
+        >
+          <AlertTriangle className="w-3 h-3 inline mr-1" /> Needs Review
+        </button>
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === 'all' ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted'}`}
+        >
+          <Eye className="w-3 h-3 inline mr-1" /> All
+        </button>
+        <span className="text-xs text-text-muted ml-auto">{items.length} verification{items.length !== 1 ? 's' : ''}</span>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="card text-center py-12">
+          <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+          <p className="text-text-secondary">No verifications to review</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {items.map((v) => (
+            <div key={v.id} className="card p-4">
+              <div className="flex items-start gap-4">
+                {/* Selfie */}
+                <div className="flex-shrink-0">
+                  <p className="text-[10px] text-text-muted mb-1 text-center">Selfie</p>
+                  <img
+                    src={v.selfie_url}
+                    alt="Selfie"
+                    className="w-24 h-24 rounded-xl object-cover border border-white/10"
+                  />
+                </div>
+
+                {/* Profile photos */}
+                <div className="flex-shrink-0">
+                  <p className="text-[10px] text-text-muted mb-1 text-center">Profile</p>
+                  <div className="flex gap-1">
+                    {(v.photo_urls || []).slice(0, 3).map((url, i) => (
+                      <img
+                        key={i}
+                        src={url}
+                        alt={`Profile ${i + 1}`}
+                        className="w-24 h-24 rounded-xl object-cover border border-white/10"
+                      />
+                    ))}
+                    {(!v.photo_urls || v.photo_urls.length === 0) && (
+                      <div className="w-24 h-24 rounded-xl bg-bg-tertiary flex items-center justify-center">
+                        <span className="text-xs text-text-muted">None</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-text-primary">{v.user_name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {statusBadge(v.status)}
+                    {confidenceBadge(v.confidence_score)}
+                  </div>
+                  {v.ai_result?.message && (
+                    <p className="text-xs text-text-muted mt-1">{v.ai_result.message}</p>
+                  )}
+                  {v.rejection_reason && (
+                    <p className="text-xs text-red-400 mt-1">Reason: {v.rejection_reason}</p>
+                  )}
+                  <p className="text-[10px] text-text-muted mt-2">
+                    {new Date(v.created_at).toLocaleString()}
+                  </p>
+
+                  {/* Actions */}
+                  {(v.status === 'pending' || v.status === 'needs_review') && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <button
+                        onClick={() => handleAction(v.id, 'approve')}
+                        disabled={actioningId === v.id}
+                        className="px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        <CheckCircle className="w-3 h-3 inline mr-1" /> Approve
+                      </button>
+
+                      {rejectingId === v.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            placeholder="Reason (optional)"
+                            className="px-2 py-1 rounded-lg bg-bg-tertiary text-xs text-text-primary border border-white/10 outline-none w-40"
+                          />
+                          <button
+                            onClick={() => handleAction(v.id, 'reject', rejectReason)}
+                            disabled={actioningId === v.id}
+                            className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-medium transition-colors disabled:opacity-50"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => { setRejectingId(null); setRejectReason(''); }}
+                            className="text-xs text-text-muted"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setRejectingId(v.id)}
+                          className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-medium transition-colors"
+                        >
+                          <XCircle className="w-3 h-3 inline mr-1" /> Reject
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

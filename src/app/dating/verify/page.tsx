@@ -14,6 +14,7 @@ export default function PhotoVerificationPage() {
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -70,17 +71,25 @@ export default function PhotoVerificationPage() {
   const handleSubmit = async () => {
     if (!user?.id || !capturedImage) return;
     setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch(capturedImage);
+      const blob = await res.blob();
+      const file = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
 
-    const res = await fetch(capturedImage);
-    const blob = await res.blob();
-    const file = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
-
-    const result = await submitVerification(user.id, file);
-    if (result.success) {
-      await loadStatus();
-      setCapturedImage(null);
+      const result = await submitVerification(user.id, file);
+      if (result.success) {
+        setCapturedImage(null);
+        await new Promise(r => setTimeout(r, 3000));
+        await loadStatus();
+      } else {
+        setSubmitError(result.error || 'Submission failed. Please try again.');
+      }
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   useEffect(() => {
@@ -170,6 +179,13 @@ export default function PhotoVerificationPage() {
             <div className="px-4 py-3 rounded-xl text-sm text-red-200 border border-red-500/30"
               style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
               {cameraError}
+            </div>
+          )}
+
+          {submitError && (
+            <div className="px-4 py-3 rounded-xl text-sm text-red-200 border border-red-500/30"
+              style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
+              {submitError}
             </div>
           )}
 
