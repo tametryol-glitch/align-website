@@ -33,57 +33,78 @@ export async function submitVerification(
   userId: string,
   selfieFile: File,
 ): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient();
+  const fileName = `${userId}/${Date.now()}-selfie.jpg`;
+
+  console.log('[Verify] Uploading selfie to dating-verifications bucket, file:', fileName, 'size:', selfieFile.size);
+
+  // Step 1: Check auth
+  let user;
   try {
-    const supabase = createClient();
-    const fileName = `${userId}/${Date.now()}-selfie.jpg`;
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  } catch (e: any) {
+    console.error('[Verify] Auth check threw:', e);
+    return { success: false, error: `Auth check failed: ${e?.message}` };
+  }
+  if (!user) {
+    return { success: false, error: 'You are not signed in. Please log in and try again.' };
+  }
 
-    console.log('[Verify] Uploading selfie to dating-verifications bucket, file:', fileName, 'size:', selfieFile.size);
-
-    // Step 1: Check auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { success: false, error: 'You are not signed in. Please log in and try again.' };
-    }
-
-    // Step 2: Upload to storage
-    const { error: uploadError } = await supabase.storage
+  // Step 2: Upload to storage
+  let uploadError;
+  try {
+    const result = await supabase.storage
       .from('dating-verifications')
       .upload(fileName, selfieFile, { contentType: 'image/jpeg', upsert: true });
+    uploadError = result.error;
+  } catch (e: any) {
+    console.error('[Verify] Storage upload threw:', e);
+    return { success: false, error: `Storage upload network error: ${e?.message}` };
+  }
 
-    if (uploadError) {
-      console.error('[Verify] Storage upload failed:', uploadError.message, uploadError);
-      return { success: false, error: `Upload failed: ${uploadError.message}` };
-    }
+  if (uploadError) {
+    console.error('[Verify] Storage upload failed:', uploadError.message, uploadError);
+    return { success: false, error: `Upload failed: ${uploadError.message}` };
+  }
 
-    console.log('[Verify] Upload succeeded, getting public URL');
+  console.log('[Verify] Upload succeeded, getting public URL');
 
-    // Step 3: Get public URL
-    const { data: urlData } = supabase.storage
-      .from('dating-verifications')
-      .getPublicUrl(fileName);
+  // Step 3: Get public URL
+  const { data: urlData } = supabase.storage
+    .from('dating-verifications')
+    .getPublicUrl(fileName);
 
-    const publicUrl = urlData?.publicUrl;
-    if (!publicUrl) {
-      return { success: false, error: 'Failed to generate image URL after upload.' };
-    }
+  const publicUrl = urlData?.publicUrl;
+  if (!publicUrl) {
+    return { success: false, error: 'Failed to generate image URL after upload.' };
+  }
 
-    console.log('[Verify] Public URL:', publicUrl);
+  console.log('[Verify] Public URL:', publicUrl);
 
-    // Step 4: Insert DB record
-    const { error: insertError } = await supabase
+  // Step 4: Insert DB record
+  let insertError;
+  try {
+    const result = await supabase
       .from('photo_verifications')
       .insert({
         user_id: userId,
         selfie_url: publicUrl,
         status: 'pending',
       });
+    insertError = result.error;
+  } catch (e: any) {
+    console.error('[Verify] DB insert threw:', e);
+    return { success: false, error: `DB insert network error: ${e?.message}` };
+  }
 
-    if (insertError) {
-      console.error('[Verify] DB insert failed:', insertError.message, insertError);
-      return { success: false, error: `Database error: ${insertError.message}` };
-    }
+  if (insertError) {
+    console.error('[Verify] DB insert failed:', insertError.message, insertError);
+    return { success: false, error: `Database error: ${insertError.message}` };
+  }
 
-    // Step 5: Trigger AI face verification (non-blocking)
+  // Step 5: Trigger AI face verification (non-blocking)
+  try {
     const { data: inserted } = await supabase
       .from('photo_verifications')
       .select('id')
@@ -99,10 +120,9 @@ export async function submitVerification(
         body: JSON.stringify({ verificationId: inserted.id }),
       }).catch(() => {});
     }
-
-    return { success: true };
-  } catch (err: any) {
-    console.error('[Verify] Unexpected error:', err);
-    return { success: false, error: err?.message || 'Verification submission failed' };
+  } catch {
+    // non-critical — face verification can run later via admin review
   }
+
+  return { success: true };
 }

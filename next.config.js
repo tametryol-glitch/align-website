@@ -36,7 +36,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co",
               "font-src 'self' data:",
-              "connect-src 'self' https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://www.google-analytics.com https://www.googletagmanager.com",
+              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://www.google-analytics.com https://www.googletagmanager.com",
               "frame-src 'self' https://www.youtube.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
