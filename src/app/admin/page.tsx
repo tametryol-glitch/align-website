@@ -369,33 +369,14 @@ function VerificationsPanel() {
 
   async function loadVerifications() {
     setLoading(true);
-    const supabase = createClient();
-    let query = supabase
-      .from('photo_verifications')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (filter === 'review') {
-      query = query.in('status', ['pending', 'needs_review']);
+    try {
+      const res = await fetch(`/api/admin/list-verifications?filter=${filter}`);
+      if (!res.ok) { setLoading(false); return; }
+      const { items: data } = await res.json();
+      setItems(data || []);
+    } catch {
+      setItems([]);
     }
-
-    const { data } = await query;
-    if (!data) { setLoading(false); return; }
-
-    const userIds = Array.from(new Set(data.map((v: any) => v.user_id)));
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id, display_name, photo_urls')
-      .in('id', userIds);
-
-    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
-
-    setItems(data.map((v: any) => ({
-      ...v,
-      user_name: profileMap.get(v.user_id)?.display_name || 'Unknown',
-      photo_urls: profileMap.get(v.user_id)?.photo_urls || [],
-    })));
     setLoading(false);
   }
 
