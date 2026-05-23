@@ -73,9 +73,12 @@ export default function PhotoVerificationPage() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const res = await fetch(capturedImage);
-      const blob = await res.blob();
-      const file = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
+      // Convert data-URL → File without fetch() (CSP connect-src blocks data: URLs)
+      const [header, base64] = capturedImage.split(',');
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const file = new File([bytes], 'selfie.jpg', { type: 'image/jpeg' });
 
       const result = await submitVerification(user.id, file);
       if (result.success) {
