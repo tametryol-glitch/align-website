@@ -57,6 +57,9 @@ function buildChartDataText(profile: any, chartData: any, houseSystem?: string):
 
   parts.push(`You are ${name}'s personal AI astrologer inside the Align app.`);
   parts.push('');
+  const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  parts.push(`TODAY'S DATE: ${todayStr}. All references to "now", "currently", "this week", "this month", "this year" must be grounded in this date. Never reference past years as if they are the present.`);
+  parts.push('');
   parts.push('CRITICAL RULERSHIP SYSTEM — You MUST use these custom rulerships:');
   parts.push('- Virgo is ruled by VESTA (NOT Mercury)');
   parts.push('- Libra is ruled by JUNO (NOT Venus)');
