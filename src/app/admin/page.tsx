@@ -450,101 +450,98 @@ function VerificationsPanel() {
       ) : (
         <div className="space-y-4">
           {items.map((v) => (
-            <div key={v.id} className="card p-4">
-              <div className="flex items-start gap-4">
-                {/* Selfie */}
-                <div className="flex-shrink-0">
+            <div key={v.id} className="card p-4 space-y-3">
+              {/* Header: name + status */}
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-text-primary">{v.user_name}</p>
+                {statusBadge(v.status)}
+                {confidenceBadge(v.confidence_score)}
+                <p className="text-[10px] text-text-muted ml-auto">
+                  {new Date(v.created_at).toLocaleString()}
+                </p>
+              </div>
+
+              {/* Photos row */}
+              <div className="flex items-start gap-4 flex-wrap">
+                <div>
                   <p className="text-[10px] text-text-muted mb-1 text-center">Selfie</p>
                   <img
                     src={v.selfie_url}
                     alt="Selfie"
-                    className="w-24 h-24 rounded-xl object-cover border border-white/10"
+                    className="w-28 h-28 rounded-xl object-cover border border-white/10"
                   />
                 </div>
-
-                {/* Profile photos */}
-                <div className="flex-shrink-0">
-                  <p className="text-[10px] text-text-muted mb-1 text-center">Profile</p>
-                  <div className="flex gap-1">
+                <div>
+                  <p className="text-[10px] text-text-muted mb-1 text-center">Profile Photos</p>
+                  <div className="flex gap-1 flex-wrap">
                     {(v.photo_urls || []).slice(0, 3).map((url, i) => (
                       <img
                         key={i}
                         src={url}
                         alt={`Profile ${i + 1}`}
-                        className="w-24 h-24 rounded-xl object-cover border border-white/10"
+                        className="w-28 h-28 rounded-xl object-cover border border-white/10"
                       />
                     ))}
                     {(!v.photo_urls || v.photo_urls.length === 0) && (
-                      <div className="w-24 h-24 rounded-xl bg-bg-tertiary flex items-center justify-center">
-                        <span className="text-xs text-text-muted">None</span>
+                      <div className="w-28 h-28 rounded-xl bg-bg-tertiary flex items-center justify-center">
+                        <span className="text-xs text-text-muted">No photos</span>
                       </div>
                     )}
                   </div>
                 </div>
+              </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-text-primary">{v.user_name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {statusBadge(v.status)}
-                    {confidenceBadge(v.confidence_score)}
-                  </div>
-                  {v.ai_result?.message && (
-                    <p className="text-xs text-text-muted mt-1">{v.ai_result.message}</p>
-                  )}
-                  {v.rejection_reason && (
-                    <p className="text-xs text-red-400 mt-1">Reason: {v.rejection_reason}</p>
-                  )}
-                  <p className="text-[10px] text-text-muted mt-2">
-                    {new Date(v.created_at).toLocaleString()}
-                  </p>
+              {v.ai_result?.message && (
+                <p className="text-xs text-text-muted">{v.ai_result.message}</p>
+              )}
+              {v.rejection_reason && (
+                <p className="text-xs text-red-400">Reason: {v.rejection_reason}</p>
+              )}
 
-                  {/* Actions */}
-                  {(v.status === 'pending' || v.status === 'needs_review') && (
-                    <div className="flex items-center gap-2 mt-3">
+              {/* Action buttons — always visible */}
+              {(v.status === 'pending' || v.status === 'needs_review') && (
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => handleAction(v.id, 'approve')}
+                    disabled={actioningId === v.id}
+                    className="px-4 py-2 rounded-lg bg-green-500/15 hover:bg-green-500/25 text-green-400 text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    <CheckCircle className="w-4 h-4 inline mr-1.5" /> Approve
+                  </button>
+
+                  {rejectingId === v.id ? (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <input
+                        type="text"
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                        placeholder="Reason (optional)"
+                        className="px-3 py-2 rounded-lg bg-bg-tertiary text-sm text-text-primary border border-white/10 outline-none w-48"
+                      />
                       <button
-                        onClick={() => handleAction(v.id, 'approve')}
+                        onClick={() => handleAction(v.id, 'reject', rejectReason)}
                         disabled={actioningId === v.id}
-                        className="px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium transition-colors disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-medium transition-colors disabled:opacity-50"
                       >
-                        <CheckCircle className="w-3 h-3 inline mr-1" /> Approve
+                        Confirm Reject
                       </button>
-
-                      {rejectingId === v.id ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={rejectReason}
-                            onChange={(e) => setRejectReason(e.target.value)}
-                            placeholder="Reason (optional)"
-                            className="px-2 py-1 rounded-lg bg-bg-tertiary text-xs text-text-primary border border-white/10 outline-none w-40"
-                          />
-                          <button
-                            onClick={() => handleAction(v.id, 'reject', rejectReason)}
-                            disabled={actioningId === v.id}
-                            className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-medium transition-colors disabled:opacity-50"
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => { setRejectingId(null); setRejectReason(''); }}
-                            className="text-xs text-text-muted"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setRejectingId(v.id)}
-                          className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-medium transition-colors"
-                        >
-                          <XCircle className="w-3 h-3 inline mr-1" /> Reject
-                        </button>
-                      )}
+                      <button
+                        onClick={() => { setRejectingId(null); setRejectReason(''); }}
+                        className="text-sm text-text-muted px-2"
+                      >
+                        Cancel
+                      </button>
                     </div>
+                  ) : (
+                    <button
+                      onClick={() => setRejectingId(v.id)}
+                      className="px-4 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-medium transition-colors"
+                    >
+                      <XCircle className="w-4 h-4 inline mr-1.5" /> Reject
+                    </button>
                   )}
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
