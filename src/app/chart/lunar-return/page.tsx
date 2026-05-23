@@ -32,7 +32,7 @@ export default function LunarReturnPage() {
   const [expandedPlanets, setExpandedPlanets] = useState<Set<string>>(new Set());
   const [hasLoaded, setHasLoaded] = useState(false);
 
-  const hasBirthData = profile?.birth_date && profile?.birth_time && profile?.latitude;
+  const hasBirthData = profile?.birth_date && profile?.latitude;
 
   const calculate = useCallback(async () => {
     if (!hasBirthData) return;

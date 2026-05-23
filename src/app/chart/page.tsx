@@ -106,7 +106,7 @@ export default function ChartPage() {
 
   // Auto-calculate on mount when profile has birth data
   useEffect(() => {
-    if (profile?.birth_date && profile?.birth_time && profile?.latitude && !chart && !loading) {
+    if (profile?.birth_date && profile?.latitude && !chart && !loading) {
       calculateChart();
     }
   }, [profile]);

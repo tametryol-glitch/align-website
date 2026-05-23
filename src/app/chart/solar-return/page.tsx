@@ -20,7 +20,7 @@ export default function SolarReturnPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedPlanets, setExpandedPlanets] = useState<Set<string>>(new Set());
 
-  const hasBirthData = profile?.birth_date && profile?.birth_time && profile?.latitude;
+  const hasBirthData = profile?.birth_date && profile?.latitude;
 
   async function calculate() {
     if (!hasBirthData) return;

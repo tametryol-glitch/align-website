@@ -31,7 +31,7 @@ export default function MoonPhasesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const hasBirthData = !!(profile?.birth_date && profile?.birth_time && profile?.latitude);
+  const hasBirthData = !!(profile?.birth_date && profile?.latitude);
 
   // Fetch natal chart on mount when birth data is available
   useEffect(() => {

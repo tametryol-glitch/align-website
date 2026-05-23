@@ -26,7 +26,7 @@ export default function ProgressedChartPage() {
   const [activeTab, setActiveTab] = useState<'positions' | 'changes'>('positions');
   const [hasCalculated, setHasCalculated] = useState(false);
 
-  const hasBirthData = profile?.birth_date && profile?.birth_time && profile?.latitude;
+  const hasBirthData = profile?.birth_date && profile?.latitude;
 
   async function calculate() {
     if (!hasBirthData) return;

@@ -215,9 +215,9 @@ export default function DashboardPage() {
 
   // Load astro data separately — depends on profile being fully loaded
   useEffect(() => {
-    if (!user || !profile?.birth_date || !profile?.birth_time || !profile?.latitude) return;
+    if (!user || !profile?.birth_date || !profile?.latitude) return;
     loadAstroData();
-  }, [user, profile?.birth_date, profile?.birth_time, profile?.latitude]);
+  }, [user, profile?.birth_date, profile?.latitude]);
 
   const loadSocialData = useCallback(async () => {
     if (!user) return;
@@ -297,7 +297,7 @@ export default function DashboardPage() {
   async function loadAstroData() {
     try {
       const currentProfile = useAuthStore.getState().profile;
-      if (currentProfile?.birth_date && currentProfile?.birth_time && currentProfile?.latitude) {
+      if (currentProfile?.birth_date && currentProfile?.latitude) {
         const data = await api.getCurrentTransits(buildBirthData(currentProfile));
         const positions = data?.transit_positions || data?.transits || [];
         if (Array.isArray(positions) && positions.length > 0) {

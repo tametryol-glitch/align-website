@@ -169,7 +169,7 @@ export default function SolarReturnPage() {
   const [lastYearData, setLastYearData] = useState<SolarReturnData | null>(null);
   const [nextYearData, setNextYearData] = useState<SolarReturnData | null>(null);
 
-  const hasBirthData = profile?.birth_date && profile?.birth_time && profile?.latitude;
+  const hasBirthData = profile?.birth_date && profile?.latitude;
   const firstName = profile?.display_name?.split(' ')[0] || 'you';
   const birthMonth = getBirthMonth(profile);
 
