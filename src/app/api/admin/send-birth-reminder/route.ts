@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createClient as createBrowserClient } from '@/lib/supabase';
+import { createServerClient } from '@supabase/ssr';
 import { sendEmail } from '@/lib/emailService';
 import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
 
@@ -18,7 +18,18 @@ async function isAdmin(req: NextRequest): Promise<boolean> {
   const secret = process.env.CRON_SECRET;
   if (secret && authHeader === `Bearer ${secret}`) return true;
 
-  const supabase = createBrowserClient();
+  // Read session from request cookies (server-side)
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return req.cookies.get(name)?.value; },
+        set() {},
+        remove() {},
+      },
+    },
+  );
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
   const admin = getAdminClient();
