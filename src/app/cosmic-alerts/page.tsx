@@ -276,7 +276,7 @@ export default function CosmicAlertsPage() {
   const [filter, setFilter] = useState<FilterTab>('all');
   const [selectedAlert, setSelectedAlert] = useState<CosmicAlert | null>(null);
 
-  const hasBirthData = profile?.birth_date && profile?.birth_time && profile?.latitude;
+  const hasBirthData = profile?.birth_date && profile?.latitude;
 
   useEffect(() => {
     if (authLoading) return;
