@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
@@ -215,6 +215,8 @@ function UsersPanel() {
   const [filtered, setFiltered] = useState<UserRow[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sendingReminders, setSendingReminders] = useState(false);
+  const [reminderResult, setReminderResult] = useState<{ sent: number; errors: number; total: number } | null>(null);
 
   useEffect(() => { loadUsers(); }, []);
 
@@ -246,7 +248,27 @@ function UsersPanel() {
     ));
   }
 
+  async function sendBirthReminders() {
+    setSendingReminders(true);
+    setReminderResult(null);
+    try {
+      const res = await fetch('/api/admin/send-birth-reminder', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        setReminderResult({ sent: data.sent || 0, errors: data.errors || 0, total: data.totalIncomplete || 0 });
+      } else {
+        setReminderResult({ sent: 0, errors: 1, total: 0 });
+      }
+    } catch {
+      setReminderResult({ sent: 0, errors: 1, total: 0 });
+    } finally {
+      setSendingReminders(false);
+    }
+  }
+
   if (loading) return <p className="text-text-muted text-sm">Loading users...</p>;
+
+  const incompleteCount = users.filter(u => !u.birth_date).length;
 
   return (
     <div className="space-y-4">
@@ -262,7 +284,22 @@ function UsersPanel() {
         />
       </div>
 
-      <p className="text-xs text-text-muted">{filtered.length} users total</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-text-muted">{filtered.length} users total · {incompleteCount} missing birth data</p>
+        <button
+          onClick={sendBirthReminders}
+          disabled={sendingReminders}
+          className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
+        >
+          {sendingReminders ? 'Sending...' : `Email ${incompleteCount} Incomplete Users`}
+        </button>
+      </div>
+
+      {reminderResult && (
+        <div className={`text-xs px-3 py-2 rounded-lg ${reminderResult.errors > 0 ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
+          Sent {reminderResult.sent} reminder emails ({reminderResult.total} incomplete profiles, {reminderResult.errors} errors)
+        </div>
+      )}
 
       {/* User list */}
       <div className="space-y-2">
@@ -285,7 +322,7 @@ function UsersPanel() {
                   {user.birth_date ? (
                     <span>Born {user.birth_date}</span>
                   ) : (
-                    <span className="text-text-muted">No birth date</span>
+                    <span className="text-amber-400 font-medium"><AlertTriangle className="w-3 h-3 inline mr-0.5" />No birth date</span>
                   )}
                   {user.birth_time && <span>at {user.birth_time.slice(0, 5)}</span>}
                   {user.birth_location && <span className="truncate max-w-[200px]">{user.birth_location}</span>}

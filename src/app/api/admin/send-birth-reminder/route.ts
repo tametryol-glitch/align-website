@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createClient as createBrowserClient } from '@/lib/supabase';
 import { sendEmail } from '@/lib/emailService';
 import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
 
@@ -12,10 +13,21 @@ function getAdminClient() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-export async function POST(req: NextRequest) {
+async function isAdmin(req: NextRequest): Promise<boolean> {
   const authHeader = req.headers.get('authorization');
   const secret = process.env.CRON_SECRET;
-  if (!secret || authHeader !== `Bearer ${secret}`) {
+  if (secret && authHeader === `Bearer ${secret}`) return true;
+
+  const supabase = createBrowserClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const admin = getAdminClient();
+  const { data } = await admin.from('profiles').select('is_admin').eq('id', user.id).single();
+  return !!data?.is_admin;
+}
+
+export async function POST(req: NextRequest) {
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -97,6 +97,14 @@ export default function OnboardingPage() {
   }
 
   async function handleRectification() {
+    if (!birthDate) {
+      setSaveError('Please enter your birth date before using the rectification tool.');
+      return;
+    }
+    if (latitude == null || longitude == null || !timezone) {
+      setSaveError('Please select your birth city first (step 4) before using the rectification tool.');
+      return;
+    }
     const saved = await saveProfile();
     if (!saved) return;
     router.push('/readings/rectification');
