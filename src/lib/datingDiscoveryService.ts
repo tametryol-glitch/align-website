@@ -486,6 +486,48 @@ export async function getReceivedLikes(
   }
 }
 
+export interface SentLike {
+  id: string;
+  liked_id: string;
+  like_type: string;
+  created_at: string;
+  liked_profile?: any;
+}
+
+export async function getSentLikes(userId: string): Promise<SentLike[]> {
+  try {
+    const supabase = getSupabase();
+
+    const { data: likes, error } = await supabase
+      .from('dating_likes')
+      .select('id, liked_id, like_type, created_at')
+      .eq('liker_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error || !likes || likes.length === 0) return [];
+
+    const likedIds = likes.map((l: any) => l.liked_id);
+
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select(CANDIDATE_FIELDS)
+      .in('id', likedIds);
+
+    const profileMap = new Map<string, any>();
+    if (profiles) {
+      for (const p of profiles as any[]) profileMap.set(p.id, p);
+    }
+
+    return likes.map((l: any) => ({
+      ...l,
+      liked_profile: profileMap.get(l.liked_id) || undefined,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getDatingMatches(userId: string): Promise<DatingMatch[]> {
   try {
     const supabase = getSupabase();
