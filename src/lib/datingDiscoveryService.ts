@@ -600,6 +600,13 @@ export function subscribeToDatingMatches(
   if (!userId) return { unsubscribe: () => {} };
   const supabase = getSupabase();
 
+  // Remove any existing channel with this name to prevent
+  // "cannot add postgres_changes callbacks after subscribe()" errors on re-mount
+  const existingMatch = supabase.getChannels().find(
+    (c) => c.topic === 'realtime:dating-matches',
+  );
+  if (existingMatch) supabase.removeChannel(existingMatch);
+
   const channel = supabase
     .channel('dating-matches')
     .on(
@@ -623,6 +630,13 @@ export function subscribeToDatingLikes(
 ): { unsubscribe: () => void } {
   if (!userId) return { unsubscribe: () => {} };
   const supabase = getSupabase();
+
+  // Remove any existing channel with this name to prevent
+  // "cannot add postgres_changes callbacks after subscribe()" errors on re-mount
+  const existingLike = supabase.getChannels().find(
+    (c) => c.topic === 'realtime:dating-likes',
+  );
+  if (existingLike) supabase.removeChannel(existingLike);
 
   const channel = supabase
     .channel('dating-likes')

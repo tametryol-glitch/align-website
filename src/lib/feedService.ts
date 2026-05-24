@@ -409,9 +409,11 @@ export async function deleteComment(commentId: string) {
   await supabase.from('post_comments').update({ is_deleted: true }).eq('id', commentId);
 }
 
-export async function deletePost(postId: string) {
+export async function deletePost(postId: string): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
-  await supabase.from('posts').update({ is_deleted: true }).eq('id', postId);
+  const { error } = await supabase.from('posts').update({ is_deleted: true }).eq('id', postId);
+  if (error) return { success: false, error: error.message };
+  return { success: true };
 }
 
 export async function editPost(postId: string, content: string) {

@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { buildChartContext, buildSuggestedQuestions, type ChartContext } from '@/lib/aiChartContext';
 import Link from 'next/link';
-import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play, RotateCcw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import {
@@ -382,8 +382,28 @@ export default function AIAstrologerPage() {
           <p className="text-text-tertiary text-xs">Personalized interpretations powered by AI</p>
         </div>
 
-        {/* Voice controls in header */}
+        {/* Controls in header */}
         <div className="flex items-center gap-2">
+          {/* New Chat button (shown when conversation has messages) */}
+          {messages.length > 0 && (
+            <button
+              onClick={() => {
+                setMessages([]);
+                setInput('');
+                setError('');
+                if (isSpeaking) {
+                  voiceService.stopPlayback();
+                  setIsSpeaking(false);
+                  setSpeakingMsgId(null);
+                }
+              }}
+              className="p-2 rounded-lg text-text-muted hover:text-accent-primary hover:bg-accent-primary/10 transition-all border border-transparent hover:border-accent-primary/30"
+              title="New chat"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
+          )}
+
           {/* Voice mode toggle */}
           <button
             onClick={() => {

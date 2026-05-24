@@ -78,6 +78,7 @@ export default function MessagesPage() {
 
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
   const [contextMenu, setContextMenu] = useState<{ message: Message; x: number; y: number } | null>(null);
   const [reactionPicker, setReactionPicker] = useState<Message | null>(null);
   const [showConvMenu, setShowConvMenu] = useState<string | null>(null);
@@ -315,6 +316,7 @@ export default function MessagesPage() {
       return;
     }
     setSending(true);
+    setSendError('');
     const content = newMessage.trim();
     const replyToId = store.replyTo?.id;
     setNewMessage('');
@@ -347,6 +349,8 @@ export default function MessagesPage() {
       store.addMessage(result.message);
     } else {
       store.removeMessage(optimistic.id);
+      setNewMessage(content);
+      setSendError(result.error || 'Failed to send message.');
     }
     setSending(false);
     inputRef.current?.focus();
@@ -843,6 +847,12 @@ export default function MessagesPage() {
                 onOpenReactionPicker={setReactionPicker}
               />
 
+              {sendError && (
+                <div className="px-4 py-2 bg-red-500/10 border-t border-red-500/20 flex items-center justify-between">
+                  <p className="text-xs text-red-400">{sendError}</p>
+                  <button onClick={() => setSendError('')} className="text-xs text-red-400 hover:text-red-300 font-medium ml-2">✕</button>
+                </div>
+              )}
               <MessageComposer
                 newMessage={newMessage}
                 editText={editText}

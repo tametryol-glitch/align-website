@@ -45,7 +45,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 
 function AnswerItem({
   answer, isQuestionOwner, currentUserId,
-  onAccept, onUpvote, onDelete,
+  onAccept, onUpvote, onDelete, isConfirmingDelete,
 }: {
   answer: Answer;
   isQuestionOwner: boolean;
@@ -53,6 +53,7 @@ function AnswerItem({
   onAccept: (answerId: string) => void;
   onUpvote: (answerId: string) => void;
   onDelete: (answerId: string) => void;
+  isConfirmingDelete: boolean;
 }) {
   const { t } = useTranslation();
   const isOwnAnswer = answer.authorId === currentUserId;
@@ -124,9 +125,13 @@ function AnswerItem({
         {isOwnAnswer && (
           <button
             onClick={() => onDelete(answer.id)}
-            className="flex items-center gap-1 text-xs text-text-muted hover:text-red-400 transition-colors ml-auto"
+            className={`flex items-center gap-1 text-xs transition-colors ml-auto ${
+              isConfirmingDelete
+                ? 'text-red-400 font-semibold'
+                : 'text-text-muted hover:text-red-400'
+            }`}
           >
-            <Trash2 className="w-3 h-3" /> {t('common.delete')}
+            <Trash2 className="w-3 h-3" /> {isConfirmingDelete ? t('common.confirm') : t('common.delete')}
           </button>
         )}
       </div>
@@ -206,9 +211,11 @@ export default function QuestionDetailPage() {
       setDeleteConfirm(answerId);
       return;
     }
-    await deleteAnswer(answerId);
+    const result = await deleteAnswer(answerId);
     setDeleteConfirm(null);
-    load();
+    if (result.success) {
+      load();
+    }
   }, [deleteConfirm, load]);
 
   // ── Follow / Bookmark ───
@@ -235,8 +242,11 @@ export default function QuestionDetailPage() {
       setDeleteConfirm('question');
       return;
     }
-    await deleteQuestion(questionId);
-    router.push('/qa');
+    const result = await deleteQuestion(questionId);
+    if (result.success) {
+      router.push('/qa');
+    }
+    setDeleteConfirm(null);
   }, [questionId, deleteConfirm, router]);
 
   // ── Loading ───
@@ -401,6 +411,7 @@ export default function QuestionDetailPage() {
               onAccept={handleAccept}
               onUpvote={handleUpvote}
               onDelete={handleDeleteAnswer}
+              isConfirmingDelete={deleteConfirm === a.id}
             />
           ))}
         </div>

@@ -631,8 +631,10 @@ export default function FeedPage() {
   }
 
   async function handleDelete(postId: string) {
-    await deletePost(postId);
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
+    const result = await deletePost(postId);
+    if (result.success) {
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    }
   }
 
   async function handleBookmark(postId: string) {
