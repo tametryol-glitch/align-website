@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Check } from 'lucide-react';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import type { HouseSystem, ZodiacSystem, JargonMode, OrbTightness } from '@/stores/astrologySettingsStore';
+import { useTranslation } from 'react-i18next';
 
 export default function AstrologySettingsPage() {
   const {
@@ -16,6 +17,7 @@ export default function AstrologySettingsPage() {
     showFixedStars, setShowFixedStars,
     hydrate,
   } = useAstrologySettings();
+  const { t } = useTranslation();
 
   // Load saved settings from localStorage on mount
   useEffect(() => { hydrate(); }, []);
@@ -23,23 +25,23 @@ export default function AstrologySettingsPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('settings.title')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Star className="w-7 h-7 text-accent-primary" />
-        Astrology Preferences
+        {t('settings.astrology.title')}
       </h1>
 
       <p className="text-xs text-text-muted mb-6">
-        Changes are saved automatically and apply to all chart calculations.
+        {t('settings.astrology.autoSaveHint')}
       </p>
 
       <div className="space-y-4">
         {/* House System */}
         <div className="card">
-          <h3 className="text-sm font-semibold text-text-primary mb-2">House System</h3>
-          <p className="text-xs text-text-muted mb-3">Determines how your chart houses are calculated</p>
+          <h3 className="text-sm font-semibold text-text-primary mb-2">{t('settings.astrology.houseSystem')}</h3>
+          <p className="text-xs text-text-muted mb-3">{t('settings.astrology.houseSystemHint')}</p>
           <select
             value={houseSystem}
             onChange={(e) => setHouseSystem(e.target.value as HouseSystem)}
@@ -61,7 +63,7 @@ export default function AstrologySettingsPage() {
 
         {/* Zodiac */}
         <div className="card">
-          <h3 className="text-sm font-semibold text-text-primary mb-2">Zodiac System</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-2">{t('settings.astrology.zodiacSystem')}</h3>
           <select
             value={zodiac}
             onChange={(e) => setZodiac(e.target.value as ZodiacSystem)}
@@ -74,8 +76,8 @@ export default function AstrologySettingsPage() {
 
         {/* Jargon Mode */}
         <div className="card">
-          <h3 className="text-sm font-semibold text-text-primary mb-2">Language Level</h3>
-          <p className="text-xs text-text-muted mb-3">How technical should interpretations be?</p>
+          <h3 className="text-sm font-semibold text-text-primary mb-2">{t('settings.astrology.languageLevel')}</h3>
+          <p className="text-xs text-text-muted mb-3">{t('settings.astrology.languageLevelHint')}</p>
           <select
             value={jargonMode}
             onChange={(e) => setJargonMode(e.target.value as JargonMode)}
@@ -106,7 +108,7 @@ export default function AstrologySettingsPage() {
         <div className="card divide-y divide-border-primary">
           <div className="flex items-center justify-between py-4 px-1">
             <div>
-              <p className="text-sm font-medium text-text-primary">Show Asteroids</p>
+              <p className="text-sm font-medium text-text-primary">{t('settings.astrology.showAsteroids')}</p>
               <p className="text-xs text-text-muted">Include Chiron, Juno, Vesta, Pallas, Ceres</p>
             </div>
             <button
@@ -118,7 +120,7 @@ export default function AstrologySettingsPage() {
           </div>
           <div className="flex items-center justify-between py-4 px-1">
             <div>
-              <p className="text-sm font-medium text-text-primary">Show Fixed Stars</p>
+              <p className="text-sm font-medium text-text-primary">{t('settings.astrology.showFixedStars')}</p>
               <p className="text-xs text-text-muted">Include prominent fixed stars in chart</p>
             </div>
             <button

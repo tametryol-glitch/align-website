@@ -8,6 +8,7 @@ import { buildChartContext, buildSuggestedQuestions, type ChartContext } from '@
 import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
 import {
   voiceService,
   setVoiceAuthToken,
@@ -127,6 +128,7 @@ function buildChartDataText(profile: any, chartData: any, houseSystem?: string):
 }
 
 export default function AIAstrologerPage() {
+  const { t } = useTranslation();
   const { profile, session } = useAuthStore();
   const { houseSystem } = useAstrologySettings();
   const [messages, setMessages] = useState<Message[]>([]);

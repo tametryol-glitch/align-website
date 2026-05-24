@@ -12,6 +12,7 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { NatalWheel } from '@/components/charts/NatalWheel';
+import { useTranslation } from 'react-i18next';
 
 // ═══════════════════════════════════════════════════════════════════
 // Types & constants matching Supabase schema
@@ -74,6 +75,7 @@ function formatDate(dateStr: string): string {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function SavedChartsPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { houseSystem } = useAstrologySettings();
   const [charts, setCharts] = useState<SavedChart[]>([]);
@@ -380,7 +382,7 @@ export default function SavedChartsPage() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <Save className="w-7 h-7 text-accent-primary" />
-          Saved Charts
+          {t('readings.savedCharts')}
         </h1>
         <button onClick={openAdd} className="btn-primary text-sm flex items-center gap-2">
           <Plus className="w-4 h-4" /> Add Chart

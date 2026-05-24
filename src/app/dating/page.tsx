@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,6 +22,7 @@ import { DatingFilterDrawer } from '@/components/dating/DatingFilterDrawer';
 import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield, UserCircle } from 'lucide-react';
 
 export default function DatingDiscoveryPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, profile, isLoading: authLoading } = useAuthStore();
   const { tier } = useSubscriptionStore();
@@ -58,7 +60,7 @@ export default function DatingDiscoveryPage() {
       setDailyPicks(picks);
       setDailyLimits(limits);
     } catch {
-      // silent
+      setActionError(t('dating.discovery.genericError'));
     }
     setDiscoveryLoading(false);
   }, [user?.id, tier, filters, setDailyPicks, setDailyLimits, setDiscoveryLoading]);
@@ -115,8 +117,8 @@ export default function DatingDiscoveryPage() {
       advancePick();
     } else {
       const msg = result.error === 'daily_like_limit'
-        ? `You've reached your daily like limit (${result.limit}). Upgrade for more!`
-        : result.error || 'Something went wrong. Please try again.';
+        ? t('dating.discovery.dailyLikeLimit', { limit: result.limit })
+        : result.error || t('dating.discovery.genericError');
       setActionError(msg);
       setTimeout(() => setActionError(null), 4000);
     }
@@ -150,10 +152,10 @@ export default function DatingDiscoveryPage() {
       advancePick();
     } else {
       const msg = result.error === 'daily_rose_limit'
-        ? `You've used all your Cosmic Roses today (${result.limit}). Upgrade for more!`
+        ? t('dating.discovery.dailyRoseLimit', { limit: result.limit })
         : result.error === 'daily_like_limit'
-          ? `You've reached your daily like limit (${result.limit}). Upgrade for more!`
-          : result.error || 'Something went wrong. Please try again.';
+          ? t('dating.discovery.dailyLikeLimit', { limit: result.limit })
+          : result.error || t('dating.discovery.genericError');
       setActionError(msg);
       setTimeout(() => setActionError(null), 4000);
     }
@@ -171,7 +173,7 @@ export default function DatingDiscoveryPage() {
   const handleChatFromCelebration = useCallback(() => {
     if (celebrationMatch?.conversation_id) {
       dismissCelebration();
-      router.push(`/messages/${celebrationMatch.conversation_id}`);
+      router.push(`/messages?conversation=${celebrationMatch.conversation_id}`);
     } else {
       dismissCelebration();
       router.push('/dating/matches');
@@ -194,33 +196,33 @@ export default function DatingDiscoveryPage() {
             style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.2), rgba(236,72,153,0.2))' }}>
             <Heart size={40} color="#EC4899" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-3">Cosmic Dating</h1>
+          <h1 className="text-3xl font-bold text-white mb-3">{t('dating.introTitle')}</h1>
           <p className="text-text-tertiary text-base max-w-sm mb-8">
-            Find meaningful connections written in the stars. Create your dating profile to start discovering cosmically compatible matches.
+            {t('dating.introDescription')}
           </p>
 
           <Link href="/dating/profile"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-base font-semibold text-white mb-8"
             style={{ background: 'linear-gradient(135deg, #9B6FF6, #EC4899)' }}>
             <Sparkles size={18} />
-            Create Your Dating Profile
+            {t('dating.createProfileButton')}
           </Link>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-md">
             <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
               <Camera size={20} color="#9B6FF6" />
-              <p className="text-xs text-text-tertiary text-center">Add photos & a voice intro</p>
+              <p className="text-xs text-text-tertiary text-center">{t('dating.featurePhotos')}</p>
             </div>
             <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
               <Star size={20} color="#9B6FF6" />
-              <p className="text-xs text-text-tertiary text-center">Get matched by cosmic compatibility</p>
+              <p className="text-xs text-text-tertiary text-center">{t('dating.featureCompatibility')}</p>
             </div>
             <div className="flex flex-col items-center gap-2 p-4 rounded-xl"
               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
               <Shield size={20} color="#9B6FF6" />
-              <p className="text-xs text-text-tertiary text-center">Safe & verified connections</p>
+              <p className="text-xs text-text-tertiary text-center">{t('dating.featureSafety')}</p>
             </div>
           </div>
         </div>
@@ -235,9 +237,9 @@ export default function DatingDiscoveryPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Sparkles size={22} color="#9B6FF6" />
-            Cosmic Dating
+            {t('dating.title')}
           </h1>
-          <p className="text-sm text-text-tertiary mt-0.5">Your curated cosmic picks</p>
+          <p className="text-sm text-text-tertiary mt-0.5">{t('dating.subtitle')}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -260,19 +262,19 @@ export default function DatingDiscoveryPage() {
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         <Link href="/dating" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium"
           style={{ backgroundColor: 'rgba(155,111,246,0.15)', color: '#B8A0FA' }}>
-          <Star size={14} /> Discover
+          <Star size={14} /> {t('dating.tabs.discover')}
         </Link>
         <Link href="/dating/likes" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Heart size={14} /> Likes
+          <Heart size={14} /> {t('dating.tabs.likes')}
         </Link>
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Users size={14} /> Matches
+          <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
         <Link href="/dating/profile" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <UserCircle size={14} /> My Profile
+          <UserCircle size={14} /> {t('dating.tabs.myProfile')}
         </Link>
       </div>
 
@@ -288,24 +290,24 @@ export default function DatingDiscoveryPage() {
       {discoveryLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-12 h-12 rounded-full border-2 border-accent-primary border-t-transparent animate-spin mb-4" />
-          <p className="text-text-tertiary text-sm">Consulting the cosmos...</p>
+          <p className="text-text-tertiary text-sm">{t('dating.discovery.consulting')}</p>
         </div>
       ) : !currentPick || currentPickIndex >= dailyPicks.length ? (
         <div className="text-center py-20 px-6">
           <div className="text-5xl mb-4">🌙</div>
           <h2 className="text-xl font-semibold text-white mb-2">
-            {dailyPicks.length === 0 ? 'No Cosmic Picks Yet' : 'All Caught Up!'}
+            {dailyPicks.length === 0 ? t('dating.discovery.noPicksTitle') : t('dating.discovery.allCaughtUpTitle')}
           </h2>
           <p className="text-text-tertiary text-sm max-w-xs mx-auto mb-6">
             {dailyPicks.length === 0
-              ? 'The stars are still aligning your matches. Make sure your dating profile is complete!'
-              : 'Come back tomorrow for new cosmic picks. Quality connections take time.'}
+              ? t('dating.discovery.noPicksDescription')
+              : t('dating.discovery.allCaughtUpDescription')}
           </p>
           {dailyPicks.length === 0 && (
             <Link href="/dating/profile"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-semibold text-white"
               style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}>
-              Complete Profile
+              {t('dating.discovery.completeProfile')}
             </Link>
           )}
         </div>

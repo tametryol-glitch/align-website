@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -68,6 +69,7 @@ function TransitDetail({
   firstName: string;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const progress = getCycleProgress(event);
   const catColor = CATEGORY_COLORS[event.category || 'growth'] || '#10B981';
   const planetTheme = PLANET_CARD_THEMES[event.transiting_planet] || PLANET_CARD_THEMES.Jupiter;
@@ -94,7 +96,7 @@ function TransitDetail({
             onClick={onClose}
             className="w-full text-left px-6 pt-5 pb-2 text-sm text-text-muted hover:text-text-primary transition-colors"
           >
-            &larr; Back to Cycles
+            &larr; {t('readings.transitsPage.backToCycles')}
           </button>
 
           {/* Progress ring */}
@@ -106,7 +108,7 @@ function TransitDetail({
               <span className="text-2xl font-bold" style={{ color: catColor }}>
                 {Math.round(progress)}%
               </span>
-              <span className="text-[10px] text-text-muted uppercase tracking-wider">active</span>
+              <span className="text-[10px] text-text-muted uppercase tracking-wider">{t('readings.transitsPage.active')}</span>
             </div>
           </div>
 
@@ -123,7 +125,7 @@ function TransitDetail({
               className="text-xs font-medium"
               style={{ color: event.separating ? '#F59E0B' : '#10B981' }}
             >
-              {event.separating ? '↘ Separating' : '↗ Approaching'}
+              {event.separating ? `↘ ${t('readings.transitsPage.separating')}` : `↗ ${t('readings.transitsPage.approaching')}`}
             </span>
           </div>
 
@@ -161,23 +163,23 @@ function TransitDetail({
             <div className="flex justify-between mt-1.5">
               <span className="text-[11px] text-text-muted">
                 {progress >= 85
-                  ? 'Near exact — strongest influence'
+                  ? t('readings.transitsPage.nearExact')
                   : progress >= 60
-                  ? 'Strongly active'
+                  ? t('readings.transitsPage.stronglyActive')
                   : progress >= 40
-                  ? 'Building momentum'
-                  : 'Entering awareness'}
+                  ? t('readings.transitsPage.buildingMomentum')
+                  : t('readings.transitsPage.enteringAwareness')}
               </span>
               <span className="text-[11px] text-text-muted">
                 {(event.days_remaining ?? 0) <= 1
-                  ? 'Less than a day left'
+                  ? t('readings.transitsPage.lessThanADay')
                   : (event.days_remaining ?? 0) <= 7
-                  ? `${event.days_remaining} days left`
+                  ? t('readings.transitsPage.daysLeft', { count: event.days_remaining })
                   : (event.days_remaining ?? 0) <= 30
-                  ? `~${Math.round((event.days_remaining ?? 0) / 7)} weeks left`
+                  ? t('readings.transitsPage.weeksLeft', { count: Math.round((event.days_remaining ?? 0) / 7) })
                   : (event.days_remaining ?? 0) <= 365
-                  ? `~${Math.round((event.days_remaining ?? 0) / 30)} months left`
-                  : `${Math.round((event.days_remaining ?? 0) / 365)}+ years`}
+                  ? t('readings.transitsPage.monthsLeft', { count: Math.round((event.days_remaining ?? 0) / 30) })
+                  : t('readings.transitsPage.yearsLeft', { count: Math.round((event.days_remaining ?? 0) / 365) })}
               </span>
             </div>
           </div>
@@ -188,7 +190,7 @@ function TransitDetail({
           {/* Cycle Meaning */}
           <div className="px-6 pb-4">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
-              What This Cycle Means for You
+              {t('readings.transitsPage.cycleMeaning')}
             </h3>
             <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
               {meaning}
@@ -200,7 +202,7 @@ function TransitDetail({
           {/* Navigation Advice */}
           <div className="px-6 pb-4">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
-              How to Navigate This
+              {t('readings.transitsPage.howToNavigate')}
             </h3>
             <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
               {advice}
@@ -212,14 +214,14 @@ function TransitDetail({
           {/* Technical Details */}
           <div className="px-6 pb-6">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
-              Technical Details
+              {t('readings.transitsPage.technicalDetails')}
             </h3>
             <div className="space-y-2">
               {[
-                ['Transit', `${event.transiting_planet} ${event.aspect_type} ${event.natal_planet}`],
-                ['Current Orb', event.orb != null ? `${typeof event.orb === 'number' ? event.orb.toFixed(1) : event.orb}°` : '—'],
-                ['Direction', event.separating ? 'Separating (moving away from exact)' : 'Applying (moving toward exact)'],
-                ['Intensity', event.intensity === 'high' ? 'Major (outer planet)' : event.intensity === 'medium' ? 'Moderate' : 'Minor'],
+                [t('readings.transitsPage.transit'), `${event.transiting_planet} ${event.aspect_type} ${event.natal_planet}`],
+                [t('readings.transitsPage.currentOrb'), event.orb != null ? `${typeof event.orb === 'number' ? event.orb.toFixed(1) : event.orb}°` : '—'],
+                [t('readings.transitsPage.direction'), event.separating ? t('readings.transitsPage.separatingDesc') : t('readings.transitsPage.applyingDesc')],
+                [t('readings.transitsPage.intensity'), event.intensity === 'high' ? t('readings.transitsPage.intensityMajor') : event.intensity === 'medium' ? t('readings.transitsPage.intensityModerate') : t('readings.transitsPage.intensityMinor')],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between text-sm">
                   <span className="text-text-muted">{label}</span>
@@ -245,6 +247,7 @@ function TransitCard({
   firstName: string;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const planetTheme = PLANET_CARD_THEMES[event.transiting_planet] || PLANET_CARD_THEMES.Jupiter;
   const progress = getCycleProgress(event);
   const isActive = progress >= 50;
@@ -311,7 +314,7 @@ function TransitCard({
               className="w-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: isActive ? '#10B981' : '#F59E0B' }}
             />
-            {isActive ? 'Active Now' : 'Approaching'}
+            {isActive ? t('readings.transitsPage.activeNow') : t('readings.transitsPage.approaching')}
           </span>
         </div>
 
@@ -363,7 +366,7 @@ function TransitCard({
             className="text-xs font-medium"
             style={{ color: event.separating ? '#F59E0B' : '#10B981' }}
           >
-            {event.separating ? '↘ Separating' : '↗ Approaching'}
+            {event.separating ? `↘ ${t('readings.transitsPage.separating')}` : `↗ ${t('readings.transitsPage.approaching')}`}
           </span>
           <span className="text-xs font-semibold" style={{ color: planetTheme.accent }}>
             {Math.round(progress)}%
@@ -372,7 +375,7 @@ function TransitCard({
 
         {/* Read more link */}
         <p className="text-xs relative z-10" style={{ color: planetTheme.accent }}>
-          Tap to read your full insight &rarr;
+          {t('readings.transitsPage.tapToRead')} &rarr;
         </p>
       </div>
     </button>
@@ -382,6 +385,7 @@ function TransitCard({
 // ─── Main Page ───────────────────────────────────────────────────────────
 
 export default function TransitsPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -397,7 +401,7 @@ export default function TransitsPage() {
   const nowRef = useRef(new Date());
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <PaywallGate feature="transit_reading"><BirthDataPrompt message="Add your birth data to see your current transits." /></PaywallGate>;
+    return <PaywallGate feature="transit_reading"><BirthDataPrompt message={t('readings.birthDataPromptTransits')} /></PaywallGate>;
   }
 
   const firstName = (profile.display_name || '').split(' ')[0] || 'Stargazer';
@@ -463,7 +467,7 @@ export default function TransitsPage() {
       );
       setEvents(dedupedEvents);
     } catch (err: any) {
-      setError(err.message || 'Failed to load transits');
+      setError(err.message || t('readings.transitsPage.errorDefault'));
     } finally {
       setLoading(false);
     }
@@ -515,7 +519,7 @@ export default function TransitsPage() {
         storylinesLoadedRef.current = true;
       } catch (err: any) {
         if (cancelled) return;
-        setStorylinesError(err?.message || 'Failed to load storylines');
+        setStorylinesError(err?.message || t('readings.transitsPage.failedToLoadStorylines'));
       } finally {
         if (!cancelled) setStorylinesLoading(false);
       }
@@ -528,7 +532,7 @@ export default function TransitsPage() {
   // ── Render ─────────────────────────────────────────────────────────────
 
   if (loading) {
-    return <LoadingCosmic label="Calculating your transits..." />;
+    return <LoadingCosmic label={t('readings.transitsPage.loadingLabel')} />;
   }
 
   if (error) {
@@ -536,7 +540,7 @@ export default function TransitsPage() {
       <div className="max-w-3xl mx-auto text-center py-16">
         <p className="text-red-400 text-sm mb-4">{error}</p>
         <button onClick={loadData} className="btn-primary">
-          Retry
+          {t('common.retry')}
         </button>
       </div>
     );
@@ -547,16 +551,14 @@ export default function TransitsPage() {
     <div className="max-w-3xl mx-auto pb-12">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       {/* ── Header ─────────────────────────────────────────────────── */}
       <h1 className="text-2xl font-display font-bold text-text-primary mt-2">
-        Your Cycles
+        {t('readings.transitsPage.title')}
       </h1>
       <p className="text-text-muted text-sm mb-5 leading-relaxed">
-        {firstName}, these are the cycles moving through your life right now.
-        Think of them like seasons &mdash; each one brings its own energy, its
-        own lessons, and its own opportunities.
+        {t('readings.transitsPage.subtitle', { name: firstName })}
       </p>
 
       {/* ── View Mode Toggle ───────────────────────────────────────── */}
@@ -569,7 +571,7 @@ export default function TransitsPage() {
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
-          Active Now
+          {t('readings.transitsPage.activeNow')}
         </button>
         <button
           onClick={() => setViewMode('storylines')}
@@ -579,7 +581,7 @@ export default function TransitsPage() {
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
-          Storylines
+          {t('readings.transitsPage.storylines')}
         </button>
       </div>
 
@@ -600,7 +602,7 @@ export default function TransitsPage() {
           <div className="flex items-center gap-2 mb-4">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
-              Impacting You Now
+              {t('readings.transitsPage.impactingYouNow')}
             </span>
           </div>
 
@@ -608,7 +610,7 @@ export default function TransitsPage() {
           {events.length === 0 ? (
             <div className="card text-center py-12">
               <p className="text-text-muted text-sm">
-                No active cycles found. Check back soon.
+                {t('readings.transitsPage.emptyState')}
               </p>
             </div>
           ) : (

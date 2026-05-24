@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface Course {
   id: string;
@@ -26,18 +27,19 @@ const COURSES: Course[] = [
 ];
 
 const LEVELS = [
-  { key: 'beginner', label: 'Beginner' },
-  { key: 'intermediate', label: 'Intermediate' },
-  { key: 'advanced', label: 'Advanced' },
+  { key: 'beginner', labelKey: 'courses.beginner' },
+  { key: 'intermediate', labelKey: 'courses.intermediate' },
+  { key: 'advanced', labelKey: 'courses.advanced' },
 ];
 
 export default function CoursesPage() {
+  const { t } = useTranslation();
   const [activeLevel, setActiveLevel] = useState('beginner');
   const filtered = COURSES.filter((c) => c.level === activeLevel);
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">Learn</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('courses.title')}</h1>
 
       {/* Level filter pills */}
       <div className="flex gap-2 mb-6">
@@ -50,7 +52,7 @@ export default function CoursesPage() {
               activeLevel === level.key && 'level-pill-active'
             )}
           >
-            {level.label}
+            {t(level.labelKey)}
           </button>
         ))}
       </div>
@@ -87,7 +89,7 @@ export default function CoursesPage() {
 
               {/* Start button */}
               <Link href={`/courses/${course.id}`} className="w-full btn-primary py-3 text-sm block text-center">
-                {course.completed > 0 ? 'Continue' : 'Start Course'}
+                {course.completed > 0 ? t('courses.continue') : t('courses.startCourse')}
               </Link>
             </div>
           );

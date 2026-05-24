@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
@@ -16,35 +17,47 @@ type SpreadType = 'single' | 'three_card' | 'celtic_cross' | 'relationship' | 'c
 
 interface SpreadOption {
   key: SpreadType;
-  label: string;
+  labelKey: string;
   icon: string;
   cardCount: number;
 }
 
 const SPREAD_OPTIONS: SpreadOption[] = [
-  { key: 'single', label: 'Single Card', icon: '♠', cardCount: 1 },
-  { key: 'three_card', label: 'Three Card', icon: '♣', cardCount: 3 },
-  { key: 'celtic_cross', label: 'Celtic Cross', icon: '✚', cardCount: 10 },
-  { key: 'relationship', label: 'Relationship', icon: '♥', cardCount: 5 },
-  { key: 'career', label: 'Career', icon: '♦', cardCount: 5 },
+  { key: 'single', labelKey: 'readings.tarotPage.spreads.single', icon: '♠', cardCount: 1 },
+  { key: 'three_card', labelKey: 'readings.tarotPage.spreads.threeCard', icon: '♣', cardCount: 3 },
+  { key: 'celtic_cross', labelKey: 'readings.tarotPage.spreads.celticCross', icon: '✚', cardCount: 10 },
+  { key: 'relationship', labelKey: 'readings.tarotPage.spreads.relationship', icon: '♥', cardCount: 5 },
+  { key: 'career', labelKey: 'readings.tarotPage.spreads.career', icon: '♦', cardCount: 5 },
 ];
 
-const THREE_CARD_LABELS = ['Past', 'Present', 'Future'];
-const CELTIC_CROSS_LABELS = [
-  'Present', 'Challenge', 'Foundation', 'Recent Past',
-  'Crown', 'Near Future', 'Self', 'Environment',
-  'Hopes/Fears', 'Outcome',
+const THREE_CARD_LABEL_KEYS = ['readings.tarotPage.positions.past', 'readings.tarotPage.positions.present', 'readings.tarotPage.positions.future'];
+const CELTIC_CROSS_LABEL_KEYS = [
+  'readings.tarotPage.positions.present', 'readings.tarotPage.positions.challenge', 'readings.tarotPage.positions.foundation', 'readings.tarotPage.positions.recentPast',
+  'readings.tarotPage.positions.crown', 'readings.tarotPage.positions.nearFuture', 'readings.tarotPage.positions.self', 'readings.tarotPage.positions.environment',
+  'readings.tarotPage.positions.hopesFears', 'readings.tarotPage.positions.outcome',
 ];
-const RELATIONSHIP_LABELS = ['You', 'Partner', 'Connection', 'Challenge', 'Potential'];
-const CAREER_LABELS = ['Current', 'Obstacle', 'Hidden Factor', 'Advice', 'Outcome'];
+const RELATIONSHIP_LABEL_KEYS = ['readings.tarotPage.positions.you', 'readings.tarotPage.positions.partner', 'readings.tarotPage.positions.connection', 'readings.tarotPage.positions.challenge', 'readings.tarotPage.positions.potential'];
+const CAREER_LABEL_KEYS = ['readings.tarotPage.positions.current', 'readings.tarotPage.positions.obstacle', 'readings.tarotPage.positions.hiddenFactor', 'readings.tarotPage.positions.advice', 'readings.tarotPage.positions.outcome'];
 
+function getPositionLabelKeys(spread: SpreadType): string[] {
+  switch (spread) {
+    case 'single': return ['readings.tarotPage.positions.focus'];
+    case 'three_card': return THREE_CARD_LABEL_KEYS;
+    case 'celtic_cross': return CELTIC_CROSS_LABEL_KEYS;
+    case 'relationship': return RELATIONSHIP_LABEL_KEYS;
+    case 'career': return CAREER_LABEL_KEYS;
+    default: return [];
+  }
+}
+
+// Keep original English labels for AI prompts (not user-facing)
 function getPositionLabels(spread: SpreadType): string[] {
   switch (spread) {
     case 'single': return ['Focus'];
-    case 'three_card': return THREE_CARD_LABELS;
-    case 'celtic_cross': return CELTIC_CROSS_LABELS;
-    case 'relationship': return RELATIONSHIP_LABELS;
-    case 'career': return CAREER_LABELS;
+    case 'three_card': return ['Past', 'Present', 'Future'];
+    case 'celtic_cross': return ['Present', 'Challenge', 'Foundation', 'Recent Past', 'Crown', 'Near Future', 'Self', 'Environment', 'Hopes/Fears', 'Outcome'];
+    case 'relationship': return ['You', 'Partner', 'Connection', 'Challenge', 'Potential'];
+    case 'career': return ['Current', 'Obstacle', 'Hidden Factor', 'Advice', 'Outcome'];
     default: return [];
   }
 }
@@ -223,12 +236,13 @@ FORMAT:
 // ── UI Components ──
 
 function CopyButton({ text }: { text: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
       className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
-      title={copied ? 'Copied!' : 'Copy'}
+      title={copied ? t('readings.tarotPage.copied') : t('common.copy')}
     >
       {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5 text-text-muted" />}
     </button>
@@ -236,6 +250,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function CardBack({ index, onClick }: { index: number; onClick: () => void }) {
+  const { t } = useTranslation();
   return (
     <button onClick={onClick} className="w-full group cursor-pointer">
       <div
@@ -245,12 +260,13 @@ function CardBack({ index, onClick }: { index: number; onClick: () => void }) {
         <div className="absolute inset-2 border border-accent-primary/15 rounded-lg" />
         <span className="text-4xl text-accent-primary/60 group-hover:text-accent-primary/80 transition-colors">{'✦'}</span>
       </div>
-      <p className="text-[11px] text-text-muted text-center mt-1.5 group-hover:text-text-tertiary transition-colors">Tap to reveal</p>
+      <p className="text-[11px] text-text-muted text-center mt-1.5 group-hover:text-text-tertiary transition-colors">{t('readings.tarotPage.tapToReveal')}</p>
     </button>
   );
 }
 
 function RevealedCard({ card }: { card: DrawnCard }) {
+  const { t } = useTranslation();
   const borderColor = card.reversed ? 'border-red-500/20' : 'border-accent-primary/20';
   const bgGradient = card.reversed
     ? 'from-red-500/10 to-red-500/[0.02]'
@@ -260,9 +276,9 @@ function RevealedCard({ card }: { card: DrawnCard }) {
     <div className={`rounded-xl border ${borderColor} bg-gradient-to-b ${bgGradient} p-4 min-h-[180px] flex flex-col items-center justify-center gap-1.5 animate-in fade-in zoom-in-95 duration-300`}>
       <h3 className="font-display font-semibold text-text-primary text-center text-sm">{card.name}</h3>
       {card.reversed && (
-        <span className="text-[10px] uppercase font-semibold tracking-wider text-red-400 bg-red-500/15 px-2 py-0.5 rounded">Reversed</span>
+        <span className="text-[10px] uppercase font-semibold tracking-wider text-red-400 bg-red-500/15 px-2 py-0.5 rounded">{t('readings.tarotPage.reversed')}</span>
       )}
-      <span className="text-[11px] text-text-muted">{card.arcana === 'major' ? 'Major Arcana' : `${card.suit} • Minor Arcana`}</span>
+      <span className="text-[11px] text-text-muted">{card.arcana === 'major' ? t('readings.tarotPage.majorArcana') : `${card.suit} • ${t('readings.tarotPage.minorArcana')}`}</span>
       {card.imagery && (
         <p className="text-xs text-text-secondary italic text-center mt-1 leading-relaxed px-1">{card.imagery}</p>
       )}
@@ -281,6 +297,7 @@ function RevealedCard({ card }: { card: DrawnCard }) {
 // ── Main Page Component ──
 
 export default function TarotPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const { hasAccess } = useSubscriptionStore();
   const { houseSystem } = useAstrologySettings();
@@ -302,7 +319,7 @@ export default function TarotPage() {
   const aiTextRef = useRef('');
 
   const selectedSpread = SPREAD_OPTIONS.find((s) => s.key === spreadType)!;
-  const positionLabels = getPositionLabels(spreadType);
+  const positionLabelKeys = getPositionLabelKeys(spreadType);
 
   // Load natal + progressed chart on mount
   useEffect(() => {
@@ -391,7 +408,7 @@ export default function TarotPage() {
       );
     } catch (err: any) {
       setAiLoading(false);
-      setError(err.message || 'Failed to generate reading. Please try again.');
+      setError(err.message || t('readings.tarotPage.failedToGenerate'));
     }
   }, [result, profile, natalData, progressedData, houseSystem]);
 
@@ -411,7 +428,7 @@ export default function TarotPage() {
           <div className="w-16 h-16 rounded-full border-2 border-accent-primary/30 border-t-accent-primary animate-spin" />
           <span className="absolute inset-0 flex items-center justify-center text-2xl">{'✦'}</span>
         </div>
-        <p className="text-text-tertiary text-sm animate-pulse">Shuffling the Cosmic Deck...</p>
+        <p className="text-text-tertiary text-sm animate-pulse">{t('readings.tarotPage.shuffling')}</p>
       </div>
     );
   }
@@ -421,14 +438,14 @@ export default function TarotPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Star className="w-8 h-8 text-accent-primary" />
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">{'♠'} Tarot Reading</h1>
-          <p className="text-text-tertiary text-sm">Receive guidance from the arcana</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{'♠'} {t('readings.tarotPage.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('readings.tarotPage.subtitle')}</p>
         </div>
       </div>
 
@@ -436,7 +453,7 @@ export default function TarotPage() {
       {!result && (
         <div className="card space-y-6">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-3">Choose Your Spread</label>
+            <label className="block text-sm font-medium text-text-secondary mb-3">{t('readings.tarotPage.chooseSpread')}</label>
             <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
               {SPREAD_OPTIONS.map((s) => (
                 <button
@@ -449,7 +466,7 @@ export default function TarotPage() {
                   }`}
                 >
                   <span className="text-xl">{s.icon}</span>
-                  <span className="text-xs font-medium">{s.label}</span>
+                  <span className="text-xs font-medium">{t(s.labelKey)}</span>
                   <span className="text-[10px] text-text-muted">{s.cardCount} {s.cardCount === 1 ? 'card' : 'cards'}</span>
                 </button>
               ))}
@@ -457,18 +474,18 @@ export default function TarotPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Your Question (Optional)</label>
+            <label className="block text-sm font-medium text-text-secondary mb-2">{t('readings.tarotPage.yourQuestion')}</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               className="input min-h-[80px] resize-none"
-              placeholder="What guidance do you seek?"
+              placeholder={t('readings.tarotPage.questionPlaceholder')}
               rows={3}
             />
           </div>
 
           <button onClick={drawCards} disabled={loading} className="btn-primary w-full text-base py-3">
-            {'✦'} Draw {selectedSpread.label}
+            {'✦'} {t('readings.tarotPage.drawButton', { spread: t(selectedSpread.labelKey) })}
           </button>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
@@ -492,7 +509,7 @@ export default function TarotPage() {
             {result.cards.map((card, i) => (
               <div key={i}>
                 <p className="text-[10px] uppercase tracking-[1.5px] text-accent-primary/70 text-center mb-1.5 font-medium">
-                  {positionLabels[i] || card.position}
+                  {positionLabelKeys[i] ? t(positionLabelKeys[i]) : card.position}
                 </p>
                 {revealed.has(i) ? (
                   <RevealedCard card={card} />
@@ -507,12 +524,12 @@ export default function TarotPage() {
             {!allRevealed && (
               <button onClick={revealAll} className="btn-secondary flex-1 flex items-center justify-center gap-2">
                 <Eye className="w-4 h-4" />
-                Reveal All Cards
+                {t('readings.tarotPage.revealAll')}
               </button>
             )}
             <button onClick={resetReading} className="btn-secondary flex-1 flex items-center justify-center gap-2">
               <RotateCcw className="w-4 h-4" />
-              New Reading
+              {t('readings.tarotPage.newReading')}
             </button>
           </div>
 
@@ -523,7 +540,7 @@ export default function TarotPage() {
               className="btn-primary w-full py-3.5 text-base flex items-center justify-center gap-2"
             >
               <Sparkles className="w-5 h-5" />
-              {showAi ? 'Regenerate Personal Reading' : 'Get Your Personal Reading'}
+              {showAi ? t('readings.tarotPage.regenerateReading') : t('readings.tarotPage.getPersonalReading')}
             </button>
           )}
 
@@ -533,7 +550,7 @@ export default function TarotPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm font-medium text-accent-primary flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
-                    Personal Tarot Reading
+                    {t('readings.tarotPage.personalTarotReading')}
                   </p>
                   {aiText && !aiLoading && (
                     <div className="flex items-center gap-1">
@@ -547,7 +564,7 @@ export default function TarotPage() {
                     <ReactMarkdown>{aiText}</ReactMarkdown>
                   </div>
                 ) : (
-                  <p className="text-text-tertiary animate-pulse">Channeling your chart and cards...</p>
+                  <p className="text-text-tertiary animate-pulse">{t('readings.tarotPage.channeling')}</p>
                 )}
                 {aiLoading && (
                   <span className="text-accent-primary text-base animate-pulse">{'█'}</span>
@@ -567,9 +584,9 @@ export default function TarotPage() {
                     className="mt-4 w-full py-3 rounded-xl bg-[#2D1B69] border border-accent-primary/30 text-white font-medium text-sm hover:bg-[#3A2580] transition-colors flex items-center justify-center gap-2"
                   >
                     {copied ? (
-                      <><Check className="w-4 h-4 text-green-400" /> Copied!</>
+                      <><Check className="w-4 h-4 text-green-400" /> {t('readings.tarotPage.copied')}</>
                     ) : (
-                      <>{'🌌'} Share Reading</>
+                      <>{'🌌'} {t('readings.tarotPage.shareReading')}</>
                     )}
                   </button>
                 )}

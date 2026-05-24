@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { ArrowLeft, Search, Filter, Trash2, ChevronRight, Sparkles, MessageCircle } from 'lucide-react';
 import { DREAM_TYPES, DREAM_EMOTIONS, PRIVACY_OPTIONS, DREAM_SYMBOLS, searchSymbols, getSymbol } from '@/lib/dreamDictionary';
@@ -12,14 +13,15 @@ import { buildDreamAstrologyContext } from '@/lib/dreamAstrologyConnector';
 
 type Tab = 'record' | 'journal' | 'dictionary' | 'patterns';
 
-const TABS: { key: Tab; label: string; glyph: string }[] = [
-  { key: 'record', label: 'Record', glyph: '✍️' },
-  { key: 'journal', label: 'Journal', glyph: '📖' },
-  { key: 'dictionary', label: 'Symbols', glyph: '🔮' },
-  { key: 'patterns', label: 'Patterns', glyph: '📊' },
+const TABS: { key: Tab; labelKey: string; glyph: string }[] = [
+  { key: 'record', labelKey: 'readings.dreamOraclePage.tabs.record', glyph: '✍️' },
+  { key: 'journal', labelKey: 'readings.dreamOraclePage.tabs.journal', glyph: '📖' },
+  { key: 'dictionary', labelKey: 'readings.dreamOraclePage.tabs.symbols', glyph: '🔮' },
+  { key: 'patterns', labelKey: 'readings.dreamOraclePage.tabs.patterns', glyph: '📊' },
 ];
 
 export default function DreamOraclePage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('record');
 
   return (
@@ -31,12 +33,12 @@ export default function DreamOraclePage() {
         </Link>
         <div className="flex-1 text-center">
           <span className="text-3xl">🌙</span>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Dream Oracle</h1>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.dreamOraclePage.title')}</h1>
         </div>
         <div className="w-5" />
       </div>
       <p className="text-text-muted text-sm text-center mb-4 px-4">
-        Decode your dreams through symbols, emotions, astrology, and the hidden language of your subconscious.
+        {t('readings.dreamOraclePage.subtitle')}
       </p>
 
       {/* Tab Bar */}
@@ -52,7 +54,7 @@ export default function DreamOraclePage() {
             }`}
           >
             <span className="text-base">{tab.glyph}</span>
-            <span className="text-xs mt-0.5">{tab.label}</span>
+            <span className="text-xs mt-0.5">{t(tab.labelKey)}</span>
           </button>
         ))}
       </div>
@@ -70,6 +72,7 @@ export default function DreamOraclePage() {
    ================================================================ */
 
 function RecordDreamTab() {
+  const { t } = useTranslation();
   const [description, setDescription] = useState('');
   const [title, setTitle] = useState('');
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
@@ -360,14 +363,15 @@ function InterpretationView({ interpretation, astrology, entry, onBack }: {
   entry: DreamEntry | null;
   onBack: () => void;
 }) {
+  const { t } = useTranslation();
   const sections: { title: string; glyph: string; content: string }[] = [
-    { title: 'The Core Message', glyph: '🎯', content: interpretation.surfaceStory },
-    { title: 'What Your Subconscious Was Showing You', glyph: '🔮', content: interpretation.hiddenMessage },
-    { title: 'The Symbols That Matter Most', glyph: '🧠', content: interpretation.psychologicalMeaning },
-    { title: 'The Emotional Undercurrent', glyph: '💜', content: interpretation.emotionalMeaning },
-    { title: 'What This Dream Is Asking You To Face', glyph: '🌑', content: interpretation.shadowMessage },
-    { title: "Dream Oracle's Final Message", glyph: '✨', content: interpretation.spiritualMeaning },
-    { title: 'Astrological Connection', glyph: '⭐', content: interpretation.astrologicalConnection },
+    { title: t('readings.dreamOraclePage.interpretation.coreMessage'), glyph: '🎯', content: interpretation.surfaceStory },
+    { title: t('readings.dreamOraclePage.interpretation.subconsciousMessage'), glyph: '🔮', content: interpretation.hiddenMessage },
+    { title: t('readings.dreamOraclePage.interpretation.symbolsMatter'), glyph: '🧠', content: interpretation.psychologicalMeaning },
+    { title: t('readings.dreamOraclePage.interpretation.emotionalUndercurrent'), glyph: '💜', content: interpretation.emotionalMeaning },
+    { title: t('readings.dreamOraclePage.interpretation.whatToFace'), glyph: '🌑', content: interpretation.shadowMessage },
+    { title: t('readings.dreamOraclePage.interpretation.oracleMessage'), glyph: '✨', content: interpretation.spiritualMeaning },
+    { title: t('readings.dreamOraclePage.interpretation.astroConnection'), glyph: '⭐', content: interpretation.astrologicalConnection },
     { title: 'Why You Dreamed This Now', glyph: '⏰', content: interpretation.whyNow },
     { title: 'What To Watch For', glyph: '👁️', content: interpretation.watchFor },
     { title: 'What To Do Next', glyph: '✨', content: interpretation.whatToDo },
@@ -452,6 +456,7 @@ function InterpretationView({ interpretation, astrology, entry, onBack }: {
    ================================================================ */
 
 function DreamJournalTab() {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<DreamEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -613,6 +618,7 @@ function DreamJournalTab() {
    ================================================================ */
 
 function DreamDictionaryTab() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<DreamSymbolEntry | null>(null);
   const results = searchSymbols(search);
@@ -673,6 +679,7 @@ function DreamDictionaryTab() {
    ================================================================ */
 
 function DreamPatternsTab() {
+  const { t } = useTranslation();
   const [patterns, setPatterns] = useState<DreamPatterns | null>(null);
   const [loading, setLoading] = useState(true);
 

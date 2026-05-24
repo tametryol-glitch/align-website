@@ -5,6 +5,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { getRevenueCatInstance, PLANS } from '@/lib/revenuecat';
 import { Check, Sparkles, Star, Zap, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const PLAN_META = [
   { key: 'free', icon: Star },
@@ -14,6 +15,7 @@ const PLAN_META = [
 ] as const;
 
 export default function PricingPage() {
+  const { t } = useTranslation();
   const { tier } = useSubscriptionStore();
   const [loading, setLoading] = useState<string | null>(null);
   const [offerings, setOfferings] = useState<any>(null);
@@ -73,10 +75,10 @@ export default function PricingPage() {
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-display font-bold text-text-primary mb-3">
-          Your chart. Your clarity. Your plan.
+          {t('pricing.title')}
         </h1>
         <p className="text-text-tertiary max-w-xl mx-auto">
-          Choose the depth of insight that fits your life. Every plan includes professional-grade astrology — upgrade anytime.
+          {t('pricing.subtitle')}
         </p>
       </div>
 
@@ -101,7 +103,7 @@ export default function PricingPage() {
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <span className="bg-gradient-accent text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    Most Popular
+                    {t('subscription.mostPopular')}
                   </span>
                 </div>
               )}
@@ -113,7 +115,7 @@ export default function PricingPage() {
 
               <div className="mb-6">
                 <span className="text-4xl font-bold text-text-primary">${plan.price}</span>
-                <span className="text-text-muted">/month</span>
+                <span className="text-text-muted">{t('subscription.perMonth')}</span>
               </div>
 
               <ul className="space-y-2 mb-6 flex-1">
@@ -138,11 +140,11 @@ export default function PricingPage() {
                 )}
               >
                 {loading === meta.key
-                  ? 'Loading...'
+                  ? t('common.loading')
                   : isCurrent
                   ? 'Current Plan'
                   : meta.key === 'free'
-                  ? 'Get Started Free'
+                  ? t('subscription.free.cta')
                   : `Get ${plan.name}`}
               </button>
             </div>

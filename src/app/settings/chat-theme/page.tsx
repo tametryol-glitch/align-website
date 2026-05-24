@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import { getVisibleChatThemes, type ChatTheme } from '@/data/chatThemes';
@@ -8,6 +9,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ChatThemePage() {
+  const { t } = useTranslation();
   const { profile, setProfile } = useAuthStore();
   const themes = getVisibleChatThemes();
   const [selected, setSelected] = useState<string>(profile?.chat_theme || 'default');
@@ -89,11 +91,11 @@ export default function ChatThemePage() {
         <Link href="/settings" className="p-1 hover:bg-bg-tertiary rounded-lg transition-colors">
           <ArrowLeft className="w-5 h-5 text-text-muted" />
         </Link>
-        <h1 className="text-2xl font-display font-bold text-text-primary">Chat Theme</h1>
+        <h1 className="text-2xl font-display font-bold text-text-primary">{t('settings.chatTheme.title')}</h1>
       </div>
 
       <p className="text-sm text-text-muted mb-6">
-        Choose a theme for your message bubbles and chat background. Your choice syncs across all your devices.
+        {t('settings.chatTheme.subtitle')}
       </p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-6">
@@ -111,7 +113,7 @@ export default function ChatThemePage() {
         disabled={saving || selected === (profile?.chat_theme || 'default')}
         className="btn-primary w-full disabled:opacity-50"
       >
-        {saving ? 'Saving...' : 'Save Theme'}
+        {saving ? t('common.loading') : t('common.save')}
       </button>
     </div>
   );

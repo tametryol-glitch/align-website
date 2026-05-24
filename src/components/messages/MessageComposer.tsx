@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Send, X, Image as ImageIcon, Smile,
 } from 'lucide-react';
@@ -46,6 +47,7 @@ export function MessageComposer({
   onSmartReplySelect, onToggleGifPicker, onToggleAttachMenu,
   onCloseAttachMenu, onSelectFileFromMenu, onSelectLocation, onSelectPoll,
 }: MessageComposerProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUploadRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +58,7 @@ export function MessageComposer({
         <div className="px-4 py-2 border-t border-border-primary bg-bg-secondary flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-accent-primary font-medium">
-              {editingMessage ? 'Editing message' : `Replying to ${replyTo?.sender_name}`}
+              {editingMessage ? t('messages.editingMessage', 'Editing message') : t('messages.replyingTo', 'Replying to {{name}}', { name: replyTo?.sender_name })}
             </p>
             <p className="text-xs text-text-muted truncate">
               {(editingMessage || replyTo)?.content}
@@ -151,7 +153,7 @@ export function MessageComposer({
               onNewMessageChange(e.target.value);
             }
           }}
-          placeholder={editingMessage ? 'Edit message...' : 'Type a message...'}
+          placeholder={editingMessage ? t('messages.editPlaceholder', 'Edit message...') : t('messages.composer.placeholder')}
           className="input flex-1 py-2.5"
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

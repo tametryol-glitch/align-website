@@ -8,10 +8,12 @@ import { useRouter } from 'next/navigation';
 import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
+import { useTranslation } from 'react-i18next';
 
 const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Complete'];
 
 export default function OnboardingPage() {
+  const { t } = useTranslation();
   const { user, setProfile, profile } = useAuthStore();
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -150,7 +152,7 @@ export default function OnboardingPage() {
             <div className="py-8">
               <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-6" />
               <h1 className="text-2xl font-display font-bold text-text-primary mb-3">
-                Welcome to Align
+                {t('auth.welcome')}
               </h1>
               <p className="text-sm text-text-tertiary mb-8">
                 Let&apos;s set up your cosmic profile. Your birth data helps us calculate accurate charts and personalized readings.
@@ -363,7 +365,7 @@ export default function OnboardingPage() {
                 disabled={saving}
                 className="btn-primary w-full"
               >
-                {saving ? 'Saving...' : 'Enter the Cosmos'}
+                {saving ? t('editProfile.saving') : 'Enter the Cosmos'}
               </button>
               <button onClick={prev} className="btn-ghost w-full mt-2 text-sm">
                 Go back

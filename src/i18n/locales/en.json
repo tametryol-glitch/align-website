@@ -48,7 +48,8 @@
     "agreeToTerms": "I agree to the",
     "privacyPolicy": "Privacy Policy",
     "and": "and",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "signInToAccess": "Sign in to access messages"
   },
   "onboarding": {
     "title": "Let's create your birth chart",
@@ -104,7 +105,7 @@
       "Sagittarius": "Your emotions need room to breathe. You process feelings through movement, adventure, humor, and philosophical perspective. Emotional claustrophobia is your kryptonite — you need freedom even in your closest relationships.",
       "Capricorn": "You were taught early that emotions are not safe. You process feelings slowly, privately, and with a level of self-control that others mistake for coldness. But beneath that composure is a loyalty so fierce it can break you.",
       "Aquarius": "Your emotional world is unconventional. You care deeply about humanity but struggle with one-on-one emotional intimacy. You process feelings intellectually — stepping outside them to analyze rather than drowning in them.",
-      "Pisces": "You feel everything — your own emotions, other people's emotions, the collective mood of every room you enter. Your heart has no walls. This is both your greatest gift and the thing that exhausts you the most."
+      "Pisces": "You feel everything — your own emotions, other people’s emotions, the collective mood of every room you enter. Your heart has no walls. This is both your greatest gift and the thing that exhausts you the most."
     },
     "risingMask": {
       "Aries": "People see you as bold, direct, and a little intimidating. You come across as someone who takes charge — the person others look to when nobody knows what to do. Your energy enters before you do.",
@@ -177,7 +178,374 @@
     "savedCharts": "Saved Charts",
     "cosmicJournal": "Cosmic Journal",
     "soulGifts": "Soul Gifts",
-    "soulMemory": "Soul Memory"
+    "soulMemory": "Soul Memory",
+    "soulAscension": "Soul Ascension",
+    "dreamOracle": "Dream Oracle",
+    "backToReadings": "Back to Readings",
+    "upgradeToTier": "Upgrade to {{tier}}",
+    "birthDataRequired": "Please add your birth data in your profile first.",
+    "birthDataPromptTransits": "Add your birth data to see your current transits.",
+    "birthDataPromptCompatibility": "Add your birth data to check compatibility with someone special.",
+    "birthDataPromptAlerts": "We need your birth data to calculate personalized cosmic alerts for your chart.",
+    "transitsPage": {
+      "title": "Your Cycles",
+      "subtitle": "{{name}}, these are the cycles moving through your life right now. Think of them like seasons — each one brings its own energy, its own lessons, and its own opportunities.",
+      "loadingLabel": "Calculating your transits...",
+      "errorDefault": "Failed to load transits",
+      "emptyState": "No active cycles found. Check back soon.",
+      "activeNow": "Active Now",
+      "storylines": "Storylines",
+      "impactingYouNow": "Impacting You Now",
+      "backToCycles": "Back to Cycles",
+      "active": "active",
+      "approaching": "Approaching",
+      "separating": "Separating",
+      "cycleMeaning": "What This Cycle Means for You",
+      "howToNavigate": "How to Navigate This",
+      "technicalDetails": "Technical Details",
+      "transit": "Transit",
+      "currentOrb": "Current Orb",
+      "direction": "Direction",
+      "intensity": "Intensity",
+      "separatingDesc": "Separating (moving away from exact)",
+      "applyingDesc": "Applying (moving toward exact)",
+      "intensityMajor": "Major (outer planet)",
+      "intensityModerate": "Moderate",
+      "intensityMinor": "Minor",
+      "nearExact": "Near exact — strongest influence",
+      "stronglyActive": "Strongly active",
+      "buildingMomentum": "Building momentum",
+      "enteringAwareness": "Entering awareness",
+      "lessThanADay": "Less than a day left",
+      "daysLeft": "{{count}} days left",
+      "weeksLeft": "~{{count}} weeks left",
+      "monthsLeft": "~{{count}} months left",
+      "yearsLeft": "{{count}}+ years",
+      "tapToRead": "Tap to read your full insight",
+      "failedToLoadStorylines": "Failed to load storylines"
+    },
+    "tarotPage": {
+      "title": "Tarot Reading",
+      "subtitle": "Receive guidance from the arcana",
+      "chooseSpread": "Choose Your Spread",
+      "yourQuestion": "Your Question (Optional)",
+      "questionPlaceholder": "What guidance do you seek?",
+      "drawButton": "Draw {{spread}}",
+      "shuffling": "Shuffling the Cosmic Deck...",
+      "tapToReveal": "Tap to reveal",
+      "revealAll": "Reveal All Cards",
+      "newReading": "New Reading",
+      "getPersonalReading": "Get Your Personal Reading",
+      "regenerateReading": "Regenerate Personal Reading",
+      "personalTarotReading": "Personal Tarot Reading",
+      "channeling": "Channeling your chart and cards...",
+      "shareReading": "Share Reading",
+      "copied": "Copied!",
+      "failedToGenerate": "Failed to generate reading. Please try again.",
+      "reversed": "Reversed",
+      "majorArcana": "Major Arcana",
+      "minorArcana": "Minor Arcana",
+      "spreads": {
+        "single": "Single Card",
+        "threeCard": "Three Card",
+        "celticCross": "Celtic Cross",
+        "relationship": "Relationship",
+        "career": "Career"
+      },
+      "positions": {
+        "focus": "Focus",
+        "past": "Past",
+        "present": "Present",
+        "future": "Future",
+        "challenge": "Challenge",
+        "foundation": "Foundation",
+        "recentPast": "Recent Past",
+        "crown": "Crown",
+        "nearFuture": "Near Future",
+        "self": "Self",
+        "environment": "Environment",
+        "hopesFears": "Hopes/Fears",
+        "outcome": "Outcome",
+        "you": "You",
+        "partner": "Partner",
+        "connection": "Connection",
+        "potential": "Potential",
+        "current": "Current",
+        "obstacle": "Obstacle",
+        "hiddenFactor": "Hidden Factor",
+        "advice": "Advice"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Dream Oracle",
+      "subtitle": "Decode your dreams through symbols, emotions, astrology, and the hidden language of your subconscious.",
+      "tabs": {
+        "record": "Record",
+        "journal": "Journal",
+        "symbols": "Symbols",
+        "patterns": "Patterns"
+      },
+      "record": {
+        "dreamTitle": "Dream Title (optional)",
+        "titlePlaceholder": "Auto-generated if left blank",
+        "describeLabel": "Describe Your Dream *",
+        "describePlaceholder": "Close your eyes and describe everything you remember...",
+        "mainEmotions": "Main Emotions (up to 5)",
+        "peopleDream": "People in the Dream",
+        "peoplePlaceholder": "e.g. Mother, ex-partner, stranger, friend",
+        "placesDream": "Places in the Dream",
+        "placesPlaceholder": "e.g. childhood home, ocean, dark forest",
+        "separateCommas": "Separate with commas",
+        "symbolsObjects": "Symbols / Objects",
+        "selectSymbols": "Click to select dream symbols",
+        "selectedCount": "{{count}} selected",
+        "searchSymbols": "Search symbols...",
+        "dreamType": "Dream Type",
+        "dreamIntensity": "Dream Intensity: {{value}}/10",
+        "privacy": "Privacy",
+        "interpretDream": "Interpret My Dream",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Your Dream Interpretation",
+        "mainSymbols": "Main Symbols",
+        "coreMessage": "The Core Message",
+        "subconsciousMessage": "What Your Subconscious Was Showing You",
+        "symbolsMatter": "The Symbols That Matter Most",
+        "emotionalUndercurrent": "The Emotional Undercurrent",
+        "whatToFace": "What This Dream Is Asking You To Face",
+        "oracleMessage": "Dream Oracle's Final Message",
+        "astroConnection": "Astrological Connection",
+        "whyNow": "Why You Dreamed This Now",
+        "watchFor": "What To Watch For",
+        "whatToDo": "What To Do Next",
+        "reflectionQuestions": "Reflection Questions",
+        "askAboutDream": "Ask About This Dream",
+        "visualizeDream": "Visualize My Dream",
+        "comingSoon": "COMING SOON",
+        "recordAnother": "Record Another Dream"
+      },
+      "journal": {
+        "loadingJournal": "Loading dream journal...",
+        "searchDreams": "Search dreams...",
+        "noDreamsYet": "No dreams yet",
+        "noDreamsHint": "Record your first dream to begin building your journal.",
+        "deleteConfirm": "Delete this dream? This cannot be undone."
+      },
+      "dictionary": {
+        "backToSymbols": "Back to symbols",
+        "generalMeaning": "General Meaning",
+        "psychologicalMeaning": "Psychological Meaning",
+        "spiritualMeaning": "Spiritual Meaning",
+        "astrologicalMeaning": "Astrological Meaning",
+        "shadowMeaning": "Shadow Meaning",
+        "reflectionQuestion": "Reflection Question"
+      },
+      "patterns": {
+        "noPatternsYet": "No patterns yet",
+        "noPatternsHint": "Record at least 3 dreams to begin seeing patterns in your dream life.",
+        "overview": "Overview",
+        "totalDreams": "Total Dreams",
+        "avgIntensity": "Avg Intensity",
+        "nightmares": "Nightmares",
+        "lucidDreams": "Lucid Dreams",
+        "prophetic": "Prophetic",
+        "recurringSymbols": "Most Recurring Symbols",
+        "recurringEmotions": "Most Recurring Emotions",
+        "recurringPeople": "Most Recurring People",
+        "dreamTypes": "Dream Types",
+        "dreamsByMoonPhase": "Dreams by Moon Phase",
+        "moonPhaseHint": "Moon phase pattern tracking will activate once you have 10+ dreams with astrology data connected.",
+        "dreamsByTransit": "Dreams by Transit",
+        "transitHint": "Transit correlation will reveal which planetary aspects activate your most vivid or prophetic dreams."
+      }
+    },
+    "starseedPage": {
+      "title": "Starseed Origin",
+      "subtitle": "Discover your cosmic soul origins",
+      "description": "Analyze your natal chart to discover which star systems your soul resonates with.",
+      "discoverButton": "Discover My Origins",
+      "analyzing": "Analyzing...",
+      "dominantOrigin": "Dominant Origin",
+      "resonancePoints": "Score: {{score}} resonance points"
+    },
+    "numerologyPage": {
+      "title": "Numerology",
+      "subtitle": "Your cosmic numbers decoded",
+      "master": "Master"
+    },
+    "angelNumbersPage": {
+      "title": "Angel Numbers",
+      "subtitle": "Look up the meaning behind the numbers you see",
+      "searchPlaceholder": "Enter a number (e.g. 111, 444)...",
+      "popular": "Popular Numbers",
+      "notFound": "Number not found. Try a common angel number.",
+      "copiedToClipboard": "Copied to clipboard!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Your energetic blueprint",
+      "aura": "Aura",
+      "defined": "Defined",
+      "undefined": "Undefined"
+    },
+    "financialPage": {
+      "title": "Financial Astrology",
+      "subtitle": "Your cosmic money blueprint",
+      "personalIncome": "Personal Income & Values",
+      "sharedResources": "Shared Resources & Transformation",
+      "careerStanding": "Career & Public Standing",
+      "gainsNetworks": "Gains & Networks",
+      "strengths": "Strengths",
+      "challenges": "Challenges",
+      "monthlyForecast": "Monthly Forecast",
+      "timingWindows": "Timing Windows",
+      "favorable": "Favorable",
+      "mixed": "Mixed",
+      "challenging": "Challenging"
+    },
+    "compatibilityPage": {
+      "title": "Compatibility Check",
+      "subtitle": "Explore the cosmic connection between two souls",
+      "person2Label": "Partner's Birth Data",
+      "datePlaceholder": "Birth Date",
+      "timePlaceholder": "Birth Time",
+      "locationPlaceholder": "Birth Location",
+      "calculateButton": "Check Compatibility",
+      "calculating": "Calculating compatibility...",
+      "overallScore": "Overall Score",
+      "soulLevelConnection": "Soul-Level Connection",
+      "deepCompatibility": "Deep Compatibility",
+      "strongPotential": "Strong Potential",
+      "moderateMatch": "Moderate Match",
+      "growthRequired": "Growth Required",
+      "challengingDynamic": "Challenging Dynamic",
+      "categories": {
+        "attraction": "Physical Attraction",
+        "emotional": "Emotional Bond",
+        "mental": "Mental Connection",
+        "stability": "Long-Term Stability",
+        "karmic": "Karmic Link",
+        "harmony": "Harmony",
+        "magnetic": "Magnetic Pull"
+      },
+      "showAspects": "Show Aspects",
+      "hideAspects": "Hide Aspects"
+    },
+    "cosmicJournalPage": {
+      "title": "Cosmic Journal",
+      "subtitle": "Track your inner world alongside the cosmos",
+      "newEntry": "New Entry",
+      "moodOptions": {
+        "low": "Low",
+        "meh": "Meh",
+        "neutral": "Neutral",
+        "good": "Good",
+        "great": "Great"
+      },
+      "noEntries": "No journal entries yet",
+      "noEntriesHint": "Start writing to track your inner world alongside the cosmos."
+    },
+    "moonPhasesPage": {
+      "title": "Moon Phases",
+      "tabs": {
+        "today": "Today",
+        "calendar": "Calendar",
+        "forecast": "Forecast",
+        "eclipses": "Eclipses",
+        "birthMoon": "Birth Moon"
+      },
+      "failedToLoadChart": "Failed to load natal chart"
+    },
+    "planetaryHoursPage": {
+      "title": "Planetary Hours",
+      "subtitle": "Ancient timing wisdom for modern life",
+      "currentHour": "Current Hour",
+      "daySummary": "Day Summary",
+      "hoursTable": "Hours Table"
+    },
+    "yearAheadPage": {
+      "title": "My Year Ahead",
+      "subtitle": "Your personalized cosmic forecast for the year",
+      "generating": "Generating your year ahead...",
+      "monthlyOverview": "Monthly Overview",
+      "keyTransits": "Key Transits",
+      "calm": "Calm",
+      "activeIntensity": "Active",
+      "intense": "Intense"
+    },
+    "solarReturnPage": {
+      "title": "Solar Return",
+      "subtitle": "Your birthday chart — the cosmic blueprint for your year",
+      "generating": "Calculating your Solar Return...",
+      "yearTheme": "Year Theme",
+      "planetsOnAngles": "Planets on Angles",
+      "retrogrades": "Retrogrades",
+      "monthlyTimeline": "Monthly Timeline",
+      "natalComparisons": "Natal vs Solar Return",
+      "criticalAspects": "Critical Aspects",
+      "yearPattern": "Year Pattern"
+    },
+    "galacticClockPage": {
+      "title": "Galactic Clock",
+      "subtitle": "Your cosmic timing interface"
+    },
+    "galacticForecastPage": {
+      "title": "Galactic Forecast",
+      "subtitle": "Deep-space energies influencing your chart"
+    },
+    "midpointsPage": {
+      "title": "Midpoint Calculator",
+      "subtitle": "Discover hidden connections in your chart"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Ancient Persian planetary periods"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistic timing technique"
+    },
+    "acgPage": {
+      "title": "Astro-Cartography",
+      "subtitle": "Where in the world your planets activate"
+    },
+    "fixedStarsPage": {
+      "title": "Fixed Stars",
+      "subtitle": "Stellar influences in your chart"
+    },
+    "arabicPartsPage": {
+      "title": "Arabic Parts",
+      "subtitle": "Ancient calculated points in your chart"
+    },
+    "pathwayPage": {
+      "title": "Pathway to Success",
+      "subtitle": "Your cosmic career and life-purpose blueprint"
+    },
+    "rectificationPage": {
+      "title": "Birth Time Rectification",
+      "subtitle": "Fine-tune your birth time for more accurate charts"
+    },
+    "nameAnalysisPage": {
+      "title": "Name Analysis",
+      "subtitle": "The numerology of your name"
+    },
+    "soulGiftsPage": {
+      "title": "Soul Gifts",
+      "subtitle": "Discover the unique gifts encoded in your chart"
+    },
+    "soulMemoryPage": {
+      "title": "Soul Memory",
+      "subtitle": "Past-life echoes in your natal chart"
+    },
+    "soulAscensionPage": {
+      "title": "Soul Ascension",
+      "description": "Play your natal chart as a reincarnation RPG with karma, purpose paths, soul contracts, relics, and past-life choices."
+    },
+    "chartAdjusterPage": {
+      "title": "Chart Adjuster",
+      "subtitle": "Experiment with different birth times"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI Interpretation",
@@ -189,6 +557,464 @@
       "spiritual": "Spiritual Gifts",
       "passion": "Passion",
       "reputation": "Reputation"
+    }
+  },
+  "dating": {
+    "title": "Cosmic Dating",
+    "subtitle": "Your curated cosmic picks",
+    "introTitle": "Cosmic Dating",
+    "introDescription": "Find meaningful connections written in the stars. Create your dating profile to start discovering cosmically compatible matches.",
+    "createProfileButton": "Create Your Dating Profile",
+    "featurePhotos": "Add photos & a voice intro",
+    "featureCompatibility": "Get matched by cosmic compatibility",
+    "featureSafety": "Safe & verified connections",
+    "tabs": {
+      "discover": "Discover",
+      "likes": "Likes",
+      "matches": "Matches",
+      "myProfile": "My Profile"
+    },
+    "discovery": {
+      "consulting": "Consulting the cosmos...",
+      "noPicksTitle": "No Cosmic Picks Yet",
+      "allCaughtUpTitle": "All Caught Up!",
+      "noPicksDescription": "The stars are still aligning your matches. Make sure your dating profile is complete!",
+      "allCaughtUpDescription": "Come back tomorrow for new cosmic picks. Quality connections take time.",
+      "completeProfile": "Complete Profile",
+      "dailyLikeLimit": "You've reached your daily like limit ({{limit}}). Upgrade for more!",
+      "dailyRoseLimit": "You've used all your Cosmic Roses today ({{limit}}). Upgrade for more!",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "likes": {
+      "title": "Likes",
+      "receivedCount": "{{count}} people are interested",
+      "sentCount": "You liked {{count}} people",
+      "received": "Received",
+      "sent": "Sent",
+      "seeWhoLikes": "See who likes you",
+      "upgradeHint": "Upgrade to Light or above to reveal profiles",
+      "upgrade": "Upgrade",
+      "noLikesYet": "No likes yet",
+      "noSentYet": "No likes sent yet",
+      "keepFresh": "Keep your profile fresh and the cosmos will deliver.",
+      "headToDiscover": "Head to Discover to find your cosmic connections.",
+      "mysteryAdmirer": "Mystery admirer",
+      "rose": "Rose",
+      "likeBack": "Like Back",
+      "matching": "Matching..."
+    },
+    "matches": {
+      "title": "Your Matches",
+      "connectionCount": "{{count}} cosmic connections",
+      "noMatchesTitle": "No matches yet",
+      "noMatchesDescription": "When you and someone both like each other, you'll appear here.",
+      "discoverPeople": "Discover People",
+      "cosmicIcebreakers": "Cosmic Icebreakers",
+      "message": "Message",
+      "unmatchConfirm": "Unmatch {{name}}?",
+      "unmatch": "Unmatch",
+      "cancel": "Cancel",
+      "matchedToday": "Matched today",
+      "matchedDaysAgo": "Matched {{days}}d ago",
+      "cosmicMatch": "Cosmic Match"
+    },
+    "profile": {
+      "title": "Dating Profile",
+      "datingMode": "Dating Mode",
+      "datingModeHint": "Make your profile visible in cosmic discovery",
+      "cosmicSignature": "Your Cosmic Signature",
+      "sunMoonRising": "Sun / Moon / Rising",
+      "photos": "Photos",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "About Me",
+      "aboutMePlaceholder": "Tell potential matches about yourself...",
+      "cosmicPrompts": "Cosmic Prompts",
+      "addPrompt": "Add a prompt",
+      "promptAnswerPlaceholder": "Your answer...",
+      "voicePrompt": "Voice Prompt",
+      "voicePromptHint": "Record a 30-second voice intro to let your personality shine",
+      "uploadingVoice": "Uploading voice prompt...",
+      "reRecord": "Re-record",
+      "stopRecording": "Stop Recording",
+      "recordVoicePrompt": "Record Voice Prompt",
+      "videoIntro": "Video Intro",
+      "videoIntroHint": "Upload a 15-second video to introduce yourself",
+      "replaceVideo": "Replace video",
+      "uploadVideo": "Upload Video",
+      "showAge": "Show age on profile",
+      "photoVerification": "Photo Verification",
+      "verified": "Verified",
+      "verifyNow": "Verify now",
+      "datingPreferences": "Dating Preferences",
+      "savePreferences": "Save Preferences",
+      "saveProfile": "Save Profile",
+      "saving": "Saving...",
+      "preferenceFields": {
+        "genderIdentity": "Gender Identity",
+        "sexualOrientation": "Sexual Orientation",
+        "interestedIn": "Interested In",
+        "primaryIntent": "Primary Intent",
+        "ageRange": "Age Range",
+        "maxDistance": "Max Distance"
+      },
+      "privacyLevels": {
+        "visible": "Visible",
+        "matchOnly": "Match only",
+        "hidden": "Hidden"
+      }
+    },
+    "verify": {
+      "title": "Photo Verification",
+      "subtitle": "Verify your identity to earn a trusted badge on your dating profile",
+      "backToProfile": "Back to Profile",
+      "verifiedTitle": "Verified!",
+      "verifiedDescription": "Your profile now shows a verified badge.",
+      "pendingTitle": "Under Review",
+      "pendingDescription": "Your selfie is being reviewed. This usually takes 24-48 hours.",
+      "rejectedTitle": "Not Approved",
+      "rejectedHint": "You can try again with a clearer selfie.",
+      "tryAgain": "Try Again",
+      "howItWorks": "How it works:",
+      "step1": "1. Take a clear selfie with good lighting",
+      "step2": "2. Make sure your face is fully visible",
+      "step3": "3. We'll compare it with your profile photos",
+      "step4": "4. Once approved, you get a verified badge",
+      "takeSelfie": "Take Selfie",
+      "capture": "Capture",
+      "cancel": "Cancel",
+      "retake": "Retake",
+      "submitForReview": "Submit for Review",
+      "submitting": "Submitting...",
+      "cameraAccessDenied": "Camera access denied. Please allow camera access in your browser settings.",
+      "submissionFailed": "Submission failed. Please try again.",
+      "networkError": "Network error. Please check your connection and try again."
+    },
+    "coach": {
+      "title": "Relationship Coach",
+      "subtitle": "AI-powered insights based on your astrological dynamics",
+      "premiumFeature": "Premium feature",
+      "backToMatches": "Back to Matches",
+      "noMatchHint": "Match with someone to get coaching insights.",
+      "browsePicks": "Browse Picks",
+      "inputPlaceholder": "Ask about communication, conflict, intimacy...",
+      "emptyHint": "Ask your first question or tap Send for a general insight.",
+      "aiInsight": "AI Insight",
+      "template": "Template"
+    },
+    "timing": {
+      "title": "Cosmic Timing",
+      "subtitle": "Planetary windows that highlight the best moments for your connections",
+      "backToMatches": "Back to Matches",
+      "noMatchHint": "Match with someone to see cosmic timing windows.",
+      "browsePicks": "Browse Picks",
+      "noWindows": "No timing windows found.",
+      "qualityExcellent": "Excellent",
+      "qualityGood": "Good",
+      "qualityNeutral": "Neutral",
+      "qualityChallenging": "Challenging",
+      "now": "Now",
+      "inDays": "In {{days}}d"
+    },
+    "events": {
+      "title": "Cosmic Events",
+      "subtitle": "Themed dating events aligned with the cosmos",
+      "backToDating": "Back to Dating",
+      "tabs": {
+        "upcoming": "Upcoming",
+        "myEvents": "My Events"
+      },
+      "noUpcoming": "No upcoming events right now. Check back soon!",
+      "noRegistered": "You haven't registered for any events yet.",
+      "live": "LIVE",
+      "maxCount": "Max {{count}}",
+      "elementOnly": "{{element}} signs only",
+      "registered": "Registered",
+      "cancelRegistration": "Cancel",
+      "register": "Register",
+      "registering": "Registering..."
+    },
+    "milestones": {
+      "title": "Relationship Milestones",
+      "subtitle": "Track your journey together under the stars",
+      "backToMatches": "Back to Matches",
+      "noMatchHint": "Match with someone to track milestones.",
+      "browsePicks": "Browse Picks",
+      "journeyProgress": "Journey Progress",
+      "mark": "Mark"
+    },
+    "datePlanner": {
+      "title": "Date Night Planner",
+      "subtitle": "Cosmically curated date ideas for you and your match",
+      "backToMatches": "Back to Matches",
+      "noMatchHint": "Match with someone to get date suggestions.",
+      "browsePicks": "Browse Picks",
+      "shuffleIdeas": "Shuffle Ideas",
+      "elementEnergy": "{{element}} energy"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Cosmic Feed",
+    "createPost": "Create Post",
+    "postTypes": {
+      "text": "Text",
+      "photo": "Photo",
+      "video": "Video",
+      "poll": "Poll"
+    },
+    "composer": {
+      "placeholder": "What's on your cosmic mind?",
+      "uploadImage": "Click to upload an image",
+      "uploadVideo": "Click to upload a video",
+      "imageSizeLimit": "Image must be under 10 MB",
+      "videoSizeLimit": "Video must be under 200 MB",
+      "backgroundStyle": "Background Style",
+      "visibility": "Visibility:",
+      "visibilityPublic": "Public",
+      "visibilityFriends": "Friends",
+      "postButton": "Post",
+      "posting": "Posting...",
+      "uploadingImage": "Uploading image...",
+      "uploadingVideo": "Uploading video...",
+      "addImage": "Add Image",
+      "addVideo": "Add Video",
+      "editPost": "Edit Post"
+    },
+    "poll": {
+      "question": "Question",
+      "questionPlaceholder": "Ask the cosmos...",
+      "options": "Options",
+      "optionPlaceholder": "Option {{number}}",
+      "addOption": "Add option",
+      "duration": "Duration",
+      "durationOptions": {
+        "1h": "1 hour",
+        "6h": "6 hours",
+        "12h": "12 hours",
+        "1d": "1 day",
+        "3d": "3 days",
+        "7d": "7 days"
+      },
+      "createPoll": "Create Poll",
+      "pollNeedsContent": "Poll needs a question and at least 2 options"
+    },
+    "empty": {
+      "title": "Your cosmic feed awaits",
+      "description": "Share readings, charts, and cosmic insights with your community.",
+      "createFirst": "Create Your First Post"
+    },
+    "loadMore": "Load more",
+    "loading": "Loading..."
+  },
+  "friends": {
+    "title": "Friends & Connections",
+    "friendCount": "{{count}} friends",
+    "pendingCount": "{{count}} pending",
+    "inviteFriends": "Invite Friends",
+    "qrCode": "QR Code",
+    "tabs": {
+      "friends": "Friends",
+      "requests": "Requests",
+      "search": "Search"
+    },
+    "suggestionsTitle": "People You May Know",
+    "addButton": "+ Add",
+    "empty": {
+      "noFriends": "No friends yet",
+      "noFriendsHint": "Search for people or share your Align code",
+      "findPeople": "Find People",
+      "noRequests": "No pending requests",
+      "noRequestsHint": "Friend requests you send or receive will appear here"
+    },
+    "requests": {
+      "wantsToConnect": "Wants to connect",
+      "requestSent": "Request sent",
+      "accept": "Accept",
+      "decline": "Decline",
+      "cancel": "Cancel"
+    },
+    "search": {
+      "placeholder": "Search by name, username, or Align code...",
+      "searching": "Searching...",
+      "noResults": "No users found",
+      "noResultsHint": "Try a different search term",
+      "startSearch": "Search for people",
+      "minCharsHint": "Type at least 2 characters..."
+    },
+    "labels": {
+      "friends": "Friends",
+      "pending": "Pending"
+    },
+    "actions": {
+      "removeFriend": "Remove Friend",
+      "blockUser": "Block User",
+      "removeConfirm": "Remove {{name}} from your friends?",
+      "blockConfirm": "Block {{name}}? They won't be able to find or contact you.",
+      "viewProfile": "View Profile",
+      "message": "Message",
+      "viewFullProfile": "View Full Profile",
+      "close": "Close",
+      "requestPending": "Request Pending",
+      "addFriend": "Add Friend",
+      "acceptRequest": "Accept Request",
+      "confirm": "Confirm",
+      "ok": "OK"
+    },
+    "alignCode": "Align Code:"
+  },
+  "messages": {
+    "signInRequired": "Sign in to access messages",
+    "selectConversation": "Select a conversation",
+    "startNewChat": "or start a new chat to connect",
+    "newChat": "New Chat",
+    "contextMenu": {
+      "reply": "Reply",
+      "react": "React",
+      "edit": "Edit",
+      "delete": "Delete",
+      "forward": "Forward",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "copyText": "Copy text"
+    },
+    "pickReaction": "Pick a reaction",
+    "messageTypes": {
+      "image": "Image",
+      "gif": "GIF",
+      "voiceMessage": "Voice message",
+      "location": "Location",
+      "poll": "Poll:"
+    },
+    "composer": {
+      "placeholder": "Type a message...",
+      "send": "Send",
+      "attachment": "Attach"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "filters": {
+      "all": "All",
+      "social": "Social",
+      "cosmic": "Cosmic",
+      "system": "System"
+    },
+    "empty": {
+      "all": "No notifications yet",
+      "allHint": "Your cosmic alerts and social updates will appear here.",
+      "social": "No social notifications",
+      "socialHint": "Friend requests, messages, and reactions will show up here.",
+      "cosmic": "No cosmic alerts",
+      "cosmicHint": "Transit alerts and cosmic events will appear here.",
+      "system": "No system notifications",
+      "systemHint": "System updates and announcements will show up here."
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    },
+    "grouped": "{{count}} notifications"
+  },
+  "communities": {
+    "title": "Communities",
+    "subtitle": "Find your cosmic tribe",
+    "create": "Create",
+    "tabs": {
+      "discover": "Discover",
+      "myCommunities": "My Communities"
+    },
+    "searchPlaceholder": "Search communities...",
+    "filterAll": "All",
+    "loading": "Loading communities...",
+    "empty": {
+      "title": "No Communities Yet",
+      "description": "Be the first to create a cosmic community!",
+      "createButton": "Create Community"
+    },
+    "featured": "Featured",
+    "allCommunities": "All Communities",
+    "noResultsSearch": "No communities found for \"{{query}}\"",
+    "noResultsCategory": "No communities in this category yet.",
+    "yourCircle": {
+      "title": "Your Cosmic Circle Awaits",
+      "description": "Join or create communities to find your tribe.",
+      "exploreButton": "Explore Communities"
+    },
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "private": "Private",
+    "join": "Join",
+    "joined": "Joined"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "shareBigThree": "Share Your Big Three",
+    "stats": {
+      "friends": "Friends",
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following",
+      "views": "Views"
+    },
+    "tabs": {
+      "posts": "Posts",
+      "photos": "Photos",
+      "reels": "Reels",
+      "about": "About"
+    },
+    "alignCode": "Your Align Code",
+    "alignCodeHint": "Share your code so friends can find you",
+    "quickLinks": {
+      "gallery": "Gallery",
+      "safetyTrust": "Safety & Trust",
+      "subscription": "Subscription",
+      "referrals": "Referrals",
+      "settings": "Settings"
+    },
+    "about": {
+      "bio": "Bio",
+      "bigThree": "Big Three",
+      "starseedOrigin": "Starseed Origin",
+      "humanDesign": "Human Design",
+      "joined": "Joined",
+      "alignCode": "Align Code"
+    },
+    "empty": {
+      "noPosts": "No posts yet",
+      "noPhotos": "No photos yet",
+      "noReels": "No reels yet"
+    },
+    "loadingProfile": "Loading profile...",
+    "profileViews": "Profile Views",
+    "noViews": "No profile views yet",
+    "editPost": "Edit Post"
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "displayName": "Display Name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell the cosmos about yourself...",
+    "birthData": "Birth Data",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "locationPlaceholder": "Search city, state, or country...",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "tapAddCover": "Tap to add cover photo",
+    "errors": {
+      "saveFailed": "Failed to save profile",
+      "avatarFailed": "Failed to upload avatar",
+      "coverFailed": "Failed to upload cover photo"
     }
   },
   "settings": {
@@ -204,7 +1030,258 @@
     "about": "About Align",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "account": "Account",
+    "email": "Email",
+    "name": "Name",
+    "notSet": "Not set",
+    "planLabel": "{{plan}} Plan",
+    "upgradeHint": "Upgrade for more features",
+    "managedVia": "Managed via RevenueCat",
+    "manage": "Manage",
+    "upgrade": "Upgrade",
+    "subPages": {
+      "chatTheme": "Chat Theme",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "astrologyPreferences": "Astrology Preferences",
+      "friends": "Friends",
+      "referrals": "Referrals",
+      "subscriptionPlans": "Subscription Plans",
+      "datingIdentity": "Dating Identity",
+      "relationshipIntent": "Relationship Intent",
+      "connectionPreferences": "Connection Preferences",
+      "identityPrivacy": "Identity Privacy",
+      "safety": "Safety",
+      "termsOfService": "Terms of Service",
+      "communityGuidelines": "Community Guidelines"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Manage User Accounts",
+      "contentModeration": "Content Moderation",
+      "manageCelebrities": "Manage Celebrities",
+      "payoutQueue": "Payout Queue"
+    },
+    "aboutSection": {
+      "version": "Version",
+      "poweredBy": "Powered by",
+      "contact": "Contact"
+    },
+    "signOut": "Sign Out",
+    "deleteAccount": "Delete Account",
+    "deleteConfirm": {
+      "title": "Delete Account?",
+      "message": "This will permanently delete your account and all associated data. This action cannot be undone.",
+      "confirm": "Delete My Account",
+      "cancel": "Cancel"
+    },
+    "astrology": {
+      "title": "Astrology Preferences",
+      "autoSaveHint": "Changes are saved automatically and apply to all chart calculations.",
+      "houseSystem": "House System",
+      "houseSystemHint": "Determines how your chart houses are calculated",
+      "houseSystems": {
+        "wholeSign": "Whole Sign",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Equal House",
+        "porphyry": "Porphyry",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Topocentric",
+        "morinus": "Morinus",
+        "meridian": "Meridian"
+      },
+      "zodiacSystem": "Zodiac System",
+      "zodiacSystems": {
+        "tropical": "Tropical (Western)",
+        "sidereal": "Sidereal (Vedic)"
+      },
+      "languageLevel": "Language Level",
+      "languageLevelHint": "How technical should interpretations be?",
+      "jargonModes": {
+        "plain": "Plain Language",
+        "mixed": "Mixed",
+        "technical": "Technical"
+      },
+      "orbTightness": "Orb Tightness",
+      "orbOptions": {
+        "tight": "Tight",
+        "standard": "Standard",
+        "wide": "Wide"
+      },
+      "showAsteroids": "Show Asteroids",
+      "showFixedStars": "Show Fixed Stars"
+    },
+    "privacy": {
+      "title": "Privacy & Data",
+      "profileVisibility": "Profile Visibility",
+      "visibilityOptions": {
+        "public": "Public",
+        "friendsOnly": "Friends Only",
+        "private": "Private"
+      },
+      "hideAge": "Hide Age",
+      "hideExactLocation": "Hide Exact Location",
+      "hideLastActive": "Hide Last Active",
+      "hideFullBirthChart": "Hide Full Birth Chart",
+      "incognitoMode": "Incognito Mode",
+      "blockUnverified": "Block Unverified Users",
+      "minimumTrustLevel": "Minimum Trust Level",
+      "trustLevels": {
+        "any": "Any",
+        "low": "Low",
+        "medium": "Med",
+        "high": "High"
+      },
+      "analyticsEnabled": "Analytics",
+      "exportData": "Export My Data",
+      "exportToast": "Your data export has been requested. You'll receive it via email."
+    },
+    "notificationsPage": {
+      "title": "Notification Preferences",
+      "pauseAll": "Pause All Notifications",
+      "social": {
+        "title": "Social Notifications",
+        "friendRequests": "Friend Requests",
+        "messages": "Messages",
+        "reactions": "Reactions",
+        "comments": "Comments"
+      },
+      "cosmic": {
+        "title": "Cosmic Notifications",
+        "frequency": "Frequency",
+        "frequencyOptions": {
+          "essential": "Essential",
+          "important": "Important",
+          "all": "All"
+        },
+        "tone": "Tone",
+        "toneOptions": {
+          "gentle": "Gentle",
+          "direct": "Direct",
+          "intense": "Intense"
+        },
+        "categories": {
+          "majorTransits": "Major Transits",
+          "moonPhases": "Moon Phases",
+          "mercuryRetrograde": "Mercury Retrograde",
+          "loveRelationships": "Love & Relationships",
+          "moneyValues": "Money & Values",
+          "careerAmbition": "Career & Ambition",
+          "healingGrowth": "Healing & Growth"
+        },
+        "aspects": {
+          "title": "Aspect Types",
+          "conjunctions": "Conjunctions",
+          "oppositions": "Oppositions",
+          "squares": "Squares",
+          "trines": "Trines",
+          "sextiles": "Sextiles"
+        },
+        "events": {
+          "title": "Cosmic Events",
+          "moonPhases": "Moon Phases",
+          "eclipses": "Eclipses",
+          "retrogrades": "Retrogrades",
+          "ingresses": "Ingresses"
+        },
+        "minIntensity": "Minimum Intensity",
+        "advanceNotice": "Advance Notice (days)"
+      },
+      "galactic": {
+        "title": "Galactic Notifications",
+        "planetaryHours": "Planetary Hours",
+        "dayRuler": "Day Ruler",
+        "goldenHour": "Golden Hour",
+        "eclipseWatch": "Eclipse Watch",
+        "retrogradeAlerts": "Retrograde Alerts",
+        "minutesBefore": "Minutes Before"
+      },
+      "summaries": {
+        "title": "Digest Summaries",
+        "daily": "Daily Summary",
+        "weekly": "Weekly Summary"
+      },
+      "quietHours": {
+        "title": "Quiet Hours",
+        "enabled": "Enable Quiet Hours",
+        "start": "Start",
+        "end": "End",
+        "urgentOverride": "Allow Urgent Notifications"
+      },
+      "delivery": {
+        "title": "Delivery",
+        "sound": "Sound",
+        "badge": "Badge"
+      },
+      "announcements": "App Announcements"
+    },
+    "referrals": {
+      "title": "Referrals",
+      "howItWorks": "How it works",
+      "step1": "Share your unique referral link with friends",
+      "step2": "When they sign up using your link, you both get 5 bonus readings",
+      "step3": "There's no limit — invite as many friends as you like!"
+    },
+    "chatTheme": {
+      "title": "Chat Theme",
+      "subtitle": "Customize the look of your messages"
+    },
+    "datingIdentity": {
+      "title": "Dating Identity",
+      "subtitle": "How you identify in the dating space"
+    },
+    "relationshipIntent": {
+      "title": "Relationship Intent",
+      "subtitle": "What you're looking for in connections"
+    },
+    "connectionPreferences": {
+      "title": "Connection Preferences",
+      "subtitle": "Who you'd like to connect with"
+    },
+    "identityPrivacy": {
+      "title": "Identity Privacy",
+      "subtitle": "Control who sees your identity information"
+    },
+    "safety": {
+      "title": "Safety",
+      "subtitle": "Manage blocks, reports, and safety settings"
+    },
+    "friends": {
+      "title": "Friends Settings",
+      "subtitle": "Manage friend request and connection preferences"
+    },
+    "termsPage": {
+      "title": "Terms of Service"
+    },
+    "communityGuidelines": {
+      "title": "Community Guidelines"
+    }
   },
   "subscription": {
     "headline": "Precision astrology. Personally yours.",
@@ -363,6 +1440,314 @@
     "continue": "Continue Learning",
     "completed": "Completed"
   },
+  "cosmicAlerts": {
+    "title": "Cosmic Weather",
+    "subtitle": "Your personalized cosmic forecast",
+    "scanningCosmos": "Scanning the cosmos...",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "upcoming": "Upcoming"
+    },
+    "emptyState": {
+      "title": "No major transits detected",
+      "filterHint": "No {{filter}} alerts right now. Try switching to \"All\".",
+      "defaultHint": "The cosmos is quiet for your chart. Check back as the sky shifts."
+    },
+    "detail": {
+      "timingWindow": "Timing Window",
+      "start": "Start",
+      "peak": "Peak",
+      "end": "End",
+      "fullInterpretation": "Full Interpretation",
+      "astrologicalDetails": "Astrological Details",
+      "transit": "Transit",
+      "natal": "Natal",
+      "aspect": "Aspect",
+      "retrograde": "Retrograde",
+      "yes": "Yes",
+      "no": "No",
+      "actionAdvice": "Action Advice",
+      "viewFullTransits": "View Full Transits"
+    },
+    "importance": {
+      "critical": "Critical",
+      "high": "High",
+      "moderate": "Moderate",
+      "low": "Low",
+      "minimal": "Minimal"
+    },
+    "categories": {
+      "general": "General",
+      "love": "Love",
+      "career": "Career",
+      "growth": "Growth",
+      "challenge": "Challenge",
+      "spiritual": "Spiritual",
+      "communication": "Communication",
+      "energy": "Energy"
+    },
+    "statusActive": "ACTIVE"
+  },
+  "discover": {
+    "title": "Discover",
+    "moonPhases": {
+      "newMoon": "New Moon",
+      "waxingCrescent": "Waxing Crescent",
+      "firstQuarter": "First Quarter",
+      "waxingGibbous": "Waxing Gibbous",
+      "fullMoon": "Full Moon",
+      "waningGibbous": "Waning Gibbous",
+      "lastQuarter": "Last Quarter",
+      "waningCrescent": "Waning Crescent"
+    }
+  },
+  "worldEcho": {
+    "title": "World Echo",
+    "subtitle": "How cosmic events ripple through human history",
+    "categories": {
+      "political": "Political",
+      "economic": "Economic",
+      "cultural": "Cultural",
+      "scientific": "Scientific",
+      "natural": "Natural",
+      "social": "Social",
+      "technological": "Technological",
+      "spiritual": "Spiritual"
+    },
+    "evidenceLabels": {
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "speculative": "Speculative"
+    },
+    "scoreLabels": {
+      "legendary": "Legendary",
+      "major": "Major",
+      "significant": "Significant",
+      "notable": "Notable",
+      "minor": "Minor"
+    }
+  },
+  "polls": {
+    "title": "Polls",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "ended": "Ended",
+      "mine": "Mine"
+    },
+    "duration": {
+      "hours": "{{count}}h left",
+      "days": "{{count}}d left",
+      "ended": "Ended"
+    },
+    "createPoll": "Create Poll",
+    "votes": "{{count}} votes",
+    "noPollsYet": "No polls yet",
+    "noPollsHint": "Be the first to start a cosmic poll!"
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "loading": "Loading bookmarks...",
+    "empty": "No bookmarks yet",
+    "emptyHint": "Save posts from the feed to read later",
+    "postUnavailable": "Post no longer available"
+  },
+  "celebrityMatches": {
+    "title": "Celebrity Matches",
+    "subtitle": "Explore celebrity charts, compatibility, and cosmic forecasts",
+    "searchPlaceholder": "Search celebrities...",
+    "trending": "Trending",
+    "recentlyAdded": "Recently Added",
+    "browseByCategory": "Browse by Category",
+    "clearFilter": "Clear filter",
+    "yourFavorites": "Your Favorites",
+    "noResults": "No results",
+    "tryDifferent": "Try a different name or spelling",
+    "noCelebrities": "No celebrities yet",
+    "searchOrCheckBack": "Search for someone or check back soon",
+    "noCelebritiesInCategory": "No celebrities in this category yet",
+    "categories": {
+      "overall": "Overall",
+      "emotional": "Emotional",
+      "passion": "Passion",
+      "marriage": "Marriage",
+      "karmic": "Karmic",
+      "attraction": "Attraction",
+      "stability": "Stability",
+      "mental": "Mental"
+    },
+    "matchScore": "{{score}}% match"
+  },
+  "matches": {
+    "title": "Compatibility Matches",
+    "categories": {
+      "overall": "Overall",
+      "emotional": "Emotional",
+      "passion": "Passion",
+      "marriage": "Marriage",
+      "karmic": "Karmic",
+      "attraction": "Attraction",
+      "stability": "Stability",
+      "mental": "Mental"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Cosmic Index",
+    "subtitle": "Today's cosmic energy at a glance"
+  },
+  "creatorStudio": {
+    "title": "Creator Studio",
+    "subtitle": "Create and manage your cosmic content"
+  },
+  "qa": {
+    "title": "Q&A",
+    "askQuestion": "Ask a Question",
+    "noQuestions": "No questions yet",
+    "placeholder": "What's your cosmic question?"
+  },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Unlock the full power of Align"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "empty": "No photos yet"
+  },
+  "timeline": {
+    "title": "Timeline",
+    "empty": "Nothing to show yet"
+  },
+  "reels": {
+    "title": "Cosmic Reels",
+    "empty": "No reels yet"
+  },
+  "fragments": {
+    "title": "Cosmic Fragments",
+    "subtitle": "Shareable cosmic wisdom cards"
+  },
+  "cosmicVideo": {
+    "title": "Cosmic Video",
+    "subtitle": "Astrological insights in motion"
+  },
+  "groupSynastry": {
+    "title": "Group Synastry",
+    "subtitle": "See how a group's charts interact"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "Birth Data Required",
+      "defaultMessage": "Add your birth date, time, and location to unlock this feature.",
+      "completeProfile": "Complete Profile"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Loading..."
+    },
+    "paywallGate": {
+      "title": "Unlock This Reading",
+      "description": "This feature is available on the",
+      "plan": "plan",
+      "youreOn": "you're on",
+      "upgradeButton": "See Plans — from {{price}}",
+      "currentPlan": "Current plan: {{plan}}",
+      "whatYouUnlock": "What you unlock",
+      "allFeatures": "This reading + all {{tier}}-tier features",
+      "aiAstrologer": "AI Astrologer with voice chat",
+      "fullChart": "Full natal chart with aspects & patterns"
+    },
+    "shareButton": {
+      "share": "Share",
+      "copied": "Copied!"
+    },
+    "referralCard": {
+      "title": "Invite Friends",
+      "subtitle": "Share your referral link and both get bonus readings",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied!"
+    },
+    "trialBanner": {
+      "title": "Premium Trial: {{count}} day remaining",
+      "title_plural": "Premium Trial: {{count}} days remaining",
+      "daysLeft": "{{count}} days left",
+      "upgrade": "Upgrade Now",
+      "expired": "Your trial has ended. Upgrade to unlock Premium again.",
+      "endsTomorrow": "Your trial ends tomorrow! Upgrade to keep Premium features.",
+      "endsSoon": "Your trial ends in {{count}} days! Upgrade to keep Premium features."
+    },
+    "cookieConsent": {
+      "message": "We use cookies to improve your experience.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "learnMore": "Learn More"
+    },
+    "matchCelebration": {
+      "itsAMatch": "It's a Match!",
+      "subtitle": "The cosmos has aligned you and {{name}}",
+      "sendMessage": "Send a Message",
+      "keepBrowsing": "Keep Browsing"
+    },
+    "datingFilterDrawer": {
+      "title": "Discovery Filters",
+      "ageRange": "Age Range",
+      "maxDistance": "Max Distance",
+      "showOnlyVerified": "Show Only Verified",
+      "compatibilityMin": "Minimum Compatibility",
+      "elements": "Elements",
+      "applyFilters": "Apply Filters",
+      "resetFilters": "Reset"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% Compatible",
+      "like": "Like",
+      "pass": "Pass",
+      "cosmicRose": "Cosmic Rose",
+      "likesRemaining": "{{count}} likes left",
+      "rosesRemaining": "{{count}} roses left"
+    },
+    "sidebar": {
+      "home": "Home",
+      "discover": "Discover",
+      "cosmicFeed": "Cosmic Feed",
+      "worldEcho": "World Echo",
+      "chart": "My Chart",
+      "cosmicWeather": "Cosmic Weather",
+      "readings": "Readings",
+      "videoCreator": "Video Creator",
+      "dating": "Dating",
+      "friends": "Friends",
+      "messages": "Messages",
+      "feed": "Feed",
+      "notifications": "Notifications",
+      "aiAstrologer": "AI Astrologer",
+      "learn": "Learn",
+      "pricing": "Pricing",
+      "communities": "Communities",
+      "profile": "Profile",
+      "settings": "Settings",
+      "menu": "Menu",
+      "close": "Close",
+      "more": "More",
+      "chat": "Chat",
+      "yourProfile": "Your Profile",
+      "viewProfile": "View your profile"
+    },
+    "feedCard": {
+      "like": "Like",
+      "comment": "Comment",
+      "share": "Share",
+      "bookmark": "Bookmark",
+      "report": "Report",
+      "deletePost": "Delete Post",
+      "editPost": "Edit Post"
+    },
+    "commentSheet": {
+      "title": "Comments",
+      "placeholder": "Write a comment...",
+      "send": "Send",
+      "noComments": "No comments yet",
+      "beFirst": "Be the first to comment!"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
@@ -372,7 +1757,46 @@
     "delete": "Delete",
     "share": "Share",
     "premium": "Premium",
-    "free": "Free"
+    "free": "Free",
+    "close": "Close",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "edit": "Edit",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "search": "Search",
+    "settings": "Settings",
+    "seeAll": "See All",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "comingSoon": "Coming Soon",
+    "upgrade": "Upgrade",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "all": "All",
+    "none": "None",
+    "public": "Public",
+    "private": "Private",
+    "apply": "Apply",
+    "reset": "Reset",
+    "remove": "Remove",
+    "add": "Add",
+    "create": "Create",
+    "submit": "Submit",
+    "send": "Send",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "noResults": "No results found",
+    "tryAgain": "Try again"
   },
   "zodiac": {
     "aries": "Aries", "taurus": "Taurus", "gemini": "Gemini",
@@ -385,7 +1809,8 @@
     "venus": "Venus", "mars": "Mars", "jupiter": "Jupiter",
     "saturn": "Saturn", "uranus": "Uranus", "neptune": "Neptune",
     "pluto": "Pluto", "northNode": "North Node", "southNode": "South Node",
-    "chiron": "Chiron", "ascendant": "Ascendant", "midheaven": "Midheaven"
+    "chiron": "Chiron", "ascendant": "Ascendant", "midheaven": "Midheaven",
+    "vesta": "Vesta", "juno": "Juno", "ceres": "Ceres", "pallas": "Pallas"
   },
   "aspects": {
     "conjunction": "Conjunction",
@@ -393,6 +1818,83 @@
     "square": "Square",
     "trine": "Trine",
     "opposition": "Opposition",
-    "quincunx": "Quincunx"
+    "quincunx": "Quincunx",
+    "semisextile": "Semi-Sextile",
+    "semisquare": "Semi-Square",
+    "sesquiquadrate": "Sesquiquadrate",
+    "quintile": "Quintile",
+    "biquintile": "Bi-Quintile"
+  },
+  "elements": {
+    "fire": "Fire",
+    "earth": "Earth",
+    "air": "Air",
+    "water": "Water"
+  },
+  "modalities": {
+    "cardinal": "Cardinal",
+    "fixed": "Fixed",
+    "mutable": "Mutable"
+  },
+  "houses": {
+    "1": "1st House",
+    "2": "2nd House",
+    "3": "3rd House",
+    "4": "4th House",
+    "5": "5th House",
+    "6": "6th House",
+    "7": "7th House",
+    "8": "8th House",
+    "9": "9th House",
+    "10": "10th House",
+    "11": "11th House",
+    "12": "12th House",
+    "labels": {
+      "1": "Self & Identity",
+      "2": "Values & Possessions",
+      "3": "Communication & Learning",
+      "4": "Home & Family",
+      "5": "Creativity & Romance",
+      "6": "Health & Service",
+      "7": "Partnerships",
+      "8": "Transformation & Shared Resources",
+      "9": "Philosophy & Travel",
+      "10": "Career & Public Image",
+      "11": "Community & Aspirations",
+      "12": "Spirituality & Subconscious"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "networkError": "Network error. Please check your connection.",
+    "unauthorized": "You need to sign in to access this feature.",
+    "notFound": "The requested content was not found.",
+    "serverError": "Server error. Please try again later.",
+    "loadFailed": "Failed to load data. Please try again.",
+    "saveFailed": "Failed to save changes. Please try again.",
+    "uploadFailed": "Failed to upload file. Please try again.",
+    "fileTooLarge": "File is too large. Please choose a smaller file.",
+    "invalidFormat": "Invalid file format.",
+    "permissionDenied": "Permission denied.",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "rateLimited": "Too many requests. Please wait a moment."
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "weeksAgo": "{{count}}w ago",
+    "monthsAgo": "{{count}}mo ago",
+    "yearsAgo": "{{count}}y ago",
+    "inMinutes": "in {{count}}m",
+    "inHours": "in {{count}}h",
+    "inDays": "in {{count}}d"
+  },
+  "tiers": {
+    "free": "Free",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

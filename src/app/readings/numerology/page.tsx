@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { Hash, ArrowLeft, Sparkles, ChevronDown, ChevronUp, Copy, Check, Heart, Calendar, Clover, Share2, Download } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
@@ -317,6 +318,7 @@ function ShareCard({ result, name }: { result: NumerologyResult; name: string })
 }
 
 export default function NumerologyPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
@@ -398,14 +400,14 @@ export default function NumerologyPage() {
     <PaywallGate feature="numerology_reading" fallbackTier="light">
       <div className="max-w-3xl mx-auto">
         <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
-          <ArrowLeft className="w-4 h-4" /> Back to Readings
+          <ArrowLeft className="w-4 h-4" /> {t('readings.backToReadings')}
         </Link>
 
         <div className="flex items-center gap-3 mb-6">
           <Hash className="w-8 h-8 text-accent-primary" />
           <div>
-            <h1 className="text-2xl font-display font-bold text-text-primary">Numerology</h1>
-            <p className="text-text-tertiary text-sm">The sacred mathematics of your destiny</p>
+            <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.numerologyPage.title')}</h1>
+            <p className="text-text-tertiary text-sm">{t('readings.numerologyPage.subtitle')}</p>
           </div>
         </div>
 

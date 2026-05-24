@@ -10,6 +10,7 @@ import {
 import { uploadCommunityBanner, uploadCommunityAvatar, updateCommunityBanner, updateCommunityAvatar } from '@/lib/communityService';
 import Link from 'next/link';
 import { ArrowLeft, Globe, Lock, RefreshCw, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const RULE_PRESETS = [
   { label: '🤝 Be Kind & Respectful', text: 'Be respectful and kind to all members\nNo harassment, bullying, or personal attacks\nKeep discussions constructive and positive' },
@@ -35,6 +36,7 @@ const SUGGESTED_NAMES: Record<string, string[]> = {
 };
 
 export default function CreateCommunityPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
 
@@ -143,7 +145,7 @@ export default function CreateCommunityPage() {
         <Link href="/communities" className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-xl font-bold text-text-primary">Create Community</h1>
+        <h1 className="text-xl font-bold text-text-primary">{t('communities.empty.createButton')}</h1>
       </div>
 
       {/* Live Preview */}
@@ -176,7 +178,7 @@ export default function CreateCommunityPage() {
                   {COMMUNITY_CATEGORIES.find(c => c.id === category)?.emoji} {COMMUNITY_CATEGORIES.find(c => c.id === category)?.label}
                 </span>
               )}
-              <span className="text-[10px] text-text-muted">{isPublic ? '🌍 Public' : '🔒 Private'}</span>
+              <span className="text-[10px] text-text-muted">{isPublic ? `🌍 ${t('common.public')}` : `🔒 ${t('common.private')}`}</span>
             </div>
           </div>
         </div>
@@ -401,7 +403,7 @@ export default function CreateCommunityPage() {
             }`}
           >
             <Globe className={`w-5 h-5 mb-2 ${isPublic ? 'text-accent-primary' : 'text-text-muted'}`} />
-            <p className="text-sm font-medium text-text-primary">Public</p>
+            <p className="text-sm font-medium text-text-primary">{t('common.public')}</p>
             <p className="text-xs text-text-muted mt-0.5">Anyone can find and join</p>
           </button>
           <button
@@ -413,7 +415,7 @@ export default function CreateCommunityPage() {
             }`}
           >
             <Lock className={`w-5 h-5 mb-2 ${!isPublic ? 'text-accent-primary' : 'text-text-muted'}`} />
-            <p className="text-sm font-medium text-text-primary">Private</p>
+            <p className="text-sm font-medium text-text-primary">{t('common.private')}</p>
             <p className="text-xs text-text-muted mt-0.5">Invite or approval required</p>
           </button>
         </div>
@@ -438,7 +440,7 @@ export default function CreateCommunityPage() {
           </>
         ) : (
           <>
-            <Check className="w-4 h-4" /> Create Community
+            <Check className="w-4 h-4" /> {t('communities.empty.createButton')}
           </>
         )}
       </button>

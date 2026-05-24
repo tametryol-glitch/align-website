@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import { ArrowLeft, Eye, EyeOff, Shield } from 'lucide-react'
@@ -45,6 +46,7 @@ const DEFAULT_SETTINGS: PrivacySettings = {
 }
 
 export default function IdentityPrivacyPage() {
+  const { t } = useTranslation()
   const [settings, setSettings] = useState<PrivacySettings>(DEFAULT_SETTINGS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -115,16 +117,16 @@ export default function IdentityPrivacyPage() {
           className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Settings</span>
+          <span>{t('common.back')} {t('common.settings')}</span>
         </Link>
 
         {/* Header */}
         <div className="flex items-center gap-3">
           <Shield className="w-7 h-7 text-accent-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">Identity Privacy</h1>
+            <h1 className="text-2xl font-bold text-text-primary">{t('settings.identityPrivacy.title')}</h1>
             <p className="text-text-secondary text-sm">
-              Control who sees your dating profile details
+              {t('settings.identityPrivacy.subtitle')}
             </p>
           </div>
         </div>
@@ -177,7 +179,7 @@ export default function IdentityPrivacyPage() {
             disabled={saving}
             className="btn-primary px-6 py-2.5 rounded-lg font-medium disabled:opacity-50"
           >
-            {saving ? 'Saving...' : 'Save Privacy Settings'}
+            {saving ? t('common.loading') : t('common.save')}
           </button>
           {success && (
             <span className="text-green-400 text-sm font-medium">

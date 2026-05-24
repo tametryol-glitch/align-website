@@ -12,10 +12,12 @@ import { MarkdownText } from '@/components/ui/MarkdownText';
 import Link from 'next/link';
 import { ArrowLeft, TrendingUp } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { useTranslation } from 'react-i18next';
 
 type ProgType = 'secondary' | 'solar_arc';
 
 export default function ProgressedChartPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [chart, setChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -61,11 +63,11 @@ export default function ProgressedChartPage() {
       <PaywallGate feature="progressed">
         <div className="max-w-3xl mx-auto">
           <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-            <ArrowLeft className="w-4 h-4" /> My Chart
+            <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
           </Link>
           <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
             <TrendingUp className="w-7 h-7 text-accent-primary" />
-            Progressed Chart
+            {t('chart.progressed')}
           </h1>
           <BirthDataPrompt message="Birth data required to calculate your progressed chart." />
         </div>
@@ -86,7 +88,7 @@ export default function ProgressedChartPage() {
     <PaywallGate feature="progressed">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> My Chart
+        <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
       </Link>
 
       {/* Header with title + progression type toggle */}
@@ -170,7 +172,7 @@ export default function ProgressedChartPage() {
           </div>
         </div>
         <button onClick={calculate} disabled={loading} className="btn-primary">
-          {loading ? 'Calculating...' : 'Calculate'}
+          {loading ? t('common.loading') : t('common.calculate')}
         </button>
       </div>
 

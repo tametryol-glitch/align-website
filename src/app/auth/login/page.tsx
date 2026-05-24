@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,6 +9,7 @@ import { createClient } from '@/lib/supabase';
 import { Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,14 +45,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-4" />
-          <h1 className="text-3xl font-display font-bold text-text-primary">Welcome back</h1>
-          <p className="text-text-tertiary mt-2">Sign in to your Align account</p>
+          <h1 className="text-3xl font-display font-bold text-text-primary">{t('auth.welcome')}</h1>
+          <p className="text-text-tertiary mt-2">{t('auth.subtitle')}</p>
         </div>
 
         <div className="card">
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.email')}</label>
               <input
                 type="email"
                 value={email}
@@ -61,7 +63,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.password')}</label>
               <input
                 type="password"
                 value={password}
@@ -77,7 +79,7 @@ export default function LoginPage() {
             )}
 
             <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? t('common.loading') : t('auth.login')}
             </button>
           </form>
 
@@ -86,7 +88,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-border-primary" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-bg-card text-text-muted">or continue with</span>
+              <span className="px-2 bg-bg-card text-text-muted">{t('auth.orContinueWith')}</span>
             </div>
           </div>
 
@@ -97,13 +99,13 @@ export default function LoginPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Google
+            {t('auth.google')}
           </button>
 
           <p className="text-center text-sm text-text-muted mt-6">
-            Don&apos;t have an account?{' '}
+            {t('auth.noAccount')}{' '}
             <Link href="/auth/signup" className="text-accent-primary hover:text-accent-secondary">
-              Sign up
+              {t('auth.signup')}
             </Link>
           </p>
         </div>

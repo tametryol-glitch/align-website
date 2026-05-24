@@ -5,11 +5,14 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { changeLanguage } from '@/i18n';
 import { Settings, CreditCard, LogOut, User, Globe, Bell, Shield, ChevronRight, Pencil, Star, Heart, FileText, BookOpen, ShieldCheck, Palette, Trash2, Info, Crown, Users, DollarSign, Flag, Gift } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user, profile, logout } = useAuthStore();
   const { tier } = useSubscriptionStore();
+  const { t, i18n } = useTranslation();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -54,28 +57,28 @@ export default function SettingsPage() {
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Settings className="w-7 h-7 text-accent-primary" />
-        Settings
+        {t('settings.title')}
       </h1>
 
       {/* Account */}
       <div className="card mb-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-text-primary flex items-center gap-2">
-            <User className="w-4 h-4" /> Account
+            <User className="w-4 h-4" /> {t('settings.account')}
           </h3>
           <Link href="/profile/edit" className="text-xs text-accent-primary flex items-center gap-1 hover:underline">
-            <Pencil className="w-3 h-3" /> Edit Profile
+            <Pencil className="w-3 h-3" /> {t('profile.editProfile')}
           </Link>
         </div>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-text-tertiary">Email</span>
+            <span className="text-sm text-text-tertiary">{t('settings.email')}</span>
             <span className="text-sm text-text-primary">{user?.email}</span>
           </div>
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-text-tertiary">Name</span>
+            <span className="text-sm text-text-tertiary">{t('settings.name')}</span>
             <span className="text-sm text-text-primary">
-              {profile?.display_name || user?.user_metadata?.name || 'Not set'}
+              {profile?.display_name || user?.user_metadata?.name || t('settings.notSet')}
             </span>
           </div>
         </div>
@@ -84,24 +87,24 @@ export default function SettingsPage() {
       {/* Subscription */}
       <div className="card mb-4">
         <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-          <CreditCard className="w-4 h-4" /> Subscription
+          <CreditCard className="w-4 h-4" /> {t('settings.subscription')}
         </h3>
         <div className="flex items-center justify-between py-2">
           <div>
             <span className="text-sm text-text-primary font-medium">
-              {tier.charAt(0).toUpperCase() + tier.slice(1)} Plan
+              {t('settings.planLabel', { plan: tier.charAt(0).toUpperCase() + tier.slice(1) })}
             </span>
             <p className="text-xs text-text-muted mt-0.5">
-              {tier === 'free' ? 'Upgrade for more features' : 'Managed via RevenueCat'}
+              {tier === 'free' ? t('settings.upgradeHint') : t('settings.managedVia')}
             </p>
           </div>
           {tier !== 'free' ? (
             <button onClick={manageSubscription} className="btn-secondary text-sm">
-              Manage
+              {t('settings.manage')}
             </button>
           ) : (
             <Link href="/pricing" className="btn-primary text-sm">
-              Upgrade
+              {t('settings.upgrade')}
             </Link>
           )}
         </div>
@@ -111,85 +114,85 @@ export default function SettingsPage() {
       <div className="card mb-4 divide-y divide-border-primary">
         <Link href="/settings/chat-theme" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Palette className="w-4 h-4 text-text-muted" /> Chat Theme
+            <Palette className="w-4 h-4 text-text-muted" /> {t('settings.subPages.chatTheme')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/notifications" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Bell className="w-4 h-4 text-text-muted" /> Notifications
+            <Bell className="w-4 h-4 text-text-muted" /> {t('settings.subPages.notifications')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/privacy" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Shield className="w-4 h-4 text-text-muted" /> Privacy
+            <Shield className="w-4 h-4 text-text-muted" /> {t('settings.subPages.privacy')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/astrology" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Star className="w-4 h-4 text-text-muted" /> Astrology Preferences
+            <Star className="w-4 h-4 text-text-muted" /> {t('settings.subPages.astrologyPreferences')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/friends" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Users className="w-4 h-4 text-text-muted" /> Friends
+            <Users className="w-4 h-4 text-text-muted" /> {t('settings.subPages.friends')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/referrals" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Gift className="w-4 h-4 text-accent-primary" /> Referrals
+            <Gift className="w-4 h-4 text-accent-primary" /> {t('settings.subPages.referrals')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/subscription" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <CreditCard className="w-4 h-4 text-text-muted" /> Subscription Plans
+            <CreditCard className="w-4 h-4 text-text-muted" /> {t('settings.subPages.subscriptionPlans')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/dating-identity" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Heart className="w-4 h-4 text-text-muted" /> Dating Identity
+            <Heart className="w-4 h-4 text-text-muted" /> {t('settings.subPages.datingIdentity')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/relationship-intent" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Heart className="w-4 h-4 text-text-muted" /> Relationship Intent
+            <Heart className="w-4 h-4 text-text-muted" /> {t('settings.subPages.relationshipIntent')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/connection-preferences" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Heart className="w-4 h-4 text-text-muted" /> Connection Preferences
+            <Heart className="w-4 h-4 text-text-muted" /> {t('settings.subPages.connectionPreferences')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/identity-privacy" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Shield className="w-4 h-4 text-text-muted" /> Identity Privacy
+            <Shield className="w-4 h-4 text-text-muted" /> {t('settings.subPages.identityPrivacy')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/safety" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <ShieldCheck className="w-4 h-4 text-text-muted" /> Safety
+            <ShieldCheck className="w-4 h-4 text-text-muted" /> {t('settings.subPages.safety')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/terms" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <FileText className="w-4 h-4 text-text-muted" /> Terms of Service
+            <FileText className="w-4 h-4 text-text-muted" /> {t('settings.subPages.termsOfService')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/community-guidelines" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors -mx-6 px-6">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <BookOpen className="w-4 h-4 text-text-muted" /> Community Guidelines
+            <BookOpen className="w-4 h-4 text-text-muted" /> {t('settings.subPages.communityGuidelines')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
@@ -198,9 +201,13 @@ export default function SettingsPage() {
       {/* Language */}
       <div className="card mb-4">
         <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-          <Globe className="w-4 h-4" /> Language
+          <Globe className="w-4 h-4" /> {t('settings.language')}
         </h3>
-        <select className="input">
+        <select
+          className="input"
+          value={i18n.language}
+          onChange={(e) => changeLanguage(e.target.value)}
+        >
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="fr">Français</option>
@@ -228,30 +235,30 @@ export default function SettingsPage() {
       {profile?.is_admin && (
         <div className="card mb-4">
           <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <Crown className="w-4 h-4 text-accent-primary" /> Admin
+            <Crown className="w-4 h-4 text-accent-primary" /> {t('settings.admin.title')}
           </h3>
           <div className="divide-y divide-border-primary -mx-6">
             <Link href="/admin" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
               <span className="flex items-center gap-3 text-sm text-text-primary">
-                <Users className="w-4 h-4 text-text-muted" /> Manage User Accounts
+                <Users className="w-4 h-4 text-text-muted" /> {t('settings.admin.manageUsers')}
               </span>
               <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>
             <Link href="/admin?tab=moderation" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
               <span className="flex items-center gap-3 text-sm text-text-primary">
-                <Flag className="w-4 h-4 text-text-muted" /> Content Moderation
+                <Flag className="w-4 h-4 text-text-muted" /> {t('settings.admin.contentModeration')}
               </span>
               <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>
             <Link href="/admin/celebrities" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
               <span className="flex items-center gap-3 text-sm text-text-primary">
-                <Star className="w-4 h-4 text-text-muted" /> Manage Celebrities
+                <Star className="w-4 h-4 text-text-muted" /> {t('settings.admin.manageCelebrities')}
               </span>
               <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>
             <Link href="/admin/payouts" className="flex items-center justify-between py-3.5 hover:bg-bg-tertiary transition-colors px-6">
               <span className="flex items-center gap-3 text-sm text-text-primary">
-                <DollarSign className="w-4 h-4 text-text-muted" /> Payout Queue
+                <DollarSign className="w-4 h-4 text-text-muted" /> {t('settings.admin.payoutQueue')}
               </span>
               <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>
@@ -262,19 +269,19 @@ export default function SettingsPage() {
       {/* About */}
       <div className="card mb-4">
         <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-          <Info className="w-4 h-4" /> About
+          <Info className="w-4 h-4" /> {t('settings.about')}
         </h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-text-secondary">Version</span>
+            <span className="text-sm text-text-secondary">{t('settings.aboutSection.version')}</span>
             <span className="text-sm text-text-muted">2.0.0</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-text-secondary">Powered by</span>
+            <span className="text-sm text-text-secondary">{t('settings.aboutSection.poweredBy')}</span>
             <span className="text-sm text-text-muted">Swiss Ephemeris · Claude AI</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-text-secondary">Contact</span>
+            <span className="text-sm text-text-secondary">{t('settings.aboutSection.contact')}</span>
             <a href="mailto:tametryol@gmail.com" className="text-sm text-accent-primary hover:underline">tametryol@gmail.com</a>
           </div>
         </div>
@@ -283,22 +290,22 @@ export default function SettingsPage() {
       {/* Logout */}
       <button onClick={handleLogout} className="w-full card flex items-center gap-3 text-red-400 hover:bg-red-400/5">
         <LogOut className="w-5 h-5" />
-        <span className="font-medium">Sign Out</span>
+        <span className="font-medium">{t('settings.signOut')}</span>
       </button>
 
       {/* Delete Account */}
       <div className="mt-4">
         <button
           onClick={() => {
-            if (confirm('Are you sure you want to delete your account? This will permanently remove all your data including posts, messages, charts, and readings. This action cannot be undone.')) {
-              if (confirm('This is your last chance. Are you absolutely sure you want to delete your account forever?')) {
+            if (confirm(t('settings.deleteConfirm.message'))) {
+              if (confirm(t('settings.deleteConfirm.message'))) {
                 handleDeleteAccount();
               }
             }
           }}
           className="w-full text-center text-sm text-red-400 hover:text-red-300 py-2"
         >
-          Delete Account
+          {t('settings.deleteAccount')}
         </button>
       </div>
     </div>

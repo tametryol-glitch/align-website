@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getVerificationStatus, submitVerification, type VerificationResult } from '@/lib/photoVerificationService';
 import { Shield, Camera, CheckCircle, XCircle, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PhotoVerificationPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [verification, setVerification] = useState<VerificationResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,7 @@ export default function PhotoVerificationPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const loadStatus = useCallback(async () => {
     if (!user?.id) return;
@@ -42,6 +45,7 @@ export default function PhotoVerificationPage() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: 640, height: 640 },
       });
+      streamRef.current = stream;
       setCameraStream(stream);
     } catch {
       setCameraError('Camera access denied. Please allow camera access in your browser settings.');
@@ -62,8 +66,10 @@ export default function PhotoVerificationPage() {
   };
 
   const stopCamera = () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(t => t.stop());
+    const stream = streamRef.current || cameraStream;
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
       setCameraStream(null);
     }
   };
@@ -96,7 +102,12 @@ export default function PhotoVerificationPage() {
   };
 
   useEffect(() => {
-    return () => stopCamera();
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+      }
+    };
   }, []);
 
   const status = verification?.status || 'none';
@@ -104,14 +115,14 @@ export default function PhotoVerificationPage() {
   return (
     <div className="max-w-lg mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/profile" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Profile
+        <ArrowLeft size={16} /> {t('dating.verify.backToProfile')}
       </Link>
 
       <div className="text-center mb-8">
         <Shield size={32} color="#4ADE80" className="mx-auto mb-3" />
-        <h1 className="text-2xl font-bold text-white mb-2">Photo Verification</h1>
+        <h1 className="text-2xl font-bold text-white mb-2">{t('dating.verify.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          Verify your identity to earn a trusted badge on your dating profile
+          {t('dating.verify.subtitle')}
         </p>
       </div>
 
@@ -125,9 +136,9 @@ export default function PhotoVerificationPage() {
           border: '1px solid rgba(74,222,128,0.3)',
         }}>
           <CheckCircle size={48} color="#4ADE80" className="mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-green-400 mb-1">Verified!</h2>
+          <h2 className="text-lg font-semibold text-green-400 mb-1">{t('dating.verify.verifiedTitle')}</h2>
           <p className="text-sm text-text-tertiary">
-            Your profile now shows a verified badge.
+            {t('dating.verify.verifiedDescription')}
           </p>
         </div>
       ) : status === 'pending' ? (
@@ -136,9 +147,9 @@ export default function PhotoVerificationPage() {
           border: '1px solid rgba(250,204,21,0.3)',
         }}>
           <Clock size={48} color="#FACC15" className="mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-yellow-400 mb-1">Under Review</h2>
+          <h2 className="text-lg font-semibold text-yellow-400 mb-1">{t('dating.verify.pendingTitle')}</h2>
           <p className="text-sm text-text-tertiary">
-            Your selfie is being reviewed. This usually takes 24-48 hours.
+            {t('dating.verify.pendingDescription')}
           </p>
         </div>
       ) : status === 'rejected' ? (
@@ -148,18 +159,18 @@ export default function PhotoVerificationPage() {
             border: '1px solid rgba(248,113,113,0.3)',
           }}>
             <XCircle size={48} color="#F87171" className="mx-auto mb-3" />
-            <h2 className="text-lg font-semibold text-red-400 mb-1">Not Approved</h2>
+            <h2 className="text-lg font-semibold text-red-400 mb-1">{t('dating.verify.rejectedTitle')}</h2>
             {verification?.rejection_reason && (
               <p className="text-sm text-text-tertiary">{verification.rejection_reason}</p>
             )}
-            <p className="text-sm text-text-muted mt-2">You can try again with a clearer selfie.</p>
+            <p className="text-sm text-text-muted mt-2">{t('dating.verify.rejectedHint')}</p>
           </div>
           <button
             onClick={startCamera}
             className="w-full py-3.5 rounded-2xl font-semibold text-white"
             style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}
           >
-            Try Again
+            {t('dating.verify.tryAgain')}
           </button>
         </div>
       ) : (
@@ -169,12 +180,12 @@ export default function PhotoVerificationPage() {
             backgroundColor: 'rgba(155,111,246,0.06)',
             border: '1px solid rgba(155,111,246,0.15)',
           }}>
-            <h3 className="text-sm font-medium text-white mb-2">How it works:</h3>
+            <h3 className="text-sm font-medium text-white mb-2">{t('dating.verify.howItWorks')}</h3>
             <ol className="text-sm text-text-tertiary space-y-1.5">
-              <li>1. Take a clear selfie with good lighting</li>
-              <li>2. Make sure your face is fully visible</li>
-              <li>3. We&apos;ll compare it with your profile photos</li>
-              <li>4. Once approved, you get a verified badge</li>
+              <li>{t('dating.verify.step1')}</li>
+              <li>{t('dating.verify.step2')}</li>
+              <li>{t('dating.verify.step3')}</li>
+              <li>{t('dating.verify.step4')}</li>
             </ol>
           </div>
 
@@ -210,14 +221,14 @@ export default function PhotoVerificationPage() {
                   className="flex-1 py-3 rounded-2xl text-sm font-medium text-text-secondary"
                   style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}
                 >
-                  Cancel
+                  {t('dating.verify.cancel')}
                 </button>
                 <button
                   onClick={capturePhoto}
                   className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white"
                   style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}
                 >
-                  Capture
+                  {t('dating.verify.capture')}
                 </button>
               </div>
             </div>
@@ -232,7 +243,7 @@ export default function PhotoVerificationPage() {
                   className="flex-1 py-3 rounded-2xl text-sm font-medium text-text-secondary"
                   style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}
                 >
-                  Retake
+                  {t('dating.verify.retake')}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -240,7 +251,7 @@ export default function PhotoVerificationPage() {
                   className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}
                 >
-                  {submitting ? 'Submitting...' : 'Submit for Review'}
+                  {submitting ? t('dating.verify.submitting') : t('dating.verify.submitForReview')}
                 </button>
               </div>
             </div>
@@ -250,7 +261,7 @@ export default function PhotoVerificationPage() {
               className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 font-semibold text-white"
               style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}
             >
-              <Camera size={18} /> Take Selfie
+              <Camera size={18} /> {t('dating.verify.takeSelfie')}
             </button>
           )}
         </div>

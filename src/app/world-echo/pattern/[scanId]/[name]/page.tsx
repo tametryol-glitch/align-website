@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -29,6 +30,7 @@ const EVIDENCE_COLORS: Record<string, string> = {
 // --- Main Component ---
 
 export default function PatternDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const scanId = params.scanId as string;
   const name = params.name as string;
@@ -56,13 +58,13 @@ export default function PatternDetailPage() {
       .finally(() => setLoading(false));
   }, [scanId, name, decodedName]);
 
-  if (loading) return <LoadingCosmic label="Loading pattern details..." />;
+  if (loading) return <LoadingCosmic label={t('common.loading')} />;
 
   return (
     <div className="max-w-3xl mx-auto">
       {/* Back button */}
       <Link href="/world-echo" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back
+        <ArrowLeft className="w-4 h-4" /> {t('common.back')}
       </Link>
 
       {/* Error state */}

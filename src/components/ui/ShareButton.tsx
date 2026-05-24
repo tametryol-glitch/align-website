@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Share2, Check, Link as LinkIcon } from 'lucide-react';
 
 interface ShareButtonProps {
@@ -12,6 +13,7 @@ interface ShareButtonProps {
 }
 
 export default function ShareButton({ url, title, text, className = '', variant = 'icon' }: ShareButtonProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
@@ -47,7 +49,7 @@ export default function ShareButton({ url, title, text, className = '', variant 
         className={`btn-secondary flex items-center gap-2 text-sm ${className}`}
       >
         {copied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
-        {copied ? 'Link Copied!' : 'Share'}
+        {copied ? t('components.shareButton.copied') : t('components.shareButton.share')}
       </button>
     );
   }
@@ -56,7 +58,7 @@ export default function ShareButton({ url, title, text, className = '', variant 
     <button
       onClick={handleShare}
       className={`p-2 rounded-lg hover:bg-bg-tertiary transition-colors ${className}`}
-      title={copied ? 'Link copied!' : 'Share'}
+      title={copied ? t('components.shareButton.copied') : t('components.shareButton.share')}
     >
       {copied ? (
         <Check className="w-4 h-4 text-green-400" />

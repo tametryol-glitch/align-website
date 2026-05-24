@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -273,6 +274,7 @@ function ContentSkeleton() {
 // ── Main Page ──
 
 export default function PlanetaryHoursPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
 
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
@@ -342,11 +344,11 @@ export default function PlanetaryHoursPage() {
       <div className="max-w-3xl mx-auto">
         <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back to Readings
+          {t('readings.backToReadings')}
         </Link>
         <div className="mb-6">
-          <h1 className="text-2xl font-display font-bold text-text-primary">Planetary Hours</h1>
-          <p className="text-text-tertiary text-sm mt-1">Powered by the Align Galactic Clock</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.planetaryHoursPage.title')}</h1>
+          <p className="text-text-tertiary text-sm mt-1">{t('readings.planetaryHoursPage.subtitle')}</p>
         </div>
         <div className="bg-bg-secondary rounded-2xl p-6 border border-border-primary text-center space-y-3">
           <p className="text-4xl">🌍</p>
@@ -370,12 +372,12 @@ export default function PlanetaryHoursPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       {/* ── 1. Header ── */}
       <div className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-text-primary">Planetary Hours</h1>
-        <p className="text-text-tertiary text-sm mt-1">Powered by the Align Galactic Clock</p>
+        <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.planetaryHoursPage.title')}</h1>
+        <p className="text-text-tertiary text-sm mt-1">{t('readings.planetaryHoursPage.subtitle')}</p>
       </div>
 
       {/* ── 2. Date Navigation Bar ── */}

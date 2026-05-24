@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendsStore } from '@/stores/friendsStore';
 import {
@@ -39,6 +40,7 @@ type TabKey = 'friends' | 'requests' | 'search';
 // ── Main Component ──────────────────────────────────────────────────
 
 export default function FriendsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, profile } = useAuthStore();
   const friends = useFriendsStore((s) => s.friends);
@@ -286,7 +288,7 @@ export default function FriendsPage() {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
         <Users className="w-12 h-12 text-text-muted mx-auto mb-3" />
-        <p className="text-text-muted">Sign in to see your friends</p>
+        <p className="text-text-muted">{t('auth.signInToAccess')}</p>
       </div>
     );
   }
@@ -294,9 +296,9 @@ export default function FriendsPage() {
   // ── Tabs ──
 
   const tabs: { key: TabKey; label: string; count?: number }[] = [
-    { key: 'friends', label: 'Friends', count: friendCount },
-    { key: 'requests', label: 'Requests', count: pendingRequestCount },
-    { key: 'search', label: 'Search' },
+    { key: 'friends', label: t('friends.tabs.friends'), count: friendCount },
+    { key: 'requests', label: t('friends.tabs.requests'), count: pendingRequestCount },
+    { key: 'search', label: t('friends.tabs.search') },
   ];
 
   return (
@@ -304,10 +306,10 @@ export default function FriendsPage() {
       {/* Header */}
       <div className="mb-5">
         <h1 className="text-[28px] font-display font-bold text-text-primary tracking-tight">
-          Friends & Connections
+          {t('friends.title')}
         </h1>
         <p className="text-xs text-text-muted mt-0.5">
-          {friendCount} friends{pendingRequestCount > 0 ? ` · ${pendingRequestCount} pending` : ''}
+          {t('friends.friendCount', { count: friendCount })}{pendingRequestCount > 0 ? ` · ${t('friends.pendingCount', { count: pendingRequestCount })}` : ''}
         </p>
         <div className="flex items-center gap-2 mt-3">
           <button
@@ -321,7 +323,7 @@ export default function FriendsPage() {
             className="px-4 py-2 rounded-full text-xs font-semibold transition-colors"
             style={{ backgroundColor: 'rgba(139,92,246,0.15)', color: '#9B6FF6' }}
           >
-            ✉️ Invite Friends
+            ✉️ {t('friends.inviteFriends')}
           </button>
           {profile?.align_code && (
             <button
@@ -332,7 +334,7 @@ export default function FriendsPage() {
               style={{ backgroundColor: 'rgba(139,92,246,0.15)', color: '#9B6FF6' }}
               title={`Your code: ${profile.align_code}`}
             >
-              📱 QR Code
+              📱 {t('friends.qrCode')}
             </button>
           )}
           <div className="flex-1" />
@@ -349,21 +351,21 @@ export default function FriendsPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
-        {tabs.map(t => (
+        {tabs.map(tab => (
           <button
-            key={t.key}
-            onClick={() => useFriendsStore.getState().setActiveTab(t.key)}
+            key={tab.key}
+            onClick={() => useFriendsStore.getState().setActiveTab(tab.key)}
             className="flex-1 py-2.5 rounded-xl text-xs font-medium transition-all text-center"
             style={{
-              backgroundColor: activeTab === t.key ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${activeTab === t.key ? '#9B6FF6' : '#3D4760'}`,
-              color: activeTab === t.key ? '#9B6FF6' : 'rgba(255,255,255,0.45)',
-              fontWeight: activeTab === t.key ? 600 : 400,
+              backgroundColor: activeTab === tab.key ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${activeTab === tab.key ? '#9B6FF6' : '#3D4760'}`,
+              color: activeTab === tab.key ? '#9B6FF6' : 'rgba(255,255,255,0.45)',
+              fontWeight: activeTab === tab.key ? 600 : 400,
             }}
           >
-            {t.key === 'friends' ? `Friends (${friendCount})` :
-             t.key === 'requests' ? `Requests${pendingRequestCount > 0 ? ` (${pendingRequestCount})` : ''}` :
-             'Search'}
+            {tab.key === 'friends' ? `${t('friends.tabs.friends')} (${friendCount})` :
+             tab.key === 'requests' ? `${t('friends.tabs.requests')}${pendingRequestCount > 0 ? ` (${pendingRequestCount})` : ''}` :
+             t('friends.tabs.search')}
           </button>
         ))}
       </div>
@@ -374,7 +376,7 @@ export default function FriendsPage() {
           {/* People You May Know - suggestions */}
           {suggestions.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-text-primary mb-3">People You May Know</h3>
+              <h3 className="text-sm font-semibold text-text-primary mb-3">{t('friends.suggestionsTitle')}</h3>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                 {suggestions.map((s) => (
                   <div
@@ -424,7 +426,7 @@ export default function FriendsPage() {
                       {actionLoading === s.id ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
                       ) : (
-                        '+ Add'
+                        t('friends.addButton')
                       )}
                     </button>
                   </div>
@@ -435,16 +437,16 @@ export default function FriendsPage() {
 
           {/* Friend list */}
           {friendsLoading ? (
-            <LoadingCosmic label="Loading friends..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : friends.length === 0 ? (
             <div className="card text-center py-12">
               <Users className="w-12 h-12 text-text-muted mx-auto mb-3" />
-              <p className="text-text-primary font-medium mb-1">No friends yet</p>
+              <p className="text-text-primary font-medium mb-1">{t('friends.empty.noFriends')}</p>
               <p className="text-xs text-text-muted mb-4">
-                Search for people or share your Align code
+                {t('friends.empty.noFriendsHint')}
               </p>
               <Link href="/discover" className="btn-primary text-sm inline-flex items-center gap-2">
-                <UserPlus className="w-4 h-4" /> Find People
+                <UserPlus className="w-4 h-4" /> {t('friends.empty.findPeople')}
               </Link>
             </div>
           ) : (
@@ -475,9 +477,9 @@ export default function FriendsPage() {
           {requestData.length === 0 ? (
             <div className="card text-center py-12">
               <Clock className="w-12 h-12 text-text-muted mx-auto mb-3" />
-              <p className="text-text-primary font-medium mb-1">No pending requests</p>
+              <p className="text-text-primary font-medium mb-1">{t('friends.empty.noRequests')}</p>
               <p className="text-xs text-text-muted">
-                Friend requests you send or receive will appear here
+                {t('friends.empty.noRequestsHint')}
               </p>
             </div>
           ) : (
@@ -509,7 +511,7 @@ export default function FriendsPage() {
                           {req.display_name}
                         </p>
                         <p className="text-xs text-text-muted" style={{ marginTop: 2 }}>
-                          {isIncoming ? 'Wants to connect' : 'Request sent'}
+                          {isIncoming ? t('friends.requests.wantsToConnect') : t('friends.requests.requestSent')}
                           {req.sun_sign ? ` · ${getZodiacGlyph(req.sun_sign)} ${req.sun_sign}` : ''}
                         </p>
                       </div>
@@ -532,7 +534,7 @@ export default function FriendsPage() {
                             borderRadius: 8,
                           }}
                         >
-                          Accept
+                          {t('friends.requests.accept')}
                         </button>
                         <button
                           onClick={() => handleDecline(req.friendship_id)}
@@ -547,7 +549,7 @@ export default function FriendsPage() {
                             borderRadius: 8,
                           }}
                         >
-                          Decline
+                          {t('friends.requests.decline')}
                         </button>
                       </div>
                     ) : (
@@ -564,7 +566,7 @@ export default function FriendsPage() {
                           borderRadius: 8,
                         }}
                       >
-                        Cancel
+                        {t('friends.requests.cancel')}
                       </button>
                     )}
                   </div>
@@ -585,7 +587,7 @@ export default function FriendsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search by name, username, or Align code..."
+              placeholder={t('friends.search.placeholder')}
               className="input pl-9 py-2.5 text-sm w-full"
               autoFocus
               autoCapitalize="off"
@@ -601,13 +603,13 @@ export default function FriendsPage() {
             searching ? (
               <div className="text-center py-12">
                 <Loader2 className="w-6 h-6 text-accent-primary animate-spin mx-auto mb-2" />
-                <p className="text-xs text-text-muted">Searching...</p>
+                <p className="text-xs text-text-muted">{t('friends.search.searching')}</p>
               </div>
             ) : searchResults.length === 0 ? (
               <div className="card text-center py-12">
                 <Search className="w-10 h-10 text-text-muted mx-auto mb-3" />
-                <p className="text-text-primary font-medium">No users found</p>
-                <p className="text-xs text-text-muted mt-1">Try a different search term</p>
+                <p className="text-text-primary font-medium">{t('friends.search.noResults')}</p>
+                <p className="text-xs text-text-muted mt-1">{t('friends.search.noResultsHint')}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -642,11 +644,11 @@ export default function FriendsPage() {
                         <Loader2 className="w-4 h-4 text-accent-primary animate-spin flex-shrink-0" />
                       ) : isFriend ? (
                         <span className="px-2.5 py-1 rounded-lg bg-green-500/10 text-green-400 text-[11px] font-medium flex-shrink-0">
-                          Friends
+                          {t('friends.labels.friends')}
                         </span>
                       ) : isOutgoing ? (
                         <span className="px-2.5 py-1 rounded-lg bg-yellow-500/10 text-yellow-400 text-[11px] font-medium flex-shrink-0">
-                          Pending
+                          {t('friends.labels.pending')}
                         </span>
                       ) : isIncoming ? (
                         <button
@@ -657,7 +659,7 @@ export default function FriendsPage() {
                           }}
                           className="px-3 py-1.5 rounded-lg bg-green-500/15 text-green-400 text-xs font-semibold hover:bg-green-500/25 transition-colors flex-shrink-0"
                         >
-                          Accept
+                          {t('friends.requests.accept')}
                         </button>
                       ) : (
                         <button
@@ -667,7 +669,7 @@ export default function FriendsPage() {
                           }}
                           className="px-3 py-1.5 rounded-lg bg-accent-primary/15 text-accent-primary text-xs font-semibold hover:bg-accent-primary/25 transition-colors flex-shrink-0"
                         >
-                          Add
+                          {t('friends.addButton')}
                         </button>
                       )}
                     </button>
@@ -678,9 +680,9 @@ export default function FriendsPage() {
           ) : (
             <div className="card text-center py-12">
               <Search className="w-10 h-10 text-text-muted mx-auto mb-3" />
-              <p className="text-text-primary font-medium">Search for people</p>
+              <p className="text-text-primary font-medium">{t('friends.search.startSearch')}</p>
               <p className="text-xs text-text-muted mt-1">
-                Type at least 2 characters to search by name, username, or Align code
+                {t('friends.search.minCharsHint')}
               </p>
             </div>
           )}
@@ -699,7 +701,7 @@ export default function FriendsPage() {
             className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
             onClick={() => setContextMenu(null)}
           >
-            <Users className="w-4 h-4" /> View Profile
+            <Users className="w-4 h-4" /> {t('friends.actions.viewProfile')}
           </Link>
           <button
             onClick={() => {
@@ -708,7 +710,7 @@ export default function FriendsPage() {
             }}
             className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            <MessageCircle className="w-4 h-4" /> Message
+            <MessageCircle className="w-4 h-4" /> {t('friends.actions.message')}
           </button>
           <div className="border-t border-border-primary my-1" />
           <button
@@ -718,7 +720,7 @@ export default function FriendsPage() {
             }}
             className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
           >
-            <UserMinus className="w-4 h-4" /> Remove Friend
+            <UserMinus className="w-4 h-4" /> {t('friends.actions.removeFriend')}
           </button>
           <button
             onClick={() => {
@@ -727,7 +729,7 @@ export default function FriendsPage() {
             }}
             className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
           >
-            <Shield className="w-4 h-4" /> Block User
+            <Shield className="w-4 h-4" /> {t('friends.actions.blockUser')}
           </button>
         </div>
       )}
@@ -909,6 +911,7 @@ function ProfilePreviewModal({
   isFriend: boolean;
   onAddFriend: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
@@ -938,7 +941,7 @@ function ProfilePreviewModal({
 
         {/* Align code */}
         {user.align_code && (
-          <p className="text-xs text-text-muted mt-1">Align Code: {user.align_code}</p>
+          <p className="text-xs text-text-muted mt-1">{t('friends.alignCode')} {user.align_code}</p>
         )}
 
         {/* Sign chips */}
@@ -946,7 +949,7 @@ function ProfilePreviewModal({
           <div className="flex flex-wrap gap-2 mt-4 justify-center">
             {user.sun_sign && (
               <div className="bg-accent-primary/10 px-3 py-1.5 rounded-lg text-center">
-                <p className="text-[9px] uppercase text-text-muted font-medium">Sun</p>
+                <p className="text-[9px] uppercase text-text-muted font-medium">{t('planets.sun')}</p>
                 <p className="text-xs text-text-primary font-semibold mt-0.5">
                   {getZodiacGlyph(user.sun_sign)} {user.sun_sign}
                 </p>
@@ -954,7 +957,7 @@ function ProfilePreviewModal({
             )}
             {user.moon_sign && (
               <div className="bg-accent-primary/10 px-3 py-1.5 rounded-lg text-center">
-                <p className="text-[9px] uppercase text-text-muted font-medium">Moon</p>
+                <p className="text-[9px] uppercase text-text-muted font-medium">{t('planets.moon')}</p>
                 <p className="text-xs text-text-primary font-semibold mt-0.5">
                   {getZodiacGlyph(user.moon_sign)} {user.moon_sign}
                 </p>
@@ -962,7 +965,7 @@ function ProfilePreviewModal({
             )}
             {user.rising_sign && (
               <div className="bg-accent-primary/10 px-3 py-1.5 rounded-lg text-center">
-                <p className="text-[9px] uppercase text-text-muted font-medium">Rising</p>
+                <p className="text-[9px] uppercase text-text-muted font-medium">{t('chart.rising')}</p>
                 <p className="text-xs text-text-primary font-semibold mt-0.5">
                   {getZodiacGlyph(user.rising_sign)} {user.rising_sign}
                 </p>
@@ -1012,7 +1015,7 @@ function ProfilePreviewModal({
         {!action && (
           <div className="mt-5 px-4 py-2 rounded-lg bg-yellow-500/10 text-yellow-400 text-sm font-medium text-center w-full">
             <Clock className="w-4 h-4 inline mr-1.5" />
-            Request Pending
+            {t('friends.actions.requestPending')}
           </div>
         )}
 
@@ -1022,7 +1025,7 @@ function ProfilePreviewModal({
           className="mt-3 text-sm text-accent-primary hover:underline"
           onClick={onClose}
         >
-          View Full Profile
+          {t('friends.actions.viewFullProfile')}
         </Link>
 
         {/* Close button */}
@@ -1030,7 +1033,7 @@ function ProfilePreviewModal({
           onClick={onClose}
           className="mt-3 text-sm text-text-muted hover:text-text-primary transition-colors"
         >
-          Close
+          {t('friends.actions.close')}
         </button>
       </div>
     </div>
@@ -1052,6 +1055,7 @@ function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
@@ -1068,7 +1072,7 @@ function ConfirmDialog({
             onClick={onCancel}
             className="btn-ghost flex-1 py-2.5"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -1078,7 +1082,7 @@ function ConfirmDialog({
                 : 'btn-primary'
             }`}
           >
-            {destructive ? 'Confirm' : 'OK'}
+            {destructive ? t('common.confirm') : t('common.ok')}
           </button>
         </div>
       </div>

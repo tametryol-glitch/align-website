@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getDatingMatches, type DatingMatch } from '@/lib/datingDiscoveryService';
 import { generateDateSuggestions, type DateSuggestion } from '@/lib/dateNightService';
@@ -18,6 +19,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function DatePlannerPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [matches, setMatches] = useState<DatingMatch[]>([]);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
@@ -67,14 +69,14 @@ export default function DatePlannerPage() {
   return (
     <div className="max-w-2xl mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/matches" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Matches
+        <ArrowLeft size={16} /> {t('dating.datePlanner.backToMatches')}
       </Link>
 
       <div className="text-center mb-6">
         <span className="text-3xl block mb-2">🌙</span>
-        <h1 className="text-2xl font-bold text-white mb-1">Date Night Planner</h1>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('dating.datePlanner.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          Cosmically curated date ideas based on your elemental compatibility
+          {t('dating.datePlanner.subtitle')}
         </p>
       </div>
 
@@ -84,8 +86,8 @@ export default function DatePlannerPage() {
         </div>
       ) : matches.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-text-tertiary mb-3">Match with someone to get date suggestions.</p>
-          <Link href="/dating" className="text-accent-primary text-sm font-medium">Browse Picks</Link>
+          <p className="text-text-tertiary mb-3">{t('dating.datePlanner.noMatchHint')}</p>
+          <Link href="/dating" className="text-accent-primary text-sm font-medium">{t('dating.datePlanner.browsePicks')}</Link>
         </div>
       ) : (
         <>
@@ -113,7 +115,7 @@ export default function DatePlannerPage() {
               onClick={refresh}
               className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors"
             >
-              <RefreshCw size={14} /> Shuffle Ideas
+              <RefreshCw size={14} /> {t('dating.datePlanner.shuffleIdeas')}
             </button>
           </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -461,6 +462,7 @@ function generateHDReading(result: HumanDesignResult, firstName: string): string
 // ═══════════════════════════════════════════════════════════════════
 
 export default function HumanDesignPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<HumanDesignResult | null>(null);

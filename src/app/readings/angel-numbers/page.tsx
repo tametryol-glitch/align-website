@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { ArrowLeft, Copy, Check, Share2 } from 'lucide-react';
 import { lookupAngelNumber, type AngelNumberMeaning } from '@/lib/angelNumbers';
@@ -28,6 +29,7 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 export default function AngelNumbersPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const firstName = (profile?.display_name || '').split(' ')[0] || 'friend';
   const [searchInput, setSearchInput] = useState('');
@@ -81,14 +83,14 @@ export default function AngelNumbersPage() {
       {/* Header */}
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-1">
-        {'✨'} Angel Numbers
+        {'✨'} {t('readings.angelNumbersPage.title')}
       </h1>
       <p className="text-text-secondary text-sm mb-6 leading-relaxed">
-        Decode the messages the universe is sending you through repeating numbers
+        {t('readings.angelNumbersPage.subtitle')}
       </p>
 
       {/* Search Input */}

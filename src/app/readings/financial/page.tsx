@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -479,6 +480,7 @@ function getDailyScoreColor(score: number): string {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function FinancialPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const now = new Date();
   const [startMonth, setStartMonth] = useState(now.getMonth());

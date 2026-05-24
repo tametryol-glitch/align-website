@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Search, ArrowLeft, Globe, ChevronRight } from 'lucide-react';
@@ -71,6 +72,7 @@ function resolveDate(preset: Preset, customDate: string): string {
 }
 
 export default function WorldEchoScannerPage() {
+  const { t } = useTranslation();
   const [preset, setPreset] = useState<Preset>('today');
   const [customDate, setCustomDate] = useState(formatISODate(new Date()));
   const [scanType, setScanType] = useState<'global' | 'personal'>('global');
@@ -145,8 +147,8 @@ export default function WorldEchoScannerPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Date Scanner</h1>
-          <p className="text-text-tertiary text-sm">Scan any date for historical echoes</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('worldEcho.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('worldEcho.subtitle')}</p>
         </div>
       </div>
 

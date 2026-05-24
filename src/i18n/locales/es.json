@@ -11,24 +11,24 @@
     "profile": "Perfil"
   },
   "auth": {
-    "login": "Iniciar sesión",
+    "login": "Iniciar sesion",
     "signup": "Registrarse",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "noAccount": "¿No tienes una cuenta?",
-    "hasAccount": "¿Ya tienes una cuenta?",
+    "email": "Correo electronico",
+    "password": "Contrasena",
+    "forgotPassword": "Olvidaste tu contrasena?",
+    "noAccount": "No tienes una cuenta?",
+    "hasAccount": "Ya tienes una cuenta?",
     "welcome": "Bienvenido a Align",
-    "subtitle": "Descubre el plano cósmico de tu vida",
+    "subtitle": "Descubre el plano cosmico de tu vida",
     "enterEmail": "Ingresa tu correo",
-    "enterEmailHint": "Escribe tu correo electrónico arriba y luego toca Olvidé mi contraseña.",
+    "enterEmailHint": "Escribe tu correo electronico arriba y luego toca Olvide mi contrasena.",
     "emailSent": "Correo enviado",
     "checkInbox": "Revisa tu bandeja de entrada para el enlace de restablecimiento.",
     "resetEmailFailed": "No se pudo enviar el correo de restablecimiento.",
-    "loginFailed": "Error al iniciar sesión.",
+    "loginFailed": "Error al iniciar sesion.",
     "signupFailed": "Error al registrarse.",
     "orContinueWith": "o continuar con",
-    "orSignUpWithEmail": "o regístrate con correo",
+    "orSignUpWithEmail": "o registrate con correo",
     "apple": "Apple",
     "google": "Google",
     "displayName": "Nombre para mostrar",
@@ -38,19 +38,20 @@
     "dobRequired": "Fecha de nacimiento requerida",
     "dobRequiredHint": "Ingresa tu fecha de nacimiento para continuar.",
     "dobInvalidFormat": "Ingresa la fecha como DD-MM-AAAA",
-    "dobInvalidMonth": "Mes inválido",
-    "dobInvalidDay": "Día inválido",
-    "dobInvalidYear": "Año inválido",
-    "dobInvalidDate": "Fecha inválida",
-    "ageRestriction": "Debes tener al menos 18 años para usar Align",
-    "ageRestrictionAlert": "Debes tener al menos {{age}} años para usar Align.",
-    "termsRequired": "Términos requeridos",
-    "termsRequiredHint": "Acepta la Política de privacidad y los Términos de servicio antes de crear tu cuenta.",
-    "referralCode": "Código de referido (opcional)",
+    "dobInvalidMonth": "Mes invalido",
+    "dobInvalidDay": "Dia invalido",
+    "dobInvalidYear": "Ano invalido",
+    "dobInvalidDate": "Fecha invalida",
+    "ageRestriction": "Debes tener al menos 18 anos para usar Align",
+    "ageRestrictionAlert": "Debes tener al menos {{age}} anos para usar Align.",
+    "termsRequired": "Terminos requeridos",
+    "termsRequiredHint": "Acepta la Politica de privacidad y los Terminos de servicio antes de crear tu cuenta.",
+    "referralCode": "Codigo de referido (opcional)",
     "agreeToTerms": "Acepto la",
-    "privacyPolicy": "Política de privacidad",
+    "privacyPolicy": "Politica de privacidad",
     "and": "y los",
-    "termsOfService": "Términos de servicio"
+    "termsOfService": "Terminos de servicio",
+    "signInToAccess": "Inicia sesion para acceder a los mensajes"
   },
   "onboarding": {
     "title": "Vamos a crear tu carta natal",
@@ -62,87 +63,99 @@
     "continue": "Continuar",
     "skip": "Omitir por ahora",
     "almostThere": "Casi listo",
-    "personalizeHint": "Ayúdanos a personalizar tu experiencia. Esto es opcional y se puede cambiar después en Configuración.",
+    "personalizeHint": "Ayudanos a personalizar tu experiencia. Esto es opcional y se puede cambiar despues en Configuracion.",
     "identifyAs": "Me identifico como...",
     "interestedIn": "Me interesan...",
     "readingStars": "Leyendo tus estrellas...",
     "fillBirthDetails": "Completa tus datos de nacimiento antes de continuar.",
-    "saveFailed": "No se pudo guardar tu información de nacimiento. Verifica tu conexión e inténtalo de nuevo.",
-    "thisIsYou": "{{name}}, este eres tú.",
-    "thisIsYouNoName": "Este eres tú.",
-    "cosmicFingerprint": "Tu huella cósmica — los tres signos que definen todo sobre quién eres.",
+    "saveFailed": "No se pudo guardar tu informacion de nacimiento. Verifica tu conexion e intentalo de nuevo.",
+    "thisIsYou": "{{name}}, este eres tu.",
+    "thisIsYouNoName": "Este eres tu.",
+    "cosmicFingerprint": "Tu huella cosmica -- los tres signos que definen todo sobre quien eres.",
     "yourSun": "TU SOL",
     "coreIdentity": "Identidad central",
     "yourMoon": "TU LUNA",
     "innerWorld": "Mundo interior",
     "yourRising": "TU ASCENDENTE",
-    "firstImpression": "Primera impresión",
+    "firstImpression": "Primera impresion",
     "dominantElement": "Tu elemento dominante: {{element}}",
-    "exploreChart": "Explora tu carta completa →",
+    "exploreChart": "Explora tu carta completa ->",
     "justBeginning": "Esto es solo el comienzo. Tu carta completa tiene\n10 planetas, 12 casas y docenas de aspectos.",
     "sunSoul": {
-      "Aries": "Naciste para liderar — no por título, sino por ejemplo. Corres hacia el fuego cuando todos los demás huyen. Tu vida es una serie de saltos valientes e impulsivos, y el universo te recompensa por nunca pedir permiso.",
-      "Taurus": "Fuiste hecho para el largo plazo. Mientras otros persiguen tendencias, tú construyes imperios con paciencia y buen gusto. Tu mayor poder es negarte a ser apresurado — sabes que todo lo que vale la pena toma tiempo.",
-      "Gemini": "Tu mente nunca se detiene. Ves conexiones que nadie más nota, hablas en ideas y te aburres en el segundo en que algo se vuelve predecible. No eres indeciso — eres multidimensional.",
-      "Cancer": "Lo sientes todo. La habitación, el silencio, lo que nadie dijo en voz alta. Tu inteligencia emocional es tu superpoder, pero tiene un costo — cargas con el peso de personas que nunca te lo pidieron.",
-      "Leo": "Naciste para ser visto. No por vanidad — por un conocimiento profundo de que tu luz tiene un propósito. Cuando entras a una habitación, la gente lo siente. Tu desafío es aprender que apagar tu brillo nunca le sirve a nadie.",
-      "Virgo": "Notas lo que nadie más ve. La grieta en el sistema, la palabra fuera de lugar, la persona que se está desmoronando en silencio. Tu mente es un instrumento de precisión, y tu propósito es hacer que las cosas rotas vuelvan a estar completas.",
-      "Libra": "Entiendes a las personas. Cómo piensan, lo que necesitan escuchar, el equilibrio entre demasiado y no suficiente. Tu don es la armonía — tu maldición es perderte a ti mismo tratando de mantener a todos los demás cómodos.",
-      "Scorpio": "Vives a una profundidad que la mayoría de las personas no pueden manejar. Ves a través de cada máscara, cada mentira, cada superficie cortés. Tu intensidad no es un defecto — es el motor de tu transformación. No haces las cosas a medias.",
-      "Sagittarius": "Fuiste hecho para la libertad. No solo viajar — libertad de mente, creencia y espíritu. Necesitas un horizonte que perseguir, una pregunta que explorar, y la certeza absoluta de que siempre hay algo más grande esperando.",
-      "Capricorn": "Entiendes que la grandeza se construye, no se nace con ella. Mientras otros sueñan, tú planeas. Mientras otros se rinden, tú perseveras. Tu ambición no es fría — es el fuego silencioso de alguien que se niega a desperdiciar su potencial.",
-      "Aquarius": "Piensas diferente a todos los que te rodean, y has dejado de disculparte por ello. Tu mente opera en una frecuencia que ve el futuro antes de que llegue. Lo más solitario de ti es la frecuencia con la que tienes razón.",
-      "Pisces": "Existes entre mundos. Sientes la corriente subterránea de todo — la música debajo del silencio, el sueño debajo de la realidad. Tu sensibilidad no es debilidad; es la forma más rara de inteligencia."
+      "Aries": "Naciste para liderar -- no por titulo, sino por ejemplo. Corres hacia el fuego cuando todos los demas huyen. Tu vida es una serie de saltos valientes e impulsivos, y el universo te recompensa por nunca pedir permiso.",
+      "Taurus": "Fuiste hecho para el largo plazo. Mientras otros persiguen tendencias, tu construyes imperios con paciencia y buen gusto. Tu mayor poder es negarte a ser apresurado -- sabes que todo lo que vale la pena toma tiempo.",
+      "Gemini": "Tu mente nunca se detiene. Ves conexiones que nadie mas nota, hablas en ideas y te aburres en el segundo en que algo se vuelve predecible. No eres indeciso -- eres multidimensional.",
+      "Cancer": "Lo sientes todo. La habitacion, el silencio, lo que nadie dijo en voz alta. Tu inteligencia emocional es tu superpoder, pero tiene un costo -- cargas con el peso de personas que nunca te lo pidieron.",
+      "Leo": "Naciste para ser visto. No por vanidad -- por un conocimiento profundo de que tu luz tiene un proposito. Cuando entras a una habitacion, la gente lo siente. Tu desafio es aprender que apagar tu brillo nunca le sirve a nadie.",
+      "Virgo": "Notas lo que nadie mas ve. La grieta en el sistema, la palabra fuera de lugar, la persona que se esta desmoronando en silencio. Tu mente es un instrumento de precision, y tu proposito es hacer que las cosas rotas vuelvan a estar completas.",
+      "Libra": "Entiendes a las personas. Como piensan, lo que necesitan escuchar, el equilibrio entre demasiado y no suficiente. Tu don es la armonia -- tu maldicion es perderte a ti mismo tratando de mantener a todos los demas comodos.",
+      "Scorpio": "Vives a una profundidad que la mayoria de las personas no pueden manejar. Ves a traves de cada mascara, cada mentira, cada superficie cortes. Tu intensidad no es un defecto -- es el motor de tu transformacion. No haces las cosas a medias.",
+      "Sagittarius": "Fuiste hecho para la libertad. No solo viajar -- libertad de mente, creencia y espiritu. Necesitas un horizonte que perseguir, una pregunta que explorar, y la certeza absoluta de que siempre hay algo mas grande esperando.",
+      "Capricorn": "Entiendes que la grandeza se construye, no se nace con ella. Mientras otros suenan, tu planeas. Mientras otros se rinden, tu perseveras. Tu ambicion no es fria -- es el fuego silencioso de alguien que se niega a desperdiciar su potencial.",
+      "Aquarius": "Piensas diferente a todos los que te rodean, y has dejado de disculparte por ello. Tu mente opera en una frecuencia que ve el futuro antes de que llegue. Lo mas solitario de ti es la frecuencia con la que tienes razon.",
+      "Pisces": "Existes entre mundos. Sientes la corriente subterranea de todo -- la musica debajo del silencio, el sueno debajo de la realidad. Tu sensibilidad no es debilidad; es la forma mas rara de inteligencia."
     },
     "moonHeart": {
-      "Aries": "Emocionalmente, ardes intenso y rápido. Sientes las cosas con todo tu cuerpo — ira, pasión, protección. No te sientas con tus sentimientos; actúas sobre ellos. Necesitas una pareja que pueda igualar tu fuego sin pestañear.",
-      "Taurus": "Tu mundo emocional ansía estabilidad. Necesitas rutina, comodidad física y un lugar seguro donde aterrizar. Cuando te sientes seguro, eres la persona más generosa del mundo. Cuando esa seguridad se ve amenazada, te cierras por completo.",
-      "Gemini": "Tus emociones se mueven como el clima — rápidas, cambiantes y a veces contradictorias. Procesas los sentimientos hablando de ellos, pensando en ellos, a veces evitándolos por completo. El aburrimiento es la emoción que más te duele.",
-      "Cancer": "Tu vida emocional es el centro de tu universo. Lo sientes todo dos veces — una por ti, otra por la persona a tu lado. El hogar no es un lugar para ti; es un sentimiento. Y cuando ese sentimiento falta, nada más importa.",
-      "Leo": "Necesitas sentirte especial. No de manera superficial — de una manera profunda hasta los huesos. Cuando las personas que amas te hacen sentir visto, brillas. Cuando te dan por sentado, algo dentro de ti se apaga. Tu corazón funciona con reconocimiento genuino.",
-      "Virgo": "Muestras amor haciendo, no diciendo. Te preocupas por las personas que te importan — su salud, sus problemas, las cosas que no están manejando. Tu vida emocional es callada, práctica y profundamente devota.",
-      "Libra": "Necesitas compañía para sentirte emocionalmente completo. No de manera codependiente — simplemente procesas tus sentimientos a través de la conexión. El conflicto te incomoda físicamente. La belleza y la armonía no son lujos para ti; son necesidades.",
-      "Scorpio": "Tu vida emocional es más profunda de lo que nadie jamás sabrá. Sientes las cosas con una intensidad devastadora, pero rara vez lo muestras. La confianza toma años. La traición tarda una eternidad en perdonarse. Cuando amas, amas con todo lo que tienes.",
-      "Sagittarius": "Tus emociones necesitan espacio para respirar. Procesas los sentimientos a través del movimiento, la aventura, el humor y la perspectiva filosófica. La claustrofobia emocional es tu kryptonita — necesitas libertad incluso en tus relaciones más cercanas.",
+      "Aries": "Emocionalmente, ardes intenso y rapido. Sientes las cosas con todo tu cuerpo -- ira, pasion, proteccion. No te sientas con tus sentimientos; actuas sobre ellos. Necesitas una pareja que pueda igualar tu fuego sin pestanear.",
+      "Taurus": "Tu mundo emocional ansia estabilidad. Necesitas rutina, comodidad fisica y un lugar seguro donde aterrizar. Cuando te sientes seguro, eres la persona mas generosa del mundo. Cuando esa seguridad se ve amenazada, te cierras por completo.",
+      "Gemini": "Tus emociones se mueven como el clima -- rapidas, cambiantes y a veces contradictorias. Procesas los sentimientos hablando de ellos, pensando en ellos, a veces evitandolos por completo. El aburrimiento es la emocion que mas te duele.",
+      "Cancer": "Tu vida emocional es el centro de tu universo. Lo sientes todo dos veces -- una por ti, otra por la persona a tu lado. El hogar no es un lugar para ti; es un sentimiento. Y cuando ese sentimiento falta, nada mas importa.",
+      "Leo": "Necesitas sentirte especial. No de manera superficial -- de una manera profunda hasta los huesos. Cuando las personas que amas te hacen sentir visto, brillas. Cuando te dan por sentado, algo dentro de ti se apaga. Tu corazon funciona con reconocimiento genuino.",
+      "Virgo": "Muestras amor haciendo, no diciendo. Te preocupas por las personas que te importan -- su salud, sus problemas, las cosas que no estan manejando. Tu vida emocional es callada, practica y profundamente devota.",
+      "Libra": "Necesitas compania para sentirte emocionalmente completo. No de manera codependiente -- simplemente procesas tus sentimientos a traves de la conexion. El conflicto te incomoda fisicamente. La belleza y la armonia no son lujos para ti; son necesidades.",
+      "Scorpio": "Tu vida emocional es mas profunda de lo que nadie jamas sabra. Sientes las cosas con una intensidad devastadora, pero rara vez lo muestras. La confianza toma anos. La traicion tarda una eternidad en perdonarse. Cuando amas, amas con todo lo que tienes.",
+      "Sagittarius": "Tus emociones necesitan espacio para respirar. Procesas los sentimientos a traves del movimiento, la aventura, el humor y la perspectiva filosofica. La claustrofobia emocional es tu kryptonita -- necesitas libertad incluso en tus relaciones mas cercanas.",
       "Capricorn": "Aprendiste temprano que las emociones no son seguras. Procesas los sentimientos lentamente, en privado, y con un nivel de autocontrol que otros confunden con frialdad. Pero debajo de esa compostura hay una lealtad tan feroz que puede quebrarte.",
-      "Aquarius": "Tu mundo emocional es poco convencional. Te importa profundamente la humanidad pero luchas con la intimidad emocional uno a uno. Procesas los sentimientos intelectualmente — saliendo de ellos para analizar en lugar de ahogarte en ellos.",
-      "Pisces": "Lo sientes todo — tus propias emociones, las emociones de otras personas, el estado de ánimo colectivo de cada habitación en la que entras. Tu corazón no tiene muros. Esto es tanto tu mayor don como lo que más te agota."
+      "Aquarius": "Tu mundo emocional es poco convencional. Te importa profundamente la humanidad pero luchas con la intimidad emocional uno a uno. Procesas los sentimientos intelectualmente -- saliendo de ellos para analizar en lugar de ahogarte en ellos.",
+      "Pisces": "Lo sientes todo -- tus propias emociones, las emociones de otras personas, el estado de animo colectivo de cada habitacion en la que entras. Tu corazon no tiene muros. Esto es tanto tu mayor don como lo que mas te agota."
     },
     "risingMask": {
-      "Aries": "La gente te ve como audaz, directo y un poco intimidante. Das la impresión de ser alguien que toma el mando — la persona a la que otros miran cuando nadie sabe qué hacer. Tu energía entra antes que tú.",
-      "Taurus": "La gente te ve como centrado, atractivo y auténticamente real. Hay una calma en tu presencia que hace que otros se sientan seguros. Te comportas con una confianza tranquila y un ojo para la belleza que la gente nota de inmediato.",
-      "Gemini": "La gente te ve como ingenioso, curioso e imposible de definir. Das la impresión de ser alguien que siempre está pensando, siempre observando, y siempre ligeramente adelante en la conversación. Tu versatilidad es desarmante.",
-      "Cancer": "La gente te ve como cálido, protector y emocionalmente presente. Das la impresión de ser alguien que genuinamente se preocupa — y tienen razón. Hay una suavidad en tu rostro que atrae a las personas, incluso cuando te estás protegiendo.",
-      "Leo": "La gente te ve como magnético, seguro e imposible de ignorar. Entras a una habitación y la energía cambia. Hay una calidez y generosidad en tu presencia que hace que la gente quiera estar cerca de ti — y rara vez saben por qué.",
-      "Virgo": "La gente te ve como compuesto, inteligente y discretamente organizado. Das la impresión de alguien que lo tiene todo bajo control — incluso cuando no es así. Hay una modestia en tu presencia que esconde la mente más aguda de la habitación.",
-      "Libra": "La gente te ve como encantador, equilibrado y estéticamente llamativo. Das la impresión de alguien que hace que todo parezca fácil — incluyendo las relaciones. Tu gracia social es algo que la gente desearía poder aprender.",
-      "Scorpio": "La gente te ve como intenso, misterioso y difícil de leer. Das la impresión de alguien que ve a través de las personas — y pueden sentirlo. Hay un poder en tu presencia que hace que otros se sientan profundamente atraídos o ligeramente asustados.",
-      "Sagittarius": "La gente te ve como aventurero, optimista y refrescantemente honesto. Das la impresión de alguien que no se toma la vida demasiado en serio — lo que hace que la gente confíe en ti, porque no estás actuando. Tu risa es medicina.",
-      "Capricorn": "La gente te ve como maduro, ambicioso y silenciosamente poderoso. Das la impresión de alguien que tiene su vida organizada — alguien a quien otros respetan antes de siquiera conocerte. Hay una autoridad en tu presencia que no pediste.",
-      "Aquarius": "La gente te ve como único, independiente y ligeramente alienígena — en el mejor sentido posible. Das la impresión de alguien que genuinamente no le importa lo que otros piensen, y esa libertad es magnética. La gente quiere lo que tú tienes.",
-      "Pisces": "La gente te ve como soñador, gentil y de otro mundo. Das la impresión de alguien que existe ligeramente fuera de la realidad normal — un alma vieja, un artista, un sanador. La gente se abre contigo sin saber por qué."
+      "Aries": "La gente te ve como audaz, directo y un poco intimidante. Das la impresion de ser alguien que toma el mando -- la persona a la que otros miran cuando nadie sabe que hacer. Tu energia entra antes que tu.",
+      "Taurus": "La gente te ve como centrado, atractivo y autenticamente real. Hay una calma en tu presencia que hace que otros se sientan seguros. Te comportas con una confianza tranquila y un ojo para la belleza que la gente nota de inmediato.",
+      "Gemini": "La gente te ve como ingenioso, curioso e imposible de definir. Das la impresion de ser alguien que siempre esta pensando, siempre observando, y siempre ligeramente adelante en la conversacion. Tu versatilidad es desarmante.",
+      "Cancer": "La gente te ve como calido, protector y emocionalmente presente. Das la impresion de ser alguien que genuinamente se preocupa -- y tienen razon. Hay una suavidad en tu rostro que atrae a las personas, incluso cuando te estas protegiendo.",
+      "Leo": "La gente te ve como magnetico, seguro e imposible de ignorar. Entras a una habitacion y la energia cambia. Hay una calidez y generosidad en tu presencia que hace que la gente quiera estar cerca de ti -- y rara vez saben por que.",
+      "Virgo": "La gente te ve como compuesto, inteligente y discretamente organizado. Das la impresion de alguien que lo tiene todo bajo control -- incluso cuando no es asi. Hay una modestia en tu presencia que esconde la mente mas aguda de la habitacion.",
+      "Libra": "La gente te ve como encantador, equilibrado y esteticamente llamativo. Das la impresion de alguien que hace que todo parezca facil -- incluyendo las relaciones. Tu gracia social es algo que la gente desearia poder aprender.",
+      "Scorpio": "La gente te ve como intenso, misterioso y dificil de leer. Das la impresion de alguien que ve a traves de las personas -- y pueden sentirlo. Hay un poder en tu presencia que hace que otros se sientan profundamente atraidos o ligeramente asustados.",
+      "Sagittarius": "La gente te ve como aventurero, optimista y refrescantemente honesto. Das la impresion de alguien que no se toma la vida demasiado en serio -- lo que hace que la gente confie en ti, porque no estas actuando. Tu risa es medicina.",
+      "Capricorn": "La gente te ve como maduro, ambicioso y silenciosamente poderoso. Das la impresion de alguien que tiene su vida organizada -- alguien a quien otros respetan antes de siquiera conocerte. Hay una autoridad en tu presencia que no pediste.",
+      "Aquarius": "La gente te ve como unico, independiente y ligeramente alienigena -- en el mejor sentido posible. Das la impresion de alguien que genuinamente no le importa lo que otros piensen, y esa libertad es magnetica. La gente quiere lo que tu tienes.",
+      "Pisces": "La gente te ve como sonador, gentil y de otro mundo. Das la impresion de alguien que existe ligeramente fuera de la realidad normal -- un alma vieja, un artista, un sanador. La gente se abre contigo sin saber por que."
     },
     "elementBalance": {
-      "Fire": { "name": "Fuego", "feel": "Te impulsa la pasión, el instinto y una necesidad inquebrantable de hacer que las cosas sucedan. Funcionas con inspiración — y te derrumbas cuando se agota." },
-      "Earth": { "name": "Tierra", "feel": "Eres centrado, práctico y hecho para la realidad. Confías en lo que puedes ver y tocar. Tu fortaleza es la resistencia — tu riesgo es resistir el cambio cuando es hora de evolucionar." },
-      "Air": { "name": "Aire", "feel": "Vives en tu mente. Ideas, conexiones, conversaciones — ahí es donde te sientes más vivo. Tu don es la perspectiva. Tu sombra es desconectarte de tu cuerpo y tu corazón." },
-      "Water": { "name": "Agua", "feel": "Te impulsa el sentimiento. Tu intuición, tu empatía, tu profundidad emocional — estas no son habilidades blandas, son tu inteligencia principal. Tu desafío es aprender qué sentimientos son tuyos." }
+      "Fire": {
+        "name": "Fuego",
+        "feel": "Te impulsa la pasion, el instinto y una necesidad inquebrantable de hacer que las cosas sucedan. Funcionas con inspiracion -- y te derrumbas cuando se agota."
+      },
+      "Earth": {
+        "name": "Tierra",
+        "feel": "Eres centrado, practico y hecho para la realidad. Confias en lo que puedes ver y tocar. Tu fortaleza es la resistencia -- tu riesgo es resistir el cambio cuando es hora de evolucionar."
+      },
+      "Air": {
+        "name": "Aire",
+        "feel": "Vives en tu mente. Ideas, conexiones, conversaciones -- ahi es donde te sientes mas vivo. Tu don es la perspectiva. Tu sombra es desconectarte de tu cuerpo y tu corazon."
+      },
+      "Water": {
+        "name": "Agua",
+        "feel": "Te impulsa el sentimiento. Tu intuicion, tu empatia, tu profundidad emocional -- estas no son habilidades blandas, son tu inteligencia principal. Tu desafio es aprender que sentimientos son tuyos."
+      }
     }
   },
   "home": {
     "greeting": "Hola, {{name}}",
     "dailyInsight": "Perspectiva diaria",
-    "currentTransits": "Tránsitos actuales",
+    "currentTransits": "Transitos actuales",
     "moonPhase": "Fase lunar",
     "planetaryHours": "Horas planetarias",
-    "quickAccess": "Acceso rápido"
+    "quickAccess": "Acceso rapido"
   },
   "chart": {
     "natal": "Carta natal",
     "progressed": "Progresada",
-    "solarReturn": "Revolución solar",
-    "lunarReturn": "Revolución lunar",
-    "synastry": "Sinastría",
+    "solarReturn": "Revolucion solar",
+    "lunarReturn": "Revolucion lunar",
+    "synastry": "Sinastria",
     "composite": "Compuesta",
     "positions": "Posiciones",
     "aspects": "Aspectos",
@@ -152,215 +165,1287 @@
   "readings": {
     "title": "Lecturas",
     "chartAdjuster": "Ajustador de carta",
-    "transits": "Tránsitos",
-    "starseed": "Orígenes estelares",
-    "numerology": "Numerología",
-    "angelNumbers": "Números angelicales",
-    "humanDesign": "Diseño Humano",
+    "transits": "Transitos",
+    "starseed": "Origenes estelares",
+    "numerology": "Numerologia",
+    "angelNumbers": "Numeros angelicales",
+    "humanDesign": "Diseno Humano",
     "tarot": "Tarot",
     "financial": "Informe financiero",
-    "pathway": "Camino al éxito",
-    "nameAnalysis": "Análisis del nombre",
+    "pathway": "Camino al exito",
+    "nameAnalysis": "Analisis del nombre",
     "firdaria": "Firdaria",
-    "zodiacalReleasing": "Liberación zodiacal",
+    "zodiacalReleasing": "Liberacion zodiacal",
     "planetaryHours": "Horas planetarias",
-    "acg": "Astrocartografía",
+    "moonPhases": "Fases lunares",
+    "acg": "Astrocartografia",
     "fixedStars": "Estrellas fijas",
-    "arabicParts": "Partes árabes",
+    "arabicParts": "Partes arabes",
     "compatibility": "Compatibilidad",
-    "rectification": "Herramienta de rectificación de hora natal",
-    "galacticClock": "Reloj galáctico",
-    "galacticOverlay": "Superposición galáctica",
-    "galacticForecast": "Pronóstico galáctico",
+    "rectification": "Herramienta de rectificacion de hora natal",
+    "galacticClock": "Reloj galactico",
+    "galacticOverlay": "Superposicion galactica",
+    "galacticForecast": "Pronostico galactico",
     "midpoints": "Calculadora de puntos medios",
-    "aiAstrologer": "Astrólogo IA",
+    "aiAstrologer": "Astrologo IA",
+    "yearAhead": "Mi Ano por Delante",
     "savedCharts": "Cartas guardadas",
-    "cosmicJournal": "Diario cósmico",
-    "moonPhases": "Fases Lunares",
-    "yearAhead": "Mi Año por Delante",
+    "cosmicJournal": "Diario cosmico",
     "soulGifts": "Dones del Alma",
-    "soulMemory": "Memoria del Alma"
+    "soulMemory": "Memoria del Alma",
+    "soulAscension": "Ascension del Alma",
+    "dreamOracle": "Oraculo de Suenos",
+    "backToReadings": "Volver a Lecturas",
+    "upgradeToTier": "Mejorar a {{tier}}",
+    "birthDataRequired": "Por favor agrega tus datos de nacimiento en tu perfil primero.",
+    "birthDataPromptTransits": "Agrega tus datos de nacimiento para ver tus transitos actuales.",
+    "birthDataPromptCompatibility": "Agrega tus datos de nacimiento para verificar compatibilidad con alguien especial.",
+    "birthDataPromptAlerts": "Necesitamos tus datos de nacimiento para calcular alertas cosmicas personalizadas para tu carta.",
+    "transitsPage": {
+      "title": "Tus Ciclos",
+      "subtitle": "{{name}}, estos son los ciclos que se mueven a traves de tu vida en este momento. Piensa en ellos como estaciones -- cada una trae su propia energia, sus propias lecciones y sus propias oportunidades.",
+      "loadingLabel": "Calculando tus transitos...",
+      "errorDefault": "No se pudieron cargar los transitos",
+      "emptyState": "No se encontraron ciclos activos. Vuelve pronto.",
+      "activeNow": "Activos Ahora",
+      "storylines": "Narrativas",
+      "impactingYouNow": "Impactandote Ahora",
+      "backToCycles": "Volver a Ciclos",
+      "active": "activo",
+      "approaching": "Acercandose",
+      "separating": "Separandose",
+      "cycleMeaning": "Lo Que Este Ciclo Significa Para Ti",
+      "howToNavigate": "Como Navegar Esto",
+      "technicalDetails": "Detalles Tecnicos",
+      "transit": "Transito",
+      "currentOrb": "Orbe Actual",
+      "direction": "Direccion",
+      "intensity": "Intensidad",
+      "separatingDesc": "Separandose (alejandose del exacto)",
+      "applyingDesc": "Aplicandose (acercandose al exacto)",
+      "intensityMajor": "Mayor (planeta exterior)",
+      "intensityModerate": "Moderada",
+      "intensityMinor": "Menor",
+      "nearExact": "Casi exacto -- influencia mas fuerte",
+      "stronglyActive": "Fuertemente activo",
+      "buildingMomentum": "Ganando impulso",
+      "enteringAwareness": "Entrando en conciencia",
+      "lessThanADay": "Menos de un dia restante",
+      "daysLeft": "{{count}} dias restantes",
+      "weeksLeft": "~{{count}} semanas restantes",
+      "monthsLeft": "~{{count}} meses restantes",
+      "yearsLeft": "{{count}}+ anos",
+      "tapToRead": "Toca para leer tu perspectiva completa",
+      "failedToLoadStorylines": "No se pudieron cargar las narrativas"
+    },
+    "tarotPage": {
+      "title": "Lectura de Tarot",
+      "subtitle": "Recibe guia de los arcanos",
+      "chooseSpread": "Elige Tu Tirada",
+      "yourQuestion": "Tu Pregunta (Opcional)",
+      "questionPlaceholder": "Que guia buscas?",
+      "drawButton": "Sacar {{spread}}",
+      "shuffling": "Mezclando el Mazo Cosmico...",
+      "tapToReveal": "Toca para revelar",
+      "revealAll": "Revelar Todas las Cartas",
+      "newReading": "Nueva Lectura",
+      "getPersonalReading": "Obtener Tu Lectura Personal",
+      "regenerateReading": "Regenerar Lectura Personal",
+      "personalTarotReading": "Lectura de Tarot Personal",
+      "channeling": "Canalizando tu carta y cartas...",
+      "shareReading": "Compartir Lectura",
+      "copied": "Copiado!",
+      "failedToGenerate": "No se pudo generar la lectura. Intentalo de nuevo.",
+      "reversed": "Invertida",
+      "majorArcana": "Arcanos Mayores",
+      "minorArcana": "Arcanos Menores",
+      "spreads": {
+        "single": "Carta Unica",
+        "threeCard": "Tres Cartas",
+        "celticCross": "Cruz Celta",
+        "relationship": "Relacion",
+        "career": "Carrera"
+      },
+      "positions": {
+        "focus": "Enfoque",
+        "past": "Pasado",
+        "present": "Presente",
+        "future": "Futuro",
+        "challenge": "Desafio",
+        "foundation": "Fundamento",
+        "recentPast": "Pasado Reciente",
+        "crown": "Corona",
+        "nearFuture": "Futuro Cercano",
+        "self": "Yo",
+        "environment": "Entorno",
+        "hopesFears": "Esperanzas/Miedos",
+        "outcome": "Resultado",
+        "you": "Tu",
+        "partner": "Pareja",
+        "connection": "Conexion",
+        "potential": "Potencial",
+        "current": "Actual",
+        "obstacle": "Obstaculo",
+        "hiddenFactor": "Factor Oculto",
+        "advice": "Consejo"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Oraculo de Suenos",
+      "subtitle": "Decodifica tus suenos a traves de simbolos, emociones, astrologia y el lenguaje oculto de tu subconsciente.",
+      "tabs": {
+        "record": "Registrar",
+        "journal": "Diario",
+        "symbols": "Simbolos",
+        "patterns": "Patrones"
+      },
+      "record": {
+        "dreamTitle": "Titulo del Sueno (opcional)",
+        "titlePlaceholder": "Autogenerado si se deja en blanco",
+        "describeLabel": "Describe Tu Sueno *",
+        "describePlaceholder": "Cierra los ojos y describe todo lo que recuerdas...",
+        "mainEmotions": "Emociones Principales (hasta 5)",
+        "peopleDream": "Personas en el Sueno",
+        "peoplePlaceholder": "ej. Madre, ex pareja, desconocido, amigo",
+        "placesDream": "Lugares en el Sueno",
+        "placesPlaceholder": "ej. casa de la infancia, oceano, bosque oscuro",
+        "separateCommas": "Separar con comas",
+        "symbolsObjects": "Simbolos / Objetos",
+        "selectSymbols": "Haz clic para seleccionar simbolos del sueno",
+        "selectedCount": "{{count}} seleccionados",
+        "searchSymbols": "Buscar simbolos...",
+        "dreamType": "Tipo de Sueno",
+        "dreamIntensity": "Intensidad del Sueno: {{value}}/10",
+        "privacy": "Privacidad",
+        "interpretDream": "Interpretar Mi Sueno",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Tu Interpretacion del Sueno",
+        "mainSymbols": "Simbolos Principales",
+        "coreMessage": "El Mensaje Central",
+        "subconsciousMessage": "Lo Que Tu Subconsciente Te Estaba Mostrando",
+        "symbolsMatter": "Los Simbolos Que Mas Importan",
+        "emotionalUndercurrent": "La Corriente Emocional Subyacente",
+        "whatToFace": "Lo Que Este Sueno Te Pide Enfrentar",
+        "oracleMessage": "Mensaje Final del Oraculo de Suenos",
+        "astroConnection": "Conexion Astrologica",
+        "whyNow": "Por Que Sonaste Esto Ahora",
+        "watchFor": "Que Observar",
+        "whatToDo": "Que Hacer Despues",
+        "reflectionQuestions": "Preguntas de Reflexion",
+        "askAboutDream": "Preguntar Sobre Este Sueno",
+        "visualizeDream": "Visualizar Mi Sueno",
+        "comingSoon": "PROXIMAMENTE",
+        "recordAnother": "Registrar Otro Sueno"
+      },
+      "journal": {
+        "loadingJournal": "Cargando diario de suenos...",
+        "searchDreams": "Buscar suenos...",
+        "noDreamsYet": "Sin suenos aun",
+        "noDreamsHint": "Registra tu primer sueno para empezar a construir tu diario.",
+        "deleteConfirm": "Eliminar este sueno? Esto no se puede deshacer."
+      },
+      "dictionary": {
+        "backToSymbols": "Volver a simbolos",
+        "generalMeaning": "Significado General",
+        "psychologicalMeaning": "Significado Psicologico",
+        "spiritualMeaning": "Significado Espiritual",
+        "astrologicalMeaning": "Significado Astrologico",
+        "shadowMeaning": "Significado de Sombra",
+        "reflectionQuestion": "Pregunta de Reflexion"
+      },
+      "patterns": {
+        "noPatternsYet": "Sin patrones aun",
+        "noPatternsHint": "Registra al menos 3 suenos para empezar a ver patrones en tu vida onirica.",
+        "overview": "Resumen",
+        "totalDreams": "Total de Suenos",
+        "avgIntensity": "Intensidad Promedio",
+        "nightmares": "Pesadillas",
+        "lucidDreams": "Suenos Lucidos",
+        "prophetic": "Profeticos",
+        "recurringSymbols": "Simbolos Mas Recurrentes",
+        "recurringEmotions": "Emociones Mas Recurrentes",
+        "recurringPeople": "Personas Mas Recurrentes",
+        "dreamTypes": "Tipos de Suenos",
+        "dreamsByMoonPhase": "Suenos por Fase Lunar",
+        "moonPhaseHint": "El seguimiento de patrones de fase lunar se activara cuando tengas 10+ suenos con datos astrologicos conectados.",
+        "dreamsByTransit": "Suenos por Transito",
+        "transitHint": "La correlacion de transitos revelara que aspectos planetarios activan tus suenos mas vividos o profeticos."
+      }
+    },
+    "starseedPage": {
+      "title": "Origen Estelar",
+      "subtitle": "Descubre tus origenes cosmicos del alma",
+      "description": "Analiza tu carta natal para descubrir con que sistemas estelares resuena tu alma.",
+      "discoverButton": "Descubrir Mis Origenes",
+      "analyzing": "Analizando...",
+      "dominantOrigin": "Origen Dominante",
+      "resonancePoints": "Puntuacion: {{score}} puntos de resonancia"
+    },
+    "numerologyPage": {
+      "title": "Numerologia",
+      "subtitle": "Tus numeros cosmicos decodificados",
+      "master": "Maestro"
+    },
+    "angelNumbersPage": {
+      "title": "Numeros Angelicales",
+      "subtitle": "Busca el significado detras de los numeros que ves",
+      "searchPlaceholder": "Ingresa un numero (ej. 111, 444)...",
+      "popular": "Numeros Populares",
+      "notFound": "Numero no encontrado. Prueba con un numero angelical comun.",
+      "copiedToClipboard": "Copiado al portapapeles!"
+    },
+    "humanDesignPage": {
+      "title": "Diseno Humano",
+      "subtitle": "Tu plano energetico",
+      "aura": "Aura",
+      "defined": "Definido",
+      "undefined": "No definido"
+    },
+    "financialPage": {
+      "title": "Astrologia Financiera",
+      "subtitle": "Tu plano cosmico del dinero",
+      "personalIncome": "Ingresos Personales y Valores",
+      "sharedResources": "Recursos Compartidos y Transformacion",
+      "careerStanding": "Carrera y Posicion Publica",
+      "gainsNetworks": "Ganancias y Redes",
+      "strengths": "Fortalezas",
+      "challenges": "Desafios",
+      "monthlyForecast": "Pronostico Mensual",
+      "timingWindows": "Ventanas de Tiempo",
+      "favorable": "Favorable",
+      "mixed": "Mixto",
+      "challenging": "Desafiante"
+    },
+    "compatibilityPage": {
+      "title": "Verificacion de Compatibilidad",
+      "subtitle": "Explora la conexion cosmica entre dos almas",
+      "person2Label": "Datos de Nacimiento de la Pareja",
+      "datePlaceholder": "Fecha de Nacimiento",
+      "timePlaceholder": "Hora de Nacimiento",
+      "locationPlaceholder": "Lugar de Nacimiento",
+      "calculateButton": "Verificar Compatibilidad",
+      "calculating": "Calculando compatibilidad...",
+      "overallScore": "Puntuacion General",
+      "soulLevelConnection": "Conexion a Nivel del Alma",
+      "deepCompatibility": "Compatibilidad Profunda",
+      "strongPotential": "Gran Potencial",
+      "moderateMatch": "Coincidencia Moderada",
+      "growthRequired": "Crecimiento Necesario",
+      "challengingDynamic": "Dinamica Desafiante",
+      "categories": {
+        "attraction": "Atraccion Fisica",
+        "emotional": "Vinculo Emocional",
+        "mental": "Conexion Mental",
+        "stability": "Estabilidad a Largo Plazo",
+        "karmic": "Vinculo Karmico",
+        "harmony": "Armonia",
+        "magnetic": "Atraccion Magnetica"
+      },
+      "showAspects": "Mostrar Aspectos",
+      "hideAspects": "Ocultar Aspectos"
+    },
+    "cosmicJournalPage": {
+      "title": "Diario Cosmico",
+      "subtitle": "Registra tu mundo interior junto al cosmos",
+      "newEntry": "Nueva Entrada",
+      "moodOptions": {
+        "low": "Bajo",
+        "meh": "Regular",
+        "neutral": "Neutral",
+        "good": "Bien",
+        "great": "Genial"
+      },
+      "noEntries": "Sin entradas en el diario aun",
+      "noEntriesHint": "Empieza a escribir para rastrear tu mundo interior junto al cosmos."
+    },
+    "moonPhasesPage": {
+      "title": "Fases Lunares",
+      "tabs": {
+        "today": "Hoy",
+        "calendar": "Calendario",
+        "forecast": "Pronostico",
+        "eclipses": "Eclipses",
+        "birthMoon": "Luna Natal"
+      },
+      "failedToLoadChart": "No se pudo cargar la carta natal"
+    },
+    "planetaryHoursPage": {
+      "title": "Horas Planetarias",
+      "subtitle": "Sabiduria antigua de sincronizacion para la vida moderna",
+      "currentHour": "Hora Actual",
+      "daySummary": "Resumen del Dia",
+      "hoursTable": "Tabla de Horas"
+    },
+    "yearAheadPage": {
+      "title": "Mi Ano por Delante",
+      "subtitle": "Tu pronostico cosmico personalizado para el ano",
+      "generating": "Generando tu ano por delante...",
+      "monthlyOverview": "Vision Mensual",
+      "keyTransits": "Transitos Clave",
+      "calm": "Calma",
+      "activeIntensity": "Activo",
+      "intense": "Intenso"
+    },
+    "solarReturnPage": {
+      "title": "Revolucion Solar",
+      "subtitle": "Tu carta de cumpleanos -- el plano cosmico de tu ano",
+      "generating": "Calculando tu Revolucion Solar...",
+      "yearTheme": "Tema del Ano",
+      "planetsOnAngles": "Planetas en Angulos",
+      "retrogrades": "Retrogrados",
+      "monthlyTimeline": "Cronograma Mensual",
+      "natalComparisons": "Natal vs Revolucion Solar",
+      "criticalAspects": "Aspectos Criticos",
+      "yearPattern": "Patron del Ano"
+    },
+    "galacticClockPage": {
+      "title": "Reloj Galactico",
+      "subtitle": "Tu interfaz de sincronizacion cosmica"
+    },
+    "galacticForecastPage": {
+      "title": "Pronostico Galactico",
+      "subtitle": "Energias del espacio profundo que influyen en tu carta"
+    },
+    "midpointsPage": {
+      "title": "Calculadora de Puntos Medios",
+      "subtitle": "Descubre conexiones ocultas en tu carta"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Periodos planetarios persas antiguos"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Liberacion Zodiacal",
+      "subtitle": "Tecnica de sincronizacion helenistica"
+    },
+    "acgPage": {
+      "title": "Astrocartografia",
+      "subtitle": "Donde en el mundo se activan tus planetas"
+    },
+    "fixedStarsPage": {
+      "title": "Estrellas Fijas",
+      "subtitle": "Influencias estelares en tu carta"
+    },
+    "arabicPartsPage": {
+      "title": "Partes Arabes",
+      "subtitle": "Puntos calculados antiguos en tu carta"
+    },
+    "pathwayPage": {
+      "title": "Camino al Exito",
+      "subtitle": "Tu plano cosmico de carrera y proposito de vida"
+    },
+    "rectificationPage": {
+      "title": "Rectificacion de Hora Natal",
+      "subtitle": "Ajusta tu hora de nacimiento para cartas mas precisas"
+    },
+    "nameAnalysisPage": {
+      "title": "Analisis del Nombre",
+      "subtitle": "La numerologia de tu nombre"
+    },
+    "soulGiftsPage": {
+      "title": "Dones del Alma",
+      "subtitle": "Descubre los dones unicos codificados en tu carta"
+    },
+    "soulMemoryPage": {
+      "title": "Memoria del Alma",
+      "subtitle": "Ecos de vidas pasadas en tu carta natal"
+    },
+    "soulAscensionPage": {
+      "title": "Ascension del Alma",
+      "description": "Juega tu carta natal como un RPG de reencarnacion con karma, caminos de proposito, contratos del alma, reliquias y elecciones de vidas pasadas."
+    },
+    "chartAdjusterPage": {
+      "title": "Ajustador de Carta",
+      "subtitle": "Experimenta con diferentes horas de nacimiento"
+    }
   },
   "interpretation": {
-    "aiInterpret": "Interpretación IA",
+    "aiInterpret": "Interpretacion IA",
     "loading": "Leyendo las estrellas...",
     "modes": {
       "default": "General",
       "dating": "Citas",
-      "purpose": "Propósito de vida",
+      "purpose": "Proposito de vida",
       "spiritual": "Dones espirituales",
-      "passion": "Pasión",
-      "reputation": "Reputación"
+      "passion": "Pasion",
+      "reputation": "Reputacion"
+    }
+  },
+  "dating": {
+    "title": "Citas Cosmicas",
+    "subtitle": "Tus selecciones cosmicas curadas",
+    "introTitle": "Citas Cosmicas",
+    "introDescription": "Encuentra conexiones significativas escritas en las estrellas. Crea tu perfil de citas para empezar a descubrir coincidencias cosmicamente compatibles.",
+    "createProfileButton": "Crear Tu Perfil de Citas",
+    "featurePhotos": "Agrega fotos y una intro de voz",
+    "featureCompatibility": "Emparejado por compatibilidad cosmica",
+    "featureSafety": "Conexiones seguras y verificadas",
+    "tabs": {
+      "discover": "Descubrir",
+      "likes": "Me gusta",
+      "matches": "Matches",
+      "myProfile": "Mi Perfil"
+    },
+    "discovery": {
+      "consulting": "Consultando el cosmos...",
+      "noPicksTitle": "Sin Selecciones Cosmicas Aun",
+      "allCaughtUpTitle": "Todo Al Dia!",
+      "noPicksDescription": "Las estrellas aun estan alineando tus coincidencias. Asegurate de que tu perfil de citas este completo!",
+      "allCaughtUpDescription": "Vuelve manana para nuevas selecciones cosmicas. Las conexiones de calidad toman tiempo.",
+      "completeProfile": "Completar Perfil",
+      "dailyLikeLimit": "Has alcanzado tu limite diario de me gusta ({{limit}}). Mejora para mas!",
+      "dailyRoseLimit": "Has usado todas tus Rosas Cosmicas hoy ({{limit}}). Mejora para mas!",
+      "genericError": "Algo salio mal. Intentalo de nuevo."
+    },
+    "likes": {
+      "title": "Me gusta",
+      "receivedCount": "{{count}} personas estan interesadas",
+      "sentCount": "Te gustaron {{count}} personas",
+      "received": "Recibidos",
+      "sent": "Enviados",
+      "seeWhoLikes": "Ve quien te da me gusta",
+      "upgradeHint": "Mejora a Light o superior para revelar perfiles",
+      "upgrade": "Mejorar",
+      "noLikesYet": "Sin me gusta aun",
+      "noSentYet": "Sin me gusta enviados aun",
+      "keepFresh": "Manten tu perfil fresco y el cosmos entregara.",
+      "headToDiscover": "Ve a Descubrir para encontrar tus conexiones cosmicas.",
+      "mysteryAdmirer": "Admirador misterioso",
+      "rose": "Rosa",
+      "likeBack": "Devolver Me Gusta",
+      "matching": "Emparejando..."
+    },
+    "matches": {
+      "title": "Tus Matches",
+      "connectionCount": "{{count}} conexiones cosmicas",
+      "noMatchesTitle": "Sin matches aun",
+      "noMatchesDescription": "Cuando tu y alguien se gusten mutuamente, apareceran aqui.",
+      "discoverPeople": "Descubrir Personas",
+      "cosmicIcebreakers": "Rompehielos Cosmicos",
+      "message": "Mensaje",
+      "unmatchConfirm": "Desemparejar con {{name}}?",
+      "unmatch": "Desemparejar",
+      "cancel": "Cancelar",
+      "matchedToday": "Emparejados hoy",
+      "matchedDaysAgo": "Emparejados hace {{days}}d",
+      "cosmicMatch": "Match Cosmico"
+    },
+    "profile": {
+      "title": "Perfil de Citas",
+      "datingMode": "Modo Citas",
+      "datingModeHint": "Haz visible tu perfil en descubrimiento cosmico",
+      "cosmicSignature": "Tu Firma Cosmica",
+      "sunMoonRising": "Sol / Luna / Ascendente",
+      "photos": "Fotos",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Sobre Mi",
+      "aboutMePlaceholder": "Cuentale a posibles matches sobre ti...",
+      "cosmicPrompts": "Preguntas Cosmicas",
+      "addPrompt": "Agregar una pregunta",
+      "promptAnswerPlaceholder": "Tu respuesta...",
+      "voicePrompt": "Intro de Voz",
+      "voicePromptHint": "Graba una intro de voz de 30 segundos para mostrar tu personalidad",
+      "uploadingVoice": "Subiendo intro de voz...",
+      "reRecord": "Regrabar",
+      "stopRecording": "Detener Grabacion",
+      "recordVoicePrompt": "Grabar Intro de Voz",
+      "videoIntro": "Video de Presentacion",
+      "videoIntroHint": "Sube un video de 15 segundos para presentarte",
+      "replaceVideo": "Reemplazar video",
+      "uploadVideo": "Subir Video",
+      "showAge": "Mostrar edad en el perfil",
+      "photoVerification": "Verificacion de Foto",
+      "verified": "Verificado",
+      "verifyNow": "Verificar ahora",
+      "datingPreferences": "Preferencias de Citas",
+      "savePreferences": "Guardar Preferencias",
+      "saveProfile": "Guardar Perfil",
+      "saving": "Guardando...",
+      "preferenceFields": {
+        "genderIdentity": "Identidad de Genero",
+        "sexualOrientation": "Orientacion Sexual",
+        "interestedIn": "Interesado En",
+        "primaryIntent": "Intencion Principal",
+        "ageRange": "Rango de Edad",
+        "maxDistance": "Distancia Maxima"
+      },
+      "privacyLevels": {
+        "visible": "Visible",
+        "matchOnly": "Solo matches",
+        "hidden": "Oculto"
+      }
+    },
+    "verify": {
+      "title": "Verificacion de Foto",
+      "subtitle": "Verifica tu identidad para obtener una insignia de confianza en tu perfil de citas",
+      "backToProfile": "Volver al Perfil",
+      "verifiedTitle": "Verificado!",
+      "verifiedDescription": "Tu perfil ahora muestra una insignia de verificado.",
+      "pendingTitle": "En Revision",
+      "pendingDescription": "Tu selfie esta siendo revisada. Esto suele tomar 24-48 horas.",
+      "rejectedTitle": "No Aprobado",
+      "rejectedHint": "Puedes intentar de nuevo con una selfie mas clara.",
+      "tryAgain": "Intentar de Nuevo",
+      "howItWorks": "Como funciona:",
+      "step1": "1. Toma una selfie clara con buena iluminacion",
+      "step2": "2. Asegurate de que tu rostro sea completamente visible",
+      "step3": "3. La compararemos con tus fotos de perfil",
+      "step4": "4. Una vez aprobada, obtendras una insignia de verificado",
+      "takeSelfie": "Tomar Selfie",
+      "capture": "Capturar",
+      "cancel": "Cancelar",
+      "retake": "Retomar",
+      "submitForReview": "Enviar para Revision",
+      "submitting": "Enviando...",
+      "cameraAccessDenied": "Acceso a la camara denegado. Permite el acceso a la camara en la configuracion de tu navegador.",
+      "submissionFailed": "Envio fallido. Intentalo de nuevo.",
+      "networkError": "Error de red. Verifica tu conexion e intentalo de nuevo."
+    },
+    "coach": {
+      "title": "Coach de Relaciones",
+      "subtitle": "Perspectivas impulsadas por IA basadas en tu dinamica astrologica",
+      "premiumFeature": "Funcion premium",
+      "backToMatches": "Volver a Matches",
+      "noMatchHint": "Emparejate con alguien para obtener perspectivas de coaching.",
+      "browsePicks": "Ver Selecciones",
+      "inputPlaceholder": "Pregunta sobre comunicacion, conflicto, intimidad...",
+      "emptyHint": "Haz tu primera pregunta o toca Enviar para una perspectiva general.",
+      "aiInsight": "Perspectiva IA",
+      "template": "Plantilla"
+    },
+    "timing": {
+      "title": "Sincronizacion Cosmica",
+      "subtitle": "Ventanas planetarias que destacan los mejores momentos para tus conexiones",
+      "backToMatches": "Volver a Matches",
+      "noMatchHint": "Emparejate con alguien para ver ventanas de sincronizacion cosmica.",
+      "browsePicks": "Ver Selecciones",
+      "noWindows": "No se encontraron ventanas de sincronizacion.",
+      "qualityExcellent": "Excelente",
+      "qualityGood": "Bueno",
+      "qualityNeutral": "Neutral",
+      "qualityChallenging": "Desafiante",
+      "now": "Ahora",
+      "inDays": "En {{days}}d"
+    },
+    "events": {
+      "title": "Eventos Cosmicos",
+      "subtitle": "Eventos de citas tematicos alineados con el cosmos",
+      "backToDating": "Volver a Citas",
+      "tabs": {
+        "upcoming": "Proximos",
+        "myEvents": "Mis Eventos"
+      },
+      "noUpcoming": "No hay eventos proximos ahora. Vuelve pronto!",
+      "noRegistered": "No te has registrado en ningun evento aun.",
+      "live": "EN VIVO",
+      "maxCount": "Max {{count}}",
+      "elementOnly": "Solo signos de {{element}}",
+      "registered": "Registrado",
+      "cancelRegistration": "Cancelar",
+      "register": "Registrarse",
+      "registering": "Registrando..."
+    },
+    "milestones": {
+      "title": "Hitos de la Relacion",
+      "subtitle": "Sigue tu camino juntos bajo las estrellas",
+      "backToMatches": "Volver a Matches",
+      "noMatchHint": "Emparejate con alguien para seguir hitos.",
+      "browsePicks": "Ver Selecciones",
+      "journeyProgress": "Progreso del Viaje",
+      "mark": "Marcar"
+    },
+    "datePlanner": {
+      "title": "Planificador de Citas",
+      "subtitle": "Ideas de citas cosmicamente curadas para ti y tu match",
+      "backToMatches": "Volver a Matches",
+      "noMatchHint": "Emparejate con alguien para obtener sugerencias de citas.",
+      "browsePicks": "Ver Selecciones",
+      "shuffleIdeas": "Mezclar Ideas",
+      "elementEnergy": "Energia de {{element}}"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Feed Cosmico",
+    "createPost": "Crear Publicacion",
+    "postTypes": {
+      "text": "Texto",
+      "photo": "Foto",
+      "video": "Video",
+      "poll": "Encuesta"
+    },
+    "composer": {
+      "placeholder": "Que hay en tu mente cosmica?",
+      "uploadImage": "Haz clic para subir una imagen",
+      "uploadVideo": "Haz clic para subir un video",
+      "imageSizeLimit": "La imagen debe ser menor a 10 MB",
+      "videoSizeLimit": "El video debe ser menor a 200 MB",
+      "backgroundStyle": "Estilo de Fondo",
+      "visibility": "Visibilidad:",
+      "visibilityPublic": "Publico",
+      "visibilityFriends": "Amigos",
+      "postButton": "Publicar",
+      "posting": "Publicando...",
+      "uploadingImage": "Subiendo imagen...",
+      "uploadingVideo": "Subiendo video...",
+      "addImage": "Agregar Imagen",
+      "addVideo": "Agregar Video",
+      "editPost": "Editar Publicacion"
+    },
+    "poll": {
+      "question": "Pregunta",
+      "questionPlaceholder": "Preguntale al cosmos...",
+      "options": "Opciones",
+      "optionPlaceholder": "Opcion {{number}}",
+      "addOption": "Agregar opcion",
+      "duration": "Duracion",
+      "durationOptions": {
+        "1h": "1 hora",
+        "6h": "6 horas",
+        "12h": "12 horas",
+        "1d": "1 dia",
+        "3d": "3 dias",
+        "7d": "7 dias"
+      },
+      "createPoll": "Crear Encuesta",
+      "pollNeedsContent": "La encuesta necesita una pregunta y al menos 2 opciones"
+    },
+    "empty": {
+      "title": "Tu feed cosmico te espera",
+      "description": "Comparte lecturas, cartas y perspectivas cosmicas con tu comunidad.",
+      "createFirst": "Crea Tu Primera Publicacion"
+    },
+    "loadMore": "Cargar mas",
+    "loading": "Cargando..."
+  },
+  "friends": {
+    "title": "Amigos y Conexiones",
+    "friendCount": "{{count}} amigos",
+    "pendingCount": "{{count}} pendientes",
+    "inviteFriends": "Invitar Amigos",
+    "qrCode": "Codigo QR",
+    "tabs": {
+      "friends": "Amigos",
+      "requests": "Solicitudes",
+      "search": "Buscar"
+    },
+    "suggestionsTitle": "Personas Que Quizas Conozcas",
+    "addButton": "+ Agregar",
+    "empty": {
+      "noFriends": "Sin amigos aun",
+      "noFriendsHint": "Busca personas o comparte tu codigo Align",
+      "findPeople": "Encontrar Personas",
+      "noRequests": "Sin solicitudes pendientes",
+      "noRequestsHint": "Las solicitudes de amistad que envies o recibas apareceran aqui"
+    },
+    "requests": {
+      "wantsToConnect": "Quiere conectar",
+      "requestSent": "Solicitud enviada",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "cancel": "Cancelar"
+    },
+    "search": {
+      "placeholder": "Buscar por nombre, usuario o codigo Align...",
+      "searching": "Buscando...",
+      "noResults": "No se encontraron usuarios",
+      "noResultsHint": "Prueba con un termino de busqueda diferente",
+      "startSearch": "Buscar personas",
+      "minCharsHint": "Escribe al menos 2 caracteres..."
+    },
+    "labels": {
+      "friends": "Amigos",
+      "pending": "Pendiente"
+    },
+    "actions": {
+      "removeFriend": "Eliminar Amigo",
+      "blockUser": "Bloquear Usuario",
+      "removeConfirm": "Eliminar a {{name}} de tus amigos?",
+      "blockConfirm": "Bloquear a {{name}}? No podra encontrarte ni contactarte.",
+      "viewProfile": "Ver Perfil",
+      "message": "Mensaje",
+      "viewFullProfile": "Ver Perfil Completo",
+      "close": "Cerrar",
+      "requestPending": "Solicitud Pendiente",
+      "addFriend": "Agregar Amigo",
+      "acceptRequest": "Aceptar Solicitud",
+      "confirm": "Confirmar",
+      "ok": "OK"
+    },
+    "alignCode": "Codigo Align:"
+  },
+  "messages": {
+    "signInRequired": "Inicia sesion para acceder a los mensajes",
+    "selectConversation": "Selecciona una conversacion",
+    "startNewChat": "o inicia un nuevo chat para conectar",
+    "newChat": "Nuevo Chat",
+    "contextMenu": {
+      "reply": "Responder",
+      "react": "Reaccionar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "forward": "Reenviar",
+      "pin": "Fijar",
+      "unpin": "Desfijar",
+      "copyText": "Copiar texto"
+    },
+    "pickReaction": "Elige una reaccion",
+    "messageTypes": {
+      "image": "Imagen",
+      "gif": "GIF",
+      "voiceMessage": "Mensaje de voz",
+      "location": "Ubicacion",
+      "poll": "Encuesta:"
+    },
+    "composer": {
+      "placeholder": "Escribe un mensaje...",
+      "send": "Enviar",
+      "attachment": "Adjuntar"
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todo como leido",
+    "filters": {
+      "all": "Todas",
+      "social": "Social",
+      "cosmic": "Cosmico",
+      "system": "Sistema"
+    },
+    "empty": {
+      "all": "Sin notificaciones aun",
+      "allHint": "Tus alertas cosmicas y actualizaciones sociales apareceran aqui.",
+      "social": "Sin notificaciones sociales",
+      "socialHint": "Solicitudes de amistad, mensajes y reacciones apareceran aqui.",
+      "cosmic": "Sin alertas cosmicas",
+      "cosmicHint": "Alertas de transitos y eventos cosmicos apareceran aqui.",
+      "system": "Sin notificaciones del sistema",
+      "systemHint": "Actualizaciones del sistema y anuncios apareceran aqui."
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}}m",
+      "hoursAgo": "hace {{count}}h",
+      "daysAgo": "hace {{count}}d"
+    },
+    "grouped": "{{count}} notificaciones"
+  },
+  "communities": {
+    "title": "Comunidades",
+    "subtitle": "Encuentra tu tribu cosmica",
+    "create": "Crear",
+    "tabs": {
+      "discover": "Descubrir",
+      "myCommunities": "Mis Comunidades"
+    },
+    "searchPlaceholder": "Buscar comunidades...",
+    "filterAll": "Todas",
+    "loading": "Cargando comunidades...",
+    "empty": {
+      "title": "Sin Comunidades Aun",
+      "description": "Se el primero en crear una comunidad cosmica!",
+      "createButton": "Crear Comunidad"
+    },
+    "featured": "Destacadas",
+    "allCommunities": "Todas las Comunidades",
+    "noResultsSearch": "No se encontraron comunidades para \"{{query}}\"",
+    "noResultsCategory": "Sin comunidades en esta categoria aun.",
+    "yourCircle": {
+      "title": "Tu Circulo Cosmico Te Espera",
+      "description": "Unete o crea comunidades para encontrar tu tribu.",
+      "exploreButton": "Explorar Comunidades"
+    },
+    "memberCount_one": "{{count}} miembro",
+    "memberCount_other": "{{count}} miembros",
+    "private": "Privada",
+    "join": "Unirse",
+    "joined": "Unido"
+  },
+  "profile": {
+    "title": "Perfil",
+    "editProfile": "Editar Perfil",
+    "shareBigThree": "Comparte Tus Tres Grandes",
+    "stats": {
+      "friends": "Amigos",
+      "posts": "Publicaciones",
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "views": "Vistas"
+    },
+    "tabs": {
+      "posts": "Publicaciones",
+      "photos": "Fotos",
+      "reels": "Reels",
+      "about": "Acerca de"
+    },
+    "alignCode": "Tu Codigo Align",
+    "alignCodeHint": "Comparte tu codigo para que tus amigos te encuentren",
+    "quickLinks": {
+      "gallery": "Galeria",
+      "safetyTrust": "Seguridad y Confianza",
+      "subscription": "Suscripcion",
+      "referrals": "Referidos",
+      "settings": "Configuracion"
+    },
+    "about": {
+      "bio": "Biografia",
+      "bigThree": "Tres Grandes",
+      "starseedOrigin": "Origen Estelar",
+      "humanDesign": "Diseno Humano",
+      "joined": "Se unio",
+      "alignCode": "Codigo Align"
+    },
+    "empty": {
+      "noPosts": "Sin publicaciones aun",
+      "noPhotos": "Sin fotos aun",
+      "noReels": "Sin reels aun"
+    },
+    "loadingProfile": "Cargando perfil...",
+    "profileViews": "Vistas del Perfil",
+    "noViews": "Sin vistas de perfil aun",
+    "editPost": "Editar Publicacion"
+  },
+  "editProfile": {
+    "title": "Editar Perfil",
+    "displayName": "Nombre para Mostrar",
+    "bio": "Biografia",
+    "bioPlaceholder": "Cuentale al cosmos sobre ti...",
+    "birthData": "Datos de Nacimiento",
+    "date": "Fecha",
+    "time": "Hora",
+    "location": "Ubicacion",
+    "locationPlaceholder": "Buscar ciudad, estado o pais...",
+    "saveChanges": "Guardar Cambios",
+    "saving": "Guardando...",
+    "tapAddCover": "Toca para agregar foto de portada",
+    "errors": {
+      "saveFailed": "Error al guardar el perfil",
+      "avatarFailed": "Error al subir el avatar",
+      "coverFailed": "Error al subir la foto de portada"
     }
   },
   "settings": {
-    "title": "Configuración",
+    "title": "Configuracion",
     "language": "Idioma",
-    "jargonMode": "Estilo de interpretación",
-    "jargonAstrology": "Términos astrológicos",
+    "jargonMode": "Estilo de interpretacion",
+    "jargonAstrology": "Terminos astrologicos",
     "jargonPlain": "Lenguaje sencillo",
-    "subscription": "Suscripción",
+    "subscription": "Suscripcion",
     "notifications": "Notificaciones",
     "houseSystem": "Sistema de casas",
     "darkMode": "Modo oscuro",
     "about": "Acerca de Align",
-    "privacy": "Política de privacidad",
-    "terms": "Términos de servicio",
-    "logout": "Cerrar sesión"
+    "privacy": {
+      "title": "Privacidad y Datos",
+      "profileVisibility": "Visibilidad del Perfil",
+      "visibilityOptions": {
+        "public": "Publico",
+        "friendsOnly": "Solo Amigos",
+        "private": "Privado"
+      },
+      "hideAge": "Ocultar Edad",
+      "hideExactLocation": "Ocultar Ubicacion Exacta",
+      "hideLastActive": "Ocultar Ultima Actividad",
+      "hideFullBirthChart": "Ocultar Carta Natal Completa",
+      "incognitoMode": "Modo Incognito",
+      "blockUnverified": "Bloquear Usuarios No Verificados",
+      "minimumTrustLevel": "Nivel Minimo de Confianza",
+      "trustLevels": {
+        "any": "Cualquiera",
+        "low": "Bajo",
+        "medium": "Medio",
+        "high": "Alto"
+      },
+      "analyticsEnabled": "Analiticas",
+      "exportData": "Exportar Mis Datos",
+      "exportToast": "Se ha solicitado tu exportacion de datos. La recibiras por correo electronico."
+    },
+    "terms": "Terminos de servicio",
+    "logout": "Cerrar sesion",
+    "account": "Cuenta",
+    "email": "Correo electronico",
+    "name": "Nombre",
+    "notSet": "No configurado",
+    "planLabel": "Plan {{plan}}",
+    "upgradeHint": "Mejora para mas funciones",
+    "managedVia": "Gestionado via RevenueCat",
+    "manage": "Gestionar",
+    "upgrade": "Mejorar",
+    "subPages": {
+      "chatTheme": "Tema del Chat",
+      "notifications": "Notificaciones",
+      "privacy": "Privacidad",
+      "astrologyPreferences": "Preferencias de Astrologia",
+      "friends": "Amigos",
+      "referrals": "Referidos",
+      "subscriptionPlans": "Planes de Suscripcion",
+      "datingIdentity": "Identidad de Citas",
+      "relationshipIntent": "Intencion de Relacion",
+      "connectionPreferences": "Preferencias de Conexion",
+      "identityPrivacy": "Privacidad de Identidad",
+      "safety": "Seguridad",
+      "termsOfService": "Terminos de Servicio",
+      "communityGuidelines": "Normas de la Comunidad"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Espanol",
+      "fr": "Francais",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Portugues",
+      "ru": "Russkij",
+      "ja": "Nihongo",
+      "ko": "Hangugeo",
+      "zh": "Zhongwen",
+      "ar": "Al-Arabiyya",
+      "hi": "Hindi",
+      "tr": "Turkce",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "Thai"
+    },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Gestionar Cuentas de Usuario",
+      "contentModeration": "Moderacion de Contenido",
+      "manageCelebrities": "Gestionar Celebridades",
+      "payoutQueue": "Cola de Pagos"
+    },
+    "aboutSection": {
+      "version": "Version",
+      "poweredBy": "Impulsado por",
+      "contact": "Contacto"
+    },
+    "signOut": "Cerrar Sesion",
+    "deleteAccount": "Eliminar Cuenta",
+    "deleteConfirm": {
+      "title": "Eliminar Cuenta?",
+      "message": "Esto eliminara permanentemente tu cuenta y todos los datos asociados. Esta accion no se puede deshacer.",
+      "confirm": "Eliminar Mi Cuenta",
+      "cancel": "Cancelar"
+    },
+    "astrology": {
+      "title": "Preferencias de Astrologia",
+      "autoSaveHint": "Los cambios se guardan automaticamente y se aplican a todos los calculos de carta.",
+      "houseSystem": "Sistema de Casas",
+      "houseSystemHint": "Determina como se calculan las casas de tu carta",
+      "houseSystems": {
+        "wholeSign": "Signo Completo",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Casa Igual",
+        "porphyry": "Porfidio",
+        "alcabitius": "Alcabicio",
+        "topocentric": "Topocentrico",
+        "morinus": "Morinus",
+        "meridian": "Meridiano"
+      },
+      "zodiacSystem": "Sistema Zodiacal",
+      "zodiacSystems": {
+        "tropical": "Tropical (Occidental)",
+        "sidereal": "Sideral (Vedico)"
+      },
+      "languageLevel": "Nivel de Lenguaje",
+      "languageLevelHint": "Que tan tecnicas deben ser las interpretaciones?",
+      "jargonModes": {
+        "plain": "Lenguaje Sencillo",
+        "mixed": "Mixto",
+        "technical": "Tecnico"
+      },
+      "orbTightness": "Ajuste de Orbe",
+      "orbOptions": {
+        "tight": "Ajustado",
+        "standard": "Estandar",
+        "wide": "Amplio"
+      },
+      "showAsteroids": "Mostrar Asteroides",
+      "showFixedStars": "Mostrar Estrellas Fijas"
+    },
+    "notificationsPage": {
+      "title": "Preferencias de Notificaciones",
+      "pauseAll": "Pausar Todas las Notificaciones",
+      "social": {
+        "title": "Notificaciones Sociales",
+        "friendRequests": "Solicitudes de Amistad",
+        "messages": "Mensajes",
+        "reactions": "Reacciones",
+        "comments": "Comentarios"
+      },
+      "cosmic": {
+        "title": "Notificaciones Cosmicas",
+        "frequency": "Frecuencia",
+        "frequencyOptions": {
+          "essential": "Esencial",
+          "important": "Importante",
+          "all": "Todas"
+        },
+        "tone": "Tono",
+        "toneOptions": {
+          "gentle": "Suave",
+          "direct": "Directo",
+          "intense": "Intenso"
+        },
+        "categories": {
+          "majorTransits": "Transitos Mayores",
+          "moonPhases": "Fases Lunares",
+          "mercuryRetrograde": "Mercurio Retrogrado",
+          "loveRelationships": "Amor y Relaciones",
+          "moneyValues": "Dinero y Valores",
+          "careerAmbition": "Carrera y Ambicion",
+          "healingGrowth": "Sanacion y Crecimiento"
+        },
+        "aspects": {
+          "title": "Tipos de Aspectos",
+          "conjunctions": "Conjunciones",
+          "oppositions": "Oposiciones",
+          "squares": "Cuadraturas",
+          "trines": "Trigonos",
+          "sextiles": "Sextiles"
+        },
+        "events": {
+          "title": "Eventos Cosmicos",
+          "moonPhases": "Fases Lunares",
+          "eclipses": "Eclipses",
+          "retrogrades": "Retrogrados",
+          "ingresses": "Ingresos"
+        },
+        "minIntensity": "Intensidad Minima",
+        "advanceNotice": "Aviso Anticipado (dias)"
+      },
+      "galactic": {
+        "title": "Notificaciones Galacticas",
+        "planetaryHours": "Horas Planetarias",
+        "dayRuler": "Regente del Dia",
+        "goldenHour": "Hora Dorada",
+        "eclipseWatch": "Vigilancia de Eclipses",
+        "retrogradeAlerts": "Alertas de Retrogrados",
+        "minutesBefore": "Minutos Antes"
+      },
+      "summaries": {
+        "title": "Resumenes",
+        "daily": "Resumen Diario",
+        "weekly": "Resumen Semanal"
+      },
+      "quietHours": {
+        "title": "Horas de Silencio",
+        "enabled": "Activar Horas de Silencio",
+        "start": "Inicio",
+        "end": "Fin",
+        "urgentOverride": "Permitir Notificaciones Urgentes"
+      },
+      "delivery": {
+        "title": "Entrega",
+        "sound": "Sonido",
+        "badge": "Insignia"
+      },
+      "announcements": "Anuncios de la App"
+    },
+    "referrals": {
+      "title": "Referidos",
+      "howItWorks": "Como funciona",
+      "step1": "Comparte tu enlace de referido unico con amigos",
+      "step2": "Cuando se registren usando tu enlace, ambos obtienen 5 lecturas adicionales",
+      "step3": "No hay limite -- invita a tantos amigos como quieras!"
+    },
+    "chatTheme": {
+      "title": "Tema del Chat",
+      "subtitle": "Personaliza la apariencia de tus mensajes"
+    },
+    "datingIdentity": {
+      "title": "Identidad de Citas",
+      "subtitle": "Como te identificas en el espacio de citas"
+    },
+    "relationshipIntent": {
+      "title": "Intencion de Relacion",
+      "subtitle": "Lo que buscas en las conexiones"
+    },
+    "connectionPreferences": {
+      "title": "Preferencias de Conexion",
+      "subtitle": "Con quien te gustaria conectar"
+    },
+    "identityPrivacy": {
+      "title": "Privacidad de Identidad",
+      "subtitle": "Controla quien ve tu informacion de identidad"
+    },
+    "safety": {
+      "title": "Seguridad",
+      "subtitle": "Gestiona bloqueos, reportes y configuraciones de seguridad"
+    },
+    "friends": {
+      "title": "Configuracion de Amigos",
+      "subtitle": "Gestiona las preferencias de solicitudes de amistad y conexiones"
+    },
+    "termsPage": {
+      "title": "Terminos de Servicio"
+    },
+    "communityGuidelines": {
+      "title": "Normas de la Comunidad"
+    }
   },
   "subscription": {
-    "headline": "Astrología de precisión. Personalmente tuya.",
-    "subheadline": "Cuatro formas de acceder a la inteligencia de carta natal más avanzada jamás creada. Sin contratos. Cancela en cualquier momento.",
-    "mostPopular": "Más popular",
+    "headline": "Astrologia de precision. Personalmente tuya.",
+    "subheadline": "Cuatro formas de acceder a la inteligencia de carta natal mas avanzada jamas creada. Sin contratos. Cancela en cualquier momento.",
+    "mostPopular": "Mas popular",
     "perMonth": "/mes",
     "restore": "Restaurar compras",
     "cancel": "Cancela en cualquier momento. Sin contratos.",
     "socialProof": "El plan que elige el 73% de los miembros.",
+    "title": "Elige tu camino",
+    "subtitle": "Cancela en cualquier momento. Prueba gratuita de 14 dias en todos los planes.",
+    "priceFree": "Gratis",
+    "priceCurrency": "$",
+    "loadingPlans": "Cargando planes de suscripcion...",
+    "tapToRetry": "Toca para reintentar",
+    "tapForDiagnostics": "Toca aqui para mostrar diagnostico",
+    "comparisonTitle": "Que plan es el adecuado para ti?",
+    "faqTitle": "Preguntas frecuentes",
+    "footerText": "Las suscripciones se gestionan a traves de App Store / Google Play.",
+    "manageButton": "Gestionar suscripcion",
+    "termsOfService": "Terminos del servicio",
+    "privacyPolicy": "Politica de privacidad",
+    "restorePurchase": "Restaurar compra",
+    "restoring": "Restaurando...",
     "free": {
       "name": "Gratis",
       "price": "$0",
-      "tagline": "Explora el cosmos sin costo.",
+      "tagline": "Explora el cosmos sin costo",
       "cta": "Comenzar gratis",
+      "bestFor": "Para principiantes curiosos sobre astrologia que quieren explorar antes de comprometerse.",
       "features": [
-        "Resumen básico de carta natal",
-        "Horóscopo diario",
+        "Resumen basico de carta natal",
+        "Horoscopo diario",
         "3 lecturas IA por mes",
         "Tiradas de una carta de tarot",
         "Calculadora de horas planetarias",
         "1 perfil guardado"
-      ],
-      "bestFor": "Para principiantes curiosos sobre astrología que quieren explorar antes de comprometerse."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "La claridad empieza aquí.",
+      "tagline": "Tu companero cosmico diario",
       "cta": "Comenzar con Light",
+      "bestFor": "Para exploradores casuales que quieren orientacion cosmica diaria e informacion basica de su carta.",
       "features": [
-        "Perspectivas personalizadas diarias",
-        "Carta natal con posiciones principales",
-        "10 lecturas IA por mes",
-        "Alertas de tránsitos en tiempo real",
-        "Guía diaria de tarot",
-        "Calculadora de horas planetarias",
-        "Resumen de camino de vida numerológico",
+        "Todo lo incluido en Gratis",
+        "Perspectivas personalizadas diarias completas",
+        "30 lecturas IA por mes",
+        "Alertas de transitos en tiempo real",
+        "Resumen de camino de vida numerologico",
         "1 perfil natal guardado"
-      ],
-      "bestFor": "Para exploradores casuales que quieren orientación cósmica diaria e información básica de su carta."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Donde la profundidad se encuentra con la claridad.",
-      "cta": "Obtener Premium — Mejor valor",
+      "tagline": "Desbloquea tu plano cosmico completo",
+      "badge": "MAS POPULAR",
+      "cta": "Obtener Premium -- Mejor valor",
+      "bestFor": "Para entusiastas listos para profundizar en su mapa astrologico completo y sus relaciones.",
       "features": [
         "Todo lo incluido en Light",
-        "50 lecturas profundas IA por mes",
-        "Carta completa — aspectos, patrones, estrellas fijas",
-        "Cartas progresadas y de revolución solar/lunar",
-        "Sinastría y compatibilidad compuesta",
-        "Orígenes estelares y Diseño Humano",
-        "Las 6 tiradas de tarot con IA",
-        "Informe de astrología financiera",
-        "Modo lenguaje sencillo — sin jerga",
-        "5 perfiles natales guardados",
-        "Todos los cursos de astrología"
-      ],
-      "badge": "MÁS POPULAR",
-      "bestFor": "Para entusiastas listos para profundizar en su mapa astrológico completo y sus relaciones."
+        "Carta completa con aspectos y patrones",
+        "100 lecturas IA por mes",
+        "Todos los tipos de carta (progresada, revoluciones, sinastria)",
+        "Compatibilidad y cartas compuestas",
+        "Origenes estelares, numerologia, Diseno Humano",
+        "Tiradas de tarot (los 5 tipos)",
+        "Alternar jerga (modo lenguaje sencillo)",
+        "5 perfiles guardados",
+        "Todos los cursos de astrologia"
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "La imagen completa. Sin restricciones.",
+      "tagline": "Para el practicante serio",
       "cta": "Desbloquear acceso Pro",
+      "bestFor": "Para astrologos profesionales y practicantes dedicados que necesitan todas las herramientas disponibles.",
       "features": [
         "Todo lo incluido en Premium",
-        "200 lecturas IA por mes",
-        "Mapas mundiales de astrocartografía",
-        "Firdaria y liberación zodiacal",
-        "Partes árabes y estrellas fijas en profundidad",
-        "IA prioritaria — procesamiento más rápido",
-        "Perfiles y lecturas guardadas ilimitadas",
-        "Informes profesionales exportables",
+        "300 lecturas IA por mes",
+        "Informe de astrologia financiera",
+        "Astrocartografia (ACG)",
+        "Firdaria y liberacion zodiacal",
+        "Estrellas fijas y partes arabes",
+        "Procesamiento prioritario de IA",
         "Acceso anticipado a nuevas funciones",
-        "IA en 20 idiomas"
-      ],
-      "bestFor": "Para astrólogos profesionales y practicantes dedicados que necesitan todas las herramientas disponibles."
-    },
-    "alerts": {
-      "couldNotOpenLink": "No se pudo abrir el enlace.",
-      "diagnostics": "Diagnóstico",
-      "errorTitle": "Error",
-      "manageError": "No se pudo abrir la gestión de suscripción. Abre la Play Store o App Store manualmente.",
-      "noActiveBody": "No se encontró ninguna suscripción anterior para esta cuenta.",
-      "noActiveTitle": "Sin suscripción activa",
-      "ok": "OK",
-      "planNotFoundBody": "Este plan no está disponible temporalmente en la tienda. Inténtalo de nuevo más tarde.",
-      "planNotFoundTitle": "Plan no encontrado",
-      "purchaseFailedDefault": "Algo salió mal.",
-      "purchaseFailedLong": "Algo salió mal al procesar tu compra. Inténtalo de nuevo.",
-      "purchaseFailedTitle": "Compra fallida",
-      "restoreError": "No se pudieron restaurar las compras",
-      "restoredBody": "Tu suscripción se ha restaurado correctamente.",
-      "restoredTitle": "¡Restaurada!",
-      "retry": "Reintentar",
-      "subscriptionsUnavailableHint": "Asegúrate de haber iniciado sesión en la Play Store e inténtalo de nuevo.",
-      "subscriptionsUnavailableTitle": "Suscripciones no disponibles",
-      "unavailableBody": "Este plan no está disponible en este momento.",
-      "unavailableTitle": "No disponible",
-      "unsupportedBody": "La gestión de suscripciones solo está disponible en iOS y Android.",
-      "unsupportedTitle": "No compatible",
-      "welcomeBody": "Tu suscripción está activa. Disfruta de tu kit cósmico ampliado.",
-      "welcomeTitle": "¡Bienvenido a bordo!"
-    },
-    "comparisonTitle": "¿Qué plan es el adecuado para ti?",
-    "errors": {
-      "apiKeyPlaceholder": "El servicio de suscripción no está configurado para esta versión. (Interno: la clave API de RevenueCat es un marcador de posición.)",
-      "connectionFailed": "No se pudo conectar con el servicio de suscripción. Comprueba tu conexión e inténtalo de nuevo.",
-      "loadFailed": "No se pudieron cargar los planes de suscripción. Inténtalo de nuevo más tarde.",
-      "loadFailedConnection": "No se pudieron cargar los planes de suscripción. Comprueba tu conexión.",
-      "nativeModuleMissing": "El servicio de suscripción no está disponible en esta versión. (Interno: módulo nativo no enlazado.)",
-      "noApiKey": "El servicio de suscripción no está configurado para esta plataforma. (Interno: falta clave API.)",
-      "noOfferings": "Aún no se han publicado planes de suscripción activos. Inténtalo de nuevo más tarde.",
-      "noPackages": "Los planes de suscripción se están finalizando en la tienda. Inténtalo de nuevo más tarde.",
-      "stillStarting": "El servicio de suscripción aún se está iniciando. Espera un momento y vuelve a intentarlo."
+        "Perfiles guardados ilimitados",
+        "Exportar y compartir informes"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "Los créditos de lecturas con IA se restablecen cada ciclo de facturación y no se acumulan. Esto mantiene nuestra infraestructura de IA rápida y receptiva para todos los usuarios.",
-        "question": "¿Las lecturas de IA se acumulan?"
-      },
-      "security": {
-        "answer": "Por supuesto. Todos los datos personales y de nacimiento se cifran tanto en reposo como en tránsito. Nunca vendemos tus datos, y puedes eliminar tu cuenta y todos los datos asociados en cualquier momento.",
-        "question": "¿Están seguros mis datos de nacimiento?"
-      },
       "switch": {
-        "answer": "¡Sí! Puedes cambiar de plan en cualquier momento. Al subir de plan, obtienes acceso inmediato a las nuevas funciones. Al bajar, mantienes los beneficios actuales hasta el final del ciclo de facturación.",
-        "question": "¿Puedo cambiar de plan en cualquier momento?"
+        "question": "Puedo cambiar de plan en cualquier momento?",
+        "answer": "Si! Puedes cambiar de plan en cualquier momento. Al subir de plan, obtienes acceso inmediato a las nuevas funciones. Al bajar, mantienes los beneficios actuales hasta el final del ciclo de facturacion."
       },
       "trial": {
-        "answer": "Tu prueba gratuita de 14 días te da acceso completo al plan que elijas. No se te cobrará hasta que termine la prueba, y puedes cancelar antes sin compromiso.",
-        "question": "¿Qué pasa después de la prueba gratuita?"
+        "question": "Que pasa despues de la prueba gratuita?",
+        "answer": "Tu prueba gratuita de 14 dias te da acceso completo al plan que elijas. No se te cobrara hasta que termine la prueba, y puedes cancelar antes sin compromiso."
+      },
+      "rollover": {
+        "question": "Las lecturas de IA se acumulan?",
+        "answer": "Los creditos de lecturas con IA se restablecen cada ciclo de facturacion y no se acumulan. Esto mantiene nuestra infraestructura de IA rapida y receptiva para todos los usuarios."
+      },
+      "security": {
+        "question": "Estan seguros mis datos de nacimiento?",
+        "answer": "Por supuesto. Todos los datos personales y de nacimiento se cifran tanto en reposo como en transito. Nunca vendemos tus datos, y puedes eliminar tu cuenta y todos los datos asociados en cualquier momento."
       }
     },
-    "faqTitle": "Preguntas frecuentes",
-    "footerText": "Las suscripciones se gestionan a través de App Store / Google Play.",
-    "loadingPlans": "Cargando planes de suscripción...",
-    "manageButton": "Gestionar suscripción",
-    "priceCurrency": "$",
-    "priceFree": "Gratis",
-    "privacyPolicy": "Política de privacidad",
-    "restorePurchase": "Restaurar compra",
-    "restoring": "Restaurando...",
-    "subtitle": "Cancela en cualquier momento. Prueba gratuita de 14 días en todos los planes.",
-    "tapForDiagnostics": "Toca aquí para mostrar diagnóstico",
-    "tapToRetry": "Toca para reintentar",
-    "termsOfService": "Términos del servicio",
-    "title": "Elige tu camino"
+    "alerts": {
+      "unavailableTitle": "No disponible",
+      "unavailableBody": "Este plan no esta disponible en este momento.",
+      "purchaseFailedTitle": "Compra fallida",
+      "purchaseFailedDefault": "Algo salio mal.",
+      "purchaseFailedLong": "Algo salio mal al procesar tu compra. Intentalo de nuevo.",
+      "welcomeTitle": "Bienvenido a bordo!",
+      "welcomeBody": "Tu suscripcion esta activa. Disfruta de tu kit cosmico ampliado.",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "Suscripciones no disponibles",
+      "subscriptionsUnavailableHint": "Asegurate de haber iniciado sesion en la Play Store e intentalo de nuevo.",
+      "retry": "Reintentar",
+      "diagnostics": "Diagnostico",
+      "planNotFoundTitle": "Plan no encontrado",
+      "planNotFoundBody": "Este plan no esta disponible temporalmente en la tienda. Intentalo de nuevo mas tarde.",
+      "errorTitle": "Error",
+      "couldNotOpenLink": "No se pudo abrir el enlace.",
+      "unsupportedTitle": "No compatible",
+      "unsupportedBody": "La gestion de suscripciones solo esta disponible en iOS y Android.",
+      "manageError": "No se pudo abrir la gestion de suscripcion. Abre la Play Store o App Store manualmente.",
+      "restoredTitle": "Restaurada!",
+      "restoredBody": "Tu suscripcion se ha restaurado correctamente.",
+      "noActiveTitle": "Sin suscripcion activa",
+      "noActiveBody": "No se encontro ninguna suscripcion anterior para esta cuenta.",
+      "restoreError": "No se pudieron restaurar las compras"
+    },
+    "errors": {
+      "loadFailed": "No se pudieron cargar los planes de suscripcion. Intentalo de nuevo mas tarde.",
+      "loadFailedConnection": "No se pudieron cargar los planes de suscripcion. Comprueba tu conexion.",
+      "apiKeyPlaceholder": "El servicio de suscripcion no esta configurado para esta version. (Interno: la clave API de RevenueCat es un marcador de posicion.)",
+      "noApiKey": "El servicio de suscripcion no esta configurado para esta plataforma. (Interno: falta clave API.)",
+      "nativeModuleMissing": "El servicio de suscripcion no esta disponible en esta version. (Interno: modulo nativo no enlazado.)",
+      "noOfferings": "Aun no se han publicado planes de suscripcion activos. Intentalo de nuevo mas tarde.",
+      "noPackages": "Los planes de suscripcion se estan finalizando en la tienda. Intentalo de nuevo mas tarde.",
+      "connectionFailed": "No se pudo conectar con el servicio de suscripcion. Comprueba tu conexion e intentalo de nuevo.",
+      "stillStarting": "El servicio de suscripcion aun se esta iniciando. Espera un momento y vuelve a intentarlo."
+    }
   },
   "courses": {
-    "title": "Aprende astrología",
+    "title": "Aprende astrologia",
     "beginner": "Principiante",
     "intermediate": "Intermedio",
     "advanced": "Avanzado",
@@ -368,22 +1453,369 @@
     "continue": "Continuar aprendiendo",
     "completed": "Completado"
   },
+  "cosmicAlerts": {
+    "title": "Clima Cosmico",
+    "subtitle": "Tu pronostico cosmico personalizado",
+    "scanningCosmos": "Escaneando el cosmos...",
+    "filters": {
+      "all": "Todos",
+      "active": "Activos",
+      "upcoming": "Proximos"
+    },
+    "emptyState": {
+      "title": "No se detectaron transitos mayores",
+      "filterHint": "No hay alertas {{filter}} ahora. Prueba cambiando a \"Todos\".",
+      "defaultHint": "El cosmos esta tranquilo para tu carta. Vuelve a medida que el cielo cambie."
+    },
+    "detail": {
+      "timingWindow": "Ventana de Tiempo",
+      "start": "Inicio",
+      "peak": "Pico",
+      "end": "Fin",
+      "fullInterpretation": "Interpretacion Completa",
+      "astrologicalDetails": "Detalles Astrologicos",
+      "transit": "Transito",
+      "natal": "Natal",
+      "aspect": "Aspecto",
+      "retrograde": "Retrogrado",
+      "yes": "Si",
+      "no": "No",
+      "actionAdvice": "Consejo de Accion",
+      "viewFullTransits": "Ver Transitos Completos"
+    },
+    "importance": {
+      "critical": "Critico",
+      "high": "Alto",
+      "moderate": "Moderado",
+      "low": "Bajo",
+      "minimal": "Minimo"
+    },
+    "categories": {
+      "general": "General",
+      "love": "Amor",
+      "career": "Carrera",
+      "growth": "Crecimiento",
+      "challenge": "Desafio",
+      "spiritual": "Espiritual",
+      "communication": "Comunicacion",
+      "energy": "Energia"
+    },
+    "statusActive": "ACTIVO"
+  },
+  "discover": {
+    "title": "Descubrir",
+    "moonPhases": {
+      "newMoon": "Luna Nueva",
+      "waxingCrescent": "Creciente",
+      "firstQuarter": "Cuarto Creciente",
+      "waxingGibbous": "Gibosa Creciente",
+      "fullMoon": "Luna Llena",
+      "waningGibbous": "Gibosa Menguante",
+      "lastQuarter": "Cuarto Menguante",
+      "waningCrescent": "Menguante"
+    }
+  },
+  "worldEcho": {
+    "title": "Eco Mundial",
+    "subtitle": "Como los eventos cosmicos reverberan en la historia humana",
+    "categories": {
+      "political": "Politico",
+      "economic": "Economico",
+      "cultural": "Cultural",
+      "scientific": "Cientifico",
+      "natural": "Natural",
+      "social": "Social",
+      "technological": "Tecnologico",
+      "spiritual": "Espiritual"
+    },
+    "evidenceLabels": {
+      "strong": "Fuerte",
+      "moderate": "Moderado",
+      "speculative": "Especulativo"
+    },
+    "scoreLabels": {
+      "legendary": "Legendario",
+      "major": "Mayor",
+      "significant": "Significativo",
+      "notable": "Notable",
+      "minor": "Menor"
+    }
+  },
+  "polls": {
+    "title": "Encuestas",
+    "filters": {
+      "all": "Todas",
+      "active": "Activas",
+      "ended": "Finalizadas",
+      "mine": "Mias"
+    },
+    "duration": {
+      "hours": "{{count}}h restantes",
+      "days": "{{count}}d restantes",
+      "ended": "Finalizada"
+    },
+    "createPoll": "Crear Encuesta",
+    "votes": "{{count}} votos",
+    "noPollsYet": "Sin encuestas aun",
+    "noPollsHint": "Se el primero en iniciar una encuesta cosmica!"
+  },
+  "bookmarks": {
+    "title": "Marcadores",
+    "loading": "Cargando marcadores...",
+    "empty": "Sin marcadores aún",
+    "emptyHint": "Guarda publicaciones del feed para leer después",
+    "postUnavailable": "Publicación ya no disponible"
+  },
+  "celebrityMatches": {
+    "title": "Coincidencias con Celebridades",
+    "subtitle": "Descubre que personas famosas comparten tu plano cosmico",
+    "searchPlaceholder": "Buscar celebridades...",
+    "categories": {
+      "overall": "General",
+      "emotional": "Emocional",
+      "passion": "Pasion",
+      "marriage": "Matrimonio",
+      "karmic": "Karmico",
+      "attraction": "Atraccion",
+      "stability": "Estabilidad",
+      "mental": "Mental"
+    },
+    "matchScore": "{{score}}% coincidencia",
+    "trending": "Tendencias",
+    "recentlyAdded": "Agregados recientemente",
+    "browseByCategory": "Explorar por categoría",
+    "clearFilter": "Limpiar filtro",
+    "yourFavorites": "Tus favoritos",
+    "noResults": "Sin resultados",
+    "tryDifferent": "Intenta con un nombre o escritura diferente",
+    "noCelebrities": "Aún no hay celebridades",
+    "searchOrCheckBack": "Busca a alguien o vuelve pronto",
+    "noCelebritiesInCategory": "Aún no hay celebridades en esta categoría"
+  },
+  "matches": {
+    "title": "Coincidencias de Compatibilidad",
+    "categories": {
+      "overall": "General",
+      "emotional": "Emocional",
+      "passion": "Pasion",
+      "marriage": "Matrimonio",
+      "karmic": "Karmico",
+      "attraction": "Atraccion",
+      "stability": "Estabilidad",
+      "mental": "Mental"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Indice Cosmico",
+    "subtitle": "La energia cosmica de hoy de un vistazo"
+  },
+  "creatorStudio": {
+    "title": "Estudio de Creador",
+    "subtitle": "Crea y gestiona tu contenido cosmico"
+  },
+  "qa": {
+    "title": "Preguntas y Respuestas",
+    "askQuestion": "Hacer una Pregunta",
+    "noQuestions": "Sin preguntas aun",
+    "placeholder": "Cual es tu pregunta cosmica?"
+  },
+  "pricing": {
+    "title": "Elige Tu Plan",
+    "subtitle": "Desbloquea todo el poder de Align"
+  },
+  "gallery": {
+    "title": "Galeria",
+    "empty": "Sin fotos aun"
+  },
+  "timeline": {
+    "title": "Cronograma",
+    "empty": "Nada que mostrar aun"
+  },
+  "reels": {
+    "title": "Reels Cosmicos",
+    "empty": "Sin reels aun"
+  },
+  "fragments": {
+    "title": "Fragmentos Cosmicos",
+    "subtitle": "Tarjetas de sabiduria cosmica para compartir"
+  },
+  "cosmicVideo": {
+    "title": "Video Cosmico",
+    "subtitle": "Perspectivas astrologicas en movimiento"
+  },
+  "groupSynastry": {
+    "title": "Sinastria Grupal",
+    "subtitle": "Ve como interactuan las cartas de un grupo"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "defaultMessage": "Agrega tus datos de nacimiento para lecturas personalizadas.",
+      "completeProfile": "Completar perfil",
+      "title": "Datos de nacimiento requeridos"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Cargando..."
+    },
+    "paywallGate": {
+      "title": "Desbloquear Esta Funcion",
+      "description": "Mejora tu plan para acceder a esta lectura.",
+      "upgradeButton": "Ver Planes",
+      "currentPlan": "Plan actual: {{plan}}",
+      "aiAstrologer": "Astrólogo IA con chat de voz",
+      "allFeatures": "Esta lectura + todas las funciones {{tier}}",
+      "fullChart": "Carta natal completa con aspectos y patrones",
+      "plan": "plan",
+      "whatYouUnlock": "Lo que desbloqueas",
+      "youreOn": "tienes"
+    },
+    "shareButton": {
+      "share": "Compartir",
+      "copied": "Copiado!"
+    },
+    "referralCard": {
+      "title": "Invitar Amigos",
+      "subtitle": "Comparte tu enlace de referido y ambos obtienen lecturas adicionales",
+      "copyLink": "Copiar Enlace",
+      "linkCopied": "Enlace copiado!"
+    },
+    "trialBanner": {
+      "title": "Prueba Activa",
+      "daysLeft": "{{count}} dias restantes",
+      "upgrade": "Mejorar Ahora",
+      "endsSoon": "Tu prueba termina en {{count}} días. ¡Mejora para mantener las funciones Premium!",
+      "endsTomorrow": "¡Tu prueba termina mañana! Mejora para mantener las funciones Premium.",
+      "expired": "Tu prueba ha terminado. Mejora para desbloquear Premium de nuevo.",
+      "title_plural": "Prueba Premium: {{count}} días restantes"
+    },
+    "cookieConsent": {
+      "message": "Usamos cookies para mejorar tu experiencia.",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "learnMore": "Mas Informacion"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Es un Match!",
+      "subtitle": "El cosmos te ha alineado con {{name}}",
+      "sendMessage": "Enviar un Mensaje",
+      "keepBrowsing": "Seguir Explorando"
+    },
+    "datingFilterDrawer": {
+      "title": "Filtros de Descubrimiento",
+      "ageRange": "Rango de Edad",
+      "maxDistance": "Distancia Maxima",
+      "showOnlyVerified": "Mostrar Solo Verificados",
+      "compatibilityMin": "Compatibilidad Minima",
+      "elements": "Elementos",
+      "applyFilters": "Aplicar Filtros",
+      "resetFilters": "Restablecer"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% Compatible",
+      "like": "Me gusta",
+      "pass": "Pasar",
+      "cosmicRose": "Rosa Cosmica",
+      "likesRemaining": "{{count}} me gusta restantes",
+      "rosesRemaining": "{{count}} rosas restantes"
+    },
+    "sidebar": {
+      "home": "Inicio",
+      "discover": "Descubrir",
+      "chart": "Carta",
+      "readings": "Lecturas",
+      "dating": "Citas",
+      "friends": "Amigos",
+      "messages": "Mensajes",
+      "feed": "Feed",
+      "communities": "Comunidades",
+      "notifications": "Notificaciones",
+      "profile": "Perfil",
+      "settings": "Configuracion",
+      "aiAstrologer": "Astrólogo IA",
+      "chat": "Chat",
+      "close": "Cerrar",
+      "cosmicFeed": "Feed Cósmico",
+      "cosmicWeather": "Clima Cósmico",
+      "learn": "Aprender",
+      "menu": "Menú",
+      "more": "Más",
+      "pricing": "Precios",
+      "videoCreator": "Creador de Video",
+      "viewProfile": "Ver tu perfil",
+      "worldEcho": "Eco Mundial",
+      "yourProfile": "Tu Perfil"
+    },
+    "feedCard": {
+      "like": "Me gusta",
+      "comment": "Comentar",
+      "share": "Compartir",
+      "bookmark": "Guardar",
+      "report": "Reportar",
+      "deletePost": "Eliminar Publicacion",
+      "editPost": "Editar Publicacion"
+    },
+    "commentSheet": {
+      "title": "Comentarios",
+      "placeholder": "Escribe un comentario...",
+      "send": "Enviar",
+      "noComments": "Sin comentarios aun",
+      "beFirst": "Se el primero en comentar!"
+    }
+  },
   "common": {
     "loading": "Cargando...",
-    "error": "Algo salió mal",
+    "error": "Algo salio mal",
     "retry": "Reintentar",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "share": "Compartir",
     "premium": "Premium",
-    "free": "Gratis"
+    "free": "Gratis",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "ok": "OK",
+    "yes": "Si",
+    "no": "No",
+    "back": "Atras",
+    "next": "Siguiente",
+    "done": "Hecho",
+    "edit": "Editar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "search": "Buscar",
+    "settings": "Configuracion",
+    "seeAll": "Ver Todo",
+    "showMore": "Mostrar Mas",
+    "showLess": "Mostrar Menos",
+    "comingSoon": "Proximamente",
+    "upgrade": "Mejorar",
+    "signIn": "Iniciar Sesion",
+    "signOut": "Cerrar Sesion",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "tomorrow": "Manana",
+    "all": "Todo",
+    "none": "Ninguno",
+    "public": "Publico",
+    "private": "Privado",
+    "apply": "Aplicar",
+    "reset": "Restablecer",
+    "remove": "Eliminar",
+    "add": "Agregar",
+    "create": "Crear",
+    "submit": "Enviar",
+    "send": "Enviar",
+    "view": "Ver",
+    "download": "Descargar",
+    "upload": "Subir",
+    "noResults": "Sin resultados",
+    "tryAgain": "Intentar de nuevo"
   },
   "zodiac": {
     "aries": "Aries",
     "taurus": "Tauro",
-    "gemini": "Géminis",
-    "cancer": "Cáncer",
+    "gemini": "Geminis",
+    "cancer": "Cancer",
     "leo": "Leo",
     "virgo": "Virgo",
     "libra": "Libra",
@@ -399,23 +1831,104 @@
     "mercury": "Mercurio",
     "venus": "Venus",
     "mars": "Marte",
-    "jupiter": "Júpiter",
+    "jupiter": "Jupiter",
     "saturn": "Saturno",
     "uranus": "Urano",
     "neptune": "Neptuno",
-    "pluto": "Plutón",
+    "pluto": "Pluton",
     "northNode": "Nodo Norte",
     "southNode": "Nodo Sur",
-    "chiron": "Quirón",
+    "chiron": "Quiron",
     "ascendant": "Ascendente",
-    "midheaven": "Medio Cielo"
+    "midheaven": "Medio Cielo",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Palas"
   },
   "aspects": {
-    "conjunction": "Conjunción",
+    "conjunction": "Conjuncion",
     "sextile": "Sextil",
     "square": "Cuadratura",
-    "trine": "Trígono",
-    "opposition": "Oposición",
-    "quincunx": "Quincuncio"
+    "trine": "Trigono",
+    "opposition": "Oposicion",
+    "quincunx": "Quincuncio",
+    "semisextile": "Semisextil",
+    "semisquare": "Semicuadratura",
+    "sesquiquadrate": "Sesquicuadratura",
+    "quintile": "Quintil",
+    "biquintile": "Biquintil"
+  },
+  "elements": {
+    "fire": "Fuego",
+    "earth": "Tierra",
+    "air": "Aire",
+    "water": "Agua"
+  },
+  "modalities": {
+    "cardinal": "Cardinal",
+    "fixed": "Fijo",
+    "mutable": "Mutable"
+  },
+  "houses": {
+    "1": "Casa 1",
+    "2": "Casa 2",
+    "3": "Casa 3",
+    "4": "Casa 4",
+    "5": "Casa 5",
+    "6": "Casa 6",
+    "7": "Casa 7",
+    "8": "Casa 8",
+    "9": "Casa 9",
+    "10": "Casa 10",
+    "11": "Casa 11",
+    "12": "Casa 12",
+    "labels": {
+      "1": "Yo e Identidad",
+      "2": "Valores y Posesiones",
+      "3": "Comunicacion y Aprendizaje",
+      "4": "Hogar y Familia",
+      "5": "Creatividad y Romance",
+      "6": "Salud y Servicio",
+      "7": "Asociaciones",
+      "8": "Transformacion y Recursos Compartidos",
+      "9": "Filosofia y Viajes",
+      "10": "Carrera e Imagen Publica",
+      "11": "Comunidad y Aspiraciones",
+      "12": "Espiritualidad y Subconsciente"
+    }
+  },
+  "errors": {
+    "generic": "Algo salio mal. Intentalo de nuevo.",
+    "networkError": "Error de red. Verifica tu conexion.",
+    "unauthorized": "Necesitas iniciar sesion para acceder a esta funcion.",
+    "notFound": "El contenido solicitado no fue encontrado.",
+    "serverError": "Error del servidor. Intentalo de nuevo mas tarde.",
+    "loadFailed": "Error al cargar datos. Intentalo de nuevo.",
+    "saveFailed": "Error al guardar cambios. Intentalo de nuevo.",
+    "uploadFailed": "Error al subir archivo. Intentalo de nuevo.",
+    "fileTooLarge": "El archivo es demasiado grande. Elige un archivo mas pequeno.",
+    "invalidFormat": "Formato de archivo invalido.",
+    "permissionDenied": "Permiso denegado.",
+    "sessionExpired": "Tu sesion ha expirado. Inicia sesion de nuevo.",
+    "rateLimited": "Demasiadas solicitudes. Espera un momento."
+  },
+  "time": {
+    "justNow": "ahora mismo",
+    "minutesAgo": "hace {{count}}m",
+    "hoursAgo": "hace {{count}}h",
+    "daysAgo": "hace {{count}}d",
+    "weeksAgo": "hace {{count}}sem",
+    "monthsAgo": "hace {{count}}mes",
+    "yearsAgo": "hace {{count}}a",
+    "inMinutes": "en {{count}}m",
+    "inHours": "en {{count}}h",
+    "inDays": "en {{count}}d"
+  },
+  "tiers": {
+    "free": "Gratis",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

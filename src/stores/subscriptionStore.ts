@@ -30,6 +30,9 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   arabic_parts: 'light',
   cosmic_journal: 'light',
   athletes: 'light',
+  soul_ascension: 'light',
+  cosmic_index: 'light',
+  chart_adjuster: 'light',
   // Premium
   ai_astrologer: 'premium',
   synastry: 'premium',

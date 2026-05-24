@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
@@ -50,11 +51,11 @@ import {
 
 type TabKey = 'overview' | 'chart' | 'compatibility' | 'forecast';
 
-const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: 'overview', label: 'Overview', icon: <Sparkles className="w-4 h-4" /> },
-  { key: 'chart', label: 'Chart', icon: <BarChart3 className="w-4 h-4" /> },
-  { key: 'compatibility', label: 'Compatibility', icon: <Compass className="w-4 h-4" /> },
-  { key: 'forecast', label: "What's Up Next", icon: <Calendar className="w-4 h-4" /> },
+const TABS: { key: TabKey; labelKey: string; icon: React.ReactNode }[] = [
+  { key: 'overview', labelKey: 'celebrityMatches.categories.overall', icon: <Sparkles className="w-4 h-4" /> },
+  { key: 'chart', labelKey: 'chart.natal', icon: <BarChart3 className="w-4 h-4" /> },
+  { key: 'compatibility', labelKey: 'readings.compatibility', icon: <Compass className="w-4 h-4" /> },
+  { key: 'forecast', labelKey: 'readings.yearAhead', icon: <Calendar className="w-4 h-4" /> },
 ];
 
 const PLANET_SYMBOLS: Record<string, string> = {
@@ -145,6 +146,7 @@ function gradientForName(name: string): string {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function CelebrityProfilePage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const { user } = useAuthStore();
@@ -250,7 +252,7 @@ export default function CelebrityProfilePage() {
       <div className="max-w-3xl mx-auto flex items-center justify-center py-20">
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-accent-primary animate-spin mx-auto" />
-          <p className="text-text-muted text-sm mt-3">Loading profile...</p>
+          <p className="text-text-muted text-sm mt-3">{t('profile.loadingProfile')}</p>
         </div>
       </div>
     );
@@ -259,9 +261,9 @@ export default function CelebrityProfilePage() {
   if (error || !celebrity) {
     return (
       <div className="max-w-3xl mx-auto text-center py-20">
-        <p className="text-red-400 mb-4">{error ?? 'Something went wrong.'}</p>
+        <p className="text-red-400 mb-4">{error ?? t('common.error')}</p>
         <button onClick={loadCelebrity} className="px-6 py-2 bg-accent-primary rounded-lg text-white font-medium hover:bg-accent-primary/80 transition-colors">
-          Retry
+          {t('common.retry')}
         </button>
       </div>
     );
@@ -278,7 +280,7 @@ export default function CelebrityProfilePage() {
           className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Back</span>
+          <span className="text-sm">{t('common.back')}</span>
         </button>
         <div className="flex items-center gap-3">
           {user && (
@@ -370,7 +372,7 @@ export default function CelebrityProfilePage() {
             }`}
           >
             {tab.icon}
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -576,11 +578,12 @@ function ChartTab({ chart, celebrity, loading }: { chart: CelebrityChartData | n
 function CompatibilityTab({
   data, loading, onCalculate, hasChart, hasUser,
 }: { data: CelebrityCompatibility | null; loading: boolean; onCalculate: () => void; hasChart: boolean; hasUser: boolean }) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
-        <p className="text-sm text-text-muted mt-3">Calculating your cosmic connection...</p>
+        <p className="text-sm text-text-muted mt-3">{t('readings.compatibilityPage.calculating')}</p>
       </div>
     );
   }
@@ -600,9 +603,9 @@ function CompatibilityTab({
               : 'bg-bg-tertiary text-text-muted cursor-not-allowed'
           }`}
         >
-          Calculate Compatibility
+          {t('readings.compatibilityPage.calculateButton')}
         </button>
-        {!hasUser && <p className="text-xs text-text-muted mt-3">Sign in to calculate compatibility.</p>}
+        {!hasUser && <p className="text-xs text-text-muted mt-3">{t('common.signIn')}</p>}
         {hasUser && !hasChart && <p className="text-xs text-text-muted mt-3">Chart data must load first.</p>}
       </div>
     );
@@ -707,11 +710,12 @@ function CompatibilityTab({
 // FORECAST TAB
 // ═══════════════════════════════════════════════════════════════════
 function ForecastTab({ data, loading }: { data: CelebrityForecast | null; loading: boolean }) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
-        <p className="text-sm text-text-muted mt-3">Reading the transits...</p>
+        <p className="text-sm text-text-muted mt-3">{t('common.loading')}</p>
       </div>
     );
   }

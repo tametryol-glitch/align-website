@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -9,6 +10,7 @@ import { createClient } from '@/lib/supabase';
 import { processReferral } from '@/lib/referralService';
 
 export default function ReferralPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const code = params.code as string;
   const [referralProcessed, setReferralProcessed] = useState(false);
@@ -34,7 +36,7 @@ export default function ReferralPage() {
       <div className="w-full max-w-md">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back
+          {t('common.back')}
         </Link>
 
         <div className="text-center">
@@ -80,7 +82,7 @@ export default function ReferralPage() {
             Join Free
           </Link>
           <Link href="/auth/login" className="text-sm text-text-muted hover:text-text-secondary transition-colors">
-            Already have an account? Sign in
+            {t('auth.hasAccount')} {t('auth.login')}
           </Link>
         </div>
       </div>

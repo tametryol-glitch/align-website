@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { buildBirthData } from '@/lib/api';
@@ -40,6 +41,7 @@ const ZODIAC_SIGNS = [
 type View = 'templates' | 'customize' | 'rendering' | 'ready' | 'my-videos';
 
 export default function CosmicVideoPage() {
+  const { t } = useTranslation();
   const { profile, isAuthenticated } = useAuthStore();
 
   // -- View state -------------------------------------------------------
@@ -231,13 +233,13 @@ export default function CosmicVideoPage() {
       <div className="max-w-md mx-auto text-center py-16">
         <Video className="w-12 h-12 text-accent-primary mx-auto mb-4" />
         <h2 className="text-xl font-display font-bold text-text-primary mb-2">
-          Cosmic Video Creator
+          {t('cosmicVideo.title')}
         </h2>
         <p className="text-text-tertiary text-sm mb-6">
-          Sign in to create shareable astrology videos.
+          {t('cosmicVideo.subtitle')}
         </p>
         <Link href="/auth/login" className="btn-primary inline-flex items-center gap-2 px-8">
-          Sign In
+          {t('common.signIn')}
         </Link>
       </div>
     );
@@ -320,7 +322,7 @@ export default function CosmicVideoPage() {
                     </h3>
                     {tmpl.premium && (
                       <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-accent-primary/20 text-accent-primary">
-                        Premium
+                        {t('common.premium')}
                       </span>
                     )}
                   </div>
@@ -925,7 +927,7 @@ export default function CosmicVideoPage() {
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-accent-primary text-white font-medium text-sm hover:bg-accent-primary/90 transition-colors"
               >
                 <Download className="w-4 h-4" />
-                Download
+                {t('common.download')}
               </a>
             )}
             <button
@@ -939,7 +941,7 @@ export default function CosmicVideoPage() {
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-bg-card border border-border-primary text-text-secondary font-medium text-sm hover:bg-bg-tertiary transition-colors"
             >
               <Share2 className="w-4 h-4" />
-              Share
+              {t('common.share')}
             </button>
           </div>
 
@@ -1039,7 +1041,7 @@ export default function CosmicVideoPage() {
                             rel="noopener noreferrer"
                             className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
                           >
-                            Download
+                            {t('common.download')}
                           </a>
                           <button
                             onClick={() => {
@@ -1051,7 +1053,7 @@ export default function CosmicVideoPage() {
                             }}
                             className="flex-1 text-center py-2 rounded-lg bg-bg-tertiary text-text-secondary text-xs font-medium hover:bg-bg-tertiary/80 transition-colors"
                           >
-                            Share
+                            {t('common.share')}
                           </button>
                         </div>
                       </div>

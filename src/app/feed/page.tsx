@@ -12,6 +12,7 @@ import {
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
 
@@ -75,6 +76,7 @@ function CreatePostModal({
   onClose: () => void;
   onCreated: (post: any) => void;
 }) {
+  const { t } = useTranslation();
   const [content, setContent] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'friends'>('public');
   const [selectedPreset, setSelectedPreset] = useState('default');
@@ -245,7 +247,7 @@ function CreatePostModal({
       <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary sticky top-0 bg-bg-secondary z-10">
-          <h3 className="text-lg font-semibold text-text-primary">Create Post</h3>
+          <h3 className="text-lg font-semibold text-text-primary">{t('feed.createPost')}</h3>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary">
             <X className="w-5 h-5" />
           </button>
@@ -272,7 +274,7 @@ function CreatePostModal({
               postMode === 'text' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
-            <FileText className="w-3.5 h-3.5" /> Text
+            <FileText className="w-3.5 h-3.5" /> {t('feed.postTypes.text')}
           </button>
           <button
             onClick={() => { setPostMode('photo'); clearVideo(); }}
@@ -281,7 +283,7 @@ function CreatePostModal({
               postMode === 'photo' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
-            <ImageIcon className="w-3.5 h-3.5" /> Photo
+            <ImageIcon className="w-3.5 h-3.5" /> {t('feed.postTypes.photo')}
           </button>
           <button
             onClick={() => { setPostMode('video'); clearImage(); }}
@@ -290,7 +292,7 @@ function CreatePostModal({
               postMode === 'video' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
-            <Video className="w-3.5 h-3.5" /> Video
+            <Video className="w-3.5 h-3.5" /> {t('feed.postTypes.video')}
           </button>
           <button
             onClick={() => setPostMode('poll')}
@@ -299,7 +301,7 @@ function CreatePostModal({
               postMode === 'poll' ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-muted hover:text-text-primary'
             )}
           >
-            <BarChart3 className="w-3.5 h-3.5" /> Poll
+            <BarChart3 className="w-3.5 h-3.5" /> {t('feed.postTypes.poll')}
           </button>
         </div>
 
@@ -315,7 +317,7 @@ function CreatePostModal({
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="What's on your cosmic mind?"
+                  placeholder={t('feed.composer.placeholder')}
                   maxLength={2000}
                   rows={4}
                   className="w-full bg-transparent border-none outline-none resize-none text-sm placeholder:text-white/40"
@@ -341,7 +343,7 @@ function CreatePostModal({
               {!imagePreview && postMode === 'photo' && (
                 <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
                   <ImageIcon className="w-8 h-8 text-text-muted" />
-                  <span className="text-sm text-text-muted">Click to upload an image</span>
+                  <span className="text-sm text-text-muted">{t('feed.composer.uploadImage')}</span>
                   <span className="text-xs text-text-muted">JPG, PNG, GIF, WebP up to 10 MB</span>
                   <input
                     type="file"
@@ -369,7 +371,7 @@ function CreatePostModal({
               {!videoPreview && postMode === 'video' && (
                 <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
                   <Video className="w-8 h-8 text-text-muted" />
-                  <span className="text-sm text-text-muted">Click to upload a video</span>
+                  <span className="text-sm text-text-muted">{t('feed.composer.uploadVideo')}</span>
                   <span className="text-xs text-text-muted">MP4, MOV, WebM up to 200 MB</span>
                   <input
                     type="file"
@@ -384,7 +386,7 @@ function CreatePostModal({
               {postMode === 'text' && !imagePreview && !videoPreview && (
                 <div className="flex items-center gap-2">
                   <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
-                    <ImageIcon className="w-4 h-4" /> Add Image
+                    <ImageIcon className="w-4 h-4" /> {t('feed.composer.addImage')}
                     <input
                       type="file"
                       accept="image/*"
@@ -393,7 +395,7 @@ function CreatePostModal({
                     />
                   </label>
                   <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
-                    <Video className="w-4 h-4" /> Add Video
+                    <Video className="w-4 h-4" /> {t('feed.composer.addVideo')}
                     <input
                       type="file"
                       accept="video/*"
@@ -407,7 +409,7 @@ function CreatePostModal({
               {/* Style presets (text only, no image/video) */}
               {postMode === 'text' && !imagePreview && !videoPreview && (
                 <div>
-                  <p className="text-xs text-text-muted font-medium mb-2">Background Style</p>
+                  <p className="text-xs text-text-muted font-medium mb-2">{t('feed.composer.backgroundStyle')}</p>
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                     {POST_STYLE_PRESETS.map((p) => (
                       <button
@@ -435,7 +437,7 @@ function CreatePostModal({
           {postMode === 'poll' && (
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-text-muted font-medium block mb-1.5">Question</label>
+                <label className="text-xs text-text-muted font-medium block mb-1.5">{t('feed.poll.question')}</label>
                 <input
                   type="text"
                   value={pollQuestion}
@@ -506,7 +508,7 @@ function CreatePostModal({
 
           {/* Visibility */}
           <div className="flex items-center gap-3">
-            <p className="text-xs text-text-muted font-medium">Visibility:</p>
+            <p className="text-xs text-text-muted font-medium">{t('feed.composer.visibility')}</p>
             <button
               onClick={() => setVisibility('public')}
               className={cn(
@@ -514,7 +516,7 @@ function CreatePostModal({
                 visibility === 'public' ? 'border-accent-primary bg-accent-muted text-accent-primary' : 'border-border-primary text-text-muted'
               )}
             >
-              <Globe className="w-3 h-3" /> Public
+              <Globe className="w-3 h-3" /> {t('feed.composer.visibilityPublic')}
             </button>
             <button
               onClick={() => setVisibility('friends')}
@@ -523,7 +525,7 @@ function CreatePostModal({
                 visibility === 'friends' ? 'border-accent-primary bg-accent-muted text-accent-primary' : 'border-border-primary text-text-muted'
               )}
             >
-              <Users className="w-3 h-3" /> Friends
+              <Users className="w-3 h-3" /> {t('feed.composer.visibilityFriends')}
             </button>
           </div>
 
@@ -541,7 +543,7 @@ function CreatePostModal({
             }
             className="btn-primary w-full"
           >
-            {uploading ? (videoFile ? 'Uploading video...' : 'Uploading image...') : posting ? 'Posting...' : postMode === 'poll' ? 'Create Poll' : 'Post'}
+            {uploading ? (videoFile ? t('feed.composer.uploadingVideo') : t('feed.composer.uploadingImage')) : posting ? t('feed.composer.posting') : postMode === 'poll' ? t('feed.poll.createPoll') : t('feed.composer.postButton')}
           </button>
         </div>
       </div>
@@ -552,6 +554,7 @@ function CreatePostModal({
 // ── Main Feed Page ─────────────────────────────────────────────────
 
 export default function FeedPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const userId = user?.id || '';
   const userName = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
@@ -588,11 +591,16 @@ export default function FeedPage() {
   async function loadMore() {
     if (loadingMore || !hasMore || posts.length === 0) return;
     setLoadingMore(true);
-    const lastPost = posts[posts.length - 1];
-    const more = await getFeed(userId, lastPost.createdAt);
-    setPosts((prev) => [...prev, ...more]);
-    setHasMore(more.length >= 30);
-    setLoadingMore(false);
+    try {
+      const lastPost = posts[posts.length - 1];
+      const more = await getFeed(userId, lastPost.createdAt);
+      setPosts((prev) => [...prev, ...more]);
+      setHasMore(more.length >= 30);
+    } catch {
+      // Silently stop loading so the UI doesn't get stuck
+    } finally {
+      setLoadingMore(false);
+    }
   }
 
   async function handleReaction(postId: string, emoji: ReactionEmoji) {
@@ -683,7 +691,7 @@ export default function FeedPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-display font-bold text-text-primary">Cosmic Feed</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary">{t('feed.title')}</h1>
         <button
           onClick={() => setShowCreate(true)}
           className="w-10 h-10 rounded-full bg-gradient-accent flex items-center justify-center hover:scale-105 transition-transform"
@@ -729,10 +737,10 @@ export default function FeedPage() {
       {!loading && posts.length === 0 && (
         <div className="card text-center py-16">
           <span className="text-5xl block mb-4">✨</span>
-          <h2 className="text-lg font-semibold text-text-primary mb-2">Your cosmic feed awaits</h2>
-          <p className="text-sm text-text-tertiary mb-6">Share readings, charts, and cosmic insights with the community.</p>
+          <h2 className="text-lg font-semibold text-text-primary mb-2">{t('feed.empty.title')}</h2>
+          <p className="text-sm text-text-tertiary mb-6">{t('feed.empty.description')}</p>
           <button onClick={() => setShowCreate(true)} className="btn-primary">
-            Create Your First Post
+            {t('feed.empty.createFirst')}
           </button>
         </div>
       )}
@@ -758,7 +766,7 @@ export default function FeedPage() {
       {hasMore && posts.length > 0 && (
         <div className="text-center py-8">
           <button onClick={loadMore} disabled={loadingMore} className="btn-secondary text-sm">
-            {loadingMore ? 'Loading...' : 'Load more'}
+            {loadingMore ? t('feed.loading') : t('feed.loadMore')}
           </button>
         </div>
       )}
@@ -798,7 +806,7 @@ export default function FeedPage() {
           <div className="absolute inset-0 bg-black/60" onClick={() => setEditingPost(null)} />
           <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-              <h3 className="text-lg font-semibold text-text-primary">Edit Post</h3>
+              <h3 className="text-lg font-semibold text-text-primary">{t('feed.composer.editPost')}</h3>
               <button onClick={() => setEditingPost(null)} className="text-text-muted hover:text-text-primary">
                 <X className="w-5 h-5" />
               </button>

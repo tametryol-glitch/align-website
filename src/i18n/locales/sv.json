@@ -50,7 +50,8 @@
     "agreeToTerms": "Jag godkänner",
     "privacyPolicy": "Integritetspolicy",
     "and": "och",
-    "termsOfService": "Användarvillkor"
+    "termsOfService": "Användarvillkor",
+    "signInToAccess": "Logga in för att komma åt meddelanden"
   },
   "onboarding": {
     "title": "Låt oss skapa ditt födelsehoroskop",
@@ -176,6 +177,7 @@
     "firdaria": "Firdaria",
     "zodiacalReleasing": "Zodiacal Releasing",
     "planetaryHours": "Planetära timmar",
+    "moonPhases": "Månfaser",
     "acg": "Astrokartografi",
     "fixedStars": "Fixstjärnor",
     "arabicParts": "Arabiska punkter",
@@ -186,12 +188,378 @@
     "galacticForecast": "Galaktisk prognos",
     "midpoints": "Midpunktskalkylator",
     "aiAstrologer": "AI-astrolog",
+    "yearAhead": "Mitt Kommande År",
     "savedCharts": "Sparade horoskop",
     "cosmicJournal": "Kosmisk dagbok",
-    "moonPhases": "Månfaser",
-    "yearAhead": "Mitt Kommande År",
     "soulGifts": "Själsgåvor",
-    "soulMemory": "Själsminne"
+    "soulMemory": "Själsminne",
+    "soulAscension": "Själsascension",
+    "dreamOracle": "Drömorakel",
+    "backToReadings": "Tillbaka till Tolkningar",
+    "upgradeToTier": "Uppgradera till {{tier}}",
+    "birthDataRequired": "Lägg till dina födelseuppgifter i din profil först.",
+    "birthDataPromptTransits": "Lägg till dina födelseuppgifter för att se dina aktuella transiter.",
+    "birthDataPromptCompatibility": "Lägg till dina födelseuppgifter för att kontrollera kompatibilitet med någon speciell.",
+    "birthDataPromptAlerts": "Vi behöver dina födelseuppgifter för att beräkna personliga kosmiska varningar för ditt horoskop.",
+    "transitsPage": {
+      "title": "Dina Cykler",
+      "subtitle": "{{name}}, det här är cyklerna som rör sig genom ditt liv just nu. Tänk på dem som årstider — var och en bär sin egen energi, sina egna lärdomar och sina egna möjligheter.",
+      "loadingLabel": "Beräknar dina transiter...",
+      "errorDefault": "Kunde inte ladda transiter",
+      "emptyState": "Inga aktiva cykler hittade. Kolla tillbaka snart.",
+      "activeNow": "Aktiva nu",
+      "storylines": "Berättelser",
+      "impactingYouNow": "Påverkar dig nu",
+      "backToCycles": "Tillbaka till Cykler",
+      "active": "aktiv",
+      "approaching": "Närmande",
+      "separating": "Separerande",
+      "cycleMeaning": "Vad denna cykel innebär för dig",
+      "howToNavigate": "Hur du navigerar detta",
+      "technicalDetails": "Tekniska detaljer",
+      "transit": "Transit",
+      "currentOrb": "Nuvarande orb",
+      "direction": "Riktning",
+      "intensity": "Intensitet",
+      "separatingDesc": "Separerande (rör sig bort från exakt)",
+      "applyingDesc": "Närmande (rör sig mot exakt)",
+      "intensityMajor": "Stor (yttre planet)",
+      "intensityModerate": "Måttlig",
+      "intensityMinor": "Mindre",
+      "nearExact": "Nära exakt — starkast inflytande",
+      "stronglyActive": "Starkt aktiv",
+      "buildingMomentum": "Bygger momentum",
+      "enteringAwareness": "Träder in i medvetande",
+      "lessThanADay": "Mindre än en dag kvar",
+      "daysLeft": "{{count}} dagar kvar",
+      "weeksLeft": "~{{count}} veckor kvar",
+      "monthsLeft": "~{{count}} månader kvar",
+      "yearsLeft": "{{count}}+ år",
+      "tapToRead": "Tryck för att läsa din fullständiga insikt",
+      "failedToLoadStorylines": "Kunde inte ladda berättelser"
+    },
+    "tarotPage": {
+      "title": "Tarotläsning",
+      "subtitle": "Ta emot vägledning från arkana",
+      "chooseSpread": "Välj din utläggning",
+      "yourQuestion": "Din fråga (valfritt)",
+      "questionPlaceholder": "Vilken vägledning söker du?",
+      "drawButton": "Dra {{spread}}",
+      "shuffling": "Blandar den kosmiska leken...",
+      "tapToReveal": "Tryck för att avslöja",
+      "revealAll": "Avslöja alla kort",
+      "newReading": "Ny läsning",
+      "getPersonalReading": "Få din personliga läsning",
+      "regenerateReading": "Regenerera personlig läsning",
+      "personalTarotReading": "Personlig tarotläsning",
+      "channeling": "Kanaliserar ditt horoskop och kort...",
+      "shareReading": "Dela läsning",
+      "copied": "Kopierad!",
+      "failedToGenerate": "Kunde inte generera läsning. Försök igen.",
+      "reversed": "Omvänd",
+      "majorArcana": "Stora Arkana",
+      "minorArcana": "Mindre Arkana",
+      "spreads": {
+        "single": "Enstaka kort",
+        "threeCard": "Tre kort",
+        "celticCross": "Keltiskt kors",
+        "relationship": "Relation",
+        "career": "Karriär"
+      },
+      "positions": {
+        "focus": "Fokus",
+        "past": "Förflutet",
+        "present": "Nuvarande",
+        "future": "Framtid",
+        "challenge": "Utmaning",
+        "foundation": "Grund",
+        "recentPast": "Nyligt förflutet",
+        "crown": "Krona",
+        "nearFuture": "Nära framtid",
+        "self": "Själv",
+        "environment": "Miljö",
+        "hopesFears": "Hopp/Rädslor",
+        "outcome": "Utfall",
+        "you": "Du",
+        "partner": "Partner",
+        "connection": "Koppling",
+        "potential": "Potential",
+        "current": "Aktuell",
+        "obstacle": "Hinder",
+        "hiddenFactor": "Dold faktor",
+        "advice": "Råd"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Drömorakel",
+      "subtitle": "Avkoda dina drömmar genom symboler, känslor, astrologi och ditt undermedvetnas dolda språk.",
+      "tabs": {
+        "record": "Spela in",
+        "journal": "Dagbok",
+        "symbols": "Symboler",
+        "patterns": "Mönster"
+      },
+      "record": {
+        "dreamTitle": "Drömtitel (valfritt)",
+        "titlePlaceholder": "Autogenereras om tom",
+        "describeLabel": "Beskriv din dröm *",
+        "describePlaceholder": "Blunda och beskriv allt du minns...",
+        "mainEmotions": "Huvudkänslor (upp till 5)",
+        "peopleDream": "Personer i drömmen",
+        "peoplePlaceholder": "t.ex. Mamma, ex-partner, främling, vän",
+        "placesDream": "Platser i drömmen",
+        "placesPlaceholder": "t.ex. barndomshem, hav, mörk skog",
+        "separateCommas": "Separera med komma",
+        "symbolsObjects": "Symboler / Objekt",
+        "selectSymbols": "Klicka för att välja drömsymboler",
+        "selectedCount": "{{count}} valda",
+        "searchSymbols": "Sök symboler...",
+        "dreamType": "Drömtyp",
+        "dreamIntensity": "Drömintensitet: {{value}}/10",
+        "privacy": "Integritet",
+        "interpretDream": "Tolka min dröm",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Din drömtolkning",
+        "mainSymbols": "Huvudsymboler",
+        "coreMessage": "Kärnbudskapet",
+        "subconsciousMessage": "Vad ditt undermedvetna visade dig",
+        "symbolsMatter": "De symboler som betyder mest",
+        "emotionalUndercurrent": "Den emotionella underströmmen",
+        "whatToFace": "Vad denna dröm ber dig att möta",
+        "oracleMessage": "Drömoraklets sista budskap",
+        "astroConnection": "Astrologisk koppling",
+        "whyNow": "Varför du drömde detta nu",
+        "watchFor": "Vad du ska se upp för",
+        "whatToDo": "Vad du ska göra härnäst",
+        "reflectionQuestions": "Reflektionsfrågor",
+        "askAboutDream": "Fråga om denna dröm",
+        "visualizeDream": "Visualisera min dröm",
+        "comingSoon": "KOMMER SNART",
+        "recordAnother": "Spela in en till dröm"
+      },
+      "journal": {
+        "loadingJournal": "Laddar drömdagbok...",
+        "searchDreams": "Sök drömmar...",
+        "noDreamsYet": "Inga drömmar ännu",
+        "noDreamsHint": "Spela in din första dröm för att börja bygga din dagbok.",
+        "deleteConfirm": "Radera denna dröm? Det går inte att ångra."
+      },
+      "dictionary": {
+        "backToSymbols": "Tillbaka till symboler",
+        "generalMeaning": "Allmän betydelse",
+        "psychologicalMeaning": "Psykologisk betydelse",
+        "spiritualMeaning": "Andlig betydelse",
+        "astrologicalMeaning": "Astrologisk betydelse",
+        "shadowMeaning": "Skuggbetydelse",
+        "reflectionQuestion": "Reflektionsfråga"
+      },
+      "patterns": {
+        "noPatternsYet": "Inga mönster ännu",
+        "noPatternsHint": "Spela in minst 3 drömmar för att börja se mönster i ditt drömliv.",
+        "overview": "Översikt",
+        "totalDreams": "Totala drömmar",
+        "avgIntensity": "Sn. intensitet",
+        "nightmares": "Mardrömmar",
+        "lucidDreams": "Klara drömmar",
+        "prophetic": "Profetiska",
+        "recurringSymbols": "Mest återkommande symboler",
+        "recurringEmotions": "Mest återkommande känslor",
+        "recurringPeople": "Mest återkommande personer",
+        "dreamTypes": "Drömtyper",
+        "dreamsByMoonPhase": "Drömmar efter månfas",
+        "moonPhaseHint": "Månfasmönsterspårning aktiveras när du har 10+ drömmar med kopplad astrologidata.",
+        "dreamsByTransit": "Drömmar efter transit",
+        "transitHint": "Transitkorrelation avslöjar vilka planetära aspekter som aktiverar dina mest levande eller profetiska drömmar."
+      }
+    },
+    "starseedPage": {
+      "title": "Starseed-ursprung",
+      "subtitle": "Upptäck dina kosmiska själsursprung",
+      "description": "Analysera ditt födelsehoroskop för att upptäcka vilka stjärnsystem din själ resonerar med.",
+      "discoverButton": "Upptäck mitt ursprung",
+      "analyzing": "Analyserar...",
+      "dominantOrigin": "Dominant ursprung",
+      "resonancePoints": "Poäng: {{score}} resonanspoäng"
+    },
+    "numerologyPage": {
+      "title": "Numerologi",
+      "subtitle": "Dina kosmiska tal avkodade",
+      "master": "Mästar"
+    },
+    "angelNumbersPage": {
+      "title": "Änglatal",
+      "subtitle": "Slå upp betydelsen bakom talen du ser",
+      "searchPlaceholder": "Ange ett tal (t.ex. 111, 444)...",
+      "popular": "Populära tal",
+      "notFound": "Tal hittades inte. Prova ett vanligt änglatal.",
+      "copiedToClipboard": "Kopierat till urklipp!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Din energetiska ritning",
+      "aura": "Aura",
+      "defined": "Definierad",
+      "undefined": "Odefinierad"
+    },
+    "financialPage": {
+      "title": "Finansiell astrologi",
+      "subtitle": "Din kosmiska pengaritning",
+      "personalIncome": "Personlig inkomst & värderingar",
+      "sharedResources": "Delade resurser & transformation",
+      "careerStanding": "Karriär & offentlig ställning",
+      "gainsNetworks": "Vinster & nätverk",
+      "strengths": "Styrkor",
+      "challenges": "Utmaningar",
+      "monthlyForecast": "Månadsprognos",
+      "timingWindows": "Tidsfönster",
+      "favorable": "Gynnsamt",
+      "mixed": "Blandat",
+      "challenging": "Utmanande"
+    },
+    "compatibilityPage": {
+      "title": "Kompatibilitetskoll",
+      "subtitle": "Utforska den kosmiska kopplingen mellan två själar",
+      "person2Label": "Partners födelseuppgifter",
+      "datePlaceholder": "Födelsedatum",
+      "timePlaceholder": "Födelsetid",
+      "locationPlaceholder": "Födelseort",
+      "calculateButton": "Kontrollera kompatibilitet",
+      "calculating": "Beräknar kompatibilitet...",
+      "overallScore": "Totalpoäng",
+      "soulLevelConnection": "Koppling på själsnivå",
+      "deepCompatibility": "Djup kompatibilitet",
+      "strongPotential": "Stark potential",
+      "moderateMatch": "Måttlig matchning",
+      "growthRequired": "Tillväxt krävs",
+      "challengingDynamic": "Utmanande dynamik",
+      "categories": {
+        "attraction": "Fysisk attraktion",
+        "emotional": "Emotionellt band",
+        "mental": "Mental koppling",
+        "stability": "Långsiktig stabilitet",
+        "karmic": "Karmisk länk",
+        "harmony": "Harmoni",
+        "magnetic": "Magnetisk dragning"
+      },
+      "showAspects": "Visa aspekter",
+      "hideAspects": "Dölj aspekter"
+    },
+    "cosmicJournalPage": {
+      "title": "Kosmisk dagbok",
+      "subtitle": "Följ din inre värld bredvid kosmos",
+      "newEntry": "Nytt inlägg",
+      "moodOptions": {
+        "low": "Låg",
+        "meh": "Sådär",
+        "neutral": "Neutral",
+        "good": "Bra",
+        "great": "Fantastisk"
+      },
+      "noEntries": "Inga dagboksinlägg ännu",
+      "noEntriesHint": "Börja skriva för att följa din inre värld bredvid kosmos."
+    },
+    "moonPhasesPage": {
+      "title": "Månfaser",
+      "tabs": {
+        "today": "Idag",
+        "calendar": "Kalender",
+        "forecast": "Prognos",
+        "eclipses": "Förmörkelser",
+        "birthMoon": "Födelsemåne"
+      },
+      "failedToLoadChart": "Kunde inte ladda födelsehoroskop"
+    },
+    "planetaryHoursPage": {
+      "title": "Planetära timmar",
+      "subtitle": "Antik tidsvisdom för det moderna livet",
+      "currentHour": "Aktuell timme",
+      "daySummary": "Dagsöversikt",
+      "hoursTable": "Timtabell"
+    },
+    "yearAheadPage": {
+      "title": "Mitt Kommande År",
+      "subtitle": "Din personliga kosmiska prognos för året",
+      "generating": "Genererar ditt kommande år...",
+      "monthlyOverview": "Månadsöversikt",
+      "keyTransits": "Nyckeltransiter",
+      "calm": "Lugnt",
+      "activeIntensity": "Aktivt",
+      "intense": "Intensivt"
+    },
+    "solarReturnPage": {
+      "title": "Solretur",
+      "subtitle": "Ditt födelsedagshoroskop — den kosmiska ritningen för ditt år",
+      "generating": "Beräknar din Solretur...",
+      "yearTheme": "Årstema",
+      "planetsOnAngles": "Planeter på vinklar",
+      "retrogrades": "Retrograder",
+      "monthlyTimeline": "Månadstidslinje",
+      "natalComparisons": "Natal vs Solretur",
+      "criticalAspects": "Kritiska aspekter",
+      "yearPattern": "Årsmönster"
+    },
+    "galacticClockPage": {
+      "title": "Galaktisk klocka",
+      "subtitle": "Ditt kosmiska tidsgränssnitt"
+    },
+    "galacticForecastPage": {
+      "title": "Galaktisk prognos",
+      "subtitle": "Djuprymdsenergier som påverkar ditt horoskop"
+    },
+    "midpointsPage": {
+      "title": "Midpunktskalkylator",
+      "subtitle": "Upptäck dolda kopplingar i ditt horoskop"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Forntida persiska planetperioder"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistisk timingteknik"
+    },
+    "acgPage": {
+      "title": "Astrokartografi",
+      "subtitle": "Var i världen dina planeter aktiveras"
+    },
+    "fixedStarsPage": {
+      "title": "Fixstjärnor",
+      "subtitle": "Stjärninflytanden i ditt horoskop"
+    },
+    "arabicPartsPage": {
+      "title": "Arabiska punkter",
+      "subtitle": "Forntida beräknade punkter i ditt horoskop"
+    },
+    "pathwayPage": {
+      "title": "Vägen till framgång",
+      "subtitle": "Din kosmiska karriär- och livsändamålsritning"
+    },
+    "rectificationPage": {
+      "title": "Födelsetidsrektifikation",
+      "subtitle": "Finjustera din födelsetid för mer exakta horoskop"
+    },
+    "nameAnalysisPage": {
+      "title": "Namnanalys",
+      "subtitle": "Numerologin i ditt namn"
+    },
+    "soulGiftsPage": {
+      "title": "Själsgåvor",
+      "subtitle": "Upptäck de unika gåvor som är kodade i ditt horoskop"
+    },
+    "soulMemoryPage": {
+      "title": "Själsminne",
+      "subtitle": "Ekon från tidigare liv i ditt födelsehoroskop"
+    },
+    "soulAscensionPage": {
+      "title": "Själsascension",
+      "description": "Spela ditt födelsehoroskop som ett reinkarnations-RPG med karma, syftesvägar, själskontrakt, reliker och val från tidigare liv."
+    },
+    "chartAdjusterPage": {
+      "title": "Horoskopjusterare",
+      "subtitle": "Experimentera med olika födelsetider"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI-tolkning",
@@ -205,6 +573,464 @@
       "reputation": "Rykte"
     }
   },
+  "dating": {
+    "title": "Kosmisk Dejting",
+    "subtitle": "Dina utvalda kosmiska val",
+    "introTitle": "Kosmisk Dejting",
+    "introDescription": "Hitta meningsfulla kopplingar skrivna i stjärnorna. Skapa din dejtingprofil för att börja upptäcka kosmiskt kompatibla matchningar.",
+    "createProfileButton": "Skapa din dejtingprofil",
+    "featurePhotos": "Lägg till foton & en röstintroduktion",
+    "featureCompatibility": "Bli matchad efter kosmisk kompatibilitet",
+    "featureSafety": "Säkra & verifierade kopplingar",
+    "tabs": {
+      "discover": "Utforska",
+      "likes": "Gillar",
+      "matches": "Matchningar",
+      "myProfile": "Min profil"
+    },
+    "discovery": {
+      "consulting": "Konsulterar kosmos...",
+      "noPicksTitle": "Inga kosmiska val ännu",
+      "allCaughtUpTitle": "Allt ikapp!",
+      "noPicksDescription": "Stjärnorna ställer fortfarande in dina matchningar. Se till att din dejtingprofil är komplett!",
+      "allCaughtUpDescription": "Kom tillbaka imorgon för nya kosmiska val. Kvalitetskopplingar tar tid.",
+      "completeProfile": "Slutför profil",
+      "dailyLikeLimit": "Du har nått din dagliga gilla-gräns ({{limit}}). Uppgradera för fler!",
+      "dailyRoseLimit": "Du har använt alla dina Kosmiska Rosor idag ({{limit}}). Uppgradera för fler!",
+      "genericError": "Något gick fel. Försök igen."
+    },
+    "likes": {
+      "title": "Gillar",
+      "receivedCount": "{{count}} personer är intresserade",
+      "sentCount": "Du har gillat {{count}} personer",
+      "received": "Mottagna",
+      "sent": "Skickade",
+      "seeWhoLikes": "Se vem som gillar dig",
+      "upgradeHint": "Uppgradera till Light eller högre för att se profiler",
+      "upgrade": "Uppgradera",
+      "noLikesYet": "Inga gillar ännu",
+      "noSentYet": "Inga gillar skickade ännu",
+      "keepFresh": "Håll din profil fräsch och kosmos levererar.",
+      "headToDiscover": "Gå till Utforska för att hitta dina kosmiska kopplingar.",
+      "mysteryAdmirer": "Hemlig beundrare",
+      "rose": "Ros",
+      "likeBack": "Gilla tillbaka",
+      "matching": "Matchar..."
+    },
+    "matches": {
+      "title": "Dina Matchningar",
+      "connectionCount": "{{count}} kosmiska kopplingar",
+      "noMatchesTitle": "Inga matchningar ännu",
+      "noMatchesDescription": "När du och någon gillar varandra dyker ni upp här.",
+      "discoverPeople": "Utforska personer",
+      "cosmicIcebreakers": "Kosmiska isbrytare",
+      "message": "Meddelande",
+      "unmatchConfirm": "Avmatcha {{name}}?",
+      "unmatch": "Avmatcha",
+      "cancel": "Avbryt",
+      "matchedToday": "Matchade idag",
+      "matchedDaysAgo": "Matchade för {{days}}d sedan",
+      "cosmicMatch": "Kosmisk Match"
+    },
+    "profile": {
+      "title": "Dejtingprofil",
+      "datingMode": "Dejtingläge",
+      "datingModeHint": "Gör din profil synlig i kosmisk utforskning",
+      "cosmicSignature": "Din kosmiska signatur",
+      "sunMoonRising": "Sol / Måne / Ascendent",
+      "photos": "Foton",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Om mig",
+      "aboutMePlaceholder": "Berätta för potentiella matchningar om dig själv...",
+      "cosmicPrompts": "Kosmiska frågor",
+      "addPrompt": "Lägg till en fråga",
+      "promptAnswerPlaceholder": "Ditt svar...",
+      "voicePrompt": "Röstintroduktion",
+      "voicePromptHint": "Spela in en 30 sekunders röstintro för att låta din personlighet lysa",
+      "uploadingVoice": "Laddar upp röstintroduktion...",
+      "reRecord": "Spela in igen",
+      "stopRecording": "Stoppa inspelning",
+      "recordVoicePrompt": "Spela in röstintroduktion",
+      "videoIntro": "Videointro",
+      "videoIntroHint": "Ladda upp en 15 sekunders video för att presentera dig själv",
+      "replaceVideo": "Byt video",
+      "uploadVideo": "Ladda upp video",
+      "showAge": "Visa ålder på profil",
+      "photoVerification": "Fotoverifiering",
+      "verified": "Verifierad",
+      "verifyNow": "Verifiera nu",
+      "datingPreferences": "Dejtingpreferenser",
+      "savePreferences": "Spara preferenser",
+      "saveProfile": "Spara profil",
+      "saving": "Sparar...",
+      "preferenceFields": {
+        "genderIdentity": "Könsidentitet",
+        "sexualOrientation": "Sexuell läggning",
+        "interestedIn": "Intresserad av",
+        "primaryIntent": "Primär avsikt",
+        "ageRange": "Åldersintervall",
+        "maxDistance": "Max avstånd"
+      },
+      "privacyLevels": {
+        "visible": "Synlig",
+        "matchOnly": "Endast match",
+        "hidden": "Dold"
+      }
+    },
+    "verify": {
+      "title": "Fotoverifiering",
+      "subtitle": "Verifiera din identitet för att få ett betroddmärke på din dejtingprofil",
+      "backToProfile": "Tillbaka till profil",
+      "verifiedTitle": "Verifierad!",
+      "verifiedDescription": "Din profil visar nu ett verifierat märke.",
+      "pendingTitle": "Under granskning",
+      "pendingDescription": "Din selfie granskas. Det tar vanligtvis 24-48 timmar.",
+      "rejectedTitle": "Inte godkänd",
+      "rejectedHint": "Du kan försöka igen med en tydligare selfie.",
+      "tryAgain": "Försök igen",
+      "howItWorks": "Så fungerar det:",
+      "step1": "1. Ta en tydlig selfie med bra belysning",
+      "step2": "2. Se till att ditt ansikte är helt synligt",
+      "step3": "3. Vi jämför den med dina profilfoton",
+      "step4": "4. Efter godkännande får du ett verifierat märke",
+      "takeSelfie": "Ta selfie",
+      "capture": "Fånga",
+      "cancel": "Avbryt",
+      "retake": "Ta om",
+      "submitForReview": "Skicka för granskning",
+      "submitting": "Skickar...",
+      "cameraAccessDenied": "Kameraåtkomst nekad. Tillåt kameraåtkomst i dina webbläsarinställningar.",
+      "submissionFailed": "Inlämning misslyckades. Försök igen.",
+      "networkError": "Nätverksfel. Kontrollera din anslutning och försök igen."
+    },
+    "coach": {
+      "title": "Relationscoach",
+      "subtitle": "AI-drivna insikter baserade på er astrologiska dynamik",
+      "premiumFeature": "Premiumfunktion",
+      "backToMatches": "Tillbaka till Matchningar",
+      "noMatchHint": "Matcha med någon för att få coachinginsikter.",
+      "browsePicks": "Bläddra bland val",
+      "inputPlaceholder": "Fråga om kommunikation, konflikter, intimitet...",
+      "emptyHint": "Ställ din första fråga eller tryck Skicka för en allmän insikt.",
+      "aiInsight": "AI-insikt",
+      "template": "Mall"
+    },
+    "timing": {
+      "title": "Kosmisk Timing",
+      "subtitle": "Planetära fönster som lyfter fram de bästa ögonblicken för dina kopplingar",
+      "backToMatches": "Tillbaka till Matchningar",
+      "noMatchHint": "Matcha med någon för att se kosmiska tidsfönster.",
+      "browsePicks": "Bläddra bland val",
+      "noWindows": "Inga tidsfönster hittade.",
+      "qualityExcellent": "Utmärkt",
+      "qualityGood": "Bra",
+      "qualityNeutral": "Neutral",
+      "qualityChallenging": "Utmanande",
+      "now": "Nu",
+      "inDays": "Om {{days}}d"
+    },
+    "events": {
+      "title": "Kosmiska Event",
+      "subtitle": "Tematiska dejtingevent i linje med kosmos",
+      "backToDating": "Tillbaka till Dejting",
+      "tabs": {
+        "upcoming": "Kommande",
+        "myEvents": "Mina Event"
+      },
+      "noUpcoming": "Inga kommande event just nu. Kolla tillbaka snart!",
+      "noRegistered": "Du har inte registrerat dig för några event ännu.",
+      "live": "LIVE",
+      "maxCount": "Max {{count}}",
+      "elementOnly": "Bara {{element}}-tecken",
+      "registered": "Registrerad",
+      "cancelRegistration": "Avbryt",
+      "register": "Registrera",
+      "registering": "Registrerar..."
+    },
+    "milestones": {
+      "title": "Relationsmilstolpar",
+      "subtitle": "Följ er resa tillsammans under stjärnorna",
+      "backToMatches": "Tillbaka till Matchningar",
+      "noMatchHint": "Matcha med någon för att följa milstolpar.",
+      "browsePicks": "Bläddra bland val",
+      "journeyProgress": "Reseframsteg",
+      "mark": "Markera"
+    },
+    "datePlanner": {
+      "title": "Date Night-planerare",
+      "subtitle": "Kosmiskt utvalda date-idéer för dig och din match",
+      "backToMatches": "Tillbaka till Matchningar",
+      "noMatchHint": "Matcha med någon för att få date-förslag.",
+      "browsePicks": "Bläddra bland val",
+      "shuffleIdeas": "Blanda idéer",
+      "elementEnergy": "{{element}}-energi"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Kosmiskt Flöde",
+    "createPost": "Skapa inlägg",
+    "postTypes": {
+      "text": "Text",
+      "photo": "Foto",
+      "video": "Video",
+      "poll": "Omröstning"
+    },
+    "composer": {
+      "placeholder": "Vad har ditt kosmiska sinne på hjärtat?",
+      "uploadImage": "Klicka för att ladda upp en bild",
+      "uploadVideo": "Klicka för att ladda upp en video",
+      "imageSizeLimit": "Bilden måste vara under 10 MB",
+      "videoSizeLimit": "Videon måste vara under 200 MB",
+      "backgroundStyle": "Bakgrundsstil",
+      "visibility": "Synlighet:",
+      "visibilityPublic": "Offentlig",
+      "visibilityFriends": "Vänner",
+      "postButton": "Publicera",
+      "posting": "Publicerar...",
+      "uploadingImage": "Laddar upp bild...",
+      "uploadingVideo": "Laddar upp video...",
+      "addImage": "Lägg till bild",
+      "addVideo": "Lägg till video",
+      "editPost": "Redigera inlägg"
+    },
+    "poll": {
+      "question": "Fråga",
+      "questionPlaceholder": "Fråga kosmos...",
+      "options": "Alternativ",
+      "optionPlaceholder": "Alternativ {{number}}",
+      "addOption": "Lägg till alternativ",
+      "duration": "Varaktighet",
+      "durationOptions": {
+        "1h": "1 timme",
+        "6h": "6 timmar",
+        "12h": "12 timmar",
+        "1d": "1 dag",
+        "3d": "3 dagar",
+        "7d": "7 dagar"
+      },
+      "createPoll": "Skapa omröstning",
+      "pollNeedsContent": "Omröstning behöver en fråga och minst 2 alternativ"
+    },
+    "empty": {
+      "title": "Ditt kosmiska flöde väntar",
+      "description": "Dela läsningar, horoskop och kosmiska insikter med din gemenskap.",
+      "createFirst": "Skapa ditt första inlägg"
+    },
+    "loadMore": "Ladda fler",
+    "loading": "Laddar..."
+  },
+  "friends": {
+    "title": "Vänner & Kopplingar",
+    "friendCount": "{{count}} vänner",
+    "pendingCount": "{{count}} väntande",
+    "inviteFriends": "Bjud in vänner",
+    "qrCode": "QR-kod",
+    "tabs": {
+      "friends": "Vänner",
+      "requests": "Förfrågningar",
+      "search": "Sök"
+    },
+    "suggestionsTitle": "Personer du kanske känner",
+    "addButton": "+ Lägg till",
+    "empty": {
+      "noFriends": "Inga vänner ännu",
+      "noFriendsHint": "Sök efter personer eller dela din Align-kod",
+      "findPeople": "Hitta personer",
+      "noRequests": "Inga väntande förfrågningar",
+      "noRequestsHint": "Vänskapsförfrågningar du skickar eller tar emot dyker upp här"
+    },
+    "requests": {
+      "wantsToConnect": "Vill ansluta",
+      "requestSent": "Förfrågan skickad",
+      "accept": "Acceptera",
+      "decline": "Avvisa",
+      "cancel": "Avbryt"
+    },
+    "search": {
+      "placeholder": "Sök efter namn, användarnamn eller Align-kod...",
+      "searching": "Söker...",
+      "noResults": "Inga användare hittade",
+      "noResultsHint": "Prova en annan sökterm",
+      "startSearch": "Sök efter personer",
+      "minCharsHint": "Skriv minst 2 tecken..."
+    },
+    "labels": {
+      "friends": "Vänner",
+      "pending": "Väntande"
+    },
+    "actions": {
+      "removeFriend": "Ta bort vän",
+      "blockUser": "Blockera användare",
+      "removeConfirm": "Ta bort {{name}} från dina vänner?",
+      "blockConfirm": "Blockera {{name}}? De kan inte hitta eller kontakta dig.",
+      "viewProfile": "Visa profil",
+      "message": "Meddelande",
+      "viewFullProfile": "Visa fullständig profil",
+      "close": "Stäng",
+      "requestPending": "Förfrågan väntande",
+      "addFriend": "Lägg till vän",
+      "acceptRequest": "Acceptera förfrågan",
+      "confirm": "Bekräfta",
+      "ok": "OK"
+    },
+    "alignCode": "Align-kod:"
+  },
+  "messages": {
+    "signInRequired": "Logga in för att komma åt meddelanden",
+    "selectConversation": "Välj en konversation",
+    "startNewChat": "eller starta en ny chatt för att ansluta",
+    "newChat": "Ny chatt",
+    "contextMenu": {
+      "reply": "Svara",
+      "react": "Reagera",
+      "edit": "Redigera",
+      "delete": "Radera",
+      "forward": "Vidarebefordra",
+      "pin": "Fäst",
+      "unpin": "Lossa",
+      "copyText": "Kopiera text"
+    },
+    "pickReaction": "Välj en reaktion",
+    "messageTypes": {
+      "image": "Bild",
+      "gif": "GIF",
+      "voiceMessage": "Röstmeddelande",
+      "location": "Plats",
+      "poll": "Omröstning:"
+    },
+    "composer": {
+      "placeholder": "Skriv ett meddelande...",
+      "send": "Skicka",
+      "attachment": "Bifoga"
+    }
+  },
+  "notifications": {
+    "title": "Aviseringar",
+    "markAllRead": "Markera alla som lästa",
+    "filters": {
+      "all": "Alla",
+      "social": "Socialt",
+      "cosmic": "Kosmiskt",
+      "system": "System"
+    },
+    "empty": {
+      "all": "Inga aviseringar ännu",
+      "allHint": "Dina kosmiska varningar och sociala uppdateringar dyker upp här.",
+      "social": "Inga sociala aviseringar",
+      "socialHint": "Vänskapsförfrågningar, meddelanden och reaktioner visas här.",
+      "cosmic": "Inga kosmiska varningar",
+      "cosmicHint": "Transitvarningar och kosmiska händelser dyker upp här.",
+      "system": "Inga systemaviseringar",
+      "systemHint": "Systemuppdateringar och meddelanden visas här."
+    },
+    "time": {
+      "justNow": "just nu",
+      "minutesAgo": "{{count}}min sedan",
+      "hoursAgo": "{{count}}h sedan",
+      "daysAgo": "{{count}}d sedan"
+    },
+    "grouped": "{{count}} aviseringar"
+  },
+  "communities": {
+    "title": "Gemenskaper",
+    "subtitle": "Hitta din kosmiska stam",
+    "create": "Skapa",
+    "tabs": {
+      "discover": "Utforska",
+      "myCommunities": "Mina Gemenskaper"
+    },
+    "searchPlaceholder": "Sök gemenskaper...",
+    "filterAll": "Alla",
+    "loading": "Laddar gemenskaper...",
+    "empty": {
+      "title": "Inga gemenskaper ännu",
+      "description": "Bli den första att skapa en kosmisk gemenskap!",
+      "createButton": "Skapa gemenskap"
+    },
+    "featured": "Utvalda",
+    "allCommunities": "Alla Gemenskaper",
+    "noResultsSearch": "Inga gemenskaper hittade för \"{{query}}\"",
+    "noResultsCategory": "Inga gemenskaper i denna kategori ännu.",
+    "yourCircle": {
+      "title": "Din kosmiska cirkel väntar",
+      "description": "Gå med i eller skapa gemenskaper för att hitta din stam.",
+      "exploreButton": "Utforska gemenskaper"
+    },
+    "memberCount_one": "{{count}} medlem",
+    "memberCount_other": "{{count}} medlemmar",
+    "private": "Privat",
+    "join": "Gå med",
+    "joined": "Gick med"
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Redigera profil",
+    "shareBigThree": "Dela dina Tre Stora",
+    "stats": {
+      "friends": "Vänner",
+      "posts": "Inlägg",
+      "followers": "Följare",
+      "following": "Följer",
+      "views": "Visningar"
+    },
+    "tabs": {
+      "posts": "Inlägg",
+      "photos": "Foton",
+      "reels": "Reels",
+      "about": "Om"
+    },
+    "alignCode": "Din Align-kod",
+    "alignCodeHint": "Dela din kod så vänner kan hitta dig",
+    "quickLinks": {
+      "gallery": "Galleri",
+      "safetyTrust": "Säkerhet & Förtroende",
+      "subscription": "Prenumeration",
+      "referrals": "Värvningar",
+      "settings": "Inställningar"
+    },
+    "about": {
+      "bio": "Bio",
+      "bigThree": "Tre Stora",
+      "starseedOrigin": "Starseed-ursprung",
+      "humanDesign": "Human Design",
+      "joined": "Gick med",
+      "alignCode": "Align-kod"
+    },
+    "empty": {
+      "noPosts": "Inga inlägg ännu",
+      "noPhotos": "Inga foton ännu",
+      "noReels": "Inga reels ännu"
+    },
+    "loadingProfile": "Laddar profil...",
+    "profileViews": "Profilvisningar",
+    "noViews": "Inga profilvisningar ännu",
+    "editPost": "Redigera inlägg"
+  },
+  "editProfile": {
+    "title": "Redigera profil",
+    "displayName": "Visningsnamn",
+    "bio": "Bio",
+    "bioPlaceholder": "Berätta för kosmos om dig själv...",
+    "birthData": "Födelseuppgifter",
+    "date": "Datum",
+    "time": "Tid",
+    "location": "Plats",
+    "locationPlaceholder": "Sök stad, län eller land...",
+    "saveChanges": "Spara ändringar",
+    "saving": "Sparar...",
+    "tapAddCover": "Tryck för att lägga till omslagsfoto",
+    "errors": {
+      "saveFailed": "Kunde inte spara profil",
+      "avatarFailed": "Kunde inte ladda upp avatar",
+      "coverFailed": "Kunde inte ladda upp omslagsfoto"
+    }
+  },
   "settings": {
     "title": "Inställningar",
     "language": "Språk",
@@ -216,9 +1042,259 @@
     "houseSystem": "Hussystem",
     "darkMode": "Mörkt läge",
     "about": "Om Align",
-    "privacy": "Integritetspolicy",
+    "privacy": {
+      "title": "Integritet & Data",
+      "profileVisibility": "Profilsynlighet",
+      "visibilityOptions": {
+        "public": "Offentlig",
+        "friendsOnly": "Bara vänner",
+        "private": "Privat"
+      },
+      "hideAge": "Dölj ålder",
+      "hideExactLocation": "Dölj exakt plats",
+      "hideLastActive": "Dölj senast aktiv",
+      "hideFullBirthChart": "Dölj fullständigt födelsehoroskop",
+      "incognitoMode": "Inkognitoläge",
+      "blockUnverified": "Blockera overifierade användare",
+      "minimumTrustLevel": "Lägsta förtroendenivå",
+      "trustLevels": {
+        "any": "Valfri",
+        "low": "Låg",
+        "medium": "Medel",
+        "high": "Hög"
+      },
+      "analyticsEnabled": "Analys",
+      "exportData": "Exportera mina data",
+      "exportToast": "Din dataexport har begärts. Du får den via e-post."
+    },
     "terms": "Användarvillkor",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "account": "Konto",
+    "email": "E-post",
+    "name": "Namn",
+    "notSet": "Ej angett",
+    "planLabel": "{{plan}}-plan",
+    "upgradeHint": "Uppgradera för fler funktioner",
+    "managedVia": "Hanteras via RevenueCat",
+    "manage": "Hantera",
+    "upgrade": "Uppgradera",
+    "subPages": {
+      "chatTheme": "Chattema",
+      "notifications": "Aviseringar",
+      "privacy": "Integritet",
+      "astrologyPreferences": "Astrologipreferenser",
+      "friends": "Vänner",
+      "referrals": "Värvningar",
+      "subscriptionPlans": "Prenumerationspaket",
+      "datingIdentity": "Dejtingidentitet",
+      "relationshipIntent": "Relationsavsikt",
+      "connectionPreferences": "Kopplingspreferenser",
+      "identityPrivacy": "Identitetsintegritet",
+      "safety": "Säkerhet",
+      "termsOfService": "Användarvillkor",
+      "communityGuidelines": "Gemenskapsriktlinjer"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Hantera användarkonton",
+      "contentModeration": "Innehållsmoderering",
+      "manageCelebrities": "Hantera kändisar",
+      "payoutQueue": "Utbetalningskö"
+    },
+    "aboutSection": {
+      "version": "Version",
+      "poweredBy": "Drivs av",
+      "contact": "Kontakt"
+    },
+    "signOut": "Logga ut",
+    "deleteAccount": "Radera konto",
+    "deleteConfirm": {
+      "title": "Radera konto?",
+      "message": "Detta raderar permanent ditt konto och all tillhörande data. Denna åtgärd kan inte ångras.",
+      "confirm": "Radera mitt konto",
+      "cancel": "Avbryt"
+    },
+    "astrology": {
+      "title": "Astrologipreferenser",
+      "autoSaveHint": "Ändringar sparas automatiskt och gäller för alla horoskopberäkningar.",
+      "houseSystem": "Hussystem",
+      "houseSystemHint": "Bestämmer hur dina horoskophus beräknas",
+      "houseSystems": {
+        "wholeSign": "Hela Tecken",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Lika Hus",
+        "porphyry": "Porphyrius",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Topocentrisk",
+        "morinus": "Morinus",
+        "meridian": "Meridian"
+      },
+      "zodiacSystem": "Zodiaksystem",
+      "zodiacSystems": {
+        "tropical": "Tropisk (Västerländsk)",
+        "sidereal": "Siderisk (Vedisk)"
+      },
+      "languageLevel": "Språknivå",
+      "languageLevelHint": "Hur tekniska ska tolkningarna vara?",
+      "jargonModes": {
+        "plain": "Enkelt språk",
+        "mixed": "Blandat",
+        "technical": "Tekniskt"
+      },
+      "orbTightness": "Orb-strikthet",
+      "orbOptions": {
+        "tight": "Strikt",
+        "standard": "Standard",
+        "wide": "Bred"
+      },
+      "showAsteroids": "Visa asteroider",
+      "showFixedStars": "Visa fixstjärnor"
+    },
+    "notificationsPage": {
+      "title": "Aviseringspreferenser",
+      "pauseAll": "Pausa alla aviseringar",
+      "social": {
+        "title": "Sociala aviseringar",
+        "friendRequests": "Vänskapsförfrågningar",
+        "messages": "Meddelanden",
+        "reactions": "Reaktioner",
+        "comments": "Kommentarer"
+      },
+      "cosmic": {
+        "title": "Kosmiska aviseringar",
+        "frequency": "Frekvens",
+        "frequencyOptions": {
+          "essential": "Väsentlig",
+          "important": "Viktig",
+          "all": "Alla"
+        },
+        "tone": "Ton",
+        "toneOptions": {
+          "gentle": "Mjuk",
+          "direct": "Direkt",
+          "intense": "Intensiv"
+        },
+        "categories": {
+          "majorTransits": "Stora transiter",
+          "moonPhases": "Månfaser",
+          "mercuryRetrograde": "Merkurius retrograd",
+          "loveRelationships": "Kärlek & Relationer",
+          "moneyValues": "Pengar & Värderingar",
+          "careerAmbition": "Karriär & Ambition",
+          "healingGrowth": "Healing & Tillväxt"
+        },
+        "aspects": {
+          "title": "Aspekttyper",
+          "conjunctions": "Konjunktioner",
+          "oppositions": "Oppositioner",
+          "squares": "Kvadraturer",
+          "trines": "Trigoner",
+          "sextiles": "Sextiler"
+        },
+        "events": {
+          "title": "Kosmiska händelser",
+          "moonPhases": "Månfaser",
+          "eclipses": "Förmörkelser",
+          "retrogrades": "Retrograder",
+          "ingresses": "Ingresser"
+        },
+        "minIntensity": "Lägsta intensitet",
+        "advanceNotice": "Förhandsavisering (dagar)"
+      },
+      "galactic": {
+        "title": "Galaktiska aviseringar",
+        "planetaryHours": "Planetära timmar",
+        "dayRuler": "Dagens härskare",
+        "goldenHour": "Gyllene timmen",
+        "eclipseWatch": "Förmörkelsebevakning",
+        "retrogradeAlerts": "Retrogradvarningar",
+        "minutesBefore": "Minuter innan"
+      },
+      "summaries": {
+        "title": "Sammanfattningar",
+        "daily": "Daglig sammanfattning",
+        "weekly": "Veckosammanfattning"
+      },
+      "quietHours": {
+        "title": "Tysta timmar",
+        "enabled": "Aktivera tysta timmar",
+        "start": "Start",
+        "end": "Slut",
+        "urgentOverride": "Tillåt brådskande aviseringar"
+      },
+      "delivery": {
+        "title": "Leverans",
+        "sound": "Ljud",
+        "badge": "Märke"
+      },
+      "announcements": "Appmeddelanden"
+    },
+    "referrals": {
+      "title": "Värvningar",
+      "howItWorks": "Så fungerar det",
+      "step1": "Dela din unika värvningslänk med vänner",
+      "step2": "När de registrerar sig via din länk får ni båda 5 bonustolkningar",
+      "step3": "Det finns ingen gräns — bjud in så många vänner du vill!"
+    },
+    "chatTheme": {
+      "title": "Chattema",
+      "subtitle": "Anpassa utseendet på dina meddelanden"
+    },
+    "datingIdentity": {
+      "title": "Dejtingidentitet",
+      "subtitle": "Hur du identifierar dig i dejtingvärlden"
+    },
+    "relationshipIntent": {
+      "title": "Relationsavsikt",
+      "subtitle": "Vad du letar efter i kopplingar"
+    },
+    "connectionPreferences": {
+      "title": "Kopplingspreferenser",
+      "subtitle": "Vem du vill koppla ihop med"
+    },
+    "identityPrivacy": {
+      "title": "Identitetsintegritet",
+      "subtitle": "Kontrollera vem som ser din identitetsinformation"
+    },
+    "safety": {
+      "title": "Säkerhet",
+      "subtitle": "Hantera blockeringar, rapporter och säkerhetsinställningar"
+    },
+    "friends": {
+      "title": "Vänninställningar",
+      "subtitle": "Hantera inställningar för vänskapsförfrågningar och kopplingar"
+    },
+    "termsPage": {
+      "title": "Användarvillkor"
+    },
+    "communityGuidelines": {
+      "title": "Gemenskapsriktlinjer"
+    }
   },
   "subscription": {
     "headline": "Precisionsastrologi. Personligt din.",
@@ -228,11 +1304,27 @@
     "restore": "Återställ köp",
     "cancel": "Avsluta när som helst. Inga avtal.",
     "socialProof": "Planen som 73 % av medlemmarna väljer.",
+    "title": "Välj din väg",
+    "subtitle": "Avsluta när som helst. 14-dagars kostnadsfri provperiod på alla paket.",
+    "priceFree": "Gratis",
+    "priceCurrency": "$",
+    "loadingPlans": "Laddar prenumerationspaket...",
+    "tapToRetry": "Tryck för att försöka igen",
+    "tapForDiagnostics": "Tryck här för att visa diagnostik",
+    "comparisonTitle": "Vilket paket passar dig?",
+    "faqTitle": "Vanliga frågor",
+    "footerText": "Prenumerationer hanteras via App Store / Google Play.",
+    "manageButton": "Hantera prenumeration",
+    "termsOfService": "Användarvillkor",
+    "privacyPolicy": "Integritetspolicy",
+    "restorePurchase": "Återställ köp",
+    "restoring": "Återställer...",
     "free": {
       "name": "Gratis",
       "price": "$0",
-      "tagline": "Utforska kosmos utan kostnad.",
+      "tagline": "Utforska kosmos utan kostnad",
       "cta": "Kom igång gratis",
+      "bestFor": "Nykomlingar nyfikna på astrologi som vill utforska innan de förbinder sig.",
       "features": [
         "Grundläggande födelsehoroskopöversikt",
         "Dagliga horoskopinsikter",
@@ -240,136 +1332,117 @@
         "Enstaka tarotkortsdragningar",
         "Kalkylator för planetära timmar",
         "1 sparad profil"
-      ],
-      "bestFor": "För nykomlingar nyfikna på astrologi som vill utforska innan de förbinder sig."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Klarhet börjar här.",
+      "tagline": "Din dagliga kosmiska följeslagare",
       "cta": "Börja med Light",
+      "bestFor": "Avslappnade utforskare som vill ha daglig kosmisk vägledning och grundläggande horoskopinsikter.",
       "features": [
-        "Dagliga personliga insikter",
-        "Födelsehoroskop med kärnpositioner",
-        "10 AI-drivna tolkningar per månad",
+        "Allt i Gratis",
+        "Fullständiga dagliga personliga insikter",
+        "30 AI-drivna tolkningar per månad",
         "Transitvarningar i realtid",
-        "Daglig tarotkortsvägledning",
-        "Kalkylator för planetära timmar",
         "Numerologi livsvägöversikt",
         "1 sparad födelseprofil"
-      ],
-      "bestFor": "För avslappnade utforskare som vill ha daglig kosmisk vägledning och grundläggande horoskopinsikter."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Där djup möter klarhet.",
+      "tagline": "Lås upp din fullständiga kosmiska ritning",
+      "badge": "MEST POPULÄR",
       "cta": "Skaffa Premium — Bästa värdet",
+      "bestFor": "Entusiaster redo att dyka djupt in i sin fullständiga astrologiska blueprint och relationer.",
       "features": [
         "Allt i Light",
-        "50 AI-djuptolkningar per månad",
-        "Fullständigt horoskop — aspekter, mönster, fixstjärnor",
-        "Progressiva och sol-/månreturhoroskop",
-        "Synastri och kompositkompatibilitet",
-        "Starseed-ursprung och Human Design",
-        "Alla 6 tarotupplägg med AI",
-        "Finansiell astrologirapport",
-        "Enkelt språkläge — utan jargong",
-        "5 sparade födelseprofiler",
+        "Fullständigt horoskop med aspekter & mönster",
+        "100 AI-tolkningar per månad",
+        "Alla horoskop-typer (progressiva, returer, synastri)",
+        "Kompatibilitet & komposithoroskop",
+        "Starseed, numerologi, Human Design",
+        "Tarot-upplägg (alla 5 typer)",
+        "Jargongväxlare (enkelt språkläge)",
+        "5 sparade profiler",
         "Alla astrologikurser"
-      ],
-      "badge": "MEST POPULÄR",
-      "bestFor": "För entusiaster redo att dyka djupt in i sin fullständiga astrologiska blueprint och relationer."
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Hela bilden. Inget undanhållet.",
-      "cta": "Lås upp Pro-åtkomst",
+      "tagline": "För den seriösa utövaren",
+      "cta": "Gå Pro",
+      "bestFor": "Professionella astrologer och dedikerade utövare som behöver alla tillgängliga verktyg.",
       "features": [
         "Allt i Premium",
-        "200 AI-tolkningar per månad",
-        "Astrokartografi världskartor",
-        "Firdaria och Zodiacal Releasing",
-        "Arabiska punkter och fixstjärnedjupdykningar",
-        "Prioriterad AI — snabbare bearbetning",
-        "Obegränsat sparade profiler och tolkningar",
-        "Exporterbara professionella rapporter",
+        "300 AI-tolkningar per månad",
+        "Finansiell astrologirapport",
+        "Astrokartografi (ACG)",
+        "Firdaria & Zodiacal Releasing",
+        "Fixstjärnor & Arabiska punkter",
+        "Prioriterad AI-bearbetning",
         "Tidig tillgång till nya funktioner",
-        "AI på 20 språk"
-      ],
-      "bestFor": "För professionella astrologer och dedikerade utövare som behöver alla tillgängliga verktyg."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Kunde inte öppna länken.",
-      "diagnostics": "Diagnostik",
-      "errorTitle": "Fel",
-      "manageError": "Kunde inte öppna prenumerationshantering. Öppna Play Store eller App Store manuellt.",
-      "noActiveBody": "Ingen tidigare prenumeration hittades för detta konto.",
-      "noActiveTitle": "Ingen aktiv prenumeration",
-      "ok": "OK",
-      "planNotFoundBody": "Detta paket är tillfälligt otillgängligt i butiken. Försök igen senare.",
-      "planNotFoundTitle": "Paketet kunde inte hittas",
-      "purchaseFailedDefault": "Något gick fel.",
-      "purchaseFailedLong": "Något gick fel när ditt köp behandlades. Försök igen.",
-      "purchaseFailedTitle": "Köpet misslyckades",
-      "restoreError": "Det gick inte att återställa köpen",
-      "restoredBody": "Din prenumeration har återställts.",
-      "restoredTitle": "Återställd!",
-      "retry": "Försök igen",
-      "subscriptionsUnavailableHint": "Se till att du är inloggad i Play Store och försök igen.",
-      "subscriptionsUnavailableTitle": "Prenumerationer otillgängliga",
-      "unavailableBody": "Detta paket är inte tillgängligt just nu.",
-      "unavailableTitle": "Otillgängligt",
-      "unsupportedBody": "Prenumerationshantering är endast tillgänglig på iOS och Android.",
-      "unsupportedTitle": "Stöds inte",
-      "welcomeBody": "Din prenumeration är aktiv. Njut av din utökade kosmiska verktygslåda.",
-      "welcomeTitle": "Välkommen ombord!"
-    },
-    "comparisonTitle": "Vilket paket passar dig?",
-    "errors": {
-      "apiKeyPlaceholder": "Prenumerationstjänsten är inte konfigurerad för denna version. (Internt: RevenueCat API-nyckel är en platshållare.)",
-      "connectionFailed": "Kunde inte nå prenumerationstjänsten. Kontrollera anslutningen och försök igen.",
-      "loadFailed": "Kunde inte ladda prenumerationspaket. Försök igen senare.",
-      "loadFailedConnection": "Kunde inte ladda prenumerationspaket. Kontrollera anslutningen.",
-      "nativeModuleMissing": "Prenumerationstjänsten är inte tillgänglig i denna version. (Internt: nativ modul ej länkad.)",
-      "noApiKey": "Prenumerationstjänsten är inte konfigurerad för denna plattform. (Internt: API-nyckel saknas.)",
-      "noOfferings": "Inga aktiva prenumerationspaket har publicerats ännu. Försök igen senare.",
-      "noPackages": "Prenumerationspaket håller på att slutföras i butiken. Försök igen senare.",
-      "stillStarting": "Prenumerationstjänsten startar fortfarande. Vänta en stund och försök igen."
+        "Obegränsat sparade profiler",
+        "Exportera & dela rapporter"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "AI-läsningskrediter återställs varje faktureringscykel och förs inte över. Detta håller vår AI-infrastruktur snabb och responsiv för alla användare.",
-        "question": "Förs AI-läsningar över?"
-      },
-      "security": {
-        "answer": "Absolut. All personlig och födelsedata är krypterad både i vila och vid överföring. Vi säljer aldrig dina data, och du kan radera ditt konto och all tillhörande data när som helst.",
-        "question": "Är min födelsedata säker?"
-      },
       "switch": {
-        "answer": "Ja! Du kan uppgradera eller nedgradera ditt paket när som helst. Vid uppgradering får du omedelbar åtkomst till nya funktioner. Vid nedgradering fortsätter dina nuvarande förmåner till slutet av faktureringscykeln.",
-        "question": "Kan jag byta paket när som helst?"
+        "question": "Kan jag byta paket när som helst?",
+        "answer": "Ja! Du kan uppgradera eller nedgradera ditt paket när som helst. Vid uppgradering får du omedelbar åtkomst till nya funktioner. Vid nedgradering fortsätter dina nuvarande förmåner till slutet av faktureringscykeln."
       },
       "trial": {
-        "answer": "Din 14-dagars kostnadsfria provperiod ger dig full tillgång till valt paket. Du debiteras inte förrän provperioden slutar och kan avsluta när som helst innan utan förpliktelser.",
-        "question": "Vad händer efter den kostnadsfria provperioden?"
+        "question": "Vad händer efter den kostnadsfria provperioden?",
+        "answer": "Din 14-dagars kostnadsfria provperiod ger dig full tillgång till valt paket. Du debiteras inte förrän provperioden slutar och kan avsluta när som helst innan utan förpliktelser."
+      },
+      "rollover": {
+        "question": "Förs AI-tolkningar över?",
+        "answer": "AI-tolkningskrediter återställs varje faktureringscykel och förs inte över. Detta håller vår AI-infrastruktur snabb och responsiv för alla användare."
+      },
+      "security": {
+        "question": "Är mina födelseuppgifter säkra?",
+        "answer": "Absolut. All personlig och födelsedata är krypterad både i vila och vid överföring. Vi säljer aldrig dina data, och du kan radera ditt konto och all tillhörande data när som helst."
       }
     },
-    "faqTitle": "Vanliga frågor",
-    "footerText": "Prenumerationer hanteras via App Store / Google Play.",
-    "loadingPlans": "Laddar prenumerationspaket...",
-    "manageButton": "Hantera prenumeration",
-    "priceCurrency": "$",
-    "priceFree": "Gratis",
-    "privacyPolicy": "Integritetspolicy",
-    "restorePurchase": "Återställ köp",
-    "restoring": "Återställer...",
-    "subtitle": "Avsluta när som helst. 14-dagars kostnadsfri provperiod på alla paket.",
-    "tapForDiagnostics": "Tryck här för att visa diagnostik",
-    "tapToRetry": "Tryck för att försöka igen",
-    "termsOfService": "Användarvillkor",
-    "title": "Välj din väg"
+    "alerts": {
+      "unavailableTitle": "Otillgängligt",
+      "unavailableBody": "Detta paket är inte tillgängligt just nu.",
+      "purchaseFailedTitle": "Köpet misslyckades",
+      "purchaseFailedDefault": "Något gick fel.",
+      "purchaseFailedLong": "Något gick fel när ditt köp behandlades. Försök igen.",
+      "welcomeTitle": "Välkommen ombord!",
+      "welcomeBody": "Din prenumeration är aktiv. Njut av din utökade kosmiska verktygslåda.",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "Prenumerationer otillgängliga",
+      "subscriptionsUnavailableHint": "Se till att du är inloggad i Play Store och försök igen.",
+      "retry": "Försök igen",
+      "diagnostics": "Diagnostik",
+      "planNotFoundTitle": "Paketet kunde inte hittas",
+      "planNotFoundBody": "Detta paket är tillfälligt otillgängligt i butiken. Försök igen senare.",
+      "errorTitle": "Fel",
+      "couldNotOpenLink": "Kunde inte öppna länken.",
+      "unsupportedTitle": "Stöds inte",
+      "unsupportedBody": "Prenumerationshantering är endast tillgänglig på iOS och Android.",
+      "manageError": "Kunde inte öppna prenumerationshantering. Öppna Play Store eller App Store manuellt.",
+      "restoredTitle": "Återställd!",
+      "restoredBody": "Din prenumeration har återställts.",
+      "noActiveTitle": "Ingen aktiv prenumeration",
+      "noActiveBody": "Ingen tidigare prenumeration hittades för detta konto.",
+      "restoreError": "Det gick inte att återställa köpen"
+    },
+    "errors": {
+      "loadFailed": "Kunde inte ladda prenumerationspaket. Försök igen senare.",
+      "loadFailedConnection": "Kunde inte ladda prenumerationspaket. Kontrollera anslutningen.",
+      "apiKeyPlaceholder": "Prenumerationstjänsten är inte konfigurerad för denna version. (Internt: RevenueCat API-nyckel är en platshållare.)",
+      "noApiKey": "Prenumerationstjänsten är inte konfigurerad för denna plattform. (Internt: API-nyckel saknas.)",
+      "nativeModuleMissing": "Prenumerationstjänsten är inte tillgänglig i denna version. (Internt: nativ modul ej länkad.)",
+      "noOfferings": "Inga aktiva prenumerationspaket har publicerats ännu. Försök igen senare.",
+      "noPackages": "Prenumerationspaket håller på att slutföras i butiken. Försök igen senare.",
+      "connectionFailed": "Kunde inte nå prenumerationstjänsten. Kontrollera anslutningen och försök igen.",
+      "stillStarting": "Prenumerationstjänsten startar fortfarande. Vänta en stund och försök igen."
+    }
   },
   "courses": {
     "title": "Lär dig astrologi",
@@ -380,6 +1453,314 @@
     "continue": "Fortsätt lära",
     "completed": "Avslutad"
   },
+  "cosmicAlerts": {
+    "title": "Kosmiskt Väder",
+    "subtitle": "Din personliga kosmiska prognos",
+    "scanningCosmos": "Skannar kosmos...",
+    "filters": {
+      "all": "Alla",
+      "active": "Aktiv",
+      "upcoming": "Kommande"
+    },
+    "emptyState": {
+      "title": "Inga stora transiter upptäckta",
+      "filterHint": "Inga {{filter}} varningar just nu. Prova att byta till \"Alla\".",
+      "defaultHint": "Kosmos är lugnt för ditt horoskop. Kolla tillbaka när himlen skiftar."
+    },
+    "detail": {
+      "timingWindow": "Tidsfönster",
+      "start": "Start",
+      "peak": "Topp",
+      "end": "Slut",
+      "fullInterpretation": "Fullständig tolkning",
+      "astrologicalDetails": "Astrologiska detaljer",
+      "transit": "Transit",
+      "natal": "Natal",
+      "aspect": "Aspekt",
+      "retrograde": "Retrograd",
+      "yes": "Ja",
+      "no": "Nej",
+      "actionAdvice": "Handlingsråd",
+      "viewFullTransits": "Visa fullständiga transiter"
+    },
+    "importance": {
+      "critical": "Kritisk",
+      "high": "Hög",
+      "moderate": "Måttlig",
+      "low": "Låg",
+      "minimal": "Minimal"
+    },
+    "categories": {
+      "general": "Allmänt",
+      "love": "Kärlek",
+      "career": "Karriär",
+      "growth": "Tillväxt",
+      "challenge": "Utmaning",
+      "spiritual": "Andligt",
+      "communication": "Kommunikation",
+      "energy": "Energi"
+    },
+    "statusActive": "AKTIV"
+  },
+  "discover": {
+    "title": "Utforska",
+    "moonPhases": {
+      "newMoon": "Nymåne",
+      "waxingCrescent": "Tilltagande skära",
+      "firstQuarter": "Första kvarteret",
+      "waxingGibbous": "Tilltagande måne",
+      "fullMoon": "Fullmåne",
+      "waningGibbous": "Avtagande måne",
+      "lastQuarter": "Sista kvarteret",
+      "waningCrescent": "Avtagande skära"
+    }
+  },
+  "worldEcho": {
+    "title": "Världseko",
+    "subtitle": "Hur kosmiska händelser ripplar genom mänsklighetens historia",
+    "categories": {
+      "political": "Politiskt",
+      "economic": "Ekonomiskt",
+      "cultural": "Kulturellt",
+      "scientific": "Vetenskapligt",
+      "natural": "Naturligt",
+      "social": "Socialt",
+      "technological": "Teknologiskt",
+      "spiritual": "Andligt"
+    },
+    "evidenceLabels": {
+      "strong": "Stark",
+      "moderate": "Måttlig",
+      "speculative": "Spekulativ"
+    },
+    "scoreLabels": {
+      "legendary": "Legendarisk",
+      "major": "Stor",
+      "significant": "Betydande",
+      "notable": "Anmärkningsvärd",
+      "minor": "Mindre"
+    }
+  },
+  "polls": {
+    "title": "Omröstningar",
+    "filters": {
+      "all": "Alla",
+      "active": "Aktiv",
+      "ended": "Avslutad",
+      "mine": "Mina"
+    },
+    "duration": {
+      "hours": "{{count}}h kvar",
+      "days": "{{count}}d kvar",
+      "ended": "Avslutad"
+    },
+    "createPoll": "Skapa omröstning",
+    "votes": "{{count}} röster",
+    "noPollsYet": "Inga omröstningar ännu",
+    "noPollsHint": "Bli den första att starta en kosmisk omröstning!"
+  },
+  "bookmarks": {
+    "title": "Bokmärken",
+    "loading": "Laddar bokmärken...",
+    "empty": "Inga bokmärken ännu",
+    "emptyHint": "Spara inlägg från flödet för att läsa senare",
+    "postUnavailable": "Inlägget är inte längre tillgängligt"
+  },
+  "celebrityMatches": {
+    "title": "Kändismatchningar",
+    "subtitle": "Upptäck vilka kända personer som delar din kosmiska ritning",
+    "searchPlaceholder": "Sök kändisar...",
+    "categories": {
+      "overall": "Totalt",
+      "emotional": "Emotionell",
+      "passion": "Passion",
+      "marriage": "Äktenskap",
+      "karmic": "Karmisk",
+      "attraction": "Attraktion",
+      "stability": "Stabilitet",
+      "mental": "Mental"
+    },
+    "matchScore": "{{score}}% match",
+    "trending": "Trendande",
+    "recentlyAdded": "Nyligen tillagda",
+    "browseByCategory": "Bläddra efter kategori",
+    "clearFilter": "Rensa filter",
+    "yourFavorites": "Dina favoriter",
+    "noResults": "Inga resultat",
+    "tryDifferent": "Prova ett annat namn eller stavning",
+    "noCelebrities": "Inga kändisar ännu",
+    "searchOrCheckBack": "Sök efter någon eller kom tillbaka snart",
+    "noCelebritiesInCategory": "Inga kändisar i denna kategori ännu"
+  },
+  "matches": {
+    "title": "Kompatibilitetsmatchningar",
+    "categories": {
+      "overall": "Totalt",
+      "emotional": "Emotionell",
+      "passion": "Passion",
+      "marriage": "Äktenskap",
+      "karmic": "Karmisk",
+      "attraction": "Attraktion",
+      "stability": "Stabilitet",
+      "mental": "Mental"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Kosmiskt Index",
+    "subtitle": "Dagens kosmiska energi i ett ögonkast"
+  },
+  "creatorStudio": {
+    "title": "Creator Studio",
+    "subtitle": "Skapa och hantera ditt kosmiska innehåll"
+  },
+  "qa": {
+    "title": "Frågor & Svar",
+    "askQuestion": "Ställ en fråga",
+    "noQuestions": "Inga frågor ännu",
+    "placeholder": "Vad är din kosmiska fråga?"
+  },
+  "pricing": {
+    "title": "Välj ditt paket",
+    "subtitle": "Lås upp Aligns fulla kraft"
+  },
+  "gallery": {
+    "title": "Galleri",
+    "empty": "Inga foton ännu"
+  },
+  "timeline": {
+    "title": "Tidslinje",
+    "empty": "Inget att visa ännu"
+  },
+  "reels": {
+    "title": "Kosmiska Reels",
+    "empty": "Inga reels ännu"
+  },
+  "fragments": {
+    "title": "Kosmiska Fragment",
+    "subtitle": "Delbara kosmiska visdomskort"
+  },
+  "cosmicVideo": {
+    "title": "Kosmisk Video",
+    "subtitle": "Astrologiska insikter i rörelse"
+  },
+  "groupSynastry": {
+    "title": "Gruppsynastri",
+    "subtitle": "Se hur en grupps horoskop interagerar"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "defaultMessage": "Lägg till dina födelseuppgifter för personliga tolkningar.",
+      "completeProfile": "Slutför profil",
+      "title": "Födelsedata krävs"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Laddar..."
+    },
+    "paywallGate": {
+      "title": "Lås upp denna funktion",
+      "description": "Uppgradera ditt paket för att komma åt denna tolkning.",
+      "upgradeButton": "Se paket",
+      "currentPlan": "Nuvarande paket: {{plan}}",
+      "aiAstrologer": "AI-astrolog med röstchatt",
+      "allFeatures": "Denna tolkning + alla {{tier}}-funktioner",
+      "fullChart": "Fullständigt födelsehoroskop med aspekter & mönster",
+      "plan": "plan",
+      "whatYouUnlock": "Vad du låser upp",
+      "youreOn": "du har"
+    },
+    "shareButton": {
+      "share": "Dela",
+      "copied": "Kopierad!"
+    },
+    "referralCard": {
+      "title": "Bjud in vänner",
+      "subtitle": "Dela din värvningslänk och få båda bonustolkningar",
+      "copyLink": "Kopiera länk",
+      "linkCopied": "Länk kopierad!"
+    },
+    "trialBanner": {
+      "title": "Provperiod aktiv",
+      "daysLeft": "{{count}} dagar kvar",
+      "upgrade": "Uppgradera nu",
+      "endsSoon": "Din provperiod slutar om {{count}} dagar! Uppgradera för att behålla Premium-funktioner.",
+      "endsTomorrow": "Din provperiod slutar imorgon! Uppgradera för att behålla Premium-funktioner.",
+      "expired": "Din provperiod har avslutats. Uppgradera för att låsa upp Premium igen.",
+      "title_plural": "Premium-provperiod: {{count}} dagar kvar"
+    },
+    "cookieConsent": {
+      "message": "Vi använder cookies för att förbättra din upplevelse.",
+      "accept": "Acceptera",
+      "decline": "Avvisa",
+      "learnMore": "Läs mer"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Det är en Match!",
+      "subtitle": "Kosmos har sammanlänkat dig och {{name}}",
+      "sendMessage": "Skicka meddelande",
+      "keepBrowsing": "Fortsätt bläddra"
+    },
+    "datingFilterDrawer": {
+      "title": "Utforskningsfilter",
+      "ageRange": "Åldersintervall",
+      "maxDistance": "Max avstånd",
+      "showOnlyVerified": "Visa bara verifierade",
+      "compatibilityMin": "Lägsta kompatibilitet",
+      "elements": "Element",
+      "applyFilters": "Tillämpa filter",
+      "resetFilters": "Återställ"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% kompatibel",
+      "like": "Gilla",
+      "pass": "Passa",
+      "cosmicRose": "Kosmisk Ros",
+      "likesRemaining": "{{count}} gillar kvar",
+      "rosesRemaining": "{{count}} rosor kvar"
+    },
+    "sidebar": {
+      "home": "Hem",
+      "discover": "Utforska",
+      "chart": "Horoskop",
+      "readings": "Tolkningar",
+      "dating": "Dejting",
+      "friends": "Vänner",
+      "messages": "Meddelanden",
+      "feed": "Flöde",
+      "communities": "Gemenskaper",
+      "notifications": "Aviseringar",
+      "profile": "Profil",
+      "settings": "Inställningar",
+      "aiAstrologer": "AI-astrolog",
+      "chat": "Chatt",
+      "close": "Stäng",
+      "cosmicFeed": "Kosmiskt flöde",
+      "cosmicWeather": "Kosmiskt väder",
+      "learn": "Lär dig",
+      "menu": "Meny",
+      "more": "Mer",
+      "pricing": "Priser",
+      "videoCreator": "Videoskapare",
+      "viewProfile": "Visa din profil",
+      "worldEcho": "Världseko",
+      "yourProfile": "Din profil"
+    },
+    "feedCard": {
+      "like": "Gilla",
+      "comment": "Kommentera",
+      "share": "Dela",
+      "bookmark": "Bokmärke",
+      "report": "Rapportera",
+      "deletePost": "Radera inlägg",
+      "editPost": "Redigera inlägg"
+    },
+    "commentSheet": {
+      "title": "Kommentarer",
+      "placeholder": "Skriv en kommentar...",
+      "send": "Skicka",
+      "noComments": "Inga kommentarer ännu",
+      "beFirst": "Bli den första att kommentera!"
+    }
+  },
   "common": {
     "loading": "Laddar...",
     "error": "Något gick fel",
@@ -389,7 +1770,46 @@
     "delete": "Radera",
     "share": "Dela",
     "premium": "Premium",
-    "free": "Gratis"
+    "free": "Gratis",
+    "close": "Stäng",
+    "confirm": "Bekräfta",
+    "ok": "OK",
+    "yes": "Ja",
+    "no": "Nej",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "done": "Klar",
+    "edit": "Redigera",
+    "copy": "Kopiera",
+    "copied": "Kopierad!",
+    "search": "Sök",
+    "settings": "Inställningar",
+    "seeAll": "Se alla",
+    "showMore": "Visa mer",
+    "showLess": "Visa mindre",
+    "comingSoon": "Kommer snart",
+    "upgrade": "Uppgradera",
+    "signIn": "Logga in",
+    "signOut": "Logga ut",
+    "today": "Idag",
+    "yesterday": "Igår",
+    "tomorrow": "Imorgon",
+    "all": "Alla",
+    "none": "Inga",
+    "public": "Offentlig",
+    "private": "Privat",
+    "apply": "Tillämpa",
+    "reset": "Återställ",
+    "remove": "Ta bort",
+    "add": "Lägg till",
+    "create": "Skapa",
+    "submit": "Skicka in",
+    "send": "Skicka",
+    "view": "Visa",
+    "download": "Ladda ner",
+    "upload": "Ladda upp",
+    "noResults": "Inga resultat hittade",
+    "tryAgain": "Försök igen"
   },
   "zodiac": {
     "aries": "Väduren",
@@ -420,7 +1840,11 @@
     "southNode": "Södra noden",
     "chiron": "Chiron",
     "ascendant": "Ascendenten",
-    "midheaven": "Medium Coeli"
+    "midheaven": "Medium Coeli",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
     "conjunction": "Konjunktion",
@@ -428,6 +1852,83 @@
     "square": "Kvadratur",
     "trine": "Trigon",
     "opposition": "Opposition",
-    "quincunx": "Kvinkunx"
+    "quincunx": "Kvinkunx",
+    "semisextile": "Semisextil",
+    "semisquare": "Semikvadrat",
+    "sesquiquadrate": "Seskvikvadratur",
+    "quintile": "Kvintil",
+    "biquintile": "Bikvintil"
+  },
+  "elements": {
+    "fire": "Eld",
+    "earth": "Jord",
+    "air": "Luft",
+    "water": "Vatten"
+  },
+  "modalities": {
+    "cardinal": "Kardinal",
+    "fixed": "Fast",
+    "mutable": "Föränderlig"
+  },
+  "houses": {
+    "1": "1:a huset",
+    "2": "2:a huset",
+    "3": "3:e huset",
+    "4": "4:e huset",
+    "5": "5:e huset",
+    "6": "6:e huset",
+    "7": "7:e huset",
+    "8": "8:e huset",
+    "9": "9:e huset",
+    "10": "10:e huset",
+    "11": "11:e huset",
+    "12": "12:e huset",
+    "labels": {
+      "1": "Själv & Identitet",
+      "2": "Värderingar & Ägodelar",
+      "3": "Kommunikation & Lärande",
+      "4": "Hem & Familj",
+      "5": "Kreativitet & Romantik",
+      "6": "Hälsa & Tjänst",
+      "7": "Partnerskap",
+      "8": "Transformation & Delade resurser",
+      "9": "Filosofi & Resor",
+      "10": "Karriär & Offentlig image",
+      "11": "Gemenskap & Ambitioner",
+      "12": "Andlighet & Undermedvetande"
+    }
+  },
+  "errors": {
+    "generic": "Något gick fel. Försök igen.",
+    "networkError": "Nätverksfel. Kontrollera din anslutning.",
+    "unauthorized": "Du måste logga in för att komma åt denna funktion.",
+    "notFound": "Det begärda innehållet hittades inte.",
+    "serverError": "Serverfel. Försök igen senare.",
+    "loadFailed": "Kunde inte ladda data. Försök igen.",
+    "saveFailed": "Kunde inte spara ändringar. Försök igen.",
+    "uploadFailed": "Kunde inte ladda upp fil. Försök igen.",
+    "fileTooLarge": "Filen är för stor. Välj en mindre fil.",
+    "invalidFormat": "Ogiltigt filformat.",
+    "permissionDenied": "Åtkomst nekad.",
+    "sessionExpired": "Din session har gått ut. Logga in igen.",
+    "rateLimited": "För många förfrågningar. Vänta en stund."
+  },
+  "time": {
+    "justNow": "just nu",
+    "minutesAgo": "{{count}}min sedan",
+    "hoursAgo": "{{count}}h sedan",
+    "daysAgo": "{{count}}d sedan",
+    "weeksAgo": "{{count}}v sedan",
+    "monthsAgo": "{{count}}mån sedan",
+    "yearsAgo": "{{count}}år sedan",
+    "inMinutes": "om {{count}}min",
+    "inHours": "om {{count}}h",
+    "inDays": "om {{count}}d"
+  },
+  "tiers": {
+    "free": "Gratis",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

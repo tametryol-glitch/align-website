@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   addComment, getComments, deleteComment,
@@ -33,6 +34,7 @@ export function CommentSheet({
   onClose: () => void;
   onCommentCountChange?: (postId: string, delta: number) => void;
 }) {
+  const { t } = useTranslation();
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ export function CommentSheet({
       <div className="relative bg-bg-secondary border border-border-primary rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col pb-safe">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-          <h3 className="text-lg font-semibold text-text-primary">Comments</h3>
+          <h3 className="text-lg font-semibold text-text-primary">{t('components.commentSheet.title')}</h3>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary">
             <X className="w-5 h-5" />
           </button>
@@ -106,9 +108,9 @@ export function CommentSheet({
 
         {/* Comments list */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {loading && <p className="text-text-muted text-sm text-center py-8">Loading comments...</p>}
+          {loading && <p className="text-text-muted text-sm text-center py-8">{t('common.loading')}</p>}
           {!loading && comments.length === 0 && (
-            <p className="text-text-muted text-sm text-center py-8">Be the first to share your thoughts</p>
+            <p className="text-text-muted text-sm text-center py-8">{t('components.commentSheet.beFirst')}</p>
           )}
           {comments.map((c) => (
             <div key={c.id} className="flex gap-3 group">
@@ -173,7 +175,7 @@ export function CommentSheet({
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Add a comment..."
+              placeholder={t('components.commentSheet.placeholder')}
               className="input flex-1 !py-2 text-sm"
             />
             <button

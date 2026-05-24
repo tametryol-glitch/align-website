@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { Image, Video, Upload, X, Grid3X3, Play } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type MediaType = 'photo' | 'video';
 type FilterTab = 'all' | 'photo' | 'video';
@@ -19,6 +20,7 @@ interface MediaItem {
 }
 
 export default function GalleryPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [items, setItems] = useState<MediaItem[]>([]);
   const [filter, setFilter] = useState<FilterTab>('all');
@@ -95,7 +97,7 @@ export default function GalleryPage() {
         <div className="flex items-center gap-3">
           <Image className="w-8 h-8 text-accent-primary" />
           <div>
-            <h1 className="text-2xl font-display font-bold text-text-primary">Gallery</h1>
+            <h1 className="text-2xl font-display font-bold text-text-primary">{t('gallery.title')}</h1>
             <p className="text-text-tertiary text-sm">Your photos and videos</p>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function GalleryPage() {
           className="btn-primary flex items-center gap-2"
         >
           <Upload className="w-4 h-4" />
-          {uploading ? 'Uploading...' : 'Upload'}
+          {uploading ? `${t('common.loading')}` : t('common.upload')}
         </button>
         <input
           ref={fileInputRef}

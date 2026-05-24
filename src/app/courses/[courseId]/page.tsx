@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
@@ -9,6 +10,7 @@ import { ArrowLeft, CheckCircle2, Circle, BookOpen } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 export default function CourseDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const courseId = params.courseId as string;
   const { user } = useAuthStore();
@@ -30,14 +32,14 @@ export default function CourseDetailPage() {
     if (courseId) load();
   }, [courseId]);
 
-  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading course..." /></div>;
+  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('common.loading')} /></div>;
 
   if (error || !course) {
     return (
       <div className="max-w-3xl mx-auto">
         <div className="card text-center py-12">
-          <p className="text-red-400 mb-4">{error || 'Course not found'}</p>
-          <Link href="/courses" className="btn-secondary">Back to Courses</Link>
+          <p className="text-red-400 mb-4">{error || t('errors.notFound')}</p>
+          <Link href="/courses" className="btn-secondary">{t('common.back')}</Link>
         </div>
       </div>
     );
@@ -49,7 +51,7 @@ export default function CourseDetailPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <Link href="/courses" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to Courses
+        <ArrowLeft className="w-4 h-4" /> {t('courses.title')}
       </Link>
 
       <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted mb-6">

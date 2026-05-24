@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
@@ -299,6 +300,7 @@ function buildMonthAdvice(
 // ── Copy Button ──
 
 function CopyBtn({ text, label }: { text: string; label?: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -321,8 +323,8 @@ function intensityColor(i: string) {
   return i === 'intense' ? '#EF4444' : i === 'active' ? '#F59E0B' : '#22C55E';
 }
 
-function intensityLabel(i: string) {
-  return i === 'intense' ? 'High Impact' : i === 'active' ? 'Active' : 'Steady';
+function intensityLabel(i: string, t: (key: string) => string) {
+  return i === 'intense' ? t('readings.yearAheadPage.intense') : i === 'active' ? t('readings.yearAheadPage.activeIntensity') : t('readings.yearAheadPage.calm');
 }
 
 // ── AI Year Ahead Prompt ──
@@ -346,6 +348,7 @@ Write in 2nd person. Be direct, warm, and honest. If a period looks difficult, s
 // ── Main Component ──
 
 export default function YearAheadPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const { hasAccess } = useSubscriptionStore();
   const usedPoolRef = useRef<Map<string, number[]>>(new Map());
@@ -468,13 +471,13 @@ export default function YearAheadPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
 
       {/* Header */}
       <div className="text-center mb-8">
         <span className="text-5xl block mb-3">{'🔮'}</span>
-        <h1 className="text-2xl font-display font-bold text-text-primary mb-2">Your Year Ahead</h1>
+        <h1 className="text-2xl font-display font-bold text-text-primary mb-2">{t('readings.yearAheadPage.title')}</h1>
         <p className="text-text-secondary text-sm leading-relaxed px-4">
           A month-by-month forecast based on your actual transits and natal chart.
           {sunSign ? ` Sun in ${sunSign}.` : ''}
@@ -496,7 +499,7 @@ export default function YearAheadPage() {
       )}
 
       {/* Loading */}
-      {loading && <LoadingCosmic label="Mapping your year ahead..." />}
+      {loading && <LoadingCosmic label={t('readings.yearAheadPage.generating')} />}
 
       {/* Forecasts loaded */}
       {forecasts.length > 0 && (
@@ -542,7 +545,7 @@ export default function YearAheadPage() {
           )}
 
           {/* Month-by-Month Forecast */}
-          <h2 className="text-lg font-display font-bold text-text-primary mb-4 mt-6">Month-by-Month Forecast</h2>
+          <h2 className="text-lg font-display font-bold text-text-primary mb-4 mt-6">{t('readings.yearAheadPage.monthlyOverview')}</h2>
 
           <div className="space-y-2">
             {forecasts.map((forecast, idx) => {
@@ -568,7 +571,7 @@ export default function YearAheadPage() {
                       style={{ backgroundColor: `${intensityColor(forecast.intensity)}20`, color: intensityColor(forecast.intensity) }}
                     >
                       <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: intensityColor(forecast.intensity) }} />
-                      {intensityLabel(forecast.intensity)}
+                      {intensityLabel(forecast.intensity, t)}
                     </div>
                     {isExpanded ? <ChevronUp className="w-4 h-4 text-text-muted" /> : <ChevronDown className="w-4 h-4 text-text-muted" />}
                   </div>
@@ -580,7 +583,7 @@ export default function YearAheadPage() {
 
                       {forecast.keyTransits.length > 0 && (
                         <div className="mb-4">
-                          <h4 className="text-[11px] font-bold text-accent-primary uppercase tracking-wider mb-2">Key Transits</h4>
+                          <h4 className="text-[11px] font-bold text-accent-primary uppercase tracking-wider mb-2">{t('readings.yearAheadPage.keyTransits')}</h4>
                           {forecast.keyTransits.map((tr, i) => (
                             <div key={i} className="flex items-start gap-2 mb-1.5">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-primary mt-1.5 flex-shrink-0" />

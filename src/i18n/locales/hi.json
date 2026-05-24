@@ -50,7 +50,8 @@
     "agreeToTerms": "मैं सहमत हूँ",
     "privacyPolicy": "गोपनीयता नीति",
     "and": "और",
-    "termsOfService": "सेवा की शर्तें"
+    "termsOfService": "सेवा की शर्तें",
+    "signInToAccess": "संदेशों तक पहुँचने के लिए साइन इन करें"
   },
   "onboarding": {
     "title": "आइए आपकी जन्म कुंडली बनाएं",
@@ -191,7 +192,374 @@
     "moonPhases": "चंद्र चरण",
     "yearAhead": "मेरा आने वाला साल",
     "soulGifts": "आत्मा की देन",
-    "soulMemory": "आत्मा की स्मृति"
+    "soulMemory": "आत्मा की स्मृति",
+    "soulAscension": "आत्मा का उत्थान",
+    "dreamOracle": "ड्रीम ओरेकल",
+    "backToReadings": "रीडिंग्स पर वापस",
+    "upgradeToTier": "{{tier}} में अपग्रेड करें",
+    "birthDataRequired": "कृपया पहले अपनी प्रोफ़ाइल में जन्म डेटा जोड़ें।",
+    "birthDataPromptTransits": "अपने वर्तमान गोचर देखने के लिए जन्म डेटा जोड़ें।",
+    "birthDataPromptCompatibility": "किसी विशेष व्यक्ति के साथ संगतता जाँचने के लिए जन्म डेटा जोड़ें।",
+    "birthDataPromptAlerts": "आपकी कुंडली के लिए व्यक्तिगत ब्रह्मांडीय अलर्ट गणना करने के लिए हमें आपके जन्म डेटा की आवश्यकता है।",
+    "transitsPage": {
+      "title": "तुम्हारे चक्र",
+      "subtitle": "{{name}}, ये वे चक्र हैं जो अभी तुम्हारे जीवन से गुज़र रहे हैं। इन्हें ऋतुओं की तरह समझो — हर एक अपनी ऊर्जा, अपने सबक और अपने अवसर लाता है।",
+      "loadingLabel": "तुम्हारे गोचर की गणना हो रही है...",
+      "errorDefault": "गोचर लोड करने में विफल",
+      "emptyState": "कोई सक्रिय चक्र नहीं मिला। जल्द ही फिर देखो।",
+      "activeNow": "अभी सक्रिय",
+      "storylines": "कथाएँ",
+      "impactingYouNow": "अभी तुम पर प्रभाव डाल रहा है",
+      "backToCycles": "चक्रों पर वापस",
+      "active": "सक्रिय",
+      "approaching": "आ रहा है",
+      "separating": "दूर हो रहा है",
+      "cycleMeaning": "इस चक्र का तुम्हारे लिए क्या मतलब है",
+      "howToNavigate": "इसे कैसे नेविगेट करें",
+      "technicalDetails": "तकनीकी विवरण",
+      "transit": "गोचर",
+      "currentOrb": "वर्तमान ऑर्ब",
+      "direction": "दिशा",
+      "intensity": "तीव्रता",
+      "separatingDesc": "दूर हो रहा (सटीक से दूर जा रहा)",
+      "applyingDesc": "अप्लाई हो रहा (सटीक की ओर बढ़ रहा)",
+      "intensityMajor": "प्रमुख (बाहरी ग्रह)",
+      "intensityModerate": "मध्यम",
+      "intensityMinor": "लघु",
+      "nearExact": "लगभग सटीक — सबसे मजबूत प्रभाव",
+      "stronglyActive": "ज़ोरदार सक्रिय",
+      "buildingMomentum": "गति बढ़ा रहा है",
+      "enteringAwareness": "जागरूकता में आ रहा है",
+      "lessThanADay": "एक दिन से कम बचा है",
+      "daysLeft": "{{count}} दिन बचे हैं",
+      "weeksLeft": "~{{count}} हफ़्ते बचे हैं",
+      "monthsLeft": "~{{count}} महीने बचे हैं",
+      "yearsLeft": "{{count}}+ साल",
+      "tapToRead": "पूरी अंतर्दृष्टि पढ़ने के लिए टैप करो",
+      "failedToLoadStorylines": "कथाएँ लोड करने में विफल"
+    },
+    "tarotPage": {
+      "title": "टैरो रीडिंग",
+      "subtitle": "आर्केना से मार्गदर्शन प्राप्त करो",
+      "chooseSpread": "अपना स्प्रेड चुनो",
+      "yourQuestion": "तुम्हारा सवाल (वैकल्पिक)",
+      "questionPlaceholder": "तुम किस मार्गदर्शन की तलाश में हो?",
+      "drawButton": "{{spread}} निकालो",
+      "shuffling": "ब्रह्मांडीय ताश फेंटी जा रही है...",
+      "tapToReveal": "प्रकट करने के लिए टैप करो",
+      "revealAll": "सभी कार्ड दिखाओ",
+      "newReading": "नई रीडिंग",
+      "getPersonalReading": "अपनी व्यक्तिगत रीडिंग पाओ",
+      "regenerateReading": "व्यक्तिगत रीडिंग फिर से बनाओ",
+      "personalTarotReading": "व्यक्तिगत टैरो रीडिंग",
+      "channeling": "तुम्हारी कुंडली और कार्ड का चैनलिंग हो रहा है...",
+      "shareReading": "रीडिंग साझा करो",
+      "copied": "कॉपी हो गया!",
+      "failedToGenerate": "रीडिंग बनाने में विफल। कृपया पुनः प्रयास करो।",
+      "reversed": "उल्टा",
+      "majorArcana": "मेजर आर्केना",
+      "minorArcana": "माइनर आर्केना",
+      "spreads": {
+        "single": "सिंगल कार्ड",
+        "threeCard": "थ्री कार्ड",
+        "celticCross": "सेल्टिक क्रॉस",
+        "relationship": "रिश्ता",
+        "career": "करियर"
+      },
+      "positions": {
+        "focus": "फोकस",
+        "past": "भूतकाल",
+        "present": "वर्तमान",
+        "future": "भविष्य",
+        "challenge": "चुनौती",
+        "foundation": "नींव",
+        "recentPast": "हाल का अतीत",
+        "crown": "मुकुट",
+        "nearFuture": "निकट भविष्य",
+        "self": "स्वयं",
+        "environment": "वातावरण",
+        "hopesFears": "आशाएँ/भय",
+        "outcome": "परिणाम",
+        "you": "तुम",
+        "partner": "साथी",
+        "connection": "जुड़ाव",
+        "potential": "संभावना",
+        "current": "वर्तमान",
+        "obstacle": "बाधा",
+        "hiddenFactor": "छिपा कारक",
+        "advice": "सलाह"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "ड्रीम ओरेकल",
+      "subtitle": "प्रतीकों, भावनाओं, ज्योतिष और अपने अवचेतन की छिपी भाषा के माध्यम से अपने सपनों को समझो।",
+      "tabs": {
+        "record": "रिकॉर्ड",
+        "journal": "डायरी",
+        "symbols": "प्रतीक",
+        "patterns": "पैटर्न"
+      },
+      "record": {
+        "dreamTitle": "सपने का शीर्षक (वैकल्पिक)",
+        "titlePlaceholder": "खाली छोड़ने पर स्वतः बन जाएगा",
+        "describeLabel": "अपना सपना बताओ *",
+        "describePlaceholder": "आँखें बंद करो और जो कुछ भी याद है वह बताओ...",
+        "mainEmotions": "मुख्य भावनाएँ (अधिकतम 5)",
+        "peopleDream": "सपने में लोग",
+        "peoplePlaceholder": "जैसे माँ, पूर्व साथी, अजनबी, दोस्त",
+        "placesDream": "सपने में जगहें",
+        "placesPlaceholder": "जैसे बचपन का घर, समुद्र, अंधेरा जंगल",
+        "separateCommas": "अल्पविराम से अलग करो",
+        "symbolsObjects": "प्रतीक / वस्तुएँ",
+        "selectSymbols": "सपने के प्रतीक चुनने के लिए क्लिक करो",
+        "selectedCount": "{{count}} चुने गए",
+        "searchSymbols": "प्रतीक खोजो...",
+        "dreamType": "सपने का प्रकार",
+        "dreamIntensity": "सपने की तीव्रता: {{value}}/10",
+        "privacy": "गोपनीयता",
+        "interpretDream": "मेरे सपने की व्याख्या करो",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "तुम्हारे सपने की व्याख्या",
+        "mainSymbols": "मुख्य प्रतीक",
+        "coreMessage": "मूल संदेश",
+        "subconsciousMessage": "तुम्हारा अवचेतन तुम्हें क्या दिखा रहा था",
+        "symbolsMatter": "सबसे महत्वपूर्ण प्रतीक",
+        "emotionalUndercurrent": "भावनात्मक अंतर्धारा",
+        "whatToFace": "यह सपना तुमसे किसका सामना करने को कह रहा है",
+        "oracleMessage": "ड्रीम ओरेकल का अंतिम संदेश",
+        "astroConnection": "ज्योतिषीय संबंध",
+        "whyNow": "तुमने अभी यह सपना क्यों देखा",
+        "watchFor": "किस पर ध्यान दो",
+        "whatToDo": "आगे क्या करो",
+        "reflectionQuestions": "चिंतन के प्रश्न",
+        "askAboutDream": "इस सपने के बारे में पूछो",
+        "visualizeDream": "मेरे सपने को विज़ुअलाइज़ करो",
+        "comingSoon": "जल्द आ रहा है",
+        "recordAnother": "एक और सपना रिकॉर्ड करो"
+      },
+      "journal": {
+        "loadingJournal": "सपनों की डायरी लोड हो रही है...",
+        "searchDreams": "सपने खोजो...",
+        "noDreamsYet": "अभी कोई सपने नहीं",
+        "noDreamsHint": "अपनी डायरी बनाना शुरू करने के लिए अपना पहला सपना रिकॉर्ड करो।",
+        "deleteConfirm": "यह सपना हटाएँ? इसे पूर्ववत नहीं किया जा सकता।"
+      },
+      "dictionary": {
+        "backToSymbols": "प्रतीकों पर वापस",
+        "generalMeaning": "सामान्य अर्थ",
+        "psychologicalMeaning": "मनोवैज्ञानिक अर्थ",
+        "spiritualMeaning": "आध्यात्मिक अर्थ",
+        "astrologicalMeaning": "ज्योतिषीय अर्थ",
+        "shadowMeaning": "छाया अर्थ",
+        "reflectionQuestion": "चिंतन प्रश्न"
+      },
+      "patterns": {
+        "noPatternsYet": "अभी कोई पैटर्न नहीं",
+        "noPatternsHint": "अपने सपनों के जीवन में पैटर्न देखने के लिए कम से कम 3 सपने रिकॉर्ड करो।",
+        "overview": "सारांश",
+        "totalDreams": "कुल सपने",
+        "avgIntensity": "औसत तीव्रता",
+        "nightmares": "बुरे सपने",
+        "lucidDreams": "लूसिड ड्रीम्स",
+        "prophetic": "भविष्यसूचक",
+        "recurringSymbols": "सबसे बार-बार आने वाले प्रतीक",
+        "recurringEmotions": "सबसे बार-बार आने वाली भावनाएँ",
+        "recurringPeople": "सबसे बार-बार आने वाले लोग",
+        "dreamTypes": "सपनों के प्रकार",
+        "dreamsByMoonPhase": "चंद्र चरण के अनुसार सपने",
+        "moonPhaseHint": "10+ सपनों के साथ ज्योतिष डेटा जुड़ने पर चंद्र चरण पैटर्न ट्रैकिंग सक्रिय होगी।",
+        "dreamsByTransit": "गोचर के अनुसार सपने",
+        "transitHint": "गोचर सहसंबंध बताएगा कि कौन से ग्रहीय दृष्टि तुम्हारे सबसे ज्वलंत या भविष्यसूचक सपनों को सक्रिय करते हैं।"
+      }
+    },
+    "starseedPage": {
+      "title": "स्टारसीड मूल",
+      "subtitle": "अपनी ब्रह्मांडीय आत्मा के मूल स्रोत खोजो",
+      "description": "अपनी जन्म कुंडली का विश्लेषण करो और जानो कि तुम्हारी आत्मा किन तारा प्रणालियों से जुड़ी है।",
+      "discoverButton": "मेरे मूल स्रोत खोजो",
+      "analyzing": "विश्लेषण हो रहा है...",
+      "dominantOrigin": "प्रमुख मूल",
+      "resonancePoints": "स्कोर: {{score}} अनुनाद बिंदु"
+    },
+    "numerologyPage": {
+      "title": "अंकज्योतिष",
+      "subtitle": "तुम्हारे ब्रह्मांडीय अंक डिकोड",
+      "master": "मास्टर"
+    },
+    "angelNumbersPage": {
+      "title": "एंजेल नंबर",
+      "subtitle": "जो संख्याएँ तुम देखते हो उनका अर्थ खोजो",
+      "searchPlaceholder": "एक संख्या दर्ज करो (जैसे 111, 444)...",
+      "popular": "लोकप्रिय संख्याएँ",
+      "notFound": "संख्या नहीं मिली। कोई सामान्य एंजेल नंबर आज़माओ।",
+      "copiedToClipboard": "क्लिपबोर्ड पर कॉपी हो गया!"
+    },
+    "humanDesignPage": {
+      "title": "ह्यूमन डिज़ाइन",
+      "subtitle": "तुम्हारा ऊर्जात्मक ब्लूप्रिंट",
+      "aura": "ऑरा",
+      "defined": "परिभाषित",
+      "undefined": "अपरिभाषित"
+    },
+    "financialPage": {
+      "title": "वित्तीय ज्योतिष",
+      "subtitle": "तुम्हारा ब्रह्मांडीय धन ब्लूप्रिंट",
+      "personalIncome": "व्यक्तिगत आय और मूल्य",
+      "sharedResources": "साझा संसाधन और रूपांतरण",
+      "careerStanding": "करियर और सार्वजनिक प्रतिष्ठा",
+      "gainsNetworks": "लाभ और नेटवर्क",
+      "strengths": "शक्तियाँ",
+      "challenges": "चुनौतियाँ",
+      "monthlyForecast": "मासिक पूर्वानुमान",
+      "timingWindows": "समय विंडो",
+      "favorable": "अनुकूल",
+      "mixed": "मिश्रित",
+      "challenging": "चुनौतीपूर्ण"
+    },
+    "compatibilityPage": {
+      "title": "संगतता जाँच",
+      "subtitle": "दो आत्माओं के बीच ब्रह्मांडीय कनेक्शन का अन्वेषण करो",
+      "person2Label": "साथी का जन्म डेटा",
+      "datePlaceholder": "जन्म तिथि",
+      "timePlaceholder": "जन्म समय",
+      "locationPlaceholder": "जन्म स्थान",
+      "calculateButton": "संगतता जाँचो",
+      "calculating": "संगतता की गणना हो रही है...",
+      "overallScore": "कुल स्कोर",
+      "soulLevelConnection": "आत्मा-स्तरीय कनेक्शन",
+      "deepCompatibility": "गहरी संगतता",
+      "strongPotential": "मजबूत संभावना",
+      "moderateMatch": "मध्यम मेल",
+      "growthRequired": "विकास आवश्यक",
+      "challengingDynamic": "चुनौतीपूर्ण गतिशीलता",
+      "categories": {
+        "attraction": "शारीरिक आकर्षण",
+        "emotional": "भावनात्मक बंधन",
+        "mental": "मानसिक कनेक्शन",
+        "stability": "दीर्घकालिक स्थिरता",
+        "karmic": "कार्मिक लिंक",
+        "harmony": "सामंजस्य",
+        "magnetic": "चुंबकीय खिंचाव"
+      },
+      "showAspects": "दृष्टियाँ दिखाओ",
+      "hideAspects": "दृष्टियाँ छिपाओ"
+    },
+    "cosmicJournalPage": {
+      "title": "ब्रह्मांडीय डायरी",
+      "subtitle": "ब्रह्मांड के साथ-साथ अपनी आंतरिक दुनिया का अनुसरण करो",
+      "newEntry": "नई प्रविष्टि",
+      "moodOptions": {
+        "low": "ख़राब",
+        "meh": "ठीकठाक",
+        "neutral": "सामान्य",
+        "good": "अच्छा",
+        "great": "बहुत अच्छा"
+      },
+      "noEntries": "अभी कोई डायरी प्रविष्टियाँ नहीं",
+      "noEntriesHint": "ब्रह्मांड के साथ-साथ अपनी आंतरिक दुनिया का अनुसरण शुरू करने के लिए लिखना शुरू करो।"
+    },
+    "moonPhasesPage": {
+      "title": "चंद्र चरण",
+      "tabs": {
+        "today": "आज",
+        "calendar": "कैलेंडर",
+        "forecast": "पूर्वानुमान",
+        "eclipses": "ग्रहण",
+        "birthMoon": "जन्म चंद्रमा"
+      },
+      "failedToLoadChart": "जन्म कुंडली लोड करने में विफल"
+    },
+    "planetaryHoursPage": {
+      "title": "ग्रहीय घंटे",
+      "subtitle": "आधुनिक जीवन के लिए प्राचीन समय ज्ञान",
+      "currentHour": "वर्तमान घंटा",
+      "daySummary": "दिन का सारांश",
+      "hoursTable": "घंटों की तालिका"
+    },
+    "yearAheadPage": {
+      "title": "मेरा आने वाला साल",
+      "subtitle": "साल भर के लिए तुम्हारा व्यक्तिगत ब्रह्मांडीय पूर्वानुमान",
+      "generating": "तुम्हारा आने वाला साल तैयार हो रहा है...",
+      "monthlyOverview": "मासिक सारांश",
+      "keyTransits": "प्रमुख गोचर",
+      "calm": "शांत",
+      "activeIntensity": "सक्रिय",
+      "intense": "तीव्र"
+    },
+    "solarReturnPage": {
+      "title": "सौर प्रत्यावर्तन",
+      "subtitle": "तुम्हारी जन्मदिन कुंडली — साल भर का ब्रह्मांडीय ब्लूप्रिंट",
+      "generating": "तुम्हारे सौर प्रत्यावर्तन की गणना हो रही है...",
+      "yearTheme": "साल की थीम",
+      "planetsOnAngles": "कोणों पर ग्रह",
+      "retrogrades": "वक्री ग्रह",
+      "monthlyTimeline": "मासिक समयरेखा",
+      "natalComparisons": "जन्म बनाम सौर प्रत्यावर्तन",
+      "criticalAspects": "महत्वपूर्ण दृष्टियाँ",
+      "yearPattern": "साल का पैटर्न"
+    },
+    "galacticClockPage": {
+      "title": "गैलेक्टिक घड़ी",
+      "subtitle": "तुम्हारा ब्रह्मांडीय समय इंटरफ़ेस"
+    },
+    "galacticForecastPage": {
+      "title": "गैलेक्टिक पूर्वानुमान",
+      "subtitle": "तुम्हारी कुंडली को प्रभावित करने वाली गहन-अंतरिक्ष ऊर्जाएँ"
+    },
+    "midpointsPage": {
+      "title": "मध्यबिंदु कैलकुलेटर",
+      "subtitle": "अपनी कुंडली में छिपे कनेक्शन खोजो"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "प्राचीन फ़ारसी ग्रहीय अवधियाँ"
+    },
+    "zodiacalReleasingPage": {
+      "title": "राशि विमोचन",
+      "subtitle": "हेलेनिस्टिक समय तकनीक"
+    },
+    "acgPage": {
+      "title": "एस्ट्रो-कार्टोग्राफी",
+      "subtitle": "दुनिया में कहाँ तुम्हारे ग्रह सक्रिय होते हैं"
+    },
+    "fixedStarsPage": {
+      "title": "स्थिर तारे",
+      "subtitle": "तुम्हारी कुंडली में तारकीय प्रभाव"
+    },
+    "arabicPartsPage": {
+      "title": "अरबी भाग",
+      "subtitle": "तुम्हारी कुंडली में प्राचीन गणित बिंदु"
+    },
+    "pathwayPage": {
+      "title": "सफलता का मार्ग",
+      "subtitle": "तुम्हारा ब्रह्मांडीय करियर और जीवन-उद्देश्य ब्लूप्रिंट"
+    },
+    "rectificationPage": {
+      "title": "जन्म समय सुधार",
+      "subtitle": "अधिक सटीक कुंडली के लिए अपना जन्म समय सूक्ष्म-समायोजित करो"
+    },
+    "nameAnalysisPage": {
+      "title": "नाम विश्लेषण",
+      "subtitle": "तुम्हारे नाम की अंकज्योतिष"
+    },
+    "soulGiftsPage": {
+      "title": "आत्मा की देन",
+      "subtitle": "अपनी कुंडली में एन्कोड किए गए अनोखे उपहार खोजो"
+    },
+    "soulMemoryPage": {
+      "title": "आत्मा की स्मृति",
+      "subtitle": "तुम्हारी जन्म कुंडली में पूर्व-जन्म की गूँज"
+    },
+    "soulAscensionPage": {
+      "title": "आत्मा का उत्थान",
+      "description": "अपनी जन्म कुंडली को एक पुनर्जन्म RPG के रूप में खेलो — कर्म, उद्देश्य मार्ग, आत्मा अनुबंध, अवशेष, और पूर्व-जन्म चयन के साथ।"
+    },
+    "chartAdjusterPage": {
+      "title": "चार्ट समायोजक",
+      "subtitle": "अलग-अलग जन्म समय के साथ प्रयोग करो"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI व्याख्या",
@@ -205,6 +573,464 @@
       "reputation": "प्रतिष्ठा"
     }
   },
+  "dating": {
+    "title": "ब्रह्मांडीय डेटिंग",
+    "subtitle": "तुम्हारे क्यूरेट किए ब्रह्मांडीय चयन",
+    "introTitle": "ब्रह्मांडीय डेटिंग",
+    "introDescription": "सितारों में लिखे अर्थपूर्ण कनेक्शन खोजो। ब्रह्मांडीय संगत मैच खोजने के लिए अपनी डेटिंग प्रोफ़ाइल बनाओ।",
+    "createProfileButton": "अपनी डेटिंग प्रोफ़ाइल बनाओ",
+    "featurePhotos": "फ़ोटो और वॉइस इंट्रो जोड़ो",
+    "featureCompatibility": "ब्रह्मांडीय संगतता द्वारा मैच पाओ",
+    "featureSafety": "सुरक्षित और सत्यापित कनेक्शन",
+    "tabs": {
+      "discover": "खोजें",
+      "likes": "लाइक्स",
+      "matches": "मैचेस",
+      "myProfile": "मेरी प्रोफ़ाइल"
+    },
+    "discovery": {
+      "consulting": "ब्रह्मांड से सलाह ली जा रही है...",
+      "noPicksTitle": "अभी कोई ब्रह्मांडीय चयन नहीं",
+      "allCaughtUpTitle": "सब देख लिया!",
+      "noPicksDescription": "सितारे अभी भी तुम्हारे मैच संरेखित कर रहे हैं। सुनिश्चित करो कि तुम्हारी डेटिंग प्रोफ़ाइल पूर्ण है!",
+      "allCaughtUpDescription": "नए ब्रह्मांडीय चयन के लिए कल वापस आओ। गुणवत्ता वाले कनेक्शन में समय लगता है।",
+      "completeProfile": "प्रोफ़ाइल पूर्ण करो",
+      "dailyLikeLimit": "तुमने अपनी दैनिक लाइक सीमा ({{limit}}) पूरी कर ली है। अधिक के लिए अपग्रेड करो!",
+      "dailyRoseLimit": "तुमने आज अपने सभी कॉस्मिक रोज़ इस्तेमाल कर लिए ({{limit}})। अधिक के लिए अपग्रेड करो!",
+      "genericError": "कुछ गलत हो गया। कृपया पुनः प्रयास करो।"
+    },
+    "likes": {
+      "title": "लाइक्स",
+      "receivedCount": "{{count}} लोग रुचि रखते हैं",
+      "sentCount": "तुमने {{count}} लोगों को लाइक किया",
+      "received": "प्राप्त",
+      "sent": "भेजा",
+      "seeWhoLikes": "देखो कौन तुम्हें लाइक करता है",
+      "upgradeHint": "प्रोफ़ाइल देखने के लिए Light या उससे ऊपर अपग्रेड करो",
+      "upgrade": "अपग्रेड",
+      "noLikesYet": "अभी कोई लाइक्स नहीं",
+      "noSentYet": "अभी कोई लाइक भेजी नहीं",
+      "keepFresh": "अपनी प्रोफ़ाइल ताज़ा रखो और ब्रह्मांड पहुँचाएगा।",
+      "headToDiscover": "अपने ब्रह्मांडीय कनेक्शन खोजने के लिए Discover पर जाओ।",
+      "mysteryAdmirer": "रहस्यमय प्रशंसक",
+      "rose": "रोज़",
+      "likeBack": "लाइक बैक",
+      "matching": "मैचिंग..."
+    },
+    "matches": {
+      "title": "तुम्हारे मैचेस",
+      "connectionCount": "{{count}} ब्रह्मांडीय कनेक्शन",
+      "noMatchesTitle": "अभी कोई मैच नहीं",
+      "noMatchesDescription": "जब तुम और कोई दोनों एक-दूसरे को लाइक करोगे, तो यहाँ दिखाई दोगे।",
+      "discoverPeople": "लोग खोजो",
+      "cosmicIcebreakers": "ब्रह्मांडीय आइसब्रेकर",
+      "message": "संदेश",
+      "unmatchConfirm": "{{name}} को अनमैच करें?",
+      "unmatch": "अनमैच",
+      "cancel": "रद्द करें",
+      "matchedToday": "आज मैच हुआ",
+      "matchedDaysAgo": "{{days}} दिन पहले मैच हुआ",
+      "cosmicMatch": "ब्रह्मांडीय मैच"
+    },
+    "profile": {
+      "title": "डेटिंग प्रोफ़ाइल",
+      "datingMode": "डेटिंग मोड",
+      "datingModeHint": "ब्रह्मांडीय खोज में अपनी प्रोफ़ाइल दिखाओ",
+      "cosmicSignature": "तुम्हारा ब्रह्मांडीय हस्ताक्षर",
+      "sunMoonRising": "सूर्य / चंद्रमा / लग्न",
+      "photos": "फ़ोटो",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "मेरे बारे में",
+      "aboutMePlaceholder": "संभावित मैचों को अपने बारे में बताओ...",
+      "cosmicPrompts": "ब्रह्मांडीय प्रॉम्प्ट",
+      "addPrompt": "एक प्रॉम्प्ट जोड़ो",
+      "promptAnswerPlaceholder": "तुम्हारा जवाब...",
+      "voicePrompt": "वॉइस प्रॉम्प्ट",
+      "voicePromptHint": "अपने व्यक्तित्व को चमकाने के लिए 30-सेकंड का वॉइस इंट्रो रिकॉर्ड करो",
+      "uploadingVoice": "वॉइस प्रॉम्प्ट अपलोड हो रहा है...",
+      "reRecord": "फिर से रिकॉर्ड करो",
+      "stopRecording": "रिकॉर्डिंग बंद करो",
+      "recordVoicePrompt": "वॉइस प्रॉम्प्ट रिकॉर्ड करो",
+      "videoIntro": "वीडियो इंट्रो",
+      "videoIntroHint": "अपना परिचय देने के लिए 15-सेकंड का वीडियो अपलोड करो",
+      "replaceVideo": "वीडियो बदलो",
+      "uploadVideo": "वीडियो अपलोड",
+      "showAge": "प्रोफ़ाइल पर उम्र दिखाओ",
+      "photoVerification": "फ़ोटो सत्यापन",
+      "verified": "सत्यापित",
+      "verifyNow": "अभी सत्यापित करो",
+      "datingPreferences": "डेटिंग प्राथमिकताएँ",
+      "savePreferences": "प्राथमिकताएँ सहेजो",
+      "saveProfile": "प्रोफ़ाइल सहेजो",
+      "saving": "सहेजा जा रहा है...",
+      "preferenceFields": {
+        "genderIdentity": "लिंग पहचान",
+        "sexualOrientation": "यौन अभिविन्यास",
+        "interestedIn": "रुचि किसमें",
+        "primaryIntent": "प्राथमिक इरादा",
+        "ageRange": "आयु सीमा",
+        "maxDistance": "अधिकतम दूरी"
+      },
+      "privacyLevels": {
+        "visible": "दृश्यमान",
+        "matchOnly": "केवल मैच",
+        "hidden": "छिपा हुआ"
+      }
+    },
+    "verify": {
+      "title": "फ़ोटो सत्यापन",
+      "subtitle": "अपनी डेटिंग प्रोफ़ाइल पर विश्वसनीय बैज पाने के लिए अपनी पहचान सत्यापित करो",
+      "backToProfile": "प्रोफ़ाइल पर वापस",
+      "verifiedTitle": "सत्यापित!",
+      "verifiedDescription": "तुम्हारी प्रोफ़ाइल अब सत्यापित बैज दिखाती है।",
+      "pendingTitle": "समीक्षाधीन",
+      "pendingDescription": "तुम्हारी सेल्फ़ी की समीक्षा हो रही है। आमतौर पर 24-48 घंटे लगते हैं।",
+      "rejectedTitle": "स्वीकृत नहीं",
+      "rejectedHint": "तुम स्पष्ट सेल्फ़ी के साथ फिर कोशिश कर सकते हो।",
+      "tryAgain": "फिर कोशिश करो",
+      "howItWorks": "कैसे काम करता है:",
+      "step1": "1. अच्छी रोशनी में एक स्पष्ट सेल्फ़ी लो",
+      "step2": "2. सुनिश्चित करो कि तुम्हारा चेहरा पूरी तरह दिखे",
+      "step3": "3. हम इसकी तुम्हारी प्रोफ़ाइल फ़ोटो से तुलना करेंगे",
+      "step4": "4. स्वीकृत होने पर, तुम्हें सत्यापित बैज मिलता है",
+      "takeSelfie": "सेल्फ़ी लो",
+      "capture": "कैप्चर",
+      "cancel": "रद्द करें",
+      "retake": "दोबारा लो",
+      "submitForReview": "समीक्षा के लिए भेजो",
+      "submitting": "भेजा जा रहा है...",
+      "cameraAccessDenied": "कैमरा एक्सेस अस्वीकृत। कृपया अपनी ब्राउज़र सेटिंग्स में कैमरा एक्सेस की अनुमति दो।",
+      "submissionFailed": "भेजना विफल। कृपया पुनः प्रयास करो।",
+      "networkError": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जाँचो और पुनः प्रयास करो।"
+    },
+    "coach": {
+      "title": "रिलेशनशिप कोच",
+      "subtitle": "तुम्हारी ज्योतिषीय गतिशीलता पर आधारित AI-संचालित अंतर्दृष्टि",
+      "premiumFeature": "प्रीमियम सुविधा",
+      "backToMatches": "मैचों पर वापस",
+      "noMatchHint": "कोचिंग अंतर्दृष्टि पाने के लिए किसी से मैच करो।",
+      "browsePicks": "चयन ब्राउज़ करो",
+      "inputPlaceholder": "संवाद, संघर्ष, अंतरंगता के बारे में पूछो...",
+      "emptyHint": "अपना पहला सवाल पूछो या सामान्य अंतर्दृष्टि के लिए भेजो टैप करो।",
+      "aiInsight": "AI अंतर्दृष्टि",
+      "template": "टेम्प्लेट"
+    },
+    "timing": {
+      "title": "ब्रह्मांडीय समय",
+      "subtitle": "ग्रहीय विंडो जो तुम्हारे कनेक्शन के लिए सर्वोत्तम क्षणों को उजागर करती हैं",
+      "backToMatches": "मैचों पर वापस",
+      "noMatchHint": "ब्रह्मांडीय समय विंडो देखने के लिए किसी से मैच करो।",
+      "browsePicks": "चयन ब्राउज़ करो",
+      "noWindows": "कोई समय विंडो नहीं मिली।",
+      "qualityExcellent": "उत्कृष्ट",
+      "qualityGood": "अच्छा",
+      "qualityNeutral": "सामान्य",
+      "qualityChallenging": "चुनौतीपूर्ण",
+      "now": "अभी",
+      "inDays": "{{days}} दिन में"
+    },
+    "events": {
+      "title": "ब्रह्मांडीय इवेंट्स",
+      "subtitle": "ब्रह्मांड से संरेखित थीम डेटिंग इवेंट्स",
+      "backToDating": "डेटिंग पर वापस",
+      "tabs": {
+        "upcoming": "आगामी",
+        "myEvents": "मेरे इवेंट्स"
+      },
+      "noUpcoming": "अभी कोई आगामी इवेंट नहीं। जल्द ही फिर देखो!",
+      "noRegistered": "तुमने अभी किसी इवेंट के लिए पंजीकरण नहीं किया।",
+      "live": "लाइव",
+      "maxCount": "अधिकतम {{count}}",
+      "elementOnly": "केवल {{element}} राशियाँ",
+      "registered": "पंजीकृत",
+      "cancelRegistration": "रद्द करें",
+      "register": "पंजीकरण करो",
+      "registering": "पंजीकरण हो रहा है..."
+    },
+    "milestones": {
+      "title": "रिलेशनशिप माइलस्टोन",
+      "subtitle": "सितारों के नीचे अपनी यात्रा का अनुसरण करो",
+      "backToMatches": "मैचों पर वापस",
+      "noMatchHint": "माइलस्टोन ट्रैक करने के लिए किसी से मैच करो।",
+      "browsePicks": "चयन ब्राउज़ करो",
+      "journeyProgress": "यात्रा प्रगति",
+      "mark": "चिह्नित करो"
+    },
+    "datePlanner": {
+      "title": "डेट नाइट प्लानर",
+      "subtitle": "तुम्हारे और तुम्हारे मैच के लिए ब्रह्मांडीय रूप से क्यूरेट किए डेट आइडिया",
+      "backToMatches": "मैचों पर वापस",
+      "noMatchHint": "डेट सुझाव पाने के लिए किसी से मैच करो।",
+      "browsePicks": "चयन ब्राउज़ करो",
+      "shuffleIdeas": "आइडिया शफ़ल करो",
+      "elementEnergy": "{{element}} ऊर्जा"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "ब्रह्मांडीय फ़ीड",
+    "createPost": "पोस्ट बनाओ",
+    "postTypes": {
+      "text": "टेक्स्ट",
+      "photo": "फ़ोटो",
+      "video": "वीडियो",
+      "poll": "पोल"
+    },
+    "composer": {
+      "placeholder": "तुम्हारे ब्रह्मांडीय मन में क्या है?",
+      "uploadImage": "इमेज अपलोड करने के लिए क्लिक करो",
+      "uploadVideo": "वीडियो अपलोड करने के लिए क्लिक करो",
+      "imageSizeLimit": "इमेज 10 MB से कम होनी चाहिए",
+      "videoSizeLimit": "वीडियो 200 MB से कम होना चाहिए",
+      "backgroundStyle": "पृष्ठभूमि शैली",
+      "visibility": "दृश्यता:",
+      "visibilityPublic": "सार्वजनिक",
+      "visibilityFriends": "दोस्त",
+      "postButton": "पोस्ट करो",
+      "posting": "पोस्ट हो रहा है...",
+      "uploadingImage": "इमेज अपलोड हो रही है...",
+      "uploadingVideo": "वीडियो अपलोड हो रहा है...",
+      "addImage": "इमेज जोड़ो",
+      "addVideo": "वीडियो जोड़ो",
+      "editPost": "पोस्ट संपादित करो"
+    },
+    "poll": {
+      "question": "सवाल",
+      "questionPlaceholder": "ब्रह्मांड से पूछो...",
+      "options": "विकल्प",
+      "optionPlaceholder": "विकल्प {{number}}",
+      "addOption": "विकल्प जोड़ो",
+      "duration": "अवधि",
+      "durationOptions": {
+        "1h": "1 घंटा",
+        "6h": "6 घंटे",
+        "12h": "12 घंटे",
+        "1d": "1 दिन",
+        "3d": "3 दिन",
+        "7d": "7 दिन"
+      },
+      "createPoll": "पोल बनाओ",
+      "pollNeedsContent": "पोल को एक सवाल और कम से कम 2 विकल्प चाहिए"
+    },
+    "empty": {
+      "title": "तुम्हारी ब्रह्मांडीय फ़ीड तुम्हारा इंतज़ार कर रही है",
+      "description": "अपने समुदाय के साथ रीडिंग, चार्ट, और ब्रह्मांडीय अंतर्दृष्टि साझा करो।",
+      "createFirst": "अपनी पहली पोस्ट बनाओ"
+    },
+    "loadMore": "और लोड करो",
+    "loading": "लोड हो रहा है..."
+  },
+  "friends": {
+    "title": "दोस्त और कनेक्शन",
+    "friendCount": "{{count}} दोस्त",
+    "pendingCount": "{{count}} लंबित",
+    "inviteFriends": "दोस्तों को आमंत्रित करो",
+    "qrCode": "QR कोड",
+    "tabs": {
+      "friends": "दोस्त",
+      "requests": "अनुरोध",
+      "search": "खोजो"
+    },
+    "suggestionsTitle": "जिन्हें तुम जान सकते हो",
+    "addButton": "+ जोड़ो",
+    "empty": {
+      "noFriends": "अभी कोई दोस्त नहीं",
+      "noFriendsHint": "लोगों को खोजो या अपना Align कोड साझा करो",
+      "findPeople": "लोग खोजो",
+      "noRequests": "कोई लंबित अनुरोध नहीं",
+      "noRequestsHint": "जो दोस्ती अनुरोध तुम भेजोगे या प्राप्त करोगे वे यहाँ दिखेंगे"
+    },
+    "requests": {
+      "wantsToConnect": "जुड़ना चाहता है",
+      "requestSent": "अनुरोध भेजा गया",
+      "accept": "स्वीकार",
+      "decline": "अस्वीकार",
+      "cancel": "रद्द करें"
+    },
+    "search": {
+      "placeholder": "नाम, यूज़रनेम, या Align कोड से खोजो...",
+      "searching": "खोज रहे हैं...",
+      "noResults": "कोई उपयोगकर्ता नहीं मिला",
+      "noResultsHint": "कोई अलग खोज शब्द आज़माओ",
+      "startSearch": "लोगों को खोजो",
+      "minCharsHint": "कम से कम 2 अक्षर लिखो..."
+    },
+    "labels": {
+      "friends": "दोस्त",
+      "pending": "लंबित"
+    },
+    "actions": {
+      "removeFriend": "दोस्त हटाओ",
+      "blockUser": "उपयोगकर्ता ब्लॉक करो",
+      "removeConfirm": "{{name}} को अपने दोस्तों से हटाएँ?",
+      "blockConfirm": "{{name}} को ब्लॉक करें? वे तुम्हें खोज या संपर्क नहीं कर पाएंगे।",
+      "viewProfile": "प्रोफ़ाइल देखो",
+      "message": "संदेश",
+      "viewFullProfile": "पूर्ण प्रोफ़ाइल देखो",
+      "close": "बंद करो",
+      "requestPending": "अनुरोध लंबित",
+      "addFriend": "दोस्त जोड़ो",
+      "acceptRequest": "अनुरोध स्वीकार करो",
+      "confirm": "पुष्टि करो",
+      "ok": "ठीक है"
+    },
+    "alignCode": "Align कोड:"
+  },
+  "messages": {
+    "signInRequired": "संदेशों तक पहुँचने के लिए साइन इन करो",
+    "selectConversation": "एक बातचीत चुनो",
+    "startNewChat": "या जुड़ने के लिए नई चैट शुरू करो",
+    "newChat": "नई चैट",
+    "contextMenu": {
+      "reply": "जवाब",
+      "react": "रिएक्ट",
+      "edit": "संपादित करो",
+      "delete": "हटाओ",
+      "forward": "आगे भेजो",
+      "pin": "पिन करो",
+      "unpin": "अनपिन करो",
+      "copyText": "टेक्स्ट कॉपी करो"
+    },
+    "pickReaction": "एक रिएक्शन चुनो",
+    "messageTypes": {
+      "image": "इमेज",
+      "gif": "GIF",
+      "voiceMessage": "वॉइस मैसेज",
+      "location": "स्थान",
+      "poll": "पोल:"
+    },
+    "composer": {
+      "placeholder": "एक संदेश लिखो...",
+      "send": "भेजो",
+      "attachment": "अटैच करो"
+    }
+  },
+  "notifications": {
+    "title": "सूचनाएँ",
+    "markAllRead": "सभी पढ़ा हुआ चिह्नित करो",
+    "filters": {
+      "all": "सभी",
+      "social": "सामाजिक",
+      "cosmic": "ब्रह्मांडीय",
+      "system": "सिस्टम"
+    },
+    "empty": {
+      "all": "अभी कोई सूचनाएँ नहीं",
+      "allHint": "तुम्हारे ब्रह्मांडीय अलर्ट और सामाजिक अपडेट यहाँ दिखेंगे।",
+      "social": "कोई सामाजिक सूचनाएँ नहीं",
+      "socialHint": "दोस्ती अनुरोध, संदेश, और रिएक्शन यहाँ दिखेंगे।",
+      "cosmic": "कोई ब्रह्मांडीय अलर्ट नहीं",
+      "cosmicHint": "गोचर अलर्ट और ब्रह्मांडीय इवेंट यहाँ दिखेंगे।",
+      "system": "कोई सिस्टम सूचनाएँ नहीं",
+      "systemHint": "सिस्टम अपडेट और घोषणाएँ यहाँ दिखेंगी।"
+    },
+    "time": {
+      "justNow": "अभी",
+      "minutesAgo": "{{count}} मिनट पहले",
+      "hoursAgo": "{{count}} घंटे पहले",
+      "daysAgo": "{{count}} दिन पहले"
+    },
+    "grouped": "{{count}} सूचनाएँ"
+  },
+  "communities": {
+    "title": "समुदाय",
+    "subtitle": "अपना ब्रह्मांडीय जनजाति खोजो",
+    "create": "बनाओ",
+    "tabs": {
+      "discover": "खोजो",
+      "myCommunities": "मेरे समुदाय"
+    },
+    "searchPlaceholder": "समुदाय खोजो...",
+    "filterAll": "सभी",
+    "loading": "समुदाय लोड हो रहे हैं...",
+    "empty": {
+      "title": "अभी कोई समुदाय नहीं",
+      "description": "पहला ब्रह्मांडीय समुदाय बनाने वाले बनो!",
+      "createButton": "समुदाय बनाओ"
+    },
+    "featured": "विशेष",
+    "allCommunities": "सभी समुदाय",
+    "noResultsSearch": "\"{{query}}\" के लिए कोई समुदाय नहीं मिला",
+    "noResultsCategory": "इस श्रेणी में अभी कोई समुदाय नहीं।",
+    "yourCircle": {
+      "title": "तुम्हारा ब्रह्मांडीय मंडल इंतज़ार कर रहा है",
+      "description": "अपना जनजाति खोजने के लिए समुदाय में शामिल हो या बनाओ।",
+      "exploreButton": "समुदाय खोजो"
+    },
+    "memberCount_one": "{{count}} सदस्य",
+    "memberCount_other": "{{count}} सदस्य",
+    "private": "निजी",
+    "join": "शामिल हो",
+    "joined": "शामिल हो गए"
+  },
+  "profile": {
+    "title": "प्रोफ़ाइल",
+    "editProfile": "प्रोफ़ाइल संपादित करो",
+    "shareBigThree": "अपनी बिग थ्री साझा करो",
+    "stats": {
+      "friends": "दोस्त",
+      "posts": "पोस्ट",
+      "followers": "फ़ॉलोअर",
+      "following": "फ़ॉलो किए",
+      "views": "व्यूज़"
+    },
+    "tabs": {
+      "posts": "पोस्ट",
+      "photos": "फ़ोटो",
+      "reels": "रील्स",
+      "about": "परिचय"
+    },
+    "alignCode": "तुम्हारा Align कोड",
+    "alignCodeHint": "अपना कोड साझा करो ताकि दोस्त तुम्हें खोज सकें",
+    "quickLinks": {
+      "gallery": "गैलरी",
+      "safetyTrust": "सुरक्षा और विश्वास",
+      "subscription": "सदस्यता",
+      "referrals": "रेफ़रल",
+      "settings": "सेटिंग्स"
+    },
+    "about": {
+      "bio": "बायो",
+      "bigThree": "बिग थ्री",
+      "starseedOrigin": "स्टारसीड मूल",
+      "humanDesign": "ह्यूमन डिज़ाइन",
+      "joined": "शामिल हुए",
+      "alignCode": "Align कोड"
+    },
+    "empty": {
+      "noPosts": "अभी कोई पोस्ट नहीं",
+      "noPhotos": "अभी कोई फ़ोटो नहीं",
+      "noReels": "अभी कोई रील्स नहीं"
+    },
+    "loadingProfile": "प्रोफ़ाइल लोड हो रही है...",
+    "profileViews": "प्रोफ़ाइल व्यूज़",
+    "noViews": "अभी कोई प्रोफ़ाइल व्यूज़ नहीं",
+    "editPost": "पोस्ट संपादित करो"
+  },
+  "editProfile": {
+    "title": "प्रोफ़ाइल संपादित करो",
+    "displayName": "प्रदर्शित नाम",
+    "bio": "बायो",
+    "bioPlaceholder": "ब्रह्मांड को अपने बारे में बताओ...",
+    "birthData": "जन्म डेटा",
+    "date": "तिथि",
+    "time": "समय",
+    "location": "स्थान",
+    "locationPlaceholder": "शहर, राज्य, या देश खोजो...",
+    "saveChanges": "बदलाव सहेजो",
+    "saving": "सहेजा जा रहा है...",
+    "tapAddCover": "कवर फ़ोटो जोड़ने के लिए टैप करो",
+    "errors": {
+      "saveFailed": "प्रोफ़ाइल सहेजने में विफल",
+      "avatarFailed": "अवतार अपलोड करने में विफल",
+      "coverFailed": "कवर फ़ोटो अपलोड करने में विफल"
+    }
+  },
   "settings": {
     "title": "सेटिंग्स",
     "language": "भाषा",
@@ -216,9 +1042,259 @@
     "houseSystem": "भाव प्रणाली",
     "darkMode": "डार्क मोड",
     "about": "Align के बारे में",
-    "privacy": "गोपनीयता नीति",
+    "privacy": {
+      "title": "गोपनीयता और डेटा",
+      "profileVisibility": "प्रोफ़ाइल दृश्यता",
+      "visibilityOptions": {
+        "public": "सार्वजनिक",
+        "friendsOnly": "केवल दोस्त",
+        "private": "निजी"
+      },
+      "hideAge": "उम्र छिपाओ",
+      "hideExactLocation": "सटीक स्थान छिपाओ",
+      "hideLastActive": "अंतिम सक्रिय छिपाओ",
+      "hideFullBirthChart": "पूर्ण जन्म कुंडली छिपाओ",
+      "incognitoMode": "गुप्त मोड",
+      "blockUnverified": "असत्यापित उपयोगकर्ताओं को ब्लॉक करो",
+      "minimumTrustLevel": "न्यूनतम विश्वास स्तर",
+      "trustLevels": {
+        "any": "कोई भी",
+        "low": "कम",
+        "medium": "मध्यम",
+        "high": "उच्च"
+      },
+      "analyticsEnabled": "विश्लेषिकी",
+      "exportData": "मेरा डेटा निर्यात करो",
+      "exportToast": "तुम्हारे डेटा निर्यात का अनुरोध किया गया है। तुम्हें ईमेल द्वारा प्राप्त होगा।"
+    },
     "terms": "सेवा की शर्तें",
-    "logout": "लॉग आउट"
+    "logout": "लॉग आउट",
+    "account": "खाता",
+    "email": "ईमेल",
+    "name": "नाम",
+    "notSet": "सेट नहीं",
+    "planLabel": "{{plan}} योजना",
+    "upgradeHint": "अधिक सुविधाओं के लिए अपग्रेड करो",
+    "managedVia": "RevenueCat द्वारा प्रबंधित",
+    "manage": "प्रबंधित करो",
+    "upgrade": "अपग्रेड",
+    "subPages": {
+      "chatTheme": "चैट थीम",
+      "notifications": "सूचनाएँ",
+      "privacy": "गोपनीयता",
+      "astrologyPreferences": "ज्योतिष प्राथमिकताएँ",
+      "friends": "दोस्त",
+      "referrals": "रेफ़रल",
+      "subscriptionPlans": "सदस्यता योजनाएँ",
+      "datingIdentity": "डेटिंग पहचान",
+      "relationshipIntent": "रिश्ते का इरादा",
+      "connectionPreferences": "कनेक्शन प्राथमिकताएँ",
+      "identityPrivacy": "पहचान गोपनीयता",
+      "safety": "सुरक्षा",
+      "termsOfService": "सेवा की शर्तें",
+      "communityGuidelines": "सामुदायिक दिशानिर्देश"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "एडमिन",
+      "manageUsers": "उपयोगकर्ता खाते प्रबंधित करो",
+      "contentModeration": "सामग्री मॉडरेशन",
+      "manageCelebrities": "सेलिब्रिटी प्रबंधित करो",
+      "payoutQueue": "भुगतान कतार"
+    },
+    "aboutSection": {
+      "version": "संस्करण",
+      "poweredBy": "संचालित",
+      "contact": "संपर्क"
+    },
+    "signOut": "साइन आउट",
+    "deleteAccount": "खाता हटाओ",
+    "deleteConfirm": {
+      "title": "खाता हटाएँ?",
+      "message": "यह तुम्हारा खाता और सभी संबद्ध डेटा स्थायी रूप से हटा देगा। इसे पूर्ववत नहीं किया जा सकता।",
+      "confirm": "मेरा खाता हटाओ",
+      "cancel": "रद्द करें"
+    },
+    "astrology": {
+      "title": "ज्योतिष प्राथमिकताएँ",
+      "autoSaveHint": "बदलाव स्वचालित रूप से सहेजे जाते हैं और सभी चार्ट गणनाओं पर लागू होते हैं।",
+      "houseSystem": "भाव प्रणाली",
+      "houseSystemHint": "निर्धारित करता है कि तुम्हारी कुंडली के भाव कैसे गणित किए जाते हैं",
+      "houseSystems": {
+        "wholeSign": "संपूर्ण राशि",
+        "placidus": "प्लेसिडस",
+        "koch": "कोक",
+        "campanus": "कैम्पेनस",
+        "regiomontanus": "रेजिओमोंटेनस",
+        "equal": "समान भाव",
+        "porphyry": "पोरफ़ायरी",
+        "alcabitius": "अल्काबिटियस",
+        "topocentric": "टोपोसेंट्रिक",
+        "morinus": "मोरिनस",
+        "meridian": "मेरिडियन"
+      },
+      "zodiacSystem": "राशि प्रणाली",
+      "zodiacSystems": {
+        "tropical": "उष्णकटिबंधीय (पाश्चात्य)",
+        "sidereal": "सायन (वैदिक)"
+      },
+      "languageLevel": "भाषा स्तर",
+      "languageLevelHint": "व्याख्याएँ कितनी तकनीकी होनी चाहिए?",
+      "jargonModes": {
+        "plain": "सरल भाषा",
+        "mixed": "मिश्रित",
+        "technical": "तकनीकी"
+      },
+      "orbTightness": "ऑर्ब कसावट",
+      "orbOptions": {
+        "tight": "कसा हुआ",
+        "standard": "मानक",
+        "wide": "चौड़ा"
+      },
+      "showAsteroids": "क्षुद्रग्रह दिखाओ",
+      "showFixedStars": "स्थिर तारे दिखाओ"
+    },
+    "notificationsPage": {
+      "title": "सूचना प्राथमिकताएँ",
+      "pauseAll": "सभी सूचनाएँ रोको",
+      "social": {
+        "title": "सामाजिक सूचनाएँ",
+        "friendRequests": "दोस्ती अनुरोध",
+        "messages": "संदेश",
+        "reactions": "रिएक्शन",
+        "comments": "टिप्पणियाँ"
+      },
+      "cosmic": {
+        "title": "ब्रह्मांडीय सूचनाएँ",
+        "frequency": "आवृत्ति",
+        "frequencyOptions": {
+          "essential": "आवश्यक",
+          "important": "महत्वपूर्ण",
+          "all": "सभी"
+        },
+        "tone": "लहजा",
+        "toneOptions": {
+          "gentle": "कोमल",
+          "direct": "सीधा",
+          "intense": "तीव्र"
+        },
+        "categories": {
+          "majorTransits": "प्रमुख गोचर",
+          "moonPhases": "चंद्र चरण",
+          "mercuryRetrograde": "बुध वक्री",
+          "loveRelationships": "प्रेम और रिश्ते",
+          "moneyValues": "धन और मूल्य",
+          "careerAmbition": "करियर और महत्वाकांक्षा",
+          "healingGrowth": "उपचार और विकास"
+        },
+        "aspects": {
+          "title": "दृष्टि प्रकार",
+          "conjunctions": "युतियाँ",
+          "oppositions": "विरोध",
+          "squares": "वर्ग",
+          "trines": "त्रिकोण",
+          "sextiles": "षडाष्टक"
+        },
+        "events": {
+          "title": "ब्रह्मांडीय इवेंट",
+          "moonPhases": "चंद्र चरण",
+          "eclipses": "ग्रहण",
+          "retrogrades": "वक्री ग्रह",
+          "ingresses": "राशि प्रवेश"
+        },
+        "minIntensity": "न्यूनतम तीव्रता",
+        "advanceNotice": "अग्रिम सूचना (दिन)"
+      },
+      "galactic": {
+        "title": "गैलेक्टिक सूचनाएँ",
+        "planetaryHours": "ग्रहीय घंटे",
+        "dayRuler": "दिन का शासक",
+        "goldenHour": "स्वर्ण घंटा",
+        "eclipseWatch": "ग्रहण निगरानी",
+        "retrogradeAlerts": "वक्री अलर्ट",
+        "minutesBefore": "मिनट पहले"
+      },
+      "summaries": {
+        "title": "डाइजेस्ट सारांश",
+        "daily": "दैनिक सारांश",
+        "weekly": "साप्ताहिक सारांश"
+      },
+      "quietHours": {
+        "title": "शांत घंटे",
+        "enabled": "शांत घंटे सक्षम करो",
+        "start": "शुरू",
+        "end": "समाप्त",
+        "urgentOverride": "अत्यावश्यक सूचनाओं की अनुमति दो"
+      },
+      "delivery": {
+        "title": "वितरण",
+        "sound": "ध्वनि",
+        "badge": "बैज"
+      },
+      "announcements": "ऐप घोषणाएँ"
+    },
+    "referrals": {
+      "title": "रेफ़रल",
+      "howItWorks": "कैसे काम करता है",
+      "step1": "अपना यूनीक रेफ़रल लिंक दोस्तों के साथ साझा करो",
+      "step2": "जब वे तुम्हारे लिंक से साइन अप करेंगे, तुम दोनों को 5 बोनस रीडिंग मिलेंगी",
+      "step3": "कोई सीमा नहीं — जितने चाहो उतने दोस्तों को आमंत्रित करो!"
+    },
+    "chatTheme": {
+      "title": "चैट थीम",
+      "subtitle": "अपने संदेशों का रूप कस्टमाइज़ करो"
+    },
+    "datingIdentity": {
+      "title": "डेटिंग पहचान",
+      "subtitle": "डेटिंग स्पेस में तुम कैसे पहचाने जाते हो"
+    },
+    "relationshipIntent": {
+      "title": "रिश्ते का इरादा",
+      "subtitle": "तुम कनेक्शन में क्या खोज रहे हो"
+    },
+    "connectionPreferences": {
+      "title": "कनेक्शन प्राथमिकताएँ",
+      "subtitle": "तुम किससे जुड़ना चाहोगे"
+    },
+    "identityPrivacy": {
+      "title": "पहचान गोपनीयता",
+      "subtitle": "नियंत्रित करो कि तुम्हारी पहचान जानकारी कौन देखे"
+    },
+    "safety": {
+      "title": "सुरक्षा",
+      "subtitle": "ब्लॉक, रिपोर्ट, और सुरक्षा सेटिंग्स प्रबंधित करो"
+    },
+    "friends": {
+      "title": "दोस्त सेटिंग्स",
+      "subtitle": "दोस्ती अनुरोध और कनेक्शन प्राथमिकताएँ प्रबंधित करो"
+    },
+    "termsPage": {
+      "title": "सेवा की शर्तें"
+    },
+    "communityGuidelines": {
+      "title": "सामुदायिक दिशानिर्देश"
+    }
   },
   "subscription": {
     "headline": "सटीक ज्योतिष। विशेष रूप से आपके लिए।",
@@ -380,6 +1456,314 @@
     "continue": "सीखना जारी रखें",
     "completed": "पूर्ण"
   },
+  "cosmicAlerts": {
+    "title": "ब्रह्मांडीय मौसम",
+    "subtitle": "तुम्हारा व्यक्तिगत ब्रह्मांडीय पूर्वानुमान",
+    "scanningCosmos": "ब्रह्मांड स्कैन हो रहा है...",
+    "filters": {
+      "all": "सभी",
+      "active": "सक्रिय",
+      "upcoming": "आगामी"
+    },
+    "emptyState": {
+      "title": "कोई प्रमुख गोचर नहीं पाया गया",
+      "filterHint": "अभी कोई {{filter}} अलर्ट नहीं। \"सभी\" पर स्विच करके देखो।",
+      "defaultHint": "तुम्हारी कुंडली के लिए ब्रह्मांड शांत है। आकाश बदलने पर फिर देखो।"
+    },
+    "detail": {
+      "timingWindow": "समय विंडो",
+      "start": "शुरू",
+      "peak": "चरम",
+      "end": "समाप्त",
+      "fullInterpretation": "पूर्ण व्याख्या",
+      "astrologicalDetails": "ज्योतिषीय विवरण",
+      "transit": "गोचर",
+      "natal": "जन्म",
+      "aspect": "दृष्टि",
+      "retrograde": "वक्री",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "actionAdvice": "कार्रवाई सलाह",
+      "viewFullTransits": "पूर्ण गोचर देखो"
+    },
+    "importance": {
+      "critical": "गंभीर",
+      "high": "उच्च",
+      "moderate": "मध्यम",
+      "low": "कम",
+      "minimal": "न्यूनतम"
+    },
+    "categories": {
+      "general": "सामान्य",
+      "love": "प्रेम",
+      "career": "करियर",
+      "growth": "विकास",
+      "challenge": "चुनौती",
+      "spiritual": "आध्यात्मिक",
+      "communication": "संवाद",
+      "energy": "ऊर्जा"
+    },
+    "statusActive": "सक्रिय"
+  },
+  "discover": {
+    "title": "खोजो",
+    "moonPhases": {
+      "newMoon": "अमावस्या",
+      "waxingCrescent": "शुक्ल अर्धचंद्र",
+      "firstQuarter": "प्रथम चतुर्थांश",
+      "waxingGibbous": "शुक्ल गिबस",
+      "fullMoon": "पूर्णिमा",
+      "waningGibbous": "कृष्ण गिबस",
+      "lastQuarter": "अंतिम चतुर्थांश",
+      "waningCrescent": "कृष्ण अर्धचंद्र"
+    }
+  },
+  "worldEcho": {
+    "title": "वर्ल्ड इको",
+    "subtitle": "ब्रह्मांडीय घटनाएँ मानव इतिहास में कैसे गूँजती हैं",
+    "categories": {
+      "political": "राजनीतिक",
+      "economic": "आर्थिक",
+      "cultural": "सांस्कृतिक",
+      "scientific": "वैज्ञानिक",
+      "natural": "प्राकृतिक",
+      "social": "सामाजिक",
+      "technological": "प्रौद्योगिकी",
+      "spiritual": "आध्यात्मिक"
+    },
+    "evidenceLabels": {
+      "strong": "मज़बूत",
+      "moderate": "मध्यम",
+      "speculative": "अनुमानित"
+    },
+    "scoreLabels": {
+      "legendary": "पौराणिक",
+      "major": "प्रमुख",
+      "significant": "महत्वपूर्ण",
+      "notable": "उल्लेखनीय",
+      "minor": "लघु"
+    }
+  },
+  "polls": {
+    "title": "पोल",
+    "filters": {
+      "all": "सभी",
+      "active": "सक्रिय",
+      "ended": "समाप्त",
+      "mine": "मेरे"
+    },
+    "duration": {
+      "hours": "{{count}} घंटे बचे",
+      "days": "{{count}} दिन बचे",
+      "ended": "समाप्त"
+    },
+    "createPoll": "पोल बनाओ",
+    "votes": "{{count}} वोट",
+    "noPollsYet": "अभी कोई पोल नहीं",
+    "noPollsHint": "पहला ब्रह्मांडीय पोल शुरू करने वाले बनो!"
+  },
+  "bookmarks": {
+    "title": "बुकमार्क",
+    "loading": "बुकमार्क लोड हो रहे हैं...",
+    "empty": "अभी कोई बुकमार्क नहीं",
+    "emptyHint": "बाद में पढ़ने के लिए फ़ीड से पोस्ट सेव करें",
+    "postUnavailable": "पोस्ट अब उपलब्ध नहीं है"
+  },
+  "celebrityMatches": {
+    "title": "सेलिब्रिटी मैचेस",
+    "subtitle": "खोजो कि कौन से प्रसिद्ध लोग तुम्हारा ब्रह्मांडीय ब्लूप्रिंट साझा करते हैं",
+    "searchPlaceholder": "सेलिब्रिटी खोजो...",
+    "categories": {
+      "overall": "कुल",
+      "emotional": "भावनात्मक",
+      "passion": "जुनून",
+      "marriage": "विवाह",
+      "karmic": "कार्मिक",
+      "attraction": "आकर्षण",
+      "stability": "स्थिरता",
+      "mental": "मानसिक"
+    },
+    "matchScore": "{{score}}% मैच",
+    "trending": "ट्रेंडिंग",
+    "recentlyAdded": "हाल ही में जोड़े गए",
+    "browseByCategory": "श्रेणी द्वारा ब्राउज़ करें",
+    "clearFilter": "फ़िल्टर साफ़ करें",
+    "yourFavorites": "आपके पसंदीदा",
+    "noResults": "कोई परिणाम नहीं",
+    "tryDifferent": "कोई अलग नाम या वर्तनी आज़माएं",
+    "noCelebrities": "अभी कोई सेलिब्रिटी नहीं",
+    "searchOrCheckBack": "किसी को खोजें या जल्द वापस आएं",
+    "noCelebritiesInCategory": "इस श्रेणी में अभी कोई सेलिब्रिटी नहीं"
+  },
+  "matches": {
+    "title": "संगतता मैचेस",
+    "categories": {
+      "overall": "कुल",
+      "emotional": "भावनात्मक",
+      "passion": "जुनून",
+      "marriage": "विवाह",
+      "karmic": "कार्मिक",
+      "attraction": "आकर्षण",
+      "stability": "स्थिरता",
+      "mental": "मानसिक"
+    }
+  },
+  "cosmicIndex": {
+    "title": "ब्रह्मांडीय सूचकांक",
+    "subtitle": "आज की ब्रह्मांडीय ऊर्जा एक नज़र में"
+  },
+  "creatorStudio": {
+    "title": "क्रिएटर स्टूडियो",
+    "subtitle": "अपनी ब्रह्मांडीय सामग्री बनाओ और प्रबंधित करो"
+  },
+  "qa": {
+    "title": "सवाल-जवाब",
+    "askQuestion": "एक सवाल पूछो",
+    "noQuestions": "अभी कोई सवाल नहीं",
+    "placeholder": "तुम्हारा ब्रह्मांडीय सवाल क्या है?"
+  },
+  "pricing": {
+    "title": "अपनी योजना चुनो",
+    "subtitle": "Align की पूरी शक्ति अनलॉक करो"
+  },
+  "gallery": {
+    "title": "गैलरी",
+    "empty": "अभी कोई फ़ोटो नहीं"
+  },
+  "timeline": {
+    "title": "टाइमलाइन",
+    "empty": "अभी कुछ दिखाने को नहीं"
+  },
+  "reels": {
+    "title": "ब्रह्मांडीय रील्स",
+    "empty": "अभी कोई रील्स नहीं"
+  },
+  "fragments": {
+    "title": "ब्रह्मांडीय फ्रैगमेंट्स",
+    "subtitle": "साझा करने योग्य ब्रह्मांडीय ज्ञान कार्ड"
+  },
+  "cosmicVideo": {
+    "title": "ब्रह्मांडीय वीडियो",
+    "subtitle": "गति में ज्योतिषीय अंतर्दृष्टि"
+  },
+  "groupSynastry": {
+    "title": "ग्रुप सिनेस्ट्री",
+    "subtitle": "देखो कि एक समूह की कुंडलियाँ कैसे परस्पर क्रिया करती हैं"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "जन्म डेटा आवश्यक",
+      "defaultMessage": "इस सुविधा को अनलॉक करने के लिए अपनी जन्म तिथि, समय, और स्थान जोड़ो।",
+      "completeProfile": "प्रोफ़ाइल पूर्ण करो"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "लोड हो रहा है..."
+    },
+    "paywallGate": {
+      "title": "यह रीडिंग अनलॉक करो",
+      "description": "यह सुविधा उपलब्ध है",
+      "plan": "योजना पर",
+      "youreOn": "तुम्हारी वर्तमान",
+      "upgradeButton": "योजनाएँ देखो — {{price}} से",
+      "currentPlan": "वर्तमान योजना: {{plan}}",
+      "whatYouUnlock": "तुम क्या अनलॉक करोगे",
+      "allFeatures": "यह रीडिंग + सभी {{tier}}-स्तर की सुविधाएँ",
+      "aiAstrologer": "वॉइस चैट के साथ AI ज्योतिषी",
+      "fullChart": "दृष्टियों और पैटर्न के साथ पूर्ण जन्म कुंडली"
+    },
+    "shareButton": {
+      "share": "साझा करो",
+      "copied": "कॉपी हो गया!"
+    },
+    "referralCard": {
+      "title": "दोस्तों को आमंत्रित करो",
+      "subtitle": "अपना रेफ़रल लिंक साझा करो और दोनों को बोनस रीडिंग पाओ",
+      "copyLink": "लिंक कॉपी करो",
+      "linkCopied": "लिंक कॉपी हो गया!"
+    },
+    "trialBanner": {
+      "title": "प्रीमियम ट्रायल: {{count}} दिन बचा है",
+      "title_plural": "प्रीमियम ट्रायल: {{count}} दिन बचे हैं",
+      "daysLeft": "{{count}} दिन बचे",
+      "upgrade": "अभी अपग्रेड करो",
+      "expired": "तुम्हारा ट्रायल समाप्त हो गया। प्रीमियम फिर से अनलॉक करने के लिए अपग्रेड करो।",
+      "endsTomorrow": "तुम्हारा ट्रायल कल समाप्त हो रहा है! प्रीमियम सुविधाएँ बनाए रखने के लिए अपग्रेड करो।",
+      "endsSoon": "तुम्हारा ट्रायल {{count}} दिनों में समाप्त हो रहा है! प्रीमियम सुविधाएँ बनाए रखने के लिए अपग्रेड करो।"
+    },
+    "cookieConsent": {
+      "message": "हम तुम्हारे अनुभव को बेहतर बनाने के लिए कुकीज़ का उपयोग करते हैं।",
+      "accept": "स्वीकार करो",
+      "decline": "अस्वीकार करो",
+      "learnMore": "और जानो"
+    },
+    "matchCelebration": {
+      "itsAMatch": "मैच हो गया!",
+      "subtitle": "ब्रह्मांड ने तुम्हें और {{name}} को संरेखित किया है",
+      "sendMessage": "एक संदेश भेजो",
+      "keepBrowsing": "ब्राउज़ करते रहो"
+    },
+    "datingFilterDrawer": {
+      "title": "खोज फ़िल्टर",
+      "ageRange": "आयु सीमा",
+      "maxDistance": "अधिकतम दूरी",
+      "showOnlyVerified": "केवल सत्यापित दिखाओ",
+      "compatibilityMin": "न्यूनतम संगतता",
+      "elements": "तत्व",
+      "applyFilters": "फ़िल्टर लागू करो",
+      "resetFilters": "रीसेट"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% संगत",
+      "like": "लाइक",
+      "pass": "पास",
+      "cosmicRose": "कॉस्मिक रोज़",
+      "likesRemaining": "{{count}} लाइक बचे",
+      "rosesRemaining": "{{count}} रोज़ बचे"
+    },
+    "sidebar": {
+      "home": "होम",
+      "discover": "खोजो",
+      "cosmicFeed": "ब्रह्मांडीय फ़ीड",
+      "worldEcho": "वर्ल्ड इको",
+      "chart": "मेरी कुंडली",
+      "cosmicWeather": "ब्रह्मांडीय मौसम",
+      "readings": "रीडिंग्स",
+      "videoCreator": "वीडियो क्रिएटर",
+      "dating": "डेटिंग",
+      "friends": "दोस्त",
+      "messages": "संदेश",
+      "feed": "फ़ीड",
+      "notifications": "सूचनाएँ",
+      "aiAstrologer": "AI ज्योतिषी",
+      "learn": "सीखो",
+      "pricing": "मूल्य निर्धारण",
+      "communities": "समुदाय",
+      "profile": "प्रोफ़ाइल",
+      "settings": "सेटिंग्स",
+      "menu": "मेन्यू",
+      "close": "बंद करो",
+      "more": "और",
+      "chat": "चैट",
+      "yourProfile": "तुम्हारी प्रोफ़ाइल",
+      "viewProfile": "अपनी प्रोफ़ाइल देखो"
+    },
+    "feedCard": {
+      "like": "लाइक",
+      "comment": "टिप्पणी",
+      "share": "साझा करो",
+      "bookmark": "बुकमार्क",
+      "report": "रिपोर्ट",
+      "deletePost": "पोस्ट हटाओ",
+      "editPost": "पोस्ट संपादित करो"
+    },
+    "commentSheet": {
+      "title": "टिप्पणियाँ",
+      "placeholder": "एक टिप्पणी लिखो...",
+      "send": "भेजो",
+      "noComments": "अभी कोई टिप्पणी नहीं",
+      "beFirst": "पहली टिप्पणी करने वाले बनो!"
+    }
+  },
   "common": {
     "loading": "लोड हो रहा है...",
     "error": "कुछ गलत हो गया",
@@ -389,7 +1773,46 @@
     "delete": "हटाएं",
     "share": "साझा करें",
     "premium": "प्रीमियम",
-    "free": "मुफ़्त"
+    "free": "मुफ़्त",
+    "close": "बंद करें",
+    "confirm": "पुष्टि करें",
+    "ok": "ठीक है",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "back": "वापस",
+    "next": "अगला",
+    "done": "हो गया",
+    "edit": "संपादित करें",
+    "copy": "कॉपी",
+    "copied": "कॉपी हो गया!",
+    "search": "खोजें",
+    "settings": "सेटिंग्स",
+    "seeAll": "सब देखें",
+    "showMore": "और दिखाओ",
+    "showLess": "कम दिखाओ",
+    "comingSoon": "जल्द आ रहा है",
+    "upgrade": "अपग्रेड",
+    "signIn": "साइन इन",
+    "signOut": "साइन आउट",
+    "today": "आज",
+    "yesterday": "कल",
+    "tomorrow": "कल",
+    "all": "सभी",
+    "none": "कोई नहीं",
+    "public": "सार्वजनिक",
+    "private": "निजी",
+    "apply": "लागू करो",
+    "reset": "रीसेट",
+    "remove": "हटाओ",
+    "add": "जोड़ो",
+    "create": "बनाओ",
+    "submit": "जमा करो",
+    "send": "भेजो",
+    "view": "देखो",
+    "download": "डाउनलोड",
+    "upload": "अपलोड",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "tryAgain": "फिर कोशिश करो"
   },
   "zodiac": {
     "aries": "मेष",
@@ -420,7 +1843,11 @@
     "southNode": "केतु",
     "chiron": "काइरॉन",
     "ascendant": "लग्न",
-    "midheaven": "मध्य आकाश"
+    "midheaven": "मध्य आकाश",
+    "vesta": "वेस्ता",
+    "juno": "जूनो",
+    "ceres": "सेरेस",
+    "pallas": "पैलस"
   },
   "aspects": {
     "conjunction": "युति",
@@ -428,6 +1855,83 @@
     "square": "वर्ग",
     "trine": "त्रिकोण",
     "opposition": "विरोध",
-    "quincunx": "क्विनकंक्स"
+    "quincunx": "क्विनकंक्स",
+    "semisextile": "अर्ध-षडाष्टक",
+    "semisquare": "अर्ध-वर्ग",
+    "sesquiquadrate": "सेस्क्विक्वाड्रेट",
+    "quintile": "क्विंटाइल",
+    "biquintile": "बाई-क्विंटाइल"
+  },
+  "elements": {
+    "fire": "अग्नि",
+    "earth": "पृथ्वी",
+    "air": "वायु",
+    "water": "जल"
+  },
+  "modalities": {
+    "cardinal": "चर",
+    "fixed": "स्थिर",
+    "mutable": "द्विस्वभाव"
+  },
+  "houses": {
+    "1": "प्रथम भाव",
+    "2": "द्वितीय भाव",
+    "3": "तृतीय भाव",
+    "4": "चतुर्थ भाव",
+    "5": "पंचम भाव",
+    "6": "षष्ठ भाव",
+    "7": "सप्तम भाव",
+    "8": "अष्टम भाव",
+    "9": "नवम भाव",
+    "10": "दशम भाव",
+    "11": "एकादश भाव",
+    "12": "द्वादश भाव",
+    "labels": {
+      "1": "आत्मा और पहचान",
+      "2": "मूल्य और सम्पत्ति",
+      "3": "संवाद और शिक्षा",
+      "4": "घर और परिवार",
+      "5": "सृजनशीलता और प्रेम",
+      "6": "स्वास्थ्य और सेवा",
+      "7": "साझेदारी",
+      "8": "रूपांतरण और साझा संसाधन",
+      "9": "दर्शन और यात्रा",
+      "10": "करियर और सार्वजनिक छवि",
+      "11": "समुदाय और आकांक्षाएँ",
+      "12": "आध्यात्मिकता और अवचेतन"
+    }
+  },
+  "errors": {
+    "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करो।",
+    "networkError": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जाँचो।",
+    "unauthorized": "इस सुविधा तक पहुँचने के लिए तुम्हें साइन इन करना होगा।",
+    "notFound": "अनुरोधित सामग्री नहीं मिली।",
+    "serverError": "सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करो।",
+    "loadFailed": "डेटा लोड करने में विफल। कृपया पुनः प्रयास करो।",
+    "saveFailed": "बदलाव सहेजने में विफल। कृपया पुनः प्रयास करो।",
+    "uploadFailed": "फ़ाइल अपलोड करने में विफल। कृपया पुनः प्रयास करो।",
+    "fileTooLarge": "फ़ाइल बहुत बड़ी है। कृपया छोटी फ़ाइल चुनो।",
+    "invalidFormat": "अमान्य फ़ाइल प्रारूप।",
+    "permissionDenied": "अनुमति अस्वीकृत।",
+    "sessionExpired": "तुम्हारा सत्र समाप्त हो गया। कृपया फिर से साइन इन करो।",
+    "rateLimited": "बहुत ज़्यादा अनुरोध। कृपया एक क्षण रुको।"
+  },
+  "time": {
+    "justNow": "अभी",
+    "minutesAgo": "{{count}} मिनट पहले",
+    "hoursAgo": "{{count}} घंटे पहले",
+    "daysAgo": "{{count}} दिन पहले",
+    "weeksAgo": "{{count}} हफ़्ते पहले",
+    "monthsAgo": "{{count}} महीने पहले",
+    "yearsAgo": "{{count}} साल पहले",
+    "inMinutes": "{{count}} मिनट में",
+    "inHours": "{{count}} घंटे में",
+    "inDays": "{{count}} दिन में"
+  },
+  "tiers": {
+    "free": "मुफ़्त",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

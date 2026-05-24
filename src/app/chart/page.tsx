@@ -16,6 +16,7 @@ import { getPlacementInterpretation, getAspectInterpretation, getHouseInterpreta
 import { MarkdownText } from '@/components/ui/MarkdownText';
 import { detectAspectPatterns, detectChartShape, interpretPatterns } from '@/lib/interpretations';
 import type { ChartPlanet, ChartAspect } from '@/lib/interpretations';
+import { useTranslation } from 'react-i18next';
 
 const SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -31,9 +32,16 @@ const CHART_LINKS = [
   { href: '/chart/saved', label: 'Saved Charts', icon: Save, desc: 'Friends & family charts' },
 ];
 
-const TABS = ['Positions', 'Aspects', 'Houses', 'Patterns'];
+const TABS = ['Positions', 'Aspects', 'Houses', 'Patterns'] as const;
+const TAB_KEYS: Record<string, string> = {
+  Positions: 'chart.positions',
+  Aspects: 'chart.aspects',
+  Houses: 'chart.houses',
+  Patterns: 'chart.patterns',
+};
 
 export default function ChartPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const { houseSystem } = useAstrologySettings();
   const [activeTab, setActiveTab] = useState('Positions');
@@ -161,7 +169,7 @@ export default function ChartPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">My Chart</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('chart.natal')}</h1>
 
       {/* Chart sub-page links — always visible */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
@@ -181,7 +189,7 @@ export default function ChartPage() {
           <p className="text-sm text-text-tertiary mb-2">Enter your birth details to calculate your natal chart</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Birth Date</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('onboarding.birthDate')}</label>
               <input
                 type="date"
                 value={birthDate}
@@ -191,7 +199,7 @@ export default function ChartPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Birth Time</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('onboarding.birthTime')}</label>
               <input
                 type="time"
                 value={birthTime}
@@ -201,7 +209,7 @@ export default function ChartPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Birth Location</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('onboarding.birthPlace')}</label>
             <CitySearch
               value={birthLocation}
               onChange={handleCitySelect}
@@ -271,7 +279,7 @@ export default function ChartPage() {
                     : 'text-text-muted hover:text-text-secondary'
                 )}
               >
-                {tab}
+                {t(TAB_KEYS[tab])}
                 {activeTab === tab && (
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-primary rounded-full" />
                 )}

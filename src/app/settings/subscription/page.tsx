@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ArrowLeft, Check, Crown, Sparkles, Star, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const plans = [
   {
@@ -19,7 +20,7 @@ const plans = [
       'Full natal chart',
       'Basic transits',
       'Community feed',
-      '3 AI questions/day',
+      '3 AI questions/month',
     ],
   },
   {
@@ -36,7 +37,7 @@ const plans = [
       'Arabic parts',
       'Cosmic journal',
       'Saved charts',
-      '30 AI questions/day',
+      '30 AI questions/month',
     ],
   },
   {
@@ -55,7 +56,7 @@ const plans = [
       'World Echo',
       'Progressed charts',
       'Solar/Lunar returns',
-      '100 AI questions/day',
+      '100 AI questions/month',
     ],
   },
   {
@@ -71,7 +72,7 @@ const plans = [
       'Financial astrology',
       'Athletes engine',
       'Priority support',
-      '300 AI questions/day',
+      '300 AI questions/month',
     ],
   },
 ];
@@ -90,7 +91,7 @@ const faqItems = [
   {
     question: 'Do unused AI questions roll over?',
     answer:
-      'AI question limits reset daily at midnight UTC. Unused questions do not roll over to the next day. This ensures fair resource allocation for all users.',
+      'AI question limits reset monthly. Unused questions do not roll over to the next month. This ensures fair resource allocation for all users.',
   },
   {
     question: 'Is my payment information secure?',
@@ -102,6 +103,7 @@ const faqItems = [
 export default function SubscriptionPage() {
   const { tier } = useSubscriptionStore();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   function handleSelectPlan(planId: string) {
@@ -133,7 +135,7 @@ export default function SubscriptionPage() {
             <ArrowLeft className="w-5 h-5 text-text-primary" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">Subscription</h1>
+            <h1 className="text-2xl font-bold text-text-primary">{t('settings.subscription')}</h1>
             <p className="text-sm text-text-muted">Choose the plan that fits your journey</p>
           </div>
         </div>
@@ -153,7 +155,7 @@ export default function SubscriptionPage() {
                 onClick={handleManageSubscription}
                 className="px-4 py-2 rounded-lg bg-accent-primary text-white font-medium hover:opacity-90 transition-opacity"
               >
-                Manage Subscription
+                {t('subscription.manageButton')}
               </button>
             </div>
           </div>
@@ -176,7 +178,7 @@ export default function SubscriptionPage() {
               >
                 {isHighlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-yellow-500 text-black text-xs font-bold">
-                    MOST POPULAR
+                    {t('subscription.mostPopular')}
                   </div>
                 )}
 
@@ -236,7 +238,7 @@ export default function SubscriptionPage() {
         </div>
 
         <div className="mb-12">
-          <h2 className="text-xl font-bold text-text-primary mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-xl font-bold text-text-primary mb-6">{t('subscription.faqTitle')}</h2>
           <div className="space-y-3">
             {faqItems.map((item, index) => (
               <div

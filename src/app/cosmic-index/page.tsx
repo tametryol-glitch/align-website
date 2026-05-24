@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Search, Sparkles, Users, BarChart3, ChevronRight, Loader2, RefreshCw, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 import {
   SIGNS, INDEXABLE_PLANETS, PLANET_EMOJIS, SIGN_EMOJIS, ELEMENT_FOR_SIGN, BROWSE_PLANETS,
   indexMyPlacements, hasIndexedPlacements, getMyPlacements,
@@ -44,6 +45,7 @@ function ordSuffix(n: number): string {
 // =====================================================================
 
 export default function CosmicIndexPage() {
+  const { t } = useTranslation();
   const user = useAuthStore(s => s.user);
   const userId = user?.id;
 
@@ -105,7 +107,7 @@ export default function CosmicIndexPage() {
     if (!indexed) return;
     setLoadingDiscover(true);
     Promise.all([getMyCosmicTribes(), getPlacementSuggestions()])
-      .then(([t, s]) => { setTribes(t); setSuggestions(s); })
+      .then(([tribesData, sugData]) => { setTribes(tribesData); setSuggestions(sugData); })
       .finally(() => setLoadingDiscover(false));
   }, [indexed]);
 
@@ -144,8 +146,8 @@ export default function CosmicIndexPage() {
   // Auto-search on filter change
   useEffect(() => {
     if (!indexed || tab !== 'explore') return;
-    const t = setTimeout(() => runSearch(true), 350);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => runSearch(true), 350);
+    return () => clearTimeout(timer);
   }, [selectedPlanet, selectedSign, selectedHouse, degreeEnabled, degreeMin, degreeMax, indexed, tab]);
 
   const loadMore = useCallback(() => {
@@ -176,8 +178,8 @@ export default function CosmicIndexPage() {
     await indexMyPlacements();
     setMyPlacements(await getMyPlacements());
     setIndexed(true);
-    const [t, s] = await Promise.all([getMyCosmicTribes(), getPlacementSuggestions()]);
-    setTribes(t); setSuggestions(s);
+    const [tribesData, sugData] = await Promise.all([getMyCosmicTribes(), getPlacementSuggestions()]);
+    setTribes(tribesData); setSuggestions(sugData);
     if (tab === 'explore') runSearch(true);
     setIndexing(false);
   }, [tab, runSearch]);
@@ -236,18 +238,18 @@ export default function CosmicIndexPage() {
           { key: 'discover' as TabMode, label: 'Discover', icon: <Sparkles className="w-4 h-4" /> },
           { key: 'explore' as TabMode, label: 'Explore', icon: <Search className="w-4 h-4" /> },
           { key: 'mychart' as TabMode, label: 'My Chart', icon: <Star className="w-4 h-4" /> },
-        ]).map(t => (
+        ]).map(item => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={item.key}
+            onClick={() => setTab(item.key)}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-all ${
-              tab === t.key
+              tab === item.key
                 ? 'border-accent-primary text-accent-primary'
                 : 'border-transparent text-text-muted hover:text-text-secondary'
             }`}
           >
-            {t.icon}
-            {t.label}
+            {item.icon}
+            {item.label}
           </button>
         ))}
       </div>
@@ -262,9 +264,9 @@ export default function CosmicIndexPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(155,111,246,0.15),transparent_50%)]" />
             <div className="relative">
               <span className="text-3xl text-purple-300/70 block mb-2">✦</span>
-              <h1 className="text-2xl font-extrabold text-white tracking-wide">Cosmic Index</h1>
+              <h1 className="text-2xl font-extrabold text-white tracking-wide">{t('cosmicIndex.title')}</h1>
               <p className="text-purple-300 text-sm font-semibold mt-1 tracking-wide">
-                Discover your astrological tribes
+                {t('cosmicIndex.subtitle')}
               </p>
               <p className="text-gray-400 text-xs mt-3 leading-5 max-w-sm mx-auto">
                 Find people who share your planetary signature —

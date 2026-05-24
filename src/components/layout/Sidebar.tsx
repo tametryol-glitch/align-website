@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
@@ -14,29 +15,25 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/discover', label: 'Discover', icon: Search },
-  { href: '/feed', label: 'Cosmic Feed', icon: Globe },
-  { href: '/world-echo', label: 'World Echo', icon: Compass },
-  { href: '/chart', label: 'My Chart', icon: Star },
-  { href: '/cosmic-alerts', label: 'Cosmic Weather', icon: Zap },
-  { href: '/readings', label: 'Readings', icon: Sparkles },
-  { href: '/cosmic-video', label: 'Video Creator', icon: Video },
-  { href: '/friends', label: 'Friends', icon: Users },
-  { href: '/dating', label: 'Dating', icon: Heart },
-  { href: '/messages', label: 'Messages', icon: Mail },
-  { href: '/notifications', label: 'Notifications', icon: Bell },
-  { href: '/ai', label: 'AI Astrologer', icon: MessageCircle },
-  { href: '/courses', label: 'Learn', icon: BookOpen },
-  { href: '/pricing', label: 'Pricing', icon: CreditCard },
-];
-
-const BOTTOM_ITEMS = [
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
+  { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
+  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe },
+  { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
+  { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star },
+  { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
+  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
+  { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
+  { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
+  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
+  { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },
+  { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
+  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
+  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
+  { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
 ];
 
 export function Sidebar() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { profile } = useAuthStore();
   const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
@@ -52,7 +49,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/');
           const showBadge = href === '/messages' && totalUnread > 0;
           const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
@@ -68,7 +65,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="w-5 h-5" />
-              <span className="flex-1">{label}</span>
+              <span className="flex-1">{t(labelKey)}</span>
               {showBadge && (
                 <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
                   {totalUnread > 99 ? '99+' : totalUnread}
@@ -102,7 +99,7 @@ export function Sidebar() {
               <User className="w-3.5 h-3.5" />
             )}
           </div>
-          {profile?.display_name || 'Profile'}
+          {profile?.display_name || t('components.sidebar.profile')}
         </Link>
         {/* Settings link */}
         <Link
@@ -115,7 +112,7 @@ export function Sidebar() {
           )}
         >
           <Settings className="w-5 h-5" />
-          Settings
+          {t('components.sidebar.settings')}
         </Link>
       </div>
     </aside>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -66,6 +67,7 @@ function getScoreColor(score: number): string {
 }
 
 export default function FragmentDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
   const [fragment, setFragment] = useState<Fragment | null>(null);
@@ -126,7 +128,7 @@ export default function FragmentDetailPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto py-12 text-center">
-        <p className="text-text-muted text-sm">Loading fragment...</p>
+        <p className="text-text-muted text-sm">{t('common.loading')}</p>
       </div>
     );
   }
@@ -134,9 +136,9 @@ export default function FragmentDetailPage() {
   if (!fragment) {
     return (
       <div className="max-w-2xl mx-auto py-12 text-center">
-        <p className="text-text-muted mb-4">Fragment not found</p>
+        <p className="text-text-muted mb-4">{t('errors.notFound')}</p>
         <Link href="/fragments" className="text-accent-primary text-sm hover:underline">
-          Back to Fragments
+          {t('common.back')}
         </Link>
       </div>
     );
@@ -147,7 +149,7 @@ export default function FragmentDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <Link href="/fragments" className="btn-ghost p-2 inline-flex items-center gap-1">
-          <ArrowLeft className="w-4 h-4" /> Fragments
+          <ArrowLeft className="w-4 h-4" /> {t('fragments.title')}
         </Link>
         <button
           onClick={handleRecalculate}
@@ -155,7 +157,7 @@ export default function FragmentDetailPage() {
           className="btn-ghost p-2 inline-flex items-center gap-1 text-sm"
         >
           <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin' : ''}`} />
-          {recalculating ? 'Calculating...' : 'Refresh'}
+          {recalculating ? t('common.loading') : t('common.retry')}
         </button>
       </div>
 

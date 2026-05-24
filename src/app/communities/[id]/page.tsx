@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -51,6 +52,7 @@ function roleBadge(role?: CommunityRole) {
 // ═════════════════════════════════════════════════════════════════════
 
 export default function CommunityDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
 
@@ -287,7 +289,7 @@ export default function CommunityDetailPage() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
         <RefreshCw className="w-6 h-6 text-accent-primary animate-spin mx-auto mb-3" />
-        <p className="text-text-muted text-sm">Loading community...</p>
+        <p className="text-text-muted text-sm">{t('communities.loading')}</p>
       </div>
     );
   }
@@ -295,8 +297,8 @@ export default function CommunityDetailPage() {
   if (!community) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-        <p className="text-text-muted mb-4">Community not found</p>
-        <Link href="/communities" className="text-accent-primary text-sm hover:underline">← Back to Communities</Link>
+        <p className="text-text-muted mb-4">{t('errors.notFound')}</p>
+        <Link href="/communities" className="text-accent-primary text-sm hover:underline">{t('common.back')} {t('communities.title')}</Link>
       </div>
     );
   }
@@ -309,15 +311,15 @@ export default function CommunityDetailPage() {
       {/* Back + Header */}
       <div className="flex items-center justify-between">
         <Link href="/communities" className="btn-ghost p-2 inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-primary">
-          <ArrowLeft className="w-4 h-4" /> Communities
+          <ArrowLeft className="w-4 h-4" /> {t('communities.title')}
         </Link>
         {memberStatus.member ? (
           <button onClick={handleLeave} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-bg-tertiary text-text-muted hover:bg-red-500/10 hover:text-red-400 transition-colors">
-            Leave
+            {t('communities.joined')}
           </button>
         ) : (
           <button onClick={handleJoin} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 transition-colors">
-            Join Community
+            {t('communities.join')}
           </button>
         )}
       </div>
@@ -337,7 +339,7 @@ export default function CommunityDetailPage() {
         {isAdmin && (
           <label className="absolute top-3 right-3 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-lg px-3 py-1.5 cursor-pointer flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera className="w-3.5 h-3.5 text-white" />
-            <span className="text-xs text-white font-medium">{uploadingBanner ? 'Uploading...' : 'Edit Banner'}</span>
+            <span className="text-xs text-white font-medium">{uploadingBanner ? t('common.loading') : t('common.edit')}</span>
             <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} disabled={uploadingBanner} />
           </label>
         )}
@@ -364,7 +366,7 @@ export default function CommunityDetailPage() {
             <p className="text-sm text-text-secondary mt-1">{community.description}</p>
             <div className="flex items-center gap-4 mt-3 flex-wrap">
               <span className="text-xs text-text-muted flex items-center gap-1">
-                <Users className="w-3 h-3" /> {community.member_count} members
+                <Users className="w-3 h-3" /> {t('communities.memberCount_other', { count: community.member_count })}
               </span>
               <span className="text-xs text-text-muted">{community.post_count} posts</span>
               {catInfo && (
@@ -461,7 +463,7 @@ export default function CommunityDetailPage() {
           {showSearch && (
             <input
               type="text"
-              placeholder="Search posts..."
+              placeholder={t('communities.searchPlaceholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 bg-bg-card rounded-xl text-sm text-text-primary placeholder:text-text-muted border border-border-primary focus:border-accent-primary/50 focus:outline-none"
@@ -624,7 +626,7 @@ export default function CommunityDetailPage() {
                         onClick={() => { setShowComposer(false); setNewPostText(''); setNewPostTopic(''); setComposerImage(null); setComposerImagePreview(null); setComposerGifUrl(null); setComposerMediaKind(null); setShowGifPicker(false); setShowEmojiPicker(false); }}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted hover:bg-bg-tertiary"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                       <button
                         onClick={handleCreatePost}
@@ -632,7 +634,7 @@ export default function CommunityDetailPage() {
                         className="px-4 py-1.5 rounded-lg text-xs font-medium bg-accent-primary text-white hover:bg-accent-primary/80 disabled:opacity-50 inline-flex items-center gap-1"
                       >
                         {posting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                        Post
+                        {t('feed.composer.postButton')}
                       </button>
                     </div>
                   </div>
@@ -644,7 +646,7 @@ export default function CommunityDetailPage() {
           {/* Posts Feed */}
           {posts.length === 0 ? (
             <div className="card rounded-2xl p-8 text-center">
-              <p className="text-text-muted text-sm">No posts yet. Be the first to share!</p>
+              <p className="text-text-muted text-sm">{t('profile.empty.noPosts')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -756,9 +758,9 @@ export default function CommunityDetailPage() {
           {/* Recent Members */}
           <div className="card rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-text-primary">Members</h3>
+              <h3 className="text-sm font-semibold text-text-primary">{t('profile.stats.friends')}</h3>
               <button onClick={() => setViewMode('members')} className="text-xs text-accent-primary hover:underline">
-                See all →
+                {t('common.seeAll')} →
               </button>
             </div>
             <div className="grid grid-cols-3 gap-3">
@@ -784,7 +786,7 @@ export default function CommunityDetailPage() {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-bg-secondary rounded-t-2xl sm:rounded-2xl border border-border-primary w-full max-w-lg max-h-[70vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-border-primary">
-              <h3 className="text-sm font-semibold text-text-primary">Comments</h3>
+              <h3 className="text-sm font-semibold text-text-primary">{t('components.commentSheet.title')}</h3>
               <button onClick={() => { setCommentPostId(null); setNewComment(''); }} className="p-1">
                 <X className="w-5 h-5 text-text-muted" />
               </button>
@@ -792,9 +794,9 @@ export default function CommunityDetailPage() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {commentsLoading ? (
-                <p className="text-center text-text-muted text-sm py-4">Loading comments...</p>
+                <p className="text-center text-text-muted text-sm py-4">{t('common.loading')}</p>
               ) : comments.length === 0 ? (
-                <p className="text-center text-text-muted text-sm py-4">No comments yet. Be the first!</p>
+                <p className="text-center text-text-muted text-sm py-4">{t('components.commentSheet.noComments')}</p>
               ) : (
                 comments.map(c => (
                   <div key={c.id} className="flex gap-3">
@@ -821,7 +823,7 @@ export default function CommunityDetailPage() {
               <div className="p-4 border-t border-border-primary flex gap-2">
                 <input
                   type="text"
-                  placeholder="Write a comment..."
+                  placeholder={t('components.commentSheet.placeholder')}
                   value={newComment}
                   onChange={e => setNewComment(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSendComment()}
@@ -844,7 +846,7 @@ export default function CommunityDetailPage() {
       {editingPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-bg-secondary rounded-2xl border border-border-primary w-full max-w-md p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-text-primary">Edit Post</h3>
+            <h3 className="text-sm font-semibold text-text-primary">{t('profile.editPost')}</h3>
             <textarea
               value={editText}
               onChange={e => setEditText(e.target.value)}
@@ -853,8 +855,8 @@ export default function CommunityDetailPage() {
               className="w-full px-3 py-2 bg-bg-tertiary rounded-xl text-sm text-text-primary border-none focus:outline-none resize-none"
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setEditingPost(null)} className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted">Cancel</button>
-              <button onClick={handleSaveEdit} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-accent-primary text-white">Save</button>
+              <button onClick={() => setEditingPost(null)} className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted">{t('common.cancel')}</button>
+              <button onClick={handleSaveEdit} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-accent-primary text-white">{t('common.save')}</button>
             </div>
           </div>
         </div>
@@ -903,6 +905,7 @@ function PostCard({
   onReport: () => void;
   onImageClick?: (url: string) => void;
 }) {
+  const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -915,7 +918,7 @@ function PostCard({
       {/* Pinned banner */}
       {post.is_pinned && (
         <div className="flex items-center gap-1 text-[11px] text-yellow-400 font-medium mb-2">
-          <Pin className="w-3 h-3" /> Pinned
+          <Pin className="w-3 h-3" /> {t('messages.contextMenu.pin')}
         </div>
       )}
 
@@ -950,7 +953,7 @@ function PostCard({
             <div className="absolute right-0 top-8 bg-bg-secondary rounded-xl border border-border-primary shadow-lg py-1 z-10 min-w-[140px]">
               {isAuthor && (
                 <button onClick={() => { onEdit(); setShowMenu(false); }} className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-tertiary flex items-center gap-2">
-                  <Edit3 className="w-3 h-3" /> Edit
+                  <Edit3 className="w-3 h-3" /> {t('common.edit')}
                 </button>
               )}
               {isAdmin && (
@@ -960,7 +963,7 @@ function PostCard({
               )}
               {(isAuthor || isAdmin) && (
                 <button onClick={() => { onDelete(); setShowMenu(false); }} className="w-full px-3 py-2 text-left text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2">
-                  <Trash2 className="w-3 h-3" /> Delete
+                  <Trash2 className="w-3 h-3" /> {t('common.delete')}
                 </button>
               )}
               {!isAuthor && (
@@ -994,7 +997,7 @@ function PostCard({
       </p>
       {isLong && (
         <button onClick={() => setExpanded(!expanded)} className="text-xs text-accent-primary mt-1 hover:underline">
-          {expanded ? 'Show less' : 'Read more'}
+          {expanded ? t('common.showLess') : t('common.showMore')}
         </button>
       )}
 

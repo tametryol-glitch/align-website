@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import {
   getDatingProfile,
@@ -57,6 +58,7 @@ const PREF_FIELDS: { label: string; field: string; options: readonly string[]; m
 ];
 
 export default function DatingProfilePage() {
+  const { t } = useTranslation();
   const { user, profile: authProfile } = useAuthStore();
   const [datingProfile, setDatingProfile] = useState<DatingProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -316,15 +318,15 @@ export default function DatingProfilePage() {
         </Link>
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-2">
           <Heart className="w-6 h-6 text-pink-400" />
-          Dating Profile
+          {t('dating.profile.title')}
         </h1>
       </div>
 
       {/* Enable Dating Toggle */}
       <div className="card p-4 mb-6 flex items-center justify-between">
         <div>
-          <p className="text-text-primary font-medium">Dating Mode</p>
-          <p className="text-text-muted text-sm">Make your profile visible in cosmic discovery</p>
+          <p className="text-text-primary font-medium">{t('dating.profile.datingMode')}</p>
+          <p className="text-text-muted text-sm">{t('dating.profile.datingModeHint')}</p>
         </div>
         <button
           onClick={handleToggleEnabled}
@@ -342,7 +344,7 @@ export default function DatingProfilePage() {
 
       {/* Chart Badge */}
       <div className="card p-4 mb-6">
-        <p className="text-text-secondary text-sm mb-2">Your Cosmic Signature</p>
+        <p className="text-text-secondary text-sm mb-2">{t('dating.profile.cosmicSignature')}</p>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-2xl">{SIGN_GLYPHS[datingProfile?.sun_sign || ''] || ''}</span>
@@ -378,7 +380,7 @@ export default function DatingProfilePage() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-text-primary font-medium flex items-center gap-2">
             <Camera className="w-4 h-4 text-accent-primary" />
-            Photos
+            {t('dating.profile.photos')}
           </p>
           <p className="text-text-muted text-xs">{photos.length}/6</p>
         </div>
@@ -428,11 +430,11 @@ export default function DatingProfilePage() {
 
       {/* Bio */}
       <div className="card p-4 mb-6">
-        <p className="text-text-primary font-medium mb-2">About Me</p>
+        <p className="text-text-primary font-medium mb-2">{t('dating.profile.aboutMe')}</p>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value.slice(0, 500))}
-          placeholder="Tell potential matches about yourself..."
+          placeholder={t('dating.profile.aboutMePlaceholder')}
           className="input w-full h-24 resize-none"
           maxLength={500}
         />
@@ -444,7 +446,7 @@ export default function DatingProfilePage() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-text-primary font-medium flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-accent-primary" />
-            Cosmic Prompts
+            {t('dating.profile.cosmicPrompts')}
           </p>
           <p className="text-text-muted text-xs">{prompts.length}/{MAX_DATING_PROMPTS}</p>
         </div>
@@ -461,7 +463,7 @@ export default function DatingProfilePage() {
               <textarea
                 value={prompt.answer}
                 onChange={(e) => updatePromptAnswer(i, e.target.value)}
-                placeholder="Your answer..."
+                placeholder={t('dating.profile.promptAnswerPlaceholder')}
                 className="w-full bg-transparent text-text-primary text-sm outline-none resize-none h-16"
                 maxLength={MAX_PROMPT_ANSWER_LENGTH}
               />
@@ -490,7 +492,7 @@ export default function DatingProfilePage() {
                 className="flex items-center gap-2 text-accent-primary text-sm hover:text-accent-secondary transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Add a prompt
+                {t('dating.profile.addPrompt')}
               </button>
             )}
           </div>
@@ -501,9 +503,9 @@ export default function DatingProfilePage() {
       <div className="card p-4 mb-6">
         <p className="text-text-primary font-medium mb-2 flex items-center gap-2">
           <Mic className="w-4 h-4 text-accent-primary" />
-          Voice Prompt
+          {t('dating.profile.voicePrompt')}
         </p>
-        <p className="text-text-muted text-xs mb-3">Record a 30-second voice intro so matches can hear you</p>
+        <p className="text-text-muted text-xs mb-3">{t('dating.profile.voicePromptHint')}</p>
         {voiceError && (
           <div className="mb-3 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
             {voiceError}
@@ -512,7 +514,7 @@ export default function DatingProfilePage() {
         {voiceUploading && (
           <div className="mb-3 flex items-center gap-2 text-text-muted text-xs">
             <div className="w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
-            Uploading voice prompt...
+            {t('dating.profile.uploadingVoice')}
           </div>
         )}
         {datingProfile?.voice_prompt_url ? (
@@ -522,7 +524,7 @@ export default function DatingProfilePage() {
               onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
               className="text-sm text-accent-primary hover:text-accent-secondary"
             >
-              Re-record
+              {t('dating.profile.reRecord')}
             </button>
           </div>
         ) : (
@@ -535,7 +537,7 @@ export default function DatingProfilePage() {
             }`}
           >
             {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            {isRecording ? 'Stop Recording' : 'Record Voice Prompt'}
+            {isRecording ? t('dating.profile.stopRecording') : t('dating.profile.recordVoicePrompt')}
           </button>
         )}
       </div>
@@ -544,14 +546,14 @@ export default function DatingProfilePage() {
       <div className="card p-4 mb-6">
         <p className="text-text-primary font-medium mb-2 flex items-center gap-2">
           <Video className="w-4 h-4 text-accent-primary" />
-          Video Intro
+          {t('dating.profile.videoIntro')}
         </p>
-        <p className="text-text-muted text-xs mb-3">Upload a 15-second video to show your personality</p>
+        <p className="text-text-muted text-xs mb-3">{t('dating.profile.videoIntroHint')}</p>
         {datingProfile?.video_intro_url ? (
           <div className="space-y-2">
             <video src={datingProfile.video_intro_url} controls className="w-full max-h-48 rounded-lg" />
             <button onClick={handleVideoUpload} className="text-sm text-accent-primary hover:text-accent-secondary">
-              Replace video
+              {t('dating.profile.replaceVideo')}
             </button>
           </div>
         ) : (
@@ -560,7 +562,7 @@ export default function DatingProfilePage() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-accent-primary/10 text-accent-primary border border-accent-primary/20 hover:bg-accent-primary/20 transition-colors"
           >
             <Video className="w-4 h-4" />
-            Upload Video
+            {t('dating.profile.uploadVideo')}
           </button>
         )}
       </div>
@@ -569,7 +571,7 @@ export default function DatingProfilePage() {
       <div className="card p-4 mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {ageVisible ? <Eye className="w-4 h-4 text-text-secondary" /> : <EyeOff className="w-4 h-4 text-text-muted" />}
-          <span className="text-text-primary text-sm">Show age on profile</span>
+          <span className="text-text-primary text-sm">{t('dating.profile.showAge')}</span>
         </div>
         <button
           onClick={() => setAgeVisible(!ageVisible)}
@@ -590,15 +592,15 @@ export default function DatingProfilePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-blue-400" />
-            <span className="text-text-primary text-sm">Photo Verification</span>
+            <span className="text-text-primary text-sm">{t('dating.profile.photoVerification')}</span>
           </div>
           {datingProfile?.photo_verified ? (
             <span className="flex items-center gap-1 text-green-400 text-sm">
-              <Check className="w-4 h-4" /> Verified
+              <Check className="w-4 h-4" /> {t('dating.profile.verified')}
             </span>
           ) : (
             <Link href="/dating/verify" className="text-accent-primary text-sm hover:text-accent-secondary">
-              Verify now
+              {t('dating.profile.verifyNow')}
             </Link>
           )}
         </div>
@@ -612,7 +614,7 @@ export default function DatingProfilePage() {
         >
           <span className="text-text-primary font-medium flex items-center gap-2">
             <Heart className="w-4 h-4 text-pink-400" />
-            Dating Preferences
+            {t('dating.profile.datingPreferences')}
           </span>
           <ChevronDown className={`w-4 h-4 text-text-muted transition-transform duration-200 ${prefsExpanded ? 'rotate-180' : ''}`} />
         </button>
@@ -662,7 +664,7 @@ export default function DatingProfilePage() {
               ) : (
                 <Check className="w-4 h-4" />
               )}
-              {savingPrefs ? 'Saving...' : 'Save Preferences'}
+              {savingPrefs ? t('common.loading') : t('dating.profile.savePreferences')}
             </button>
           </div>
         )}
@@ -679,7 +681,7 @@ export default function DatingProfilePage() {
         ) : (
           <Check className="w-4 h-4" />
         )}
-        {saving ? 'Saving...' : 'Save Profile'}
+        {saving ? t('dating.profile.saving') : t('dating.profile.saveProfile')}
       </button>
     </div>
   );

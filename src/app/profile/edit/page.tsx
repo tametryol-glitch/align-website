@@ -9,8 +9,10 @@ import Link from 'next/link';
 import { ArrowLeft, Save, Camera, ImageIcon } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
+import { useTranslation } from 'react-i18next';
 
 export default function EditProfilePage() {
+  const { t } = useTranslation();
   const { user, profile, setProfile } = useAuthStore();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -71,7 +73,7 @@ export default function EditProfilePage() {
       }
       router.push('/profile');
     } catch (err: any) {
-      setError(err.message || 'Failed to save profile');
+      setError(err.message || t('editProfile.errors.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -84,10 +86,10 @@ export default function EditProfilePage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/profile" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Profile
+        <ArrowLeft className="w-4 h-4" /> {t('profile.title')}
       </Link>
 
-      <h1 className="text-2xl font-display font-bold text-text-primary mb-6">Edit Profile</h1>
+      <h1 className="text-2xl font-display font-bold text-text-primary mb-6">{t('editProfile.title')}</h1>
 
       {/* Cover photo + Avatar */}
       <div className="relative mb-10">
@@ -97,7 +99,7 @@ export default function EditProfilePage() {
             <Image src={profile.cover_photo_url} alt="Cover photo" fill className="object-cover" unoptimized />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#1E1440] via-[#2D1B69] to-[#1A1035] flex items-center justify-center">
-              <p className="text-text-muted text-xs">Tap to add cover photo</p>
+              <p className="text-text-muted text-xs">{t('editProfile.tapAddCover')}</p>
             </div>
           )}
           <label className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -119,7 +121,7 @@ export default function EditProfilePage() {
                   await supabase.from('profiles').update({ cover_photo_url: coverUrl }).eq('id', user.id);
                   setProfile({ ...profile!, cover_photo_url: coverUrl });
                 } catch (err: any) {
-                  setError(err.message || 'Failed to upload cover photo');
+                  setError(err.message || t('editProfile.errors.coverFailed'));
                 } finally {
                   setSaving(false);
                 }
@@ -156,7 +158,7 @@ export default function EditProfilePage() {
                     await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id);
                     setProfile({ ...profile!, avatar_url: avatarUrl });
                   } catch (err: any) {
-                    setError(err.message || 'Failed to upload avatar');
+                    setError(err.message || t('editProfile.errors.avatarFailed'));
                   } finally {
                     setSaving(false);
                   }
@@ -170,7 +172,7 @@ export default function EditProfilePage() {
       <div className="card space-y-5">
         {/* Display Name */}
         <div>
-          <label className="text-sm font-medium text-text-secondary block mb-1.5">Display Name</label>
+          <label className="text-sm font-medium text-text-secondary block mb-1.5">{t('editProfile.displayName')}</label>
           <input
             type="text"
             value={displayName}
@@ -182,12 +184,12 @@ export default function EditProfilePage() {
 
         {/* Bio */}
         <div>
-          <label className="text-sm font-medium text-text-secondary block mb-1.5">Bio</label>
+          <label className="text-sm font-medium text-text-secondary block mb-1.5">{t('editProfile.bio')}</label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             className="input min-h-[80px] resize-none"
-            placeholder="Tell the cosmos about yourself..."
+            placeholder={t('editProfile.bioPlaceholder')}
             maxLength={300}
           />
           <p className="text-xs text-text-muted text-right mt-1">{bio.length}/300</p>
@@ -195,19 +197,19 @@ export default function EditProfilePage() {
 
         {/* Birth Data */}
         <div className="border-t border-border-primary pt-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Birth Data</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('editProfile.birthData')}</h3>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div>
-              <label className="text-xs text-text-muted block mb-1">Date</label>
+              <label className="text-xs text-text-muted block mb-1">{t('editProfile.date')}</label>
               <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="input" />
             </div>
             <div>
-              <label className="text-xs text-text-muted block mb-1">Time</label>
+              <label className="text-xs text-text-muted block mb-1">{t('editProfile.time')}</label>
               <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="input" />
             </div>
           </div>
           <div className="mb-3">
-            <label className="text-xs text-text-muted block mb-1">Location</label>
+            <label className="text-xs text-text-muted block mb-1">{t('editProfile.location')}</label>
             <CitySearch
               value={birthLocation}
               onChange={(location, lat, lon, tz) => {
@@ -216,7 +218,7 @@ export default function EditProfilePage() {
                 setLongitude(lon);
                 setTimezone(tz);
               }}
-              placeholder="Search city, state, or country..."
+              placeholder={t('editProfile.locationPlaceholder')}
             />
           </div>
         </div>
@@ -228,7 +230,7 @@ export default function EditProfilePage() {
           disabled={saving || !displayName.trim()}
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
-          <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
+          <Save className="w-4 h-4" /> {saving ? t('editProfile.saving') : t('editProfile.saveChanges')}
         </button>
       </div>
     </div>

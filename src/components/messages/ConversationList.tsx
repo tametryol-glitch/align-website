@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
@@ -41,6 +42,7 @@ function ConversationItem({
   onArchive: () => void;
   onLeave: () => void;
 }) {
+  const { t } = useTranslation();
   const hasUnread = conversation.unread_count > 0;
   const iSentLast = conversation.last_message_sender_id === myId;
   const otherRead = conversation.other_last_read_at && conversation.last_message_at
@@ -90,7 +92,7 @@ function ConversationItem({
               <p className={`text-xs truncate ${
                 isTyping ? 'text-accent-primary italic' : hasUnread ? 'text-text-secondary font-medium' : 'text-text-muted'
               }`}>
-                {isTyping ? 'typing...' : (conversation.last_message_preview || 'Start a conversation')}
+                {isTyping ? t('messages.typing', 'typing...') : (conversation.last_message_preview || t('messages.startNewChat', 'Start a conversation'))}
               </p>
             </div>
             {hasUnread && (
@@ -120,16 +122,16 @@ function ConversationItem({
           onClick={(e) => e.stopPropagation()}
         >
           <button onClick={onPin} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <Pin className="w-3.5 h-3.5" /> {conversation.is_pinned ? 'Unpin' : 'Pin'}
+            <Pin className="w-3.5 h-3.5" /> {conversation.is_pinned ? t('messages.contextMenu.unpin') : t('messages.contextMenu.pin')}
           </button>
           <button onClick={onMute} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <BellOff className="w-3.5 h-3.5" /> {conversation.is_muted ? 'Unmute' : 'Mute'}
+            <BellOff className="w-3.5 h-3.5" /> {conversation.is_muted ? t('messages.unmute', 'Unmute') : t('messages.mute', 'Mute')}
           </button>
           <button onClick={onArchive} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary">
-            <Archive className="w-3.5 h-3.5" /> Archive
+            <Archive className="w-3.5 h-3.5" /> {t('messages.archive', 'Archive')}
           </button>
           <button onClick={onLeave} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary">
-            <Trash2 className="w-3.5 h-3.5" /> Leave
+            <Trash2 className="w-3.5 h-3.5" /> {t('messages.leave', 'Leave')}
           </button>
         </div>
       )}
@@ -165,6 +167,7 @@ export function ConversationList({
   onSearchChange, onSelect, onNewChat, onNewGroup, onToggleConvMenu,
   onPin, onMute, onArchive, onLeave,
 }: ConversationListProps) {
+  const { t } = useTranslation();
   return (
     <div className={`w-full sm:w-80 lg:w-96 flex-shrink-0 flex flex-col border-r border-border-primary ${
       activeConversationId ? 'hidden sm:flex' : 'flex'
@@ -174,7 +177,7 @@ export function ConversationList({
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-lg font-display font-bold text-text-primary flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-accent-primary" />
-            Messages
+            {t('components.sidebar.messages')}
             {totalUnread > 0 && (
               <span className="ml-1 px-2 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold">
                 {totalUnread > 99 ? '99+' : totalUnread}
@@ -205,7 +208,7 @@ export function ConversationList({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search conversations..."
+            placeholder={t('messages.searchConversations', 'Search conversations...')}
             className="input pl-9 py-2 text-sm"
           />
         </div>
@@ -218,15 +221,15 @@ export function ConversationList({
         ) : conversations.length === 0 ? (
           <div className="text-center py-12 px-4">
             <MessageCircle className="w-10 h-10 text-text-muted mx-auto mb-3" />
-            <p className="text-sm text-text-muted font-medium">No conversations yet</p>
+            <p className="text-sm text-text-muted font-medium">{t('messages.noConversations', 'No conversations yet')}</p>
             <p className="text-xs text-text-muted mt-1">
-              Start a new chat to connect with friends
+              {t('messages.startNewChat')}
             </p>
             <button
               onClick={onNewChat}
               className="btn-primary text-sm mt-4"
             >
-              Start a Chat
+              {t('messages.startChat', 'Start a Chat')}
             </button>
           </div>
         ) : (

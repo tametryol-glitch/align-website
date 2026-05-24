@@ -8,12 +8,14 @@
  */
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function ReelDeepLinkPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const reelId = params?.id as string;
   const router = useRouter();
@@ -54,10 +56,10 @@ export default function ReelDeepLinkPage() {
         </Link>
         <div className="flex items-center gap-3">
           <Link href="/auth/login" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-            Sign In
+            {t('auth.login')}
           </Link>
           <Link href="/auth/signup" className="bg-accent-primary hover:bg-accent-primary/90 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors">
-            Sign Up Free
+            {t('auth.signup')}
           </Link>
         </div>
       </nav>
@@ -86,13 +88,13 @@ export default function ReelDeepLinkPage() {
               href="/auth/signup"
               className="block w-full bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold py-3 rounded-xl transition-colors text-center"
             >
-              Sign Up Free
+              {t('auth.signup')}
             </Link>
             <Link
               href="/auth/login"
               className="block w-full bg-bg-tertiary hover:bg-bg-elevated text-text-secondary font-medium py-3 rounded-xl transition-colors text-center"
             >
-              Already have an account? Sign In
+              {t('auth.hasAccount')} {t('auth.login')}
             </Link>
             <a
               href="https://play.google.com/store/apps/details?id=com.align.astrology"

@@ -50,7 +50,8 @@
     "agreeToTerms": "Ik ga akkoord met het",
     "privacyPolicy": "Privacybeleid",
     "and": "en",
-    "termsOfService": "Servicevoorwaarden"
+    "termsOfService": "Servicevoorwaarden",
+    "signInToAccess": "Log in om toegang te krijgen tot berichten"
   },
   "onboarding": {
     "title": "Laten we je geboortehoroscoop maken",
@@ -176,6 +177,7 @@
     "firdaria": "Firdaria",
     "zodiacalReleasing": "Zodiacal Releasing",
     "planetaryHours": "Planetaire uren",
+    "moonPhases": "Maanfasen",
     "acg": "Astro-cartografie",
     "fixedStars": "Vaste sterren",
     "arabicParts": "Arabische punten",
@@ -186,12 +188,378 @@
     "galacticForecast": "Galactische voorspelling",
     "midpoints": "Midpuntcalculator",
     "aiAstrologer": "AI-astroloog",
+    "yearAhead": "Mijn Jaar Vooruit",
     "savedCharts": "Opgeslagen horoscopen",
     "cosmicJournal": "Kosmisch dagboek",
-    "moonPhases": "Maanfasen",
-    "yearAhead": "Mijn Jaar Vooruit",
     "soulGifts": "Zielengaven",
-    "soulMemory": "Zielenherinnering"
+    "soulMemory": "Zielenherinnering",
+    "soulAscension": "Zielenopstijging",
+    "dreamOracle": "Droomorakel",
+    "backToReadings": "Terug naar Lezingen",
+    "upgradeToTier": "Upgraden naar {{tier}}",
+    "birthDataRequired": "Voeg eerst je geboortegegevens toe in je profiel.",
+    "birthDataPromptTransits": "Voeg je geboortegegevens toe om je huidige transits te zien.",
+    "birthDataPromptCompatibility": "Voeg je geboortegegevens toe om de compatibiliteit met iemand speciaal te controleren.",
+    "birthDataPromptAlerts": "We hebben je geboortegegevens nodig om gepersonaliseerde kosmische waarschuwingen voor je horoscoop te berekenen.",
+    "transitsPage": {
+      "title": "Jouw Cycli",
+      "subtitle": "{{name}}, dit zijn de cycli die op dit moment door je leven bewegen. Zie ze als seizoenen — elk brengt zijn eigen energie, lessen en kansen.",
+      "loadingLabel": "Je transits worden berekend...",
+      "errorDefault": "Transits konden niet worden geladen",
+      "emptyState": "Geen actieve cycli gevonden. Kom snel terug.",
+      "activeNow": "Nu actief",
+      "storylines": "Verhaallijnen",
+      "impactingYouNow": "Beïnvloedt je nu",
+      "backToCycles": "Terug naar Cycli",
+      "active": "actief",
+      "approaching": "Naderend",
+      "separating": "Scheidend",
+      "cycleMeaning": "Wat deze cyclus voor jou betekent",
+      "howToNavigate": "Hoe dit te navigeren",
+      "technicalDetails": "Technische details",
+      "transit": "Transit",
+      "currentOrb": "Huidige orb",
+      "direction": "Richting",
+      "intensity": "Intensiteit",
+      "separatingDesc": "Scheidend (weg van exact)",
+      "applyingDesc": "Naderend (richting exact)",
+      "intensityMajor": "Groot (buitenplaneet)",
+      "intensityModerate": "Gemiddeld",
+      "intensityMinor": "Klein",
+      "nearExact": "Bijna exact — sterkste invloed",
+      "stronglyActive": "Sterk actief",
+      "buildingMomentum": "Bouwt momentum op",
+      "enteringAwareness": "Komt in bewustzijn",
+      "lessThanADay": "Minder dan een dag over",
+      "daysLeft": "{{count}} dagen over",
+      "weeksLeft": "~{{count}} weken over",
+      "monthsLeft": "~{{count}} maanden over",
+      "yearsLeft": "{{count}}+ jaar",
+      "tapToRead": "Tik om je volledige inzicht te lezen",
+      "failedToLoadStorylines": "Verhaallijnen konden niet worden geladen"
+    },
+    "tarotPage": {
+      "title": "Tarotlezing",
+      "subtitle": "Ontvang begeleiding van de arcana",
+      "chooseSpread": "Kies je spread",
+      "yourQuestion": "Je vraag (optioneel)",
+      "questionPlaceholder": "Welke begeleiding zoek je?",
+      "drawButton": "Trek {{spread}}",
+      "shuffling": "Het kosmische deck wordt geschud...",
+      "tapToReveal": "Tik om te onthullen",
+      "revealAll": "Alle kaarten onthullen",
+      "newReading": "Nieuwe lezing",
+      "getPersonalReading": "Krijg je persoonlijke lezing",
+      "regenerateReading": "Persoonlijke lezing opnieuw genereren",
+      "personalTarotReading": "Persoonlijke tarotlezing",
+      "channeling": "Je horoscoop en kaarten worden gekanaliseerd...",
+      "shareReading": "Lezing delen",
+      "copied": "Gekopieerd!",
+      "failedToGenerate": "Lezing kon niet worden gegenereerd. Probeer het opnieuw.",
+      "reversed": "Omgekeerd",
+      "majorArcana": "Grote Arcana",
+      "minorArcana": "Kleine Arcana",
+      "spreads": {
+        "single": "Enkele kaart",
+        "threeCard": "Drie kaarten",
+        "celticCross": "Keltisch kruis",
+        "relationship": "Relatie",
+        "career": "Carrière"
+      },
+      "positions": {
+        "focus": "Focus",
+        "past": "Verleden",
+        "present": "Heden",
+        "future": "Toekomst",
+        "challenge": "Uitdaging",
+        "foundation": "Fundament",
+        "recentPast": "Recent verleden",
+        "crown": "Kroon",
+        "nearFuture": "Nabije toekomst",
+        "self": "Zelf",
+        "environment": "Omgeving",
+        "hopesFears": "Hoop/Angsten",
+        "outcome": "Uitkomst",
+        "you": "Jij",
+        "partner": "Partner",
+        "connection": "Verbinding",
+        "potential": "Potentieel",
+        "current": "Huidig",
+        "obstacle": "Obstakel",
+        "hiddenFactor": "Verborgen factor",
+        "advice": "Advies"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Droomorakel",
+      "subtitle": "Ontcijfer je dromen door symbolen, emoties, astrologie en de verborgen taal van je onderbewustzijn.",
+      "tabs": {
+        "record": "Opnemen",
+        "journal": "Dagboek",
+        "symbols": "Symbolen",
+        "patterns": "Patronen"
+      },
+      "record": {
+        "dreamTitle": "Droomtitel (optioneel)",
+        "titlePlaceholder": "Wordt automatisch gegenereerd indien leeg",
+        "describeLabel": "Beschrijf je droom *",
+        "describePlaceholder": "Sluit je ogen en beschrijf alles wat je je herinnert...",
+        "mainEmotions": "Hoofdemoties (max 5)",
+        "peopleDream": "Mensen in de droom",
+        "peoplePlaceholder": "bijv. Moeder, ex-partner, vreemde, vriend",
+        "placesDream": "Plaatsen in de droom",
+        "placesPlaceholder": "bijv. ouderlijk huis, oceaan, donker bos",
+        "separateCommas": "Scheid met komma's",
+        "symbolsObjects": "Symbolen / Objecten",
+        "selectSymbols": "Klik om droomsymbolen te selecteren",
+        "selectedCount": "{{count}} geselecteerd",
+        "searchSymbols": "Symbolen zoeken...",
+        "dreamType": "Droomtype",
+        "dreamIntensity": "Droomintensiteit: {{value}}/10",
+        "privacy": "Privacy",
+        "interpretDream": "Mijn droom interpreteren",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Je droominterpretatie",
+        "mainSymbols": "Hoofdsymbolen",
+        "coreMessage": "De kernboodschap",
+        "subconsciousMessage": "Wat je onderbewustzijn je liet zien",
+        "symbolsMatter": "De symbolen die het meest uitmaken",
+        "emotionalUndercurrent": "De emotionele onderstroom",
+        "whatToFace": "Waar deze droom je mee confronteert",
+        "oracleMessage": "Laatste boodschap van het droomorakel",
+        "astroConnection": "Astrologische connectie",
+        "whyNow": "Waarom je dit nu droomde",
+        "watchFor": "Waar je op moet letten",
+        "whatToDo": "Wat nu te doen",
+        "reflectionQuestions": "Reflectievragen",
+        "askAboutDream": "Vraag over deze droom",
+        "visualizeDream": "Mijn droom visualiseren",
+        "comingSoon": "BINNENKORT",
+        "recordAnother": "Nog een droom opnemen"
+      },
+      "journal": {
+        "loadingJournal": "Droomdagboek wordt geladen...",
+        "searchDreams": "Dromen zoeken...",
+        "noDreamsYet": "Nog geen dromen",
+        "noDreamsHint": "Neem je eerste droom op om je dagboek op te bouwen.",
+        "deleteConfirm": "Deze droom verwijderen? Dit kan niet ongedaan worden gemaakt."
+      },
+      "dictionary": {
+        "backToSymbols": "Terug naar symbolen",
+        "generalMeaning": "Algemene betekenis",
+        "psychologicalMeaning": "Psychologische betekenis",
+        "spiritualMeaning": "Spirituele betekenis",
+        "astrologicalMeaning": "Astrologische betekenis",
+        "shadowMeaning": "Schaduwbetekenis",
+        "reflectionQuestion": "Reflectievraag"
+      },
+      "patterns": {
+        "noPatternsYet": "Nog geen patronen",
+        "noPatternsHint": "Neem minstens 3 dromen op om patronen in je droomleven te ontdekken.",
+        "overview": "Overzicht",
+        "totalDreams": "Totaal dromen",
+        "avgIntensity": "Gem. intensiteit",
+        "nightmares": "Nachtmerries",
+        "lucidDreams": "Lucide dromen",
+        "prophetic": "Profetisch",
+        "recurringSymbols": "Meest terugkerende symbolen",
+        "recurringEmotions": "Meest terugkerende emoties",
+        "recurringPeople": "Meest terugkerende mensen",
+        "dreamTypes": "Droomtypes",
+        "dreamsByMoonPhase": "Dromen per maanfase",
+        "moonPhaseHint": "Maanfasepatroontracking wordt geactiveerd zodra je 10+ dromen met gekoppelde astrologiegegevens hebt.",
+        "dreamsByTransit": "Dromen per transit",
+        "transitHint": "Transitcorrelatie zal onthullen welke planetaire aspecten je levendigste of meest profetische dromen activeren."
+      }
+    },
+    "starseedPage": {
+      "title": "Starseed-oorsprong",
+      "subtitle": "Ontdek de kosmische zieloorsprong",
+      "description": "Analyseer je geboortehoroscoop om te ontdekken met welke sterrensystemen je ziel resoneert.",
+      "discoverButton": "Mijn oorsprong ontdekken",
+      "analyzing": "Analyse bezig...",
+      "dominantOrigin": "Dominante oorsprong",
+      "resonancePoints": "Score: {{score}} resonantiepunten"
+    },
+    "numerologyPage": {
+      "title": "Numerologie",
+      "subtitle": "Je kosmische getallen ontcijferd",
+      "master": "Meester"
+    },
+    "angelNumbersPage": {
+      "title": "Engelennummers",
+      "subtitle": "Zoek de betekenis achter de getallen die je ziet",
+      "searchPlaceholder": "Voer een nummer in (bijv. 111, 444)...",
+      "popular": "Populaire nummers",
+      "notFound": "Nummer niet gevonden. Probeer een veelvoorkomend engelennummer.",
+      "copiedToClipboard": "Gekopieerd naar klembord!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Je energetische blauwdruk",
+      "aura": "Aura",
+      "defined": "Gedefinieerd",
+      "undefined": "Ongedefinieerd"
+    },
+    "financialPage": {
+      "title": "Financiële astrologie",
+      "subtitle": "Je kosmische geldblauwdruk",
+      "personalIncome": "Persoonlijk inkomen & waarden",
+      "sharedResources": "Gedeelde middelen & transformatie",
+      "careerStanding": "Carrière & publiek aanzien",
+      "gainsNetworks": "Winsten & netwerken",
+      "strengths": "Sterke punten",
+      "challenges": "Uitdagingen",
+      "monthlyForecast": "Maandelijkse voorspelling",
+      "timingWindows": "Timingvensters",
+      "favorable": "Gunstig",
+      "mixed": "Gemengd",
+      "challenging": "Uitdagend"
+    },
+    "compatibilityPage": {
+      "title": "Compatibiliteitscheck",
+      "subtitle": "Verken de kosmische verbinding tussen twee zielen",
+      "person2Label": "Geboortegegevens van partner",
+      "datePlaceholder": "Geboortedatum",
+      "timePlaceholder": "Geboortetijd",
+      "locationPlaceholder": "Geboortelocatie",
+      "calculateButton": "Compatibiliteit controleren",
+      "calculating": "Compatibiliteit wordt berekend...",
+      "overallScore": "Totaalscore",
+      "soulLevelConnection": "Verbinding op zielsniveau",
+      "deepCompatibility": "Diepe compatibiliteit",
+      "strongPotential": "Sterk potentieel",
+      "moderateMatch": "Gematigde match",
+      "growthRequired": "Groei vereist",
+      "challengingDynamic": "Uitdagende dynamiek",
+      "categories": {
+        "attraction": "Fysieke aantrekkingskracht",
+        "emotional": "Emotionele band",
+        "mental": "Mentale connectie",
+        "stability": "Langetermijnstabiliteit",
+        "karmic": "Karmische link",
+        "harmony": "Harmonie",
+        "magnetic": "Magnetische aantrekking"
+      },
+      "showAspects": "Aspecten tonen",
+      "hideAspects": "Aspecten verbergen"
+    },
+    "cosmicJournalPage": {
+      "title": "Kosmisch dagboek",
+      "subtitle": "Volg je innerlijke wereld naast de kosmos",
+      "newEntry": "Nieuw item",
+      "moodOptions": {
+        "low": "Laag",
+        "meh": "Mwah",
+        "neutral": "Neutraal",
+        "good": "Goed",
+        "great": "Geweldig"
+      },
+      "noEntries": "Nog geen dagboekitems",
+      "noEntriesHint": "Begin met schrijven om je innerlijke wereld naast de kosmos te volgen."
+    },
+    "moonPhasesPage": {
+      "title": "Maanfasen",
+      "tabs": {
+        "today": "Vandaag",
+        "calendar": "Kalender",
+        "forecast": "Voorspelling",
+        "eclipses": "Eclipsen",
+        "birthMoon": "Geboortermaan"
+      },
+      "failedToLoadChart": "Geboortehoroscoop kon niet worden geladen"
+    },
+    "planetaryHoursPage": {
+      "title": "Planetaire uren",
+      "subtitle": "Oude tijdswijsheid voor het moderne leven",
+      "currentHour": "Huidig uur",
+      "daySummary": "Dagoverzicht",
+      "hoursTable": "Urentabel"
+    },
+    "yearAheadPage": {
+      "title": "Mijn Jaar Vooruit",
+      "subtitle": "Je gepersonaliseerde kosmische voorspelling voor het jaar",
+      "generating": "Je komende jaar wordt gegenereerd...",
+      "monthlyOverview": "Maandelijks overzicht",
+      "keyTransits": "Belangrijke transits",
+      "calm": "Rustig",
+      "activeIntensity": "Actief",
+      "intense": "Intens"
+    },
+    "solarReturnPage": {
+      "title": "Zonneretour",
+      "subtitle": "Je verjaardagshoroscoop — de kosmische blauwdruk voor je jaar",
+      "generating": "Je Zonneretour wordt berekend...",
+      "yearTheme": "Jaarthema",
+      "planetsOnAngles": "Planeten op hoeken",
+      "retrogrades": "Retrograden",
+      "monthlyTimeline": "Maandelijkse tijdlijn",
+      "natalComparisons": "Natal vs. Zonneretour",
+      "criticalAspects": "Kritieke aspecten",
+      "yearPattern": "Jaarpatroon"
+    },
+    "galacticClockPage": {
+      "title": "Galactische klok",
+      "subtitle": "Je kosmische timing-interface"
+    },
+    "galacticForecastPage": {
+      "title": "Galactische voorspelling",
+      "subtitle": "Diepe-ruimte-energieën die je horoscoop beïnvloeden"
+    },
+    "midpointsPage": {
+      "title": "Midpuntcalculator",
+      "subtitle": "Ontdek verborgen verbindingen in je horoscoop"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Oud-Perzische planetaire perioden"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistische timingtechniek"
+    },
+    "acgPage": {
+      "title": "Astro-cartografie",
+      "subtitle": "Waar ter wereld je planeten geactiveerd worden"
+    },
+    "fixedStarsPage": {
+      "title": "Vaste sterren",
+      "subtitle": "Stellaire invloeden in je horoscoop"
+    },
+    "arabicPartsPage": {
+      "title": "Arabische punten",
+      "subtitle": "Oude berekende punten in je horoscoop"
+    },
+    "pathwayPage": {
+      "title": "Pad naar succes",
+      "subtitle": "Je kosmische carrière- en levensdoelblauwdruk"
+    },
+    "rectificationPage": {
+      "title": "Geboortetijdrectificatie",
+      "subtitle": "Verfijn je geboortetijd voor nauwkeurigere horoscopen"
+    },
+    "nameAnalysisPage": {
+      "title": "Naamanalyse",
+      "subtitle": "De numerologie van je naam"
+    },
+    "soulGiftsPage": {
+      "title": "Zielengaven",
+      "subtitle": "Ontdek de unieke gaven die in je horoscoop versleuteld zijn"
+    },
+    "soulMemoryPage": {
+      "title": "Zielenherinnering",
+      "subtitle": "Echo's van vorige levens in je geboortehoroscoop"
+    },
+    "soulAscensionPage": {
+      "title": "Zielenopstijging",
+      "description": "Speel je geboortehoroscoop als een reïncarnatie-RPG met karma, doelpaden, zielencontracten, relikwieën en keuzes uit vorige levens."
+    },
+    "chartAdjusterPage": {
+      "title": "Horoscoop aanpassen",
+      "subtitle": "Experimenteer met verschillende geboortetijden"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI-interpretatie",
@@ -205,6 +573,464 @@
       "reputation": "Reputatie"
     }
   },
+  "dating": {
+    "title": "Kosmische Dating",
+    "subtitle": "Jouw samengestelde kosmische keuzes",
+    "introTitle": "Kosmische Dating",
+    "introDescription": "Vind betekenisvolle connecties die in de sterren geschreven staan. Maak je datingprofiel aan om kosmisch compatibele matches te ontdekken.",
+    "createProfileButton": "Maak je datingprofiel",
+    "featurePhotos": "Voeg foto's & een stemintro toe",
+    "featureCompatibility": "Word gematcht op kosmische compatibiliteit",
+    "featureSafety": "Veilige & geverifieerde connecties",
+    "tabs": {
+      "discover": "Ontdek",
+      "likes": "Likes",
+      "matches": "Matches",
+      "myProfile": "Mijn profiel"
+    },
+    "discovery": {
+      "consulting": "De kosmos wordt geraadpleegd...",
+      "noPicksTitle": "Nog geen kosmische keuzes",
+      "allCaughtUpTitle": "Alles bijgewerkt!",
+      "noPicksDescription": "De sterren zijn je matches nog aan het uitlijnen. Zorg dat je datingprofiel compleet is!",
+      "allCaughtUpDescription": "Kom morgen terug voor nieuwe kosmische keuzes. Kwaliteitsconnecties kosten tijd.",
+      "completeProfile": "Profiel voltooien",
+      "dailyLikeLimit": "Je hebt je dagelijkse like-limiet bereikt ({{limit}}). Upgrade voor meer!",
+      "dailyRoseLimit": "Je hebt al je Kosmische Rozen vandaag gebruikt ({{limit}}). Upgrade voor meer!",
+      "genericError": "Er is iets misgegaan. Probeer het opnieuw."
+    },
+    "likes": {
+      "title": "Likes",
+      "receivedCount": "{{count}} mensen zijn geïnteresseerd",
+      "sentCount": "Je hebt {{count}} mensen geliked",
+      "received": "Ontvangen",
+      "sent": "Verzonden",
+      "seeWhoLikes": "Bekijk wie jou leuk vindt",
+      "upgradeHint": "Upgrade naar Light of hoger om profielen te zien",
+      "upgrade": "Upgraden",
+      "noLikesYet": "Nog geen likes",
+      "noSentYet": "Nog geen likes verzonden",
+      "keepFresh": "Houd je profiel actueel en de kosmos levert.",
+      "headToDiscover": "Ga naar Ontdek om je kosmische connecties te vinden.",
+      "mysteryAdmirer": "Geheime bewonderaar",
+      "rose": "Roos",
+      "likeBack": "Terug liken",
+      "matching": "Matchen..."
+    },
+    "matches": {
+      "title": "Jouw Matches",
+      "connectionCount": "{{count}} kosmische connecties",
+      "noMatchesTitle": "Nog geen matches",
+      "noMatchesDescription": "Wanneer jij en iemand anders elkaar leuk vinden, verschijnen jullie hier.",
+      "discoverPeople": "Mensen ontdekken",
+      "cosmicIcebreakers": "Kosmische ijsbrekers",
+      "message": "Bericht",
+      "unmatchConfirm": "{{name}} ontmatchen?",
+      "unmatch": "Ontmatchen",
+      "cancel": "Annuleren",
+      "matchedToday": "Vandaag gematcht",
+      "matchedDaysAgo": "{{days}}d geleden gematcht",
+      "cosmicMatch": "Kosmische Match"
+    },
+    "profile": {
+      "title": "Datingprofiel",
+      "datingMode": "Datingmodus",
+      "datingModeHint": "Maak je profiel zichtbaar in kosmische ontdekking",
+      "cosmicSignature": "Je kosmische signatuur",
+      "sunMoonRising": "Zon / Maan / Ascendant",
+      "photos": "Foto's",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Over mij",
+      "aboutMePlaceholder": "Vertel potentiële matches over jezelf...",
+      "cosmicPrompts": "Kosmische vragen",
+      "addPrompt": "Een vraag toevoegen",
+      "promptAnswerPlaceholder": "Jouw antwoord...",
+      "voicePrompt": "Steminstructie",
+      "voicePromptHint": "Neem een 30-seconden stemintro op om je persoonlijkheid te laten zien",
+      "uploadingVoice": "Steminstructie wordt geüpload...",
+      "reRecord": "Opnieuw opnemen",
+      "stopRecording": "Opname stoppen",
+      "recordVoicePrompt": "Steminstructie opnemen",
+      "videoIntro": "Video-intro",
+      "videoIntroHint": "Upload een 15-seconden video om jezelf voor te stellen",
+      "replaceVideo": "Video vervangen",
+      "uploadVideo": "Video uploaden",
+      "showAge": "Leeftijd tonen op profiel",
+      "photoVerification": "Fotoverificatie",
+      "verified": "Geverifieerd",
+      "verifyNow": "Nu verifiëren",
+      "datingPreferences": "Datingvoorkeuren",
+      "savePreferences": "Voorkeuren opslaan",
+      "saveProfile": "Profiel opslaan",
+      "saving": "Opslaan...",
+      "preferenceFields": {
+        "genderIdentity": "Genderidentiteit",
+        "sexualOrientation": "Seksuele oriëntatie",
+        "interestedIn": "Geïnteresseerd in",
+        "primaryIntent": "Primaire intentie",
+        "ageRange": "Leeftijdsrange",
+        "maxDistance": "Maximale afstand"
+      },
+      "privacyLevels": {
+        "visible": "Zichtbaar",
+        "matchOnly": "Alleen match",
+        "hidden": "Verborgen"
+      }
+    },
+    "verify": {
+      "title": "Fotoverificatie",
+      "subtitle": "Verifieer je identiteit om een vertrouwensbadge op je datingprofiel te verdienen",
+      "backToProfile": "Terug naar profiel",
+      "verifiedTitle": "Geverifieerd!",
+      "verifiedDescription": "Je profiel toont nu een geverifieerde badge.",
+      "pendingTitle": "Wordt beoordeeld",
+      "pendingDescription": "Je selfie wordt beoordeeld. Dit duurt meestal 24-48 uur.",
+      "rejectedTitle": "Niet goedgekeurd",
+      "rejectedHint": "Je kunt het opnieuw proberen met een duidelijkere selfie.",
+      "tryAgain": "Opnieuw proberen",
+      "howItWorks": "Zo werkt het:",
+      "step1": "1. Maak een duidelijke selfie met goede verlichting",
+      "step2": "2. Zorg dat je gezicht volledig zichtbaar is",
+      "step3": "3. We vergelijken het met je profielfoto's",
+      "step4": "4. Na goedkeuring krijg je een geverifieerde badge",
+      "takeSelfie": "Selfie maken",
+      "capture": "Vastleggen",
+      "cancel": "Annuleren",
+      "retake": "Opnieuw maken",
+      "submitForReview": "Indienen voor beoordeling",
+      "submitting": "Wordt ingediend...",
+      "cameraAccessDenied": "Cameratoegang geweigerd. Sta cameratoegang toe in je browserinstellingen.",
+      "submissionFailed": "Indiening mislukt. Probeer het opnieuw.",
+      "networkError": "Netwerkfout. Controleer je verbinding en probeer het opnieuw."
+    },
+    "coach": {
+      "title": "Relatiecoach",
+      "subtitle": "AI-gedreven inzichten op basis van jullie astrologische dynamiek",
+      "premiumFeature": "Premium-functie",
+      "backToMatches": "Terug naar Matches",
+      "noMatchHint": "Match met iemand om coaching-inzichten te krijgen.",
+      "browsePicks": "Keuzes bekijken",
+      "inputPlaceholder": "Vraag over communicatie, conflict, intimiteit...",
+      "emptyHint": "Stel je eerste vraag of tik op Verstuur voor een algemeen inzicht.",
+      "aiInsight": "AI-inzicht",
+      "template": "Sjabloon"
+    },
+    "timing": {
+      "title": "Kosmische Timing",
+      "subtitle": "Planetaire vensters die de beste momenten voor je connecties benadrukken",
+      "backToMatches": "Terug naar Matches",
+      "noMatchHint": "Match met iemand om kosmische timingvensters te zien.",
+      "browsePicks": "Keuzes bekijken",
+      "noWindows": "Geen timingvensters gevonden.",
+      "qualityExcellent": "Uitstekend",
+      "qualityGood": "Goed",
+      "qualityNeutral": "Neutraal",
+      "qualityChallenging": "Uitdagend",
+      "now": "Nu",
+      "inDays": "Over {{days}}d"
+    },
+    "events": {
+      "title": "Kosmische Events",
+      "subtitle": "Thematische dating-events afgestemd op de kosmos",
+      "backToDating": "Terug naar Dating",
+      "tabs": {
+        "upcoming": "Aankomend",
+        "myEvents": "Mijn Events"
+      },
+      "noUpcoming": "Nu geen aankomende events. Kom snel terug!",
+      "noRegistered": "Je hebt je nog voor geen enkel event geregistreerd.",
+      "live": "LIVE",
+      "maxCount": "Max. {{count}}",
+      "elementOnly": "Alleen {{element}}-tekens",
+      "registered": "Geregistreerd",
+      "cancelRegistration": "Annuleren",
+      "register": "Registreren",
+      "registering": "Registreren..."
+    },
+    "milestones": {
+      "title": "Relatiemijlpalen",
+      "subtitle": "Volg jullie reis samen onder de sterren",
+      "backToMatches": "Terug naar Matches",
+      "noMatchHint": "Match met iemand om mijlpalen te volgen.",
+      "browsePicks": "Keuzes bekijken",
+      "journeyProgress": "Reisvoortgang",
+      "mark": "Markeren"
+    },
+    "datePlanner": {
+      "title": "Date Night Planner",
+      "subtitle": "Kosmisch samengestelde date-ideeën voor jou en je match",
+      "backToMatches": "Terug naar Matches",
+      "noMatchHint": "Match met iemand om date-suggesties te krijgen.",
+      "browsePicks": "Keuzes bekijken",
+      "shuffleIdeas": "Ideeën schudden",
+      "elementEnergy": "{{element}}-energie"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Kosmische Feed",
+    "createPost": "Bericht maken",
+    "postTypes": {
+      "text": "Tekst",
+      "photo": "Foto",
+      "video": "Video",
+      "poll": "Poll"
+    },
+    "composer": {
+      "placeholder": "Wat houdt je kosmische geest bezig?",
+      "uploadImage": "Klik om een afbeelding te uploaden",
+      "uploadVideo": "Klik om een video te uploaden",
+      "imageSizeLimit": "Afbeelding moet kleiner zijn dan 10 MB",
+      "videoSizeLimit": "Video moet kleiner zijn dan 200 MB",
+      "backgroundStyle": "Achtergrondstijl",
+      "visibility": "Zichtbaarheid:",
+      "visibilityPublic": "Openbaar",
+      "visibilityFriends": "Vrienden",
+      "postButton": "Plaatsen",
+      "posting": "Plaatsen...",
+      "uploadingImage": "Afbeelding uploaden...",
+      "uploadingVideo": "Video uploaden...",
+      "addImage": "Afbeelding toevoegen",
+      "addVideo": "Video toevoegen",
+      "editPost": "Bericht bewerken"
+    },
+    "poll": {
+      "question": "Vraag",
+      "questionPlaceholder": "Vraag de kosmos...",
+      "options": "Opties",
+      "optionPlaceholder": "Optie {{number}}",
+      "addOption": "Optie toevoegen",
+      "duration": "Duur",
+      "durationOptions": {
+        "1h": "1 uur",
+        "6h": "6 uur",
+        "12h": "12 uur",
+        "1d": "1 dag",
+        "3d": "3 dagen",
+        "7d": "7 dagen"
+      },
+      "createPoll": "Poll maken",
+      "pollNeedsContent": "Poll heeft een vraag en minstens 2 opties nodig"
+    },
+    "empty": {
+      "title": "Je kosmische feed wacht",
+      "description": "Deel lezingen, horoscopen en kosmische inzichten met je community.",
+      "createFirst": "Maak je eerste bericht"
+    },
+    "loadMore": "Meer laden",
+    "loading": "Laden..."
+  },
+  "friends": {
+    "title": "Vrienden & Connecties",
+    "friendCount": "{{count}} vrienden",
+    "pendingCount": "{{count}} in afwachting",
+    "inviteFriends": "Vrienden uitnodigen",
+    "qrCode": "QR-code",
+    "tabs": {
+      "friends": "Vrienden",
+      "requests": "Verzoeken",
+      "search": "Zoeken"
+    },
+    "suggestionsTitle": "Mensen die je misschien kent",
+    "addButton": "+ Toevoegen",
+    "empty": {
+      "noFriends": "Nog geen vrienden",
+      "noFriendsHint": "Zoek naar mensen of deel je Align-code",
+      "findPeople": "Mensen vinden",
+      "noRequests": "Geen openstaande verzoeken",
+      "noRequestsHint": "Vriendschapsverzoeken die je stuurt of ontvangt verschijnen hier"
+    },
+    "requests": {
+      "wantsToConnect": "Wil verbinden",
+      "requestSent": "Verzoek verzonden",
+      "accept": "Accepteren",
+      "decline": "Weigeren",
+      "cancel": "Annuleren"
+    },
+    "search": {
+      "placeholder": "Zoek op naam, gebruikersnaam of Align-code...",
+      "searching": "Zoeken...",
+      "noResults": "Geen gebruikers gevonden",
+      "noResultsHint": "Probeer een andere zoekterm",
+      "startSearch": "Zoek naar mensen",
+      "minCharsHint": "Typ minstens 2 tekens..."
+    },
+    "labels": {
+      "friends": "Vrienden",
+      "pending": "In afwachting"
+    },
+    "actions": {
+      "removeFriend": "Vriend verwijderen",
+      "blockUser": "Gebruiker blokkeren",
+      "removeConfirm": "{{name}} verwijderen uit je vriendenlijst?",
+      "blockConfirm": "{{name}} blokkeren? Ze kunnen je niet meer vinden of contacteren.",
+      "viewProfile": "Profiel bekijken",
+      "message": "Bericht",
+      "viewFullProfile": "Volledig profiel bekijken",
+      "close": "Sluiten",
+      "requestPending": "Verzoek in afwachting",
+      "addFriend": "Vriend toevoegen",
+      "acceptRequest": "Verzoek accepteren",
+      "confirm": "Bevestigen",
+      "ok": "OK"
+    },
+    "alignCode": "Align-code:"
+  },
+  "messages": {
+    "signInRequired": "Log in om toegang te krijgen tot berichten",
+    "selectConversation": "Selecteer een gesprek",
+    "startNewChat": "of start een nieuwe chat om te verbinden",
+    "newChat": "Nieuwe Chat",
+    "contextMenu": {
+      "reply": "Beantwoorden",
+      "react": "Reageren",
+      "edit": "Bewerken",
+      "delete": "Verwijderen",
+      "forward": "Doorsturen",
+      "pin": "Vastpinnen",
+      "unpin": "Losmaken",
+      "copyText": "Tekst kopiëren"
+    },
+    "pickReaction": "Kies een reactie",
+    "messageTypes": {
+      "image": "Afbeelding",
+      "gif": "GIF",
+      "voiceMessage": "Spraakbericht",
+      "location": "Locatie",
+      "poll": "Poll:"
+    },
+    "composer": {
+      "placeholder": "Typ een bericht...",
+      "send": "Versturen",
+      "attachment": "Bijlage"
+    }
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "filters": {
+      "all": "Alle",
+      "social": "Sociaal",
+      "cosmic": "Kosmisch",
+      "system": "Systeem"
+    },
+    "empty": {
+      "all": "Nog geen meldingen",
+      "allHint": "Je kosmische waarschuwingen en sociale updates verschijnen hier.",
+      "social": "Geen sociale meldingen",
+      "socialHint": "Vriendschapsverzoeken, berichten en reacties verschijnen hier.",
+      "cosmic": "Geen kosmische waarschuwingen",
+      "cosmicHint": "Transitwaarschuwingen en kosmische events verschijnen hier.",
+      "system": "Geen systeemmeldingen",
+      "systemHint": "Systeemupdates en aankondigingen verschijnen hier."
+    },
+    "time": {
+      "justNow": "zojuist",
+      "minutesAgo": "{{count}}min geleden",
+      "hoursAgo": "{{count}}u geleden",
+      "daysAgo": "{{count}}d geleden"
+    },
+    "grouped": "{{count}} meldingen"
+  },
+  "communities": {
+    "title": "Communities",
+    "subtitle": "Vind je kosmische stam",
+    "create": "Maken",
+    "tabs": {
+      "discover": "Ontdek",
+      "myCommunities": "Mijn Communities"
+    },
+    "searchPlaceholder": "Communities zoeken...",
+    "filterAll": "Alle",
+    "loading": "Communities laden...",
+    "empty": {
+      "title": "Nog geen communities",
+      "description": "Wees de eerste die een kosmische community maakt!",
+      "createButton": "Community maken"
+    },
+    "featured": "Uitgelicht",
+    "allCommunities": "Alle Communities",
+    "noResultsSearch": "Geen communities gevonden voor \"{{query}}\"",
+    "noResultsCategory": "Nog geen communities in deze categorie.",
+    "yourCircle": {
+      "title": "Je kosmische kring wacht",
+      "description": "Word lid van communities of maak er zelf een om je stam te vinden.",
+      "exploreButton": "Communities verkennen"
+    },
+    "memberCount_one": "{{count}} lid",
+    "memberCount_other": "{{count}} leden",
+    "private": "Privé",
+    "join": "Deelnemen",
+    "joined": "Lid geworden"
+  },
+  "profile": {
+    "title": "Profiel",
+    "editProfile": "Profiel bewerken",
+    "shareBigThree": "Deel je Grote Drie",
+    "stats": {
+      "friends": "Vrienden",
+      "posts": "Berichten",
+      "followers": "Volgers",
+      "following": "Volgend",
+      "views": "Weergaven"
+    },
+    "tabs": {
+      "posts": "Berichten",
+      "photos": "Foto's",
+      "reels": "Reels",
+      "about": "Over"
+    },
+    "alignCode": "Jouw Align-code",
+    "alignCodeHint": "Deel je code zodat vrienden je kunnen vinden",
+    "quickLinks": {
+      "gallery": "Galerij",
+      "safetyTrust": "Veiligheid & Vertrouwen",
+      "subscription": "Abonnement",
+      "referrals": "Verwijzingen",
+      "settings": "Instellingen"
+    },
+    "about": {
+      "bio": "Bio",
+      "bigThree": "Grote Drie",
+      "starseedOrigin": "Starseed-oorsprong",
+      "humanDesign": "Human Design",
+      "joined": "Lid sinds",
+      "alignCode": "Align-code"
+    },
+    "empty": {
+      "noPosts": "Nog geen berichten",
+      "noPhotos": "Nog geen foto's",
+      "noReels": "Nog geen reels"
+    },
+    "loadingProfile": "Profiel laden...",
+    "profileViews": "Profielweergaven",
+    "noViews": "Nog geen profielweergaven",
+    "editPost": "Bericht bewerken"
+  },
+  "editProfile": {
+    "title": "Profiel bewerken",
+    "displayName": "Weergavenaam",
+    "bio": "Bio",
+    "bioPlaceholder": "Vertel de kosmos over jezelf...",
+    "birthData": "Geboortegegevens",
+    "date": "Datum",
+    "time": "Tijd",
+    "location": "Locatie",
+    "locationPlaceholder": "Zoek stad, provincie of land...",
+    "saveChanges": "Wijzigingen opslaan",
+    "saving": "Opslaan...",
+    "tapAddCover": "Tik om omslagfoto toe te voegen",
+    "errors": {
+      "saveFailed": "Profiel opslaan mislukt",
+      "avatarFailed": "Avatar uploaden mislukt",
+      "coverFailed": "Omslagfoto uploaden mislukt"
+    }
+  },
   "settings": {
     "title": "Instellingen",
     "language": "Taal",
@@ -216,9 +1042,259 @@
     "houseSystem": "Huizensysteem",
     "darkMode": "Donkere modus",
     "about": "Over Align",
-    "privacy": "Privacybeleid",
-    "terms": "Gebruiksvoorwaarden",
-    "logout": "Uitloggen"
+    "privacy": {
+      "title": "Privacy & Gegevens",
+      "profileVisibility": "Profielzichtbaarheid",
+      "visibilityOptions": {
+        "public": "Openbaar",
+        "friendsOnly": "Alleen vrienden",
+        "private": "Privé"
+      },
+      "hideAge": "Leeftijd verbergen",
+      "hideExactLocation": "Exacte locatie verbergen",
+      "hideLastActive": "Laatst actief verbergen",
+      "hideFullBirthChart": "Volledige geboortehoroscoop verbergen",
+      "incognitoMode": "Incognitomodus",
+      "blockUnverified": "Niet-geverifieerde gebruikers blokkeren",
+      "minimumTrustLevel": "Minimum vertrouwensniveau",
+      "trustLevels": {
+        "any": "Elk",
+        "low": "Laag",
+        "medium": "Midden",
+        "high": "Hoog"
+      },
+      "analyticsEnabled": "Analyse",
+      "exportData": "Mijn gegevens exporteren",
+      "exportToast": "Je gegevensexport is aangevraagd. Je ontvangt het via e-mail."
+    },
+    "terms": "Servicevoorwaarden",
+    "logout": "Uitloggen",
+    "account": "Account",
+    "email": "E-mail",
+    "name": "Naam",
+    "notSet": "Niet ingesteld",
+    "planLabel": "{{plan}}-pakket",
+    "upgradeHint": "Upgrade voor meer functies",
+    "managedVia": "Beheerd via RevenueCat",
+    "manage": "Beheren",
+    "upgrade": "Upgraden",
+    "subPages": {
+      "chatTheme": "Chatthema",
+      "notifications": "Meldingen",
+      "privacy": "Privacy",
+      "astrologyPreferences": "Astrologievoorkeuren",
+      "friends": "Vrienden",
+      "referrals": "Verwijzingen",
+      "subscriptionPlans": "Abonnementspakketten",
+      "datingIdentity": "Dating-identiteit",
+      "relationshipIntent": "Relatie-intentie",
+      "connectionPreferences": "Connectievoorkeuren",
+      "identityPrivacy": "Identiteitsprivacy",
+      "safety": "Veiligheid",
+      "termsOfService": "Servicevoorwaarden",
+      "communityGuidelines": "Communityrichtlijnen"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Gebruikersaccounts beheren",
+      "contentModeration": "Inhoudsmoderatie",
+      "manageCelebrities": "Beroemdheden beheren",
+      "payoutQueue": "Uitbetalingswachtrij"
+    },
+    "aboutSection": {
+      "version": "Versie",
+      "poweredBy": "Aangedreven door",
+      "contact": "Contact"
+    },
+    "signOut": "Uitloggen",
+    "deleteAccount": "Account verwijderen",
+    "deleteConfirm": {
+      "title": "Account verwijderen?",
+      "message": "Dit verwijdert permanent je account en alle bijbehorende gegevens. Dit kan niet ongedaan worden gemaakt.",
+      "confirm": "Mijn account verwijderen",
+      "cancel": "Annuleren"
+    },
+    "astrology": {
+      "title": "Astrologievoorkeuren",
+      "autoSaveHint": "Wijzigingen worden automatisch opgeslagen en gelden voor alle horoscoopberekeningen.",
+      "houseSystem": "Huizensysteem",
+      "houseSystemHint": "Bepaalt hoe je horoscoophuizen worden berekend",
+      "houseSystems": {
+        "wholeSign": "Heel Teken",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Gelijk Huis",
+        "porphyry": "Porphyrius",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Topocentrisch",
+        "morinus": "Morinus",
+        "meridian": "Meridiaan"
+      },
+      "zodiacSystem": "Dierenriemsysteem",
+      "zodiacSystems": {
+        "tropical": "Tropisch (Westers)",
+        "sidereal": "Siderisch (Vedisch)"
+      },
+      "languageLevel": "Taalniveau",
+      "languageLevelHint": "Hoe technisch moeten interpretaties zijn?",
+      "jargonModes": {
+        "plain": "Eenvoudige taal",
+        "mixed": "Gemengd",
+        "technical": "Technisch"
+      },
+      "orbTightness": "Orb-strakheid",
+      "orbOptions": {
+        "tight": "Strak",
+        "standard": "Standaard",
+        "wide": "Wijd"
+      },
+      "showAsteroids": "Asteroïden tonen",
+      "showFixedStars": "Vaste sterren tonen"
+    },
+    "notificationsPage": {
+      "title": "Meldingsvoorkeuren",
+      "pauseAll": "Alle meldingen pauzeren",
+      "social": {
+        "title": "Sociale meldingen",
+        "friendRequests": "Vriendschapsverzoeken",
+        "messages": "Berichten",
+        "reactions": "Reacties",
+        "comments": "Reacties"
+      },
+      "cosmic": {
+        "title": "Kosmische meldingen",
+        "frequency": "Frequentie",
+        "frequencyOptions": {
+          "essential": "Essentieel",
+          "important": "Belangrijk",
+          "all": "Alle"
+        },
+        "tone": "Toon",
+        "toneOptions": {
+          "gentle": "Zacht",
+          "direct": "Direct",
+          "intense": "Intens"
+        },
+        "categories": {
+          "majorTransits": "Grote transits",
+          "moonPhases": "Maanfasen",
+          "mercuryRetrograde": "Mercurius retrograde",
+          "loveRelationships": "Liefde & Relaties",
+          "moneyValues": "Geld & Waarden",
+          "careerAmbition": "Carrière & Ambitie",
+          "healingGrowth": "Heling & Groei"
+        },
+        "aspects": {
+          "title": "Aspecttypen",
+          "conjunctions": "Conjuncties",
+          "oppositions": "Opposities",
+          "squares": "Vierkanten",
+          "trines": "Driehoeken",
+          "sextiles": "Sextielen"
+        },
+        "events": {
+          "title": "Kosmische Events",
+          "moonPhases": "Maanfasen",
+          "eclipses": "Eclipsen",
+          "retrogrades": "Retrograden",
+          "ingresses": "Ingressen"
+        },
+        "minIntensity": "Minimum intensiteit",
+        "advanceNotice": "Voorafgaande kennisgeving (dagen)"
+      },
+      "galactic": {
+        "title": "Galactische meldingen",
+        "planetaryHours": "Planetaire uren",
+        "dayRuler": "Dagheerser",
+        "goldenHour": "Gouden uur",
+        "eclipseWatch": "Eclipsewatch",
+        "retrogradeAlerts": "Retrograde-waarschuwingen",
+        "minutesBefore": "Minuten vooraf"
+      },
+      "summaries": {
+        "title": "Samenvattingen",
+        "daily": "Dagelijkse samenvatting",
+        "weekly": "Wekelijkse samenvatting"
+      },
+      "quietHours": {
+        "title": "Stille uren",
+        "enabled": "Stille uren inschakelen",
+        "start": "Begin",
+        "end": "Einde",
+        "urgentOverride": "Urgente meldingen toestaan"
+      },
+      "delivery": {
+        "title": "Bezorging",
+        "sound": "Geluid",
+        "badge": "Badge"
+      },
+      "announcements": "App-aankondigingen"
+    },
+    "referrals": {
+      "title": "Verwijzingen",
+      "howItWorks": "Zo werkt het",
+      "step1": "Deel je unieke verwijzingslink met vrienden",
+      "step2": "Wanneer ze zich via jouw link aanmelden, krijgen jullie allebei 5 bonuslezingen",
+      "step3": "Er is geen limiet — nodig zoveel vrienden uit als je wilt!"
+    },
+    "chatTheme": {
+      "title": "Chatthema",
+      "subtitle": "Pas het uiterlijk van je berichten aan"
+    },
+    "datingIdentity": {
+      "title": "Dating-identiteit",
+      "subtitle": "Hoe jij je identificeert in de datingwereld"
+    },
+    "relationshipIntent": {
+      "title": "Relatie-intentie",
+      "subtitle": "Wat je zoekt in connecties"
+    },
+    "connectionPreferences": {
+      "title": "Connectievoorkeuren",
+      "subtitle": "Met wie je wilt verbinden"
+    },
+    "identityPrivacy": {
+      "title": "Identiteitsprivacy",
+      "subtitle": "Bepaal wie je identiteitsinformatie ziet"
+    },
+    "safety": {
+      "title": "Veiligheid",
+      "subtitle": "Beheer blokkades, meldingen en veiligheidsinstellingen"
+    },
+    "friends": {
+      "title": "Vrienden-instellingen",
+      "subtitle": "Beheer vriendschapsverzoek- en connectievoorkeuren"
+    },
+    "termsPage": {
+      "title": "Servicevoorwaarden"
+    },
+    "communityGuidelines": {
+      "title": "Communityrichtlijnen"
+    }
   },
   "subscription": {
     "headline": "Precisie-astrologie. Persoonlijk van jou.",
@@ -228,11 +1304,27 @@
     "restore": "Aankopen herstellen",
     "cancel": "Op elk moment opzegbaar. Geen contracten.",
     "socialProof": "Het plan dat 73% van de leden kiest.",
+    "title": "Kies jouw weg",
+    "subtitle": "Op elk moment opzegbaar. 14 dagen gratis proefperiode op alle pakketten.",
+    "priceFree": "Gratis",
+    "priceCurrency": "$",
+    "loadingPlans": "Abonnementspakketten laden...",
+    "tapToRetry": "Tik om opnieuw te proberen",
+    "tapForDiagnostics": "Tik hier om diagnose te tonen",
+    "comparisonTitle": "Welk pakket past bij jou?",
+    "faqTitle": "Veelgestelde vragen",
+    "footerText": "Abonnementen worden beheerd via App Store / Google Play.",
+    "manageButton": "Abonnement beheren",
+    "termsOfService": "Servicevoorwaarden",
+    "privacyPolicy": "Privacybeleid",
+    "restorePurchase": "Aankoop herstellen",
+    "restoring": "Herstellen...",
     "free": {
       "name": "Gratis",
       "price": "$0",
-      "tagline": "Verken de kosmos zonder kosten.",
+      "tagline": "Verken de kosmos zonder kosten",
       "cta": "Gratis beginnen",
+      "bestFor": "Nieuwkomers die nieuwsgierig zijn naar astrologie en willen verkennen voordat ze zich verbinden.",
       "features": [
         "Basis geboortehoroscoop overzicht",
         "Dagelijkse horoscoop inzichten",
@@ -240,136 +1332,117 @@
         "Enkele tarotkaart trekkingen",
         "Planetaire uren calculator",
         "1 opgeslagen profiel"
-      ],
-      "bestFor": "Voor nieuwsgierige beginners op het gebied van astrologie die willen verkennen voordat ze zich verbinden."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Helderheid begint hier.",
+      "tagline": "Je dagelijkse kosmische metgezel",
       "cta": "Begin met Light",
+      "bestFor": "Casual ontdekkers die dagelijkse kosmische begeleiding en basisinzichten in hun horoscoop willen.",
       "features": [
-        "Dagelijkse persoonlijke inzichten",
-        "Geboortehoroscoop met kernposities",
-        "10 AI-aangedreven lezingen per maand",
+        "Alles in Gratis",
+        "Volledige dagelijkse persoonlijke inzichten",
+        "30 AI-aangedreven lezingen per maand",
         "Realtime transitwaarschuwingen",
-        "Dagelijkse tarotkaart begeleiding",
-        "Planetaire uren calculator",
         "Numerologie levenspad momentopname",
         "1 opgeslagen geboorteprofiel"
-      ],
-      "bestFor": "Voor casual ontdekkers die dagelijkse kosmische begeleiding en basisinzichten in hun horoscoop willen."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Waar diepgang helderheid ontmoet.",
+      "tagline": "Ontgrendel je volledige kosmische blauwdruk",
+      "badge": "MEEST POPULAIR",
       "cta": "Premium kiezen — Beste waarde",
+      "bestFor": "Enthousiastelingen die klaar zijn om diep te duiken in hun volledige astrologische blauwdruk en relaties.",
       "features": [
         "Alles in Light",
-        "50 AI diepgaande lezingen per maand",
-        "Volledige horoscoop — aspecten, patronen, vaste sterren",
-        "Geprogresseerde en zonne-/maanretour horoscopen",
-        "Synastrie en composiet compatibiliteit",
-        "Starseed-oorsprong en Human Design",
-        "Alle 6 tarot spreads met AI",
-        "Financieel astrologie rapport",
-        "Eenvoudige taal modus — geen jargon",
-        "5 opgeslagen geboorteprofielen",
+        "Volledige horoscoop met aspecten & patronen",
+        "100 AI-lezingen per maand",
+        "Alle horoscoop-typen (geprogresseerd, retour, synastrie)",
+        "Compatibiliteit & composiet-horoscopen",
+        "Starseed, numerologie, Human Design",
+        "Tarot spreads (alle 5 typen)",
+        "Jargon-schakelaar (eenvoudige taalmodus)",
+        "5 opgeslagen profielen",
         "Alle astrologiecursussen"
-      ],
-      "badge": "MEEST POPULAIR",
-      "bestFor": "Voor enthousiastelingen die klaar zijn om diep in hun volledige astrologische blauwdruk en relaties te duiken."
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Het volledige beeld. Niets achtergehouden.",
-      "cta": "Pro-toegang ontgrendelen",
+      "tagline": "Voor de serieuze beoefenaar",
+      "cta": "Ga Pro",
+      "bestFor": "Professionele astrologen en toegewijde beoefenaars die alle beschikbare tools nodig hebben.",
       "features": [
         "Alles in Premium",
-        "200 AI-lezingen per maand",
-        "Astro-cartografie wereldkaarten",
-        "Firdaria en Zodiacal Releasing",
-        "Arabische punten en vaste sterren diepteanalyses",
-        "Prioriteits-AI — snellere verwerking",
-        "Onbeperkt opgeslagen profielen en lezingen",
-        "Exporteerbare professionele rapporten",
+        "300 AI-lezingen per maand",
+        "Financieel astrologie rapport",
+        "Astro-cartografie (ACG)",
+        "Firdaria & Zodiacal Releasing",
+        "Vaste sterren & Arabische punten",
+        "Prioriteits-AI verwerking",
         "Vroege toegang tot nieuwe functies",
-        "AI in 20 talen"
-      ],
-      "bestFor": "Voor professionele astrologen en toegewijde beoefenaars die alle beschikbare tools nodig hebben."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Kan link niet openen.",
-      "diagnostics": "Diagnose",
-      "errorTitle": "Fout",
-      "manageError": "Kan abonnementsbeheer niet openen. Open de Play Store of App Store handmatig.",
-      "noActiveBody": "Geen eerder abonnement gevonden voor dit account.",
-      "noActiveTitle": "Geen actief abonnement",
-      "ok": "OK",
-      "planNotFoundBody": "Dit pakket is tijdelijk niet beschikbaar in de winkel. Probeer het later opnieuw.",
-      "planNotFoundTitle": "Pakket niet gevonden",
-      "purchaseFailedDefault": "Er is iets misgegaan.",
-      "purchaseFailedLong": "Er is iets misgegaan tijdens het verwerken van je aankoop. Probeer het opnieuw.",
-      "purchaseFailedTitle": "Aankoop mislukt",
-      "restoreError": "Herstellen van aankopen mislukt",
-      "restoredBody": "Je abonnement is succesvol hersteld.",
-      "restoredTitle": "Hersteld!",
-      "retry": "Opnieuw proberen",
-      "subscriptionsUnavailableHint": "Zorg ervoor dat je bent ingelogd in de Play Store en probeer het opnieuw.",
-      "subscriptionsUnavailableTitle": "Abonnementen niet beschikbaar",
-      "unavailableBody": "Dit pakket is op dit moment niet beschikbaar.",
-      "unavailableTitle": "Niet beschikbaar",
-      "unsupportedBody": "Abonnementsbeheer is alleen beschikbaar op iOS en Android.",
-      "unsupportedTitle": "Niet ondersteund",
-      "welcomeBody": "Je abonnement is actief. Geniet van je uitgebreide kosmische gereedschap.",
-      "welcomeTitle": "Welkom aan boord!"
-    },
-    "comparisonTitle": "Welk pakket is geschikt voor jou?",
-    "errors": {
-      "apiKeyPlaceholder": "De abonnementsdienst is niet ingesteld voor deze build. (Intern: RevenueCat API-sleutel is een plaatshouder.)",
-      "connectionFailed": "Kan de abonnementsdienst niet bereiken. Controleer je verbinding en probeer het opnieuw.",
-      "loadFailed": "Kan abonnementspakketten niet laden. Probeer het later opnieuw.",
-      "loadFailedConnection": "Kan abonnementspakketten niet laden. Controleer je verbinding.",
-      "nativeModuleMissing": "De abonnementsdienst is niet beschikbaar in deze build. (Intern: native module niet gekoppeld.)",
-      "noApiKey": "De abonnementsdienst is niet ingesteld voor dit platform. (Intern: API-sleutel ontbreekt.)",
-      "noOfferings": "Er zijn nog geen actieve abonnementspakketten gepubliceerd. Probeer het later opnieuw.",
-      "noPackages": "Abonnementspakketten worden gefinaliseerd in de winkel. Probeer het later opnieuw.",
-      "stillStarting": "De abonnementsdienst is nog aan het opstarten. Wacht een moment en probeer het opnieuw."
+        "Onbeperkt opgeslagen profielen",
+        "Rapporten exporteren & delen"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "AI-leescredits worden elke factureringscyclus gereset en worden niet doorgerold. Dit houdt onze AI-infrastructuur snel en responsief voor alle gebruikers.",
-        "question": "Worden AI-lezingen doorgerold?"
-      },
-      "security": {
-        "answer": "Absoluut. Alle persoonlijke en geboortegegevens zijn versleuteld zowel in rust als tijdens overdracht. We verkopen je gegevens nooit, en je kunt op elk moment je account en alle bijbehorende gegevens verwijderen.",
-        "question": "Zijn mijn geboortegegevens veilig?"
-      },
       "switch": {
-        "answer": "Ja! Je kunt je pakket op elk moment upgraden of downgraden. Bij upgraden krijg je direct toegang tot nieuwe functies. Bij downgraden blijven je huidige voordelen geldig tot het einde van je factureringscyclus.",
-        "question": "Kan ik op elk moment van pakket wisselen?"
+        "question": "Kan ik op elk moment van pakket wisselen?",
+        "answer": "Ja! Je kunt je pakket op elk moment upgraden of downgraden. Bij upgraden krijg je direct toegang tot nieuwe functies. Bij downgraden blijven je huidige voordelen geldig tot het einde van je factureringscyclus."
       },
       "trial": {
-        "answer": "Je 14-daagse gratis proefperiode geeft je volledige toegang tot het gekozen pakket. Je wordt pas in rekening gebracht na afloop van de proefperiode, en je kunt op elk moment daarvoor zonder verplichting opzeggen.",
-        "question": "Wat gebeurt er na de gratis proefperiode?"
+        "question": "Wat gebeurt er na de gratis proefperiode?",
+        "answer": "Je 14-daagse gratis proefperiode geeft je volledige toegang tot het gekozen pakket. Je wordt pas in rekening gebracht na afloop van de proefperiode, en je kunt op elk moment daarvoor zonder verplichting opzeggen."
+      },
+      "rollover": {
+        "question": "Worden AI-lezingen doorgerold?",
+        "answer": "AI-leescredits worden elke factureringscyclus gereset en worden niet doorgerold. Dit houdt onze AI-infrastructuur snel en responsief voor alle gebruikers."
+      },
+      "security": {
+        "question": "Zijn mijn geboortegegevens veilig?",
+        "answer": "Absoluut. Alle persoonlijke en geboortegegevens zijn versleuteld zowel in rust als tijdens overdracht. We verkopen je gegevens nooit, en je kunt op elk moment je account en alle bijbehorende gegevens verwijderen."
       }
     },
-    "faqTitle": "Veelgestelde vragen",
-    "footerText": "Abonnementen worden beheerd via App Store / Google Play.",
-    "loadingPlans": "Abonnementspakketten laden...",
-    "manageButton": "Abonnement beheren",
-    "priceCurrency": "$",
-    "priceFree": "Gratis",
-    "privacyPolicy": "Privacybeleid",
-    "restorePurchase": "Aankoop herstellen",
-    "restoring": "Herstellen...",
-    "subtitle": "Op elk moment opzegbaar. 14 dagen gratis proefperiode op alle pakketten.",
-    "tapForDiagnostics": "Tik hier om diagnose te tonen",
-    "tapToRetry": "Tik om opnieuw te proberen",
-    "termsOfService": "Servicevoorwaarden",
-    "title": "Kies jouw weg"
+    "alerts": {
+      "unavailableTitle": "Niet beschikbaar",
+      "unavailableBody": "Dit pakket is op dit moment niet beschikbaar.",
+      "purchaseFailedTitle": "Aankoop mislukt",
+      "purchaseFailedDefault": "Er is iets misgegaan.",
+      "purchaseFailedLong": "Er is iets misgegaan tijdens het verwerken van je aankoop. Probeer het opnieuw.",
+      "welcomeTitle": "Welkom aan boord!",
+      "welcomeBody": "Je abonnement is actief. Geniet van je uitgebreide kosmische gereedschap.",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "Abonnementen niet beschikbaar",
+      "subscriptionsUnavailableHint": "Zorg ervoor dat je bent ingelogd in de Play Store en probeer het opnieuw.",
+      "retry": "Opnieuw proberen",
+      "diagnostics": "Diagnose",
+      "planNotFoundTitle": "Pakket niet gevonden",
+      "planNotFoundBody": "Dit pakket is tijdelijk niet beschikbaar in de winkel. Probeer het later opnieuw.",
+      "errorTitle": "Fout",
+      "couldNotOpenLink": "Kan link niet openen.",
+      "unsupportedTitle": "Niet ondersteund",
+      "unsupportedBody": "Abonnementsbeheer is alleen beschikbaar op iOS en Android.",
+      "manageError": "Kan abonnementsbeheer niet openen. Open de Play Store of App Store handmatig.",
+      "restoredTitle": "Hersteld!",
+      "restoredBody": "Je abonnement is succesvol hersteld.",
+      "noActiveTitle": "Geen actief abonnement",
+      "noActiveBody": "Geen eerder abonnement gevonden voor dit account.",
+      "restoreError": "Herstellen van aankopen mislukt"
+    },
+    "errors": {
+      "loadFailed": "Kan abonnementspakketten niet laden. Probeer het later opnieuw.",
+      "loadFailedConnection": "Kan abonnementspakketten niet laden. Controleer je verbinding.",
+      "apiKeyPlaceholder": "De abonnementsdienst is niet ingesteld voor deze build. (Intern: RevenueCat API-sleutel is een plaatshouder.)",
+      "noApiKey": "De abonnementsdienst is niet ingesteld voor dit platform. (Intern: API-sleutel ontbreekt.)",
+      "nativeModuleMissing": "De abonnementsdienst is niet beschikbaar in deze build. (Intern: native module niet gekoppeld.)",
+      "noOfferings": "Er zijn nog geen actieve abonnementspakketten gepubliceerd. Probeer het later opnieuw.",
+      "noPackages": "Abonnementspakketten worden gefinaliseerd in de winkel. Probeer het later opnieuw.",
+      "connectionFailed": "Kan de abonnementsdienst niet bereiken. Controleer je verbinding en probeer het opnieuw.",
+      "stillStarting": "De abonnementsdienst is nog aan het opstarten. Wacht een moment en probeer het opnieuw."
+    }
   },
   "courses": {
     "title": "Astrologie leren",
@@ -380,6 +1453,314 @@
     "continue": "Verder leren",
     "completed": "Afgerond"
   },
+  "cosmicAlerts": {
+    "title": "Kosmisch Weer",
+    "subtitle": "Je gepersonaliseerde kosmische voorspelling",
+    "scanningCosmos": "De kosmos wordt gescand...",
+    "filters": {
+      "all": "Alle",
+      "active": "Actief",
+      "upcoming": "Aankomend"
+    },
+    "emptyState": {
+      "title": "Geen grote transits gedetecteerd",
+      "filterHint": "Geen {{filter}} waarschuwingen op dit moment. Probeer naar \"Alle\" te schakelen.",
+      "defaultHint": "De kosmos is rustig voor je horoscoop. Kom terug als de hemel verschuift."
+    },
+    "detail": {
+      "timingWindow": "Timingvenster",
+      "start": "Begin",
+      "peak": "Piek",
+      "end": "Einde",
+      "fullInterpretation": "Volledige interpretatie",
+      "astrologicalDetails": "Astrologische details",
+      "transit": "Transit",
+      "natal": "Natal",
+      "aspect": "Aspect",
+      "retrograde": "Retrograde",
+      "yes": "Ja",
+      "no": "Nee",
+      "actionAdvice": "Actieadvies",
+      "viewFullTransits": "Volledige transits bekijken"
+    },
+    "importance": {
+      "critical": "Kritiek",
+      "high": "Hoog",
+      "moderate": "Gemiddeld",
+      "low": "Laag",
+      "minimal": "Minimaal"
+    },
+    "categories": {
+      "general": "Algemeen",
+      "love": "Liefde",
+      "career": "Carrière",
+      "growth": "Groei",
+      "challenge": "Uitdaging",
+      "spiritual": "Spiritueel",
+      "communication": "Communicatie",
+      "energy": "Energie"
+    },
+    "statusActive": "ACTIEF"
+  },
+  "discover": {
+    "title": "Ontdek",
+    "moonPhases": {
+      "newMoon": "Nieuwe Maan",
+      "waxingCrescent": "Wassende Sikkel",
+      "firstQuarter": "Eerste Kwartier",
+      "waxingGibbous": "Wassende Maan",
+      "fullMoon": "Volle Maan",
+      "waningGibbous": "Afnemende Maan",
+      "lastQuarter": "Laatste Kwartier",
+      "waningCrescent": "Afnemende Sikkel"
+    }
+  },
+  "worldEcho": {
+    "title": "Wereld Echo",
+    "subtitle": "Hoe kosmische events door de menselijke geschiedenis golven",
+    "categories": {
+      "political": "Politiek",
+      "economic": "Economisch",
+      "cultural": "Cultureel",
+      "scientific": "Wetenschappelijk",
+      "natural": "Natuurlijk",
+      "social": "Sociaal",
+      "technological": "Technologisch",
+      "spiritual": "Spiritueel"
+    },
+    "evidenceLabels": {
+      "strong": "Sterk",
+      "moderate": "Gemiddeld",
+      "speculative": "Speculatief"
+    },
+    "scoreLabels": {
+      "legendary": "Legendarisch",
+      "major": "Groot",
+      "significant": "Significant",
+      "notable": "Opmerkelijk",
+      "minor": "Klein"
+    }
+  },
+  "polls": {
+    "title": "Polls",
+    "filters": {
+      "all": "Alle",
+      "active": "Actief",
+      "ended": "Beëindigd",
+      "mine": "Mijn"
+    },
+    "duration": {
+      "hours": "{{count}}u over",
+      "days": "{{count}}d over",
+      "ended": "Beëindigd"
+    },
+    "createPoll": "Poll maken",
+    "votes": "{{count}} stemmen",
+    "noPollsYet": "Nog geen polls",
+    "noPollsHint": "Wees de eerste die een kosmische poll start!"
+  },
+  "bookmarks": {
+    "title": "Bladwijzers",
+    "loading": "Bladwijzers laden...",
+    "empty": "Nog geen bladwijzers",
+    "emptyHint": "Bewaar berichten uit de feed om later te lezen",
+    "postUnavailable": "Bericht niet meer beschikbaar"
+  },
+  "celebrityMatches": {
+    "title": "Beroemdhedenmatches",
+    "subtitle": "Ontdek welke beroemde mensen jouw kosmische blauwdruk delen",
+    "searchPlaceholder": "Beroemdheden zoeken...",
+    "categories": {
+      "overall": "Totaal",
+      "emotional": "Emotioneel",
+      "passion": "Passie",
+      "marriage": "Huwelijk",
+      "karmic": "Karmisch",
+      "attraction": "Aantrekking",
+      "stability": "Stabiliteit",
+      "mental": "Mentaal"
+    },
+    "matchScore": "{{score}}% match",
+    "trending": "Trending",
+    "recentlyAdded": "Recent toegevoegd",
+    "browseByCategory": "Blader op categorie",
+    "clearFilter": "Filter wissen",
+    "yourFavorites": "Jouw favorieten",
+    "noResults": "Geen resultaten",
+    "tryDifferent": "Probeer een andere naam of spelling",
+    "noCelebrities": "Nog geen beroemdheden",
+    "searchOrCheckBack": "Zoek naar iemand of kom later terug",
+    "noCelebritiesInCategory": "Nog geen beroemdheden in deze categorie"
+  },
+  "matches": {
+    "title": "Compatibiliteitsmatches",
+    "categories": {
+      "overall": "Totaal",
+      "emotional": "Emotioneel",
+      "passion": "Passie",
+      "marriage": "Huwelijk",
+      "karmic": "Karmisch",
+      "attraction": "Aantrekking",
+      "stability": "Stabiliteit",
+      "mental": "Mentaal"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Kosmische Index",
+    "subtitle": "De kosmische energie van vandaag in één oogopslag"
+  },
+  "creatorStudio": {
+    "title": "Creator Studio",
+    "subtitle": "Maak en beheer je kosmische content"
+  },
+  "qa": {
+    "title": "V&A",
+    "askQuestion": "Stel een vraag",
+    "noQuestions": "Nog geen vragen",
+    "placeholder": "Wat is je kosmische vraag?"
+  },
+  "pricing": {
+    "title": "Kies je pakket",
+    "subtitle": "Ontgrendel de volledige kracht van Align"
+  },
+  "gallery": {
+    "title": "Galerij",
+    "empty": "Nog geen foto's"
+  },
+  "timeline": {
+    "title": "Tijdlijn",
+    "empty": "Nog niets te tonen"
+  },
+  "reels": {
+    "title": "Kosmische Reels",
+    "empty": "Nog geen reels"
+  },
+  "fragments": {
+    "title": "Kosmische Fragmenten",
+    "subtitle": "Deelbare kosmische wijsheidskaarten"
+  },
+  "cosmicVideo": {
+    "title": "Kosmische Video",
+    "subtitle": "Astrologische inzichten in beweging"
+  },
+  "groupSynastry": {
+    "title": "Groepssynastrie",
+    "subtitle": "Bekijk hoe de horoscopen van een groep op elkaar inwerken"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "defaultMessage": "Voeg je geboortegegevens toe voor gepersonaliseerde lezingen.",
+      "completeProfile": "Profiel voltooien",
+      "title": "Geboortegegevens vereist"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Laden..."
+    },
+    "paywallGate": {
+      "title": "Deze functie ontgrendelen",
+      "description": "Upgrade je pakket om toegang te krijgen tot deze lezing.",
+      "upgradeButton": "Pakketten bekijken",
+      "currentPlan": "Huidig pakket: {{plan}}",
+      "aiAstrologer": "AI Astroloog met spraakchat",
+      "allFeatures": "Deze lezing + alle {{tier}}-functies",
+      "fullChart": "Volledige geboortehoroscoop met aspecten & patronen",
+      "plan": "abonnement",
+      "whatYouUnlock": "Wat je ontgrendelt",
+      "youreOn": "je hebt"
+    },
+    "shareButton": {
+      "share": "Delen",
+      "copied": "Gekopieerd!"
+    },
+    "referralCard": {
+      "title": "Vrienden uitnodigen",
+      "subtitle": "Deel je verwijzingslink en ontvang beide bonuslezingen",
+      "copyLink": "Link kopiëren",
+      "linkCopied": "Link gekopieerd!"
+    },
+    "trialBanner": {
+      "title": "Proefperiode actief",
+      "daysLeft": "{{count}} dagen over",
+      "upgrade": "Nu upgraden",
+      "endsSoon": "Je proefperiode eindigt over {{count}} dagen! Upgrade om Premium-functies te behouden.",
+      "endsTomorrow": "Je proefperiode eindigt morgen! Upgrade om Premium-functies te behouden.",
+      "expired": "Je proefperiode is afgelopen. Upgrade om Premium opnieuw te ontgrendelen.",
+      "title_plural": "Premium Proefperiode: {{count}} dagen resterend"
+    },
+    "cookieConsent": {
+      "message": "We gebruiken cookies om je ervaring te verbeteren.",
+      "accept": "Accepteren",
+      "decline": "Weigeren",
+      "learnMore": "Meer informatie"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Het is een Match!",
+      "subtitle": "De kosmos heeft jou en {{name}} samengebracht",
+      "sendMessage": "Stuur een bericht",
+      "keepBrowsing": "Verder bladeren"
+    },
+    "datingFilterDrawer": {
+      "title": "Ontdekkingsfilters",
+      "ageRange": "Leeftijdsrange",
+      "maxDistance": "Maximale afstand",
+      "showOnlyVerified": "Alleen geverifieerd tonen",
+      "compatibilityMin": "Minimale compatibiliteit",
+      "elements": "Elementen",
+      "applyFilters": "Filters toepassen",
+      "resetFilters": "Reset"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% compatibel",
+      "like": "Like",
+      "pass": "Overslaan",
+      "cosmicRose": "Kosmische Roos",
+      "likesRemaining": "{{count}} likes over",
+      "rosesRemaining": "{{count}} rozen over"
+    },
+    "sidebar": {
+      "home": "Home",
+      "discover": "Ontdek",
+      "chart": "Horoscoop",
+      "readings": "Lezingen",
+      "dating": "Dating",
+      "friends": "Vrienden",
+      "messages": "Berichten",
+      "feed": "Feed",
+      "communities": "Communities",
+      "notifications": "Meldingen",
+      "profile": "Profiel",
+      "settings": "Instellingen",
+      "aiAstrologer": "AI Astroloog",
+      "chat": "Chat",
+      "close": "Sluiten",
+      "cosmicFeed": "Kosmische Feed",
+      "cosmicWeather": "Kosmisch Weer",
+      "learn": "Leren",
+      "menu": "Menu",
+      "more": "Meer",
+      "pricing": "Prijzen",
+      "videoCreator": "Video Maker",
+      "viewProfile": "Bekijk je profiel",
+      "worldEcho": "Wereld Echo",
+      "yourProfile": "Jouw Profiel"
+    },
+    "feedCard": {
+      "like": "Leuk",
+      "comment": "Reactie",
+      "share": "Delen",
+      "bookmark": "Bladwijzer",
+      "report": "Melden",
+      "deletePost": "Bericht verwijderen",
+      "editPost": "Bericht bewerken"
+    },
+    "commentSheet": {
+      "title": "Reacties",
+      "placeholder": "Schrijf een reactie...",
+      "send": "Versturen",
+      "noComments": "Nog geen reacties",
+      "beFirst": "Wees de eerste die reageert!"
+    }
+  },
   "common": {
     "loading": "Laden...",
     "error": "Er is iets misgegaan",
@@ -389,7 +1770,46 @@
     "delete": "Verwijderen",
     "share": "Delen",
     "premium": "Premium",
-    "free": "Gratis"
+    "free": "Gratis",
+    "close": "Sluiten",
+    "confirm": "Bevestigen",
+    "ok": "OK",
+    "yes": "Ja",
+    "no": "Nee",
+    "back": "Terug",
+    "next": "Volgende",
+    "done": "Klaar",
+    "edit": "Bewerken",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "search": "Zoeken",
+    "settings": "Instellingen",
+    "seeAll": "Alles bekijken",
+    "showMore": "Meer tonen",
+    "showLess": "Minder tonen",
+    "comingSoon": "Binnenkort",
+    "upgrade": "Upgraden",
+    "signIn": "Inloggen",
+    "signOut": "Uitloggen",
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "tomorrow": "Morgen",
+    "all": "Alle",
+    "none": "Geen",
+    "public": "Openbaar",
+    "private": "Privé",
+    "apply": "Toepassen",
+    "reset": "Reset",
+    "remove": "Verwijderen",
+    "add": "Toevoegen",
+    "create": "Maken",
+    "submit": "Indienen",
+    "send": "Versturen",
+    "view": "Bekijken",
+    "download": "Downloaden",
+    "upload": "Uploaden",
+    "noResults": "Geen resultaten gevonden",
+    "tryAgain": "Probeer opnieuw"
   },
   "zodiac": {
     "aries": "Ram",
@@ -420,7 +1840,11 @@
     "southNode": "Zuidelijke Maansknoop",
     "chiron": "Chiron",
     "ascendant": "Ascendant",
-    "midheaven": "Medium Coeli"
+    "midheaven": "Medium Coeli",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
     "conjunction": "Conjunctie",
@@ -428,6 +1852,83 @@
     "square": "Vierkant",
     "trine": "Driehoek",
     "opposition": "Oppositie",
-    "quincunx": "Quincunx"
+    "quincunx": "Quincunx",
+    "semisextile": "Semi-sextiel",
+    "semisquare": "Semi-vierkant",
+    "sesquiquadrate": "Sesquikwadraat",
+    "quintile": "Quintiel",
+    "biquintile": "Biquintiel"
+  },
+  "elements": {
+    "fire": "Vuur",
+    "earth": "Aarde",
+    "air": "Lucht",
+    "water": "Water"
+  },
+  "modalities": {
+    "cardinal": "Kardinaal",
+    "fixed": "Vast",
+    "mutable": "Veranderlijk"
+  },
+  "houses": {
+    "1": "1e Huis",
+    "2": "2e Huis",
+    "3": "3e Huis",
+    "4": "4e Huis",
+    "5": "5e Huis",
+    "6": "6e Huis",
+    "7": "7e Huis",
+    "8": "8e Huis",
+    "9": "9e Huis",
+    "10": "10e Huis",
+    "11": "11e Huis",
+    "12": "12e Huis",
+    "labels": {
+      "1": "Zelf & Identiteit",
+      "2": "Waarden & Bezittingen",
+      "3": "Communicatie & Leren",
+      "4": "Thuis & Familie",
+      "5": "Creativiteit & Romantiek",
+      "6": "Gezondheid & Dienst",
+      "7": "Partnerschappen",
+      "8": "Transformatie & Gedeelde Middelen",
+      "9": "Filosofie & Reizen",
+      "10": "Carrière & Publiek Imago",
+      "11": "Gemeenschap & Aspiraties",
+      "12": "Spiritualiteit & Onderbewustzijn"
+    }
+  },
+  "errors": {
+    "generic": "Er is iets misgegaan. Probeer het opnieuw.",
+    "networkError": "Netwerkfout. Controleer je verbinding.",
+    "unauthorized": "Je moet inloggen om toegang te krijgen tot deze functie.",
+    "notFound": "De gevraagde content is niet gevonden.",
+    "serverError": "Serverfout. Probeer het later opnieuw.",
+    "loadFailed": "Gegevens laden mislukt. Probeer het opnieuw.",
+    "saveFailed": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",
+    "uploadFailed": "Bestand uploaden mislukt. Probeer het opnieuw.",
+    "fileTooLarge": "Bestand is te groot. Kies een kleiner bestand.",
+    "invalidFormat": "Ongeldig bestandsformaat.",
+    "permissionDenied": "Toestemming geweigerd.",
+    "sessionExpired": "Je sessie is verlopen. Log opnieuw in.",
+    "rateLimited": "Te veel verzoeken. Wacht even."
+  },
+  "time": {
+    "justNow": "zojuist",
+    "minutesAgo": "{{count}}min geleden",
+    "hoursAgo": "{{count}}u geleden",
+    "daysAgo": "{{count}}d geleden",
+    "weeksAgo": "{{count}}w geleden",
+    "monthsAgo": "{{count}}mnd geleden",
+    "yearsAgo": "{{count}}j geleden",
+    "inMinutes": "over {{count}}min",
+    "inHours": "over {{count}}u",
+    "inDays": "over {{count}}d"
+  },
+  "tiers": {
+    "free": "Gratis",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

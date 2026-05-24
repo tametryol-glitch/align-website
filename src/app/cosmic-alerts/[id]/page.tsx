@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import { useParams, useSearchParams } from 'next/navigation'
@@ -9,6 +10,7 @@ import Link from 'next/link'
 import { CATEGORY_CONFIG, getImportanceLabel, type CosmicAlert, type AlertCategory } from '@/lib/cosmicAlertService'
 
 export default function CosmicAlertDetailPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const searchParams = useSearchParams()
   const { user } = useAuthStore()
@@ -48,7 +50,7 @@ export default function CosmicAlertDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-text-secondary text-lg">Loading alert...</div>
+        <div className="animate-pulse text-text-secondary text-lg">{t('common.loading')}</div>
       </div>
     )
   }
@@ -112,7 +114,7 @@ export default function CosmicAlertDetailPage() {
             className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Cosmic Weather
+            {t('cosmicAlerts.title')}
           </Link>
         </div>
 
@@ -142,7 +144,7 @@ export default function CosmicAlertDetailPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="w-5 h-5 text-accent-primary" />
-                <h2 className="text-text-primary font-semibold text-lg">Timing Window</h2>
+                <h2 className="text-text-primary font-semibold text-lg">{t('cosmicAlerts.detail.timingWindow')}</h2>
                 {isActive && (
                   <span className="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-500/15 text-green-400 border border-green-500/30">
                     Active Now
@@ -151,7 +153,7 @@ export default function CosmicAlertDetailPage() {
               </div>
               <div className="flex items-stretch rounded-lg bg-bg-tertiary/50 border border-border-primary overflow-hidden">
                 <div className="flex-1 text-center py-3 px-2">
-                  <p className="text-text-muted text-[10px] font-bold uppercase tracking-wide mb-1">Begins</p>
+                  <p className="text-text-muted text-[10px] font-bold uppercase tracking-wide mb-1">{t('cosmicAlerts.detail.start')}</p>
                   <p className="text-text-primary text-xs font-semibold">{formatDate(startDate)}</p>
                 </div>
                 <div className="w-px bg-border-primary" />

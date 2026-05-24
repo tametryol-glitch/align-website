@@ -13,6 +13,7 @@ import {
   HelpCircle, Plus, MessageSquare, Eye, Bell,
   CheckCircle2, Circle, XCircle, X, ToggleLeft, ToggleRight,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ═══════════════════════════════════════════════════════════════════
 // Helpers
@@ -122,6 +123,7 @@ function QuestionCard({ question, onClick }: { question: Question; onClick: () =
 // ═══════════════════════════════════════════════════════════════════
 
 function CreateQuestionModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [category, setCategory] = useState<string | undefined>();
@@ -159,7 +161,7 @@ function CreateQuestionModal({ onClose, onCreated }: { onClose: () => void; onCr
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-          <h2 className="text-lg font-bold text-text-primary">Ask a Question</h2>
+          <h2 className="text-lg font-bold text-text-primary">{t('qa.askQuestion')}</h2>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-bg-tertiary transition-colors">
             <X className="w-5 h-5 text-text-muted" />
           </button>
@@ -251,7 +253,7 @@ function CreateQuestionModal({ onClose, onCreated }: { onClose: () => void; onCr
             onClick={onClose}
             className="flex-1 px-4 py-2.5 rounded-lg border border-border-primary text-text-secondary text-sm font-medium hover:bg-bg-tertiary transition-colors"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
@@ -271,6 +273,7 @@ function CreateQuestionModal({ onClose, onCreated }: { onClose: () => void; onCr
 // ═══════════════════════════════════════════════════════════════════
 
 export default function QAPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -298,7 +301,7 @@ export default function QAPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <HelpCircle className="w-7 h-7 text-accent-primary" />
-          Q&A
+          {t('qa.title')}
         </h1>
         {user && (
           <button
@@ -330,11 +333,11 @@ export default function QAPage() {
 
       {/* Question list */}
       {loading ? (
-        <LoadingCosmic label="Loading questions..." />
+        <LoadingCosmic label={t('common.loading')} />
       ) : questions.length === 0 ? (
         <div className="bg-bg-secondary border border-border-primary rounded-xl text-center py-16 px-6">
           <HelpCircle className="w-14 h-14 text-text-muted mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">No questions yet</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-2">{t('qa.noQuestions')}</h3>
           <p className="text-sm text-text-muted mb-6">Ask the first question and get cosmic wisdom!</p>
           {user && (
             <button
@@ -342,7 +345,7 @@ export default function QAPage() {
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Ask a Question
+              {t('qa.askQuestion')}
             </button>
           )}
         </div>

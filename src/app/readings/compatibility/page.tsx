@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
@@ -23,26 +24,27 @@ interface PersonInput {
   timezone: string;
 }
 
-const CATEGORY_META: Record<string, { emoji: string; label: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
-  Attraction: { emoji: '🔥', label: 'Physical Attraction', color: 'red' },
-  Emotional: { emoji: '💙', label: 'Emotional Bond', color: 'accent' },
-  Mental: { emoji: '🧠', label: 'Mental Connection', color: 'green' },
-  Stability: { emoji: '🏗️', label: 'Long-Term Stability', color: 'gold' },
-  Karmic: { emoji: '🔮', label: 'Karmic Link', color: 'accent' },
-  Harmony: { emoji: '☯️', label: 'Harmony', color: 'green' },
-  Magnetic: { emoji: '⚡', label: 'Magnetic Pull', color: 'red' },
+const CATEGORY_META: Record<string, { emoji: string; labelKey: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
+  Attraction: { emoji: '🔥', labelKey: 'readings.compatibilityPage.categories.attraction', color: 'red' },
+  Emotional: { emoji: '💙', labelKey: 'readings.compatibilityPage.categories.emotional', color: 'accent' },
+  Mental: { emoji: '🧠', labelKey: 'readings.compatibilityPage.categories.mental', color: 'green' },
+  Stability: { emoji: '🏗️', labelKey: 'readings.compatibilityPage.categories.stability', color: 'gold' },
+  Karmic: { emoji: '🔮', labelKey: 'readings.compatibilityPage.categories.karmic', color: 'accent' },
+  Harmony: { emoji: '☯️', labelKey: 'readings.compatibilityPage.categories.harmony', color: 'green' },
+  Magnetic: { emoji: '⚡', labelKey: 'readings.compatibilityPage.categories.magnetic', color: 'red' },
 };
 
-function overallBand(score: number): { label: string; color: string } {
-  if (score >= 85) return { label: 'Soul-Level Connection', color: '#22c55e' };
-  if (score >= 70) return { label: 'Deep Compatibility', color: '#a78bfa' };
-  if (score >= 55) return { label: 'Strong Potential', color: '#9B6FF6' };
-  if (score >= 40) return { label: 'Moderate Match', color: '#F5A623' };
-  if (score >= 25) return { label: 'Growth Required', color: '#f59e0b' };
-  return { label: 'Challenging Dynamic', color: '#ef4444' };
+function overallBand(score: number): { labelKey: string; color: string } {
+  if (score >= 85) return { labelKey: 'readings.compatibilityPage.soulLevelConnection', color: '#22c55e' };
+  if (score >= 70) return { labelKey: 'readings.compatibilityPage.deepCompatibility', color: '#a78bfa' };
+  if (score >= 55) return { labelKey: 'readings.compatibilityPage.strongPotential', color: '#9B6FF6' };
+  if (score >= 40) return { labelKey: 'readings.compatibilityPage.moderateMatch', color: '#F5A623' };
+  if (score >= 25) return { labelKey: 'readings.compatibilityPage.growthRequired', color: '#f59e0b' };
+  return { labelKey: 'readings.compatibilityPage.challengingDynamic', color: '#ef4444' };
 }
 
 export default function CompatibilityPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [person2, setPerson2] = useState<PersonInput>({ date: '', time: '12:00', location: '', lat: null, lng: null, timezone: 'UTC' });
   const [result, setResult] = useState<CompatibilityResult | null>(null);
@@ -51,7 +53,7 @@ export default function CompatibilityPage() {
   const [showAspects, setShowAspects] = useState(false);
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <PaywallGate feature="compatibility"><BirthDataPrompt message="Add your birth data to check compatibility with someone special." /></PaywallGate>;
+    return <PaywallGate feature="compatibility"><BirthDataPrompt message={t('readings.birthDataPromptCompatibility')} /></PaywallGate>;
   }
 
   async function calculate(e: React.FormEvent) {
@@ -104,13 +106,13 @@ export default function CompatibilityPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       <div className="flex items-center gap-3 mb-6">
         <Heart className="w-8 h-8 text-accent-primary" />
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Compatibility</h1>
-          <p className="text-text-tertiary text-sm">7-category synastry analysis powered by 9 aspect types</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.compatibilityPage.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('readings.compatibilityPage.subtitle')}</p>
         </div>
       </div>
 
@@ -133,11 +135,11 @@ export default function CompatibilityPage() {
           <div className="card">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">💕</span>
-              <h3 className="font-semibold text-text-primary">Their Birth Data</h3>
+              <h3 className="font-semibold text-text-primary">{t('readings.compatibilityPage.person2Label')}</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-text-muted mb-1">Birth Date</label>
+                <label className="block text-xs text-text-muted mb-1">{t('readings.compatibilityPage.datePlaceholder')}</label>
                 <input
                   type="date"
                   value={person2.date}
@@ -147,7 +149,7 @@ export default function CompatibilityPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-text-muted mb-1">Birth Time</label>
+                <label className="block text-xs text-text-muted mb-1">{t('readings.compatibilityPage.timePlaceholder')}</label>
                 <input
                   type="time"
                   value={person2.time}
@@ -157,7 +159,7 @@ export default function CompatibilityPage() {
               </div>
             </div>
             <div className="mt-3">
-              <label className="block text-xs text-text-muted mb-1">Birth Location</label>
+              <label className="block text-xs text-text-muted mb-1">{t('readings.compatibilityPage.locationPlaceholder')}</label>
               <CitySearch
                 value={person2.location}
                 onChange={(location, lat, lon, tz) => {
@@ -169,22 +171,22 @@ export default function CompatibilityPage() {
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary w-full">
-            Calculate Compatibility
+            {t('readings.compatibilityPage.calculateButton')}
           </button>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </form>
       )}
 
-      {loading && <LoadingCosmic label="Computing synastry across 7 categories..." />}
+      {loading && <LoadingCosmic label={t('readings.compatibilityPage.calculating')} />}
 
       {result && (
         <div className="space-y-5">
           {/* Overall Score */}
           <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted text-center">
-            <p className="text-accent-secondary text-sm uppercase tracking-wider mb-2">Overall Compatibility</p>
+            <p className="text-accent-secondary text-sm uppercase tracking-wider mb-2">{t('readings.compatibilityPage.overallScore')}</p>
             <p className="text-6xl font-bold text-text-primary mb-2">{result.overall_score}%</p>
             <p className="text-sm font-medium" style={{ color: overallBand(result.overall_score).color }}>
-              {overallBand(result.overall_score).label}
+              {t(overallBand(result.overall_score).labelKey)}
             </p>
             {result.style_label && (
               <p className="text-xs text-text-muted mt-2">{result.style_label}</p>
@@ -209,7 +211,7 @@ export default function CompatibilityPage() {
                   <div key={cat} className="flex items-center gap-3">
                     <span className="text-lg w-7 text-center">{meta.emoji}</span>
                     <div className="flex-1">
-                      <ScoreBar value={score} label={meta.label} color={meta.color} size="sm" />
+                      <ScoreBar value={score} label={t(meta.labelKey)} color={meta.color} size="sm" />
                     </div>
                   </div>
                 );
@@ -332,6 +334,7 @@ function extractPositions(chartData: any): Array<{ name: string; longitude: numb
 }
 
 function ShareCompatButton({ score }: { score: number }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   async function handleShare() {
     const url = `${window.location.origin}/readings/compatibility`;

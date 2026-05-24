@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Globe, Search, Info, X, RefreshCw, ChevronRight } from 'lucide-react';
@@ -90,6 +91,7 @@ function composeDailySummary(scan: any): string {
 // ─── Main Component ──────────────────────────────────────────────
 
 export default function WorldEchoPage() {
+  const { t } = useTranslation();
   const [scan, setScan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -155,8 +157,8 @@ export default function WorldEchoPage() {
         <div className="flex items-center gap-3">
           <Globe className="w-8 h-8 text-accent-primary" />
           <div>
-            <h1 className="text-2xl font-display font-bold text-text-primary">World Echo</h1>
-            <p className="text-text-tertiary text-sm">Today&apos;s historical resonances</p>
+            <h1 className="text-2xl font-display font-bold text-text-primary">{t('worldEcho.title')}</h1>
+            <p className="text-text-tertiary text-sm">{t('worldEcho.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -196,7 +198,7 @@ export default function WorldEchoPage() {
       )}
 
       {/* Loading state */}
-      {loading && <LoadingCosmic label="Reading the sky…" />}
+      {loading && <LoadingCosmic label={t('common.loading')} />}
 
       {/* Error state */}
       {!loading && error && (
@@ -204,7 +206,7 @@ export default function WorldEchoPage() {
           <span className="text-4xl block mb-4">&#x26A0;&#xFE0F;</span>
           <p className="text-text-tertiary mb-4">{error}</p>
           <button onClick={() => loadToday(true)} className="btn-primary inline-flex items-center gap-2">
-            <RefreshCw className="w-4 h-4" /> Retry
+            <RefreshCw className="w-4 h-4" /> {t('common.retry')}
           </button>
         </div>
       )}

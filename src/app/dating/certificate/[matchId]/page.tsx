@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { generateCertificate, type CosmicCertificate } from '@/lib/cosmicCertificateService';
@@ -14,6 +15,7 @@ const SIGN_GLYPHS: Record<string, string> = {
 };
 
 export default function CertificatePage() {
+  const { t } = useTranslation();
   const { matchId } = useParams<{ matchId: string }>();
   const { user, isLoading: authLoading } = useAuthStore();
   const [cert, setCert] = useState<CosmicCertificate | null>(null);
@@ -40,7 +42,7 @@ export default function CertificatePage() {
     return (
       <div className="text-center py-20">
         <p className="text-text-tertiary mb-4">Certificate not available.</p>
-        <Link href="/dating/matches" className="text-accent-primary text-sm">Back to Matches</Link>
+        <Link href="/dating/matches" className="text-accent-primary text-sm">{t('dating.timing.backToMatches')}</Link>
       </div>
     );
   }
@@ -52,7 +54,7 @@ export default function CertificatePage() {
   return (
     <div className="max-w-lg mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/matches" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-6">
-        <ArrowLeft size={16} /> Back to Matches
+        <ArrowLeft size={16} /> {t('dating.timing.backToMatches')}
       </Link>
 
       {/* Certificate card */}
@@ -172,7 +174,7 @@ export default function CertificatePage() {
           }
         }}
       >
-        <Share2 size={16} /> Share Certificate
+        <Share2 size={16} /> {t('common.share')}
       </button>
     </div>
   );

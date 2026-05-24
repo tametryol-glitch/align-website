@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, Users, Search, Plus, X, Flame, Mountain, Wind, Droplets } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Member {
   id: string;
@@ -75,6 +76,7 @@ function computeGroupAnalysis(members: Member[]) {
 }
 
 export default function GroupSynastryPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [members, setMembers] = useState<Member[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -122,13 +124,13 @@ export default function GroupSynastryPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back
+        {t('common.back')}
       </Link>
       <div className="flex items-center gap-3 mb-6">
         <Users className="w-8 h-8 text-accent-primary" />
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Group Synastry</h1>
-          <p className="text-text-tertiary text-sm">Analyze your group&apos;s cosmic chemistry</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('groupSynastry.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('groupSynastry.subtitle')}</p>
         </div>
       </div>
 

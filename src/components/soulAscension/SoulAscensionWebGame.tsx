@@ -516,7 +516,7 @@ function HomePanel({
         <ScoreBars scores={state.scores} />
         <ChapterMap state={state} />
         <Panel title="Purpose Path" body={state.profile.futurePurpose} />
-        <Panel title="Daily Soul Mission" body={`Choose one ${state.profile.soulContracts[0].contractType.toLowerCase()} moment without using the old weapon: ${state.profile.mainTemptation}.`} />
+        <Panel title="Daily Soul Mission" body={`Choose one ${(state.profile.soulContracts[0]?.contractType || 'growth').toLowerCase()} moment without using the old weapon: ${state.profile.mainTemptation}.`} />
         <Panel title="Next Chapter" body={mission ? `${mission.chapterNumber}. ${mission.title}` : 'This lifetime is ready for Soul Review.'} />
         <div className="flex gap-2">
           <button type="button" onClick={onReload} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-xs font-semibold text-text-tertiary hover:text-text-primary">
@@ -574,7 +574,7 @@ function AvatarPanel({ state, avatarUrl, avatarLoading }: { state: SoulAscension
         ['South Node Pattern', p.pastLifePattern],
         ['North Node Purpose', p.futurePurpose],
         ['Soul Scar', `${p.soulScar.name}: ${p.soulScar.shadowPhrase}`],
-        ['Soul Contract Theme', p.soulContracts[0].lesson],
+        ['Soul Contract Theme', p.soulContracts[0]?.lesson || 'Unknown'],
       ]} />
       <ListPanel title="Strengths" items={p.strengths} />
       <ListPanel title="Weaknesses" items={p.weaknesses} />
@@ -593,10 +593,10 @@ function LifetimePanel({ state }: { state: SoulAscensionGameState }) {
         <div className="mt-5">
           <InfoGrid items={[
             ['Main Conflict', p.mainConflict],
-            ['Key Relationship', `${p.soulContracts[0].recurringSoulName} as ${p.soulContracts[0].currentRole}`],
+            ['Key Relationship', `${p.soulContracts[0]?.recurringSoulName || 'Unknown'} as ${p.soulContracts[0]?.currentRole || 'Unknown'}`],
             ['Main Purpose', p.mainPurpose],
             ['Current Soul Scar', `${p.soulScar.name} (${p.soulScar.status})`],
-            ['Main Contract', p.soulContracts[0].purposeChoice],
+            ['Main Contract', p.soulContracts[0]?.purposeChoice || 'Unknown'],
           ]} compact />
         </div>
       </section>

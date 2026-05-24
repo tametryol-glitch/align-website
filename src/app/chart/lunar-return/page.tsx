@@ -12,6 +12,7 @@ import { MarkdownText } from '@/components/ui/MarkdownText';
 import Link from 'next/link';
 import { ArrowLeft, Moon, ChevronDown } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { useTranslation } from 'react-i18next';
 
 const ASPECT_SYMBOLS: Record<string, string> = {
   conjunction: '☌',
@@ -23,6 +24,7 @@ const ASPECT_SYMBOLS: Record<string, string> = {
 };
 
 export default function LunarReturnPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [chart, setChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -73,11 +75,11 @@ export default function LunarReturnPage() {
       <PaywallGate feature="lunar_return">
         <div className="max-w-3xl mx-auto">
           <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-            <ArrowLeft className="w-4 h-4" /> My Chart
+            <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
           </Link>
           <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
             <Moon className="w-7 h-7 text-water" />
-            Lunar Return
+            {t('chart.lunarReturn')}
           </h1>
           <BirthDataPrompt message="Birth data required to calculate your Lunar Return chart." />
         </div>
@@ -105,7 +107,7 @@ export default function LunarReturnPage() {
     <PaywallGate feature="lunar_return">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> My Chart
+        <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-2 flex items-center gap-3">
@@ -213,7 +215,7 @@ export default function LunarReturnPage() {
           {/* Positions table with expandable interpretations */}
           <div className="card">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-1">
-              Lunar Return Positions
+              {t('chart.lunarReturn')} Positions
             </h3>
             <p className="text-xs text-text-muted italic mb-4">
               Tap any planet to read its interpretation for this lunar cycle

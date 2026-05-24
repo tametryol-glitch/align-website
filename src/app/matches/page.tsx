@@ -14,18 +14,19 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2 } from 'lucide-react';
 import { CompatibilityCard, ShareButtonWithCard } from '@/components/share';
 import { generateShareUrl } from '@/lib/shareCardUtils';
+import { useTranslation } from 'react-i18next';
 
 // ── Constants ──
 
 const CATEGORY_TABS = [
-  { key: 'overall', label: 'Overall', emoji: '⭐' },
-  { key: 'emotional', label: 'Emotional', emoji: '💜' },
-  { key: 'passion', label: 'Passion', emoji: '🔥' },
-  { key: 'marriage', label: 'Marriage', emoji: '💍' },
-  { key: 'karmic', label: 'Karmic', emoji: '✨' },
-  { key: 'attraction', label: 'Attraction', emoji: '🤲' },
-  { key: 'stability', label: 'Stability', emoji: '🏠' },
-  { key: 'mental', label: 'Mental', emoji: '🧠' },
+  { key: 'overall', labelKey: 'matches.categories.overall', emoji: '⭐' },
+  { key: 'emotional', labelKey: 'matches.categories.emotional', emoji: '💜' },
+  { key: 'passion', labelKey: 'matches.categories.passion', emoji: '🔥' },
+  { key: 'marriage', labelKey: 'matches.categories.marriage', emoji: '💍' },
+  { key: 'karmic', labelKey: 'matches.categories.karmic', emoji: '✨' },
+  { key: 'attraction', labelKey: 'matches.categories.attraction', emoji: '🤲' },
+  { key: 'stability', labelKey: 'matches.categories.stability', emoji: '🏠' },
+  { key: 'mental', labelKey: 'matches.categories.mental', emoji: '🧠' },
 ] as const;
 
 type CategoryKey = (typeof CATEGORY_TABS)[number]['key'];
@@ -84,6 +85,7 @@ interface MatchEntry {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function MatchesPage() {
+  const { t } = useTranslation();
   const { user, profile, isLoading: authLoading } = useAuthStore();
   const [entries, setEntries] = useState<MatchEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +159,7 @@ export default function MatchesPage() {
         <div className="flex items-center gap-3">
           <Users className="w-7 h-7" style={{ color: '#8B5CF6' }} />
           <div>
-            <h1 className="text-2xl font-bold text-white">Cosmic Matches</h1>
+            <h1 className="text-2xl font-bold text-white">{t('matches.title')}</h1>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
               Advanced Compatibility Analysis
             </p>
@@ -195,7 +197,7 @@ export default function MatchesPage() {
               }}
             >
               <span className="text-sm">{tab.emoji}</span>
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           );
         })}
@@ -204,7 +206,7 @@ export default function MatchesPage() {
       {/* Match List */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <LoadingCosmic label="Loading matches..." />
+          <LoadingCosmic label={t('common.loading')} />
         </div>
       ) : !user ? (
         <div className="text-center py-16 px-6">
@@ -423,6 +425,7 @@ function DetailModal({
   onToggleToxicity: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const { friend, match } = entry;
   const overallScore = match.overall_score ?? 0;
   const overallColor = getScoreColor(overallScore);
@@ -465,7 +468,7 @@ function DetailModal({
             style={{ color: '#8B5CF6' }}
           >
             <X className="w-4 h-4" />
-            Close
+            {t('common.close')}
           </button>
 
           {/* Header: Avatar + Name + Signs */}

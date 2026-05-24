@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function BirthDataPrompt({ message }: Props) {
+  const { t } = useTranslation();
   const { isLoading } = useAuthStore();
 
   // While auth/profile is still loading, show a spinner instead of the prompt
@@ -24,13 +26,13 @@ export function BirthDataPrompt({ message }: Props) {
     <div className="max-w-md mx-auto text-center py-16">
       <span className="text-5xl block mb-4">🌌</span>
       <h2 className="text-xl font-display font-bold text-text-primary mb-2">
-        Birth Data Required
+        {t('components.birthDataPrompt.title')}
       </h2>
       <p className="text-text-tertiary text-sm mb-6">
-        {message || 'Add your birth date, time, and location to unlock this feature.'}
+        {message || t('components.birthDataPrompt.defaultMessage')}
       </p>
       <Link href="/profile" className="btn-primary inline-block">
-        Complete Profile
+        {t('components.birthDataPrompt.completeProfile')}
       </Link>
     </div>
   );

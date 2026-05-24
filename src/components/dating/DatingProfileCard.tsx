@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { Heart, X, Sparkles, Shield, ChevronLeft, ChevronRight, Mic, Video } from 'lucide-react';
+import { Heart, X, Sparkles, Shield, ChevronLeft, ChevronRight, Mic, Video, MoreVertical, Flag, Ban } from 'lucide-react';
 import type { DatingCandidate } from '@/lib/datingDiscoveryService';
 
 interface DatingProfileCardProps {
@@ -10,6 +11,8 @@ interface DatingProfileCardProps {
   onLike: () => void;
   onPass: () => void;
   onRose: () => void;
+  onReport?: () => void;
+  onBlock?: () => void;
   likesRemaining: number;
   rosesRemaining: number;
   disabled?: boolean;
@@ -42,11 +45,15 @@ export function DatingProfileCard({
   onLike,
   onPass,
   onRose,
+  onReport,
+  onBlock,
   likesRemaining,
   rosesRemaining,
   disabled,
 }: DatingProfileCardProps) {
+  const { t } = useTranslation();
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [safetyMenuOpen, setSafetyMenuOpen] = useState(false);
   const photos = candidate.photo_urls?.length > 0
     ? candidate.photo_urls
     : candidate.avatar_url ? [candidate.avatar_url] : [];
@@ -120,6 +127,49 @@ export function DatingProfileCard({
             style={{ backgroundColor: 'rgba(74,222,128,0.2)', backdropFilter: 'blur(8px)' }}>
             <Shield size={12} color="#4ADE80" />
             <span className="text-xs text-green-400">Verified</span>
+          </div>
+        )}
+
+        {/* Safety menu (report/block) */}
+        {(onReport || onBlock) && (
+          <div className="absolute left-3 z-20" style={{ top: candidate.photo_verified ? 48 : 12 }}>
+            <button
+              onClick={() => setSafetyMenuOpen(!safetyMenuOpen)}
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
+              aria-label="Safety options"
+            >
+              <MoreVertical size={14} color="#fff" />
+            </button>
+            {safetyMenuOpen && (
+              <div className="absolute top-10 left-0 rounded-xl overflow-hidden" style={{
+                backgroundColor: 'rgba(20,24,38,0.95)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(155,111,246,0.2)',
+                minWidth: '140px',
+              }}>
+                {onReport && (
+                  <button
+                    onClick={() => { setSafetyMenuOpen(false); onReport(); }}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-white/5 transition-colors"
+                    style={{ color: '#FACC15' }}
+                  >
+                    <Flag size={14} />
+                    Report
+                  </button>
+                )}
+                {onBlock && (
+                  <button
+                    onClick={() => { setSafetyMenuOpen(false); onBlock(); }}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-white/5 transition-colors"
+                    style={{ color: '#F87171' }}
+                  >
+                    <Ban size={14} />
+                    Block
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -239,7 +289,7 @@ export function DatingProfileCard({
               backgroundColor: 'rgba(248,113,113,0.1)',
               border: '2px solid rgba(248,113,113,0.3)',
             }}
-            aria-label="Pass"
+            aria-label={t('components.datingProfileCard.pass')}
           >
             <X size={24} color="#F87171" />
           </button>
@@ -252,8 +302,8 @@ export function DatingProfileCard({
               backgroundColor: 'rgba(245,166,35,0.1)',
               border: '2px solid rgba(245,166,35,0.3)',
             }}
-            aria-label={`Send Cosmic Rose (${rosesRemaining} remaining)`}
-            title={`${rosesRemaining} roses remaining today`}
+            aria-label={`${t('components.datingProfileCard.cosmicRose')} (${rosesRemaining})`}
+            title={t('components.datingProfileCard.rosesRemaining', { count: rosesRemaining })}
           >
             <span className="text-xl">🌹</span>
           </button>
@@ -266,7 +316,7 @@ export function DatingProfileCard({
               backgroundColor: 'rgba(155,111,246,0.15)',
               border: '2px solid rgba(155,111,246,0.3)',
             }}
-            aria-label={`Like (${likesRemaining} remaining)`}
+            aria-label={t('components.datingProfileCard.likesRemaining', { count: likesRemaining })}
           >
             <Heart size={24} color="#9B6FF6" fill="#9B6FF6" />
           </button>
@@ -275,7 +325,7 @@ export function DatingProfileCard({
         {/* Remaining likes indicator */}
         <div className="text-center mt-2">
           <span className="text-xs text-text-muted">
-            {likesRemaining} likes · {rosesRemaining} roses remaining today
+            {t('components.datingProfileCard.likesRemaining', { count: likesRemaining })} · {t('components.datingProfileCard.rosesRemaining', { count: rosesRemaining })}
           </span>
         </div>
       </div>

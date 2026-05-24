@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -30,6 +31,7 @@ interface FriendRequest {
 }
 
 export default function FriendsPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [tab, setTab] = useState<Tab>('friends');
   const [friends, setFriends] = useState<FriendProfile[]>([]);
@@ -204,20 +206,20 @@ export default function FriendsPage() {
           <Link href="/settings" className="p-2 rounded-full hover:bg-white/5 transition-colors">
             <ArrowLeft size={20} className="text-text-primary" />
           </Link>
-          <h1 className="text-xl font-bold text-text-primary">Friends</h1>
+          <h1 className="text-xl font-bold text-text-primary">{t('settings.friends.title')}</h1>
         </div>
 
         <div className="flex gap-1 p-1 rounded-xl bg-white/5 mb-6">
-          {tabs.map(t => (
+          {tabs.map(tab_item => (
             <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
+              key={tab_item.key}
+              onClick={() => setTab(tab_item.key)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-white/10 text-text-primary' : 'text-text-muted hover:text-text-primary'
+                tab === tab_item.key ? 'bg-white/10 text-text-primary' : 'text-text-muted hover:text-text-primary'
               }`}
             >
-              {t.icon}
-              {t.label}
+              {tab_item.icon}
+              {tab_item.label}
             </button>
           ))}
         </div>

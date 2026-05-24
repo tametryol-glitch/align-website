@@ -26,6 +26,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Gradient palette for placeholder avatars ─────────────────────
 const PLACEHOLDER_GRADIENTS = [
@@ -205,6 +206,7 @@ function CarouselSection({
 // Main Page
 // ═══════════════════════════════════════════════════════════════════
 export default function CelebrityMatchesPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
 
@@ -308,10 +310,10 @@ export default function CelebrityMatchesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <Star className="w-7 h-7 text-[#9B6FF6]" />
-          Celebrity Matches
+          {t('celebrityMatches.title')}
         </h1>
         <p className="text-sm text-text-tertiary mt-1">
-          Explore celebrity charts, compatibility, and cosmic forecasts
+          {t('celebrityMatches.subtitle')}
         </p>
       </div>
 
@@ -320,7 +322,7 @@ export default function CelebrityMatchesPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
         <input
           type="text"
-          placeholder="Search celebrities..."
+          placeholder={t('celebrityMatches.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="w-full pl-10 pr-10 py-3 bg-bg-secondary border border-border-primary rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-primary/50 focus:border-accent-primary transition-all"
@@ -344,8 +346,8 @@ export default function CelebrityMatchesPage() {
             </div>
           ) : searchResults.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-text-primary font-semibold">No results</p>
-              <p className="text-sm text-text-muted mt-1">Try a different name or spelling</p>
+              <p className="text-text-primary font-semibold">{t('celebrityMatches.noResults')}</p>
+              <p className="text-sm text-text-muted mt-1">{t('celebrityMatches.tryDifferent')}</p>
             </div>
           ) : (
             <div className="space-y-0">
@@ -370,7 +372,7 @@ export default function CelebrityMatchesPage() {
             <>
               {/* Trending */}
               <CarouselSection
-                title="Trending"
+                title={t('celebrityMatches.trending')}
                 icon={<TrendingUp className="w-5 h-5 text-[#9B6FF6]" />}
                 data={trending}
                 onCelebClick={goToProfile}
@@ -378,7 +380,7 @@ export default function CelebrityMatchesPage() {
 
               {/* Recently Added */}
               <CarouselSection
-                title="Recently Added"
+                title={t('celebrityMatches.recentlyAdded')}
                 icon={<Clock className="w-5 h-5 text-[#9B6FF6]" />}
                 data={recent}
                 onCelebClick={goToProfile}
@@ -387,13 +389,13 @@ export default function CelebrityMatchesPage() {
               {/* Category Chips */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h2 className="text-lg font-bold text-text-primary">Browse by Category</h2>
+                  <h2 className="text-lg font-bold text-text-primary">{t('celebrityMatches.browseByCategory')}</h2>
                   {activeCategory && (
                     <button
                       onClick={() => { setActiveCategory(null); setCategoryResults([]); }}
                       className="text-sm text-accent-primary font-semibold hover:underline"
                     >
-                      Clear filter
+                      {t('celebrityMatches.clearFilter')}
                     </button>
                   )}
                 </div>
@@ -426,7 +428,7 @@ export default function CelebrityMatchesPage() {
                       </div>
                     ) : categoryResults.length === 0 ? (
                       <p className="text-sm text-text-muted text-center py-4">
-                        No celebrities in this category yet
+                        {t('celebrityMatches.noCelebritiesInCategory')}
                       </p>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -446,7 +448,7 @@ export default function CelebrityMatchesPage() {
               {/* Favorites */}
               {favorites.length > 0 && (
                 <CarouselSection
-                  title="Your Favorites"
+                  title={t('celebrityMatches.yourFavorites')}
                   icon={<Heart className="w-5 h-5 text-red-400" />}
                   data={favorites}
                   onCelebClick={goToProfile}
@@ -457,9 +459,9 @@ export default function CelebrityMatchesPage() {
               {trending.length === 0 && recent.length === 0 && favorites.length === 0 && !activeCategory && (
                 <div className="text-center py-16">
                   <Star className="w-12 h-12 text-text-muted mx-auto mb-3" />
-                  <p className="text-text-primary font-semibold text-lg">No celebrities yet</p>
+                  <p className="text-text-primary font-semibold text-lg">{t('celebrityMatches.noCelebrities')}</p>
                   <p className="text-sm text-text-muted mt-1">
-                    Search for someone or check back soon
+                    {t('celebrityMatches.searchOrCheckBack')}
                   </p>
                 </div>
               )}

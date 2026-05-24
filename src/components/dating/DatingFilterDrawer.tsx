@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, SlidersHorizontal } from 'lucide-react';
 import {
   PRIMARY_INTENT_OPTIONS,

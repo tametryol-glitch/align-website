@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getDatingMatches, type DatingMatch } from '@/lib/datingDiscoveryService';
 import { getTimingForMatch, type CosmicTimingWindow } from '@/lib/cosmicTimingService';
@@ -32,6 +33,7 @@ function daysUntil(dateStr: string): number {
 }
 
 export default function CosmicTimingPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [matches, setMatches] = useState<DatingMatch[]>([]);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
@@ -70,14 +72,14 @@ export default function CosmicTimingPage() {
   return (
     <div className="max-w-2xl mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/matches" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Matches
+        <ArrowLeft size={16} /> {t('dating.timing.backToMatches')}
       </Link>
 
       <div className="text-center mb-6">
         <Sparkles size={28} color="#FACC15" className="mx-auto mb-2" />
-        <h1 className="text-2xl font-bold text-white mb-1">Cosmic Timing</h1>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('dating.timing.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          Planetary windows that highlight the best moments for your connections
+          {t('dating.timing.subtitle')}
         </p>
       </div>
 
@@ -87,9 +89,9 @@ export default function CosmicTimingPage() {
         </div>
       ) : matches.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-text-tertiary mb-3">Match with someone to see cosmic timing windows.</p>
+          <p className="text-text-tertiary mb-3">{t('dating.timing.noMatchHint')}</p>
           <Link href="/dating" className="text-accent-primary text-sm font-medium">
-            Browse Picks
+            {t('dating.timing.browsePicks')}
           </Link>
         </div>
       ) : (
@@ -118,7 +120,7 @@ export default function CosmicTimingPage() {
               <div className="w-8 h-8 rounded-full border-2 border-accent-primary border-t-transparent animate-spin" />
             </div>
           ) : windows.length === 0 ? (
-            <p className="text-center text-text-tertiary py-8">No timing windows found.</p>
+            <p className="text-center text-text-tertiary py-8">{t('dating.timing.noWindows')}</p>
           ) : (
             <div className="space-y-4">
               {windows.map(w => {

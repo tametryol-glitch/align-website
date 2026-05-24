@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -43,6 +44,7 @@ function timeRemaining(expiresAt: string): string {
 // ===================================================================
 
 export default function PollDetailPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const pollId = params?.id as string;
@@ -140,7 +142,7 @@ export default function PollDetailPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto">
-        <LoadingCosmic label="Loading poll..." />
+        <LoadingCosmic label={t('common.loading')} />
       </div>
     );
   }
@@ -150,15 +152,15 @@ export default function PollDetailPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-bg-card border border-border-primary rounded-2xl p-12 text-center">
           <BarChart3 className="w-14 h-14 text-text-muted mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">Poll not found</h3>
+          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">{t('errors.notFound')}</h3>
           <p className="text-sm text-text-muted mb-6">
-            This poll may have been deleted or doesn't exist.
+            {t('errors.notFound')}
           </p>
           <button
             onClick={() => router.push('/polls')}
             className="btn-primary text-sm inline-flex items-center gap-2"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Polls
+            <ArrowLeft className="w-4 h-4" /> {t('polls.title')}
           </button>
         </div>
       </div>
@@ -177,7 +179,7 @@ export default function PollDetailPage() {
           className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">Back to Polls</span>
+          <span className="text-sm font-medium">{t('polls.title')}</span>
         </button>
         <div className="flex items-center gap-2">
           <button
@@ -197,13 +199,13 @@ export default function PollDetailPage() {
                     disabled={deleting}
                     className="px-3 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-medium"
                   >
-                    {deleting ? 'Deleting...' : 'Confirm Delete'}
+                    {deleting ? t('common.loading') : t('common.confirm')}
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
                     className="px-3 py-2 rounded-xl bg-bg-tertiary text-text-muted hover:text-text-primary transition-colors text-sm"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                 </div>
               ) : (

@@ -9,6 +9,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { Loader2, Upload, Film, Smartphone, HardDrive } from 'lucide-react';
@@ -73,6 +74,7 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024;
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska'];
 
 function EditorPageInner() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const videoUrl = searchParams.get('url') || '';
@@ -244,7 +246,7 @@ function EditorPageInner() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
-        <p className="text-text-muted text-sm">Loading editor...</p>
+        <p className="text-text-muted text-sm">{t('common.loading')}</p>
       </div>
     );
   }

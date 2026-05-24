@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import {
   SmilePlus, Check, CheckCheck, Reply, MoreVertical,
@@ -117,6 +118,7 @@ export function MessageBubble({
   currentUserId, onReaction, onOpenReactionPicker, onReply, onContextMenu, onPollVote,
   onScrollToMessage,
 }: MessageBubbleProps) {
+  const { t } = useTranslation();
   const reactions = getReactionsFromMessage(msg);
   const hasReactions = Object.keys(reactions).length > 0;
 
@@ -196,7 +198,7 @@ export function MessageBubble({
           {/* Chart share */}
           {msg.type === 'chart_share' && (
             <div className="bg-white/10 rounded-lg p-2 mb-1">
-              <p className="text-xs font-medium">Shared a chart</p>
+              <p className="text-xs font-medium">{t('messages.sharedChart', 'Shared a chart')}</p>
               {msg.metadata?.chart_type && (
                 <p className="text-[10px] opacity-70">{msg.metadata.chart_type}</p>
               )}
@@ -256,14 +258,14 @@ export function MessageBubble({
           {/* Pinned indicator */}
           {msg.metadata?.pinned && (
             <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>
-              📌 Pinned
+              📌 {t('messages.contextMenu.pin')}
             </span>
           )}
 
           {/* Time + status */}
           <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : ''}`}>
             {msg.is_edited && (
-              <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>edited</span>
+              <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>{t('messages.edited', 'edited')}</span>
             )}
             <span className={`text-[9px] ${isMine ? 'text-white/50' : 'text-text-muted'}`}>
               {formatMessageTime(msg.created_at)}
@@ -271,7 +273,7 @@ export function MessageBubble({
             {isMine && (
               <span
                 className={`text-[9px] cursor-default ${read ? 'text-blue-300' : 'text-white/40'}`}
-                title={read && otherReadAt ? `Read ${new Date(otherReadAt).toLocaleDateString()} at ${new Date(otherReadAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Sent'}
+                title={read && otherReadAt ? `${t('messages.read', 'Read')} ${new Date(otherReadAt).toLocaleDateString()} ${new Date(otherReadAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : t('messages.sent', 'Sent')}
               >
                 {read ? <CheckCheck className="w-3 h-3 inline" /> : <Check className="w-3 h-3 inline" />}
               </span>

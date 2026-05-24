@@ -94,7 +94,7 @@ export const useDatingStore = create<DatingState>((set, get) => ({
   setCurrentPickIndex: (index) => set({ currentPickIndex: index }),
   advancePick: () => {
     const { currentPickIndex, dailyPicks } = get();
-    if (currentPickIndex < dailyPicks.length - 1) {
+    if (currentPickIndex < dailyPicks.length) {
       set({ currentPickIndex: currentPickIndex + 1 });
     }
   },

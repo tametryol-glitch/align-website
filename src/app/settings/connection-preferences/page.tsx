@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createClient } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import { ArrowLeft, Heart } from 'lucide-react'
@@ -33,6 +34,7 @@ const SPIRITUAL_OPENNESS_OPTIONS = [
 ]
 
 export default function ConnectionPreferencesPage() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const [connectionType, setConnectionType] = useState('')
   const [energeticPace, setEnergeticPace] = useState('')
@@ -124,13 +126,13 @@ export default function ConnectionPreferencesPage() {
         className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
-        <span>Back to Settings</span>
+        <span>{t('common.back')} {t('common.settings')}</span>
       </Link>
 
       <div className="flex items-center gap-3 mb-8">
         <Heart className="w-6 h-6 text-accent-primary" />
         <h1 className="text-2xl font-bold text-text-primary">
-          Connection Preferences
+          {t('settings.connectionPreferences.title')}
         </h1>
       </div>
 
@@ -189,7 +191,7 @@ export default function ConnectionPreferencesPage() {
         disabled={saving}
         className="btn-primary w-full mt-6"
       >
-        {saving ? 'Saving...' : 'Save Preferences'}
+        {saving ? t('common.loading') : t('common.save')}
       </button>
     </div>
   )

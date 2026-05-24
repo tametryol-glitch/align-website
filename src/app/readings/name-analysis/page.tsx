@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -484,6 +485,7 @@ function CopyBtn({ text }: { text: string }) {
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
 export default function NameAnalysisPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [fullName, setFullName] = useState('');
   const [birthDate, setBirthDate] = useState('');

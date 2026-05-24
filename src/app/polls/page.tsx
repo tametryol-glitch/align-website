@@ -12,6 +12,7 @@ import {
   Poll, PollFilter,
   getPolls, createPoll, votePoll, togglePollBookmark, deletePoll,
 } from '@/lib/pollService';
+import { useTranslation } from 'react-i18next';
 
 // ===================================================================
 // Constants
@@ -295,6 +296,7 @@ function CreatePollModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const { t } = useTranslation();
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -495,11 +497,11 @@ function CreatePollModal({
                   Creating...
                 </>
               ) : (
-                'Create Poll'
+                t('polls.createPoll')
               )}
             </button>
             <button onClick={onClose} className="btn-secondary text-sm">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </div>
@@ -513,6 +515,7 @@ function CreatePollModal({
 // ===================================================================
 
 export default function PollsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -553,7 +556,7 @@ export default function PollsPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <BarChart3 className="w-7 h-7 text-accent-primary" />
-          Polls
+          {t('polls.title')}
         </h1>
         <div className="flex items-center gap-2">
           <button
@@ -569,7 +572,7 @@ export default function PollsPage() {
               onClick={() => setShowCreate(true)}
               className="btn-primary text-sm flex items-center gap-2"
             >
-              <Plus className="w-4 h-4" /> Create Poll
+              <Plus className="w-4 h-4" /> {t('polls.createPoll')}
             </button>
           )}
         </div>
@@ -594,11 +597,11 @@ export default function PollsPage() {
 
       {/* Content */}
       {loading ? (
-        <LoadingCosmic label="Loading polls..." />
+        <LoadingCosmic label={t('common.loading')} />
       ) : polls.length === 0 ? (
         <div className="bg-bg-card border border-border-primary rounded-2xl p-12 text-center">
           <BarChart3 className="w-14 h-14 text-text-muted mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">No polls yet</h3>
+          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">{t('polls.noPollsYet')}</h3>
           <p className="text-sm text-text-muted mb-6">
             {filter === 'my_polls'
               ? "You haven't created any polls yet."
@@ -612,7 +615,7 @@ export default function PollsPage() {
               onClick={() => setShowCreate(true)}
               className="btn-primary text-sm inline-flex items-center gap-2"
             >
-              <Plus className="w-4 h-4" /> Create Poll
+              <Plus className="w-4 h-4" /> {t('polls.createPoll')}
             </button>
           )}
         </div>

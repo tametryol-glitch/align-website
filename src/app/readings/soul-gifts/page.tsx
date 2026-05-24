@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -24,6 +25,7 @@ const SECTIONS = [
 ] as const;
 
 export default function SoulGiftsPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [result, setResult] = useState<SoulGiftsResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,13 +61,13 @@ export default function SoulGiftsPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       <div className="flex items-center gap-3 mb-6">
         <Gem className="w-8 h-8 text-accent-primary" />
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Soul Gifts</h1>
-          <p className="text-text-tertiary text-sm">210+ gifts scored against your natal chart</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.soulGiftsPage.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('readings.soulGiftsPage.subtitle')}</p>
         </div>
       </div>
 
@@ -85,7 +87,7 @@ export default function SoulGiftsPage() {
         </div>
       )}
 
-      {loading && <LoadingCosmic label="Scoring 210+ gifts against your chart..." />}
+      {loading && <LoadingCosmic label={t('common.loading')} />}
 
       {result && (
         <div className="space-y-6">

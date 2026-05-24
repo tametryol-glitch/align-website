@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getDatingMatches, type DatingMatch } from '@/lib/datingDiscoveryService';
 import { getCoachInsight, getCoachHistory, type CoachInsight } from '@/lib/datingCoachService';
@@ -8,6 +9,7 @@ import { ArrowLeft, Sparkles, Send } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RelationshipCoachPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [matches, setMatches] = useState<DatingMatch[]>([]);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
@@ -48,16 +50,16 @@ export default function RelationshipCoachPage() {
   return (
     <div className="max-w-2xl mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/matches" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Matches
+        <ArrowLeft size={16} /> {t('dating.coach.backToMatches')}
       </Link>
 
       <div className="text-center mb-6">
         <Sparkles size={28} color="#EC4899" className="mx-auto mb-2" />
-        <h1 className="text-2xl font-bold text-white mb-1">Relationship Coach</h1>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('dating.coach.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          AI-powered insights based on your astrological dynamics
+          {t('dating.coach.subtitle')}
         </p>
-        <p className="text-xs text-text-muted mt-1">Premium feature</p>
+        <p className="text-xs text-text-muted mt-1">{t('dating.coach.premiumFeature')}</p>
       </div>
 
       {loading ? (
@@ -66,8 +68,8 @@ export default function RelationshipCoachPage() {
         </div>
       ) : matches.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-text-tertiary mb-3">Match with someone to get coaching insights.</p>
-          <Link href="/dating" className="text-accent-primary text-sm font-medium">Browse Picks</Link>
+          <p className="text-text-tertiary mb-3">{t('dating.coach.noMatchHint')}</p>
+          <Link href="/dating" className="text-accent-primary text-sm font-medium">{t('dating.coach.browsePicks')}</Link>
         </div>
       ) : (
         <>
@@ -95,7 +97,7 @@ export default function RelationshipCoachPage() {
               type="text"
               value={topic}
               onChange={e => setTopic(e.target.value)}
-              placeholder="Ask about communication, conflict, intimacy..."
+              placeholder={t('dating.coach.inputPlaceholder')}
               className="flex-1 px-4 py-3 rounded-2xl text-sm text-white placeholder-text-muted outline-none"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.04)',
@@ -121,7 +123,7 @@ export default function RelationshipCoachPage() {
           <div className="space-y-4">
             {history.length === 0 && !generating && (
               <p className="text-center text-text-muted text-sm py-8">
-                Ask your first question or tap Send for a general insight.
+                {t('dating.coach.emptyHint')}
               </p>
             )}
             {[...history].reverse().map((insight, i) => (
@@ -139,7 +141,7 @@ export default function RelationshipCoachPage() {
                 <p className="text-sm text-text-secondary leading-relaxed">{insight.insight}</p>
                 <div className="flex items-center justify-between mt-3 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
                   <span className="text-[10px] text-text-muted">
-                    {insight.source === 'ai' ? 'AI Insight' : 'Template'}
+                    {insight.source === 'ai' ? t('dating.coach.aiInsight') : t('dating.coach.template')}
                   </span>
                   <span className="text-[10px] text-text-muted">
                     {new Date(insight.created_at).toLocaleDateString()}

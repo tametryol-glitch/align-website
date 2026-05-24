@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Shield, Eye, EyeOff, Search, Download, BarChart3, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type ProfileVisibility = 'public' | 'friends_only' | 'private';
 type TrustLevel = 0 | 1 | 3 | 5;
@@ -31,6 +32,7 @@ function ToggleRow({ label, description, enabled, onToggle }: {
 }
 
 export default function PrivacySettingsPage() {
+  const { t } = useTranslation();
   // Profile Visibility
   const [profileVisibility, setProfileVisibility] = useState<ProfileVisibility>('public');
   const [hideAge, setHideAge] = useState(false);
@@ -66,12 +68,12 @@ export default function PrivacySettingsPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('settings.title')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Shield className="w-7 h-7 text-accent-primary" />
-        Privacy &amp; Data
+        {t('settings.privacy.title')}
       </h1>
 
       <div className="space-y-4">
@@ -79,7 +81,7 @@ export default function PrivacySettingsPage() {
         <div className="card">
           <div className="flex items-center gap-2 mb-1">
             <Eye className="w-4 h-4 text-accent-primary" />
-            <h3 className="text-sm font-semibold text-text-primary">Profile Visibility</h3>
+            <h3 className="text-sm font-semibold text-text-primary">{t('settings.privacy.profileVisibility')}</h3>
           </div>
           <p className="text-xs text-text-muted mb-4">Control who can see your profile and personal details</p>
 
@@ -97,19 +99,19 @@ export default function PrivacySettingsPage() {
 
           <div className="divide-y divide-border-primary">
             <ToggleRow
-              label="Hide Age"
+              label={t('settings.privacy.hideAge')}
               description="Show zodiac sign instead of age"
               enabled={hideAge}
               onToggle={() => setHideAge(!hideAge)}
             />
             <ToggleRow
-              label="Hide Exact Location"
+              label={t('settings.privacy.hideExactLocation')}
               description="Show approximate area instead"
               enabled={hideExactLocation}
               onToggle={() => setHideExactLocation(!hideExactLocation)}
             />
             <ToggleRow
-              label="Hide Last Active"
+              label={t('settings.privacy.hideLastActive')}
               description="Don't show when you were last online"
               enabled={hideLastActive}
               onToggle={() => setHideLastActive(!hideLastActive)}
@@ -126,7 +128,7 @@ export default function PrivacySettingsPage() {
           <p className="text-xs text-text-muted mb-2">Control how much of your birth chart others can see</p>
           <div className="divide-y divide-border-primary">
             <ToggleRow
-              label="Hide Full Birth Chart"
+              label={t('settings.privacy.hideFullBirthChart')}
               description="Only show Sun, Moon & Rising to others"
               enabled={hideFullBirthChart}
               onToggle={() => setHideFullBirthChart(!hideFullBirthChart)}
@@ -143,13 +145,13 @@ export default function PrivacySettingsPage() {
           <p className="text-xs text-text-muted mb-2">Manage how others find and contact you</p>
           <div className="divide-y divide-border-primary">
             <ToggleRow
-              label="Incognito Mode"
+              label={t('settings.privacy.incognitoMode')}
               description="Don't appear in search or suggestions"
               enabled={incognitoMode}
               onToggle={() => setIncognitoMode(!incognitoMode)}
             />
             <ToggleRow
-              label="Block Unverified Users"
+              label={t('settings.privacy.blockUnverified')}
               description="Only verified users can contact you"
               enabled={blockUnverified}
               onToggle={() => setBlockUnverified(!blockUnverified)}
@@ -189,7 +191,7 @@ export default function PrivacySettingsPage() {
             className="w-full flex items-center justify-between py-3 px-4 rounded-lg border border-border-primary hover:bg-bg-tertiary transition-colors"
           >
             <div className="text-left">
-              <p className="text-sm font-medium text-text-primary">Export My Data</p>
+              <p className="text-sm font-medium text-text-primary">{t('settings.privacy.exportData')}</p>
               <p className="text-xs text-text-muted mt-0.5">Download all your data as a JSON file</p>
             </div>
             <Download className="w-5 h-5 text-accent-primary" />
@@ -200,7 +202,7 @@ export default function PrivacySettingsPage() {
         <div className="card">
           <div className="flex items-center gap-2 mb-1">
             <BarChart3 className="w-4 h-4 text-accent-primary" />
-            <h3 className="text-sm font-semibold text-text-primary">Analytics</h3>
+            <h3 className="text-sm font-semibold text-text-primary">{t('settings.privacy.analyticsEnabled')}</h3>
           </div>
           <p className="text-xs text-text-muted mb-2">Manage usage data collection preferences</p>
           <div className="divide-y divide-border-primary">

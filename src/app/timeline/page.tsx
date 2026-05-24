@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Clock, ArrowLeft, Heart, MessageCircle, Users, Star, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 interface TimelineEvent {
   id: string;
@@ -24,14 +25,16 @@ const EVENT_ICONS: Record<string, { icon: string; color: string }> = {
 };
 
 export default function TimelinePage() {
+  const { t } = useTranslation();
   return (
-    <Suspense fallback={<p className="text-text-muted text-sm text-center py-12">Loading timeline...</p>}>
+    <Suspense fallback={<p className="text-text-muted text-sm text-center py-12">{t('common.loading')}</p>}>
       <TimelineContent />
     </Suspense>
   );
 }
 
 function TimelineContent() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
   const friendId = searchParams.get('friendId');
@@ -64,7 +67,7 @@ function TimelineContent() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/friends" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Friends
+        <ArrowLeft className="w-4 h-4" /> {t('friends.tabs.friends')}
       </Link>
 
       <div className="flex items-center gap-3 mb-6">
@@ -76,7 +79,7 @@ function TimelineContent() {
       </div>
 
       {loading ? (
-        <p className="text-text-muted text-sm text-center py-12">Loading timeline...</p>
+        <p className="text-text-muted text-sm text-center py-12">{t('common.loading')}</p>
       ) : events.length === 0 ? (
         <div className="card text-center py-16">
           <span className="text-5xl block mb-4">✨</span>

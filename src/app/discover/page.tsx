@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { getSuggestedFriends, type SuggestedUser } from '@/lib/discoveryService';
 import Link from 'next/link';
 import { Search, ChevronRight, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -15,14 +16,14 @@ function getMoonPhaseInfo() {
   const known_new = new Date('2024-01-11').getTime();
   const diff = (Date.now() - known_new) / (1000 * 60 * 60 * 24);
   const phase = ((diff % synodic) + synodic) % synodic;
-  if (phase < 1.85) return { emoji: '🌑', name: 'New Moon', sign: getMoonSign(phase) };
-  if (phase < 7.38) return { emoji: '🌒', name: 'Waxing Crescent', sign: getMoonSign(phase) };
-  if (phase < 11.07) return { emoji: '🌓', name: 'First Quarter', sign: getMoonSign(phase) };
-  if (phase < 14.76) return { emoji: '🌔', name: 'Waxing Gibbous', sign: getMoonSign(phase) };
-  if (phase < 16.61) return { emoji: '🌕', name: 'Full Moon', sign: getMoonSign(phase) };
-  if (phase < 22.14) return { emoji: '🌖', name: 'Waning Gibbous', sign: getMoonSign(phase) };
-  if (phase < 25.83) return { emoji: '🌗', name: 'Last Quarter', sign: getMoonSign(phase) };
-  return { emoji: '🌘', name: 'Waning Crescent', sign: getMoonSign(phase) };
+  if (phase < 1.85) return { emoji: '🌑', name: 'New Moon', nameKey: 'discover.moonPhases.newMoon', sign: getMoonSign(phase) };
+  if (phase < 7.38) return { emoji: '🌒', name: 'Waxing Crescent', nameKey: 'discover.moonPhases.waxingCrescent', sign: getMoonSign(phase) };
+  if (phase < 11.07) return { emoji: '🌓', name: 'First Quarter', nameKey: 'discover.moonPhases.firstQuarter', sign: getMoonSign(phase) };
+  if (phase < 14.76) return { emoji: '🌔', name: 'Waxing Gibbous', nameKey: 'discover.moonPhases.waxingGibbous', sign: getMoonSign(phase) };
+  if (phase < 16.61) return { emoji: '🌕', name: 'Full Moon', nameKey: 'discover.moonPhases.fullMoon', sign: getMoonSign(phase) };
+  if (phase < 22.14) return { emoji: '🌖', name: 'Waning Gibbous', nameKey: 'discover.moonPhases.waningGibbous', sign: getMoonSign(phase) };
+  if (phase < 25.83) return { emoji: '🌗', name: 'Last Quarter', nameKey: 'discover.moonPhases.lastQuarter', sign: getMoonSign(phase) };
+  return { emoji: '🌘', name: 'Waning Crescent', nameKey: 'discover.moonPhases.waningCrescent', sign: getMoonSign(phase) };
 }
 
 function getMoonSign(phase: number): string {
@@ -125,6 +126,7 @@ const POST_TYPE_LABELS: Record<string, { emoji: string; label: string }> = {
 // ── Page ─────────────────────────────────────────────────────────────
 
 export default function DiscoverPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -195,7 +197,7 @@ export default function DiscoverPage() {
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
-      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">Discover</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('discover.title')}</h1>
 
       {/* Search */}
       <div className="relative mb-6">
@@ -260,7 +262,7 @@ export default function DiscoverPage() {
           <span className="text-5xl">{moon.emoji}</span>
           <div>
             <p className="text-lg font-bold text-white">Cosmic Weather</p>
-            <p className="text-sm text-white/80">{moon.name} in {moon.sign}</p>
+            <p className="text-sm text-white/80">{t(moon.nameKey)} in {moon.sign}</p>
             <p className="text-xs text-white/50 mt-1">Sun in {sunSign} · {SIGN_GLYPHS[sunSign]} Season</p>
           </div>
         </div>
@@ -464,7 +466,7 @@ export default function DiscoverPage() {
       {profile?.is_admin && (
         <Link href="/admin" className="card flex items-center gap-3 mb-8 hover:border-red-400/30 transition-colors">
           <Shield className="w-5 h-5 text-red-400" />
-          <span className="text-sm font-medium text-text-primary">Admin Panel</span>
+          <span className="text-sm font-medium text-text-primary">{t('settings.admin.title')}</span>
           <ChevronRight className="w-4 h-4 text-text-muted ml-auto" />
         </Link>
       )}

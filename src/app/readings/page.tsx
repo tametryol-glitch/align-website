@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSubscriptionStore, type TierLevel } from '@/stores/subscriptionStore';
 import { Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ReadingItem {
   key: string;
@@ -43,14 +44,47 @@ const READINGS: ReadingItem[] = [
   { key: 'Chart Adjuster', href: '/readings/chart-adjuster', glyph: '☉', tier: 'free' },
 ];
 
+const READING_I18N_KEYS: Record<string, string> = {
+  'Soul Ascension': 'readings.soulAscension',
+  'Transits': 'readings.transits',
+  'Soul Gifts': 'readings.soulGifts',
+  'Soul Memory': 'readings.soulMemory',
+  'Compatibility': 'readings.compatibility',
+  'Starseed': 'readings.starseed',
+  'Numerology': 'readings.numerology',
+  'Human Design': 'readings.humanDesign',
+  'Tarot': 'readings.tarot',
+  'Financial': 'readings.financial',
+  'Name Analysis': 'readings.nameAnalysis',
+  'Angel Numbers': 'readings.angelNumbers',
+  'Moon Phases': 'readings.moonPhases',
+  'Planetary Hours': 'readings.planetaryHours',
+  'Cosmic Journal': 'readings.cosmicJournal',
+  'Dream Oracle': 'readings.dreamOracle',
+  'Year Ahead': 'readings.yearAhead',
+  'Galactic Clock': 'readings.galacticClock',
+  'Galactic Forecast': 'readings.galacticForecast',
+  'Solar Return': 'readings.solarReturn',
+  'Midpoints': 'readings.midpoints',
+  'Firdaria': 'readings.firdaria',
+  'Zodiacal Releasing': 'readings.zodiacalReleasing',
+  'ACG Map': 'readings.acg',
+  'Arabic Parts': 'readings.arabicParts',
+  'Fixed Stars': 'readings.fixedStars',
+  'Pathway': 'readings.pathway',
+  'Rectification': 'readings.rectification',
+  'Chart Adjuster': 'readings.chartAdjuster',
+};
+
 const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pro: 3 };
 
 export default function ReadingsPage() {
+  const { t } = useTranslation();
   const { tier } = useSubscriptionStore();
 
   return (
     <div className="max-w-5xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">Readings</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('readings.title')}</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {READINGS.map((reading) => {
@@ -70,13 +104,13 @@ export default function ReadingsPage() {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-text-primary font-medium mt-3">{reading.key}</p>
+                <p className="text-sm text-text-primary font-medium mt-3">{READING_I18N_KEYS[reading.key] ? t(READING_I18N_KEYS[reading.key]) : reading.key}</p>
               </div>
               {locked && (
                 <div className="absolute inset-0 bg-bg-primary/60 backdrop-blur-[1px] rounded-2xl flex items-center justify-center">
                   <div className="flex items-center gap-2 text-text-muted">
                     <Lock className="w-4 h-4" />
-                    <span className="text-sm font-medium">Upgrade to {reading.tier}</span>
+                    <span className="text-sm font-medium">{t('readings.upgradeToTier', { tier: reading.tier })}</span>
                   </div>
                 </div>
               )}

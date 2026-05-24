@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -15,6 +16,7 @@ import { PaywallGate } from '@/components/ui/PaywallGate';
 const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna'];
 
 export default function SoulMemoryPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [result, setResult] = useState<SoulMemoryResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,13 +57,13 @@ export default function SoulMemoryPage() {
     <div className="max-w-3xl mx-auto">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       <div className="flex items-center gap-3 mb-6">
         <History className="w-8 h-8 text-accent-primary" />
         <div>
-          <h1 className="text-2xl font-display font-bold text-text-primary">Soul Memory</h1>
-          <p className="text-text-tertiary text-sm">Decode your past-life imprints through your natal chart</p>
+          <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.soulMemoryPage.title')}</h1>
+          <p className="text-text-tertiary text-sm">{t('readings.soulMemoryPage.subtitle')}</p>
         </div>
       </div>
 
@@ -82,7 +84,7 @@ export default function SoulMemoryPage() {
         </div>
       )}
 
-      {loading && <LoadingCosmic label="Scoring 16 archetypes against your chart..." />}
+      {loading && <LoadingCosmic label={t('common.loading')} />}
 
       {result && (
         <div className="space-y-5">

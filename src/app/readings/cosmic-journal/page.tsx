@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
 import Link from 'next/link';
@@ -487,6 +488,7 @@ function EntryEditorModal({
 // ─── Main Page ──────────────────────────────────────────────────────────────
 
 export default function CosmicJournalPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const [viewMode, setViewMode] = useState<'entries' | 'patterns'>('entries');
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -577,10 +579,10 @@ export default function CosmicJournalPage() {
       <div className="max-w-3xl mx-auto">
         <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back to Readings
+          {t('readings.backToReadings')}
         </Link>
 
-        <h1 className="text-2xl font-display font-bold text-text-primary mb-1">Cosmic Journal</h1>
+        <h1 className="text-2xl font-display font-bold text-text-primary mb-1">{t('readings.cosmicJournalPage.title')}</h1>
         <p className="text-sm text-text-muted leading-relaxed mb-4">
           Write through the transits. Every entry quietly captures the sky around you — over time,
           the pattern of your mood against the pattern of your stars becomes visible.

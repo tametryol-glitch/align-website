@@ -50,7 +50,8 @@
     "agreeToTerms": "Zgadzam się z",
     "privacyPolicy": "Polityką prywatności",
     "and": "i",
-    "termsOfService": "Regulaminem"
+    "termsOfService": "Regulaminem",
+    "signInToAccess": "Zaloguj się, aby uzyskać dostęp do wiadomości"
   },
   "onboarding": {
     "title": "Stwórzmy Twój wykres urodzeniowy",
@@ -176,6 +177,7 @@
     "firdaria": "Firdaria",
     "zodiacalReleasing": "Zodiacal Releasing",
     "planetaryHours": "Godziny planetarne",
+    "moonPhases": "Fazy Księżyca",
     "acg": "Astrokartografia",
     "fixedStars": "Gwiazdy stałe",
     "arabicParts": "Punkty arabskie",
@@ -186,12 +188,378 @@
     "galacticForecast": "Prognoza galaktyczna",
     "midpoints": "Kalkulator półsumów",
     "aiAstrologer": "Astrolog AI",
+    "yearAhead": "Mój Nadchodzący Rok",
     "savedCharts": "Zapisane wykresy",
     "cosmicJournal": "Kosmiczny dziennik",
-    "moonPhases": "Fazy Księżyca",
-    "yearAhead": "Mój Nadchodzący Rok",
     "soulGifts": "Dary duszy",
-    "soulMemory": "Pamięć duszy"
+    "soulMemory": "Pamięć duszy",
+    "soulAscension": "Wzniesienie duszy",
+    "dreamOracle": "Wyrocznia snów",
+    "backToReadings": "Powrót do Odczytów",
+    "upgradeToTier": "Uaktualnij do {{tier}}",
+    "birthDataRequired": "Najpierw dodaj dane urodzenia w swoim profilu.",
+    "birthDataPromptTransits": "Dodaj dane urodzenia, aby zobaczyć swoje bieżące tranzyty.",
+    "birthDataPromptCompatibility": "Dodaj dane urodzenia, aby sprawdzić kompatybilność z kimś wyjątkowym.",
+    "birthDataPromptAlerts": "Potrzebujemy twoich danych urodzenia, aby obliczyć spersonalizowane kosmiczne alerty dla twojego wykresu.",
+    "transitsPage": {
+      "title": "Twoje cykle",
+      "subtitle": "{{name}}, to są cykle przechodzące teraz przez twoje życie. Pomyśl o nich jak o porach roku — każdy niesie swoją energię, lekcje i możliwości.",
+      "loadingLabel": "Obliczanie twoich tranzytów...",
+      "errorDefault": "Nie udało się załadować tranzytów",
+      "emptyState": "Nie znaleziono aktywnych cykli. Sprawdź ponownie wkrótce.",
+      "activeNow": "Aktywne teraz",
+      "storylines": "Wątki",
+      "impactingYouNow": "Wpływające na ciebie teraz",
+      "backToCycles": "Powrót do Cykli",
+      "active": "aktywny",
+      "approaching": "Zbliżający się",
+      "separating": "Oddalający się",
+      "cycleMeaning": "Co ten cykl oznacza dla ciebie",
+      "howToNavigate": "Jak to nawigować",
+      "technicalDetails": "Szczegóły techniczne",
+      "transit": "Tranzyt",
+      "currentOrb": "Bieżący orb",
+      "direction": "Kierunek",
+      "intensity": "Intensywność",
+      "separatingDesc": "Oddalający się (odchodzi od dokładnego)",
+      "applyingDesc": "Zbliżający się (zmierza ku dokładnemu)",
+      "intensityMajor": "Główny (planeta zewnętrzna)",
+      "intensityModerate": "Umiarkowany",
+      "intensityMinor": "Mniejszy",
+      "nearExact": "Blisko dokładnego — najsilniejszy wpływ",
+      "stronglyActive": "Silnie aktywny",
+      "buildingMomentum": "Nabieranie rozpędu",
+      "enteringAwareness": "Wchodzenie w świadomość",
+      "lessThanADay": "Mniej niż dzień pozostał",
+      "daysLeft": "{{count}} dni pozostało",
+      "weeksLeft": "~{{count}} tygodni pozostało",
+      "monthsLeft": "~{{count}} miesięcy pozostało",
+      "yearsLeft": "{{count}}+ lat",
+      "tapToRead": "Dotknij, aby przeczytać pełny wgląd",
+      "failedToLoadStorylines": "Nie udało się załadować wątków"
+    },
+    "tarotPage": {
+      "title": "Odczyt tarota",
+      "subtitle": "Otrzymaj wskazówki od arcana",
+      "chooseSpread": "Wybierz rozkład",
+      "yourQuestion": "Twoje pytanie (opcjonalnie)",
+      "questionPlaceholder": "Jakiej wskazówki szukasz?",
+      "drawButton": "Wylosuj {{spread}}",
+      "shuffling": "Tasowanie kosmicznej talii...",
+      "tapToReveal": "Dotknij, aby odsłonić",
+      "revealAll": "Odsłoń wszystkie karty",
+      "newReading": "Nowy odczyt",
+      "getPersonalReading": "Uzyskaj osobisty odczyt",
+      "regenerateReading": "Wygeneruj ponownie osobisty odczyt",
+      "personalTarotReading": "Osobisty odczyt tarota",
+      "channeling": "Łączenie wykresu i kart...",
+      "shareReading": "Udostępnij odczyt",
+      "copied": "Skopiowano!",
+      "failedToGenerate": "Nie udało się wygenerować odczytu. Spróbuj ponownie.",
+      "reversed": "Odwrócona",
+      "majorArcana": "Wielkie Arkana",
+      "minorArcana": "Małe Arkana",
+      "spreads": {
+        "single": "Pojedyncza karta",
+        "threeCard": "Trzy karty",
+        "celticCross": "Krzyż Celtycki",
+        "relationship": "Relacja",
+        "career": "Kariera"
+      },
+      "positions": {
+        "focus": "Fokus",
+        "past": "Przeszłość",
+        "present": "Teraźniejszość",
+        "future": "Przyszłość",
+        "challenge": "Wyzwanie",
+        "foundation": "Fundament",
+        "recentPast": "Niedawna przeszłość",
+        "crown": "Korona",
+        "nearFuture": "Bliska przyszłość",
+        "self": "Ja",
+        "environment": "Otoczenie",
+        "hopesFears": "Nadzieje/Obawy",
+        "outcome": "Wynik",
+        "you": "Ty",
+        "partner": "Partner",
+        "connection": "Połączenie",
+        "potential": "Potencjał",
+        "current": "Obecny",
+        "obstacle": "Przeszkoda",
+        "hiddenFactor": "Ukryty czynnik",
+        "advice": "Rada"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Wyrocznia snów",
+      "subtitle": "Rozszyfruj swoje sny poprzez symbole, emocje, astrologię i ukryty język podświadomości.",
+      "tabs": {
+        "record": "Nagrywanie",
+        "journal": "Dziennik",
+        "symbols": "Symbole",
+        "patterns": "Wzorce"
+      },
+      "record": {
+        "dreamTitle": "Tytuł snu (opcjonalnie)",
+        "titlePlaceholder": "Generowany automatycznie, jeśli puste",
+        "describeLabel": "Opisz swój sen *",
+        "describePlaceholder": "Zamknij oczy i opisz wszystko, co pamiętasz...",
+        "mainEmotions": "Główne emocje (maks. 5)",
+        "peopleDream": "Osoby we śnie",
+        "peoplePlaceholder": "np. Matka, eks-partner, nieznajomy, przyjaciel",
+        "placesDream": "Miejsca we śnie",
+        "placesPlaceholder": "np. dom z dzieciństwa, ocean, ciemny las",
+        "separateCommas": "Oddziel przecinkami",
+        "symbolsObjects": "Symbole / Przedmioty",
+        "selectSymbols": "Kliknij, aby wybrać symbole snu",
+        "selectedCount": "{{count}} wybranych",
+        "searchSymbols": "Szukaj symboli...",
+        "dreamType": "Typ snu",
+        "dreamIntensity": "Intensywność snu: {{value}}/10",
+        "privacy": "Prywatność",
+        "interpretDream": "Interpretuj mój sen",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Twoja interpretacja snu",
+        "mainSymbols": "Główne symbole",
+        "coreMessage": "Główne przesłanie",
+        "subconsciousMessage": "Co twoja podświadomość ci pokazywała",
+        "symbolsMatter": "Symbole, które mają największe znaczenie",
+        "emotionalUndercurrent": "Podprąd emocjonalny",
+        "whatToFace": "Z czym ten sen każe ci się zmierzyć",
+        "oracleMessage": "Ostateczne przesłanie wyroczni snów",
+        "astroConnection": "Połączenie astrologiczne",
+        "whyNow": "Dlaczego to przyśniło ci się teraz",
+        "watchFor": "Na co zwrócić uwagę",
+        "whatToDo": "Co zrobić dalej",
+        "reflectionQuestions": "Pytania do refleksji",
+        "askAboutDream": "Zapytaj o ten sen",
+        "visualizeDream": "Zwizualizuj mój sen",
+        "comingSoon": "WKRÓTCE",
+        "recordAnother": "Nagraj kolejny sen"
+      },
+      "journal": {
+        "loadingJournal": "Ładowanie dziennika snów...",
+        "searchDreams": "Szukaj snów...",
+        "noDreamsYet": "Brak snów",
+        "noDreamsHint": "Nagraj swój pierwszy sen, aby zacząć budować dziennik.",
+        "deleteConfirm": "Usunąć ten sen? Tej operacji nie można cofnąć."
+      },
+      "dictionary": {
+        "backToSymbols": "Powrót do symboli",
+        "generalMeaning": "Znaczenie ogólne",
+        "psychologicalMeaning": "Znaczenie psychologiczne",
+        "spiritualMeaning": "Znaczenie duchowe",
+        "astrologicalMeaning": "Znaczenie astrologiczne",
+        "shadowMeaning": "Znaczenie cienia",
+        "reflectionQuestion": "Pytanie do refleksji"
+      },
+      "patterns": {
+        "noPatternsYet": "Brak wzorców",
+        "noPatternsHint": "Nagraj co najmniej 3 sny, aby zacząć dostrzegać wzorce w swoim życiu sennym.",
+        "overview": "Przegląd",
+        "totalDreams": "Łączna liczba snów",
+        "avgIntensity": "Średnia intensywność",
+        "nightmares": "Koszmary",
+        "lucidDreams": "Sny świadome",
+        "prophetic": "Prorocze",
+        "recurringSymbols": "Najczęściej powtarzające się symbole",
+        "recurringEmotions": "Najczęściej powtarzające się emocje",
+        "recurringPeople": "Najczęściej powtarzające się osoby",
+        "dreamTypes": "Typy snów",
+        "dreamsByMoonPhase": "Sny według fazy Księżyca",
+        "moonPhaseHint": "Śledzenie wzorców faz Księżyca aktywuje się po nagraniu 10+ snów z połączonymi danymi astrologicznymi.",
+        "dreamsByTransit": "Sny według tranzytów",
+        "transitHint": "Korelacja tranzytów ujawni, które aspekty planetarne aktywują twoje najżywsze lub prorocze sny."
+      }
+    },
+    "starseedPage": {
+      "title": "Pochodzenie gwiezdne",
+      "subtitle": "Odkryj kosmiczne korzenie swojej duszy",
+      "description": "Przeanalizuj swój wykres urodzeniowy, aby odkryć, z którymi systemami gwiezdnymi rezonuje twoja dusza.",
+      "discoverButton": "Odkryj moje pochodzenie",
+      "analyzing": "Analizowanie...",
+      "dominantOrigin": "Dominujące pochodzenie",
+      "resonancePoints": "Wynik: {{score}} punktów rezonansu"
+    },
+    "numerologyPage": {
+      "title": "Numerologia",
+      "subtitle": "Twoje kosmiczne liczby rozszyfrowane",
+      "master": "Mistrzowska"
+    },
+    "angelNumbersPage": {
+      "title": "Liczby anielskie",
+      "subtitle": "Sprawdź znaczenie liczb, które widzisz",
+      "searchPlaceholder": "Wpisz liczbę (np. 111, 444)...",
+      "popular": "Popularne liczby",
+      "notFound": "Nie znaleziono liczby. Spróbuj popularnej liczby anielskiej.",
+      "copiedToClipboard": "Skopiowano do schowka!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Twój energetyczny plan",
+      "aura": "Aura",
+      "defined": "Zdefiniowane",
+      "undefined": "Niezdefiniowane"
+    },
+    "financialPage": {
+      "title": "Astrologia finansowa",
+      "subtitle": "Twój kosmiczny plan finansowy",
+      "personalIncome": "Osobisty dochód i wartości",
+      "sharedResources": "Wspólne zasoby i transformacja",
+      "careerStanding": "Kariera i pozycja publiczna",
+      "gainsNetworks": "Zyski i sieci kontaktów",
+      "strengths": "Mocne strony",
+      "challenges": "Wyzwania",
+      "monthlyForecast": "Prognoza miesięczna",
+      "timingWindows": "Okna czasowe",
+      "favorable": "Korzystne",
+      "mixed": "Mieszane",
+      "challenging": "Wymagające"
+    },
+    "compatibilityPage": {
+      "title": "Sprawdzanie kompatybilności",
+      "subtitle": "Odkryj kosmiczne połączenie między dwiema duszami",
+      "person2Label": "Dane urodzenia partnera",
+      "datePlaceholder": "Data urodzenia",
+      "timePlaceholder": "Godzina urodzenia",
+      "locationPlaceholder": "Miejsce urodzenia",
+      "calculateButton": "Sprawdź kompatybilność",
+      "calculating": "Obliczanie kompatybilności...",
+      "overallScore": "Wynik ogólny",
+      "soulLevelConnection": "Połączenie na poziomie duszy",
+      "deepCompatibility": "Głęboka kompatybilność",
+      "strongPotential": "Silny potencjał",
+      "moderateMatch": "Umiarkowane dopasowanie",
+      "growthRequired": "Wymagany rozwój",
+      "challengingDynamic": "Wymagająca dynamika",
+      "categories": {
+        "attraction": "Przyciąganie fizyczne",
+        "emotional": "Więź emocjonalna",
+        "mental": "Połączenie mentalne",
+        "stability": "Stabilność długoterminowa",
+        "karmic": "Więź karmiczna",
+        "harmony": "Harmonia",
+        "magnetic": "Przyciąganie magnetyczne"
+      },
+      "showAspects": "Pokaż aspekty",
+      "hideAspects": "Ukryj aspekty"
+    },
+    "cosmicJournalPage": {
+      "title": "Kosmiczny dziennik",
+      "subtitle": "Śledź swój wewnętrzny świat obok kosmosu",
+      "newEntry": "Nowy wpis",
+      "moodOptions": {
+        "low": "Niski",
+        "meh": "Tak sobie",
+        "neutral": "Neutralny",
+        "good": "Dobry",
+        "great": "Świetny"
+      },
+      "noEntries": "Brak wpisów w dzienniku",
+      "noEntriesHint": "Zacznij pisać, aby śledzić swój wewnętrzny świat obok kosmosu."
+    },
+    "moonPhasesPage": {
+      "title": "Fazy Księżyca",
+      "tabs": {
+        "today": "Dziś",
+        "calendar": "Kalendarz",
+        "forecast": "Prognoza",
+        "eclipses": "Zaćmienia",
+        "birthMoon": "Księżyc urodzeniowy"
+      },
+      "failedToLoadChart": "Nie udało się załadować wykresu urodzeniowego"
+    },
+    "planetaryHoursPage": {
+      "title": "Godziny planetarne",
+      "subtitle": "Starożytna mądrość czasu dla współczesnego życia",
+      "currentHour": "Bieżąca godzina",
+      "daySummary": "Podsumowanie dnia",
+      "hoursTable": "Tabela godzin"
+    },
+    "yearAheadPage": {
+      "title": "Mój Nadchodzący Rok",
+      "subtitle": "Twoja spersonalizowana kosmiczna prognoza na rok",
+      "generating": "Generowanie nadchodzącego roku...",
+      "monthlyOverview": "Przegląd miesięczny",
+      "keyTransits": "Kluczowe tranzyty",
+      "calm": "Spokojny",
+      "activeIntensity": "Aktywny",
+      "intense": "Intensywny"
+    },
+    "solarReturnPage": {
+      "title": "Rewolucja słoneczna",
+      "subtitle": "Twój wykres urodzinowy — kosmiczny plan na rok",
+      "generating": "Obliczanie rewolucji słonecznej...",
+      "yearTheme": "Temat roku",
+      "planetsOnAngles": "Planety na kątach",
+      "retrogrades": "Retrogradacje",
+      "monthlyTimeline": "Oś czasu miesięczna",
+      "natalComparisons": "Natal vs. rewolucja słoneczna",
+      "criticalAspects": "Krytyczne aspekty",
+      "yearPattern": "Wzorzec roku"
+    },
+    "galacticClockPage": {
+      "title": "Zegar galaktyczny",
+      "subtitle": "Twój kosmiczny interfejs czasu"
+    },
+    "galacticForecastPage": {
+      "title": "Prognoza galaktyczna",
+      "subtitle": "Energie głębokiego kosmosu wpływające na twój wykres"
+    },
+    "midpointsPage": {
+      "title": "Kalkulator półsumów",
+      "subtitle": "Odkryj ukryte połączenia w swoim wykresie"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Starożytne perskie okresy planetarne"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistyczna technika czasu"
+    },
+    "acgPage": {
+      "title": "Astrokartografia",
+      "subtitle": "Gdzie na świecie aktywują się twoje planety"
+    },
+    "fixedStarsPage": {
+      "title": "Gwiazdy stałe",
+      "subtitle": "Wpływy gwiezdne w twoim wykresie"
+    },
+    "arabicPartsPage": {
+      "title": "Punkty arabskie",
+      "subtitle": "Starożytne punkty obliczone w twoim wykresie"
+    },
+    "pathwayPage": {
+      "title": "Droga do sukcesu",
+      "subtitle": "Twój kosmiczny plan kariery i celu życiowego"
+    },
+    "rectificationPage": {
+      "title": "Rektyfikacja czasu urodzenia",
+      "subtitle": "Doprecyzuj czas urodzenia dla dokładniejszych wykresów"
+    },
+    "nameAnalysisPage": {
+      "title": "Analiza imienia",
+      "subtitle": "Numerologia twojego imienia"
+    },
+    "soulGiftsPage": {
+      "title": "Dary duszy",
+      "subtitle": "Odkryj unikalne dary zakodowane w twoim wykresie"
+    },
+    "soulMemoryPage": {
+      "title": "Pamięć duszy",
+      "subtitle": "Echa przeszłych żyć w twoim wykresie urodzeniowym"
+    },
+    "soulAscensionPage": {
+      "title": "Wzniesienie duszy",
+      "description": "Graj w swój wykres urodzeniowy jako RPG reinkarnacji z karmą, ścieżkami celu, kontraktami duszy, relikwiami i wyborami z przeszłych żyć."
+    },
+    "chartAdjusterPage": {
+      "title": "Korekta wykresu",
+      "subtitle": "Eksperymentuj z różnymi czasami urodzenia"
+    }
   },
   "interpretation": {
     "aiInterpret": "Interpretacja AI",
@@ -205,6 +573,464 @@
       "reputation": "Reputacja"
     }
   },
+  "dating": {
+    "title": "Kosmiczne randki",
+    "subtitle": "Twoje wyselekcjonowane kosmiczne wybory",
+    "introTitle": "Kosmiczne randki",
+    "introDescription": "Znajdź znaczące połączenia zapisane w gwiazdach. Stwórz swój profil randkowy, aby zacząć odkrywać kosmicznie kompatybilne dopasowania.",
+    "createProfileButton": "Stwórz swój profil randkowy",
+    "featurePhotos": "Dodaj zdjęcia i wprowadzenie głosowe",
+    "featureCompatibility": "Dopasowanie na podstawie kosmicznej kompatybilności",
+    "featureSafety": "Bezpieczne i zweryfikowane połączenia",
+    "tabs": {
+      "discover": "Odkrywaj",
+      "likes": "Polubienia",
+      "matches": "Dopasowania",
+      "myProfile": "Mój profil"
+    },
+    "discovery": {
+      "consulting": "Konsultacja z kosmosem...",
+      "noPicksTitle": "Brak kosmicznych wyborów",
+      "allCaughtUpTitle": "Wszystko na bieżąco!",
+      "noPicksDescription": "Gwiazdy wciąż układają twoje dopasowania. Upewnij się, że twój profil randkowy jest kompletny!",
+      "allCaughtUpDescription": "Wróć jutro po nowe kosmiczne wybory. Jakościowe połączenia wymagają czasu.",
+      "completeProfile": "Uzupełnij profil",
+      "dailyLikeLimit": "Osiągnąłeś dzienny limit polubień ({{limit}}). Uaktualnij, aby uzyskać więcej!",
+      "dailyRoseLimit": "Wykorzystałeś wszystkie Kosmiczne Róże na dziś ({{limit}}). Uaktualnij, aby uzyskać więcej!",
+      "genericError": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "likes": {
+      "title": "Polubienia",
+      "receivedCount": "{{count}} osób jest zainteresowanych",
+      "sentCount": "Polubiłeś {{count}} osób",
+      "received": "Otrzymane",
+      "sent": "Wysłane",
+      "seeWhoLikes": "Zobacz, kto cię lubi",
+      "upgradeHint": "Uaktualnij do Light lub wyżej, aby zobaczyć profile",
+      "upgrade": "Uaktualnij",
+      "noLikesYet": "Brak polubień",
+      "noSentYet": "Brak wysłanych polubień",
+      "keepFresh": "Utrzymuj aktualny profil, a kosmos dostarczy.",
+      "headToDiscover": "Przejdź do Odkrywaj, aby znaleźć kosmiczne połączenia.",
+      "mysteryAdmirer": "Tajemniczy wielbiciel",
+      "rose": "Róża",
+      "likeBack": "Polub z powrotem",
+      "matching": "Dopasowywanie..."
+    },
+    "matches": {
+      "title": "Twoje dopasowania",
+      "connectionCount": "{{count}} kosmicznych połączeń",
+      "noMatchesTitle": "Brak dopasowań",
+      "noMatchesDescription": "Gdy ty i ktoś inny się wzajemnie polubicie, pojawicie się tutaj.",
+      "discoverPeople": "Odkrywaj ludzi",
+      "cosmicIcebreakers": "Kosmiczne przełamywacze lodów",
+      "message": "Wiadomość",
+      "unmatchConfirm": "Usunąć dopasowanie z {{name}}?",
+      "unmatch": "Usuń dopasowanie",
+      "cancel": "Anuluj",
+      "matchedToday": "Dopasowani dziś",
+      "matchedDaysAgo": "Dopasowani {{days}} dni temu",
+      "cosmicMatch": "Kosmiczne dopasowanie"
+    },
+    "profile": {
+      "title": "Profil randkowy",
+      "datingMode": "Tryb randkowy",
+      "datingModeHint": "Ustaw widoczność profilu w kosmicznym odkrywaniu",
+      "cosmicSignature": "Twoja kosmiczna sygnatura",
+      "sunMoonRising": "Słońce / Księżyc / Ascendent",
+      "photos": "Zdjęcia",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "O mnie",
+      "aboutMePlaceholder": "Opowiedz potencjalnym dopasowaniom o sobie...",
+      "cosmicPrompts": "Kosmiczne podpowiedzi",
+      "addPrompt": "Dodaj podpowiedź",
+      "promptAnswerPlaceholder": "Twoja odpowiedź...",
+      "voicePrompt": "Wprowadzenie głosowe",
+      "voicePromptHint": "Nagraj 30-sekundowe wprowadzenie głosowe, aby pokazać swoją osobowość",
+      "uploadingVoice": "Przesyłanie wprowadzenia głosowego...",
+      "reRecord": "Nagraj ponownie",
+      "stopRecording": "Zatrzymaj nagrywanie",
+      "recordVoicePrompt": "Nagraj wprowadzenie głosowe",
+      "videoIntro": "Wprowadzenie wideo",
+      "videoIntroHint": "Prześlij 15-sekundowe wideo, aby się przedstawić",
+      "replaceVideo": "Zastąp wideo",
+      "uploadVideo": "Prześlij wideo",
+      "showAge": "Pokaż wiek na profilu",
+      "photoVerification": "Weryfikacja zdjęcia",
+      "verified": "Zweryfikowany",
+      "verifyNow": "Zweryfikuj teraz",
+      "datingPreferences": "Preferencje randkowe",
+      "savePreferences": "Zapisz preferencje",
+      "saveProfile": "Zapisz profil",
+      "saving": "Zapisywanie...",
+      "preferenceFields": {
+        "genderIdentity": "Tożsamość płciowa",
+        "sexualOrientation": "Orientacja seksualna",
+        "interestedIn": "Zainteresowany/a",
+        "primaryIntent": "Główny cel",
+        "ageRange": "Przedział wiekowy",
+        "maxDistance": "Maksymalna odległość"
+      },
+      "privacyLevels": {
+        "visible": "Widoczny",
+        "matchOnly": "Tylko dopasowanie",
+        "hidden": "Ukryty"
+      }
+    },
+    "verify": {
+      "title": "Weryfikacja zdjęcia",
+      "subtitle": "Zweryfikuj swoją tożsamość, aby zdobyć odznakę zaufania na profilu randkowym",
+      "backToProfile": "Powrót do profilu",
+      "verifiedTitle": "Zweryfikowany!",
+      "verifiedDescription": "Twój profil wyświetla teraz odznakę weryfikacji.",
+      "pendingTitle": "W trakcie weryfikacji",
+      "pendingDescription": "Twoje selfie jest weryfikowane. Zazwyczaj trwa to 24-48 godzin.",
+      "rejectedTitle": "Niezatwierdzone",
+      "rejectedHint": "Możesz spróbować ponownie z wyraźniejszym selfie.",
+      "tryAgain": "Spróbuj ponownie",
+      "howItWorks": "Jak to działa:",
+      "step1": "1. Zrób wyraźne selfie w dobrym oświetleniu",
+      "step2": "2. Upewnij się, że twoja twarz jest w pełni widoczna",
+      "step3": "3. Porównamy je z twoimi zdjęciami profilowymi",
+      "step4": "4. Po zatwierdzeniu otrzymasz odznakę weryfikacji",
+      "takeSelfie": "Zrób selfie",
+      "capture": "Zrób zdjęcie",
+      "cancel": "Anuluj",
+      "retake": "Zrób ponownie",
+      "submitForReview": "Prześlij do weryfikacji",
+      "submitting": "Przesyłanie...",
+      "cameraAccessDenied": "Odmowa dostępu do kamery. Zezwól na dostęp do kamery w ustawieniach przeglądarki.",
+      "submissionFailed": "Przesyłanie nie powiodło się. Spróbuj ponownie.",
+      "networkError": "Błąd sieci. Sprawdź połączenie i spróbuj ponownie."
+    },
+    "coach": {
+      "title": "Trener relacji",
+      "subtitle": "Wglądy oparte na AI na podstawie dynamiki astrologicznej",
+      "premiumFeature": "Funkcja Premium",
+      "backToMatches": "Powrót do Dopasowań",
+      "noMatchHint": "Dopasuj się z kimś, aby uzyskać wglądy coachingowe.",
+      "browsePicks": "Przeglądaj wybory",
+      "inputPlaceholder": "Zapytaj o komunikację, konflikty, intymność...",
+      "emptyHint": "Zadaj swoje pierwsze pytanie lub dotknij Wyślij, aby uzyskać ogólny wgląd.",
+      "aiInsight": "Wgląd AI",
+      "template": "Szablon"
+    },
+    "timing": {
+      "title": "Kosmiczny czas",
+      "subtitle": "Planetarne okna podkreślające najlepsze momenty dla twoich połączeń",
+      "backToMatches": "Powrót do Dopasowań",
+      "noMatchHint": "Dopasuj się z kimś, aby zobaczyć kosmiczne okna czasowe.",
+      "browsePicks": "Przeglądaj wybory",
+      "noWindows": "Nie znaleziono okien czasowych.",
+      "qualityExcellent": "Doskonała",
+      "qualityGood": "Dobra",
+      "qualityNeutral": "Neutralna",
+      "qualityChallenging": "Wymagająca",
+      "now": "Teraz",
+      "inDays": "Za {{days}} dni"
+    },
+    "events": {
+      "title": "Kosmiczne wydarzenia",
+      "subtitle": "Tematyczne wydarzenia randkowe dopasowane do kosmosu",
+      "backToDating": "Powrót do Randek",
+      "tabs": {
+        "upcoming": "Nadchodzące",
+        "myEvents": "Moje wydarzenia"
+      },
+      "noUpcoming": "Brak nadchodzących wydarzeń. Sprawdź wkrótce!",
+      "noRegistered": "Nie zarejestrowałeś się na żadne wydarzenie.",
+      "live": "NA ŻYWO",
+      "maxCount": "Maks. {{count}}",
+      "elementOnly": "Tylko znaki {{element}}",
+      "registered": "Zarejestrowany",
+      "cancelRegistration": "Anuluj",
+      "register": "Zarejestruj się",
+      "registering": "Rejestrowanie..."
+    },
+    "milestones": {
+      "title": "Kamienie milowe relacji",
+      "subtitle": "Śledź swoją wspólną podróż pod gwiazdami",
+      "backToMatches": "Powrót do Dopasowań",
+      "noMatchHint": "Dopasuj się z kimś, aby śledzić kamienie milowe.",
+      "browsePicks": "Przeglądaj wybory",
+      "journeyProgress": "Postęp podróży",
+      "mark": "Oznacz"
+    },
+    "datePlanner": {
+      "title": "Planer randek",
+      "subtitle": "Kosmicznie dobrane pomysły na randkę dla ciebie i twojego dopasowania",
+      "backToMatches": "Powrót do Dopasowań",
+      "noMatchHint": "Dopasuj się z kimś, aby uzyskać propozycje randek.",
+      "browsePicks": "Przeglądaj wybory",
+      "shuffleIdeas": "Przetasuj pomysły",
+      "elementEnergy": "Energia {{element}}"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Kosmiczny feed",
+    "createPost": "Utwórz post",
+    "postTypes": {
+      "text": "Tekst",
+      "photo": "Zdjęcie",
+      "video": "Wideo",
+      "poll": "Ankieta"
+    },
+    "composer": {
+      "placeholder": "Co masz na kosmicznym umyśle?",
+      "uploadImage": "Kliknij, aby przesłać obraz",
+      "uploadVideo": "Kliknij, aby przesłać wideo",
+      "imageSizeLimit": "Obraz musi mieć mniej niż 10 MB",
+      "videoSizeLimit": "Wideo musi mieć mniej niż 200 MB",
+      "backgroundStyle": "Styl tła",
+      "visibility": "Widoczność:",
+      "visibilityPublic": "Publiczny",
+      "visibilityFriends": "Znajomi",
+      "postButton": "Opublikuj",
+      "posting": "Publikowanie...",
+      "uploadingImage": "Przesyłanie obrazu...",
+      "uploadingVideo": "Przesyłanie wideo...",
+      "addImage": "Dodaj obraz",
+      "addVideo": "Dodaj wideo",
+      "editPost": "Edytuj post"
+    },
+    "poll": {
+      "question": "Pytanie",
+      "questionPlaceholder": "Zapytaj kosmos...",
+      "options": "Opcje",
+      "optionPlaceholder": "Opcja {{number}}",
+      "addOption": "Dodaj opcję",
+      "duration": "Czas trwania",
+      "durationOptions": {
+        "1h": "1 godzina",
+        "6h": "6 godzin",
+        "12h": "12 godzin",
+        "1d": "1 dzień",
+        "3d": "3 dni",
+        "7d": "7 dni"
+      },
+      "createPoll": "Utwórz ankietę",
+      "pollNeedsContent": "Ankieta wymaga pytania i co najmniej 2 opcji"
+    },
+    "empty": {
+      "title": "Twój kosmiczny feed czeka",
+      "description": "Dziel się odczytami, wykresami i kosmicznymi wglądami ze swoją społecznością.",
+      "createFirst": "Utwórz swój pierwszy post"
+    },
+    "loadMore": "Załaduj więcej",
+    "loading": "Ładowanie..."
+  },
+  "friends": {
+    "title": "Znajomi i połączenia",
+    "friendCount": "{{count}} znajomych",
+    "pendingCount": "{{count}} oczekujących",
+    "inviteFriends": "Zaproś znajomych",
+    "qrCode": "Kod QR",
+    "tabs": {
+      "friends": "Znajomi",
+      "requests": "Zaproszenia",
+      "search": "Szukaj"
+    },
+    "suggestionsTitle": "Osoby, które możesz znać",
+    "addButton": "+ Dodaj",
+    "empty": {
+      "noFriends": "Brak znajomych",
+      "noFriendsHint": "Szukaj ludzi lub udostępnij swój kod Align",
+      "findPeople": "Znajdź ludzi",
+      "noRequests": "Brak oczekujących zaproszeń",
+      "noRequestsHint": "Zaproszenia do znajomych, które wysyłasz lub otrzymujesz, pojawią się tutaj"
+    },
+    "requests": {
+      "wantsToConnect": "Chce się połączyć",
+      "requestSent": "Zaproszenie wysłane",
+      "accept": "Akceptuj",
+      "decline": "Odrzuć",
+      "cancel": "Anuluj"
+    },
+    "search": {
+      "placeholder": "Szukaj po imieniu, nazwie użytkownika lub kodzie Align...",
+      "searching": "Szukanie...",
+      "noResults": "Nie znaleziono użytkowników",
+      "noResultsHint": "Spróbuj innego wyszukiwania",
+      "startSearch": "Szukaj ludzi",
+      "minCharsHint": "Wpisz co najmniej 2 znaki..."
+    },
+    "labels": {
+      "friends": "Znajomi",
+      "pending": "Oczekujące"
+    },
+    "actions": {
+      "removeFriend": "Usuń znajomego",
+      "blockUser": "Zablokuj użytkownika",
+      "removeConfirm": "Usunąć {{name}} ze znajomych?",
+      "blockConfirm": "Zablokować {{name}}? Nie będą mogli cię znaleźć ani się z tobą skontaktować.",
+      "viewProfile": "Zobacz profil",
+      "message": "Wiadomość",
+      "viewFullProfile": "Zobacz pełny profil",
+      "close": "Zamknij",
+      "requestPending": "Zaproszenie oczekuje",
+      "addFriend": "Dodaj znajomego",
+      "acceptRequest": "Akceptuj zaproszenie",
+      "confirm": "Potwierdź",
+      "ok": "OK"
+    },
+    "alignCode": "Kod Align:"
+  },
+  "messages": {
+    "signInRequired": "Zaloguj się, aby uzyskać dostęp do wiadomości",
+    "selectConversation": "Wybierz rozmowę",
+    "startNewChat": "lub rozpocznij nowy czat, aby się połączyć",
+    "newChat": "Nowy czat",
+    "contextMenu": {
+      "reply": "Odpowiedz",
+      "react": "Reaguj",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "forward": "Przekaż dalej",
+      "pin": "Przypnij",
+      "unpin": "Odepnij",
+      "copyText": "Kopiuj tekst"
+    },
+    "pickReaction": "Wybierz reakcję",
+    "messageTypes": {
+      "image": "Obraz",
+      "gif": "GIF",
+      "voiceMessage": "Wiadomość głosowa",
+      "location": "Lokalizacja",
+      "poll": "Ankieta:"
+    },
+    "composer": {
+      "placeholder": "Napisz wiadomość...",
+      "send": "Wyślij",
+      "attachment": "Załącznik"
+    }
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "markAllRead": "Oznacz wszystko jako przeczytane",
+    "filters": {
+      "all": "Wszystkie",
+      "social": "Społeczne",
+      "cosmic": "Kosmiczne",
+      "system": "Systemowe"
+    },
+    "empty": {
+      "all": "Brak powiadomień",
+      "allHint": "Twoje kosmiczne alerty i aktualizacje społeczne pojawią się tutaj.",
+      "social": "Brak powiadomień społecznych",
+      "socialHint": "Zaproszenia do znajomych, wiadomości i reakcje pojawią się tutaj.",
+      "cosmic": "Brak kosmicznych alertów",
+      "cosmicHint": "Alerty tranzytów i wydarzenia kosmiczne pojawią się tutaj.",
+      "system": "Brak powiadomień systemowych",
+      "systemHint": "Aktualizacje systemu i ogłoszenia pojawią się tutaj."
+    },
+    "time": {
+      "justNow": "właśnie teraz",
+      "minutesAgo": "{{count}} min temu",
+      "hoursAgo": "{{count}} godz. temu",
+      "daysAgo": "{{count}} dni temu"
+    },
+    "grouped": "{{count}} powiadomień"
+  },
+  "communities": {
+    "title": "Społeczności",
+    "subtitle": "Znajdź swoje kosmiczne plemię",
+    "create": "Utwórz",
+    "tabs": {
+      "discover": "Odkrywaj",
+      "myCommunities": "Moje społeczności"
+    },
+    "searchPlaceholder": "Szukaj społeczności...",
+    "filterAll": "Wszystkie",
+    "loading": "Ładowanie społeczności...",
+    "empty": {
+      "title": "Brak społeczności",
+      "description": "Bądź pierwszym, który utworzy kosmiczną społeczność!",
+      "createButton": "Utwórz społeczność"
+    },
+    "featured": "Polecane",
+    "allCommunities": "Wszystkie społeczności",
+    "noResultsSearch": "Nie znaleziono społeczności dla \"{{query}}\"",
+    "noResultsCategory": "Brak społeczności w tej kategorii.",
+    "yourCircle": {
+      "title": "Twój kosmiczny krąg czeka",
+      "description": "Dołącz do społeczności lub utwórz własną, aby znaleźć swoje plemię.",
+      "exploreButton": "Odkrywaj społeczności"
+    },
+    "memberCount_one": "{{count}} członek",
+    "memberCount_other": "{{count}} członków",
+    "private": "Prywatna",
+    "join": "Dołącz",
+    "joined": "Dołączono"
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Edytuj profil",
+    "shareBigThree": "Udostępnij swoją Wielką Trójkę",
+    "stats": {
+      "friends": "Znajomi",
+      "posts": "Posty",
+      "followers": "Obserwujący",
+      "following": "Obserwowani",
+      "views": "Wyświetlenia"
+    },
+    "tabs": {
+      "posts": "Posty",
+      "photos": "Zdjęcia",
+      "reels": "Reels",
+      "about": "O mnie"
+    },
+    "alignCode": "Twój kod Align",
+    "alignCodeHint": "Udostępnij swój kod, aby znajomi mogli cię znaleźć",
+    "quickLinks": {
+      "gallery": "Galeria",
+      "safetyTrust": "Bezpieczeństwo i zaufanie",
+      "subscription": "Subskrypcja",
+      "referrals": "Polecenia",
+      "settings": "Ustawienia"
+    },
+    "about": {
+      "bio": "Bio",
+      "bigThree": "Wielka Trójka",
+      "starseedOrigin": "Pochodzenie gwiezdne",
+      "humanDesign": "Human Design",
+      "joined": "Dołączono",
+      "alignCode": "Kod Align"
+    },
+    "empty": {
+      "noPosts": "Brak postów",
+      "noPhotos": "Brak zdjęć",
+      "noReels": "Brak reels"
+    },
+    "loadingProfile": "Ładowanie profilu...",
+    "profileViews": "Wyświetlenia profilu",
+    "noViews": "Brak wyświetleń profilu",
+    "editPost": "Edytuj post"
+  },
+  "editProfile": {
+    "title": "Edytuj profil",
+    "displayName": "Wyświetlana nazwa",
+    "bio": "Bio",
+    "bioPlaceholder": "Opowiedz kosmosowi o sobie...",
+    "birthData": "Dane urodzenia",
+    "date": "Data",
+    "time": "Godzina",
+    "location": "Lokalizacja",
+    "locationPlaceholder": "Szukaj miasta, regionu lub kraju...",
+    "saveChanges": "Zapisz zmiany",
+    "saving": "Zapisywanie...",
+    "tapAddCover": "Dotknij, aby dodać zdjęcie okładki",
+    "errors": {
+      "saveFailed": "Nie udało się zapisać profilu",
+      "avatarFailed": "Nie udało się przesłać awatara",
+      "coverFailed": "Nie udało się przesłać zdjęcia okładki"
+    }
+  },
   "settings": {
     "title": "Ustawienia",
     "language": "Język",
@@ -216,9 +1042,259 @@
     "houseSystem": "System domów",
     "darkMode": "Tryb ciemny",
     "about": "O Align",
-    "privacy": "Polityka prywatności",
+    "privacy": {
+      "title": "Prywatność i dane",
+      "profileVisibility": "Widoczność profilu",
+      "visibilityOptions": {
+        "public": "Publiczny",
+        "friendsOnly": "Tylko znajomi",
+        "private": "Prywatny"
+      },
+      "hideAge": "Ukryj wiek",
+      "hideExactLocation": "Ukryj dokładną lokalizację",
+      "hideLastActive": "Ukryj ostatnią aktywność",
+      "hideFullBirthChart": "Ukryj pełny wykres urodzeniowy",
+      "incognitoMode": "Tryb incognito",
+      "blockUnverified": "Blokuj niezweryfikowanych użytkowników",
+      "minimumTrustLevel": "Minimalny poziom zaufania",
+      "trustLevels": {
+        "any": "Dowolny",
+        "low": "Niski",
+        "medium": "Średni",
+        "high": "Wysoki"
+      },
+      "analyticsEnabled": "Analityka",
+      "exportData": "Eksportuj moje dane",
+      "exportToast": "Twój eksport danych został zamówiony. Otrzymasz go e-mailem."
+    },
     "terms": "Regulamin",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "account": "Konto",
+    "email": "E-mail",
+    "name": "Nazwa",
+    "notSet": "Nie ustawiono",
+    "planLabel": "Plan {{plan}}",
+    "upgradeHint": "Uaktualnij, aby uzyskać więcej funkcji",
+    "managedVia": "Zarządzane przez RevenueCat",
+    "manage": "Zarządzaj",
+    "upgrade": "Uaktualnij",
+    "subPages": {
+      "chatTheme": "Motyw czatu",
+      "notifications": "Powiadomienia",
+      "privacy": "Prywatność",
+      "astrologyPreferences": "Preferencje astrologiczne",
+      "friends": "Znajomi",
+      "referrals": "Polecenia",
+      "subscriptionPlans": "Plany subskrypcji",
+      "datingIdentity": "Tożsamość randkowa",
+      "relationshipIntent": "Cel relacji",
+      "connectionPreferences": "Preferencje połączeń",
+      "identityPrivacy": "Prywatność tożsamości",
+      "safety": "Bezpieczeństwo",
+      "termsOfService": "Regulamin",
+      "communityGuidelines": "Wytyczne społeczności"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Zarządzaj kontami użytkowników",
+      "contentModeration": "Moderacja treści",
+      "manageCelebrities": "Zarządzaj celebrytami",
+      "payoutQueue": "Kolejka wypłat"
+    },
+    "aboutSection": {
+      "version": "Wersja",
+      "poweredBy": "Obsługiwane przez",
+      "contact": "Kontakt"
+    },
+    "signOut": "Wyloguj się",
+    "deleteAccount": "Usuń konto",
+    "deleteConfirm": {
+      "title": "Usunąć konto?",
+      "message": "To trwale usunie twoje konto i wszystkie powiązane dane. Tej operacji nie można cofnąć.",
+      "confirm": "Usuń moje konto",
+      "cancel": "Anuluj"
+    },
+    "astrology": {
+      "title": "Preferencje astrologiczne",
+      "autoSaveHint": "Zmiany są zapisywane automatycznie i mają zastosowanie do wszystkich obliczeń wykresów.",
+      "houseSystem": "System domów",
+      "houseSystemHint": "Określa sposób obliczania domów wykresu",
+      "houseSystems": {
+        "wholeSign": "Cały znak",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Równe domy",
+        "porphyry": "Porfiriusz",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Topocentryczny",
+        "morinus": "Morinus",
+        "meridian": "Meridian"
+      },
+      "zodiacSystem": "System zodiaku",
+      "zodiacSystems": {
+        "tropical": "Tropikalny (Zachodni)",
+        "sidereal": "Syderyczny (Wedyjski)"
+      },
+      "languageLevel": "Poziom języka",
+      "languageLevelHint": "Jak techniczne powinny być interpretacje?",
+      "jargonModes": {
+        "plain": "Prosty język",
+        "mixed": "Mieszany",
+        "technical": "Techniczny"
+      },
+      "orbTightness": "Ścisłość orbu",
+      "orbOptions": {
+        "tight": "Ścisły",
+        "standard": "Standardowy",
+        "wide": "Szeroki"
+      },
+      "showAsteroids": "Pokaż asteroidy",
+      "showFixedStars": "Pokaż gwiazdy stałe"
+    },
+    "notificationsPage": {
+      "title": "Preferencje powiadomień",
+      "pauseAll": "Wstrzymaj wszystkie powiadomienia",
+      "social": {
+        "title": "Powiadomienia społeczne",
+        "friendRequests": "Zaproszenia do znajomych",
+        "messages": "Wiadomości",
+        "reactions": "Reakcje",
+        "comments": "Komentarze"
+      },
+      "cosmic": {
+        "title": "Powiadomienia kosmiczne",
+        "frequency": "Częstotliwość",
+        "frequencyOptions": {
+          "essential": "Istotne",
+          "important": "Ważne",
+          "all": "Wszystkie"
+        },
+        "tone": "Ton",
+        "toneOptions": {
+          "gentle": "Łagodny",
+          "direct": "Bezpośredni",
+          "intense": "Intensywny"
+        },
+        "categories": {
+          "majorTransits": "Główne tranzyty",
+          "moonPhases": "Fazy Księżyca",
+          "mercuryRetrograde": "Merkury w retrogradacji",
+          "loveRelationships": "Miłość i związki",
+          "moneyValues": "Pieniądze i wartości",
+          "careerAmbition": "Kariera i ambicja",
+          "healingGrowth": "Uzdrawianie i rozwój"
+        },
+        "aspects": {
+          "title": "Typy aspektów",
+          "conjunctions": "Koniunkcje",
+          "oppositions": "Opozycje",
+          "squares": "Kwadratury",
+          "trines": "Trygony",
+          "sextiles": "Sekstyle"
+        },
+        "events": {
+          "title": "Wydarzenia kosmiczne",
+          "moonPhases": "Fazy Księżyca",
+          "eclipses": "Zaćmienia",
+          "retrogrades": "Retrogradacje",
+          "ingresses": "Ingresy"
+        },
+        "minIntensity": "Minimalna intensywność",
+        "advanceNotice": "Wyprzedzenie (dni)"
+      },
+      "galactic": {
+        "title": "Powiadomienia galaktyczne",
+        "planetaryHours": "Godziny planetarne",
+        "dayRuler": "Władca dnia",
+        "goldenHour": "Złota godzina",
+        "eclipseWatch": "Obserwacja zaćmień",
+        "retrogradeAlerts": "Alerty retrogradacji",
+        "minutesBefore": "Minuty wcześniej"
+      },
+      "summaries": {
+        "title": "Podsumowania",
+        "daily": "Podsumowanie dzienne",
+        "weekly": "Podsumowanie tygodniowe"
+      },
+      "quietHours": {
+        "title": "Godziny ciszy",
+        "enabled": "Włącz godziny ciszy",
+        "start": "Początek",
+        "end": "Koniec",
+        "urgentOverride": "Zezwalaj na pilne powiadomienia"
+      },
+      "delivery": {
+        "title": "Dostarczanie",
+        "sound": "Dźwięk",
+        "badge": "Odznaka"
+      },
+      "announcements": "Ogłoszenia aplikacji"
+    },
+    "referrals": {
+      "title": "Polecenia",
+      "howItWorks": "Jak to działa",
+      "step1": "Udostępnij swój unikalny link polecający znajomym",
+      "step2": "Gdy zarejestrują się za pomocą twojego linku, oboje otrzymacie 5 dodatkowych odczytów",
+      "step3": "Nie ma limitu — zaproś tylu znajomych, ilu chcesz!"
+    },
+    "chatTheme": {
+      "title": "Motyw czatu",
+      "subtitle": "Dostosuj wygląd swoich wiadomości"
+    },
+    "datingIdentity": {
+      "title": "Tożsamość randkowa",
+      "subtitle": "Jak się identyfikujesz w przestrzeni randkowej"
+    },
+    "relationshipIntent": {
+      "title": "Cel relacji",
+      "subtitle": "Czego szukasz w połączeniach"
+    },
+    "connectionPreferences": {
+      "title": "Preferencje połączeń",
+      "subtitle": "Z kim chciałbyś się połączyć"
+    },
+    "identityPrivacy": {
+      "title": "Prywatność tożsamości",
+      "subtitle": "Kontroluj, kto widzi twoje informacje o tożsamości"
+    },
+    "safety": {
+      "title": "Bezpieczeństwo",
+      "subtitle": "Zarządzaj blokadami, zgłoszeniami i ustawieniami bezpieczeństwa"
+    },
+    "friends": {
+      "title": "Ustawienia znajomych",
+      "subtitle": "Zarządzaj preferencjami zaproszeń i połączeń"
+    },
+    "termsPage": {
+      "title": "Regulamin"
+    },
+    "communityGuidelines": {
+      "title": "Wytyczne społeczności"
+    }
   },
   "subscription": {
     "headline": "Precyzyjna astrologia. Stworzona dla Ciebie.",
@@ -228,148 +1304,145 @@
     "restore": "Przywróć zakupy",
     "cancel": "Anuluj w dowolnym momencie. Bez umów.",
     "socialProof": "Plan, który wybiera 73% członków.",
+    "title": "Wybierz swoją drogę",
+    "subtitle": "Anuluj w dowolnym momencie. 14-dniowy bezpłatny okres próbny we wszystkich planach.",
+    "priceFree": "Bezpłatnie",
+    "priceCurrency": "$",
+    "loadingPlans": "Ładowanie planów subskrypcji...",
+    "tapToRetry": "Dotknij, aby spróbować ponownie",
+    "tapForDiagnostics": "Dotknij tutaj, aby pokazać diagnostykę",
+    "comparisonTitle": "Który plan jest dla Ciebie odpowiedni?",
+    "faqTitle": "Często zadawane pytania",
+    "footerText": "Subskrypcje są zarządzane przez App Store / Google Play.",
+    "manageButton": "Zarządzaj subskrypcją",
+    "termsOfService": "Warunki świadczenia usług",
+    "privacyPolicy": "Polityka prywatności",
+    "restorePurchase": "Przywróć zakup",
+    "restoring": "Przywracanie...",
     "free": {
       "name": "Darmowy",
       "price": "$0",
-      "tagline": "Odkrywaj kosmos za darmo.",
+      "tagline": "Odkrywaj kosmos za darmo",
       "cta": "Zacznij za darmo",
+      "bestFor": "Dla początkujących ciekawych astrologii, którzy chcą eksplorować przed zobowiązaniem.",
       "features": [
         "Podstawowy przegląd wykresu urodzeniowego",
-        "Codzienne horoskopu",
+        "Codzienne wglądy horoskopu",
         "3 odczyty AI miesięcznie",
         "Pojedyncze losowanie kart tarota",
         "Kalkulator godzin planetarnych",
         "1 zapisany profil"
-      ],
-      "bestFor": "Dla początkujących ciekawych astrologii, którzy chcą eksplorować przed zobowiązaniem."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Jasność zaczyna się tutaj.",
+      "tagline": "Twój codzienny kosmiczny towarzysz",
       "cta": "Zacznij z Light",
+      "bestFor": "Dla okazjonalnych odkrywców, którzy chcą codziennej kosmicznej porady i podstawowych wglądów w horoskop.",
       "features": [
-        "Codzienne spersonalizowane wglądy",
-        "Wykres urodzeniowy z głównymi pozycjami",
-        "10 odczytów AI miesięcznie",
-        "Powiadomienia o tranzytach w czasie rzeczywistym",
-        "Codzienna karta tarota",
-        "Kalkulator godzin planetarnych",
+        "Wszystko z planu Darmowy",
+        "Pełne codzienne spersonalizowane wglądy",
+        "30 odczytów AI miesięcznie",
+        "Alerty tranzytów w czasie rzeczywistym",
         "Przegląd ścieżki życia w numerologii",
         "1 zapisany profil urodzeniowy"
-      ],
-      "bestFor": "Dla okazjonalnych odkrywców, którzy chcą codziennej kosmicznej porady i podstawowych wglądów w horoskop."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Gdzie głębia spotyka jasność.",
+      "tagline": "Odblokuj swój pełny kosmiczny plan",
+      "badge": "NAJPOPULARNIEJSZY",
       "cta": "Wybierz Premium — Najlepsza wartość",
+      "bestFor": "Dla entuzjastów gotowych zagłębić się w pełny astrologiczny plan i relacje.",
       "features": [
         "Wszystko z planu Light",
-        "50 pogłębionych odczytów AI miesięcznie",
-        "Pełny wykres — aspekty, wzorce, gwiazdy stałe",
-        "Wykresy progresji i rewolucji słonecznej/księżycowej",
-        "Synastria i kompatybilność złożona",
-        "Pochodzenie gwiezdne i Human Design",
-        "Wszystkie 6 rozkładów tarota z AI",
-        "Raport astrologii finansowej",
-        "Tryb prostego języka — bez żargonu",
-        "5 zapisanych profili urodzeniowych",
+        "Pełny wykres z aspektami i wzorcami",
+        "100 odczytów AI miesięcznie",
+        "Wszystkie typy wykresów (progresja, rewolucje, synastria)",
+        "Kompatybilność i wykresy złożone",
+        "Starseed, numerologia, Human Design",
+        "Rozkłady tarota (wszystkie 5 typów)",
+        "Tryb prostego języka",
+        "5 zapisanych profili",
         "Wszystkie kursy astrologii"
-      ],
-      "badge": "NAJPOPULARNIEJSZY",
-      "bestFor": "Dla entuzjastów gotowych zagłębić się w pełny astrologiczny plan i relacje."
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Pełny obraz. Bez ograniczeń.",
-      "cta": "Odblokuj dostęp Pro",
+      "tagline": "Dla poważnych praktyków",
+      "cta": "Przejdź na Pro",
+      "bestFor": "Dla profesjonalnych astrologów i oddanych praktyków, którzy potrzebują wszystkich dostępnych narzędzi.",
       "features": [
         "Wszystko z planu Premium",
-        "200 odczytów AI miesięcznie",
-        "Mapy świata astrokartografii",
+        "300 odczytów AI miesięcznie",
+        "Raport astrologii finansowej",
+        "Astrokartografia (ACG)",
         "Firdaria i Zodiacal Releasing",
-        "Pogłębione analizy punktów arabskich i gwiazd stałych",
-        "Priorytetowe AI — szybsze przetwarzanie",
-        "Nieograniczona liczba zapisanych profili i odczytów",
-        "Eksportowalne raporty profesjonalne",
+        "Gwiazdy stałe i punkty arabskie",
+        "Priorytetowe przetwarzanie AI",
         "Wczesny dostęp do nowych funkcji",
-        "AI w 20 językach"
-      ],
-      "bestFor": "Dla profesjonalnych astrologów i oddanych praktyków, którzy potrzebują wszystkich dostępnych narzędzi."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Nie udało się otworzyć linku.",
-      "diagnostics": "Diagnostyka",
-      "errorTitle": "Błąd",
-      "manageError": "Nie można otworzyć zarządzania subskrypcją. Otwórz Play Store lub App Store ręcznie.",
-      "noActiveBody": "Nie znaleziono wcześniejszej subskrypcji dla tego konta.",
-      "noActiveTitle": "Brak aktywnej subskrypcji",
-      "ok": "OK",
-      "planNotFoundBody": "Ten plan jest tymczasowo niedostępny w sklepie. Spróbuj ponownie później.",
-      "planNotFoundTitle": "Nie znaleziono planu",
-      "purchaseFailedDefault": "Coś poszło nie tak.",
-      "purchaseFailedLong": "Coś poszło nie tak podczas przetwarzania zakupu. Spróbuj ponownie.",
-      "purchaseFailedTitle": "Zakup nieudany",
-      "restoreError": "Nie udało się przywrócić zakupów",
-      "restoredBody": "Twoja subskrypcja została pomyślnie przywrócona.",
-      "restoredTitle": "Przywrócono!",
-      "retry": "Spróbuj ponownie",
-      "subscriptionsUnavailableHint": "Upewnij się, że jesteś zalogowany w Play Store i spróbuj ponownie.",
-      "subscriptionsUnavailableTitle": "Subskrypcje niedostępne",
-      "unavailableBody": "Ten plan nie jest obecnie dostępny.",
-      "unavailableTitle": "Niedostępny",
-      "unsupportedBody": "Zarządzanie subskrypcją jest dostępne tylko na iOS i Android.",
-      "unsupportedTitle": "Nieobsługiwany",
-      "welcomeBody": "Twoja subskrypcja jest aktywna. Ciesz się rozszerzonym zestawem narzędzi kosmicznych.",
-      "welcomeTitle": "Witamy na pokładzie!"
-    },
-    "comparisonTitle": "Który plan jest dla Ciebie odpowiedni?",
-    "errors": {
-      "apiKeyPlaceholder": "Usługa subskrypcji nie jest skonfigurowana dla tej wersji. (Wewnętrzny: klucz API RevenueCat to symbol zastępczy.)",
-      "connectionFailed": "Nie można połączyć się z usługą subskrypcji. Sprawdź połączenie i spróbuj ponownie.",
-      "loadFailed": "Nie można załadować planów subskrypcji. Spróbuj ponownie później.",
-      "loadFailedConnection": "Nie można załadować planów subskrypcji. Sprawdź połączenie.",
-      "nativeModuleMissing": "Usługa subskrypcji jest niedostępna w tej wersji. (Wewnętrzny: moduł natywny nie jest połączony.)",
-      "noApiKey": "Usługa subskrypcji nie jest skonfigurowana dla tej platformy. (Wewnętrzny: brak klucza API.)",
-      "noOfferings": "Żadne aktywne plany subskrypcji nie zostały jeszcze opublikowane. Spróbuj ponownie później.",
-      "noPackages": "Plany subskrypcji są finalizowane w sklepie. Spróbuj ponownie później.",
-      "stillStarting": "Usługa subskrypcji wciąż się uruchamia. Poczekaj chwilę i spróbuj ponownie."
+        "Nielimitowana liczba zapisanych profili",
+        "Eksport i udostępnianie raportów"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "Kredyty na odczyty AI są resetowane co cykl rozliczeniowy i nie są przenoszone. Pozwala to utrzymać naszą infrastrukturę AI szybką i responsywną dla wszystkich użytkowników.",
-        "question": "Czy odczyty AI są przenoszone?"
-      },
-      "security": {
-        "answer": "Absolutnie. Wszystkie dane osobowe i dane urodzenia są szyfrowane zarówno w spoczynku, jak i podczas przesyłania. Nigdy nie sprzedajemy Twoich danych, a Ty możesz w każdej chwili usunąć swoje konto i wszystkie powiązane dane.",
-        "question": "Czy moje dane urodzenia są bezpieczne?"
-      },
       "switch": {
-        "answer": "Tak! Możesz zmienić plan na wyższy lub niższy w dowolnym momencie. Po przejściu na wyższy plan otrzymujesz natychmiastowy dostęp do nowych funkcji. Po zmianie na niższy, Twoje obecne korzyści są utrzymywane do końca cyklu rozliczeniowego.",
-        "question": "Czy mogę zmienić plan w dowolnym momencie?"
+        "question": "Czy mogę zmienić plan w dowolnym momencie?",
+        "answer": "Tak! Możesz uaktualnić lub obniżyć plan w dowolnym momencie. Przy uaktualnieniu otrzymujesz natychmiastowy dostęp do nowych funkcji. Przy obniżeniu twoje obecne korzyści są utrzymywane do końca cyklu rozliczeniowego."
       },
       "trial": {
-        "answer": "Twój 14-dniowy bezpłatny okres próbny daje Ci pełny dostęp do wybranego planu. Nie zostaniesz obciążony do końca okresu próbnego i możesz w każdej chwili anulować bez zobowiązań.",
-        "question": "Co dzieje się po bezpłatnym okresie próbnym?"
+        "question": "Co dzieje się po bezpłatnym okresie próbnym?",
+        "answer": "Twój 14-dniowy bezpłatny okres próbny daje pełny dostęp do wybranego planu. Nie zostaniesz obciążony do końca okresu próbnego i możesz w każdej chwili anulować bez zobowiązań."
+      },
+      "rollover": {
+        "question": "Czy odczyty AI są przenoszone?",
+        "answer": "Kredyty na odczyty AI są resetowane co cykl rozliczeniowy i nie są przenoszone. Pozwala to utrzymać naszą infrastrukturę AI szybką i responsywną dla wszystkich użytkowników."
+      },
+      "security": {
+        "question": "Czy moje dane urodzenia są bezpieczne?",
+        "answer": "Absolutnie. Wszystkie dane osobowe i dane urodzenia są szyfrowane zarówno w spoczynku, jak i podczas przesyłania. Nigdy nie sprzedajemy twoich danych i możesz w każdej chwili usunąć konto i wszystkie powiązane dane."
       }
     },
-    "faqTitle": "Często zadawane pytania",
-    "footerText": "Subskrypcje są zarządzane przez App Store / Google Play.",
-    "loadingPlans": "Ładowanie planów subskrypcji...",
-    "manageButton": "Zarządzaj subskrypcją",
-    "priceCurrency": "$",
-    "priceFree": "Bezpłatnie",
-    "privacyPolicy": "Polityka prywatności",
-    "restorePurchase": "Przywróć zakup",
-    "restoring": "Przywracanie...",
-    "subtitle": "Anuluj w dowolnym momencie. 14-dniowy bezpłatny okres próbny we wszystkich planach.",
-    "tapForDiagnostics": "Dotknij tutaj, aby pokazać diagnostykę",
-    "tapToRetry": "Dotknij, aby spróbować ponownie",
-    "termsOfService": "Warunki świadczenia usług",
-    "title": "Wybierz swoją drogę"
+    "alerts": {
+      "unavailableTitle": "Niedostępny",
+      "unavailableBody": "Ten plan nie jest obecnie dostępny.",
+      "purchaseFailedTitle": "Zakup nieudany",
+      "purchaseFailedDefault": "Coś poszło nie tak.",
+      "purchaseFailedLong": "Coś poszło nie tak podczas przetwarzania zakupu. Spróbuj ponownie.",
+      "welcomeTitle": "Witamy na pokładzie!",
+      "welcomeBody": "Twoja subskrypcja jest aktywna. Ciesz się rozszerzonym zestawem narzędzi kosmicznych.",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "Subskrypcje niedostępne",
+      "subscriptionsUnavailableHint": "Upewnij się, że jesteś zalogowany w Play Store i spróbuj ponownie.",
+      "retry": "Spróbuj ponownie",
+      "diagnostics": "Diagnostyka",
+      "planNotFoundTitle": "Nie znaleziono planu",
+      "planNotFoundBody": "Ten plan jest tymczasowo niedostępny w sklepie. Spróbuj ponownie później.",
+      "errorTitle": "Błąd",
+      "couldNotOpenLink": "Nie udało się otworzyć linku.",
+      "unsupportedTitle": "Nieobsługiwany",
+      "unsupportedBody": "Zarządzanie subskrypcją jest dostępne tylko na iOS i Android.",
+      "manageError": "Nie można otworzyć zarządzania subskrypcją. Otwórz Play Store lub App Store ręcznie.",
+      "restoredTitle": "Przywrócono!",
+      "restoredBody": "Twoja subskrypcja została pomyślnie przywrócona.",
+      "noActiveTitle": "Brak aktywnej subskrypcji",
+      "noActiveBody": "Nie znaleziono wcześniejszej subskrypcji dla tego konta.",
+      "restoreError": "Nie udało się przywrócić zakupów"
+    },
+    "errors": {
+      "loadFailed": "Nie można załadować planów subskrypcji. Spróbuj ponownie później.",
+      "loadFailedConnection": "Nie można załadować planów subskrypcji. Sprawdź połączenie.",
+      "apiKeyPlaceholder": "Usługa subskrypcji nie jest skonfigurowana dla tej wersji. (Wewnętrzny: klucz API RevenueCat to symbol zastępczy.)",
+      "noApiKey": "Usługa subskrypcji nie jest skonfigurowana dla tej platformy. (Wewnętrzny: brak klucza API.)",
+      "nativeModuleMissing": "Usługa subskrypcji jest niedostępna w tej wersji. (Wewnętrzny: moduł natywny nie jest połączony.)",
+      "noOfferings": "Żadne aktywne plany subskrypcji nie zostały jeszcze opublikowane. Spróbuj ponownie później.",
+      "noPackages": "Plany subskrypcji są finalizowane w sklepie. Spróbuj ponownie później.",
+      "connectionFailed": "Nie można połączyć się z usługą subskrypcji. Sprawdź połączenie i spróbuj ponownie.",
+      "stillStarting": "Usługa subskrypcji wciąż się uruchamia. Poczekaj chwilę i spróbuj ponownie."
+    }
   },
   "courses": {
     "title": "Naucz się astrologii",
@@ -380,6 +1453,314 @@
     "continue": "Kontynuuj naukę",
     "completed": "Ukończony"
   },
+  "cosmicAlerts": {
+    "title": "Pogoda kosmiczna",
+    "subtitle": "Twoja spersonalizowana prognoza kosmiczna",
+    "scanningCosmos": "Skanowanie kosmosu...",
+    "filters": {
+      "all": "Wszystkie",
+      "active": "Aktywne",
+      "upcoming": "Nadchodzące"
+    },
+    "emptyState": {
+      "title": "Nie wykryto głównych tranzytów",
+      "filterHint": "Brak alertów {{filter}} w tej chwili. Spróbuj przełączyć na \"Wszystkie\".",
+      "defaultHint": "Kosmos jest cichy dla twojego wykresu. Sprawdź ponownie, gdy niebo się zmieni."
+    },
+    "detail": {
+      "timingWindow": "Okno czasowe",
+      "start": "Początek",
+      "peak": "Szczyt",
+      "end": "Koniec",
+      "fullInterpretation": "Pełna interpretacja",
+      "astrologicalDetails": "Szczegóły astrologiczne",
+      "transit": "Tranzyt",
+      "natal": "Natal",
+      "aspect": "Aspekt",
+      "retrograde": "Retrogradacja",
+      "yes": "Tak",
+      "no": "Nie",
+      "actionAdvice": "Porada dotycząca działania",
+      "viewFullTransits": "Zobacz pełne tranzyty"
+    },
+    "importance": {
+      "critical": "Krytyczny",
+      "high": "Wysoki",
+      "moderate": "Umiarkowany",
+      "low": "Niski",
+      "minimal": "Minimalny"
+    },
+    "categories": {
+      "general": "Ogólne",
+      "love": "Miłość",
+      "career": "Kariera",
+      "growth": "Rozwój",
+      "challenge": "Wyzwanie",
+      "spiritual": "Duchowe",
+      "communication": "Komunikacja",
+      "energy": "Energia"
+    },
+    "statusActive": "AKTYWNE"
+  },
+  "discover": {
+    "title": "Odkrywaj",
+    "moonPhases": {
+      "newMoon": "Nów",
+      "waxingCrescent": "Sierp rosnący",
+      "firstQuarter": "Pierwsza kwadra",
+      "waxingGibbous": "Księżyc rosnący",
+      "fullMoon": "Pełnia",
+      "waningGibbous": "Księżyc malejący",
+      "lastQuarter": "Ostatnia kwadra",
+      "waningCrescent": "Sierp malejący"
+    }
+  },
+  "worldEcho": {
+    "title": "Echo Świata",
+    "subtitle": "Jak wydarzenia kosmiczne rozchodzą się w historii ludzkości",
+    "categories": {
+      "political": "Polityczne",
+      "economic": "Ekonomiczne",
+      "cultural": "Kulturowe",
+      "scientific": "Naukowe",
+      "natural": "Przyrodnicze",
+      "social": "Społeczne",
+      "technological": "Technologiczne",
+      "spiritual": "Duchowe"
+    },
+    "evidenceLabels": {
+      "strong": "Silne",
+      "moderate": "Umiarkowane",
+      "speculative": "Spekulatywne"
+    },
+    "scoreLabels": {
+      "legendary": "Legendarne",
+      "major": "Główne",
+      "significant": "Znaczące",
+      "notable": "Godne uwagi",
+      "minor": "Mniejsze"
+    }
+  },
+  "polls": {
+    "title": "Ankiety",
+    "filters": {
+      "all": "Wszystkie",
+      "active": "Aktywne",
+      "ended": "Zakończone",
+      "mine": "Moje"
+    },
+    "duration": {
+      "hours": "{{count}} godz. pozostało",
+      "days": "{{count}} dni pozostało",
+      "ended": "Zakończona"
+    },
+    "createPoll": "Utwórz ankietę",
+    "votes": "{{count}} głosów",
+    "noPollsYet": "Brak ankiet",
+    "noPollsHint": "Bądź pierwszym, który rozpocznie kosmiczną ankietę!"
+  },
+  "bookmarks": {
+    "title": "Zakładki",
+    "loading": "Ładowanie zakładek...",
+    "empty": "Brak zakładek",
+    "emptyHint": "Zapisuj posty z kanału, aby przeczytać je później",
+    "postUnavailable": "Post nie jest już dostępny"
+  },
+  "celebrityMatches": {
+    "title": "Dopasowania celebrytów",
+    "subtitle": "Odkryj, które sławne osoby dzielą twój kosmiczny plan",
+    "searchPlaceholder": "Szukaj celebrytów...",
+    "categories": {
+      "overall": "Ogólne",
+      "emotional": "Emocjonalne",
+      "passion": "Pasja",
+      "marriage": "Małżeństwo",
+      "karmic": "Karmiczne",
+      "attraction": "Przyciąganie",
+      "stability": "Stabilność",
+      "mental": "Mentalne"
+    },
+    "matchScore": "{{score}}% dopasowania",
+    "trending": "Popularne",
+    "recentlyAdded": "Ostatnio dodane",
+    "browseByCategory": "Przeglądaj według kategorii",
+    "clearFilter": "Wyczyść filtr",
+    "yourFavorites": "Twoje ulubione",
+    "noResults": "Brak wyników",
+    "tryDifferent": "Spróbuj innej nazwy lub pisowni",
+    "noCelebrities": "Brak celebrytów",
+    "searchOrCheckBack": "Wyszukaj kogoś lub sprawdź później",
+    "noCelebritiesInCategory": "Brak celebrytów w tej kategorii"
+  },
+  "matches": {
+    "title": "Dopasowania kompatybilności",
+    "categories": {
+      "overall": "Ogólne",
+      "emotional": "Emocjonalne",
+      "passion": "Pasja",
+      "marriage": "Małżeństwo",
+      "karmic": "Karmiczne",
+      "attraction": "Przyciąganie",
+      "stability": "Stabilność",
+      "mental": "Mentalne"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Indeks kosmiczny",
+    "subtitle": "Kosmiczna energia dnia w pigułce"
+  },
+  "creatorStudio": {
+    "title": "Studio twórcy",
+    "subtitle": "Twórz i zarządzaj swoją kosmiczną treścią"
+  },
+  "qa": {
+    "title": "Pytania i odpowiedzi",
+    "askQuestion": "Zadaj pytanie",
+    "noQuestions": "Brak pytań",
+    "placeholder": "Jakie jest twoje kosmiczne pytanie?"
+  },
+  "pricing": {
+    "title": "Wybierz swój plan",
+    "subtitle": "Odblokuj pełną moc Align"
+  },
+  "gallery": {
+    "title": "Galeria",
+    "empty": "Brak zdjęć"
+  },
+  "timeline": {
+    "title": "Oś czasu",
+    "empty": "Nic do pokazania"
+  },
+  "reels": {
+    "title": "Kosmiczne Reels",
+    "empty": "Brak reels"
+  },
+  "fragments": {
+    "title": "Kosmiczne fragmenty",
+    "subtitle": "Karty kosmicznej mądrości do udostępniania"
+  },
+  "cosmicVideo": {
+    "title": "Kosmiczne wideo",
+    "subtitle": "Astrologiczne wglądy w ruchu"
+  },
+  "groupSynastry": {
+    "title": "Synastria grupowa",
+    "subtitle": "Zobacz, jak wykresy grupy na siebie oddziałują"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "Wymagane dane urodzenia",
+      "defaultMessage": "Dodaj datę urodzenia, godzinę i lokalizację, aby odblokować tę funkcję.",
+      "completeProfile": "Uzupełnij profil"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Ładowanie..."
+    },
+    "paywallGate": {
+      "title": "Odblokuj ten odczyt",
+      "description": "Ta funkcja jest dostępna w planie",
+      "plan": "plan",
+      "youreOn": "jesteś na",
+      "upgradeButton": "Zobacz plany — od {{price}}",
+      "currentPlan": "Obecny plan: {{plan}}",
+      "whatYouUnlock": "Co odblokujesz",
+      "allFeatures": "Ten odczyt + wszystkie funkcje poziomu {{tier}}",
+      "aiAstrologer": "Astrolog AI z czatem głosowym",
+      "fullChart": "Pełny wykres urodzeniowy z aspektami i wzorcami"
+    },
+    "shareButton": {
+      "share": "Udostępnij",
+      "copied": "Skopiowano!"
+    },
+    "referralCard": {
+      "title": "Zaproś znajomych",
+      "subtitle": "Udostępnij link polecający i oboje otrzymajcie dodatkowe odczyty",
+      "copyLink": "Kopiuj link",
+      "linkCopied": "Link skopiowany!"
+    },
+    "trialBanner": {
+      "title": "Okres próbny Premium: {{count}} dzień pozostał",
+      "title_plural": "Okres próbny Premium: {{count}} dni pozostało",
+      "daysLeft": "{{count}} dni pozostało",
+      "upgrade": "Uaktualnij teraz",
+      "expired": "Twój okres próbny dobiegł końca. Uaktualnij, aby ponownie odblokować Premium.",
+      "endsTomorrow": "Twój okres próbny kończy się jutro! Uaktualnij, aby zachować funkcje Premium.",
+      "endsSoon": "Twój okres próbny kończy się za {{count}} dni! Uaktualnij, aby zachować funkcje Premium."
+    },
+    "cookieConsent": {
+      "message": "Używamy plików cookie, aby poprawić twoje doświadczenie.",
+      "accept": "Akceptuj",
+      "decline": "Odrzuć",
+      "learnMore": "Dowiedz się więcej"
+    },
+    "matchCelebration": {
+      "itsAMatch": "To dopasowanie!",
+      "subtitle": "Kosmos połączył ciebie i {{name}}",
+      "sendMessage": "Wyślij wiadomość",
+      "keepBrowsing": "Przeglądaj dalej"
+    },
+    "datingFilterDrawer": {
+      "title": "Filtry odkrywania",
+      "ageRange": "Przedział wiekowy",
+      "maxDistance": "Maksymalna odległość",
+      "showOnlyVerified": "Pokaż tylko zweryfikowanych",
+      "compatibilityMin": "Minimalna kompatybilność",
+      "elements": "Żywioły",
+      "applyFilters": "Zastosuj filtry",
+      "resetFilters": "Resetuj"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% kompatybilności",
+      "like": "Polub",
+      "pass": "Pomiń",
+      "cosmicRose": "Kosmiczna Róża",
+      "likesRemaining": "{{count}} polubień pozostało",
+      "rosesRemaining": "{{count}} róż pozostało"
+    },
+    "sidebar": {
+      "home": "Strona główna",
+      "discover": "Odkrywaj",
+      "cosmicFeed": "Kosmiczny feed",
+      "worldEcho": "Echo Świata",
+      "chart": "Mój wykres",
+      "cosmicWeather": "Pogoda kosmiczna",
+      "readings": "Odczyty",
+      "videoCreator": "Twórca wideo",
+      "dating": "Randki",
+      "friends": "Znajomi",
+      "messages": "Wiadomości",
+      "feed": "Feed",
+      "notifications": "Powiadomienia",
+      "aiAstrologer": "Astrolog AI",
+      "learn": "Nauka",
+      "pricing": "Cennik",
+      "communities": "Społeczności",
+      "profile": "Profil",
+      "settings": "Ustawienia",
+      "menu": "Menu",
+      "close": "Zamknij",
+      "more": "Więcej",
+      "chat": "Czat",
+      "yourProfile": "Twój profil",
+      "viewProfile": "Zobacz swój profil"
+    },
+    "feedCard": {
+      "like": "Polub",
+      "comment": "Komentarz",
+      "share": "Udostępnij",
+      "bookmark": "Zakładka",
+      "report": "Zgłoś",
+      "deletePost": "Usuń post",
+      "editPost": "Edytuj post"
+    },
+    "commentSheet": {
+      "title": "Komentarze",
+      "placeholder": "Napisz komentarz...",
+      "send": "Wyślij",
+      "noComments": "Brak komentarzy",
+      "beFirst": "Bądź pierwszym, który skomentuje!"
+    }
+  },
   "common": {
     "loading": "Ładowanie...",
     "error": "Coś poszło nie tak",
@@ -389,7 +1770,46 @@
     "delete": "Usuń",
     "share": "Udostępnij",
     "premium": "Premium",
-    "free": "Darmowy"
+    "free": "Darmowy",
+    "close": "Zamknij",
+    "confirm": "Potwierdź",
+    "ok": "OK",
+    "yes": "Tak",
+    "no": "Nie",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "done": "Gotowe",
+    "edit": "Edytuj",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano!",
+    "search": "Szukaj",
+    "settings": "Ustawienia",
+    "seeAll": "Zobacz wszystko",
+    "showMore": "Pokaż więcej",
+    "showLess": "Pokaż mniej",
+    "comingSoon": "Wkrótce",
+    "upgrade": "Uaktualnij",
+    "signIn": "Zaloguj się",
+    "signOut": "Wyloguj się",
+    "today": "Dziś",
+    "yesterday": "Wczoraj",
+    "tomorrow": "Jutro",
+    "all": "Wszystko",
+    "none": "Brak",
+    "public": "Publiczny",
+    "private": "Prywatny",
+    "apply": "Zastosuj",
+    "reset": "Resetuj",
+    "remove": "Usuń",
+    "add": "Dodaj",
+    "create": "Utwórz",
+    "submit": "Prześlij",
+    "send": "Wyślij",
+    "view": "Zobacz",
+    "download": "Pobierz",
+    "upload": "Prześlij",
+    "noResults": "Brak wyników",
+    "tryAgain": "Spróbuj ponownie"
   },
   "zodiac": {
     "aries": "Baran",
@@ -420,7 +1840,11 @@
     "southNode": "Węzeł Południowy",
     "chiron": "Chiron",
     "ascendant": "Ascendent",
-    "midheaven": "Medium Coeli"
+    "midheaven": "Medium Coeli",
+    "vesta": "Westa",
+    "juno": "Junona",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
     "conjunction": "Koniunkcja",
@@ -428,6 +1852,83 @@
     "square": "Kwadratura",
     "trine": "Trygon",
     "opposition": "Opozycja",
-    "quincunx": "Kwinkunks"
+    "quincunx": "Kwinkunks",
+    "semisextile": "Półsekstyl",
+    "semisquare": "Półkwadratura",
+    "sesquiquadrate": "Półtorakwadratura",
+    "quintile": "Kwintyl",
+    "biquintile": "Bikwintyl"
+  },
+  "elements": {
+    "fire": "Ogień",
+    "earth": "Ziemia",
+    "air": "Powietrze",
+    "water": "Woda"
+  },
+  "modalities": {
+    "cardinal": "Kardynalny",
+    "fixed": "Stały",
+    "mutable": "Zmienny"
+  },
+  "houses": {
+    "1": "1. dom",
+    "2": "2. dom",
+    "3": "3. dom",
+    "4": "4. dom",
+    "5": "5. dom",
+    "6": "6. dom",
+    "7": "7. dom",
+    "8": "8. dom",
+    "9": "9. dom",
+    "10": "10. dom",
+    "11": "11. dom",
+    "12": "12. dom",
+    "labels": {
+      "1": "Ja i tożsamość",
+      "2": "Wartości i mienie",
+      "3": "Komunikacja i nauka",
+      "4": "Dom i rodzina",
+      "5": "Kreatywność i romans",
+      "6": "Zdrowie i służba",
+      "7": "Partnerstwa",
+      "8": "Transformacja i wspólne zasoby",
+      "9": "Filozofia i podróże",
+      "10": "Kariera i wizerunek publiczny",
+      "11": "Społeczność i aspiracje",
+      "12": "Duchowość i podświadomość"
+    }
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+    "networkError": "Błąd sieci. Sprawdź połączenie.",
+    "unauthorized": "Musisz się zalogować, aby uzyskać dostęp do tej funkcji.",
+    "notFound": "Żądana treść nie została znaleziona.",
+    "serverError": "Błąd serwera. Spróbuj ponownie później.",
+    "loadFailed": "Nie udało się załadować danych. Spróbuj ponownie.",
+    "saveFailed": "Nie udało się zapisać zmian. Spróbuj ponownie.",
+    "uploadFailed": "Nie udało się przesłać pliku. Spróbuj ponownie.",
+    "fileTooLarge": "Plik jest za duży. Wybierz mniejszy plik.",
+    "invalidFormat": "Nieprawidłowy format pliku.",
+    "permissionDenied": "Odmowa dostępu.",
+    "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "rateLimited": "Zbyt wiele żądań. Poczekaj chwilę."
+  },
+  "time": {
+    "justNow": "właśnie teraz",
+    "minutesAgo": "{{count}} min temu",
+    "hoursAgo": "{{count}} godz. temu",
+    "daysAgo": "{{count}} dni temu",
+    "weeksAgo": "{{count}} tyg. temu",
+    "monthsAgo": "{{count}} mies. temu",
+    "yearsAgo": "{{count}} lat temu",
+    "inMinutes": "za {{count}} min",
+    "inHours": "za {{count}} godz.",
+    "inDays": "za {{count}} dni"
+  },
+  "tiers": {
+    "free": "Darmowy",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { Search, X, Check, Users } from 'lucide-react';
 import {
@@ -17,6 +18,7 @@ export interface NewChatModalProps {
 }
 
 export function NewChatModal({ onClose, onSelectUser }: NewChatModalProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Array<{
     id: string;
@@ -63,7 +65,7 @@ export function NewChatModal({ onClose, onSelectUser }: NewChatModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-border-primary">
-          <h2 className="text-lg font-display font-bold text-text-primary">New Chat</h2>
+          <h2 className="text-lg font-display font-bold text-text-primary">{t('messages.newChat')}</h2>
           <button onClick={onClose} className="p-1 text-text-muted hover:text-text-primary">
             <X className="w-5 h-5" />
           </button>
@@ -76,7 +78,7 @@ export function NewChatModal({ onClose, onSelectUser }: NewChatModalProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name or username..."
+              placeholder={t('messages.searchByName', 'Search by name or username...')}
               className="input pl-9 py-2.5 text-sm"
               autoFocus
             />
@@ -85,15 +87,15 @@ export function NewChatModal({ onClose, onSelectUser }: NewChatModalProps) {
 
         <div className="flex-1 overflow-y-auto px-2 pb-4">
           {!query.trim() && !friendsLoading && friends.length > 0 && (
-            <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">Your Friends</p>
+            <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">{t('messages.yourFriends', 'Your Friends')}</p>
           )}
           {(loading || friendsLoading) ? (
             <div className="text-center py-8">
-              <span className="text-sm text-text-muted">Searching...</span>
+              <span className="text-sm text-text-muted">{t('friends.search.searching')}</span>
             </div>
           ) : displayList.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-sm text-text-muted">{query.trim() ? 'No users found' : 'No friends yet'}</p>
+              <p className="text-sm text-text-muted">{query.trim() ? t('friends.search.noResults') : t('friends.empty.noFriends')}</p>
             </div>
           ) : (
             displayList.map(u => (
@@ -126,6 +128,7 @@ export interface NewGroupModalProps {
 }
 
 export function NewGroupModal({ onClose, onCreated }: NewGroupModalProps) {
+  const { t } = useTranslation();
   const [groupName, setGroupName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [friends, setFriends] = useState<Array<{
@@ -167,7 +170,7 @@ export function NewGroupModal({ onClose, onCreated }: NewGroupModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-border-primary">
-          <h2 className="text-lg font-display font-bold text-text-primary">New Group</h2>
+          <h2 className="text-lg font-display font-bold text-text-primary">{t('messages.newGroup', 'New Group')}</h2>
           <button onClick={onClose} className="p-1 text-text-muted hover:text-text-primary">
             <X className="w-5 h-5" />
           </button>
@@ -178,7 +181,7 @@ export function NewGroupModal({ onClose, onCreated }: NewGroupModalProps) {
             type="text"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            placeholder="Group name..."
+            placeholder={t('messages.groupNamePlaceholder', 'Group name...')}
             className="input py-2.5 text-sm"
             autoFocus
           />
@@ -205,11 +208,11 @@ export function NewGroupModal({ onClose, onCreated }: NewGroupModalProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 pb-2">
-          <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">Add Members</p>
+          <p className="text-[10px] uppercase text-text-muted font-semibold px-2 mb-2">{t('messages.addMembers', 'Add Members')}</p>
           {loading ? (
-            <div className="text-center py-8"><span className="text-sm text-text-muted">Loading friends...</span></div>
+            <div className="text-center py-8"><span className="text-sm text-text-muted">{t('messages.loadingFriends', 'Loading friends...')}</span></div>
           ) : friends.length === 0 ? (
-            <div className="text-center py-8"><p className="text-sm text-text-muted">No friends yet</p></div>
+            <div className="text-center py-8"><p className="text-sm text-text-muted">{t('friends.empty.noFriends')}</p></div>
           ) : (
             friends.map(f => (
               <button
@@ -240,7 +243,7 @@ export function NewGroupModal({ onClose, onCreated }: NewGroupModalProps) {
             disabled={!groupName.trim() || selectedIds.length < 1 || creating}
             className="btn-primary w-full"
           >
-            {creating ? 'Creating...' : `Create Group${selectedIds.length > 0 ? ` (${selectedIds.length} members)` : ''}`}
+            {creating ? t('messages.creating', 'Creating...') : t('messages.createGroup', 'Create Group') + (selectedIds.length > 0 ? ` (${selectedIds.length})` : '')}
           </button>
         </div>
       </div>

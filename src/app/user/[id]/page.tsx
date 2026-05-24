@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
@@ -47,6 +48,7 @@ const HD_TYPE_EMOJI: Record<string, string> = {
 };
 
 export default function UserProfilePage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const userId = params.id as string;
@@ -390,12 +392,12 @@ export default function UserProfilePage() {
     setEditSaving(false);
   }
 
-  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading profile..." /></div>;
+  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('profile.loadingProfile')} /></div>;
   if (!profile) {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
-        <p className="text-text-muted">User not found</p>
-        <Link href="/discover" className="btn-secondary mt-4 inline-block">Back to Discover</Link>
+        <p className="text-text-muted">{t('errors.notFound')}</p>
+        <Link href="/discover" className="btn-secondary mt-4 inline-block">{t('common.back')}</Link>
       </div>
     );
   }
@@ -407,7 +409,7 @@ export default function UserProfilePage() {
       {/* Back + More */}
       <div className="flex items-center justify-between mb-4">
         <button onClick={() => router.back()} className="btn-ghost p-2 inline-flex items-center gap-1">
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t('common.back')}
         </button>
         {!isOwn && (
           <div className="relative">
@@ -417,10 +419,10 @@ export default function UserProfilePage() {
             {showMoreMenu && (
               <div className="absolute right-0 top-10 z-50 w-48 rounded-xl border border-border bg-bg-card shadow-lg py-1">
                 <button onClick={handleReportUser} className="w-full text-left px-4 py-2.5 text-sm text-text-secondary hover:bg-bg-secondary flex items-center gap-2">
-                  <Flag className="w-4 h-4" /> Report User
+                  <Flag className="w-4 h-4" /> {t('components.feedCard.report')}
                 </button>
                 <button onClick={handleBlockUser} className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-bg-secondary flex items-center gap-2">
-                  <Ban className="w-4 h-4" /> Block User
+                  <Ban className="w-4 h-4" /> {t('friends.actions.blockUser')}
                 </button>
               </div>
             )}
@@ -489,22 +491,22 @@ export default function UserProfilePage() {
           <div className="flex items-center justify-center gap-6 mt-5 py-3 border-t border-b border-border">
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{friendCount}</p>
-              <p className="text-xs text-text-tertiary">Friends</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.friends')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{postCount}</p>
-              <p className="text-xs text-text-tertiary">Posts</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.posts')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{followerCount}</p>
-              <p className="text-xs text-text-tertiary">Followers</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.followers')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{followingCount}</p>
-              <p className="text-xs text-text-tertiary">Following</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.following')}</p>
             </div>
           </div>
 
@@ -513,28 +515,28 @@ export default function UserProfilePage() {
             <div className="flex items-center justify-center gap-3 mt-4">
               {friendStatus === 'none' && (
                 <button onClick={handleSendFriendRequest} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
-                  <UserPlus className="w-4 h-4" /> {sendingRequest ? 'Sending...' : 'Add Friend'}
+                  <UserPlus className="w-4 h-4" /> {sendingRequest ? t('common.loading') : t('friends.actions.addFriend')}
                 </button>
               )}
               {friendStatus === 'pending' && (
                 <button onClick={handleCancelRequest} disabled={sendingRequest} className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 group">
                   <UserCheck className="w-4 h-4 group-hover:hidden" />
                   <UserMinus className="w-4 h-4 hidden group-hover:block" />
-                  <span className="group-hover:hidden">{sendingRequest ? 'Cancelling...' : 'Request Sent'}</span>
-                  <span className="hidden group-hover:block text-red-400">Cancel Request</span>
+                  <span className="group-hover:hidden">{sendingRequest ? t('common.loading') : t('friends.actions.requestPending')}</span>
+                  <span className="hidden group-hover:block text-red-400">{t('common.cancel')}</span>
                 </button>
               )}
               {friendStatus === 'incoming' && (
                 <button onClick={handleAcceptFriend} disabled={sendingRequest} className="btn-primary text-sm flex items-center gap-2 px-4 py-2">
-                  <UserCheck className="w-4 h-4" /> Accept Request
+                  <UserCheck className="w-4 h-4" /> {t('friends.actions.acceptRequest')}
                 </button>
               )}
               {friendStatus === 'friends' && (
                 <button onClick={handleRemoveFriend} disabled={sendingRequest} className="btn-secondary text-sm flex items-center gap-2 px-4 py-2 group">
                   <UserCheck className="w-4 h-4 group-hover:hidden" />
                   <UserMinus className="w-4 h-4 hidden group-hover:block" />
-                  <span className="group-hover:hidden">Friends</span>
-                  <span className="hidden group-hover:block text-red-400">Unfriend</span>
+                  <span className="group-hover:hidden">{t('profile.stats.friends')}</span>
+                  <span className="hidden group-hover:block text-red-400">{t('friends.actions.removeFriend')}</span>
                 </button>
               )}
 
@@ -555,7 +557,7 @@ export default function UserProfilePage() {
                 onClick={handleMessage}
                 className="bg-blue-600 text-white text-sm flex items-center gap-2 px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
-                <MessageCircle className="w-4 h-4" /> Message
+                <MessageCircle className="w-4 h-4" /> {t('friends.actions.message')}
               </button>
             </div>
           )}
@@ -603,7 +605,7 @@ export default function UserProfilePage() {
       {activeTab === 'posts' && (
         <div className="space-y-4">
           {postsLoading ? (
-            <LoadingCosmic label="Loading posts..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : posts.length > 0 ? (
             posts.map(post => (
               <FeedCard
@@ -622,7 +624,7 @@ export default function UserProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">📝</p>
-              <p className="text-text-tertiary text-sm">No posts yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noPosts')}</p>
             </div>
           )}
         </div>
@@ -631,7 +633,7 @@ export default function UserProfilePage() {
       {activeTab === 'photos' && (
         <div>
           {photosLoading ? (
-            <LoadingCosmic label="Loading photos..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : photos.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
               {photos.map(photo => (
@@ -649,7 +651,7 @@ export default function UserProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">📷</p>
-              <p className="text-text-tertiary text-sm">No photos yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noPhotos')}</p>
             </div>
           )}
         </div>
@@ -658,7 +660,7 @@ export default function UserProfilePage() {
       {activeTab === 'reels' && (
         <div>
           {reelsLoading ? (
-            <LoadingCosmic label="Loading reels..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : reels.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
               {reels.map(reel => (
@@ -679,7 +681,7 @@ export default function UserProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">🎬</p>
-              <p className="text-text-tertiary text-sm">No reels yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noReels')}</p>
             </div>
           )}
         </div>
@@ -689,13 +691,13 @@ export default function UserProfilePage() {
         <div className="card p-5 space-y-4">
           {profile.bio && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Bio</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.bio')}</p>
               <p className="text-sm text-text-secondary">{profile.bio}</p>
             </div>
           )}
           {(profile.sun_sign || profile.moon_sign || profile.rising_sign) && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Big Three</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.bigThree')}</p>
               <p className="text-sm text-text-secondary">
                 {[
                   profile.sun_sign && `☉ ${profile.sun_sign}`,
@@ -707,25 +709,25 @@ export default function UserProfilePage() {
           )}
           {profile.starseed && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Starseed Origin</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.starseedOrigin')}</p>
               <p className="text-sm text-text-secondary">✨ {profile.starseed}</p>
             </div>
           )}
           {profile.human_design_type && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Human Design</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.humanDesign')}</p>
               <p className="text-sm text-text-secondary">{HD_TYPE_EMOJI[profile.human_design_type] || '✴️'} {profile.human_design_type}</p>
             </div>
           )}
           <div>
-            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Joined</p>
+            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.joined')}</p>
             <p className="text-sm text-text-secondary flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" /> {joinedDate}
             </p>
           </div>
           {profile.align_code && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Align Code</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.alignCode')}</p>
               <p className="text-sm font-bold text-accent-primary tracking-widest">{profile.align_code}</p>
             </div>
           )}
@@ -761,7 +763,7 @@ export default function UserProfilePage() {
           <div className="absolute inset-0 bg-black/60" onClick={() => setEditingPost(null)} />
           <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-              <h3 className="text-lg font-semibold text-text-primary">Edit Post</h3>
+              <h3 className="text-lg font-semibold text-text-primary">{t('profile.editPost')}</h3>
               <button onClick={() => setEditingPost(null)} className="text-text-muted hover:text-text-primary">
                 <X className="w-5 h-5" />
               </button>
@@ -777,13 +779,13 @@ export default function UserProfilePage() {
               <p className="text-xs text-text-muted text-right mt-1">{editText.length}/2000</p>
             </div>
             <div className="px-5 py-4 border-t border-border-primary flex gap-3">
-              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">Cancel</button>
+              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">{t('common.cancel')}</button>
               <button
                 onClick={handleSaveEdit}
                 disabled={editSaving || !editText.trim()}
                 className="btn-primary flex-1 text-sm"
               >
-                {editSaving ? 'Saving...' : 'Save'}
+                {editSaving ? t('editProfile.saving') : t('common.save')}
               </button>
             </div>
           </div>

@@ -50,7 +50,8 @@
     "agreeToTerms": "Я соглашаюсь с",
     "privacyPolicy": "Политикой конфиденциальности",
     "and": "и",
-    "termsOfService": "Условиями использования"
+    "termsOfService": "Условиями использования",
+    "signInToAccess": "Войдите, чтобы получить доступ к сообщениям"
   },
   "onboarding": {
     "title": "Создадим вашу натальную карту",
@@ -168,14 +169,15 @@
     "starseed": "Звёздное происхождение",
     "numerology": "Нумерология",
     "angelNumbers": "Ангельские числа",
-    "humanDesign": "Дизайн человека",
+    "humanDesign": "Дизайн Человека",
     "tarot": "Таро",
     "financial": "Финансовый отчёт",
     "pathway": "Путь к успеху",
     "nameAnalysis": "Анализ имени",
-    "firdaria": "Firdaria",
-    "zodiacalReleasing": "Zodiacal Releasing",
+    "firdaria": "Фирдарии",
+    "zodiacalReleasing": "Зодиакальное освобождение",
     "planetaryHours": "Планетарные часы",
+    "moonPhases": "Фазы Луны",
     "acg": "Астрокартография",
     "fixedStars": "Неподвижные звёзды",
     "arabicParts": "Арабские точки",
@@ -186,12 +188,378 @@
     "galacticForecast": "Галактический прогноз",
     "midpoints": "Калькулятор мидпоинтов",
     "aiAstrologer": "ИИ-астролог",
+    "yearAhead": "Мой предстоящий год",
     "savedCharts": "Сохранённые карты",
     "cosmicJournal": "Космический дневник",
-    "moonPhases": "Фазы Луны",
-    "yearAhead": "Мой предстоящий год",
     "soulGifts": "Дары души",
-    "soulMemory": "Память души"
+    "soulMemory": "Память души",
+    "soulAscension": "Восхождение души",
+    "dreamOracle": "Оракул снов",
+    "backToReadings": "Назад к чтениям",
+    "upgradeToTier": "Обновить до {{tier}}",
+    "birthDataRequired": "Сначала добавьте данные о рождении в профиле.",
+    "birthDataPromptTransits": "Добавьте данные о рождении, чтобы увидеть текущие транзиты.",
+    "birthDataPromptCompatibility": "Добавьте данные о рождении, чтобы проверить совместимость с особенным человеком.",
+    "birthDataPromptAlerts": "Нам нужны ваши данные о рождении для расчёта персонализированных космических оповещений.",
+    "transitsPage": {
+      "title": "Ваши циклы",
+      "subtitle": "{{name}}, это циклы, которые проходят через вашу жизнь прямо сейчас. Думайте о них как о сезонах — каждый приносит свою энергию, свои уроки и возможности.",
+      "loadingLabel": "Рассчитываем ваши транзиты...",
+      "errorDefault": "Не удалось загрузить транзиты",
+      "emptyState": "Активных циклов не обнаружено. Загляните позже.",
+      "activeNow": "Активно сейчас",
+      "storylines": "Сюжетные линии",
+      "impactingYouNow": "Влияет на вас сейчас",
+      "backToCycles": "Назад к циклам",
+      "active": "активно",
+      "approaching": "Приближается",
+      "separating": "Расходится",
+      "cycleMeaning": "Что этот цикл значит для вас",
+      "howToNavigate": "Как пройти через это",
+      "technicalDetails": "Технические детали",
+      "transit": "Транзит",
+      "currentOrb": "Текущий орбис",
+      "direction": "Направление",
+      "intensity": "Интенсивность",
+      "separatingDesc": "Расходится (удаляется от точного)",
+      "applyingDesc": "Сближается (движется к точному)",
+      "intensityMajor": "Значительный (внешняя планета)",
+      "intensityModerate": "Умеренный",
+      "intensityMinor": "Незначительный",
+      "nearExact": "Почти точный — максимальное влияние",
+      "stronglyActive": "Сильно активен",
+      "buildingMomentum": "Набирает силу",
+      "enteringAwareness": "Входит в осознание",
+      "lessThanADay": "Осталось менее суток",
+      "daysLeft": "Осталось {{count}} дн.",
+      "weeksLeft": "~{{count}} нед.",
+      "monthsLeft": "~{{count}} мес.",
+      "yearsLeft": "{{count}}+ лет",
+      "tapToRead": "Нажмите, чтобы прочитать полный прогноз",
+      "failedToLoadStorylines": "Не удалось загрузить сюжетные линии"
+    },
+    "tarotPage": {
+      "title": "Расклад Таро",
+      "subtitle": "Получите руководство от аркан",
+      "chooseSpread": "Выберите расклад",
+      "yourQuestion": "Ваш вопрос (необязательно)",
+      "questionPlaceholder": "Какое руководство вы ищете?",
+      "drawButton": "Вытянуть {{spread}}",
+      "shuffling": "Перемешиваем Космическую Колоду...",
+      "tapToReveal": "Нажмите, чтобы открыть",
+      "revealAll": "Открыть все карты",
+      "newReading": "Новый расклад",
+      "getPersonalReading": "Получить личное чтение",
+      "regenerateReading": "Обновить личное чтение",
+      "personalTarotReading": "Личное чтение Таро",
+      "channeling": "Считываем вашу карту и карты...",
+      "shareReading": "Поделиться чтением",
+      "copied": "Скопировано!",
+      "failedToGenerate": "Не удалось создать чтение. Попробуйте снова.",
+      "reversed": "Перевёрнута",
+      "majorArcana": "Старшие Арканы",
+      "minorArcana": "Младшие Арканы",
+      "spreads": {
+        "single": "Одна карта",
+        "threeCard": "Три карты",
+        "celticCross": "Кельтский крест",
+        "relationship": "Отношения",
+        "career": "Карьера"
+      },
+      "positions": {
+        "focus": "Фокус",
+        "past": "Прошлое",
+        "present": "Настоящее",
+        "future": "Будущее",
+        "challenge": "Вызов",
+        "foundation": "Основание",
+        "recentPast": "Недавнее прошлое",
+        "crown": "Корона",
+        "nearFuture": "Ближайшее будущее",
+        "self": "Я",
+        "environment": "Окружение",
+        "hopesFears": "Надежды/Страхи",
+        "outcome": "Результат",
+        "you": "Вы",
+        "partner": "Партнёр",
+        "connection": "Связь",
+        "potential": "Потенциал",
+        "current": "Текущее",
+        "obstacle": "Препятствие",
+        "hiddenFactor": "Скрытый фактор",
+        "advice": "Совет"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Оракул снов",
+      "subtitle": "Расшифруйте свои сны через символы, эмоции, астрологию и скрытый язык подсознания.",
+      "tabs": {
+        "record": "Запись",
+        "journal": "Дневник",
+        "symbols": "Символы",
+        "patterns": "Паттерны"
+      },
+      "record": {
+        "dreamTitle": "Название сна (необязательно)",
+        "titlePlaceholder": "Сгенерируется автоматически, если оставить пустым",
+        "describeLabel": "Опишите ваш сон *",
+        "describePlaceholder": "Закройте глаза и опишите всё, что помните...",
+        "mainEmotions": "Основные эмоции (до 5)",
+        "peopleDream": "Люди во сне",
+        "peoplePlaceholder": "напр. мать, бывший партнёр, незнакомец, друг",
+        "placesDream": "Места во сне",
+        "placesPlaceholder": "напр. дом детства, океан, тёмный лес",
+        "separateCommas": "Разделяйте запятыми",
+        "symbolsObjects": "Символы / Объекты",
+        "selectSymbols": "Нажмите, чтобы выбрать символы сна",
+        "selectedCount": "{{count}} выбрано",
+        "searchSymbols": "Поиск символов...",
+        "dreamType": "Тип сна",
+        "dreamIntensity": "Интенсивность сна: {{value}}/10",
+        "privacy": "Приватность",
+        "interpretDream": "Расшифровать мой сон",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Ваша расшифровка сна",
+        "mainSymbols": "Главные символы",
+        "coreMessage": "Ключевое послание",
+        "subconsciousMessage": "Что ваше подсознание показывало вам",
+        "symbolsMatter": "Символы, которые важнее всего",
+        "emotionalUndercurrent": "Эмоциональный подтекст",
+        "whatToFace": "С чем этот сон просит вас столкнуться",
+        "oracleMessage": "Финальное послание Оракула снов",
+        "astroConnection": "Астрологическая связь",
+        "whyNow": "Почему вам приснилось это именно сейчас",
+        "watchFor": "На что обратить внимание",
+        "whatToDo": "Что делать дальше",
+        "reflectionQuestions": "Вопросы для размышления",
+        "askAboutDream": "Спросить об этом сне",
+        "visualizeDream": "Визуализировать мой сон",
+        "comingSoon": "СКОРО",
+        "recordAnother": "Записать другой сон"
+      },
+      "journal": {
+        "loadingJournal": "Загрузка дневника снов...",
+        "searchDreams": "Поиск снов...",
+        "noDreamsYet": "Снов пока нет",
+        "noDreamsHint": "Запишите свой первый сон, чтобы начать вести дневник.",
+        "deleteConfirm": "Удалить этот сон? Это действие нельзя отменить."
+      },
+      "dictionary": {
+        "backToSymbols": "Назад к символам",
+        "generalMeaning": "Общее значение",
+        "psychologicalMeaning": "Психологическое значение",
+        "spiritualMeaning": "Духовное значение",
+        "astrologicalMeaning": "Астрологическое значение",
+        "shadowMeaning": "Теневое значение",
+        "reflectionQuestion": "Вопрос для размышления"
+      },
+      "patterns": {
+        "noPatternsYet": "Паттернов пока нет",
+        "noPatternsHint": "Запишите минимум 3 сна, чтобы начать видеть закономерности.",
+        "overview": "Обзор",
+        "totalDreams": "Всего снов",
+        "avgIntensity": "Средняя интенсивность",
+        "nightmares": "Кошмары",
+        "lucidDreams": "Осознанные сны",
+        "prophetic": "Пророческие",
+        "recurringSymbols": "Повторяющиеся символы",
+        "recurringEmotions": "Повторяющиеся эмоции",
+        "recurringPeople": "Повторяющиеся люди",
+        "dreamTypes": "Типы снов",
+        "dreamsByMoonPhase": "Сны по фазам Луны",
+        "moonPhaseHint": "Отслеживание паттернов лунных фаз активируется после 10+ снов с подключёнными астрологическими данными.",
+        "dreamsByTransit": "Сны по транзитам",
+        "transitHint": "Корреляция транзитов покажет, какие планетарные аспекты активируют ваши самые яркие или пророческие сны."
+      }
+    },
+    "starseedPage": {
+      "title": "Звёздное происхождение",
+      "subtitle": "Откройте ваши космические истоки души",
+      "description": "Анализ натальной карты для определения звёздных систем, с которыми резонирует ваша душа.",
+      "discoverButton": "Открыть мои истоки",
+      "analyzing": "Анализируем...",
+      "dominantOrigin": "Доминирующее происхождение",
+      "resonancePoints": "Оценка: {{score}} точек резонанса"
+    },
+    "numerologyPage": {
+      "title": "Нумерология",
+      "subtitle": "Ваши космические числа расшифрованы",
+      "master": "Мастер"
+    },
+    "angelNumbersPage": {
+      "title": "Ангельские числа",
+      "subtitle": "Узнайте значение чисел, которые вы видите",
+      "searchPlaceholder": "Введите число (напр. 111, 444)...",
+      "popular": "Популярные числа",
+      "notFound": "Число не найдено. Попробуйте распространённое ангельское число.",
+      "copiedToClipboard": "Скопировано в буфер обмена!"
+    },
+    "humanDesignPage": {
+      "title": "Дизайн Человека",
+      "subtitle": "Ваш энергетический чертёж",
+      "aura": "Аура",
+      "defined": "Определённый",
+      "undefined": "Неопределённый"
+    },
+    "financialPage": {
+      "title": "Финансовая астрология",
+      "subtitle": "Ваш космический финансовый чертёж",
+      "personalIncome": "Личный доход и ценности",
+      "sharedResources": "Общие ресурсы и трансформация",
+      "careerStanding": "Карьера и публичная репутация",
+      "gainsNetworks": "Доходы и связи",
+      "strengths": "Сильные стороны",
+      "challenges": "Вызовы",
+      "monthlyForecast": "Ежемесячный прогноз",
+      "timingWindows": "Временные окна",
+      "favorable": "Благоприятно",
+      "mixed": "Смешанно",
+      "challenging": "Непросто"
+    },
+    "compatibilityPage": {
+      "title": "Проверка совместимости",
+      "subtitle": "Исследуйте космическую связь между двумя душами",
+      "person2Label": "Данные рождения партнёра",
+      "datePlaceholder": "Дата рождения",
+      "timePlaceholder": "Время рождения",
+      "locationPlaceholder": "Место рождения",
+      "calculateButton": "Проверить совместимость",
+      "calculating": "Рассчитываем совместимость...",
+      "overallScore": "Общая оценка",
+      "soulLevelConnection": "Связь на уровне души",
+      "deepCompatibility": "Глубокая совместимость",
+      "strongPotential": "Сильный потенциал",
+      "moderateMatch": "Умеренное совпадение",
+      "growthRequired": "Требуется рост",
+      "challengingDynamic": "Непростая динамика",
+      "categories": {
+        "attraction": "Физическое влечение",
+        "emotional": "Эмоциональная связь",
+        "mental": "Ментальная связь",
+        "stability": "Долгосрочная стабильность",
+        "karmic": "Кармическая связь",
+        "harmony": "Гармония",
+        "magnetic": "Магнетическое притяжение"
+      },
+      "showAspects": "Показать аспекты",
+      "hideAspects": "Скрыть аспекты"
+    },
+    "cosmicJournalPage": {
+      "title": "Космический дневник",
+      "subtitle": "Отслеживайте ваш внутренний мир вместе с космосом",
+      "newEntry": "Новая запись",
+      "moodOptions": {
+        "low": "Низкое",
+        "meh": "Так себе",
+        "neutral": "Нейтрально",
+        "good": "Хорошо",
+        "great": "Отлично"
+      },
+      "noEntries": "Записей в дневнике пока нет",
+      "noEntriesHint": "Начните писать, чтобы отслеживать ваш внутренний мир вместе с космосом."
+    },
+    "moonPhasesPage": {
+      "title": "Фазы Луны",
+      "tabs": {
+        "today": "Сегодня",
+        "calendar": "Календарь",
+        "forecast": "Прогноз",
+        "eclipses": "Затмения",
+        "birthMoon": "Луна рождения"
+      },
+      "failedToLoadChart": "Не удалось загрузить натальную карту"
+    },
+    "planetaryHoursPage": {
+      "title": "Планетарные часы",
+      "subtitle": "Древняя мудрость тайминга для современной жизни",
+      "currentHour": "Текущий час",
+      "daySummary": "Обзор дня",
+      "hoursTable": "Таблица часов"
+    },
+    "yearAheadPage": {
+      "title": "Мой предстоящий год",
+      "subtitle": "Ваш персонализированный космический прогноз на год",
+      "generating": "Генерируем ваш прогноз на год...",
+      "monthlyOverview": "Ежемесячный обзор",
+      "keyTransits": "Ключевые транзиты",
+      "calm": "Спокойно",
+      "activeIntensity": "Активно",
+      "intense": "Интенсивно"
+    },
+    "solarReturnPage": {
+      "title": "Солнечный возврат",
+      "subtitle": "Ваша карта дня рождения — космический чертёж на год",
+      "generating": "Рассчитываем ваш Солнечный возврат...",
+      "yearTheme": "Тема года",
+      "planetsOnAngles": "Планеты на углах",
+      "retrogrades": "Ретрограды",
+      "monthlyTimeline": "Помесячная шкала",
+      "natalComparisons": "Натальная vs Солнечный возврат",
+      "criticalAspects": "Критические аспекты",
+      "yearPattern": "Паттерн года"
+    },
+    "galacticClockPage": {
+      "title": "Галактические часы",
+      "subtitle": "Ваш космический интерфейс времени"
+    },
+    "galacticForecastPage": {
+      "title": "Галактический прогноз",
+      "subtitle": "Энергии дальнего космоса, влияющие на вашу карту"
+    },
+    "midpointsPage": {
+      "title": "Калькулятор мидпоинтов",
+      "subtitle": "Откройте скрытые связи в вашей карте"
+    },
+    "firdariaPage": {
+      "title": "Фирдарии",
+      "subtitle": "Древние персидские планетарные периоды"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Зодиакальное освобождение",
+      "subtitle": "Эллинистическая техника тайминга"
+    },
+    "acgPage": {
+      "title": "Астрокартография",
+      "subtitle": "Где в мире активируются ваши планеты"
+    },
+    "fixedStarsPage": {
+      "title": "Неподвижные звёзды",
+      "subtitle": "Звёздные влияния в вашей карте"
+    },
+    "arabicPartsPage": {
+      "title": "Арабские точки",
+      "subtitle": "Древние расчётные точки в вашей карте"
+    },
+    "pathwayPage": {
+      "title": "Путь к успеху",
+      "subtitle": "Ваш космический карьерный чертёж и жизненное предназначение"
+    },
+    "rectificationPage": {
+      "title": "Ректификация времени рождения",
+      "subtitle": "Уточните время рождения для более точных карт"
+    },
+    "nameAnalysisPage": {
+      "title": "Анализ имени",
+      "subtitle": "Нумерология вашего имени"
+    },
+    "soulGiftsPage": {
+      "title": "Дары души",
+      "subtitle": "Откройте уникальные дары, заложенные в вашей карте"
+    },
+    "soulMemoryPage": {
+      "title": "Память души",
+      "subtitle": "Отголоски прошлых жизней в натальной карте"
+    },
+    "soulAscensionPage": {
+      "title": "Восхождение души",
+      "description": "Играйте с натальной картой как с RPG реинкарнации: карма, пути предназначения, контракты души, реликвии и выборы прошлых жизней."
+    },
+    "chartAdjusterPage": {
+      "title": "Корректор карты",
+      "subtitle": "Экспериментируйте с разным временем рождения"
+    }
   },
   "interpretation": {
     "aiInterpret": "Интерпретация ИИ",
@@ -205,6 +573,464 @@
       "reputation": "Репутация"
     }
   },
+  "dating": {
+    "title": "Космические знакомства",
+    "subtitle": "Ваши персональные космические выборы",
+    "introTitle": "Космические знакомства",
+    "introDescription": "Найдите значимые связи, написанные в звёздах. Создайте профиль для знакомств, чтобы начать открывать космически совместимых людей.",
+    "createProfileButton": "Создать профиль для знакомств",
+    "featurePhotos": "Добавьте фото и голосовое приветствие",
+    "featureCompatibility": "Подбор по космической совместимости",
+    "featureSafety": "Безопасные и проверенные связи",
+    "tabs": {
+      "discover": "Обзор",
+      "likes": "Лайки",
+      "matches": "Совпадения",
+      "myProfile": "Мой профиль"
+    },
+    "discovery": {
+      "consulting": "Сверяемся с космосом...",
+      "noPicksTitle": "Пока нет космических подборок",
+      "allCaughtUpTitle": "Вы всё просмотрели!",
+      "noPicksDescription": "Звёзды всё ещё выравнивают ваши совпадения. Убедитесь, что ваш профиль заполнен!",
+      "allCaughtUpDescription": "Вернитесь завтра за новыми космическими подборками. Качественные связи требуют времени.",
+      "completeProfile": "Заполнить профиль",
+      "dailyLikeLimit": "Вы достигли дневного лимита лайков ({{limit}}). Обновите подписку!",
+      "dailyRoseLimit": "Вы использовали все Космические Розы сегодня ({{limit}}). Обновите подписку!",
+      "genericError": "Что-то пошло не так. Попробуйте снова."
+    },
+    "likes": {
+      "title": "Лайки",
+      "receivedCount": "{{count}} человек заинтересованы",
+      "sentCount": "Вы лайкнули {{count}} человек",
+      "received": "Полученные",
+      "sent": "Отправленные",
+      "seeWhoLikes": "Узнайте, кому вы нравитесь",
+      "upgradeHint": "Обновите до Light или выше, чтобы увидеть профили",
+      "upgrade": "Обновить",
+      "noLikesYet": "Лайков пока нет",
+      "noSentYet": "Вы ещё не отправляли лайки",
+      "keepFresh": "Держите профиль актуальным, и космос доставит.",
+      "headToDiscover": "Перейдите в Обзор, чтобы найти космические связи.",
+      "mysteryAdmirer": "Тайный поклонник",
+      "rose": "Роза",
+      "likeBack": "Лайкнуть в ответ",
+      "matching": "Подбираем..."
+    },
+    "matches": {
+      "title": "Ваши совпадения",
+      "connectionCount": "{{count}} космических связей",
+      "noMatchesTitle": "Совпадений пока нет",
+      "noMatchesDescription": "Когда вы оба лайкнете друг друга, вы появитесь здесь.",
+      "discoverPeople": "Искать людей",
+      "cosmicIcebreakers": "Космические айсбрейкеры",
+      "message": "Сообщение",
+      "unmatchConfirm": "Отменить совпадение с {{name}}?",
+      "unmatch": "Отменить",
+      "cancel": "Отмена",
+      "matchedToday": "Совпадение сегодня",
+      "matchedDaysAgo": "Совпадение {{days}} дн. назад",
+      "cosmicMatch": "Космическое совпадение"
+    },
+    "profile": {
+      "title": "Профиль знакомств",
+      "datingMode": "Режим знакомств",
+      "datingModeHint": "Сделайте профиль видимым в космическом поиске",
+      "cosmicSignature": "Ваша космическая подпись",
+      "sunMoonRising": "Солнце / Луна / Асцендент",
+      "photos": "Фото",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Обо мне",
+      "aboutMePlaceholder": "Расскажите потенциальным партнёрам о себе...",
+      "cosmicPrompts": "Космические подсказки",
+      "addPrompt": "Добавить подсказку",
+      "promptAnswerPlaceholder": "Ваш ответ...",
+      "voicePrompt": "Голосовое приветствие",
+      "voicePromptHint": "Запишите 30-секундное голосовое приветствие",
+      "uploadingVoice": "Загрузка голосового приветствия...",
+      "reRecord": "Перезаписать",
+      "stopRecording": "Остановить запись",
+      "recordVoicePrompt": "Записать голосовое приветствие",
+      "videoIntro": "Видео-приветствие",
+      "videoIntroHint": "Загрузите 15-секундное видео, чтобы представиться",
+      "replaceVideo": "Заменить видео",
+      "uploadVideo": "Загрузить видео",
+      "showAge": "Показывать возраст в профиле",
+      "photoVerification": "Верификация фото",
+      "verified": "Подтверждён",
+      "verifyNow": "Подтвердить сейчас",
+      "datingPreferences": "Предпочтения в знакомствах",
+      "savePreferences": "Сохранить предпочтения",
+      "saveProfile": "Сохранить профиль",
+      "saving": "Сохранение...",
+      "preferenceFields": {
+        "genderIdentity": "Гендерная идентичность",
+        "sexualOrientation": "Сексуальная ориентация",
+        "interestedIn": "Интересуюсь",
+        "primaryIntent": "Основное намерение",
+        "ageRange": "Возрастной диапазон",
+        "maxDistance": "Макс. расстояние"
+      },
+      "privacyLevels": {
+        "visible": "Видимый",
+        "matchOnly": "Только для совпадений",
+        "hidden": "Скрытый"
+      }
+    },
+    "verify": {
+      "title": "Верификация фото",
+      "subtitle": "Подтвердите свою личность, чтобы получить значок доверия в профиле знакомств",
+      "backToProfile": "Назад к профилю",
+      "verifiedTitle": "Подтверждено!",
+      "verifiedDescription": "Ваш профиль теперь отображает значок верификации.",
+      "pendingTitle": "На проверке",
+      "pendingDescription": "Ваше селфи проверяется. Обычно это занимает 24-48 часов.",
+      "rejectedTitle": "Не одобрено",
+      "rejectedHint": "Вы можете попробовать снова с более чётким селфи.",
+      "tryAgain": "Попробовать снова",
+      "howItWorks": "Как это работает:",
+      "step1": "1. Сделайте чёткое селфи при хорошем освещении",
+      "step2": "2. Убедитесь, что ваше лицо полностью видно",
+      "step3": "3. Мы сравним его с вашими фотографиями в профиле",
+      "step4": "4. После одобрения вы получите значок верификации",
+      "takeSelfie": "Сделать селфи",
+      "capture": "Снять",
+      "cancel": "Отмена",
+      "retake": "Переснять",
+      "submitForReview": "Отправить на проверку",
+      "submitting": "Отправка...",
+      "cameraAccessDenied": "Доступ к камере запрещён. Разрешите доступ к камере в настройках браузера.",
+      "submissionFailed": "Отправка не удалась. Попробуйте снова.",
+      "networkError": "Ошибка сети. Проверьте подключение и попробуйте снова."
+    },
+    "coach": {
+      "title": "Коуч по отношениям",
+      "subtitle": "Инсайты на основе ИИ, основанные на вашей астрологической динамике",
+      "premiumFeature": "Премиум-функция",
+      "backToMatches": "Назад к совпадениям",
+      "noMatchHint": "Найдите совпадение, чтобы получить инсайты.",
+      "browsePicks": "Просмотреть подборки",
+      "inputPlaceholder": "Спросите о коммуникации, конфликтах, близости...",
+      "emptyHint": "Задайте первый вопрос или нажмите Отправить для общего инсайта.",
+      "aiInsight": "Инсайт ИИ",
+      "template": "Шаблон"
+    },
+    "timing": {
+      "title": "Космический тайминг",
+      "subtitle": "Планетарные окна для лучших моментов ваших связей",
+      "backToMatches": "Назад к совпадениям",
+      "noMatchHint": "Найдите совпадение, чтобы увидеть космические окна.",
+      "browsePicks": "Просмотреть подборки",
+      "noWindows": "Временные окна не найдены.",
+      "qualityExcellent": "Отлично",
+      "qualityGood": "Хорошо",
+      "qualityNeutral": "Нейтрально",
+      "qualityChallenging": "Сложно",
+      "now": "Сейчас",
+      "inDays": "Через {{days}} дн."
+    },
+    "events": {
+      "title": "Космические события",
+      "subtitle": "Тематические мероприятия для знакомств, согласованные с космосом",
+      "backToDating": "Назад к знакомствам",
+      "tabs": {
+        "upcoming": "Предстоящие",
+        "myEvents": "Мои события"
+      },
+      "noUpcoming": "Нет предстоящих событий. Загляните позже!",
+      "noRegistered": "Вы ещё не зарегистрировались ни на одно событие.",
+      "live": "ПРЯМОЙ ЭФИР",
+      "maxCount": "Макс. {{count}}",
+      "elementOnly": "Только знаки {{element}}",
+      "registered": "Зарегистрирован",
+      "cancelRegistration": "Отменить",
+      "register": "Регистрация",
+      "registering": "Регистрация..."
+    },
+    "milestones": {
+      "title": "Вехи отношений",
+      "subtitle": "Отслеживайте ваш путь вместе под звёздами",
+      "backToMatches": "Назад к совпадениям",
+      "noMatchHint": "Найдите совпадение, чтобы отслеживать вехи.",
+      "browsePicks": "Просмотреть подборки",
+      "journeyProgress": "Прогресс пути",
+      "mark": "Отметить"
+    },
+    "datePlanner": {
+      "title": "Планировщик свиданий",
+      "subtitle": "Космически подобранные идеи для свиданий с вашим совпадением",
+      "backToMatches": "Назад к совпадениям",
+      "noMatchHint": "Найдите совпадение, чтобы получить рекомендации для свиданий.",
+      "browsePicks": "Просмотреть подборки",
+      "shuffleIdeas": "Перемешать идеи",
+      "elementEnergy": "Энергия {{element}}"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Космическая лента",
+    "createPost": "Создать пост",
+    "postTypes": {
+      "text": "Текст",
+      "photo": "Фото",
+      "video": "Видео",
+      "poll": "Опрос"
+    },
+    "composer": {
+      "placeholder": "О чём думает ваш космический ум?",
+      "uploadImage": "Нажмите, чтобы загрузить изображение",
+      "uploadVideo": "Нажмите, чтобы загрузить видео",
+      "imageSizeLimit": "Изображение должно быть менее 10 МБ",
+      "videoSizeLimit": "Видео должно быть менее 200 МБ",
+      "backgroundStyle": "Стиль фона",
+      "visibility": "Видимость:",
+      "visibilityPublic": "Публичный",
+      "visibilityFriends": "Друзья",
+      "postButton": "Опубликовать",
+      "posting": "Публикация...",
+      "uploadingImage": "Загрузка изображения...",
+      "uploadingVideo": "Загрузка видео...",
+      "addImage": "Добавить изображение",
+      "addVideo": "Добавить видео",
+      "editPost": "Редактировать пост"
+    },
+    "poll": {
+      "question": "Вопрос",
+      "questionPlaceholder": "Спросите у космоса...",
+      "options": "Варианты",
+      "optionPlaceholder": "Вариант {{number}}",
+      "addOption": "Добавить вариант",
+      "duration": "Длительность",
+      "durationOptions": {
+        "1h": "1 час",
+        "6h": "6 часов",
+        "12h": "12 часов",
+        "1d": "1 день",
+        "3d": "3 дня",
+        "7d": "7 дней"
+      },
+      "createPoll": "Создать опрос",
+      "pollNeedsContent": "Для опроса нужен вопрос и минимум 2 варианта"
+    },
+    "empty": {
+      "title": "Ваша космическая лента ждёт",
+      "description": "Делитесь чтениями, картами и космическими инсайтами с сообществом.",
+      "createFirst": "Создайте свой первый пост"
+    },
+    "loadMore": "Загрузить ещё",
+    "loading": "Загрузка..."
+  },
+  "friends": {
+    "title": "Друзья и связи",
+    "friendCount": "{{count}} друзей",
+    "pendingCount": "{{count}} ожидают",
+    "inviteFriends": "Пригласить друзей",
+    "qrCode": "QR-код",
+    "tabs": {
+      "friends": "Друзья",
+      "requests": "Запросы",
+      "search": "Поиск"
+    },
+    "suggestionsTitle": "Люди, которых вы можете знать",
+    "addButton": "+ Добавить",
+    "empty": {
+      "noFriends": "Пока нет друзей",
+      "noFriendsHint": "Ищите людей или поделитесь вашим кодом Align",
+      "findPeople": "Найти людей",
+      "noRequests": "Нет ожидающих запросов",
+      "noRequestsHint": "Отправленные и полученные запросы в друзья будут отображаться здесь"
+    },
+    "requests": {
+      "wantsToConnect": "Хочет подключиться",
+      "requestSent": "Запрос отправлен",
+      "accept": "Принять",
+      "decline": "Отклонить",
+      "cancel": "Отмена"
+    },
+    "search": {
+      "placeholder": "Поиск по имени, имени пользователя или коду Align...",
+      "searching": "Поиск...",
+      "noResults": "Пользователи не найдены",
+      "noResultsHint": "Попробуйте другой запрос",
+      "startSearch": "Искать людей",
+      "minCharsHint": "Введите минимум 2 символа..."
+    },
+    "labels": {
+      "friends": "Друзья",
+      "pending": "Ожидание"
+    },
+    "actions": {
+      "removeFriend": "Удалить друга",
+      "blockUser": "Заблокировать",
+      "removeConfirm": "Удалить {{name}} из друзей?",
+      "blockConfirm": "Заблокировать {{name}}? Они не смогут вас найти или связаться с вами.",
+      "viewProfile": "Посмотреть профиль",
+      "message": "Сообщение",
+      "viewFullProfile": "Полный профиль",
+      "close": "Закрыть",
+      "requestPending": "Запрос отправлен",
+      "addFriend": "Добавить в друзья",
+      "acceptRequest": "Принять запрос",
+      "confirm": "Подтвердить",
+      "ok": "ОК"
+    },
+    "alignCode": "Код Align:"
+  },
+  "messages": {
+    "signInRequired": "Войдите, чтобы получить доступ к сообщениям",
+    "selectConversation": "Выберите беседу",
+    "startNewChat": "или начните новый чат",
+    "newChat": "Новый чат",
+    "contextMenu": {
+      "reply": "Ответить",
+      "react": "Реакция",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "forward": "Переслать",
+      "pin": "Закрепить",
+      "unpin": "Открепить",
+      "copyText": "Копировать текст"
+    },
+    "pickReaction": "Выберите реакцию",
+    "messageTypes": {
+      "image": "Изображение",
+      "gif": "GIF",
+      "voiceMessage": "Голосовое сообщение",
+      "location": "Местоположение",
+      "poll": "Опрос:"
+    },
+    "composer": {
+      "placeholder": "Введите сообщение...",
+      "send": "Отправить",
+      "attachment": "Прикрепить"
+    }
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "markAllRead": "Отметить все как прочитанные",
+    "filters": {
+      "all": "Все",
+      "social": "Социальные",
+      "cosmic": "Космические",
+      "system": "Системные"
+    },
+    "empty": {
+      "all": "Уведомлений пока нет",
+      "allHint": "Ваши космические оповещения и социальные обновления появятся здесь.",
+      "social": "Нет социальных уведомлений",
+      "socialHint": "Запросы в друзья, сообщения и реакции будут отображаться здесь.",
+      "cosmic": "Нет космических оповещений",
+      "cosmicHint": "Оповещения о транзитах и космических событиях появятся здесь.",
+      "system": "Нет системных уведомлений",
+      "systemHint": "Системные обновления и объявления будут отображаться здесь."
+    },
+    "time": {
+      "justNow": "только что",
+      "minutesAgo": "{{count}} мин. назад",
+      "hoursAgo": "{{count}} ч. назад",
+      "daysAgo": "{{count}} дн. назад"
+    },
+    "grouped": "{{count}} уведомлений"
+  },
+  "communities": {
+    "title": "Сообщества",
+    "subtitle": "Найдите своё космическое племя",
+    "create": "Создать",
+    "tabs": {
+      "discover": "Обзор",
+      "myCommunities": "Мои сообщества"
+    },
+    "searchPlaceholder": "Поиск сообществ...",
+    "filterAll": "Все",
+    "loading": "Загрузка сообществ...",
+    "empty": {
+      "title": "Сообществ пока нет",
+      "description": "Станьте первым, кто создаст космическое сообщество!",
+      "createButton": "Создать сообщество"
+    },
+    "featured": "Рекомендуемые",
+    "allCommunities": "Все сообщества",
+    "noResultsSearch": "Не найдено сообществ для «{{query}}»",
+    "noResultsCategory": "В этой категории пока нет сообществ.",
+    "yourCircle": {
+      "title": "Ваш космический круг ждёт",
+      "description": "Присоединяйтесь к сообществам или создайте своё.",
+      "exploreButton": "Исследовать сообщества"
+    },
+    "memberCount_one": "{{count}} участник",
+    "memberCount_other": "{{count}} участников",
+    "private": "Приватное",
+    "join": "Вступить",
+    "joined": "Вы участник"
+  },
+  "profile": {
+    "title": "Профиль",
+    "editProfile": "Редактировать профиль",
+    "shareBigThree": "Поделиться Большой Тройкой",
+    "stats": {
+      "friends": "Друзья",
+      "posts": "Посты",
+      "followers": "Подписчики",
+      "following": "Подписки",
+      "views": "Просмотры"
+    },
+    "tabs": {
+      "posts": "Посты",
+      "photos": "Фото",
+      "reels": "Рилсы",
+      "about": "О себе"
+    },
+    "alignCode": "Ваш код Align",
+    "alignCodeHint": "Поделитесь кодом, чтобы друзья вас нашли",
+    "quickLinks": {
+      "gallery": "Галерея",
+      "safetyTrust": "Безопасность и доверие",
+      "subscription": "Подписка",
+      "referrals": "Рефералы",
+      "settings": "Настройки"
+    },
+    "about": {
+      "bio": "О себе",
+      "bigThree": "Большая Тройка",
+      "starseedOrigin": "Звёздное происхождение",
+      "humanDesign": "Дизайн Человека",
+      "joined": "Присоединился",
+      "alignCode": "Код Align"
+    },
+    "empty": {
+      "noPosts": "Постов пока нет",
+      "noPhotos": "Фото пока нет",
+      "noReels": "Рилсов пока нет"
+    },
+    "loadingProfile": "Загрузка профиля...",
+    "profileViews": "Просмотры профиля",
+    "noViews": "Просмотров профиля пока нет",
+    "editPost": "Редактировать пост"
+  },
+  "editProfile": {
+    "title": "Редактировать профиль",
+    "displayName": "Отображаемое имя",
+    "bio": "О себе",
+    "bioPlaceholder": "Расскажите космосу о себе...",
+    "birthData": "Данные рождения",
+    "date": "Дата",
+    "time": "Время",
+    "location": "Местоположение",
+    "locationPlaceholder": "Поиск города, штата или страны...",
+    "saveChanges": "Сохранить изменения",
+    "saving": "Сохранение...",
+    "tapAddCover": "Нажмите, чтобы добавить обложку",
+    "errors": {
+      "saveFailed": "Не удалось сохранить профиль",
+      "avatarFailed": "Не удалось загрузить аватар",
+      "coverFailed": "Не удалось загрузить обложку"
+    }
+  },
   "settings": {
     "title": "Настройки",
     "language": "Язык",
@@ -216,9 +1042,259 @@
     "houseSystem": "Система домов",
     "darkMode": "Тёмная тема",
     "about": "О приложении Align",
-    "privacy": "Политика конфиденциальности",
+    "privacy": {
+      "title": "Конфиденциальность и данные",
+      "profileVisibility": "Видимость профиля",
+      "visibilityOptions": {
+        "public": "Публичный",
+        "friendsOnly": "Только друзья",
+        "private": "Приватный"
+      },
+      "hideAge": "Скрыть возраст",
+      "hideExactLocation": "Скрыть точное местоположение",
+      "hideLastActive": "Скрыть последнюю активность",
+      "hideFullBirthChart": "Скрыть полную натальную карту",
+      "incognitoMode": "Режим инкогнито",
+      "blockUnverified": "Блокировать неверифицированных",
+      "minimumTrustLevel": "Минимальный уровень доверия",
+      "trustLevels": {
+        "any": "Любой",
+        "low": "Низкий",
+        "medium": "Средний",
+        "high": "Высокий"
+      },
+      "analyticsEnabled": "Аналитика",
+      "exportData": "Экспортировать мои данные",
+      "exportToast": "Запрос на экспорт данных отправлен. Вы получите его по электронной почте."
+    },
     "terms": "Условия использования",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "account": "Аккаунт",
+    "email": "E-mail",
+    "name": "Имя",
+    "notSet": "Не задано",
+    "planLabel": "План {{plan}}",
+    "upgradeHint": "Обновите для дополнительных функций",
+    "managedVia": "Управляется через RevenueCat",
+    "manage": "Управлять",
+    "upgrade": "Обновить",
+    "subPages": {
+      "chatTheme": "Тема чата",
+      "notifications": "Уведомления",
+      "privacy": "Конфиденциальность",
+      "astrologyPreferences": "Настройки астрологии",
+      "friends": "Друзья",
+      "referrals": "Рефералы",
+      "subscriptionPlans": "Планы подписки",
+      "datingIdentity": "Идентичность в знакомствах",
+      "relationshipIntent": "Цели отношений",
+      "connectionPreferences": "Предпочтения в связях",
+      "identityPrivacy": "Приватность идентичности",
+      "safety": "Безопасность",
+      "termsOfService": "Условия использования",
+      "communityGuidelines": "Правила сообщества"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "Администратор",
+      "manageUsers": "Управление пользователями",
+      "contentModeration": "Модерация контента",
+      "manageCelebrities": "Управление знаменитостями",
+      "payoutQueue": "Очередь выплат"
+    },
+    "aboutSection": {
+      "version": "Версия",
+      "poweredBy": "Работает на",
+      "contact": "Контакты"
+    },
+    "signOut": "Выйти",
+    "deleteAccount": "Удалить аккаунт",
+    "deleteConfirm": {
+      "title": "Удалить аккаунт?",
+      "message": "Это безвозвратно удалит ваш аккаунт и все связанные данные. Это действие нельзя отменить.",
+      "confirm": "Удалить мой аккаунт",
+      "cancel": "Отмена"
+    },
+    "astrology": {
+      "title": "Настройки астрологии",
+      "autoSaveHint": "Изменения сохраняются автоматически и применяются ко всем расчётам карт.",
+      "houseSystem": "Система домов",
+      "houseSystemHint": "Определяет, как рассчитываются дома вашей карты",
+      "houseSystems": {
+        "wholeSign": "Целый знак",
+        "placidus": "Плацидус",
+        "koch": "Кох",
+        "campanus": "Кампанус",
+        "regiomontanus": "Региомонтанус",
+        "equal": "Равнодомная",
+        "porphyry": "Порфирий",
+        "alcabitius": "Алькабитиус",
+        "topocentric": "Топоцентрическая",
+        "morinus": "Моринус",
+        "meridian": "Меридианная"
+      },
+      "zodiacSystem": "Система зодиака",
+      "zodiacSystems": {
+        "tropical": "Тропический (Западный)",
+        "sidereal": "Сидерический (Ведический)"
+      },
+      "languageLevel": "Уровень языка",
+      "languageLevelHint": "Насколько техническими должны быть интерпретации?",
+      "jargonModes": {
+        "plain": "Простой язык",
+        "mixed": "Смешанный",
+        "technical": "Технический"
+      },
+      "orbTightness": "Точность орбисов",
+      "orbOptions": {
+        "tight": "Узкий",
+        "standard": "Стандартный",
+        "wide": "Широкий"
+      },
+      "showAsteroids": "Показывать астероиды",
+      "showFixedStars": "Показывать неподвижные звёзды"
+    },
+    "notificationsPage": {
+      "title": "Настройки уведомлений",
+      "pauseAll": "Приостановить все уведомления",
+      "social": {
+        "title": "Социальные уведомления",
+        "friendRequests": "Запросы в друзья",
+        "messages": "Сообщения",
+        "reactions": "Реакции",
+        "comments": "Комментарии"
+      },
+      "cosmic": {
+        "title": "Космические уведомления",
+        "frequency": "Частота",
+        "frequencyOptions": {
+          "essential": "Важнейшие",
+          "important": "Важные",
+          "all": "Все"
+        },
+        "tone": "Тон",
+        "toneOptions": {
+          "gentle": "Мягкий",
+          "direct": "Прямой",
+          "intense": "Интенсивный"
+        },
+        "categories": {
+          "majorTransits": "Основные транзиты",
+          "moonPhases": "Фазы Луны",
+          "mercuryRetrograde": "Ретроградный Меркурий",
+          "loveRelationships": "Любовь и отношения",
+          "moneyValues": "Деньги и ценности",
+          "careerAmbition": "Карьера и амбиции",
+          "healingGrowth": "Исцеление и рост"
+        },
+        "aspects": {
+          "title": "Типы аспектов",
+          "conjunctions": "Соединения",
+          "oppositions": "Оппозиции",
+          "squares": "Квадратуры",
+          "trines": "Трины",
+          "sextiles": "Секстили"
+        },
+        "events": {
+          "title": "Космические события",
+          "moonPhases": "Фазы Луны",
+          "eclipses": "Затмения",
+          "retrogrades": "Ретрограды",
+          "ingresses": "Ингрессии"
+        },
+        "minIntensity": "Минимальная интенсивность",
+        "advanceNotice": "Предварительное уведомление (дни)"
+      },
+      "galactic": {
+        "title": "Галактические уведомления",
+        "planetaryHours": "Планетарные часы",
+        "dayRuler": "Управитель дня",
+        "goldenHour": "Золотой час",
+        "eclipseWatch": "Слежение за затмениями",
+        "retrogradeAlerts": "Оповещения о ретрограде",
+        "minutesBefore": "Минут заранее"
+      },
+      "summaries": {
+        "title": "Дайджесты",
+        "daily": "Ежедневная сводка",
+        "weekly": "Еженедельная сводка"
+      },
+      "quietHours": {
+        "title": "Тихие часы",
+        "enabled": "Включить тихие часы",
+        "start": "Начало",
+        "end": "Конец",
+        "urgentOverride": "Разрешить срочные уведомления"
+      },
+      "delivery": {
+        "title": "Доставка",
+        "sound": "Звук",
+        "badge": "Значок"
+      },
+      "announcements": "Объявления приложения"
+    },
+    "referrals": {
+      "title": "Рефералы",
+      "howItWorks": "Как это работает",
+      "step1": "Поделитесь уникальной реферальной ссылкой с друзьями",
+      "step2": "Когда они зарегистрируются по вашей ссылке, вы оба получите 5 бонусных чтений",
+      "step3": "Нет ограничений — приглашайте сколько угодно друзей!"
+    },
+    "chatTheme": {
+      "title": "Тема чата",
+      "subtitle": "Настройте внешний вид сообщений"
+    },
+    "datingIdentity": {
+      "title": "Идентичность в знакомствах",
+      "subtitle": "Как вы идентифицируете себя в сфере знакомств"
+    },
+    "relationshipIntent": {
+      "title": "Цели отношений",
+      "subtitle": "Что вы ищете в связях"
+    },
+    "connectionPreferences": {
+      "title": "Предпочтения в связях",
+      "subtitle": "С кем вы хотели бы познакомиться"
+    },
+    "identityPrivacy": {
+      "title": "Приватность идентичности",
+      "subtitle": "Контролируйте, кто видит вашу информацию"
+    },
+    "safety": {
+      "title": "Безопасность",
+      "subtitle": "Управление блокировками, жалобами и настройками безопасности"
+    },
+    "friends": {
+      "title": "Настройки друзей",
+      "subtitle": "Управление запросами в друзья и предпочтениями связей"
+    },
+    "termsPage": {
+      "title": "Условия использования"
+    },
+    "communityGuidelines": {
+      "title": "Правила сообщества"
+    }
   },
   "subscription": {
     "headline": "Точная астрология. Персонально для вас.",
@@ -228,11 +1304,27 @@
     "restore": "Восстановить покупки",
     "cancel": "Отмена в любой момент. Без контрактов.",
     "socialProof": "План, который выбирают 73% участников.",
+    "title": "Выберите свой путь",
+    "subtitle": "Отмена в любое время. 14-дневный бесплатный пробный период на всех планах.",
+    "priceFree": "Бесплатно",
+    "priceCurrency": "$",
+    "loadingPlans": "Загрузка планов подписки...",
+    "tapToRetry": "Нажмите, чтобы повторить",
+    "tapForDiagnostics": "Нажмите здесь, чтобы показать диагностику",
+    "comparisonTitle": "Какой план вам подходит?",
+    "faqTitle": "Часто задаваемые вопросы",
+    "footerText": "Подписки управляются через App Store / Google Play.",
+    "manageButton": "Управлять подпиской",
+    "termsOfService": "Условия использования",
+    "privacyPolicy": "Политика конфиденциальности",
+    "restorePurchase": "Восстановить покупку",
+    "restoring": "Восстановление...",
     "free": {
       "name": "Бесплатный",
       "price": "$0",
-      "tagline": "Исследуйте космос бесплатно.",
+      "tagline": "Исследуйте космос бесплатно",
       "cta": "Начать бесплатно",
+      "bestFor": "Для новичков, любопытствующих об астрологии, желающих изучить, прежде чем взять на себя обязательства.",
       "features": [
         "Базовый обзор натальной карты",
         "Ежедневные гороскопы",
@@ -240,136 +1332,117 @@
         "Одиночные расклады таро",
         "Калькулятор планетарных часов",
         "1 сохранённый профиль"
-      ],
-      "bestFor": "Для новичков, любопытствующих об астрологии, желающих изучить, прежде чем взять на себя обязательства."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Ясность начинается здесь.",
+      "tagline": "Ваш ежедневный космический спутник",
       "cta": "Начать с Light",
+      "bestFor": "Для случайных исследователей, желающих ежедневного космического руководства и базовых сведений о своей карте.",
       "features": [
-        "Ежедневные персональные прогнозы",
-        "Натальная карта с основными позициями",
-        "10 чтений ИИ в месяц",
+        "Всё из Бесплатного",
+        "Полные ежедневные персональные прогнозы",
+        "30 чтений ИИ в месяц",
         "Оповещения о транзитах в реальном времени",
-        "Ежедневная карта таро",
-        "Калькулятор планетарных часов",
         "Обзор жизненного пути в нумерологии",
         "1 сохранённый профиль рождения"
-      ],
-      "bestFor": "Для случайных исследователей, желающих ежедневного космического руководства и базовых сведений о своей карте."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Где глубина встречает ясность.",
-      "cta": "Получить Premium — Лучшая ценность",
-      "features": [
-        "Всё из плана Light",
-        "50 глубоких чтений ИИ в месяц",
-        "Полная карта — аспекты, паттерны, неподвижные звёзды",
-        "Карты прогрессий и солнечного/лунного возврата",
-        "Синастрия и композитная совместимость",
-        "Звёздное происхождение и Дизайн человека",
-        "Все 6 раскладов таро с ИИ",
-        "Отчёт по финансовой астрологии",
-        "Режим простого языка — без жаргона",
-        "5 сохранённых профилей рождения",
-        "Все курсы астрологии"
-      ],
+      "tagline": "Раскройте свой полный космический чертёж",
       "badge": "САМЫЙ ПОПУЛЯРНЫЙ",
-      "bestFor": "Для энтузиастов, готовых глубоко погрузиться в свой полный астрологический план и отношения."
+      "cta": "Получить Premium — Лучшая ценность",
+      "bestFor": "Для энтузиастов, готовых глубоко погрузиться в свой полный астрологический план и отношения.",
+      "features": [
+        "Всё из Light",
+        "Полная карта — аспекты и паттерны",
+        "100 чтений ИИ в месяц",
+        "Все типы карт (прогрессии, возвраты, синастрия)",
+        "Совместимость и композитные карты",
+        "Звёздное происхождение, нумерология, Дизайн Человека",
+        "Расклады Таро (все 5 типов)",
+        "Переключатель терминологии (режим простого языка)",
+        "5 сохранённых профилей",
+        "Все курсы астрологии"
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Полная картина. Ничего скрытого.",
+      "tagline": "Для серьёзных практиков",
       "cta": "Открыть доступ Pro",
+      "bestFor": "Для профессиональных астрологов и преданных практиков, которым нужны все доступные инструменты.",
       "features": [
-        "Всё из плана Premium",
-        "200 чтений ИИ в месяц",
-        "Карты мира астрокартографии",
-        "Firdaria и Zodiacal Releasing",
-        "Глубокий анализ арабских точек и неподвижных звёзд",
-        "Приоритетный ИИ — быстрая обработка",
-        "Неограниченное количество сохранённых профилей и чтений",
-        "Экспортируемые профессиональные отчёты",
+        "Всё из Premium",
+        "300 чтений ИИ в месяц",
+        "Финансовая астрология",
+        "Астрокартография (ACG)",
+        "Фирдарии и Зодиакальное освобождение",
+        "Неподвижные звёзды и Арабские точки",
+        "Приоритетная обработка ИИ",
         "Ранний доступ к новым функциям",
-        "ИИ на 20 языках"
-      ],
-      "bestFor": "Для профессиональных астрологов и преданных практиков, которым нужны все доступные инструменты."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Не удалось открыть ссылку.",
-      "diagnostics": "Диагностика",
-      "errorTitle": "Ошибка",
-      "manageError": "Не удалось открыть управление подпиской. Откройте Play Store или App Store вручную.",
-      "noActiveBody": "Для этого аккаунта не найдено предыдущей подписки.",
-      "noActiveTitle": "Нет активной подписки",
-      "ok": "ОК",
-      "planNotFoundBody": "Этот план временно недоступен в магазине. Пожалуйста, попробуйте позже.",
-      "planNotFoundTitle": "План не найден",
-      "purchaseFailedDefault": "Что-то пошло не так.",
-      "purchaseFailedLong": "Что-то пошло не так при обработке вашей покупки. Пожалуйста, попробуйте снова.",
-      "purchaseFailedTitle": "Покупка не удалась",
-      "restoreError": "Не удалось восстановить покупки",
-      "restoredBody": "Ваша подписка успешно восстановлена.",
-      "restoredTitle": "Восстановлено!",
-      "retry": "Повторить",
-      "subscriptionsUnavailableHint": "Убедитесь, что вы вошли в Play Store, и попробуйте снова.",
-      "subscriptionsUnavailableTitle": "Подписки недоступны",
-      "unavailableBody": "Этот план сейчас недоступен.",
-      "unavailableTitle": "Недоступно",
-      "unsupportedBody": "Управление подпиской доступно только на iOS и Android.",
-      "unsupportedTitle": "Не поддерживается",
-      "welcomeBody": "Ваша подписка активна. Наслаждайтесь расширенным космическим набором инструментов.",
-      "welcomeTitle": "Добро пожаловать на борт!"
-    },
-    "comparisonTitle": "Какой план вам подходит?",
-    "errors": {
-      "apiKeyPlaceholder": "Сервис подписок не настроен для этой сборки. (Внутр.: API-ключ RevenueCat является заполнителем.)",
-      "connectionFailed": "Не удалось связаться с сервисом подписок. Проверьте подключение и попробуйте снова.",
-      "loadFailed": "Не удалось загрузить планы подписки. Пожалуйста, попробуйте позже.",
-      "loadFailedConnection": "Не удалось загрузить планы подписки. Проверьте подключение.",
-      "nativeModuleMissing": "Сервис подписок недоступен в этой сборке. (Внутр.: нативный модуль не связан.)",
-      "noApiKey": "Сервис подписок не настроен для этой платформы. (Внутр.: отсутствует API-ключ.)",
-      "noOfferings": "Активные планы подписки еще не опубликованы. Пожалуйста, попробуйте позже.",
-      "noPackages": "Планы подписки финализируются в магазине. Пожалуйста, попробуйте позже.",
-      "stillStarting": "Сервис подписок все еще запускается. Пожалуйста, подождите немного и повторите попытку."
+        "Неограниченное количество профилей",
+        "Экспорт и публикация отчётов"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "Кредиты на чтения ИИ сбрасываются каждый расчетный период и не переносятся. Это позволяет нашей ИИ-инфраструктуре оставаться быстрой и отзывчивой для всех пользователей.",
-        "question": "Переносятся ли чтения ИИ?"
-      },
-      "security": {
-        "answer": "Безусловно. Все личные данные и данные о рождении зашифрованы как в состоянии покоя, так и при передаче. Мы никогда не продаем ваши данные, и вы можете удалить свой аккаунт и все связанные данные в любое время.",
-        "question": "Безопасны ли мои данные о рождении?"
-      },
       "switch": {
-        "answer": "Да! Вы можете повысить или понизить свой план в любое время. При повышении вы получаете немедленный доступ к новым функциям. При понижении ваши текущие преимущества сохраняются до конца расчетного периода.",
-        "question": "Могу ли я переключаться между планами в любое время?"
+        "question": "Могу ли я переключаться между планами?",
+        "answer": "Да! Вы можете повысить или понизить свой план в любое время. При повышении вы получаете немедленный доступ к новым функциям. При понижении ваши текущие преимущества сохраняются до конца расчётного периода."
       },
       "trial": {
-        "answer": "14-дневный бесплатный пробный период дает вам полный доступ к выбранному плану. С вас не будет взиматься плата до окончания пробного периода, и вы можете отменить его в любое время без обязательств.",
-        "question": "Что происходит после бесплатного пробного периода?"
+        "question": "Что происходит после бесплатного пробного периода?",
+        "answer": "14-дневный бесплатный пробный период даёт вам полный доступ к выбранному плану. С вас не будет взиматься плата до окончания пробного периода, и вы можете отменить его в любое время без обязательств."
+      },
+      "rollover": {
+        "question": "Переносятся ли чтения ИИ?",
+        "answer": "Кредиты на чтения ИИ сбрасываются каждый расчётный период и не переносятся. Это позволяет нашей ИИ-инфраструктуре оставаться быстрой и отзывчивой для всех пользователей."
+      },
+      "security": {
+        "question": "Безопасны ли мои данные о рождении?",
+        "answer": "Безусловно. Все личные данные и данные о рождении зашифрованы как в состоянии покоя, так и при передаче. Мы никогда не продаём ваши данные, и вы можете удалить свой аккаунт и все связанные данные в любое время."
       }
     },
-    "faqTitle": "Часто задаваемые вопросы",
-    "footerText": "Подписки управляются через App Store / Google Play.",
-    "loadingPlans": "Загрузка планов подписки...",
-    "manageButton": "Управлять подпиской",
-    "priceCurrency": "$",
-    "priceFree": "Бесплатно",
-    "privacyPolicy": "Политика конфиденциальности",
-    "restorePurchase": "Восстановить покупку",
-    "restoring": "Восстановление...",
-    "subtitle": "Отмена в любое время. 14-дневный бесплатный пробный период на всех планах.",
-    "tapForDiagnostics": "Нажмите здесь, чтобы показать диагностику",
-    "tapToRetry": "Нажмите, чтобы повторить",
-    "termsOfService": "Условия обслуживания",
-    "title": "Выберите свой путь"
+    "alerts": {
+      "unavailableTitle": "Недоступно",
+      "unavailableBody": "Этот план сейчас недоступен.",
+      "purchaseFailedTitle": "Покупка не удалась",
+      "purchaseFailedDefault": "Что-то пошло не так.",
+      "purchaseFailedLong": "Что-то пошло не так при обработке вашей покупки. Пожалуйста, попробуйте снова.",
+      "welcomeTitle": "Добро пожаловать на борт!",
+      "welcomeBody": "Ваша подписка активна. Наслаждайтесь расширенным космическим набором инструментов.",
+      "ok": "ОК",
+      "subscriptionsUnavailableTitle": "Подписки недоступны",
+      "subscriptionsUnavailableHint": "Убедитесь, что вы вошли в Play Store, и попробуйте снова.",
+      "retry": "Повторить",
+      "diagnostics": "Диагностика",
+      "planNotFoundTitle": "План не найден",
+      "planNotFoundBody": "Этот план временно недоступен в магазине. Пожалуйста, попробуйте позже.",
+      "errorTitle": "Ошибка",
+      "couldNotOpenLink": "Не удалось открыть ссылку.",
+      "unsupportedTitle": "Не поддерживается",
+      "unsupportedBody": "Управление подпиской доступно только на iOS и Android.",
+      "manageError": "Не удалось открыть управление подпиской. Откройте Play Store или App Store вручную.",
+      "restoredTitle": "Восстановлено!",
+      "restoredBody": "Ваша подписка успешно восстановлена.",
+      "noActiveTitle": "Нет активной подписки",
+      "noActiveBody": "Для этого аккаунта не найдено предыдущей подписки.",
+      "restoreError": "Не удалось восстановить покупки"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить планы подписки. Попробуйте позже.",
+      "loadFailedConnection": "Не удалось загрузить планы подписки. Проверьте подключение.",
+      "apiKeyPlaceholder": "Сервис подписок не настроен для этой сборки. (Внутр.: API-ключ RevenueCat является заполнителем.)",
+      "noApiKey": "Сервис подписок не настроен для этой платформы. (Внутр.: отсутствует API-ключ.)",
+      "nativeModuleMissing": "Сервис подписок недоступен в этой сборке. (Внутр.: нативный модуль не связан.)",
+      "noOfferings": "Активные планы подписки ещё не опубликованы. Попробуйте позже.",
+      "noPackages": "Планы подписки финализируются в магазине. Попробуйте позже.",
+      "connectionFailed": "Не удалось связаться с сервисом подписок. Проверьте подключение и попробуйте снова.",
+      "stillStarting": "Сервис подписок всё ещё запускается. Подождите немного и повторите попытку."
+    }
   },
   "courses": {
     "title": "Изучайте астрологию",
@@ -380,6 +1453,314 @@
     "continue": "Продолжить обучение",
     "completed": "Завершён"
   },
+  "cosmicAlerts": {
+    "title": "Космическая погода",
+    "subtitle": "Ваш персонализированный космический прогноз",
+    "scanningCosmos": "Сканируем космос...",
+    "filters": {
+      "all": "Все",
+      "active": "Активные",
+      "upcoming": "Предстоящие"
+    },
+    "emptyState": {
+      "title": "Крупных транзитов не обнаружено",
+      "filterHint": "Нет {{filter}} оповещений. Попробуйте переключиться на «Все».",
+      "defaultHint": "Космос сейчас спокоен для вашей карты. Загляните позже."
+    },
+    "detail": {
+      "timingWindow": "Временное окно",
+      "start": "Начало",
+      "peak": "Пик",
+      "end": "Конец",
+      "fullInterpretation": "Полная интерпретация",
+      "astrologicalDetails": "Астрологические детали",
+      "transit": "Транзит",
+      "natal": "Натальный",
+      "aspect": "Аспект",
+      "retrograde": "Ретроград",
+      "yes": "Да",
+      "no": "Нет",
+      "actionAdvice": "Рекомендации к действию",
+      "viewFullTransits": "Посмотреть все транзиты"
+    },
+    "importance": {
+      "critical": "Критический",
+      "high": "Высокий",
+      "moderate": "Умеренный",
+      "low": "Низкий",
+      "minimal": "Минимальный"
+    },
+    "categories": {
+      "general": "Общее",
+      "love": "Любовь",
+      "career": "Карьера",
+      "growth": "Рост",
+      "challenge": "Вызов",
+      "spiritual": "Духовное",
+      "communication": "Коммуникация",
+      "energy": "Энергия"
+    },
+    "statusActive": "АКТИВНО"
+  },
+  "discover": {
+    "title": "Обзор",
+    "moonPhases": {
+      "newMoon": "Новолуние",
+      "waxingCrescent": "Растущий серп",
+      "firstQuarter": "Первая четверть",
+      "waxingGibbous": "Растущая горбатая",
+      "fullMoon": "Полнолуние",
+      "waningGibbous": "Убывающая горбатая",
+      "lastQuarter": "Последняя четверть",
+      "waningCrescent": "Убывающий серп"
+    }
+  },
+  "worldEcho": {
+    "title": "Мировое эхо",
+    "subtitle": "Как космические события отражаются в человеческой истории",
+    "categories": {
+      "political": "Политика",
+      "economic": "Экономика",
+      "cultural": "Культура",
+      "scientific": "Наука",
+      "natural": "Природа",
+      "social": "Общество",
+      "technological": "Технологии",
+      "spiritual": "Духовность"
+    },
+    "evidenceLabels": {
+      "strong": "Сильный",
+      "moderate": "Умеренный",
+      "speculative": "Предположительный"
+    },
+    "scoreLabels": {
+      "legendary": "Легендарный",
+      "major": "Значительный",
+      "significant": "Существенный",
+      "notable": "Заметный",
+      "minor": "Незначительный"
+    }
+  },
+  "polls": {
+    "title": "Опросы",
+    "filters": {
+      "all": "Все",
+      "active": "Активные",
+      "ended": "Завершённые",
+      "mine": "Мои"
+    },
+    "duration": {
+      "hours": "{{count}} ч. осталось",
+      "days": "{{count}} дн. осталось",
+      "ended": "Завершён"
+    },
+    "createPoll": "Создать опрос",
+    "votes": "{{count}} голосов",
+    "noPollsYet": "Опросов пока нет",
+    "noPollsHint": "Будьте первым, кто создаст космический опрос!"
+  },
+  "bookmarks": {
+    "title": "Закладки",
+    "loading": "Загрузка закладок...",
+    "empty": "Закладок пока нет",
+    "emptyHint": "Сохраняйте публикации из ленты для чтения позже",
+    "postUnavailable": "Публикация больше не доступна"
+  },
+  "celebrityMatches": {
+    "title": "Совпадения со знаменитостями",
+    "subtitle": "Узнайте, какие знаменитости разделяют ваш космический чертёж",
+    "searchPlaceholder": "Поиск знаменитостей...",
+    "categories": {
+      "overall": "Общее",
+      "emotional": "Эмоциональное",
+      "passion": "Страсть",
+      "marriage": "Брак",
+      "karmic": "Кармическое",
+      "attraction": "Влечение",
+      "stability": "Стабильность",
+      "mental": "Ментальное"
+    },
+    "matchScore": "{{score}}% совпадение",
+    "trending": "В тренде",
+    "recentlyAdded": "Недавно добавленные",
+    "browseByCategory": "Обзор по категории",
+    "clearFilter": "Очистить фильтр",
+    "yourFavorites": "Ваши избранные",
+    "noResults": "Нет результатов",
+    "tryDifferent": "Попробуйте другое имя или написание",
+    "noCelebrities": "Пока нет знаменитостей",
+    "searchOrCheckBack": "Найдите кого-нибудь или загляните позже",
+    "noCelebritiesInCategory": "В этой категории пока нет знаменитостей"
+  },
+  "matches": {
+    "title": "Совместимость",
+    "categories": {
+      "overall": "Общее",
+      "emotional": "Эмоциональное",
+      "passion": "Страсть",
+      "marriage": "Брак",
+      "karmic": "Кармическое",
+      "attraction": "Влечение",
+      "stability": "Стабильность",
+      "mental": "Ментальное"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Космический индекс",
+    "subtitle": "Космическая энергия дня одним взглядом"
+  },
+  "creatorStudio": {
+    "title": "Студия автора",
+    "subtitle": "Создавайте и управляйте космическим контентом"
+  },
+  "qa": {
+    "title": "Вопросы и ответы",
+    "askQuestion": "Задать вопрос",
+    "noQuestions": "Вопросов пока нет",
+    "placeholder": "Какой ваш космический вопрос?"
+  },
+  "pricing": {
+    "title": "Выберите план",
+    "subtitle": "Раскройте всю мощь Align"
+  },
+  "gallery": {
+    "title": "Галерея",
+    "empty": "Фото пока нет"
+  },
+  "timeline": {
+    "title": "Хронология",
+    "empty": "Пока нечего показать"
+  },
+  "reels": {
+    "title": "Космические Рилсы",
+    "empty": "Рилсов пока нет"
+  },
+  "fragments": {
+    "title": "Космические фрагменты",
+    "subtitle": "Карточки космической мудрости для распространения"
+  },
+  "cosmicVideo": {
+    "title": "Космическое видео",
+    "subtitle": "Астрологические инсайты в движении"
+  },
+  "groupSynastry": {
+    "title": "Групповая синастрия",
+    "subtitle": "Посмотрите, как взаимодействуют карты группы"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "defaultMessage": "Добавьте данные рождения для персонализированных чтений.",
+      "completeProfile": "Заполнить профиль",
+      "title": "Требуются данные о рождении"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Загрузка..."
+    },
+    "paywallGate": {
+      "title": "Разблокировать эту функцию",
+      "description": "Обновите план, чтобы получить доступ к этому чтению.",
+      "upgradeButton": "Посмотреть планы",
+      "currentPlan": "Текущий план: {{plan}}",
+      "aiAstrologer": "ИИ-астролог с голосовым чатом",
+      "allFeatures": "Это чтение + все функции уровня {{tier}}",
+      "fullChart": "Полная натальная карта с аспектами и паттернами",
+      "plan": "план",
+      "whatYouUnlock": "Что вы разблокируете",
+      "youreOn": "ваш план"
+    },
+    "shareButton": {
+      "share": "Поделиться",
+      "copied": "Скопировано!"
+    },
+    "referralCard": {
+      "title": "Пригласить друзей",
+      "subtitle": "Поделитесь реферальной ссылкой и оба получите бонусные чтения",
+      "copyLink": "Копировать ссылку",
+      "linkCopied": "Ссылка скопирована!"
+    },
+    "trialBanner": {
+      "title": "Пробный период активен",
+      "daysLeft": "Осталось {{count}} дн.",
+      "upgrade": "Обновить сейчас",
+      "endsSoon": "Ваш пробный период заканчивается через {{count}} дней! Обновите подписку, чтобы сохранить функции Premium.",
+      "endsTomorrow": "Ваш пробный период заканчивается завтра! Обновите подписку, чтобы сохранить функции Premium.",
+      "expired": "Ваш пробный период закончился. Обновите подписку, чтобы снова разблокировать Premium.",
+      "title_plural": "Premium-пробный период: осталось {{count}} дней"
+    },
+    "cookieConsent": {
+      "message": "Мы используем файлы cookie для улучшения вашего опыта.",
+      "accept": "Принять",
+      "decline": "Отклонить",
+      "learnMore": "Подробнее"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Совпадение!",
+      "subtitle": "Космос соединил вас и {{name}}",
+      "sendMessage": "Отправить сообщение",
+      "keepBrowsing": "Продолжить просмотр"
+    },
+    "datingFilterDrawer": {
+      "title": "Фильтры поиска",
+      "ageRange": "Возрастной диапазон",
+      "maxDistance": "Макс. расстояние",
+      "showOnlyVerified": "Только подтверждённые",
+      "compatibilityMin": "Минимальная совместимость",
+      "elements": "Стихии",
+      "applyFilters": "Применить фильтры",
+      "resetFilters": "Сбросить"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% совместимость",
+      "like": "Нравится",
+      "pass": "Пропустить",
+      "cosmicRose": "Космическая Роза",
+      "likesRemaining": "{{count}} лайков осталось",
+      "rosesRemaining": "{{count}} роз осталось"
+    },
+    "sidebar": {
+      "home": "Главная",
+      "discover": "Обзор",
+      "chart": "Карта",
+      "readings": "Чтения",
+      "dating": "Знакомства",
+      "friends": "Друзья",
+      "messages": "Сообщения",
+      "feed": "Лента",
+      "communities": "Сообщества",
+      "notifications": "Уведомления",
+      "profile": "Профиль",
+      "settings": "Настройки",
+      "aiAstrologer": "ИИ-астролог",
+      "chat": "Чат",
+      "close": "Закрыть",
+      "cosmicFeed": "Космическая лента",
+      "cosmicWeather": "Космическая погода",
+      "learn": "Обучение",
+      "menu": "Меню",
+      "more": "Ещё",
+      "pricing": "Цены",
+      "videoCreator": "Видео-создатель",
+      "viewProfile": "Просмотр профиля",
+      "worldEcho": "Мировое эхо",
+      "yourProfile": "Ваш профиль"
+    },
+    "feedCard": {
+      "like": "Нравится",
+      "comment": "Комментарий",
+      "share": "Поделиться",
+      "bookmark": "Закладка",
+      "report": "Пожаловаться",
+      "deletePost": "Удалить пост",
+      "editPost": "Редактировать пост"
+    },
+    "commentSheet": {
+      "title": "Комментарии",
+      "placeholder": "Напишите комментарий...",
+      "send": "Отправить",
+      "noComments": "Комментариев пока нет",
+      "beFirst": "Будьте первым, кто прокомментирует!"
+    }
+  },
   "common": {
     "loading": "Загрузка...",
     "error": "Что-то пошло не так",
@@ -389,7 +1770,46 @@
     "delete": "Удалить",
     "share": "Поделиться",
     "premium": "Премиум",
-    "free": "Бесплатно"
+    "free": "Бесплатно",
+    "close": "Закрыть",
+    "confirm": "Подтвердить",
+    "ok": "ОК",
+    "yes": "Да",
+    "no": "Нет",
+    "back": "Назад",
+    "next": "Далее",
+    "done": "Готово",
+    "edit": "Редактировать",
+    "copy": "Копировать",
+    "copied": "Скопировано!",
+    "search": "Поиск",
+    "settings": "Настройки",
+    "seeAll": "Показать все",
+    "showMore": "Показать больше",
+    "showLess": "Показать меньше",
+    "comingSoon": "Скоро",
+    "upgrade": "Обновить",
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "tomorrow": "Завтра",
+    "all": "Все",
+    "none": "Нет",
+    "public": "Публичный",
+    "private": "Приватный",
+    "apply": "Применить",
+    "reset": "Сбросить",
+    "remove": "Удалить",
+    "add": "Добавить",
+    "create": "Создать",
+    "submit": "Отправить",
+    "send": "Отправить",
+    "view": "Просмотр",
+    "download": "Скачать",
+    "upload": "Загрузить",
+    "noResults": "Ничего не найдено",
+    "tryAgain": "Попробуйте снова"
   },
   "zodiac": {
     "aries": "Овен",
@@ -420,14 +1840,95 @@
     "southNode": "Южный узел",
     "chiron": "Хирон",
     "ascendant": "Асцендент",
-    "midheaven": "Середина неба"
+    "midheaven": "Середина неба",
+    "vesta": "Веста",
+    "juno": "Юнона",
+    "ceres": "Церера",
+    "pallas": "Паллада"
   },
   "aspects": {
     "conjunction": "Соединение",
     "sextile": "Секстиль",
-    "square": "Квадрат",
+    "square": "Квадратура",
     "trine": "Трин",
     "opposition": "Оппозиция",
-    "quincunx": "Квиконс"
+    "quincunx": "Квиконс",
+    "semisextile": "Полусекстиль",
+    "semisquare": "Полуквадрат",
+    "sesquiquadrate": "Полутораквадрат",
+    "quintile": "Квинтиль",
+    "biquintile": "Биквинтиль"
+  },
+  "elements": {
+    "fire": "Огонь",
+    "earth": "Земля",
+    "air": "Воздух",
+    "water": "Вода"
+  },
+  "modalities": {
+    "cardinal": "Кардинальный",
+    "fixed": "Фиксированный",
+    "mutable": "Мутабельный"
+  },
+  "houses": {
+    "1": "1-й дом",
+    "2": "2-й дом",
+    "3": "3-й дом",
+    "4": "4-й дом",
+    "5": "5-й дом",
+    "6": "6-й дом",
+    "7": "7-й дом",
+    "8": "8-й дом",
+    "9": "9-й дом",
+    "10": "10-й дом",
+    "11": "11-й дом",
+    "12": "12-й дом",
+    "labels": {
+      "1": "Личность и идентичность",
+      "2": "Ценности и имущество",
+      "3": "Общение и обучение",
+      "4": "Дом и семья",
+      "5": "Творчество и романтика",
+      "6": "Здоровье и служение",
+      "7": "Партнёрство",
+      "8": "Трансформация и общие ресурсы",
+      "9": "Философия и путешествия",
+      "10": "Карьера и публичный имидж",
+      "11": "Сообщество и стремления",
+      "12": "Духовность и подсознание"
+    }
+  },
+  "errors": {
+    "generic": "Что-то пошло не так. Попробуйте снова.",
+    "networkError": "Ошибка сети. Проверьте подключение.",
+    "unauthorized": "Вам необходимо войти, чтобы получить доступ к этой функции.",
+    "notFound": "Запрошенный контент не найден.",
+    "serverError": "Ошибка сервера. Попробуйте позже.",
+    "loadFailed": "Не удалось загрузить данные. Попробуйте снова.",
+    "saveFailed": "Не удалось сохранить изменения. Попробуйте снова.",
+    "uploadFailed": "Не удалось загрузить файл. Попробуйте снова.",
+    "fileTooLarge": "Файл слишком большой. Выберите файл меньшего размера.",
+    "invalidFormat": "Недопустимый формат файла.",
+    "permissionDenied": "Доступ запрещён.",
+    "sessionExpired": "Ваша сессия истекла. Войдите снова.",
+    "rateLimited": "Слишком много запросов. Подождите немного."
+  },
+  "time": {
+    "justNow": "только что",
+    "minutesAgo": "{{count}} мин. назад",
+    "hoursAgo": "{{count}} ч. назад",
+    "daysAgo": "{{count}} дн. назад",
+    "weeksAgo": "{{count}} нед. назад",
+    "monthsAgo": "{{count}} мес. назад",
+    "yearsAgo": "{{count}} г. назад",
+    "inMinutes": "через {{count}} мин.",
+    "inHours": "через {{count}} ч.",
+    "inDays": "через {{count}} дн."
+  },
+  "tiers": {
+    "free": "Бесплатный",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

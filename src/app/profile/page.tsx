@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -32,6 +33,7 @@ const HD_TYPE_EMOJI: Record<string, string> = {
 };
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const userId = user?.id;
   const { totalXP, level, progress, xpForNextLevel, xpInCurrentLevel, badges, fetchProgress: fetchGamification } = useGamificationStore();
@@ -257,7 +259,7 @@ export default function ProfilePage() {
   }
 
   if (!profile || loading) {
-    return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading profile..." /></div>;
+    return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('profile.loadingProfile')} /></div>;
   }
 
   const joinedDate = new Date(profile.created_at || '').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -266,7 +268,7 @@ export default function ProfilePage() {
     <div className="max-w-3xl mx-auto pb-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-display font-bold text-text-primary">Profile</h1>
+        <h1 className="text-2xl font-display font-bold text-text-primary">{t('profile.title')}</h1>
         <Link href="/settings" className="btn-ghost p-2">
           <Settings className="w-5 h-5" />
         </Link>
@@ -333,39 +335,39 @@ export default function ProfilePage() {
           <div className="flex items-center justify-center gap-6 mt-5 py-3 border-t border-b border-border">
             <Link href="/friends" className="text-center hover:opacity-80 transition-opacity">
               <p className="text-lg font-bold text-text-primary">{friendCount}</p>
-              <p className="text-xs text-text-tertiary">Friends</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.friends')}</p>
             </Link>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{postCount}</p>
-              <p className="text-xs text-text-tertiary">Posts</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.posts')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{followerCount}</p>
-              <p className="text-xs text-text-tertiary">Followers</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.followers')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
               <p className="text-lg font-bold text-text-primary">{followingCount}</p>
-              <p className="text-xs text-text-tertiary">Following</p>
+              <p className="text-xs text-text-tertiary">{t('profile.stats.following')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
             <button onClick={loadViewers} className="text-center hover:opacity-80 transition-opacity">
               <p className="text-lg font-bold text-text-primary">{viewCount}</p>
-              <p className="text-xs text-text-tertiary flex items-center justify-center gap-1"><Eye className="w-3 h-3" /> Views</p>
+              <p className="text-xs text-text-tertiary flex items-center justify-center gap-1"><Eye className="w-3 h-3" /> {t('profile.stats.views')}</p>
             </button>
           </div>
 
           {/* Edit Profile button */}
           <div className="mt-4 flex items-center justify-center gap-3 flex-wrap">
             <Link href="/profile/edit" className="btn-secondary text-sm inline-flex items-center gap-2 px-6 py-2">
-              <Pencil className="w-4 h-4" /> Edit Profile
+              <Pencil className="w-4 h-4" /> {t('profile.editProfile')}
             </Link>
             {profile.sun_sign && profile.moon_sign && profile.rising_sign && (
               <ShareButtonWithCard
                 variant="button"
-                label="Share Your Big Three"
+                label={t('profile.shareBigThree')}
                 shareTitle={`${profile.display_name}'s Big Three`}
                 shareText={`${profile.display_name}'s cosmic blueprint: ${profile.sun_sign} Sun, ${profile.moon_sign} Moon, ${profile.rising_sign} Rising`}
                 shareUrl={generateShareUrl('big-three', {
@@ -405,7 +407,7 @@ export default function ProfilePage() {
       {/* Owner Section: Align Code */}
       {profile.align_code && (
         <div className="card p-4 mb-4">
-          <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-2">Your Align Code</p>
+          <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-2">{t('profile.alignCode')}</p>
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold text-accent-primary tracking-widest">{profile.align_code}</p>
             <div className="flex items-center gap-2">
@@ -424,31 +426,31 @@ export default function ProfilePage() {
       <div className="card overflow-hidden mb-4">
         <Link href="/gallery" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <ImageIcon className="w-4 h-4 text-text-muted" /> Gallery
+            <ImageIcon className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.gallery')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/safety" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Shield className="w-4 h-4 text-text-muted" /> Safety & Trust
+            <Shield className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.safetyTrust')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/pricing" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <CreditCard className="w-4 h-4 text-text-muted" /> Subscription
+            <CreditCard className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.subscription')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings/referrals" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Gift className="w-4 h-4 text-accent-primary" /> Referrals
+            <Gift className="w-4 h-4 text-accent-primary" /> {t('profile.quickLinks.referrals')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
         <Link href="/settings" className="flex items-center justify-between px-4 py-3.5 hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
-            <Settings className="w-4 h-4 text-text-muted" /> Settings
+            <Settings className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.settings')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
         </Link>
@@ -466,7 +468,7 @@ export default function ProfilePage() {
                 : 'text-text-tertiary hover:text-text-secondary'
             }`}
           >
-            {tab === 'posts' ? '📝 Posts' : tab === 'photos' ? '📷 Photos' : tab === 'reels' ? '🎬 Reels' : 'ℹ️ About'}
+            {tab === 'posts' ? `📝 ${t('profile.tabs.posts')}` : tab === 'photos' ? `📷 ${t('profile.tabs.photos')}` : tab === 'reels' ? `🎬 ${t('profile.tabs.reels')}` : `ℹ️ ${t('profile.tabs.about')}`}
             {activeTab === tab && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-primary rounded-full" />
             )}
@@ -478,7 +480,7 @@ export default function ProfilePage() {
       {activeTab === 'posts' && (
         <div className="space-y-4">
           {postsLoading ? (
-            <LoadingCosmic label="Loading posts..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : posts.length > 0 ? (
             posts.map(post => (
               <FeedCard
@@ -497,7 +499,7 @@ export default function ProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">📝</p>
-              <p className="text-text-tertiary text-sm">No posts yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noPosts')}</p>
             </div>
           )}
         </div>
@@ -507,7 +509,7 @@ export default function ProfilePage() {
       {activeTab === 'photos' && (
         <div>
           {photosLoading ? (
-            <LoadingCosmic label="Loading photos..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : photos.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
               {photos.map(photo => (
@@ -525,7 +527,7 @@ export default function ProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">📷</p>
-              <p className="text-text-tertiary text-sm">No photos yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noPhotos')}</p>
             </div>
           )}
         </div>
@@ -535,7 +537,7 @@ export default function ProfilePage() {
       {activeTab === 'reels' && (
         <div>
           {reelsLoading ? (
-            <LoadingCosmic label="Loading reels..." />
+            <LoadingCosmic label={t('common.loading')} />
           ) : reels.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
               {reels.map(reel => (
@@ -556,7 +558,7 @@ export default function ProfilePage() {
           ) : (
             <div className="card p-8 text-center">
               <p className="text-3xl mb-2">🎬</p>
-              <p className="text-text-tertiary text-sm">No reels yet</p>
+              <p className="text-text-tertiary text-sm">{t('profile.empty.noReels')}</p>
             </div>
           )}
         </div>
@@ -567,13 +569,13 @@ export default function ProfilePage() {
         <div className="card p-5 space-y-4">
           {profile.bio && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Bio</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.bio')}</p>
               <p className="text-sm text-text-secondary">{profile.bio}</p>
             </div>
           )}
           {(profile.sun_sign || profile.moon_sign || profile.rising_sign) && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Big Three</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.bigThree')}</p>
               <p className="text-sm text-text-secondary">
                 {[
                   profile.sun_sign && `☉ ${profile.sun_sign}`,
@@ -585,25 +587,25 @@ export default function ProfilePage() {
           )}
           {profile.starseed && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Starseed Origin</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.starseedOrigin')}</p>
               <p className="text-sm text-text-secondary">✨ {profile.starseed}</p>
             </div>
           )}
           {profile.human_design_type && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Human Design</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.humanDesign')}</p>
               <p className="text-sm text-text-secondary">{HD_TYPE_EMOJI[profile.human_design_type] || '✴️'} {profile.human_design_type}</p>
             </div>
           )}
           <div>
-            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Joined</p>
+            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.joined')}</p>
             <p className="text-sm text-text-secondary flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" /> {joinedDate}
             </p>
           </div>
           {profile.align_code && (
             <div>
-              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Align Code</p>
+              <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">{t('profile.about.alignCode')}</p>
               <p className="text-sm font-bold text-accent-primary tracking-widest">{profile.align_code}</p>
             </div>
           )}
@@ -616,15 +618,15 @@ export default function ProfilePage() {
           <div className="fixed inset-0 bg-black/60 z-50" onClick={() => setShowQR(false)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowQR(false)}>
             <div className="bg-bg-card border border-border rounded-2xl p-6 max-w-xs w-full text-center" onClick={e => e.stopPropagation()}>
-              <p className="text-lg font-display font-bold text-text-primary mb-2">Your Align Code</p>
+              <p className="text-lg font-display font-bold text-text-primary mb-2">{t('profile.alignCode')}</p>
               <p className="text-2xl font-bold text-accent-primary tracking-widest mb-4">{profile.align_code}</p>
               <div className="bg-white p-4 rounded-xl inline-block mb-4">
                 <div className="w-40 h-40 flex items-center justify-center text-6xl">
                   <QrCode className="w-32 h-32 text-gray-800" />
                 </div>
               </div>
-              <p className="text-xs text-text-tertiary mb-4">Share your code so friends can find you</p>
-              <button onClick={() => setShowQR(false)} className="btn-primary w-full py-2.5 text-sm">Close</button>
+              <p className="text-xs text-text-tertiary mb-4">{t('profile.alignCodeHint')}</p>
+              <button onClick={() => setShowQR(false)} className="btn-primary w-full py-2.5 text-sm">{t('common.close')}</button>
             </div>
           </div>
         </>
@@ -635,11 +637,11 @@ export default function ProfilePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowViewersModal(false)}>
           <div className="bg-bg-card border border-border rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-display font-bold text-text-primary flex items-center gap-2"><Eye className="w-5 h-5" /> Profile Views</h3>
+              <h3 className="text-lg font-display font-bold text-text-primary flex items-center gap-2"><Eye className="w-5 h-5" /> {t('profile.profileViews')}</h3>
               <button onClick={() => setShowViewersModal(false)} className="text-text-muted hover:text-text-primary text-xl">&times;</button>
             </div>
             {viewers.length === 0 ? (
-              <p className="text-center text-text-muted py-8">No profile views yet</p>
+              <p className="text-center text-text-muted py-8">{t('profile.noViews')}</p>
             ) : (
               <div className="space-y-3">
                 {viewers.map((v, i) => (
@@ -681,7 +683,7 @@ export default function ProfilePage() {
           <div className="absolute inset-0 bg-black/60" onClick={() => setEditingPost(null)} />
           <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
-              <h3 className="text-lg font-semibold text-text-primary">Edit Post</h3>
+              <h3 className="text-lg font-semibold text-text-primary">{t('profile.editPost')}</h3>
               <button onClick={() => setEditingPost(null)} className="text-text-muted hover:text-text-primary">
                 <X className="w-5 h-5" />
               </button>
@@ -697,7 +699,7 @@ export default function ProfilePage() {
               <p className="text-xs text-text-muted text-right mt-1">{editText.length}/2000</p>
             </div>
             <div className="px-5 py-4 border-t border-border-primary flex gap-3">
-              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">Cancel</button>
+              <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">{t('common.cancel')}</button>
               <button
                 onClick={handleSaveEdit}
                 disabled={editSaving || !editText.trim()}

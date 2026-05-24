@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { Bookmark, Trash2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import { useTranslation } from 'react-i18next';
 
 interface BookmarkedPost {
   id: string;
@@ -28,6 +29,7 @@ interface BookmarkedPost {
 }
 
 export default function BookmarksPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [bookmarks, setBookmarks] = useState<BookmarkedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function BookmarksPage() {
   if (!user) {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
-        <p className="text-text-muted">Please sign in to see bookmarks</p>
+        <p className="text-text-muted">{t('common.signIn')}</p>
       </div>
     );
   }
@@ -88,16 +90,16 @@ export default function BookmarksPage() {
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Bookmark className="w-7 h-7 text-accent-primary" />
-        Bookmarks
+        {t('bookmarks.title')}
       </h1>
 
       {loading ? (
-        <LoadingCosmic label="Loading bookmarks..." />
+        <LoadingCosmic label={t('bookmarks.loading')} />
       ) : bookmarks.length === 0 ? (
         <div className="card text-center py-12">
           <Bookmark className="w-12 h-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-muted mb-1">No bookmarks yet</p>
-          <p className="text-xs text-text-muted">Save posts from the feed to read later</p>
+          <p className="text-text-muted mb-1">{t('bookmarks.empty')}</p>
+          <p className="text-xs text-text-muted">{t('bookmarks.emptyHint')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -141,7 +143,7 @@ export default function BookmarksPage() {
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-text-muted italic">Post no longer available</p>
+                <p className="text-sm text-text-muted italic">{t('bookmarks.postUnavailable')}</p>
               )}
             </div>
           ))}

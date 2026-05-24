@@ -50,11 +50,11 @@ export const PLANS = {
   light: {
     name: 'Light',
     price: 9,
-    aiReadings: 10,
+    aiReadings: 30,
     features: [
       'Daily personalized insights',
       'Natal chart with core positions',
-      '10 AI-powered readings per month',
+      '30 AI-powered readings per month',
       'Basic transit alerts',
       'Numerology life path reading',
       '5 saved chart readings',
@@ -63,11 +63,11 @@ export const PLANS = {
   premium: {
     name: 'Premium',
     price: 19,
-    aiReadings: 50,
+    aiReadings: 100,
     popular: true,
     features: [
       'Everything in Light',
-      '50 AI-powered readings per month',
+      '100 AI-powered readings per month',
       'Full natal chart with aspects & patterns',
       'Progressed & solar return charts',
       'Synastry & composite compatibility',
@@ -79,10 +79,10 @@ export const PLANS = {
   pro: {
     name: 'Pro',
     price: 29,
-    aiReadings: 200,
+    aiReadings: 300,
     features: [
       'Everything in Premium',
-      '200 AI-powered readings per month',
+      '300 AI-powered readings per month',
       'Astro-cartography world maps',
       'Firdaria & zodiacal releasing',
       'Arabic parts & fixed stars',

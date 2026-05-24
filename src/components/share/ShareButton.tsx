@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Share2, Copy, Download, Check } from 'lucide-react';
 import { shareCard, copyShareLink, downloadCardAsImage } from '@/lib/shareCardUtils';
 
@@ -31,6 +32,7 @@ function ShareCardModal({
   open,
   onClose,
 }: ShareCardModalProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ function ShareCardModal({
               }}
             >
               <Share2 className="w-4 h-4" />
-              Share
+              {t('common.share')}
             </button>
 
             {/* Copy Link */}
@@ -112,12 +114,12 @@ function ShareCardModal({
               {copied ? (
                 <>
                   <Check className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400">Copied!</span>
+                  <span className="text-green-400">{t('common.copied')}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  Copy Link
+                  {t('components.referralCard.copyLink')}
                 </>
               )}
             </button>
@@ -134,7 +136,7 @@ function ShareCardModal({
               }}
             >
               <Download className="w-4 h-4" />
-              {downloading ? 'Saving...' : 'Download'}
+              {downloading ? 'Saving...' : t('common.download')}
             </button>
           </div>
         </div>

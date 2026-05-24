@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
@@ -16,6 +17,7 @@ const INTENT_OPTIONS = [
 ];
 
 export default function RelationshipIntentPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [intent, setIntent] = useState<string | null>(null);
   const [ageMin, setAgeMin] = useState<number>(18);
@@ -72,12 +74,12 @@ export default function RelationshipIntentPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('common.settings')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Sparkles className="w-7 h-7 text-accent-primary" />
-        Relationship Intent
+        {t('settings.relationshipIntent.title')}
       </h1>
 
       {/* What are you looking for? */}
@@ -138,7 +140,7 @@ export default function RelationshipIntentPage() {
         disabled={saving}
         className="btn-primary w-full"
       >
-        {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
+        {saving ? t('common.loading') : saved ? t('common.done') : t('common.save')}
       </button>
     </div>
   );

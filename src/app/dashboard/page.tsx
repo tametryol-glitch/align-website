@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Bell, ChevronRight } from 'lucide-react';
 import { StreakBadge } from '@/components/ui/StreakBadge';
 import { useStreakStore } from '@/stores/streakStore';
+import { useTranslation } from 'react-i18next';
 
 // ── Astronomical helpers ─────────────────────────────────────────
 
@@ -181,6 +182,7 @@ interface TransitPosition {
 // ── Main Component ───────────────────────────────────────────────
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const name = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
   const firstName = name.split(' ')[0];
@@ -274,7 +276,7 @@ export default function DashboardPage() {
 
       // Unread messages
       const { count: msgCount } = await supabase
-        .from('direct_messages')
+        .from('messages')
         .select('id', { count: 'exact', head: true })
         .neq('sender_id', user.id)
         .eq('is_read', false);
@@ -371,7 +373,7 @@ export default function DashboardPage() {
           style={{ background: 'linear-gradient(135deg, #1E1145, #2D1B69)' }}
         >
           <p className="text-purple-300 text-[10px] font-semibold uppercase tracking-[2px] mb-2">
-            Daily Insight
+            {t('home.dailyInsight')}
           </p>
           <h2 className="text-lg font-bold text-white mb-2">
             ☉ Sun in {liveSunSign || sunSign}
@@ -487,7 +489,7 @@ export default function DashboardPage() {
 
       {/* ─── Quick Access Grid ──────────────────────────── */}
       <div>
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Quick Access</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.quickAccess')}</h3>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
           <QuickAccessButton href="/chart" glyph="☉" label="Natal Chart" />
           <QuickAccessButton href="/readings/transits" glyph="♄" label="Transits" />
@@ -582,7 +584,7 @@ export default function DashboardPage() {
       {/* ─── Moon Phase Card ────────────────────────────────── */}
       <Link href="/readings/moon-phases" className="block">
         <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Moon Phase</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.moonPhase')}</h3>
           <div className="flex items-center gap-4">
             <span className="text-5xl">{moonPhase.emoji}</span>
             <div>
@@ -598,7 +600,7 @@ export default function DashboardPage() {
       {/* ─── Current Transits Card ──────────────────────────── */}
       <Link href="/readings/transits" className="block">
         <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Current Transits</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.currentTransits')}</h3>
           {liveTransits.length > 0 ? (
             <div className="space-y-2">
               {liveTransits.map(t => (
@@ -624,7 +626,7 @@ export default function DashboardPage() {
       {/* ─── Planetary Hours Card ───────────────────────────── */}
       <Link href="/readings/planetary-hours" className="block">
         <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Planetary Hours</h3>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.planetaryHours')}</h3>
           <div className="flex items-center justify-between">
             <div className="bg-gold-primary/10 text-gold-primary text-sm font-semibold px-4 py-2 rounded-lg">
               {planetaryHour.glyph} {planetaryHour.name} Hour

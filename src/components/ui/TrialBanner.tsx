@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getTrialStatus, TrialStatus } from '@/lib/trialService';
 import Link from 'next/link';
 import { X, Sparkles, AlertTriangle } from 'lucide-react';
 
 export function TrialBanner() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
   const [dismissed, setDismissed] = useState(false);
@@ -29,14 +31,14 @@ export function TrialBanner() {
         <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-medium text-red-300">
-            Your trial has ended. Upgrade to unlock Premium again.
+            {t('components.trialBanner.expired')}
           </p>
         </div>
         <Link
           href="/pricing"
           className="shrink-0 px-4 py-2 rounded-lg bg-accent-primary hover:bg-accent-primary/90 text-white text-sm font-medium transition-colors"
         >
-          Upgrade Now
+          {t('components.trialBanner.upgrade')}
         </Link>
         <button
           onClick={() => setDismissed(true)}
@@ -57,15 +59,15 @@ export function TrialBanner() {
         <div className="flex-1">
           <p className="text-sm font-medium text-amber-300">
             {trialStatus.daysRemaining === 1
-              ? 'Your trial ends tomorrow! Upgrade to keep Premium features.'
-              : `Your trial ends in ${trialStatus.daysRemaining} days! Upgrade to keep Premium features.`}
+              ? t('components.trialBanner.endsTomorrow')
+              : t('components.trialBanner.endsSoon', { count: trialStatus.daysRemaining })}
           </p>
         </div>
         <Link
           href="/pricing"
           className="shrink-0 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium transition-colors"
         >
-          Upgrade Now
+          {t('components.trialBanner.upgrade')}
         </Link>
         <button
           onClick={() => setDismissed(true)}
@@ -88,14 +90,16 @@ export function TrialBanner() {
         <Sparkles className="w-5 h-5 text-purple-400 shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-medium text-purple-200">
-            Premium Trial: {trialStatus.daysRemaining} day{trialStatus.daysRemaining !== 1 ? 's' : ''} remaining
+            {trialStatus.daysRemaining !== 1
+              ? t('components.trialBanner.title_plural', { count: trialStatus.daysRemaining })
+              : t('components.trialBanner.title', { count: trialStatus.daysRemaining })}
           </p>
         </div>
         <Link
           href="/pricing"
           className="shrink-0 px-4 py-2 rounded-lg bg-accent-primary hover:bg-accent-primary/90 text-white text-sm font-medium transition-colors"
         >
-          Upgrade Now
+          {t('components.trialBanner.upgrade')}
         </Link>
         <button
           onClick={() => setDismissed(true)}

@@ -13,6 +13,7 @@ import {
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { PushNotificationToggle } from '@/components/ui/PushNotificationToggle';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationPreferences {
   pauseAll: boolean;
@@ -236,6 +237,7 @@ function SectionHeader({ icon: Icon, title, subtitle, collapsible, collapsed, on
 
 export default function NotificationSettingsPage() {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -314,12 +316,12 @@ export default function NotificationSettingsPage() {
   return (
     <div className="max-w-2xl mx-auto pb-16">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('settings.title')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Bell className="w-7 h-7 text-accent-primary" />
-        Notifications
+        {t('settings.notificationsPage.title')}
       </h1>
 
       <div className="space-y-6">

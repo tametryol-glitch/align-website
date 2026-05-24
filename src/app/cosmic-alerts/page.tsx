@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
@@ -19,10 +20,10 @@ import {
 
 type FilterTab = 'all' | 'active' | 'upcoming';
 
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'active', label: 'Active' },
-  { key: 'upcoming', label: 'Upcoming' },
+const FILTER_TABS: { key: FilterTab; labelKey: string }[] = [
+  { key: 'all', labelKey: 'cosmicAlerts.filters.all' },
+  { key: 'active', labelKey: 'cosmicAlerts.filters.active' },
+  { key: 'upcoming', labelKey: 'cosmicAlerts.filters.upcoming' },
 ];
 
 // ─── Importance dots ────────────────────────────────────────────────
@@ -74,6 +75,7 @@ function AlertDetailModal({
   alert: CosmicAlert;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const cat = CATEGORY_CONFIG[alert.category] || CATEGORY_CONFIG.general;
   const m = alert.metadata || {} as Record<string, any>;
 
@@ -113,19 +115,19 @@ function AlertDetailModal({
           {/* Timing Window */}
           <div>
             <h3 className="text-sm font-bold text-text-primary mb-2 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-accent-primary" /> Timing Window
+              <Clock className="w-4 h-4 text-accent-primary" /> {t('cosmicAlerts.detail.timingWindow')}
             </h3>
             <div className="card grid grid-cols-3 divide-x divide-white/10 text-center py-3">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">Start</p>
+                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">{t('cosmicAlerts.detail.start')}</p>
                 <p className="text-xs font-semibold text-text-secondary">{formatDate(alert.start_time ?? '')}</p>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">Peak</p>
+                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">{t('cosmicAlerts.detail.peak')}</p>
                 <p className="text-xs font-bold text-accent-primary">{formatDate(alert.peak_time ?? '')}</p>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">End</p>
+                <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">{t('cosmicAlerts.detail.end')}</p>
                 <p className="text-xs font-semibold text-text-secondary">{formatDate(alert.end_time ?? '')}</p>
               </div>
             </div>
@@ -135,7 +137,7 @@ function AlertDetailModal({
           {(alert.long_body || alert.short_body) && (
             <div>
               <h3 className="text-sm font-bold text-text-primary mb-2 flex items-center gap-2">
-                <Star className="w-4 h-4 text-accent-primary" /> Full Interpretation
+                <Star className="w-4 h-4 text-accent-primary" /> {t('cosmicAlerts.detail.fullInterpretation')}
               </h3>
               <div className="card">
                 <p className="text-sm text-text-secondary leading-relaxed">
@@ -149,30 +151,30 @@ function AlertDetailModal({
           {(m.transit_planet || m.natal_point || m.aspect_type) && (
             <div>
               <h3 className="text-sm font-bold text-text-primary mb-2 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-accent-primary" /> Astrological Details
+                <Zap className="w-4 h-4 text-accent-primary" /> {t('cosmicAlerts.detail.astrologicalDetails')}
               </h3>
               <div className="card space-y-2">
                 {m.transit_planet && (
                   <div className="flex justify-between text-xs">
-                    <span className="text-text-muted">Transit</span>
+                    <span className="text-text-muted">{t('cosmicAlerts.detail.transit')}</span>
                     <span className="text-text-primary font-semibold">{m.transit_planet} in {m.transit_sign || '?'}</span>
                   </div>
                 )}
                 {m.natal_point && (
                   <div className="flex justify-between text-xs">
-                    <span className="text-text-muted">Natal</span>
+                    <span className="text-text-muted">{t('cosmicAlerts.detail.natal')}</span>
                     <span className="text-text-primary font-semibold">{m.natal_point} in {m.natal_sign || '?'}</span>
                   </div>
                 )}
                 {m.aspect_type && (
                   <div className="flex justify-between text-xs">
-                    <span className="text-text-muted">Aspect</span>
+                    <span className="text-text-muted">{t('cosmicAlerts.detail.aspect')}</span>
                     <span className="text-text-primary font-semibold">{m.aspect_type} (orb: {(m.orb ?? 0).toFixed(1)}°)</span>
                   </div>
                 )}
                 <div className="flex justify-between text-xs">
-                  <span className="text-text-muted">Retrograde</span>
-                  <span className="text-text-primary font-semibold">{alert.is_retrograde ? 'Yes' : 'No'}</span>
+                  <span className="text-text-muted">{t('cosmicAlerts.detail.retrograde')}</span>
+                  <span className="text-text-primary font-semibold">{alert.is_retrograde ? t('cosmicAlerts.detail.yes') : t('cosmicAlerts.detail.no')}</span>
                 </div>
               </div>
             </div>
@@ -182,7 +184,7 @@ function AlertDetailModal({
           {alert.action_advice && (
             <div>
               <h3 className="text-sm font-bold text-text-primary mb-2 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-amber-400" /> Action Advice
+                <Lightbulb className="w-4 h-4 text-amber-400" /> {t('cosmicAlerts.detail.actionAdvice')}
               </h3>
               <div className="card border-amber-500/20 bg-amber-500/5">
                 <p className="text-sm text-amber-300/90 leading-relaxed">{alert.action_advice}</p>
@@ -195,7 +197,7 @@ function AlertDetailModal({
             href="/readings/transits"
             className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent-primary/20 text-accent-primary font-bold text-sm hover:bg-accent-primary/30 transition-colors"
           >
-            View Full Transits <ArrowRight className="w-4 h-4" />
+            {t('cosmicAlerts.detail.viewFullTransits')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -269,6 +271,7 @@ function AlertCard({
 // ═══════════════════════════════════════════════════════════════════
 
 export default function CosmicAlertsPage() {
+  const { t } = useTranslation();
   const { profile, isLoading: authLoading } = useAuthStore();
   const [alerts, setAlerts] = useState<CosmicAlert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -317,7 +320,7 @@ export default function CosmicAlertsPage() {
     return (
       <div className="max-w-3xl mx-auto">
         <Header />
-        <LoadingCosmic label="Scanning the cosmos..." />
+        <LoadingCosmic label={t('cosmicAlerts.scanningCosmos')} />
       </div>
     );
   }
@@ -327,7 +330,7 @@ export default function CosmicAlertsPage() {
     return (
       <div className="max-w-3xl mx-auto">
         <Header />
-        <BirthDataPrompt message="We need your birth data to calculate personalized cosmic alerts for your chart." />
+        <BirthDataPrompt />
       </div>
     );
   }
@@ -348,7 +351,7 @@ export default function CosmicAlertsPage() {
                 : 'bg-bg-tertiary border-white/10 text-text-muted hover:text-text-secondary'
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -358,17 +361,17 @@ export default function CosmicAlertsPage() {
         <div className="card text-center py-8">
           <AlertTriangle className="w-8 h-8 text-gold-primary mx-auto mb-3" />
           <p className="text-sm text-text-muted">{error}</p>
-          <button onClick={loadAlerts} className="btn-secondary text-sm mt-4">Retry</button>
+          <button onClick={loadAlerts} className="btn-secondary text-sm mt-4">{t('common.retry')}</button>
         </div>
       ) : filtered.length === 0 ? (
         /* Empty state */
         <div className="card text-center py-12">
           <Star className="w-12 h-12 text-text-muted mx-auto mb-4 opacity-40" />
-          <p className="text-text-secondary font-semibold mb-1">No major transits detected</p>
+          <p className="text-text-secondary font-semibold mb-1">{t('cosmicAlerts.emptyState.title')}</p>
           <p className="text-xs text-text-muted">
             {filter !== 'all'
-              ? `No ${filter} alerts right now. Try switching to "All".`
-              : 'The cosmos is quiet for your chart. Check back as the sky shifts.'}
+              ? t('cosmicAlerts.emptyState.filterHint', { filter })
+              : t('cosmicAlerts.emptyState.defaultHint')}
           </p>
         </div>
       ) : (

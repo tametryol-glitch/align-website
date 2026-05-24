@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
 import { MessageCircle, Plus, Reply, SmilePlus, Pencil, Trash2, Forward, Pin } from 'lucide-react';
@@ -49,7 +50,7 @@ import { NewChatModal, NewGroupModal } from '@/components/messages/NewConversati
 
 function getSmartReplies(lastMsg: Message | undefined, myId: string | undefined): string[] {
   if (!lastMsg || lastMsg.sender_id === myId || lastMsg.type !== 'text') return [];
-  const t = lastMsg.content.toLowerCase();
+  const t = (lastMsg.content || '').toLowerCase();
   if (/\bhey\b|\bhi\b|\bhello\b|\bwhat'?s up\b/.test(t)) return ['Hey!', 'Hi there!', "What's up?"];
   if (/\bthank|\bthanks\b/.test(t)) return ["You're welcome!", 'No problem!', 'Anytime!'];
   if (/\bhow are you\b|\bhow'?s it going\b/.test(t)) return ["I'm good, you?", 'Doing great!', 'Pretty good!'];
@@ -65,6 +66,7 @@ const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '🙏', '🔥'];
 // ── Main Component ───────────────────────────────────────────────────
 
 export default function MessagesPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const store = useMessagesStore();
   const chatTheme = useMemo(() => getChatTheme(profile?.chat_theme), [profile?.chat_theme]);
@@ -137,7 +139,7 @@ export default function MessagesPage() {
   const displayMessages = useMemo(() => {
     if (!store.messageSearchQuery) return store.messages;
     const q = store.messageSearchQuery.toLowerCase();
-    return store.messages.filter(m => m.content.toLowerCase().includes(q));
+    return store.messages.filter(m => (m.content || '').toLowerCase().includes(q));
   }, [store.messages, store.messageSearchQuery]);
 
   // Typing state for active conversation
@@ -778,7 +780,7 @@ export default function MessagesPage() {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
         <MessageCircle className="w-12 h-12 text-text-muted mx-auto mb-3" />
-        <p className="text-text-muted">Sign in to access messages</p>
+        <p className="text-text-muted">{t('messages.signInRequired')}</p>
       </div>
     );
   }
@@ -873,14 +875,14 @@ export default function MessagesPage() {
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
                 <MessageCircle className="w-14 h-14 text-text-muted mx-auto mb-4" />
-                <p className="text-text-secondary font-medium">Select a conversation</p>
-                <p className="text-xs text-text-muted mt-1 mb-4">or start a new chat to connect</p>
+                <p className="text-text-secondary font-medium">{t('messages.selectConversation')}</p>
+                <p className="text-xs text-text-muted mt-1 mb-4">{t('messages.startNewChat')}</p>
                 <button
                   onClick={() => store.setShowNewChatModal(true)}
                   className="btn-primary text-sm"
                 >
                   <Plus className="w-4 h-4 mr-1.5 inline" />
-                  New Chat
+                  {t('messages.newChat')}
                 </button>
               </div>
             </div>
@@ -899,13 +901,13 @@ export default function MessagesPage() {
             onClick={() => handleReply(contextMenu.message)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            <Reply className="w-4 h-4" /> Reply
+            <Reply className="w-4 h-4" /> {t('messages.contextMenu.reply')}
           </button>
           <button
             onClick={() => setReactionPicker(contextMenu.message)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            <SmilePlus className="w-4 h-4" /> React
+            <SmilePlus className="w-4 h-4" /> {t('messages.contextMenu.react')}
           </button>
           {contextMenu.message.sender_id === user.id && (
             <>
@@ -913,13 +915,13 @@ export default function MessagesPage() {
                 onClick={() => handleEdit(contextMenu.message)}
                 className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
               >
-                <Pencil className="w-4 h-4" /> Edit
+                <Pencil className="w-4 h-4" /> {t('messages.contextMenu.edit')}
               </button>
               <button
                 onClick={() => handleDelete(contextMenu.message.id)}
                 className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
               >
-                <Trash2 className="w-4 h-4" /> Delete
+                <Trash2 className="w-4 h-4" /> {t('messages.contextMenu.delete')}
               </button>
             </>
           )}
@@ -930,13 +932,13 @@ export default function MessagesPage() {
             }}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            <Forward className="w-4 h-4" /> Forward
+            <Forward className="w-4 h-4" /> {t('messages.contextMenu.forward')}
           </button>
           <button
             onClick={() => handlePinMessage(contextMenu.message)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            <Pin className="w-4 h-4" /> {contextMenu.message.metadata?.pinned ? 'Unpin' : 'Pin'}
+            <Pin className="w-4 h-4" /> {contextMenu.message.metadata?.pinned ? t('messages.contextMenu.unpin') : t('messages.contextMenu.pin')}
           </button>
           <button
             onClick={() => {
@@ -945,7 +947,7 @@ export default function MessagesPage() {
             }}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
-            Copy text
+            {t('messages.contextMenu.copyText')}
           </button>
         </div>
       )}
@@ -960,7 +962,7 @@ export default function MessagesPage() {
             className="bg-bg-card border border-border-primary rounded-2xl p-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-xs text-text-muted mb-3 text-center">Pick a reaction</p>
+            <p className="text-xs text-text-muted mb-3 text-center">{t('messages.pickReaction')}</p>
             <div className="flex gap-3">
               {QUICK_REACTIONS.map(emoji => (
                 <button

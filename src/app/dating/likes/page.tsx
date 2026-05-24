@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
@@ -36,6 +37,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function DatingLikesPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const { tier } = useSubscriptionStore();
   const { receivedLikes, setReceivedLikes, setLikesLoading, likesLoading } = useDatingStore();
@@ -89,12 +91,12 @@ export default function DatingLikesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <Heart size={22} color="#F87171" />
-          Likes
+          {t('dating.likes.title')}
         </h1>
         <p className="text-sm text-text-tertiary mt-0.5">
           {viewTab === 'received'
-            ? `${receivedLikes.length} people are interested`
-            : `You liked ${sentLikes.length} people`}
+            ? t('dating.likes.receivedCount', { count: receivedLikes.length })
+            : t('dating.likes.sentCount', { count: sentLikes.length })}
         </p>
       </div>
 
@@ -102,15 +104,15 @@ export default function DatingLikesPage() {
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
         <Link href="/dating" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Star size={14} /> Discover
+          <Star size={14} /> {t('dating.tabs.discover')}
         </Link>
         <Link href="/dating/likes" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium"
           style={{ backgroundColor: 'rgba(155,111,246,0.15)', color: '#B8A0FA' }}>
-          <Heart size={14} /> Likes
+          <Heart size={14} /> {t('dating.tabs.likes')}
         </Link>
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Users size={14} /> Matches
+          <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
       </div>
 
@@ -124,7 +126,7 @@ export default function DatingLikesPage() {
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
-          <Heart size={14} /> Received {receivedLikes.length > 0 && `(${receivedLikes.length})`}
+          <Heart size={14} /> {t('dating.likes.received')} {receivedLikes.length > 0 && `(${receivedLikes.length})`}
         </button>
         <button
           onClick={() => setViewTab('sent')}
@@ -134,7 +136,7 @@ export default function DatingLikesPage() {
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
-          <Send size={14} /> Sent {sentLikes.length > 0 && `(${sentLikes.length})`}
+          <Send size={14} /> {t('dating.likes.sent')} {sentLikes.length > 0 && `(${sentLikes.length})`}
         </button>
       </div>
 
@@ -146,12 +148,12 @@ export default function DatingLikesPage() {
         }}>
           <Crown size={20} color="#F5A623" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-white">See who likes you</p>
-            <p className="text-xs text-text-tertiary">Upgrade to Light or above to reveal profiles</p>
+            <p className="text-sm font-medium text-white">{t('dating.likes.seeWhoLikes')}</p>
+            <p className="text-xs text-text-tertiary">{t('dating.likes.upgradeHint')}</p>
           </div>
           <Link href="/subscription" className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
             style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}>
-            Upgrade
+            {t('dating.likes.upgrade')}
           </Link>
         </div>
       )}
@@ -165,17 +167,17 @@ export default function DatingLikesPage() {
         <div className="text-center py-20 px-6">
           <div className="text-5xl mb-4">{viewTab === 'received' ? '💫' : '💜'}</div>
           <h2 className="text-lg font-semibold text-white mb-2">
-            {viewTab === 'received' ? 'No likes yet' : 'No likes sent yet'}
+            {viewTab === 'received' ? t('dating.likes.noLikesYet') : t('dating.likes.noSentYet')}
           </h2>
           <p className="text-text-tertiary text-sm max-w-xs mx-auto">
             {viewTab === 'received'
-              ? 'Keep your profile fresh and the cosmos will deliver.'
-              : 'Head to Discover to find your cosmic connections.'}
+              ? t('dating.likes.keepFresh')
+              : t('dating.likes.headToDiscover')}
           </p>
           {viewTab === 'sent' && (
             <Link href="/dating" className="inline-flex items-center gap-2 mt-4 px-6 py-3 rounded-2xl text-sm font-semibold text-white"
               style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}>
-              <Star size={16} /> Discover
+              <Star size={16} /> {t('dating.tabs.discover')}
             </Link>
           )}
         </div>
@@ -221,7 +223,7 @@ export default function DatingLikesPage() {
                     <div className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs flex items-center gap-1"
                       style={{ backgroundColor: 'rgba(245,166,35,0.2)' }}>
                       <span>🌹</span>
-                      <span className="text-gold-primary">Rose</span>
+                      <span className="text-gold-primary">{t('dating.likes.rose')}</span>
                     </div>
                   )}
 
@@ -265,7 +267,7 @@ export default function DatingLikesPage() {
                     </>
                   ) : (
                     <p className="text-sm text-text-muted">
-                      {p?.sun_sign ? `${ZODIAC_GLYPHS[p.sun_sign]} ${p.sun_sign}` : 'Mystery admirer'}
+                      {p?.sun_sign ? `${ZODIAC_GLYPHS[p.sun_sign]} ${p.sun_sign}` : t('dating.likes.mysteryAdmirer')}
                     </p>
                   )}
 
@@ -281,7 +283,7 @@ export default function DatingLikesPage() {
                       }}
                     >
                       <Heart size={12} />
-                      {likeBackLoading === like.liker_id ? 'Matching...' : 'Like Back'}
+                      {likeBackLoading === like.liker_id ? t('dating.likes.matching') : t('dating.likes.likeBack')}
                     </button>
                   )}
                 </div>

@@ -238,6 +238,7 @@ export async function getDailyCosmicPicks(
         .select('id')
         .not('display_name', 'is', null)
         .not('sun_sign', 'is', null)
+        .eq('dating_enabled', true)
         .neq('id', userId)
         .order('created_at', { ascending: false })
         .limit(fetchLimit * 2);

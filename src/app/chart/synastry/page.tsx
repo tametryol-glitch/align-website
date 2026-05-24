@@ -13,6 +13,7 @@ import { computeSynastryCompatibility } from '@/lib/engines';
 import type { CompatibilityResult } from '@/lib/engines';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { useTranslation } from 'react-i18next';
 
 const CATEGORY_META: Record<string, { emoji: string; label: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
   Attraction: { emoji: '🔥', label: 'Physical Attraction', color: 'red' },
@@ -34,6 +35,7 @@ function overallBand(score: number): { label: string; color: string } {
 }
 
 export default function SynastryPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -106,7 +108,7 @@ export default function SynastryPage() {
           </Link>
           <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
             <Heart className="w-7 h-7 text-fire" />
-            Synastry
+            {t('chart.synastry')}
           </h1>
           <BirthDataPrompt message="Birth data required to calculate synastry with another person." />
         </div>

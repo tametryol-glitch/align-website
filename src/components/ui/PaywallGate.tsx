@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useSubscriptionStore, type TierLevel } from '@/stores/subscriptionStore';
 import { Lock, Sparkles, Zap, Crown } from 'lucide-react';
 
@@ -17,6 +18,7 @@ const TIER_CONFIG: Record<string, { icon: React.ReactNode; color: string; price:
 };
 
 export function PaywallGate({ feature, children, fallbackTier }: Props) {
+  const { t } = useTranslation();
   const { hasAccess, tier, loading } = useSubscriptionStore();
 
   // Don't flash paywall while subscription loads
@@ -48,34 +50,34 @@ export function PaywallGate({ feature, children, fallbackTier }: Props) {
       </div>
 
       <h2 className="text-xl font-display font-bold text-text-primary mb-2">
-        Unlock This Reading
+        {t('components.paywallGate.title')}
       </h2>
       <p className="text-text-tertiary text-sm mb-4">
-        This feature is available on the{' '}
-        <span className={`font-semibold capitalize ${config.color}`}>{required}</span> plan
+        {t('components.paywallGate.description')}{' '}
+        <span className={`font-semibold capitalize ${config.color}`}>{required}</span> {t('components.paywallGate.plan')}
         {tier !== 'free' && (
-          <> &mdash; you&apos;re on <span className="capitalize">{tier}</span></>
+          <> &mdash; {t('components.paywallGate.youreOn')} <span className="capitalize">{tier}</span></>
         )}
       </p>
 
       {/* What you get */}
       <div className="bg-bg-card border border-border-primary rounded-xl p-4 mb-6 text-left">
-        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">What you unlock</p>
+        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">{t('components.paywallGate.whatYouUnlock')}</p>
         <ul className="space-y-2 text-sm text-text-secondary">
           <li className="flex items-center gap-2">
-            <span className="text-accent-primary">✦</span> This reading + all {required}-tier features
+            <span className="text-accent-primary">✦</span> {t('components.paywallGate.allFeatures', { tier: required })}
           </li>
           <li className="flex items-center gap-2">
-            <span className="text-accent-primary">✦</span> AI Astrologer with voice chat
+            <span className="text-accent-primary">✦</span> {t('components.paywallGate.aiAstrologer')}
           </li>
           <li className="flex items-center gap-2">
-            <span className="text-accent-primary">✦</span> Full natal chart with aspects & patterns
+            <span className="text-accent-primary">✦</span> {t('components.paywallGate.fullChart')}
           </li>
         </ul>
       </div>
 
       <Link href="/pricing" className="btn-primary inline-flex items-center gap-2 px-8">
-        {config.icon} See Plans — from {config.price}
+        {config.icon} {t('components.paywallGate.upgradeButton', { price: config.price })}
       </Link>
     </div>
   );

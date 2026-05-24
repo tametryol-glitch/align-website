@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
@@ -16,30 +17,31 @@ import {
 } from 'lucide-react';
 
 const TABS = [
-  { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/feed', label: 'Feed', icon: Newspaper },
-  { href: '/chart', label: 'Chart', icon: Sun },
-  { href: '/messages', label: 'Chat', icon: MessageCircle },
-  { href: '/dating', label: 'Dating', icon: Heart },
-  { href: '#more', label: 'More', icon: Menu },
+  { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
+  { href: '/feed', labelKey: 'components.sidebar.feed', icon: Newspaper },
+  { href: '/chart', labelKey: 'components.sidebar.chart', icon: Sun },
+  { href: '/messages', labelKey: 'components.sidebar.chat', icon: MessageCircle },
+  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
+  { href: '#more', labelKey: 'components.sidebar.more', icon: Menu },
 ];
 
 const MORE_ITEMS = [
-  { href: '/discover', label: 'Discover', icon: Search },
-  { href: '/world-echo', label: 'World Echo', icon: Compass },
-  { href: '/cosmic-alerts', label: 'Cosmic Weather', icon: Zap },
-  { href: '/readings', label: 'Readings', icon: Sparkles },
-  { href: '/cosmic-video', label: 'Video Creator', icon: Video },
-  { href: '/friends', label: 'Friends', icon: Users },
-  { href: '/notifications', label: 'Notifications', icon: Bell },
-  { href: '/ai', label: 'AI Astrologer', icon: MessageCircle },
-  { href: '/courses', label: 'Learn', icon: BookOpen },
-  { href: '/pricing', label: 'Pricing', icon: CreditCard },
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
+  { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
+  { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
+  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
+  { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
+  { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
+  { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
+  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
+  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
+  { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
+  { href: '/profile', labelKey: 'components.sidebar.profile', icon: User },
+  { href: '/settings', labelKey: 'components.sidebar.settings', icon: Settings },
 ];
 
 export function BottomTabBar() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { profile } = useAuthStore();
   const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
@@ -77,7 +79,7 @@ export function BottomTabBar() {
             className="absolute bottom-[72px] left-0 right-0 bg-bg-secondary border-t border-border-primary rounded-t-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200"
           >
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
-              <span className="text-sm font-semibold text-text-primary">Menu</span>
+              <span className="text-sm font-semibold text-text-primary">{t('components.sidebar.menu')}</span>
               <button onClick={() => setShowMore(false)} className="p-1 text-text-muted hover:text-text-primary">
                 <X className="w-5 h-5" />
               </button>
@@ -98,16 +100,16 @@ export function BottomTabBar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-text-primary truncate">
-                  {profile?.display_name || 'Your Profile'}
+                  {profile?.display_name || t('components.sidebar.yourProfile')}
                 </p>
                 <p className="text-xs text-text-muted truncate">
-                  {profile?.sun_sign ? `${profile.sun_sign} Sun` : 'View your profile'}
+                  {profile?.sun_sign ? `${profile.sun_sign} ${t('planets.sun')}` : t('components.sidebar.viewProfile')}
                 </p>
               </div>
             </Link>
 
             <div className="grid grid-cols-3 gap-1 px-4 pb-6">
-              {MORE_ITEMS.filter(i => i.href !== '/profile').map(({ href, label, icon: Icon }) => {
+              {MORE_ITEMS.filter(i => i.href !== '/profile').map(({ href, labelKey, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(href + '/');
                 const showBadge = href === '/friends' && pendingFriendRequests > 0;
                 const showNotifBadge = href === '/notifications';
@@ -131,7 +133,7 @@ export function BottomTabBar() {
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] font-medium text-center leading-tight">{label}</span>
+                    <span className="text-[11px] font-medium text-center leading-tight">{t(labelKey)}</span>
                   </Link>
                 );
               })}
@@ -143,7 +145,7 @@ export function BottomTabBar() {
       {/* Bottom tab bar */}
       <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-bg-secondary border-t border-border-primary z-50" role="tablist" aria-label="Main navigation">
         <div className="flex items-center justify-around h-[72px] px-2 pb-safe overflow-x-auto scrollbar-hide">
-          {TABS.map(({ href, label, icon: Icon }) => {
+          {TABS.map(({ href, labelKey, icon: Icon }) => {
             const isMore = href === '#more';
             const active = isMore
               ? isMoreActive || showMore
@@ -155,7 +157,7 @@ export function BottomTabBar() {
                   key={href}
                   role="tab"
                   aria-selected={active}
-                  aria-label={label}
+                  aria-label={t(labelKey)}
                   onClick={() => setShowMore(prev => !prev)}
                   className={cn(
                     'flex flex-col items-center gap-1 px-3 py-2 min-w-[56px] transition-colors',
@@ -163,7 +165,7 @@ export function BottomTabBar() {
                   )}
                 >
                   {showMore ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                  <span className="text-[11px] font-medium">{showMore ? 'Close' : label}</span>
+                  <span className="text-[11px] font-medium">{showMore ? t('components.sidebar.close') : t(labelKey)}</span>
                 </button>
               );
             }
@@ -174,7 +176,7 @@ export function BottomTabBar() {
                 href={href}
                 role="tab"
                 aria-selected={active}
-                aria-label={label}
+                aria-label={t(labelKey)}
                 onClick={() => setShowMore(false)}
                 className={cn(
                   'flex flex-col items-center gap-1 px-3 py-2 min-w-[56px] transition-colors',
@@ -189,7 +191,7 @@ export function BottomTabBar() {
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] font-medium">{label}</span>
+                <span className="text-[11px] font-medium">{t(labelKey)}</span>
               </Link>
             );
           })}

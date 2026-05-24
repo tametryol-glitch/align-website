@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
@@ -73,6 +74,7 @@ function getStatusStyle(status: string): { bg: string; text: string; label: stri
 }
 
 export default function SafetyPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [privacy, setPrivacy] = useState<PrivacySettings>(DEFAULT_PRIVACY);
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
@@ -181,12 +183,12 @@ export default function SafetyPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('common.settings')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <ShieldCheck className="w-7 h-7 text-accent-primary" />
-        Safety & Privacy
+        {t('settings.safety.title')}
       </h1>
 
       {/* Trust Score */}

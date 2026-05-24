@@ -21,6 +21,12 @@ function checkRateLimit(request: NextRequest): NextResponse | null {
       { status: 429, headers: { 'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)) } },
     );
   }
+  if (hits.size > 10000) {
+    const now2 = Date.now();
+    hits.forEach((v, k) => {
+      if (now2 > v.resetAt) hits.delete(k);
+    });
+  }
   return null;
 }
 

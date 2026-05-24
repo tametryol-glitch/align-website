@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -10,6 +11,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 export default function LessonPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -50,7 +52,7 @@ export default function LessonPage() {
     }
   }
 
-  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading lesson..." /></div>;
+  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('common.loading')} /></div>;
 
   const slides = lesson?.slides || lesson?.content ? [lesson] : [];
   const totalSlides = slides.length;
@@ -60,7 +62,7 @@ export default function LessonPage() {
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <Link href={`/courses/${courseId}`} className="btn-ghost p-2 inline-flex items-center gap-1">
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t('common.back')}
         </Link>
         {totalSlides > 1 && (
           <span className="text-xs text-text-muted">
@@ -108,7 +110,7 @@ export default function LessonPage() {
               onClick={() => setSlideIndex(slideIndex + 1)}
               className="btn-primary flex items-center gap-2"
             >
-              Next <ArrowRight className="w-4 h-4" />
+              {t('common.next')} <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
             <button
@@ -117,7 +119,7 @@ export default function LessonPage() {
               className="btn-primary flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
-              {completing ? 'Saving...' : 'Complete Lesson'}
+              {completing ? t('editProfile.saving') : t('courses.completed')}
             </button>
           )}
         </div>

@@ -13,6 +13,7 @@ import {
   Sparkles, Plus, X, Search, ChevronDown, ChevronUp,
   Trash2, Users, Star, RefreshCw,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -215,6 +216,7 @@ const SOUL_SCORE_LABELS = [
 // ═════════════════════════════════════════════════════════════════════
 
 export default function FragmentsPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'fragments' | 'soul'>('fragments');
   const [fragments, setFragments] = useState<FragmentWithCalc[]>([]);
@@ -340,8 +342,8 @@ export default function FragmentsPage() {
               <Sparkles className="w-5 h-5 text-accent-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-text-primary">Fragments</h1>
-              <p className="text-sm text-text-secondary">Your relationship intelligence dashboard</p>
+              <h1 className="text-xl font-bold text-text-primary">{t('fragments.title')}</h1>
+              <p className="text-sm text-text-secondary">{t('fragments.subtitle')}</p>
             </div>
           </div>
           <span className="text-xs font-medium text-text-muted bg-bg-tertiary px-3 py-1 rounded-full border border-border-primary">
@@ -380,7 +382,7 @@ export default function FragmentsPage() {
           {loading ? (
             <div className="card rounded-2xl p-12 text-center">
               <RefreshCw className="w-6 h-6 text-accent-primary animate-spin mx-auto mb-3" />
-              <p className="text-text-muted text-sm">Loading fragments...</p>
+              <p className="text-text-muted text-sm">{t('common.loading')}</p>
             </div>
           ) : fragments.length === 0 ? (
             <div className="card rounded-2xl p-12 text-center">
@@ -664,6 +666,7 @@ function FriendPickerModal({
   onAdd: (friendId: string) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [friends, setFriends] = useState<FriendProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

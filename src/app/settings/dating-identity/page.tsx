@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ const ORIENTATION_OPTIONS = ['Straight', 'Gay', 'Lesbian', 'Bisexual', 'Pansexua
 const INTERESTED_IN_OPTIONS = ['Men', 'Women', 'Non-binary people', 'Trans men', 'Trans women'];
 
 export default function DatingIdentityPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [gender, setGender] = useState<string | null>(null);
   const [genderCustom, setGenderCustom] = useState('');
@@ -85,12 +87,12 @@ export default function DatingIdentityPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('common.settings')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Heart className="w-7 h-7 text-accent-primary" />
-        Dating Identity
+        {t('settings.datingIdentity.title')}
       </h1>
 
       {/* Gender Identity */}
@@ -182,7 +184,7 @@ export default function DatingIdentityPage() {
         disabled={saving}
         className="btn-primary w-full"
       >
-        {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
+        {saving ? t('common.loading') : saved ? t('common.done') : t('common.save')}
       </button>
     </div>
   );

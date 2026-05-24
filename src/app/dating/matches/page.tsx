@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -33,6 +34,7 @@ function daysSince(dateStr: string): number {
 }
 
 export default function DatingMatchesPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuthStore();
   const { matches, setMatches, setMatchesLoading, matchesLoading, removeMatch } = useDatingStore();
@@ -73,10 +75,10 @@ export default function DatingMatchesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <Users size={22} color="#9B6FF6" />
-          Your Matches
+          {t('dating.matches.title')}
         </h1>
         <p className="text-sm text-text-tertiary mt-0.5">
-          {matches.length} cosmic connections
+          {t('dating.matches.connectionCount', { count: matches.length })}
         </p>
       </div>
 
@@ -84,15 +86,15 @@ export default function DatingMatchesPage() {
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         <Link href="/dating" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Star size={14} /> Discover
+          <Star size={14} /> {t('dating.tabs.discover')}
         </Link>
         <Link href="/dating/likes" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Heart size={14} /> Likes
+          <Heart size={14} /> {t('dating.tabs.likes')}
         </Link>
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium"
           style={{ backgroundColor: 'rgba(155,111,246,0.15)', color: '#B8A0FA' }}>
-          <Users size={14} /> Matches
+          <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
       </div>
 
@@ -131,7 +133,7 @@ export default function DatingMatchesPage() {
               }}
               onChat={() => {
                 if (match.conversation_id) {
-                  router.push(`/messages/${match.conversation_id}`);
+                  router.push(`/messages?conversation=${match.conversation_id}`);
                 }
               }}
               onUnmatchToggle={() => setUnmatchConfirm(unmatchConfirm === match.id ? null : match.id)}

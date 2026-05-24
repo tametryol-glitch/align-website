@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getDatingMatches, type DatingMatch } from '@/lib/datingDiscoveryService';
 import {
@@ -11,6 +12,7 @@ import { ArrowLeft, Plus, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function MilestonesPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [matches, setMatches] = useState<DatingMatch[]>([]);
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
@@ -55,14 +57,14 @@ export default function MilestonesPage() {
   return (
     <div className="max-w-2xl mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating/matches" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Matches
+        <ArrowLeft size={16} /> {t('dating.milestones.backToMatches')}
       </Link>
 
       <div className="text-center mb-6">
         <span className="text-3xl block mb-2">🌟</span>
-        <h1 className="text-2xl font-bold text-white mb-1">Relationship Milestones</h1>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('dating.milestones.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          Track your journey together under the stars
+          {t('dating.milestones.subtitle')}
         </p>
       </div>
 
@@ -72,8 +74,8 @@ export default function MilestonesPage() {
         </div>
       ) : matches.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-text-tertiary mb-3">Match with someone to track milestones.</p>
-          <Link href="/dating" className="text-accent-primary text-sm font-medium">Browse Picks</Link>
+          <p className="text-text-tertiary mb-3">{t('dating.milestones.noMatchHint')}</p>
+          <Link href="/dating" className="text-accent-primary text-sm font-medium">{t('dating.milestones.browsePicks')}</Link>
         </div>
       ) : (
         <>
@@ -98,7 +100,7 @@ export default function MilestonesPage() {
           {/* Progress bar */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-text-muted">Journey Progress</span>
+              <span className="text-xs text-text-muted">{t('dating.milestones.journeyProgress')}</span>
               <span className="text-xs font-semibold text-accent-primary">{progress}%</span>
             </div>
             <div className="h-2 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
@@ -158,7 +160,7 @@ export default function MilestonesPage() {
                       className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-white"
                       style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}
                     >
-                      <Plus size={12} /> Mark
+                      <Plus size={12} /> {t('dating.milestones.mark')}
                     </button>
                   ) : (
                     <div className="w-5 h-5 rounded-full" style={{ border: '2px solid rgba(255,255,255,0.1)' }} />

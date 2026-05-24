@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { getReferralStats, getMyReferralLink, type ReferralStats } from '@/lib/referralService';
 import { Copy, Check, Share2, Users, Sparkles, Gift } from 'lucide-react';
 
 export default function ReferralCard() {
+  const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [copied, setCopied] = useState(false);
@@ -69,7 +71,7 @@ export default function ReferralCard() {
           <Gift className="w-5 h-5 text-accent-primary" />
         </div>
         <div>
-          <h3 className="font-semibold text-text-primary">Invite Friends</h3>
+          <h3 className="font-semibold text-text-primary">{t('components.referralCard.title')}</h3>
           <p className="text-xs text-text-muted">You both get 5 bonus readings!</p>
         </div>
       </div>
@@ -109,7 +111,7 @@ export default function ReferralCard() {
             <button
               onClick={handleCopy}
               className="p-2.5 rounded-lg bg-accent-primary/10 hover:bg-accent-primary/20 transition-colors"
-              title={copied ? 'Copied!' : 'Copy link'}
+              title={copied ? t('common.copied') : t('components.referralCard.copyLink')}
             >
               {copied ? (
                 <Check className="w-4 h-4 text-green-400" />
@@ -126,14 +128,14 @@ export default function ReferralCard() {
               className="flex-1 btn-secondary flex items-center justify-center gap-2 text-sm"
             >
               {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copied!' : 'Copy Link'}
+              {copied ? t('common.copied') : t('components.referralCard.copyLink')}
             </button>
             <button
               onClick={handleShare}
               className="flex-1 btn-primary flex items-center justify-center gap-2 text-sm"
             >
               <Share2 className="w-4 h-4" />
-              Share
+              {t('common.share')}
             </button>
           </div>
         </>

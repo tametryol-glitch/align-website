@@ -12,6 +12,7 @@ import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { getCompositePlacementInterpretation } from '@/lib/compositePlacementInterp';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { useTranslation } from 'react-i18next';
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
@@ -117,6 +118,7 @@ function normalizeCompositeResponse(raw: any): NormalizedCompositeData {
 }
 
 export default function CompositePage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [result, setResult] = useState<NormalizedCompositeData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -174,7 +176,7 @@ export default function CompositePage() {
           </Link>
           <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
             <Heart className="w-7 h-7 text-accent-primary" />
-            Composite Chart
+            {t('chart.composite')}
           </h1>
           <BirthDataPrompt message="Birth data required to calculate your composite (relationship) chart." />
         </div>

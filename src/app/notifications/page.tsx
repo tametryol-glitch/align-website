@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -80,33 +81,33 @@ const NOTIFICATION_ICONS: Record<string, any> = {
   subscription: Bell,
 };
 
-const TABS: { key: TabFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'social', label: 'Social' },
-  { key: 'cosmic', label: 'Cosmic' },
-  { key: 'system', label: 'System' },
+const TABS: { key: TabFilter; labelKey: string }[] = [
+  { key: 'all', labelKey: 'notifications.filters.all' },
+  { key: 'social', labelKey: 'notifications.filters.social' },
+  { key: 'cosmic', labelKey: 'notifications.filters.cosmic' },
+  { key: 'system', labelKey: 'notifications.filters.system' },
 ];
 
-const EMPTY_STATES: Record<TabFilter, { icon: any; title: string; subtitle: string }> = {
+const EMPTY_STATES: Record<TabFilter, { icon: any; titleKey: string; subtitleKey: string }> = {
   all: {
     icon: Bell,
-    title: 'No notifications yet',
-    subtitle: 'Friend requests, reactions, and cosmic alerts will appear here',
+    titleKey: 'notifications.empty.all',
+    subtitleKey: 'notifications.empty.allHint',
   },
   social: {
     icon: Heart,
-    title: 'No social notifications',
-    subtitle: 'Reactions, comments, and friend requests will appear here',
+    titleKey: 'notifications.empty.social',
+    subtitleKey: 'notifications.empty.socialHint',
   },
   cosmic: {
     icon: Zap,
-    title: 'No cosmic alerts',
-    subtitle: 'Transit alerts, moon phases, and retrogrades will appear here',
+    titleKey: 'notifications.empty.cosmic',
+    subtitleKey: 'notifications.empty.cosmicHint',
   },
   system: {
     icon: Megaphone,
-    title: 'No system notifications',
-    subtitle: 'Announcements and account updates will appear here',
+    titleKey: 'notifications.empty.system',
+    subtitleKey: 'notifications.empty.systemHint',
   },
 };
 
@@ -245,6 +246,7 @@ function getNotificationLink(n: Notification): string {
 }
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -383,7 +385,7 @@ export default function NotificationsPage() {
   if (!user) {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
-        <p className="text-text-muted">Please sign in to see notifications</p>
+        <p className="text-text-muted">{t('auth.signInToAccess')}</p>
       </div>
     );
   }
@@ -402,7 +404,7 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary flex items-center gap-3">
           <Bell className="w-7 h-7 text-accent-primary" />
-          Notifications
+          {t('notifications.title')}
           {unreadCount > 0 && (
             <span className="px-2 py-0.5 rounded-full bg-accent-primary/20 text-accent-primary text-xs font-medium">
               {unreadCount}
@@ -411,7 +413,7 @@ export default function NotificationsPage() {
         </h1>
         {unreadCount > 0 && (
           <button onClick={markAllRead} className="btn-ghost text-sm flex items-center gap-1.5 text-accent-primary">
-            <CheckCheck className="w-4 h-4" /> Mark all read
+            <CheckCheck className="w-4 h-4" /> {t('notifications.markAllRead')}
           </button>
         )}
       </div>
@@ -427,18 +429,18 @@ export default function NotificationsPage() {
                 : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <LoadingCosmic label="Loading notifications..." />
+        <LoadingCosmic label={t('common.loading')} />
       ) : groups.length === 0 ? (
         <div className="card text-center py-12">
           <EmptyIcon className="w-12 h-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-muted mb-1">{emptyState.title}</p>
-          <p className="text-xs text-text-muted">{emptyState.subtitle}</p>
+          <p className="text-text-muted mb-1">{t(emptyState.titleKey)}</p>
+          <p className="text-xs text-text-muted">{t(emptyState.subtitleKey)}</p>
         </div>
       ) : (
         <div className="space-y-1">

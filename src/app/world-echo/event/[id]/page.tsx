@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -38,6 +39,7 @@ function prettyCategory(cat: string): string {
 // ─── Main Component ──────────────────────────────────────────────
 
 export default function WorldEchoEventPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const eventId = params.id as string;
   const [event, setEvent] = useState<any>(null);
@@ -66,12 +68,12 @@ export default function WorldEchoEventPage() {
       .catch(() => {}); // 404 is expected if event isn't in today's top hits
   }, [eventId]);
 
-  if (loading) return <LoadingCosmic label="Loading event details..." />;
+  if (loading) return <LoadingCosmic label={t('common.loading')} />;
 
   return (
     <div className="max-w-3xl mx-auto">
       <Link href="/world-echo" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back
+        <ArrowLeft className="w-4 h-4" /> {t('common.back')}
       </Link>
 
       {error && (

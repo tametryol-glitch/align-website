@@ -50,7 +50,8 @@
     "agreeToTerms": "次に同意します：",
     "privacyPolicy": "プライバシーポリシー",
     "and": "および",
-    "termsOfService": "利用規約"
+    "termsOfService": "利用規約",
+    "signInToAccess": "メッセージにアクセスするにはサインインしてください"
   },
   "onboarding": {
     "title": "出生チャートを作成しましょう",
@@ -173,9 +174,10 @@
     "financial": "財務レポート",
     "pathway": "成功への道",
     "nameAnalysis": "姓名分析",
-    "firdaria": "Firdaria",
+    "firdaria": "フィルダリア",
     "zodiacalReleasing": "ゾディアカルリリーシング",
     "planetaryHours": "プラネタリーアワー",
+    "moonPhases": "月の満ち欠け",
     "acg": "アストロカートグラフィー",
     "fixedStars": "恒星",
     "arabicParts": "アラビックパーツ",
@@ -186,12 +188,378 @@
     "galacticForecast": "ギャラクティック予報",
     "midpoints": "ミッドポイント計算機",
     "aiAstrologer": "AI占星術師",
+    "yearAhead": "私の今後一年",
     "savedCharts": "保存済みチャート",
     "cosmicJournal": "コズミック・ジャーナル",
-    "moonPhases": "月の満ち欠け",
-    "yearAhead": "私の今後一年",
     "soulGifts": "魂のギフト",
-    "soulMemory": "魂の記憶"
+    "soulMemory": "魂の記憶",
+    "soulAscension": "魂のアセンション",
+    "dreamOracle": "ドリームオラクル",
+    "backToReadings": "リーディングに戻る",
+    "upgradeToTier": "{{tier}}にアップグレード",
+    "birthDataRequired": "まずプロフィールで出生データを追加してください。",
+    "birthDataPromptTransits": "現在のトランジットを見るには出生データを追加してください。",
+    "birthDataPromptCompatibility": "特別な人との相性を調べるには出生データを追加してください。",
+    "birthDataPromptAlerts": "あなたのチャートに合わせた宇宙アラートを計算するために出生データが必要です。",
+    "transitsPage": {
+      "title": "あなたのサイクル",
+      "subtitle": "{{name}}さん、これらは今あなたの人生を動かしているサイクルです。季節のようなものだと考えてください——それぞれが独自のエネルギー、学び、機会をもたらします。",
+      "loadingLabel": "トランジットを計算中...",
+      "errorDefault": "トランジットの読み込みに失敗しました",
+      "emptyState": "アクティブなサイクルが見つかりません。また確認してください。",
+      "activeNow": "現在アクティブ",
+      "storylines": "ストーリーライン",
+      "impactingYouNow": "今あなたに影響しているもの",
+      "backToCycles": "サイクルに戻る",
+      "active": "アクティブ",
+      "approaching": "接近中",
+      "separating": "分離中",
+      "cycleMeaning": "このサイクルがあなたにとって意味すること",
+      "howToNavigate": "このサイクルの乗り越え方",
+      "technicalDetails": "技術的詳細",
+      "transit": "トランジット",
+      "currentOrb": "現在のオーブ",
+      "direction": "方向",
+      "intensity": "強度",
+      "separatingDesc": "分離中（正確な角度から離れている）",
+      "applyingDesc": "接近中（正確な角度に向かっている）",
+      "intensityMajor": "メジャー（外惑星）",
+      "intensityModerate": "中程度",
+      "intensityMinor": "マイナー",
+      "nearExact": "ほぼ正確 — 最も強い影響",
+      "stronglyActive": "強くアクティブ",
+      "buildingMomentum": "勢いを増している",
+      "enteringAwareness": "意識に入りつつある",
+      "lessThanADay": "残り1日未満",
+      "daysLeft": "残り{{count}}日",
+      "weeksLeft": "約{{count}}週間残り",
+      "monthsLeft": "約{{count}}ヶ月残り",
+      "yearsLeft": "{{count}}年以上",
+      "tapToRead": "タップしてインサイト全文を読む",
+      "failedToLoadStorylines": "ストーリーラインの読み込みに失敗しました"
+    },
+    "tarotPage": {
+      "title": "タロットリーディング",
+      "subtitle": "アルカナからのガイダンスを受け取る",
+      "chooseSpread": "スプレッドを選ぶ",
+      "yourQuestion": "あなたの質問（任意）",
+      "questionPlaceholder": "どのようなガイダンスを求めていますか？",
+      "drawButton": "{{spread}}を引く",
+      "shuffling": "コズミックデッキをシャッフル中...",
+      "tapToReveal": "タップしてめくる",
+      "revealAll": "すべてめくる",
+      "newReading": "新しいリーディング",
+      "getPersonalReading": "パーソナルリーディングを受ける",
+      "regenerateReading": "パーソナルリーディングを再生成",
+      "personalTarotReading": "パーソナルタロットリーディング",
+      "channeling": "あなたのチャートとカードをチャネリング中...",
+      "shareReading": "リーディングを共有",
+      "copied": "コピーしました！",
+      "failedToGenerate": "リーディングの生成に失敗しました。もう一度お試しください。",
+      "reversed": "逆位置",
+      "majorArcana": "大アルカナ",
+      "minorArcana": "小アルカナ",
+      "spreads": {
+        "single": "1枚引き",
+        "threeCard": "3枚引き",
+        "celticCross": "ケルト十字",
+        "relationship": "恋愛",
+        "career": "キャリア"
+      },
+      "positions": {
+        "focus": "フォーカス",
+        "past": "過去",
+        "present": "現在",
+        "future": "未来",
+        "challenge": "課題",
+        "foundation": "基盤",
+        "recentPast": "近い過去",
+        "crown": "クラウン",
+        "nearFuture": "近い未来",
+        "self": "自分自身",
+        "environment": "環境",
+        "hopesFears": "希望と恐れ",
+        "outcome": "結果",
+        "you": "あなた",
+        "partner": "パートナー",
+        "connection": "つながり",
+        "potential": "可能性",
+        "current": "現状",
+        "obstacle": "障害",
+        "hiddenFactor": "隠れた要因",
+        "advice": "アドバイス"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "ドリームオラクル",
+      "subtitle": "シンボル、感情、占星術、そして潜在意識の隠された言語を通して夢を解読しましょう。",
+      "tabs": {
+        "record": "記録",
+        "journal": "ジャーナル",
+        "symbols": "シンボル",
+        "patterns": "パターン"
+      },
+      "record": {
+        "dreamTitle": "夢のタイトル（任意）",
+        "titlePlaceholder": "空欄の場合は自動生成されます",
+        "describeLabel": "あなたの夢を描写してください *",
+        "describePlaceholder": "目を閉じて、覚えていることをすべて描写してください...",
+        "mainEmotions": "主な感情（最大5つ）",
+        "peopleDream": "夢に出てきた人",
+        "peoplePlaceholder": "例：母親、元パートナー、見知らぬ人、友人",
+        "placesDream": "夢の場所",
+        "placesPlaceholder": "例：子供時代の家、海、暗い森",
+        "separateCommas": "カンマで区切ってください",
+        "symbolsObjects": "シンボル / オブジェクト",
+        "selectSymbols": "クリックして夢のシンボルを選択",
+        "selectedCount": "{{count}}件選択済み",
+        "searchSymbols": "シンボルを検索...",
+        "dreamType": "夢の種類",
+        "dreamIntensity": "夢の強度：{{value}}/10",
+        "privacy": "プライバシー",
+        "interpretDream": "夢を解釈する",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "あなたの夢の解釈",
+        "mainSymbols": "主なシンボル",
+        "coreMessage": "核心のメッセージ",
+        "subconsciousMessage": "潜在意識があなたに見せていたもの",
+        "symbolsMatter": "最も重要なシンボル",
+        "emotionalUndercurrent": "感情の底流",
+        "whatToFace": "この夢があなたに向き合うよう求めていること",
+        "oracleMessage": "ドリームオラクルの最終メッセージ",
+        "astroConnection": "占星術的なつながり",
+        "whyNow": "なぜ今この夢を見たのか",
+        "watchFor": "注目すべきこと",
+        "whatToDo": "次にすべきこと",
+        "reflectionQuestions": "振り返りの質問",
+        "askAboutDream": "この夢について質問する",
+        "visualizeDream": "夢をビジュアライズする",
+        "comingSoon": "近日公開",
+        "recordAnother": "別の夢を記録する"
+      },
+      "journal": {
+        "loadingJournal": "ドリームジャーナルを読み込み中...",
+        "searchDreams": "夢を検索...",
+        "noDreamsYet": "まだ夢がありません",
+        "noDreamsHint": "最初の夢を記録してジャーナルを作り始めましょう。",
+        "deleteConfirm": "この夢を削除しますか？元に戻せません。"
+      },
+      "dictionary": {
+        "backToSymbols": "シンボルに戻る",
+        "generalMeaning": "一般的な意味",
+        "psychologicalMeaning": "心理学的な意味",
+        "spiritualMeaning": "スピリチュアルな意味",
+        "astrologicalMeaning": "占星術的な意味",
+        "shadowMeaning": "シャドウの意味",
+        "reflectionQuestion": "振り返りの質問"
+      },
+      "patterns": {
+        "noPatternsYet": "まだパターンがありません",
+        "noPatternsHint": "夢の生活のパターンを見るには、少なくとも3つの夢を記録してください。",
+        "overview": "概要",
+        "totalDreams": "夢の総数",
+        "avgIntensity": "平均強度",
+        "nightmares": "悪夢",
+        "lucidDreams": "明晰夢",
+        "prophetic": "予知夢",
+        "recurringSymbols": "最も繰り返されるシンボル",
+        "recurringEmotions": "最も繰り返される感情",
+        "recurringPeople": "最も繰り返される人物",
+        "dreamTypes": "夢の種類",
+        "dreamsByMoonPhase": "月の満ち欠け別の夢",
+        "moonPhaseHint": "占星術データに接続された夢が10件以上になると、月の満ち欠けパターン追跡が有効になります。",
+        "dreamsByTransit": "トランジット別の夢",
+        "transitHint": "トランジットの相関関係は、どの惑星アスペクトが最も鮮明な夢や予知夢を活性化するかを明らかにします。"
+      }
+    },
+    "starseedPage": {
+      "title": "スターシードの起源",
+      "subtitle": "あなたの宇宙的な魂の起源を発見しましょう",
+      "description": "あなたのネイタルチャートを分析して、あなたの魂がどの星系と共鳴しているかを発見します。",
+      "discoverButton": "起源を発見する",
+      "analyzing": "分析中...",
+      "dominantOrigin": "主要な起源",
+      "resonancePoints": "スコア：{{score}}共鳴ポイント"
+    },
+    "numerologyPage": {
+      "title": "数秘術",
+      "subtitle": "あなたの宇宙的な数字を解読",
+      "master": "マスター"
+    },
+    "angelNumbersPage": {
+      "title": "エンジェルナンバー",
+      "subtitle": "見かける数字の意味を調べましょう",
+      "searchPlaceholder": "数字を入力してください（例：111、444）...",
+      "popular": "人気のナンバー",
+      "notFound": "ナンバーが見つかりません。一般的なエンジェルナンバーをお試しください。",
+      "copiedToClipboard": "クリップボードにコピーしました！"
+    },
+    "humanDesignPage": {
+      "title": "ヒューマンデザイン",
+      "subtitle": "あなたのエネルギー的な設計図",
+      "aura": "オーラ",
+      "defined": "定義済み",
+      "undefined": "未定義"
+    },
+    "financialPage": {
+      "title": "金融占星術",
+      "subtitle": "あなたの宇宙的なマネーブループリント",
+      "personalIncome": "個人の収入と価値観",
+      "sharedResources": "共有資源と変容",
+      "careerStanding": "キャリアと社会的地位",
+      "gainsNetworks": "利益とネットワーク",
+      "strengths": "強み",
+      "challenges": "課題",
+      "monthlyForecast": "月間予測",
+      "timingWindows": "タイミングウィンドウ",
+      "favorable": "好調",
+      "mixed": "混合",
+      "challenging": "困難"
+    },
+    "compatibilityPage": {
+      "title": "相性診断",
+      "subtitle": "二つの魂の宇宙的なつながりを探りましょう",
+      "person2Label": "パートナーの出生データ",
+      "datePlaceholder": "生年月日",
+      "timePlaceholder": "出生時刻",
+      "locationPlaceholder": "出生地",
+      "calculateButton": "相性を調べる",
+      "calculating": "相性を計算中...",
+      "overallScore": "総合スコア",
+      "soulLevelConnection": "魂レベルのつながり",
+      "deepCompatibility": "深い相性",
+      "strongPotential": "高い可能性",
+      "moderateMatch": "まずまずの相性",
+      "growthRequired": "成長が必要",
+      "challengingDynamic": "挑戦的なダイナミクス",
+      "categories": {
+        "attraction": "身体的魅力",
+        "emotional": "感情的な絆",
+        "mental": "知的なつながり",
+        "stability": "長期的な安定性",
+        "karmic": "カルマ的なつながり",
+        "harmony": "調和",
+        "magnetic": "磁力的な引力"
+      },
+      "showAspects": "アスペクトを表示",
+      "hideAspects": "アスペクトを非表示"
+    },
+    "cosmicJournalPage": {
+      "title": "コズミック・ジャーナル",
+      "subtitle": "宇宙とともに内なる世界を追跡しましょう",
+      "newEntry": "新しいエントリー",
+      "moodOptions": {
+        "low": "低い",
+        "meh": "いまいち",
+        "neutral": "普通",
+        "good": "良い",
+        "great": "最高"
+      },
+      "noEntries": "まだジャーナルエントリーがありません",
+      "noEntriesHint": "書き始めて、宇宙とともに内なる世界を追跡しましょう。"
+    },
+    "moonPhasesPage": {
+      "title": "月の満ち欠け",
+      "tabs": {
+        "today": "今日",
+        "calendar": "カレンダー",
+        "forecast": "予報",
+        "eclipses": "食",
+        "birthMoon": "バースムーン"
+      },
+      "failedToLoadChart": "ネイタルチャートの読み込みに失敗しました"
+    },
+    "planetaryHoursPage": {
+      "title": "プラネタリーアワー",
+      "subtitle": "現代生活のための古代のタイミングの知恵",
+      "currentHour": "現在の時間",
+      "daySummary": "一日のまとめ",
+      "hoursTable": "時間テーブル"
+    },
+    "yearAheadPage": {
+      "title": "私の今後一年",
+      "subtitle": "あなたの年間パーソナライズド宇宙予報",
+      "generating": "今後一年を生成中...",
+      "monthlyOverview": "月間概要",
+      "keyTransits": "主要トランジット",
+      "calm": "穏やか",
+      "activeIntensity": "アクティブ",
+      "intense": "激しい"
+    },
+    "solarReturnPage": {
+      "title": "ソーラーリターン",
+      "subtitle": "あなたの誕生日チャート — 今年の宇宙的な設計図",
+      "generating": "ソーラーリターンを計算中...",
+      "yearTheme": "年間テーマ",
+      "planetsOnAngles": "アングル上の惑星",
+      "retrogrades": "逆行",
+      "monthlyTimeline": "月間タイムライン",
+      "natalComparisons": "ネイタル vs ソーラーリターン",
+      "criticalAspects": "重要なアスペクト",
+      "yearPattern": "年間パターン"
+    },
+    "galacticClockPage": {
+      "title": "ギャラクティッククロック",
+      "subtitle": "あなたの宇宙的なタイミングインターフェース"
+    },
+    "galacticForecastPage": {
+      "title": "ギャラクティック予報",
+      "subtitle": "あなたのチャートに影響する深宇宙エネルギー"
+    },
+    "midpointsPage": {
+      "title": "ミッドポイント計算機",
+      "subtitle": "チャートの隠れたつながりを発見"
+    },
+    "firdariaPage": {
+      "title": "フィルダリア",
+      "subtitle": "古代ペルシャの惑星期間"
+    },
+    "zodiacalReleasingPage": {
+      "title": "ゾディアカルリリーシング",
+      "subtitle": "ヘレニスティックのタイミング技法"
+    },
+    "acgPage": {
+      "title": "アストロカートグラフィー",
+      "subtitle": "世界のどこであなたの惑星が活性化するか"
+    },
+    "fixedStarsPage": {
+      "title": "恒星",
+      "subtitle": "あなたのチャートにおける恒星の影響"
+    },
+    "arabicPartsPage": {
+      "title": "アラビックパーツ",
+      "subtitle": "あなたのチャートの古代計算ポイント"
+    },
+    "pathwayPage": {
+      "title": "成功への道",
+      "subtitle": "あなたの宇宙的なキャリアと人生の目的のブループリント"
+    },
+    "rectificationPage": {
+      "title": "出生時刻修正",
+      "subtitle": "より正確なチャートのために出生時刻を微調整"
+    },
+    "nameAnalysisPage": {
+      "title": "姓名分析",
+      "subtitle": "あなたの名前の数秘術"
+    },
+    "soulGiftsPage": {
+      "title": "魂のギフト",
+      "subtitle": "あなたのチャートに刻まれたユニークな才能を発見"
+    },
+    "soulMemoryPage": {
+      "title": "魂の記憶",
+      "subtitle": "ネイタルチャートに残る前世のエコー"
+    },
+    "soulAscensionPage": {
+      "title": "魂のアセンション",
+      "description": "カルマ、目的の道、魂の契約、遺物、前世の選択を持つ転生RPGとしてネイタルチャートをプレイしましょう。"
+    },
+    "chartAdjusterPage": {
+      "title": "チャート調整",
+      "subtitle": "異なる出生時刻で実験する"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI解釈",
@@ -205,6 +573,464 @@
       "reputation": "名声"
     }
   },
+  "dating": {
+    "title": "コズミックデーティング",
+    "subtitle": "あなたの厳選されたコズミックピック",
+    "introTitle": "コズミックデーティング",
+    "introDescription": "星に書かれた意味のあるつながりを見つけましょう。デーティングプロフィールを作成して、宇宙的に相性の良いマッチの発見を始めましょう。",
+    "createProfileButton": "デーティングプロフィールを作成",
+    "featurePhotos": "写真とボイスイントロを追加",
+    "featureCompatibility": "宇宙的な相性でマッチング",
+    "featureSafety": "安全で確認済みのつながり",
+    "tabs": {
+      "discover": "発見",
+      "likes": "いいね",
+      "matches": "マッチ",
+      "myProfile": "マイプロフィール"
+    },
+    "discovery": {
+      "consulting": "宇宙に相談中...",
+      "noPicksTitle": "まだコズミックピックがありません",
+      "allCaughtUpTitle": "最新です！",
+      "noPicksDescription": "星がまだあなたのマッチを調整中です。デーティングプロフィールを完成させましょう！",
+      "allCaughtUpDescription": "明日また新しいコズミックピックをチェックしてください。質の良いつながりには時間がかかります。",
+      "completeProfile": "プロフィールを完成",
+      "dailyLikeLimit": "1日のいいね上限（{{limit}}）に達しました。アップグレードでもっと！",
+      "dailyRoseLimit": "今日のコズミックローズをすべて使いました（{{limit}}）。アップグレードでもっと！",
+      "genericError": "問題が発生しました。もう一度お試しください。"
+    },
+    "likes": {
+      "title": "いいね",
+      "receivedCount": "{{count}}人があなたに興味を持っています",
+      "sentCount": "あなたは{{count}}人にいいねしました",
+      "received": "受信",
+      "sent": "送信",
+      "seeWhoLikes": "誰があなたにいいねしたか見る",
+      "upgradeHint": "Light以上にアップグレードしてプロフィールを表示",
+      "upgrade": "アップグレード",
+      "noLikesYet": "まだいいねがありません",
+      "noSentYet": "まだいいねを送っていません",
+      "keepFresh": "プロフィールを新鮮に保てば、宇宙が届けてくれます。",
+      "headToDiscover": "発見に移動して、宇宙的なつながりを見つけましょう。",
+      "mysteryAdmirer": "秘密の崇拝者",
+      "rose": "ローズ",
+      "likeBack": "いいねを返す",
+      "matching": "マッチング中..."
+    },
+    "matches": {
+      "title": "あなたのマッチ",
+      "connectionCount": "{{count}}件の宇宙的なつながり",
+      "noMatchesTitle": "まだマッチがありません",
+      "noMatchesDescription": "お互いにいいねすると、ここに表示されます。",
+      "discoverPeople": "人を発見する",
+      "cosmicIcebreakers": "コズミック・アイスブレーカー",
+      "message": "メッセージ",
+      "unmatchConfirm": "{{name}}のマッチを解除しますか？",
+      "unmatch": "マッチ解除",
+      "cancel": "キャンセル",
+      "matchedToday": "今日マッチ",
+      "matchedDaysAgo": "{{days}}日前にマッチ",
+      "cosmicMatch": "コズミックマッチ"
+    },
+    "profile": {
+      "title": "デーティングプロフィール",
+      "datingMode": "デーティングモード",
+      "datingModeHint": "コズミックディスカバリーでプロフィールを表示する",
+      "cosmicSignature": "あなたのコズミックシグネチャー",
+      "sunMoonRising": "太陽 / 月 / アセンダント",
+      "photos": "写真",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "自己紹介",
+      "aboutMePlaceholder": "マッチ候補の人にあなたのことを伝えましょう...",
+      "cosmicPrompts": "コズミックプロンプト",
+      "addPrompt": "プロンプトを追加",
+      "promptAnswerPlaceholder": "あなたの回答...",
+      "voicePrompt": "ボイスプロンプト",
+      "voicePromptHint": "30秒のボイスイントロを録音してあなたの個性を輝かせましょう",
+      "uploadingVoice": "ボイスプロンプトをアップロード中...",
+      "reRecord": "再録音",
+      "stopRecording": "録音を停止",
+      "recordVoicePrompt": "ボイスプロンプトを録音",
+      "videoIntro": "ビデオイントロ",
+      "videoIntroHint": "15秒のビデオをアップロードして自己紹介しましょう",
+      "replaceVideo": "ビデオを置き換え",
+      "uploadVideo": "ビデオをアップロード",
+      "showAge": "プロフィールに年齢を表示",
+      "photoVerification": "写真認証",
+      "verified": "認証済み",
+      "verifyNow": "今すぐ認証",
+      "datingPreferences": "デーティング設定",
+      "savePreferences": "設定を保存",
+      "saveProfile": "プロフィールを保存",
+      "saving": "保存中...",
+      "preferenceFields": {
+        "genderIdentity": "性自認",
+        "sexualOrientation": "性的指向",
+        "interestedIn": "興味のある対象",
+        "primaryIntent": "主な目的",
+        "ageRange": "年齢範囲",
+        "maxDistance": "最大距離"
+      },
+      "privacyLevels": {
+        "visible": "表示",
+        "matchOnly": "マッチのみ",
+        "hidden": "非表示"
+      }
+    },
+    "verify": {
+      "title": "写真認証",
+      "subtitle": "身元を確認して、デーティングプロフィールに信頼バッジを獲得しましょう",
+      "backToProfile": "プロフィールに戻る",
+      "verifiedTitle": "認証済み！",
+      "verifiedDescription": "あなたのプロフィールに認証バッジが表示されるようになりました。",
+      "pendingTitle": "審査中",
+      "pendingDescription": "あなたのセルフィーは審査中です。通常24〜48時間かかります。",
+      "rejectedTitle": "承認されませんでした",
+      "rejectedHint": "より鮮明なセルフィーで再試行できます。",
+      "tryAgain": "もう一度試す",
+      "howItWorks": "仕組み：",
+      "step1": "1. 良い照明でクリアなセルフィーを撮影",
+      "step2": "2. 顔全体が見えるようにする",
+      "step3": "3. プロフィール写真と比較します",
+      "step4": "4. 承認されると認証バッジが付きます",
+      "takeSelfie": "セルフィーを撮る",
+      "capture": "撮影",
+      "cancel": "キャンセル",
+      "retake": "撮り直す",
+      "submitForReview": "審査に提出",
+      "submitting": "提出中...",
+      "cameraAccessDenied": "カメラへのアクセスが拒否されました。ブラウザの設定でカメラアクセスを許可してください。",
+      "submissionFailed": "提出に失敗しました。もう一度お試しください。",
+      "networkError": "ネットワークエラー。接続を確認してもう一度お試しください。"
+    },
+    "coach": {
+      "title": "リレーションシップコーチ",
+      "subtitle": "占星術のダイナミクスに基づくAIパワードインサイト",
+      "premiumFeature": "プレミアム機能",
+      "backToMatches": "マッチに戻る",
+      "noMatchHint": "コーチングのインサイトを得るには、誰かとマッチしてください。",
+      "browsePicks": "ピックを閲覧",
+      "inputPlaceholder": "コミュニケーション、対立、親密さについて質問する...",
+      "emptyHint": "最初の質問をするか、送信をタップして一般的なインサイトを受け取りましょう。",
+      "aiInsight": "AIインサイト",
+      "template": "テンプレート"
+    },
+    "timing": {
+      "title": "コズミックタイミング",
+      "subtitle": "あなたのつながりに最適な瞬間をハイライトする惑星ウィンドウ",
+      "backToMatches": "マッチに戻る",
+      "noMatchHint": "コズミックタイミングウィンドウを見るには、誰かとマッチしてください。",
+      "browsePicks": "ピックを閲覧",
+      "noWindows": "タイミングウィンドウが見つかりません。",
+      "qualityExcellent": "最高",
+      "qualityGood": "良好",
+      "qualityNeutral": "普通",
+      "qualityChallenging": "困難",
+      "now": "今",
+      "inDays": "{{days}}日後"
+    },
+    "events": {
+      "title": "コズミックイベント",
+      "subtitle": "宇宙と調和したテーマ別デーティングイベント",
+      "backToDating": "デーティングに戻る",
+      "tabs": {
+        "upcoming": "今後のイベント",
+        "myEvents": "マイイベント"
+      },
+      "noUpcoming": "今後のイベントはありません。また確認してください！",
+      "noRegistered": "まだイベントに登録していません。",
+      "live": "ライブ",
+      "maxCount": "最大{{count}}名",
+      "elementOnly": "{{element}}サインのみ",
+      "registered": "登録済み",
+      "cancelRegistration": "キャンセル",
+      "register": "登録",
+      "registering": "登録中..."
+    },
+    "milestones": {
+      "title": "リレーションシップマイルストーン",
+      "subtitle": "星の下で二人の旅を追跡しましょう",
+      "backToMatches": "マッチに戻る",
+      "noMatchHint": "マイルストーンを追跡するには、誰かとマッチしてください。",
+      "browsePicks": "ピックを閲覧",
+      "journeyProgress": "旅の進捗",
+      "mark": "マーク"
+    },
+    "datePlanner": {
+      "title": "デートナイトプランナー",
+      "subtitle": "あなたとマッチのための宇宙的に厳選されたデートアイデア",
+      "backToMatches": "マッチに戻る",
+      "noMatchHint": "デートの提案を得るには、誰かとマッチしてください。",
+      "browsePicks": "ピックを閲覧",
+      "shuffleIdeas": "アイデアをシャッフル",
+      "elementEnergy": "{{element}}エネルギー"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "コズミックフィード",
+    "createPost": "投稿を作成",
+    "postTypes": {
+      "text": "テキスト",
+      "photo": "写真",
+      "video": "動画",
+      "poll": "投票"
+    },
+    "composer": {
+      "placeholder": "宇宙的に何を考えていますか？",
+      "uploadImage": "クリックして画像をアップロード",
+      "uploadVideo": "クリックして動画をアップロード",
+      "imageSizeLimit": "画像は10MB以下にしてください",
+      "videoSizeLimit": "動画は200MB以下にしてください",
+      "backgroundStyle": "背景スタイル",
+      "visibility": "公開範囲：",
+      "visibilityPublic": "公開",
+      "visibilityFriends": "友達のみ",
+      "postButton": "投稿",
+      "posting": "投稿中...",
+      "uploadingImage": "画像をアップロード中...",
+      "uploadingVideo": "動画をアップロード中...",
+      "addImage": "画像を追加",
+      "addVideo": "動画を追加",
+      "editPost": "投稿を編集"
+    },
+    "poll": {
+      "question": "質問",
+      "questionPlaceholder": "宇宙に聞いてみよう...",
+      "options": "選択肢",
+      "optionPlaceholder": "選択肢 {{number}}",
+      "addOption": "選択肢を追加",
+      "duration": "期間",
+      "durationOptions": {
+        "1h": "1時間",
+        "6h": "6時間",
+        "12h": "12時間",
+        "1d": "1日",
+        "3d": "3日",
+        "7d": "7日"
+      },
+      "createPoll": "投票を作成",
+      "pollNeedsContent": "投票には質問と少なくとも2つの選択肢が必要です"
+    },
+    "empty": {
+      "title": "コズミックフィードが待っています",
+      "description": "リーディング、チャート、宇宙的なインサイトをコミュニティと共有しましょう。",
+      "createFirst": "最初の投稿を作成"
+    },
+    "loadMore": "もっと読み込む",
+    "loading": "読み込み中..."
+  },
+  "friends": {
+    "title": "友達とつながり",
+    "friendCount": "{{count}}人の友達",
+    "pendingCount": "{{count}}件保留中",
+    "inviteFriends": "友達を招待",
+    "qrCode": "QRコード",
+    "tabs": {
+      "friends": "友達",
+      "requests": "リクエスト",
+      "search": "検索"
+    },
+    "suggestionsTitle": "知り合いかもしれない人",
+    "addButton": "+ 追加",
+    "empty": {
+      "noFriends": "まだ友達がいません",
+      "noFriendsHint": "人を検索するか、Alignコードを共有しましょう",
+      "findPeople": "人を探す",
+      "noRequests": "保留中のリクエストはありません",
+      "noRequestsHint": "送信または受信した友達リクエストがここに表示されます"
+    },
+    "requests": {
+      "wantsToConnect": "つながりたい",
+      "requestSent": "リクエスト送信済み",
+      "accept": "承認",
+      "decline": "辞退",
+      "cancel": "キャンセル"
+    },
+    "search": {
+      "placeholder": "名前、ユーザー名、またはAlignコードで検索...",
+      "searching": "検索中...",
+      "noResults": "ユーザーが見つかりません",
+      "noResultsHint": "別の検索語をお試しください",
+      "startSearch": "人を検索",
+      "minCharsHint": "2文字以上入力してください..."
+    },
+    "labels": {
+      "friends": "友達",
+      "pending": "保留中"
+    },
+    "actions": {
+      "removeFriend": "友達を削除",
+      "blockUser": "ユーザーをブロック",
+      "removeConfirm": "{{name}}を友達から削除しますか？",
+      "blockConfirm": "{{name}}をブロックしますか？あなたを見つけたり連絡したりできなくなります。",
+      "viewProfile": "プロフィールを見る",
+      "message": "メッセージ",
+      "viewFullProfile": "フルプロフィールを見る",
+      "close": "閉じる",
+      "requestPending": "リクエスト保留中",
+      "addFriend": "友達を追加",
+      "acceptRequest": "リクエストを承認",
+      "confirm": "確認",
+      "ok": "OK"
+    },
+    "alignCode": "Alignコード："
+  },
+  "messages": {
+    "signInRequired": "メッセージにアクセスするにはサインインしてください",
+    "selectConversation": "会話を選択",
+    "startNewChat": "または新しいチャットを始めてつながりましょう",
+    "newChat": "新しいチャット",
+    "contextMenu": {
+      "reply": "返信",
+      "react": "リアクション",
+      "edit": "編集",
+      "delete": "削除",
+      "forward": "転送",
+      "pin": "ピン留め",
+      "unpin": "ピン留め解除",
+      "copyText": "テキストをコピー"
+    },
+    "pickReaction": "リアクションを選択",
+    "messageTypes": {
+      "image": "画像",
+      "gif": "GIF",
+      "voiceMessage": "ボイスメッセージ",
+      "location": "位置情報",
+      "poll": "投票："
+    },
+    "composer": {
+      "placeholder": "メッセージを入力...",
+      "send": "送信",
+      "attachment": "添付"
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "filters": {
+      "all": "すべて",
+      "social": "ソーシャル",
+      "cosmic": "コズミック",
+      "system": "システム"
+    },
+    "empty": {
+      "all": "まだ通知がありません",
+      "allHint": "宇宙アラートとソーシャル更新がここに表示されます。",
+      "social": "ソーシャル通知はありません",
+      "socialHint": "友達リクエスト、メッセージ、リアクションがここに表示されます。",
+      "cosmic": "宇宙アラートはありません",
+      "cosmicHint": "トランジットアラートや宇宙イベントがここに表示されます。",
+      "system": "システム通知はありません",
+      "systemHint": "システム更新とお知らせがここに表示されます。"
+    },
+    "time": {
+      "justNow": "たった今",
+      "minutesAgo": "{{count}}分前",
+      "hoursAgo": "{{count}}時間前",
+      "daysAgo": "{{count}}日前"
+    },
+    "grouped": "{{count}}件の通知"
+  },
+  "communities": {
+    "title": "コミュニティ",
+    "subtitle": "あなたの宇宙的な仲間を見つけましょう",
+    "create": "作成",
+    "tabs": {
+      "discover": "発見",
+      "myCommunities": "マイコミュニティ"
+    },
+    "searchPlaceholder": "コミュニティを検索...",
+    "filterAll": "すべて",
+    "loading": "コミュニティを読み込み中...",
+    "empty": {
+      "title": "まだコミュニティがありません",
+      "description": "宇宙的なコミュニティを最初に作りましょう！",
+      "createButton": "コミュニティを作成"
+    },
+    "featured": "おすすめ",
+    "allCommunities": "すべてのコミュニティ",
+    "noResultsSearch": "「{{query}}」のコミュニティが見つかりません",
+    "noResultsCategory": "このカテゴリにはまだコミュニティがありません。",
+    "yourCircle": {
+      "title": "あなたのコズミックサークルが待っています",
+      "description": "コミュニティに参加または作成して仲間を見つけましょう。",
+      "exploreButton": "コミュニティを探索"
+    },
+    "memberCount_one": "{{count}}人のメンバー",
+    "memberCount_other": "{{count}}人のメンバー",
+    "private": "プライベート",
+    "join": "参加",
+    "joined": "参加済み"
+  },
+  "profile": {
+    "title": "プロフィール",
+    "editProfile": "プロフィールを編集",
+    "shareBigThree": "ビッグスリーを共有",
+    "stats": {
+      "friends": "友達",
+      "posts": "投稿",
+      "followers": "フォロワー",
+      "following": "フォロー中",
+      "views": "閲覧数"
+    },
+    "tabs": {
+      "posts": "投稿",
+      "photos": "写真",
+      "reels": "リール",
+      "about": "概要"
+    },
+    "alignCode": "あなたのAlignコード",
+    "alignCodeHint": "友達があなたを見つけられるようにコードを共有しましょう",
+    "quickLinks": {
+      "gallery": "ギャラリー",
+      "safetyTrust": "安全と信頼",
+      "subscription": "サブスクリプション",
+      "referrals": "紹介",
+      "settings": "設定"
+    },
+    "about": {
+      "bio": "自己紹介",
+      "bigThree": "ビッグスリー",
+      "starseedOrigin": "スターシードの起源",
+      "humanDesign": "ヒューマンデザイン",
+      "joined": "登録日",
+      "alignCode": "Alignコード"
+    },
+    "empty": {
+      "noPosts": "まだ投稿がありません",
+      "noPhotos": "まだ写真がありません",
+      "noReels": "まだリールがありません"
+    },
+    "loadingProfile": "プロフィールを読み込み中...",
+    "profileViews": "プロフィール閲覧数",
+    "noViews": "まだプロフィール閲覧がありません",
+    "editPost": "投稿を編集"
+  },
+  "editProfile": {
+    "title": "プロフィールを編集",
+    "displayName": "表示名",
+    "bio": "自己紹介",
+    "bioPlaceholder": "宇宙にあなたのことを伝えてください...",
+    "birthData": "出生データ",
+    "date": "日付",
+    "time": "時間",
+    "location": "場所",
+    "locationPlaceholder": "都市、州、または国を検索...",
+    "saveChanges": "変更を保存",
+    "saving": "保存中...",
+    "tapAddCover": "タップしてカバー写真を追加",
+    "errors": {
+      "saveFailed": "プロフィールの保存に失敗しました",
+      "avatarFailed": "アバターのアップロードに失敗しました",
+      "coverFailed": "カバー写真のアップロードに失敗しました"
+    }
+  },
   "settings": {
     "title": "設定",
     "language": "言語",
@@ -216,9 +1042,259 @@
     "houseSystem": "ハウスシステム",
     "darkMode": "ダークモード",
     "about": "Alignについて",
-    "privacy": "プライバシーポリシー",
+    "privacy": {
+      "title": "プライバシーとデータ",
+      "profileVisibility": "プロフィールの公開範囲",
+      "visibilityOptions": {
+        "public": "公開",
+        "friendsOnly": "友達のみ",
+        "private": "非公開"
+      },
+      "hideAge": "年齢を非表示",
+      "hideExactLocation": "正確な場所を非表示",
+      "hideLastActive": "最終アクティブを非表示",
+      "hideFullBirthChart": "フルバースチャートを非表示",
+      "incognitoMode": "シークレットモード",
+      "blockUnverified": "未認証ユーザーをブロック",
+      "minimumTrustLevel": "最低信頼レベル",
+      "trustLevels": {
+        "any": "すべて",
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      },
+      "analyticsEnabled": "アナリティクス",
+      "exportData": "データをエクスポート",
+      "exportToast": "データエクスポートがリクエストされました。メールでお届けします。"
+    },
     "terms": "利用規約",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "account": "アカウント",
+    "email": "メールアドレス",
+    "name": "名前",
+    "notSet": "未設定",
+    "planLabel": "{{plan}}プラン",
+    "upgradeHint": "アップグレードでさらに機能を",
+    "managedVia": "RevenueCat経由で管理",
+    "manage": "管理",
+    "upgrade": "アップグレード",
+    "subPages": {
+      "chatTheme": "チャットテーマ",
+      "notifications": "通知",
+      "privacy": "プライバシー",
+      "astrologyPreferences": "占星術の設定",
+      "friends": "友達",
+      "referrals": "紹介",
+      "subscriptionPlans": "サブスクリプションプラン",
+      "datingIdentity": "デーティングアイデンティティ",
+      "relationshipIntent": "リレーションシップの目的",
+      "connectionPreferences": "つながりの設定",
+      "identityPrivacy": "アイデンティティプライバシー",
+      "safety": "安全",
+      "termsOfService": "利用規約",
+      "communityGuidelines": "コミュニティガイドライン"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "管理",
+      "manageUsers": "ユーザーアカウントの管理",
+      "contentModeration": "コンテンツモデレーション",
+      "manageCelebrities": "セレブリティの管理",
+      "payoutQueue": "支払いキュー"
+    },
+    "aboutSection": {
+      "version": "バージョン",
+      "poweredBy": "提供元",
+      "contact": "お問い合わせ"
+    },
+    "signOut": "サインアウト",
+    "deleteAccount": "アカウントを削除",
+    "deleteConfirm": {
+      "title": "アカウントを削除しますか？",
+      "message": "アカウントと関連するすべてのデータが完全に削除されます。この操作は元に戻せません。",
+      "confirm": "アカウントを削除",
+      "cancel": "キャンセル"
+    },
+    "astrology": {
+      "title": "占星術の設定",
+      "autoSaveHint": "変更は自動的に保存され、すべてのチャート計算に適用されます。",
+      "houseSystem": "ハウスシステム",
+      "houseSystemHint": "チャートのハウスの計算方法を決定します",
+      "houseSystems": {
+        "wholeSign": "ホールサイン",
+        "placidus": "プラシーダス",
+        "koch": "コッホ",
+        "campanus": "カンパヌス",
+        "regiomontanus": "レジオモンタヌス",
+        "equal": "イコールハウス",
+        "porphyry": "ポルフィリウス",
+        "alcabitius": "アルカビティウス",
+        "topocentric": "トポセントリック",
+        "morinus": "モリヌス",
+        "meridian": "メリディアン"
+      },
+      "zodiacSystem": "黄道帯システム",
+      "zodiacSystems": {
+        "tropical": "トロピカル（西洋）",
+        "sidereal": "サイデリアル（ヴェーダ）"
+      },
+      "languageLevel": "言語レベル",
+      "languageLevelHint": "解釈はどの程度専門的にしますか？",
+      "jargonModes": {
+        "plain": "わかりやすい言葉",
+        "mixed": "ミックス",
+        "technical": "専門的"
+      },
+      "orbTightness": "オーブの厳密さ",
+      "orbOptions": {
+        "tight": "タイト",
+        "standard": "標準",
+        "wide": "ワイド"
+      },
+      "showAsteroids": "小惑星を表示",
+      "showFixedStars": "恒星を表示"
+    },
+    "notificationsPage": {
+      "title": "通知設定",
+      "pauseAll": "すべての通知を一時停止",
+      "social": {
+        "title": "ソーシャル通知",
+        "friendRequests": "友達リクエスト",
+        "messages": "メッセージ",
+        "reactions": "リアクション",
+        "comments": "コメント"
+      },
+      "cosmic": {
+        "title": "コズミック通知",
+        "frequency": "頻度",
+        "frequencyOptions": {
+          "essential": "必須のみ",
+          "important": "重要",
+          "all": "すべて"
+        },
+        "tone": "トーン",
+        "toneOptions": {
+          "gentle": "穏やか",
+          "direct": "直接的",
+          "intense": "強烈"
+        },
+        "categories": {
+          "majorTransits": "メジャートランジット",
+          "moonPhases": "月の満ち欠け",
+          "mercuryRetrograde": "水星逆行",
+          "loveRelationships": "恋愛と人間関係",
+          "moneyValues": "お金と価値観",
+          "careerAmbition": "キャリアと野心",
+          "healingGrowth": "癒しと成長"
+        },
+        "aspects": {
+          "title": "アスペクトの種類",
+          "conjunctions": "コンジャンクション",
+          "oppositions": "オポジション",
+          "squares": "スクエア",
+          "trines": "トライン",
+          "sextiles": "セクスタイル"
+        },
+        "events": {
+          "title": "コズミックイベント",
+          "moonPhases": "月の満ち欠け",
+          "eclipses": "食",
+          "retrogrades": "逆行",
+          "ingresses": "イングレス"
+        },
+        "minIntensity": "最低強度",
+        "advanceNotice": "事前通知（日数）"
+      },
+      "galactic": {
+        "title": "ギャラクティック通知",
+        "planetaryHours": "プラネタリーアワー",
+        "dayRuler": "曜日の支配星",
+        "goldenHour": "ゴールデンアワー",
+        "eclipseWatch": "食ウォッチ",
+        "retrogradeAlerts": "逆行アラート",
+        "minutesBefore": "何分前"
+      },
+      "summaries": {
+        "title": "ダイジェスト",
+        "daily": "デイリーサマリー",
+        "weekly": "ウィークリーサマリー"
+      },
+      "quietHours": {
+        "title": "おやすみモード",
+        "enabled": "おやすみモードを有効にする",
+        "start": "開始",
+        "end": "終了",
+        "urgentOverride": "緊急通知を許可"
+      },
+      "delivery": {
+        "title": "配信",
+        "sound": "サウンド",
+        "badge": "バッジ"
+      },
+      "announcements": "アプリのお知らせ"
+    },
+    "referrals": {
+      "title": "紹介",
+      "howItWorks": "仕組み",
+      "step1": "あなた専用の紹介リンクを友達と共有しましょう",
+      "step2": "友達があなたのリンクで登録すると、お互いに5回のボーナスリーディングがもらえます",
+      "step3": "上限なし——好きなだけ友達を招待できます！"
+    },
+    "chatTheme": {
+      "title": "チャットテーマ",
+      "subtitle": "メッセージの見た目をカスタマイズ"
+    },
+    "datingIdentity": {
+      "title": "デーティングアイデンティティ",
+      "subtitle": "デーティング空間でのあなたのアイデンティティ"
+    },
+    "relationshipIntent": {
+      "title": "リレーションシップの目的",
+      "subtitle": "つながりに求めているもの"
+    },
+    "connectionPreferences": {
+      "title": "つながりの設定",
+      "subtitle": "つながりたい相手"
+    },
+    "identityPrivacy": {
+      "title": "アイデンティティプライバシー",
+      "subtitle": "あなたのアイデンティティ情報を誰が見られるかを管理"
+    },
+    "safety": {
+      "title": "安全",
+      "subtitle": "ブロック、報告、安全設定の管理"
+    },
+    "friends": {
+      "title": "友達設定",
+      "subtitle": "友達リクエストとつながりの設定を管理"
+    },
+    "termsPage": {
+      "title": "利用規約"
+    },
+    "communityGuidelines": {
+      "title": "コミュニティガイドライン"
+    }
   },
   "subscription": {
     "headline": "精密な占星術。あなただけのために。",
@@ -228,11 +1304,27 @@
     "restore": "購入を復元",
     "cancel": "いつでも解約可能。契約なし。",
     "socialProof": "73%の会員が選ぶプラン。",
+    "title": "あなたの道を選んでください",
+    "subtitle": "いつでもキャンセル可能。すべてのプランで14日間の無料トライアル。",
+    "priceFree": "無料",
+    "priceCurrency": "$",
+    "loadingPlans": "サブスクリプションプランを読み込み中...",
+    "tapToRetry": "再試行するにはタップ",
+    "tapForDiagnostics": "診断を表示するにはここをタップ",
+    "comparisonTitle": "あなたに最適なプランは？",
+    "faqTitle": "よくある質問",
+    "footerText": "サブスクリプションはApp Store / Google Play経由で管理されます。",
+    "manageButton": "サブスクリプションを管理",
+    "termsOfService": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "restorePurchase": "購入を復元",
+    "restoring": "復元中...",
     "free": {
       "name": "無料",
       "price": "$0",
-      "tagline": "無料で宇宙を探索。",
+      "tagline": "無料で宇宙を探索",
       "cta": "無料で始める",
+      "bestFor": "占星術に興味があり、コミットする前に探索したい初心者の方へ。",
       "features": [
         "基本的な出生チャート概要",
         "毎日の星占いインサイト",
@@ -240,136 +1332,117 @@
         "タロットカード1枚引き",
         "プラネタリーアワー計算機",
         "プロフィール1件保存"
-      ],
-      "bestFor": "占星術に興味があり、コミットする前に探索したい初心者の方へ。"
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "明晰さはここから始まる。",
+      "tagline": "あなたの毎日の宇宙的なコンパニオン",
       "cta": "Lightで始める",
+      "bestFor": "毎日の宇宙的なガイダンスと基本的なチャートの洞察を求めるカジュアルな探求者の方へ。",
       "features": [
+        "無料のすべてを含む",
         "毎日のパーソナルインサイト",
-        "主要天体位置付き出生チャート",
-        "月10回のAIリーディング",
+        "月30回のAIリーディング",
         "リアルタイムトランジットアラート",
-        "毎日のタロットカードガイダンス",
-        "プラネタリーアワー計算機",
         "数秘術ライフパススナップショット",
         "出生プロフィール1件保存"
-      ],
-      "bestFor": "毎日の宇宙的なガイダンスと基本的なチャートの洞察を求めるカジュアルな探求者の方へ。"
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "深さと明晰さが出会う場所。",
+      "tagline": "あなたの完全な宇宙的設計図をアンロック",
+      "badge": "最も人気",
       "cta": "Premiumを取得 — 最もお得",
+      "bestFor": "完全な占星術の青写真と人間関係に深く飛び込む準備ができている熱心な方へ。",
       "features": [
         "Lightのすべてを含む",
-        "月50回のAIディープリーディング",
-        "完全チャート — アスペクト、パターン、恒星",
-        "プログレスチャートとソーラー/ルナーリターン",
-        "シナストリーとコンポジット相性診断",
-        "スターシードの起源とヒューマンデザイン",
-        "AI付き全6タロットスプレッド",
-        "金融占星術レポート",
-        "わかりやすい言葉モード — 専門用語なし",
-        "出生プロフィール5件保存",
+        "アスペクトとパターン付きフルチャート",
+        "月100回のAIリーディング",
+        "すべてのチャートタイプ（プログレス、リターン、シナストリー）",
+        "相性とコンポジットチャート",
+        "スターシード、数秘術、ヒューマンデザイン",
+        "タロットスプレッド（全5種類）",
+        "専門用語切り替え（わかりやすい言葉モード）",
+        "プロフィール5件保存",
         "すべての占星術コース"
-      ],
-      "badge": "最も人気",
-      "bestFor": "完全な占星術の青写真と人間関係に深く飛び込む準備ができている熱心な方へ。"
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "全体像。制限なし。",
-      "cta": "Proアクセスを解放",
+      "tagline": "本格的な実践者のために",
+      "cta": "Proにする",
+      "bestFor": "利用可能なすべてのツールが必要なプロの占星術師および献身的な実践者の方へ。",
       "features": [
         "Premiumのすべてを含む",
-        "月200回のAIリーディング",
-        "アストロカートグラフィー世界地図",
-        "Firdaria とゾディアカルリリーシング",
-        "アラビックパーツと恒星の深掘り",
-        "優先AI — 高速処理",
-        "無制限のプロフィールとリーディング保存",
-        "エクスポート可能なプロフェッショナルレポート",
+        "月300回のAIリーディング",
+        "金融占星術レポート",
+        "アストロカートグラフィー（ACG）",
+        "フィルダリアとゾディアカルリリーシング",
+        "恒星とアラビックパーツ",
+        "優先AI処理",
         "新機能への早期アクセス",
-        "20言語対応AI"
-      ],
-      "bestFor": "利用可能なすべてのツールが必要なプロの占星術師および献身的な実践者の方へ。"
-    },
-    "alerts": {
-      "couldNotOpenLink": "リンクを開けませんでした。",
-      "diagnostics": "診断",
-      "errorTitle": "エラー",
-      "manageError": "サブスクリプション管理を開けませんでした。Play StoreまたはApp Storeを手動で開いてください。",
-      "noActiveBody": "このアカウントには以前のサブスクリプションが見つかりませんでした。",
-      "noActiveTitle": "有効なサブスクリプションがありません",
-      "ok": "OK",
-      "planNotFoundBody": "このプランは現在ストアで一時的に利用できません。後でもう一度お試しください。",
-      "planNotFoundTitle": "プランが見つかりません",
-      "purchaseFailedDefault": "何か問題が発生しました。",
-      "purchaseFailedLong": "購入処理中に問題が発生しました。もう一度お試しください。",
-      "purchaseFailedTitle": "購入に失敗しました",
-      "restoreError": "購入の復元に失敗しました",
-      "restoredBody": "サブスクリプションが正常に復元されました。",
-      "restoredTitle": "復元されました!",
-      "retry": "再試行",
-      "subscriptionsUnavailableHint": "Play Storeにサインインしていることを確認してから、もう一度お試しください。",
-      "subscriptionsUnavailableTitle": "サブスクリプション利用不可",
-      "unavailableBody": "このプランは現在利用できません。",
-      "unavailableTitle": "利用不可",
-      "unsupportedBody": "サブスクリプション管理はiOSとAndroidでのみ利用可能です。",
-      "unsupportedTitle": "サポートされていません",
-      "welcomeBody": "サブスクリプションが有効です。拡張された宇宙ツールキットをお楽しみください。",
-      "welcomeTitle": "ようこそ!"
-    },
-    "comparisonTitle": "あなたに最適なプランは?",
-    "errors": {
-      "apiKeyPlaceholder": "このビルドではサブスクリプションサービスが設定されていません。(内部: RevenueCat APIキーはプレースホルダーです。)",
-      "connectionFailed": "サブスクリプションサービスに接続できませんでした。接続を確認してもう一度お試しください。",
-      "loadFailed": "サブスクリプションプランを読み込めませんでした。後でもう一度お試しください。",
-      "loadFailedConnection": "サブスクリプションプランを読み込めませんでした。接続を確認してください。",
-      "nativeModuleMissing": "このビルドではサブスクリプションサービスを利用できません。(内部: ネイティブモジュールがリンクされていません。)",
-      "noApiKey": "このプラットフォームではサブスクリプションサービスが設定されていません。(内部: APIキーがありません。)",
-      "noOfferings": "アクティブなサブスクリプションプランはまだ公開されていません。後でもう一度お試しください。",
-      "noPackages": "ストアでサブスクリプションプランを最終調整中です。後でもう一度お試しください。",
-      "stillStarting": "サブスクリプションサービスはまだ起動中です。少し待ってから再試行してください。"
+        "無制限のプロフィール保存",
+        "レポートのエクスポートと共有"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "AI読み取りクレジットは各請求サイクルでリセットされ、繰り越されません。これにより、すべてのユーザー向けにAIインフラストラクチャを高速で応答性の高い状態に保ちます。",
-        "question": "AI読み取りは繰り越されますか?"
-      },
-      "security": {
-        "answer": "もちろんです。すべての個人および出生データは保存時と転送時の両方で暗号化されています。お客様のデータを販売することは決してなく、いつでもアカウントとすべての関連データを削除できます。",
-        "question": "私の出生データは安全ですか?"
-      },
       "switch": {
-        "answer": "はい!いつでもプランをアップグレードまたはダウングレードできます。アップグレード時には新機能にすぐにアクセスできます。ダウングレード時には現在の特典が請求サイクルの終わりまで継続されます。",
-        "question": "いつでもプランを切り替えられますか?"
+        "question": "いつでもプランを切り替えられますか？",
+        "answer": "はい！いつでもプランをアップグレードまたはダウングレードできます。アップグレード時には新機能にすぐにアクセスできます。ダウングレード時には現在の特典が請求サイクルの終わりまで継続されます。"
       },
       "trial": {
-        "answer": "14日間の無料トライアルでは、選択したプランへのフルアクセスが提供されます。トライアルが終了するまで料金は発生せず、いつでもその前に義務なくキャンセルできます。",
-        "question": "無料トライアル後はどうなりますか?"
+        "question": "無料トライアル後はどうなりますか？",
+        "answer": "14日間の無料トライアルでは、選択したプランへのフルアクセスが提供されます。トライアルが終了するまで料金は発生せず、いつでもその前に義務なくキャンセルできます。"
+      },
+      "rollover": {
+        "question": "AIリーディングは繰り越されますか？",
+        "answer": "AIリーディングクレジットは各請求サイクルでリセットされ、繰り越されません。これにより、すべてのユーザー向けにAIインフラストラクチャを高速で応答性の高い状態に保ちます。"
+      },
+      "security": {
+        "question": "私の出生データは安全ですか？",
+        "answer": "もちろんです。すべての個人および出生データは保存時と転送時の両方で暗号化されています。お客様のデータを販売することは決してなく、いつでもアカウントとすべての関連データを削除できます。"
       }
     },
-    "faqTitle": "よくある質問",
-    "footerText": "サブスクリプションはApp Store / Google Play経由で管理されます。",
-    "loadingPlans": "サブスクリプションプランを読み込み中...",
-    "manageButton": "サブスクリプションを管理",
-    "priceCurrency": "$",
-    "priceFree": "無料",
-    "privacyPolicy": "プライバシーポリシー",
-    "restorePurchase": "購入を復元",
-    "restoring": "復元中...",
-    "subtitle": "いつでもキャンセル可能。すべてのプランで14日間の無料トライアル。",
-    "tapForDiagnostics": "診断を表示するにはここをタップ",
-    "tapToRetry": "再試行するにはタップ",
-    "termsOfService": "利用規約",
-    "title": "あなたの道を選んでください"
+    "alerts": {
+      "unavailableTitle": "利用不可",
+      "unavailableBody": "このプランは現在利用できません。",
+      "purchaseFailedTitle": "購入に失敗しました",
+      "purchaseFailedDefault": "何か問題が発生しました。",
+      "purchaseFailedLong": "購入処理中に問題が発生しました。もう一度お試しください。",
+      "welcomeTitle": "ようこそ！",
+      "welcomeBody": "サブスクリプションが有効です。拡張された宇宙ツールキットをお楽しみください。",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "サブスクリプション利用不可",
+      "subscriptionsUnavailableHint": "Play Storeにサインインしていることを確認してから、もう一度お試しください。",
+      "retry": "再試行",
+      "diagnostics": "診断",
+      "planNotFoundTitle": "プランが見つかりません",
+      "planNotFoundBody": "このプランは現在ストアで一時的に利用できません。後でもう一度お試しください。",
+      "errorTitle": "エラー",
+      "couldNotOpenLink": "リンクを開けませんでした。",
+      "unsupportedTitle": "サポートされていません",
+      "unsupportedBody": "サブスクリプション管理はiOSとAndroidでのみ利用可能です。",
+      "manageError": "サブスクリプション管理を開けませんでした。Play StoreまたはApp Storeを手動で開いてください。",
+      "restoredTitle": "復元されました！",
+      "restoredBody": "サブスクリプションが正常に復元されました。",
+      "noActiveTitle": "有効なサブスクリプションがありません",
+      "noActiveBody": "このアカウントには以前のサブスクリプションが見つかりませんでした。",
+      "restoreError": "購入の復元に失敗しました"
+    },
+    "errors": {
+      "loadFailed": "サブスクリプションプランを読み込めませんでした。後でもう一度お試しください。",
+      "loadFailedConnection": "サブスクリプションプランを読み込めませんでした。接続を確認してください。",
+      "apiKeyPlaceholder": "このビルドではサブスクリプションサービスが設定されていません。(内部: RevenueCat APIキーはプレースホルダーです。)",
+      "noApiKey": "このプラットフォームではサブスクリプションサービスが設定されていません。(内部: APIキーがありません。)",
+      "nativeModuleMissing": "このビルドではサブスクリプションサービスを利用できません。(内部: ネイティブモジュールがリンクされていません。)",
+      "noOfferings": "アクティブなサブスクリプションプランはまだ公開されていません。後でもう一度お試しください。",
+      "noPackages": "ストアでサブスクリプションプランを最終調整中です。後でもう一度お試しください。",
+      "connectionFailed": "サブスクリプションサービスに接続できませんでした。接続を確認してもう一度お試しください。",
+      "stillStarting": "サブスクリプションサービスはまだ起動中です。少し待ってから再試行してください。"
+    }
   },
   "courses": {
     "title": "占星術を学ぶ",
@@ -380,6 +1453,314 @@
     "continue": "学習を続ける",
     "completed": "修了"
   },
+  "cosmicAlerts": {
+    "title": "コズミックウェザー",
+    "subtitle": "あなたのパーソナライズされた宇宙予報",
+    "scanningCosmos": "宇宙をスキャン中...",
+    "filters": {
+      "all": "すべて",
+      "active": "アクティブ",
+      "upcoming": "今後"
+    },
+    "emptyState": {
+      "title": "主要なトランジットは検出されませんでした",
+      "filterHint": "現在{{filter}}アラートはありません。「すべて」に切り替えてみてください。",
+      "defaultHint": "あなたのチャートに対して宇宙は静かです。空が移り変わるのを待ちましょう。"
+    },
+    "detail": {
+      "timingWindow": "タイミングウィンドウ",
+      "start": "開始",
+      "peak": "ピーク",
+      "end": "終了",
+      "fullInterpretation": "完全な解釈",
+      "astrologicalDetails": "占星術的詳細",
+      "transit": "トランジット",
+      "natal": "ネイタル",
+      "aspect": "アスペクト",
+      "retrograde": "逆行",
+      "yes": "はい",
+      "no": "いいえ",
+      "actionAdvice": "アクションアドバイス",
+      "viewFullTransits": "フルトランジットを表示"
+    },
+    "importance": {
+      "critical": "重大",
+      "high": "高",
+      "moderate": "中",
+      "low": "低",
+      "minimal": "最小"
+    },
+    "categories": {
+      "general": "一般",
+      "love": "恋愛",
+      "career": "キャリア",
+      "growth": "成長",
+      "challenge": "課題",
+      "spiritual": "スピリチュアル",
+      "communication": "コミュニケーション",
+      "energy": "エネルギー"
+    },
+    "statusActive": "アクティブ"
+  },
+  "discover": {
+    "title": "発見",
+    "moonPhases": {
+      "newMoon": "新月",
+      "waxingCrescent": "三日月",
+      "firstQuarter": "上弦の月",
+      "waxingGibbous": "十三夜月",
+      "fullMoon": "満月",
+      "waningGibbous": "十八夜月",
+      "lastQuarter": "下弦の月",
+      "waningCrescent": "二十六夜月"
+    }
+  },
+  "worldEcho": {
+    "title": "ワールドエコー",
+    "subtitle": "宇宙イベントが人類の歴史を通じてどのように波及するか",
+    "categories": {
+      "political": "政治",
+      "economic": "経済",
+      "cultural": "文化",
+      "scientific": "科学",
+      "natural": "自然",
+      "social": "社会",
+      "technological": "テクノロジー",
+      "spiritual": "スピリチュアル"
+    },
+    "evidenceLabels": {
+      "strong": "強い",
+      "moderate": "中程度",
+      "speculative": "推測的"
+    },
+    "scoreLabels": {
+      "legendary": "伝説的",
+      "major": "メジャー",
+      "significant": "重要",
+      "notable": "注目",
+      "minor": "マイナー"
+    }
+  },
+  "polls": {
+    "title": "投票",
+    "filters": {
+      "all": "すべて",
+      "active": "アクティブ",
+      "ended": "終了",
+      "mine": "自分の"
+    },
+    "duration": {
+      "hours": "残り{{count}}時間",
+      "days": "残り{{count}}日",
+      "ended": "終了"
+    },
+    "createPoll": "投票を作成",
+    "votes": "{{count}}票",
+    "noPollsYet": "まだ投票がありません",
+    "noPollsHint": "宇宙的な投票を最初に始めましょう！"
+  },
+  "bookmarks": {
+    "title": "ブックマーク",
+    "loading": "ブックマークを読み込み中...",
+    "empty": "まだブックマークはありません",
+    "emptyHint": "フィードの投稿を保存して後で読む",
+    "postUnavailable": "投稿は利用できなくなりました"
+  },
+  "celebrityMatches": {
+    "title": "セレブリティマッチ",
+    "subtitle": "あなたの宇宙的な設計図を共有する有名人を発見",
+    "searchPlaceholder": "セレブリティを検索...",
+    "categories": {
+      "overall": "総合",
+      "emotional": "感情",
+      "passion": "情熱",
+      "marriage": "結婚",
+      "karmic": "カルマ",
+      "attraction": "魅力",
+      "stability": "安定性",
+      "mental": "知性"
+    },
+    "matchScore": "{{score}}%マッチ",
+    "trending": "トレンド",
+    "recentlyAdded": "最近追加",
+    "browseByCategory": "カテゴリで閲覧",
+    "clearFilter": "フィルターをクリア",
+    "yourFavorites": "お気に入り",
+    "noResults": "結果なし",
+    "tryDifferent": "別の名前やスペルを試してください",
+    "noCelebrities": "まだ有名人はいません",
+    "searchOrCheckBack": "誰かを検索するか、後でまた確認してください",
+    "noCelebritiesInCategory": "このカテゴリにはまだ有名人がいません"
+  },
+  "matches": {
+    "title": "相性マッチ",
+    "categories": {
+      "overall": "総合",
+      "emotional": "感情",
+      "passion": "情熱",
+      "marriage": "結婚",
+      "karmic": "カルマ",
+      "attraction": "魅力",
+      "stability": "安定性",
+      "mental": "知性"
+    }
+  },
+  "cosmicIndex": {
+    "title": "コズミックインデックス",
+    "subtitle": "今日の宇宙エネルギーを一目で"
+  },
+  "creatorStudio": {
+    "title": "クリエイタースタジオ",
+    "subtitle": "宇宙的なコンテンツを作成・管理"
+  },
+  "qa": {
+    "title": "Q&A",
+    "askQuestion": "質問する",
+    "noQuestions": "まだ質問がありません",
+    "placeholder": "あなたの宇宙的な質問は？"
+  },
+  "pricing": {
+    "title": "プランを選ぶ",
+    "subtitle": "Alignのフルパワーをアンロック"
+  },
+  "gallery": {
+    "title": "ギャラリー",
+    "empty": "まだ写真がありません"
+  },
+  "timeline": {
+    "title": "タイムライン",
+    "empty": "まだ表示するものがありません"
+  },
+  "reels": {
+    "title": "コズミックリール",
+    "empty": "まだリールがありません"
+  },
+  "fragments": {
+    "title": "コズミックフラグメント",
+    "subtitle": "シェア可能な宇宙的知恵カード"
+  },
+  "cosmicVideo": {
+    "title": "コズミックビデオ",
+    "subtitle": "動きの中の占星術的インサイト"
+  },
+  "groupSynastry": {
+    "title": "グループシナストリー",
+    "subtitle": "グループのチャートがどのように影響し合うかを見る"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "defaultMessage": "パーソナライズされたリーディングのために出生データを追加してください。",
+      "completeProfile": "プロフィールを完成",
+      "title": "出生データが必要です"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "読み込み中..."
+    },
+    "paywallGate": {
+      "title": "この機能をアンロック",
+      "description": "このリーディングにアクセスするにはプランをアップグレードしてください。",
+      "upgradeButton": "プランを見る",
+      "currentPlan": "現在のプラン：{{plan}}",
+      "aiAstrologer": "音声チャット付きAI占星術師",
+      "allFeatures": "この鑑定 + すべての{{tier}}機能",
+      "fullChart": "アスペクトとパターン付き完全出生チャート",
+      "plan": "プラン",
+      "whatYouUnlock": "解放される機能",
+      "youreOn": "現在のプラン"
+    },
+    "shareButton": {
+      "share": "共有",
+      "copied": "コピーしました！"
+    },
+    "referralCard": {
+      "title": "友達を招待",
+      "subtitle": "紹介リンクを共有してお互いにボーナスリーディングをゲット",
+      "copyLink": "リンクをコピー",
+      "linkCopied": "リンクをコピーしました！"
+    },
+    "trialBanner": {
+      "title": "トライアル中",
+      "daysLeft": "残り{{count}}日",
+      "upgrade": "今すぐアップグレード",
+      "endsSoon": "トライアルは{{count}}日後に終了します！プレミアム機能を維持するにはアップグレードしてください。",
+      "endsTomorrow": "トライアルは明日終了します！プレミアム機能を維持するにはアップグレードしてください。",
+      "expired": "トライアルが終了しました。プレミアムを再度利用するにはアップグレードしてください。",
+      "title_plural": "プレミアムトライアル：残り{{count}}日"
+    },
+    "cookieConsent": {
+      "message": "体験向上のためにCookieを使用しています。",
+      "accept": "同意",
+      "decline": "拒否",
+      "learnMore": "詳しく見る"
+    },
+    "matchCelebration": {
+      "itsAMatch": "マッチしました！",
+      "subtitle": "宇宙があなたと{{name}}を引き合わせました",
+      "sendMessage": "メッセージを送る",
+      "keepBrowsing": "ブラウジングを続ける"
+    },
+    "datingFilterDrawer": {
+      "title": "ディスカバリーフィルター",
+      "ageRange": "年齢範囲",
+      "maxDistance": "最大距離",
+      "showOnlyVerified": "認証済みのみ表示",
+      "compatibilityMin": "最低相性スコア",
+      "elements": "エレメント",
+      "applyFilters": "フィルターを適用",
+      "resetFilters": "リセット"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}%相性",
+      "like": "いいね",
+      "pass": "パス",
+      "cosmicRose": "コズミックローズ",
+      "likesRemaining": "残りいいね{{count}}回",
+      "rosesRemaining": "残りローズ{{count}}回"
+    },
+    "sidebar": {
+      "home": "ホーム",
+      "discover": "発見",
+      "chart": "チャート",
+      "readings": "リーディング",
+      "dating": "デーティング",
+      "friends": "友達",
+      "messages": "メッセージ",
+      "feed": "フィード",
+      "communities": "コミュニティ",
+      "notifications": "通知",
+      "profile": "プロフィール",
+      "settings": "設定",
+      "aiAstrologer": "AI占星術師",
+      "chat": "チャット",
+      "close": "閉じる",
+      "cosmicFeed": "コスミックフィード",
+      "cosmicWeather": "コスミックウェザー",
+      "learn": "学ぶ",
+      "menu": "メニュー",
+      "more": "もっと",
+      "pricing": "料金",
+      "videoCreator": "動画クリエイター",
+      "viewProfile": "プロフィールを見る",
+      "worldEcho": "ワールドエコー",
+      "yourProfile": "あなたのプロフィール"
+    },
+    "feedCard": {
+      "like": "いいね",
+      "comment": "コメント",
+      "share": "共有",
+      "bookmark": "ブックマーク",
+      "report": "報告",
+      "deletePost": "投稿を削除",
+      "editPost": "投稿を編集"
+    },
+    "commentSheet": {
+      "title": "コメント",
+      "placeholder": "コメントを書く...",
+      "send": "送信",
+      "noComments": "まだコメントがありません",
+      "beFirst": "最初にコメントしましょう！"
+    }
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "問題が発生しました",
@@ -389,7 +1770,46 @@
     "delete": "削除",
     "share": "共有",
     "premium": "プレミアム",
-    "free": "無料"
+    "free": "無料",
+    "close": "閉じる",
+    "confirm": "確認",
+    "ok": "OK",
+    "yes": "はい",
+    "no": "いいえ",
+    "back": "戻る",
+    "next": "次へ",
+    "done": "完了",
+    "edit": "編集",
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "search": "検索",
+    "settings": "設定",
+    "seeAll": "すべて見る",
+    "showMore": "もっと見る",
+    "showLess": "少なく表示",
+    "comingSoon": "近日公開",
+    "upgrade": "アップグレード",
+    "signIn": "サインイン",
+    "signOut": "サインアウト",
+    "today": "今日",
+    "yesterday": "昨日",
+    "tomorrow": "明日",
+    "all": "すべて",
+    "none": "なし",
+    "public": "公開",
+    "private": "非公開",
+    "apply": "適用",
+    "reset": "リセット",
+    "remove": "削除",
+    "add": "追加",
+    "create": "作成",
+    "submit": "送信",
+    "send": "送信",
+    "view": "表示",
+    "download": "ダウンロード",
+    "upload": "アップロード",
+    "noResults": "結果が見つかりません",
+    "tryAgain": "もう一度お試しください"
   },
   "zodiac": {
     "aries": "おひつじ座",
@@ -420,7 +1840,11 @@
     "southNode": "サウスノード",
     "chiron": "キロン",
     "ascendant": "アセンダント",
-    "midheaven": "MC（天頂）"
+    "midheaven": "MC（天頂）",
+    "vesta": "ベスタ",
+    "juno": "ジュノー",
+    "ceres": "セレス",
+    "pallas": "パラス"
   },
   "aspects": {
     "conjunction": "コンジャンクション",
@@ -428,6 +1852,83 @@
     "square": "スクエア",
     "trine": "トライン",
     "opposition": "オポジション",
-    "quincunx": "クインカンクス"
+    "quincunx": "クインカンクス",
+    "semisextile": "セミセクスタイル",
+    "semisquare": "セミスクエア",
+    "sesquiquadrate": "セスキコードレート",
+    "quintile": "クインタイル",
+    "biquintile": "バイクインタイル"
+  },
+  "elements": {
+    "fire": "火",
+    "earth": "地",
+    "air": "風",
+    "water": "水"
+  },
+  "modalities": {
+    "cardinal": "活動宮",
+    "fixed": "不動宮",
+    "mutable": "柔軟宮"
+  },
+  "houses": {
+    "1": "第1ハウス",
+    "2": "第2ハウス",
+    "3": "第3ハウス",
+    "4": "第4ハウス",
+    "5": "第5ハウス",
+    "6": "第6ハウス",
+    "7": "第7ハウス",
+    "8": "第8ハウス",
+    "9": "第9ハウス",
+    "10": "第10ハウス",
+    "11": "第11ハウス",
+    "12": "第12ハウス",
+    "labels": {
+      "1": "自我とアイデンティティ",
+      "2": "価値観と所有物",
+      "3": "コミュニケーションと学習",
+      "4": "家庭と家族",
+      "5": "創造性とロマンス",
+      "6": "健康と奉仕",
+      "7": "パートナーシップ",
+      "8": "変容と共有資源",
+      "9": "哲学と旅行",
+      "10": "キャリアと社会的イメージ",
+      "11": "コミュニティと志",
+      "12": "スピリチュアリティと潜在意識"
+    }
+  },
+  "errors": {
+    "generic": "問題が発生しました。もう一度お試しください。",
+    "networkError": "ネットワークエラー。接続を確認してください。",
+    "unauthorized": "この機能にアクセスするにはサインインが必要です。",
+    "notFound": "リクエストされたコンテンツが見つかりませんでした。",
+    "serverError": "サーバーエラー。後でもう一度お試しください。",
+    "loadFailed": "データの読み込みに失敗しました。もう一度お試しください。",
+    "saveFailed": "変更の保存に失敗しました。もう一度お試しください。",
+    "uploadFailed": "ファイルのアップロードに失敗しました。もう一度お試しください。",
+    "fileTooLarge": "ファイルが大きすぎます。より小さいファイルを選んでください。",
+    "invalidFormat": "無効なファイル形式です。",
+    "permissionDenied": "権限が拒否されました。",
+    "sessionExpired": "セッションが期限切れになりました。再度サインインしてください。",
+    "rateLimited": "リクエストが多すぎます。少しお待ちください。"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{{count}}分前",
+    "hoursAgo": "{{count}}時間前",
+    "daysAgo": "{{count}}日前",
+    "weeksAgo": "{{count}}週間前",
+    "monthsAgo": "{{count}}ヶ月前",
+    "yearsAgo": "{{count}}年前",
+    "inMinutes": "{{count}}分後",
+    "inHours": "{{count}}時間後",
+    "inDays": "{{count}}日後"
+  },
+  "tiers": {
+    "free": "無料",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

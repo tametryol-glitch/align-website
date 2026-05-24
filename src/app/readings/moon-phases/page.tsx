@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import dynamic from 'next/dynamic';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
@@ -16,15 +17,16 @@ const EclipsesTab = dynamic(() => import('@/components/moonPhases/EclipsesTab'))
 
 type TabKey = 'today' | 'calendar' | 'forecast' | 'eclipses' | 'birth';
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'today', label: 'Today' },
-  { key: 'calendar', label: 'Calendar' },
-  { key: 'forecast', label: 'Forecast' },
-  { key: 'eclipses', label: 'Eclipses' },
-  { key: 'birth', label: 'Birth Moon' },
+const TABS: { key: TabKey; labelKey: string }[] = [
+  { key: 'today', labelKey: 'readings.moonPhasesPage.tabs.today' },
+  { key: 'calendar', labelKey: 'readings.moonPhasesPage.tabs.calendar' },
+  { key: 'forecast', labelKey: 'readings.moonPhasesPage.tabs.forecast' },
+  { key: 'eclipses', labelKey: 'readings.moonPhasesPage.tabs.eclipses' },
+  { key: 'birth', labelKey: 'readings.moonPhasesPage.tabs.birthMoon' },
 ];
 
 export default function MoonPhasesPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabKey>('today');
   const [natalChart, setNatalChart] = useState<any>(null);
@@ -45,7 +47,7 @@ export default function MoonPhasesPage() {
         const data = await api.getNatalChart(buildBirthData(profile));
         if (!cancelled) setNatalChart(data);
       } catch (err: any) {
-        if (!cancelled) setError(err.message || 'Failed to load natal chart');
+        if (!cancelled) setError(err.message || t('readings.moonPhasesPage.failedToLoadChart'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -84,14 +86,14 @@ export default function MoonPhasesPage() {
       <div className="max-w-3xl mx-auto">
         <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back to Readings
+          {t('readings.backToReadings')}
         </Link>
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <span className="text-3xl">🌙</span>
           <div>
             <h1 className="text-2xl font-display font-bold text-text-primary">
-              Moon Phases & Eclipses
+              {t('readings.moonPhasesPage.title')}
             </h1>
             <p className="text-text-tertiary text-sm">
               Track lunar cycles, eclipses, and your birth moon phase
@@ -111,7 +113,7 @@ export default function MoonPhasesPage() {
                   : 'bg-bg-tertiary text-text-tertiary hover:text-text-primary'
               }`}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import {
   getUpcomingEvents, getMyEvents, registerForEvent, cancelRegistration,
@@ -20,6 +21,7 @@ function formatEventTime(start: string, end: string): string {
 }
 
 export default function DatingEventsPage() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuthStore();
   const [tab, setTab] = useState<Tab>('upcoming');
   const [upcoming, setUpcoming] = useState<DatingEvent[]>([]);
@@ -66,31 +68,31 @@ export default function DatingEventsPage() {
   return (
     <div className="max-w-2xl mx-auto" style={{ minHeight: '100vh' }}>
       <Link href="/dating" className="inline-flex items-center gap-1 text-sm text-accent-primary mb-4">
-        <ArrowLeft size={16} /> Back to Dating
+        <ArrowLeft size={16} /> {t('dating.events.backToDating')}
       </Link>
 
       <div className="text-center mb-6">
         <Calendar size={28} color="#8B5CF6" className="mx-auto mb-2" />
-        <h1 className="text-2xl font-bold text-white mb-1">Cosmic Events</h1>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('dating.events.title')}</h1>
         <p className="text-sm text-text-tertiary max-w-xs mx-auto">
-          Themed dating events aligned with the cosmos
+          {t('dating.events.subtitle')}
         </p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
-        {(['upcoming', 'my_events'] as const).map(t => (
+        {(['upcoming', 'my_events'] as const).map(tabKey => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
             style={{
-              backgroundColor: tab === t ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
-              color: tab === t ? '#C4B5FD' : '#A8B0C0',
-              border: `1px solid ${tab === t ? 'rgba(139,92,246,0.3)' : 'transparent'}`,
+              backgroundColor: tab === tabKey ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
+              color: tab === tabKey ? '#C4B5FD' : '#A8B0C0',
+              border: `1px solid ${tab === tabKey ? 'rgba(139,92,246,0.3)' : 'transparent'}`,
             }}
           >
-            {t === 'upcoming' ? 'Upcoming' : 'My Events'}
+            {tabKey === 'upcoming' ? t('dating.events.tabs.upcoming') : t('dating.events.tabs.myEvents')}
           </button>
         ))}
       </div>
@@ -102,7 +104,7 @@ export default function DatingEventsPage() {
       ) : events.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-text-tertiary text-sm">
-            {tab === 'upcoming' ? 'No upcoming events right now. Check back soon!' : 'You haven\'t registered for any events yet.'}
+            {tab === 'upcoming' ? t('dating.events.noUpcoming') : t('dating.events.noRegistered')}
           </p>
         </div>
       ) : (
@@ -169,14 +171,14 @@ export default function DatingEventsPage() {
                 {event.is_registered ? (
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-sm text-green-400">
-                      <CheckCircle size={16} /> Registered
+                      <CheckCircle size={16} /> {t('dating.events.registered')}
                     </span>
                     <button
                       onClick={() => handleCancel(event.id)}
                       disabled={actioningId === event.id}
                       className="text-xs text-text-muted hover:text-red-400 transition-colors"
                     >
-                      Cancel
+                      {t('dating.events.cancelRegistration')}
                     </button>
                   </div>
                 ) : (
@@ -186,7 +188,7 @@ export default function DatingEventsPage() {
                     className="w-full py-3 rounded-xl text-sm font-semibold text-white disabled:opacity-50"
                     style={{ background: `linear-gradient(135deg, ${typeCfg.color}, #7C3AED)` }}
                   >
-                    {actioningId === event.id ? 'Registering...' : 'Register'}
+                    {actioningId === event.id ? t('dating.events.registering') : t('dating.events.register')}
                   </button>
                 )}
               </div>

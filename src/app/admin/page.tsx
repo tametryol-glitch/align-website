@@ -8,6 +8,7 @@ import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Lo
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
+import { useTranslation } from 'react-i18next';
 
 interface Report {
   id: string;
@@ -45,6 +46,7 @@ export default function AdminPage() {
 }
 
 function AdminPageContent() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const searchParams = useSearchParams();
   const initialTab = (['moderation', 'users', 'verifications', 'cosmic-index'] as Tab[]).includes(searchParams.get('tab') as Tab)
@@ -85,7 +87,7 @@ function AdminPageContent() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Shield className="w-8 h-8 text-accent-primary" />
-        <h1 className="text-2xl font-display font-bold text-text-primary">Admin Panel</h1>
+        <h1 className="text-2xl font-display font-bold text-text-primary">{t('settings.admin.title')}</h1>
       </div>
 
       {/* Tabs */}

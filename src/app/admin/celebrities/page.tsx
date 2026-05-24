@@ -8,6 +8,7 @@ import {
   Shield, Search, Star, Plus, Pencil, Trash2, CheckCircle, XCircle,
   Loader2, ArrowLeft, X, Save,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Types (mirrors mobile celebrityService.ts) ──────────────────────
 
@@ -124,6 +125,7 @@ function slugify(s: string): string {
 // ── Page ─────────────────────────────────────────────────────────────
 
 export default function AdminCelebritiesPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [verified, setVerified] = useState(false);
   const [list, setList] = useState<Celebrity[]>([]);

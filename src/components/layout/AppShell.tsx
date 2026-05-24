@@ -1,11 +1,13 @@
 'use client';
 
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { BottomTabBar } from './BottomTabBar';
 import { useEffect } from 'react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuthStore();
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-accent opacity-60" />
-          <p className="text-text-muted text-sm">Loading...</p>
+          <p className="text-text-muted text-sm">{t('common.loading')}</p>
         </div>
       </div>
     );

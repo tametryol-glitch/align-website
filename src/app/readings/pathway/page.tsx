@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -550,6 +551,7 @@ function generateAiReading(data: PathwayResponse, firstName: string): string {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function PathwayPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -606,11 +608,11 @@ export default function PathwayPage() {
       {/* Header */}
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
-        Back to Readings
+        {t('readings.backToReadings')}
       </Link>
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-display font-bold text-text-primary">Pathway to Success</h1>
-        <p className="text-text-tertiary text-sm">Your personalized wealth blueprint</p>
+        <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.pathwayPage.title')}</h1>
+        <p className="text-text-tertiary text-sm">{t('readings.pathwayPage.subtitle')}</p>
       </div>
 
       {/* Error State */}

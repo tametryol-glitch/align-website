@@ -8,6 +8,7 @@ import {
   Shield, DollarSign, ArrowLeft, Loader2, CheckCircle, XCircle,
   Filter, Clock, CreditCard, AlertTriangle,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ── Types (mirrors mobile creatorMonetization.ts) ────────────────────
 
@@ -44,6 +45,7 @@ const ACTIONABLE_STATUSES: PayoutStatus[] = ['requested', 'pending_floor', 'pend
 // ── Page ─────────────────────────────────────────────────────────────
 
 export default function AdminPayoutsPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [verified, setVerified] = useState(false);
   const [rows, setRows] = useState<PendingPayoutRow[]>([]);

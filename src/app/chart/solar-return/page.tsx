@@ -11,8 +11,10 @@ import { generateSolarReturnPrediction } from '@/lib/interpretations';
 import Link from 'next/link';
 import { ArrowLeft, Sun, ChevronDown } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { useTranslation } from 'react-i18next';
 
 export default function SolarReturnPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [chart, setChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -46,11 +48,11 @@ export default function SolarReturnPage() {
       <PaywallGate feature="solar_return">
         <div className="max-w-3xl mx-auto">
           <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-            <ArrowLeft className="w-4 h-4" /> My Chart
+            <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
           </Link>
           <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
             <Sun className="w-7 h-7 text-gold-primary" />
-            Solar Return
+            {t('chart.solarReturn')}
           </h1>
           <BirthDataPrompt message="Birth data required to calculate your Solar Return chart." />
         </div>
@@ -62,7 +64,7 @@ export default function SolarReturnPage() {
     <PaywallGate feature="solar_return">
     <div className="max-w-4xl mx-auto">
       <Link href="/chart" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> My Chart
+        <ArrowLeft className="w-4 h-4" /> {t('chart.natal')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-2 flex items-center gap-3">
@@ -96,7 +98,7 @@ export default function SolarReturnPage() {
           </div>
         </div>
         <button onClick={calculate} disabled={loading} className="btn-primary">
-          {loading ? 'Calculating...' : 'Calculate'}
+          {loading ? t('common.loading') : t('common.calculate')}
         </button>
       </div>
 
@@ -163,7 +165,7 @@ export default function SolarReturnPage() {
 
           <div className="card">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4">
-              Solar Return Positions
+              {t('chart.solarReturn')} Positions
             </h3>
             <div className="divide-y divide-border-primary">
               {(chart.positions || chart.planets || []).map((planet: any) => {

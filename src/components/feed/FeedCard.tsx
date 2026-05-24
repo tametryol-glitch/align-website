@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   type FeedPost, type ReactionEmoji, type PostReaction,
@@ -155,6 +156,7 @@ export function FeedCard({
   isBookmarked: boolean;
   onBookmark: (postId: string) => void;
 }) {
+  const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showReportMenu, setShowReportMenu] = useState(false);
@@ -213,13 +215,13 @@ export function FeedCard({
                     onClick={() => { onEdit(post.id, post.content); setShowMenu(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
                   >
-                    <Pencil className="w-4 h-4" /> Edit
+                    <Pencil className="w-4 h-4" /> {t('components.feedCard.editPost')}
                   </button>
                   <button
                     onClick={() => { onDelete(post.id); setShowMenu(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
                   >
-                    <Trash2 className="w-4 h-4" /> Delete
+                    <Trash2 className="w-4 h-4" /> {t('components.feedCard.deletePost')}
                   </button>
                 </>
               ) : (
@@ -228,13 +230,13 @@ export function FeedCard({
                     onClick={() => { setShowMenu(false); setShowReportMenu(true); }}
                     className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
                   >
-                    <Flag className="w-4 h-4" /> Report
+                    <Flag className="w-4 h-4" /> {t('components.feedCard.report')}
                   </button>
                   <button
                     onClick={() => setShowMenu(false)}
                     className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
                   >
-                    <Ban className="w-4 h-4" /> Block User
+                    <Ban className="w-4 h-4" /> {t('friends.actions.blockUser')}
                   </button>
                 </>
               )}
@@ -351,7 +353,7 @@ export function FeedCard({
           onClick={() => setShowReactions(!showReactions)}
           className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
-          <span className="text-base">✨</span> React
+          <span className="text-base">✨</span> {t('messages.contextMenu.react')}
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
@@ -359,14 +361,14 @@ export function FeedCard({
           className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
           <MessageCircle className="w-4 h-4" />
-          {post.commentCount > 0 ? post.commentCount : 'Comment'}
+          {post.commentCount > 0 ? post.commentCount : t('components.feedCard.comment')}
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
           onClick={() => onRepost(post)}
           className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
-          <Repeat2 className="w-4 h-4" /> Repost
+          <Repeat2 className="w-4 h-4" /> {t('feed.composer.repost', 'Repost')}
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
@@ -376,7 +378,7 @@ export function FeedCard({
             isBookmarked ? 'text-accent-primary' : 'text-text-muted hover:text-accent-primary'
           )}
         >
-          <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} /> {isBookmarked ? 'Saved' : 'Save'}
+          <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} /> {isBookmarked ? t('components.feedCard.saved', 'Saved') : t('common.save')}
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
@@ -390,7 +392,7 @@ export function FeedCard({
           }}
           className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
-          <Share2 className="w-4 h-4" /> Share
+          <Share2 className="w-4 h-4" /> {t('components.feedCard.share')}
         </button>
       </div>
 
@@ -438,7 +440,7 @@ export function FeedCard({
               onClick={() => onComment(post.id)}
               className="text-xs text-accent-secondary hover:text-accent-primary"
             >
-              View all {post.commentCount} comments
+              {t('components.feedCard.viewAllComments', 'View all {{count}} comments', { count: post.commentCount })}
             </button>
           )}
         </div>
@@ -450,9 +452,9 @@ export function FeedCard({
           <div className="fixed inset-0 bg-black/60 z-50" onClick={() => setShowReportMenu(false)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowReportMenu(false)}>
             <div className="bg-bg-card border border-border rounded-2xl p-5 max-w-xs w-full" onClick={e => e.stopPropagation()}>
-              <h3 className="text-base font-semibold text-text-primary mb-3">Report Post</h3>
+              <h3 className="text-base font-semibold text-text-primary mb-3">{t('components.feedCard.reportPost', 'Report Post')}</h3>
               {reported ? (
-                <p className="text-sm text-green-400 mb-4">Thanks for reporting. We&apos;ll review this post.</p>
+                <p className="text-sm text-green-400 mb-4">{t('components.feedCard.reportThanks', "Thanks for reporting. We'll review this post.")}</p>
               ) : (
                 <div className="space-y-1 mb-4">
                   {['Spam', 'Harassment', 'Inappropriate content', 'Misinformation', 'Other'].map(reason => (
@@ -470,7 +472,7 @@ export function FeedCard({
                 </div>
               )}
               <button onClick={() => { setShowReportMenu(false); setReported(false); }} className="btn-secondary w-full text-sm">
-                {reported ? 'Done' : 'Cancel'}
+                {reported ? t('common.done') : t('common.cancel')}
               </button>
             </div>
           </div>

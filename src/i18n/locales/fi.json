@@ -11,146 +11,147 @@
     "profile": "Profiili"
   },
   "auth": {
-    "login": "Kirjaudu sisään",
-    "signup": "Rekisteröidy",
-    "email": "Sähköposti",
+    "login": "Kirjaudu sisaan",
+    "signup": "Rekisteroidy",
+    "email": "Sahkoposti",
     "password": "Salasana",
     "forgotPassword": "Unohditko salasanan?",
-    "noAccount": "Eikö sinulla ole tiliä?",
+    "noAccount": "Eiko sinulla ole tilia?",
     "hasAccount": "Onko sinulla jo tili?",
     "welcome": "Tervetuloa Aligniin",
-    "subtitle": "Löydä elämäsi kosminen suunnitelma",
-    "enterEmail": "Syötä sähköpostisi",
-    "enterEmailHint": "Kirjoita sähköpostiosoitteesi yllä ja napauta Unohditko salasanan.",
-    "emailSent": "Sähköposti lähetetty",
+    "subtitle": "Loyda elamasi kosminen suunnitelma",
+    "enterEmail": "Syota sahkopostisi",
+    "enterEmailHint": "Kirjoita sahkopostiosoitteesi ylla ja napauta Unohditko salasanan.",
+    "emailSent": "Sahkoposti lahetetty",
     "checkInbox": "Tarkista saapuneet-kansiosi salasanan palautuslinkki.",
-    "resetEmailFailed": "Palautussähköpostia ei voitu lähettää.",
-    "loginFailed": "Kirjautuminen epäonnistui.",
-    "signupFailed": "Rekisteröityminen epäonnistui.",
-    "orContinueWith": "tai jatka käyttäen",
-    "orSignUpWithEmail": "tai rekisteröidy sähköpostilla",
+    "resetEmailFailed": "Palautussahkopostia ei voitu lahettaa.",
+    "loginFailed": "Kirjautuminen epaonnistui.",
+    "signupFailed": "Rekisteroityminen epaonnistui.",
+    "orContinueWith": "tai jatka kayttaen",
+    "orSignUpWithEmail": "tai rekisteroidy sahkopostilla",
     "apple": "Apple",
     "google": "Google",
-    "displayName": "Näyttönimi",
+    "displayName": "Nayttonimi",
     "yourName": "Nimesi",
-    "dateOfBirth": "Syntymäaika",
+    "dateOfBirth": "Syntymaaika",
     "dobPlaceholder": "DD-MM-YYYY",
-    "dobRequired": "Syntymäaika vaaditaan",
-    "dobRequiredHint": "Syötä syntymäaikasi jatkaaksesi.",
-    "dobInvalidFormat": "Syötä päivämäärä muodossa DD-MM-YYYY",
+    "dobRequired": "Syntymaaika vaaditaan",
+    "dobRequiredHint": "Syota syntymaaika jatkaaksesi.",
+    "dobInvalidFormat": "Syota paivamaara muodossa DD-MM-YYYY",
     "dobInvalidMonth": "Virheellinen kuukausi",
-    "dobInvalidDay": "Virheellinen päivä",
+    "dobInvalidDay": "Virheellinen paiva",
     "dobInvalidYear": "Virheellinen vuosi",
-    "dobInvalidDate": "Virheellinen päivämäärä",
-    "ageRestriction": "Sinun tulee olla vähintään 18-vuotias käyttääksesi Alignia",
-    "ageRestrictionAlert": "Sinun tulee olla vähintään {{age}}-vuotias käyttääksesi Alignia.",
+    "dobInvalidDate": "Virheellinen paivamaara",
+    "ageRestriction": "Sinun tulee olla vahintaan 18-vuotias kayttaaksesi Alignia",
+    "ageRestrictionAlert": "Sinun tulee olla vahintaan {{age}}-vuotias kayttaaksesi Alignia.",
     "termsRequired": "Ehdot vaaditaan",
-    "termsRequiredHint": "Hyväksy tietosuojakäytäntö ja käyttöehdot ennen tilin luomista.",
+    "termsRequiredHint": "Hyvaksy tietosuojakaytanto ja kayttoehdot ennen tilin luomista.",
     "referralCode": "Suosittelukoodi (valinnainen)",
-    "agreeToTerms": "Hyväksyn",
-    "privacyPolicy": "Tietosuojakäytäntö",
+    "agreeToTerms": "Hyvaksyn",
+    "privacyPolicy": "Tietosuojakaytanto",
     "and": "ja",
-    "termsOfService": "Käyttöehdot"
+    "termsOfService": "Kayttoehdot",
+    "signInToAccess": "Kirjaudu sisaan paastaksesi viesteihin"
   },
   "onboarding": {
     "title": "Luodaan syntymäkarttasi",
-    "subtitle": "Syötä syntymätietosi henkilökohtaista kokemusta varten",
+    "subtitle": "Syota syntymatietosi henkilokohtaista kokemusta varten",
     "name": "Koko nimi",
-    "birthDate": "Syntymäpäivä",
-    "birthTime": "Syntymäaika",
-    "birthPlace": "Syntymäpaikka",
+    "birthDate": "Syntymapaiva",
+    "birthTime": "Syntymaaika",
+    "birthPlace": "Syntymapaikka",
     "continue": "Jatka",
     "skip": "Ohita toistaiseksi",
     "almostThere": "Melkein valmista",
-    "personalizeHint": "Auta meitä mukauttamaan kokemustasi. Tämä on valinnaista ja voidaan muuttaa myöhemmin Asetuksissa.",
+    "personalizeHint": "Auta meita mukauttamaan kokemustasi. Tama on valinnaista ja voidaan muuttaa myohemmin Asetuksissa.",
     "identifyAs": "Identifioidun...",
     "interestedIn": "Olen kiinnostunut...",
-    "readingStars": "Luetaan tähtiäsi...",
-    "fillBirthDetails": "Täytä syntymätietosi ennen jatkamista.",
-    "saveFailed": "Syntymätietojasi ei voitu tallentaa. Tarkista yhteytesi ja yritä uudelleen.",
-    "thisIsYou": "{{name}}, tämä olet sinä.",
-    "thisIsYouNoName": "Tämä olet sinä.",
-    "cosmicFingerprint": "Kosminen sormenjälkesi — kolme merkkiä, jotka muovaavat kaiken siitä, kuka olet.",
+    "readingStars": "Luetaan tahtiasi...",
+    "fillBirthDetails": "Tayta syntymatietosi ennen jatkamista.",
+    "saveFailed": "Syntymatietojasi ei voitu tallentaa. Tarkista yhteytesi ja yrita uudelleen.",
+    "thisIsYou": "{{name}}, tama olet sina.",
+    "thisIsYouNoName": "Tama olet sina.",
+    "cosmicFingerprint": "Kosminen sormenjalkesi -- kolme merkkia, jotka muovaavat kaiken siita, kuka olet.",
     "yourSun": "AURINKOSI",
     "coreIdentity": "Ydinidentiteetti",
     "yourMoon": "KUUSI",
-    "innerWorld": "Sisäinen maailma",
+    "innerWorld": "Sisainen maailma",
     "yourRising": "NOUSEVASI",
     "firstImpression": "Ensivaikutelma",
     "dominantElement": "Hallitseva elementtisi: {{element}}",
-    "exploreChart": "Tutustu koko karttaasi →",
-    "justBeginning": "Tämä on vasta alkua. Täydessä kartassasi on\n10 planeettaa, 12 huonetta ja kymmeniä aspekteja.",
+    "exploreChart": "Tutustu koko karttaasi ->",
+    "justBeginning": "Tama on vasta alkua. Taydessa kartassasi on\n10 planeettaa, 12 huonetta ja kymmenia aspekteja.",
     "sunSoul": {
-      "Aries": "Synnyit johtamaan — et arvonimellä, vaan esimerkillä. Juokset kohti tulta, kun kaikki muut juoksevat pois. Elämäsi on sarja rohkeita, impulsiivisia hyppyjä, ja universumi palkitsee sinut siitä, ettet koskaan pyydä lupaa.",
-      "Taurus": "Olet rakennettu pitkää peliä varten. Kun muut jahtaavat trendejä, sinä rakennat imperiumeja kärsivällisyydestä ja mausta. Suurin voimasi on kieltäytymisesi kiirehtiä — tiedät, että kaikki arvokas vaatii aikansa.",
-      "Gemini": "Mielesi ei pysähdy koskaan. Näet yhteyksiä, joita kukaan muu ei huomaa, puhut ideoina ja kyllästyt sillä sekunnilla kun jokin muuttuu ennustettavaksi. Et ole päättämätön — olet moniulotteinen.",
-      "Cancer": "Tunnet kaiken. Huoneen, hiljaisuuden, sen mitä kukaan ei sanonut ääneen. Tunneälysi on supervoimasi, mutta sillä on hintansa — kannat ihmisten taakkaa, jotka eivät koskaan pyytäneet sinua kantamaan.",
-      "Leo": "Synnyit nähdyksi tulemista varten. Et turhamaisuudesta — vaan syvästä tiedosta, että valollasi on tarkoitus. Kun astut huoneeseen, ihmiset tuntevat sen. Haasteesi on oppia, ettei itsesi himmentäminen palvele ketään.",
-      "Virgo": "Huomaat sen, mitä kukaan muu ei näe. Halkeaman järjestelmässä, sanan väärässä paikassa, ihmisen joka hiljaa hajoaa. Mielesi on tarkkuusinstrumentti, ja tarkoituksesi on tehdä rikkinäisistä asioista ehjiä.",
-      "Libra": "Ymmärrät ihmisiä. Tapaa jolla he ajattelevat, mitä heidän tarvitsee kuulla, tasapainon liian paljon ja liian vähän välillä. Lahjasi on harmonia — kirouksesi on kadottaa itsesi yrittäessäsi pitää kaikki muut tyytyväisinä.",
-      "Scorpio": "Elät syvyydessä, jota useimmat ihmiset eivät kestä. Näet jokaisen naamion läpi, jokaisen valheen, jokaisen kohteliaan pinnan. Intensiteettisi ei ole vika — se on muutoksesi moottori. Et tee asioita puoliksi.",
-      "Sagittarius": "Olet rakennettu vapaudelle. Et pelkästään matkustamiselle — mielen, uskon ja hengen vapaudelle. Tarvitset horisontin jahdattavaksi, kysymyksen tutkittavaksi ja ehdottoman varmuuden siitä, että jotain suurempaa odottaa aina.",
-      "Capricorn": "Ymmärrät, että suuruus rakennetaan, ei synnytetä. Kun muut haaveilevat, sinä suunnittelet. Kun muut luovuttavat, sinä kestät. Kunnianhimosi ei ole kylmää — se on hiljainen tuli ihmisessä, joka kieltäytyy tuhlaamasta potentiaaliaan.",
-      "Aquarius": "Ajattelet eri tavalla kuin kaikki ympärilläsi, ja olet lakannut pyytämästä anteeksi siitä. Mielesi toimii taajuudella, joka näkee tulevaisuuden ennen kuin se saapuu. Yksinäisin asia sinussa on se, kuinka usein olet oikeassa.",
-      "Pisces": "Olet olemassa maailmojen välissä. Tunnet kaiken alavirtauksen — musiikin hiljaisuuden alla, unen todellisuuden alla. Herkkyytesi ei ole heikkoutta; se on älykkyyden harvinaisin muoto."
+      "Aries": "Synnyit johtamaan -- et arvonimella, vaan esimerkilla. Juokset kohti tulta, kun kaikki muut juoksevat pois. Elamasi on sarja rohkeita, impulsiivisia hyppyja, ja universumi palkitsee sinut siita, ettet koskaan pyyda lupaa.",
+      "Taurus": "Olet rakennettu pitkaa pelia varten. Kun muut jahtaavat trendeja, sina rakennat imperiumeja karsivallisyydesta ja mausta. Suurin voimasi on kieltaytymisesi kiirehtiä -- tiedat, etta kaikki arvokas vaatii aikansa.",
+      "Gemini": "Mielesi ei pysahdy koskaan. Naet yhteyksiaá, joita kukaan muu ei huomaa, puhut ideoina ja kyllastyt silla sekunnilla kun jokin muuttuu ennustettavaksi. Et ole paattamaton -- olet moniulotteinen.",
+      "Cancer": "Tunnet kaiken. Huoneen, hiljaisuuden, sen mita kukaan ei sanonut aaneen. Tunneálysi on supervoimasi, mutta silla on hintansa -- kannat ihmisten taakkaa, jotka eivat koskaan pyytaneet sinua kantamaan.",
+      "Leo": "Synnyit nahdyksi tulemista varten. Et turhamaisuudesta -- vaan syvasta tiedosta, etta valollasi on tarkoitus. Kun astut huoneeseen, ihmiset tuntevat sen. Haasteesi on oppia, ettei itsesi himmentaminen palvele ketaan.",
+      "Virgo": "Huomaat sen, mita kukaan muu ei nae. Halkeaman jarjestelmassa, sanan vaarassa paikassa, ihmisen joka hiljaa hajoaa. Mielesi on tarkkuusinstrumentti, ja tarkoituksesi on tehda rikkinaisista asioista ehjia.",
+      "Libra": "Ymmarrat ihmisia. Tapaa jolla he ajattelevat, mita heidan tarvitsee kuulla, tasapainon liian paljon ja liian vahan valilla. Lahjasi on harmonia -- kirouksesi on kadottaa itsesi yrittaessasi pitaa kaikki muut tyytyivaisina.",
+      "Scorpio": "Elat syvyydessa, jota useimmat ihmiset eivat kesta. Naet jokaisen naamion lapi, jokaisen valheen, jokaisen kohteliaan pinnan. Intensiteettisi ei ole vika -- se on muutoksesi moottori. Et tee asioita puoliksi.",
+      "Sagittarius": "Olet rakennettu vapaudelle. Et pelkastaan matkustamiselle -- mielen, uskon ja hengen vapaudelle. Tarvitset horisontin jahdattavaksi, kysymyksen tutkittavaksi ja ehdottoman varmuuden siita, etta jotain suurempaa odottaa aina.",
+      "Capricorn": "Ymmarrat, etta suuruus rakennetaan, ei synnytetä. Kun muut haaveilevat, sina suunnittelet. Kun muut luovuttavat, sina kestat. Kunnianhimosi ei ole kylmaa -- se on hiljainen tuli ihmisessa, joka kieltaytyy tuhlaamasta potentiaaliaan.",
+      "Aquarius": "Ajattelet eri tavalla kuin kaikki ymparillasi, ja olet lakannut pyytamasta anteeksi siita. Mielesi toimii taajuudella, joka nakee tulevaisuuden ennen kuin se saapuu. Yksinaisin asia sinussa on se, kuinka usein olet oikeassa.",
+      "Pisces": "Olet olemassa maailmojen valissa. Tunnet kaiken alavirtauksen -- musiikin hiljaisuuden alla, unen todellisuuden alla. Herkkyytesi ei ole heikkoutta; se on alykkyyden harvinaisin muoto."
     },
     "moonHeart": {
-      "Aries": "Tunnetasolla palat kuumasti ja nopeasti. Tunnet asiat koko kehollasi — vihan, intohimon, suojeluhalun. Et istu tunteidesi kanssa; toimit niiden mukaan. Tarvitset kumppanin, joka pystyy vastaamaan tuleesi väistämättä.",
-      "Taurus": "Tunne-elämäsi kaipaa vakautta. Tarvitset rutiinia, fyysistä mukavuutta ja turvallisen paikan laskeutua. Kun tunnet olosi turvalliseksi, olet maailman anteliain ihminen. Kun turvallisuuttasi uhataan, sulkeudut kokonaan.",
-      "Gemini": "Tunteesi liikkuvat kuin sää — nopeasti, muuttuvasti ja joskus ristiriitaisesti. Prosessoit tunteita puhumalla niistä, ajattelemalla niitä, joskus välttämällä niitä kokonaan. Tylsyys on tunne, joka satuttaa sinua eniten.",
-      "Cancer": "Tunne-elämäsi on universumisi keskipiste. Tunnet kaiken kahdesti — kerran itsellesi, kerran vierelläsi olevalle ihmiselle. Koti ei ole sinulle paikka; se on tunne. Ja kun se tunne puuttuu, mikään muu ei merkitse mitään.",
-      "Leo": "Sinun täytyy tuntea olevasi erityinen. Ei pinnallisella tavalla — syvällä, luihin asti ulottuvalla tavalla. Kun rakastamasi ihmiset saavat sinut tuntemaan itsesi nähdyksi, loistaat. Kun he pitävät sinua itsestäänselvyytenä, jokin sisälläsi himmenee. Sydämesi käy aidolla tunnustuksella.",
-      "Virgo": "Näytät rakkautta tekemällä, et sanomalla. Murrehdit ihmisistä, joista välität — heidän terveydestään, ongelmistaan, asioista joita he eivät hoida. Tunne-elämäsi on hiljainen, käytännöllinen ja syvästi omistautunut.",
-      "Libra": "Tarvitset kumppanuutta tunteaksesi olosi emotionaalisesti kokonaiseksi. Et riippuvaisella tavalla — prosessoit yksinkertaisesti tunteitasi yhteyden kautta. Konflikti tekee sinulle fyysisesti epämukavaa. Kauneus ja harmonia eivät ole sinulle ylellisyyttä; ne ovat välttämättömyyksiä.",
-      "Scorpio": "Tunne-elämäsi kulkee syvemmällä kuin kukaan tulee koskaan tietämään. Tunnet asiat musertavalla intensiteetillä, mutta näytät sen harvoin. Luottamus vie vuosia. Petoksen antaminen anteeksi vie ikuisuuden. Kun rakastat, rakastat kaikella mitä sinussa on.",
-      "Sagittarius": "Tunteesi tarvitsevat tilaa hengittää. Prosessoit tunteita liikkeen, seikkailun, huumorin ja filosofisen näkökulman kautta. Emotionaalinen ahtaanpaikankammo on kryptoniittisi — tarvitset vapautta jopa lähimmissä ihmissuhteissasi.",
-      "Capricorn": "Opit varhain, etteivät tunteet ole turvallisia. Prosessoit tunteita hitaasti, yksityisesti ja itsehillinnällä, jonka muut erehtyvät luulemaan kylmyydeksi. Mutta tuon tyyneyden alla piilee uskollisuus niin raju, että se voi murtaa sinut.",
-      "Aquarius": "Tunne-elämäsi on epätavanomainen. Välität syvästi ihmiskunnasta, mutta kamppailet kahdenkeskisen emotionaalisen läheisyyden kanssa. Prosessoit tunteita älyllisesti — astut niiden ulkopuolelle analysoidaksesi sen sijaan, että hukkuisit niihin.",
-      "Pisces": "Tunnet kaiken — omat tunteesi, muiden ihmisten tunteet, jokaisen huoneen kollektiivisen tunnelman johon astut. Sydämelläsi ei ole seiniä. Tämä on sekä suurin lahjasi että se, mikä uuvuttaa sinut eniten."
+      "Aries": "Tunnetasolla palat kuumasti ja nopeasti. Tunnet asiat koko kehollasi -- vihan, intohimon, suojeluhalun. Et istu tunteidesi kanssa; toimit niiden mukaan. Tarvitset kumppanin, joka pystyy vastaamaan tuleesi vaistamatta.",
+      "Taurus": "Tunne-elamasi kaipaa vakautta. Tarvitset rutiinia, fyysista mukavuutta ja turvallisen paikan laskeutua. Kun tunnet olosi turvalliseksi, olet maailman anteliain ihminen. Kun turvallisuuttasi uhataan, sulkeudut kokonaan.",
+      "Gemini": "Tunteesi liikkuvat kuin saa -- nopeasti, muuttuvasti ja joskus ristiriitaisesti. Prosessoit tunteita puhumalla niista, ajattelemalla niita, joskus valttamalla niita kokonaan. Tylsyys on tunne, joka satuttaa sinua eniten.",
+      "Cancer": "Tunne-elamasi on universumisi keskipiste. Tunnet kaiken kahdesti -- kerran itsellesi, kerran vierellasi olevalle ihmiselle. Koti ei ole sinulle paikka; se on tunne. Ja kun se tunne puuttuu, mikaan muu ei merkitse mitaan.",
+      "Leo": "Sinun taytyy tuntea olevasi erityinen. Ei pinnallisella tavalla -- syvalla, luihin asti ulottuvalla tavalla. Kun rakastamasi ihmiset saavat sinut tuntemaan itsesi nahdyksi, loistaat. Kun he pitavat sinua itsestaan selvyytenä, jokin sisallasi himmenee. Sydamesi kay aidolla tunnustuksella.",
+      "Virgo": "Naytat rakkautta tekemalla, et sanomalla. Murrehdit ihmisista, joista valitat -- heidan terveydestaan, ongelmistaan, asioista joita he eivat hoida. Tunne-elamasi on hiljainen, kaytannollinen ja syvasti omistautunut.",
+      "Libra": "Tarvitset kumppanuutta tunteaksesi olosi emotionaalisesti kokonaiseksi. Et riippuvaisella tavalla -- prosessoit yksinkertaisesti tunteitasi yhteyden kautta. Konflikti tekee sinulle fyysisesti epamukavaa. Kauneus ja harmonia eivat ole sinulle ylellisyytta; ne ovat valttamattomyyksiaö.",
+      "Scorpio": "Tunne-elamasi kulkee syvemmalla kuin kukaan tulee koskaan tietamaan. Tunnet asiat musertavalla intensiteetilla, mutta naytat sen harvoin. Luottamus vie vuosia. Petoksen antaminen anteeksi vie ikuisuuden. Kun rakastat, rakastat kaikella mita sinussa on.",
+      "Sagittarius": "Tunteesi tarvitsevat tilaa hengittaa. Prosessoit tunteita liikkeen, seikkailun, huumorin ja filosofisen nakokulman kautta. Emotionaalinen ahtaanpaikankammo on kryptoniittisi -- tarvitset vapautta jopa lahimmissa ihmissuhteissasi.",
+      "Capricorn": "Opit varhain, etteivat tunteet ole turvallisia. Prosessoit tunteita hitaasti, yksityisesti ja itsehillinnalla, jonka muut erehtyvat luulemaan kylmyydeksi. Mutta tuon tyyneyden alla piilee uskollisuus niin raju, etta se voi murtaa sinut.",
+      "Aquarius": "Tunne-elamasi on epätavanomainen. Valitat syvasti ihmiskunnasta, mutta kamppailet kahdenkeskisen emotionaalisen laheisyyden kanssa. Prosessoit tunteita alyllisesti -- astut niiden ulkopuolelle analysoidaksesi sen sijaan, etta hukkuisit niihin.",
+      "Pisces": "Tunnet kaiken -- omat tunteesi, muiden ihmisten tunteet, jokaisen huoneen kollektiivisen tunnelman johon astut. Sydamellasi ei ole seinia. Tama on seka suurin lahjasi etta se, mika uuvuttaa sinut eniten."
     },
     "risingMask": {
-      "Aries": "Ihmiset näkevät sinut rohkeana, suorana ja hieman pelottavana. Tulet vaikutelmana henkilöstä, joka ottaa ohjat — ihmisestä, jonka puoleen muut katsovat kun kukaan ei tiedä mitä tehdä. Energiasi saapuu ennen sinua.",
-      "Taurus": "Ihmiset näkevät sinut maanläheisenä, viehättävänä ja anteeksipyytelemättömän aitona. Läsnäolossasi on rauha, joka saa muut tuntemaan olonsa turvalliseksi. Kannat itseäsi hiljaisella itsevarmuudella ja kauneuden tajulla, jonka ihmiset huomaavat välittömästi.",
-      "Gemini": "Ihmiset näkevät sinut nokkkelana, uteliaana ja mahdottomana lokeroida. Tulet vaikutelmana ihmisestä, joka aina ajattelee, aina tarkkailee ja on aina hieman keskustelua edellä. Monipuolisuutesi on aseistariisuvaa.",
-      "Cancer": "Ihmiset näkevät sinut lämpimänä, suojelevana ja emotionaalisesti läsnä olevana. Tulet vaikutelmana ihmisestä, joka aidosti välittää — ja he ovat oikeassa. Kasvoissasi on pehmeys, joka vetää ihmisiä puoleensa, vaikka vartioisitkin itseäsi.",
-      "Leo": "Ihmiset näkevät sinut magneettisena, itsevarmana ja mahdottomana sivuuttaa. Astut huoneeseen ja energia muuttuu. Läsnäolossasi on lämpö ja anteliaisuus, joka saa ihmiset haluamaan olla lähellä sinua — ja he harvoin tietävät miksi.",
-      "Virgo": "Ihmiset näkevät sinut hillittynä, älykkäänä ja hiljaisesti huoliteltuna. Tulet vaikutelmana ihmisestä, jolla on asiat hallinnassa — silloinkin kun ei ole. Läsnäolossasi on vaatimattomuus, joka kätkee huoneen terävimmän mielen.",
-      "Libra": "Ihmiset näkevät sinut viehättävänä, tasapainoisena ja esteettisesti silmiinpistävänä. Tulet vaikutelmana ihmisestä, joka saa kaiken näyttämään vaivattomalta — ihmissuhteet mukaan lukien. Sosiaalinen eleganssisi on jotain, mitä ihmiset toivoisivat voivansa oppia.",
-      "Scorpio": "Ihmiset näkevät sinut intensiivisenä, salaperäisenä ja vaikeana lukea. Tulet vaikutelmana ihmisestä, joka näkee suoraan ihmisten läpi — ja he voivat tuntea sen. Läsnäolossasi on voima, joka tekee muista joko syvästi puoleensavedettyja tai hieman pelokkaita.",
-      "Sagittarius": "Ihmiset näkevät sinut seikkailunhaluisena, optimistisena ja virkistävän rehellisenä. Tulet vaikutelmana ihmisestä, joka ei ota elämää liian vakavasti — mikä saa ihmiset luottamaan sinuun, koska et esitä. Naurusi on lääkettä.",
-      "Capricorn": "Ihmiset näkevät sinut kypsänä, kunnianhimoisena ja hiljaisesti voimakkaana. Tulet vaikutelmana ihmisestä, jonka elämä on kunnossa — jota muut kunnioittavat ennen kuin edes tuntevat sinut. Läsnäolossasi on auktoriteetti, jota et pyytänyt.",
-      "Aquarius": "Ihmiset näkevät sinut ainutlaatuisena, itsenäisenä ja hieman maanulkopuolisena — parhaalla mahdollisella tavalla. Tulet vaikutelmana ihmisestä, jota aidosti ei kiinnosta mitä muut ajattelevat, ja tuo vapaus on magneettista. Ihmiset haluavat sitä mitä sinulla on.",
-      "Pisces": "Ihmiset näkevät sinut unelmoivana, lempeänä ja toismaailmallisena. Tulet vaikutelmana ihmisestä, joka on olemassa hieman normaalin todellisuuden ulkopuolella — vanha sielu, taiteilija, parantaja. Ihmiset avautuvat sinulle tietämättä miksi."
+      "Aries": "Ihmiset nakevat sinut rohkeana, suorana ja hieman pelottavana. Tulet vaikutelmana henkilosta, joka ottaa ohjat -- ihmisesta, jonka puoleen muut katsovat kun kukaan ei tieda mita tehda. Energiasi saapuu ennen sinua.",
+      "Taurus": "Ihmiset nakevat sinut maanlaheisenä, viehattavana ja anteeksipyytelemattoman aitona. Lasnaolossasi on rauha, joka saa muut tuntemaan olonsa turvalliseksi. Kannat itseasi hiljaisella itsevarmuudella ja kauneuden tajulla, jonka ihmiset huomaavat valittomasti.",
+      "Gemini": "Ihmiset nakevat sinut nokkelana, uteliaana ja mahdottomana lokeroida. Tulet vaikutelmana ihmisesta, joka aina ajattelee, aina tarkkailee ja on aina hieman keskustelua edella. Monipuolisuutesi on aseistariisuvaa.",
+      "Cancer": "Ihmiset nakevat sinut lampimana, suojelevana ja emotionaalisesti lasna olevana. Tulet vaikutelmana ihmisesta, joka aidosti valittaa -- ja he ovat oikeassa. Kasvoissasi on pehmeys, joka vetaa ihmisia puoleensa, vaikka vartioisitkin itseasi.",
+      "Leo": "Ihmiset nakevat sinut magneettisena, itsevarmana ja mahdottomana sivuuttaa. Astut huoneeseen ja energia muuttuu. Lasnaolossasi on lampo ja anteliaisuus, joka saa ihmiset haluamaan olla lahella sinua -- ja he harvoin tietavat miksi.",
+      "Virgo": "Ihmiset nakevat sinut hillittyna, alykkaana ja hiljaisesti huoliteltuna. Tulet vaikutelmana ihmisesta, jolla on asiat hallinnassa -- silloinkin kun ei ole. Lasnaolossasi on vaatimattomuus, joka katkee huoneen teravimman mielen.",
+      "Libra": "Ihmiset nakevat sinut viehattavana, tasapainoisena ja esteettisesti silmiinpistavana. Tulet vaikutelmana ihmisesta, joka saa kaiken nayttamaan vaivattomalta -- ihmissuhteet mukaan lukien. Sosiaalinen eleganssisi on jotain, mita ihmiset toivoisivat voivansa oppia.",
+      "Scorpio": "Ihmiset nakevat sinut intensiivisenä, salaperäisenä ja vaikeana lukea. Tulet vaikutelmana ihmisesta, joka nakee suoraan ihmisten lapi -- ja he voivat tuntea sen. Lasnaolossasi on voima, joka tekee muista joko syvasti puoleensavedettyja tai hieman pelokkaita.",
+      "Sagittarius": "Ihmiset nakevat sinut seikkailunhaluisena, optimistisena ja virikistavän rehellisena. Tulet vaikutelmana ihmisesta, joka ei ota elamaa liian vakavasti -- mika saa ihmiset luottamaan sinuun, koska et esita. Naurusi on laaketta.",
+      "Capricorn": "Ihmiset nakevat sinut kypsana, kunnianhimoisena ja hiljaisesti voimakkaana. Tulet vaikutelmana ihmisesta, jonka elama on kunnossa -- jota muut kunnioittavat ennen kuin edes tuntevat sinut. Lasnaolossasi on auktoriteetti, jota et pyytanyt.",
+      "Aquarius": "Ihmiset nakevat sinut ainutlaatuisena, itsenaisena ja hieman maanulkopuolisena -- parhaalla mahdollisella tavalla. Tulet vaikutelmana ihmisesta, jota aidosti ei kiinnosta mita muut ajattelevat, ja tuo vapaus on magneettista. Ihmiset haluavat sita mita sinulla on.",
+      "Pisces": "Ihmiset nakevat sinut unelmoivana, lempeana ja toismaailmallisena. Tulet vaikutelmana ihmisesta, joka on olemassa hieman normaalin todellisuuden ulkopuolella -- vanha sielu, taiteilija, parantaja. Ihmiset avautuvat sinulle tietamatta miksi."
     },
     "elementBalance": {
       "Fire": {
         "name": "Tuli",
-        "feel": "Sinua ajaa intohimo, vaisto ja horjumaton tarve saada asiat tapahtumaan. Käyt inspiraatiolla — ja romahdut kun se loppuu."
+        "feel": "Sinua ajaa intohimo, vaisto ja horjumaton tarve saada asiat tapahtumaan. Kayt inspiraatiolla -- ja romahdut kun se loppuu."
       },
       "Earth": {
         "name": "Maa",
-        "feel": "Olet maanläheinen, käytännöllinen ja rakennettu todellisuutta varten. Luotat siihen mitä voit nähdä ja koskettaa. Vahvuutesi on kestävyys — riskisi on vastustaa muutosta kun on aika kehittyä."
+        "feel": "Olet maanlaheinen, kaytannollinen ja rakennettu todellisuutta varten. Luotat siihen mita voit nahda ja koskettaa. Vahvuutesi on kestavyys -- riskisi on vastustaa muutosta kun on aika kehittya."
       },
       "Air": {
         "name": "Ilma",
-        "feel": "Elät mielessäsi. Ideat, yhteydet, keskustelut — siellä tunnet olevasi eniten elossa. Lahjasi on perspektiivi. Varjopuolesi on irtautuminen kehostasi ja sydämestäsi."
+        "feel": "Elat mielessasi. Ideat, yhteydet, keskustelut -- siella tunnet olevasi eniten elossa. Lahjasi on perspektiivi. Varjopuolesi on irtautuminen kehostasi ja sydamestasi."
       },
       "Water": {
         "name": "Vesi",
-        "feel": "Sinua ajavat tunteet. Intuitiosi, empatiasi, emotionaalinen syvyytesi — nämä eivät ole pehmeitä taitoja, ne ovat ensisijainen älykkyytesi. Haasteesi on oppia, mitkä tunteet ovat sinun omiasi."
+        "feel": "Sinua ajavat tunteet. Intuitiosi, empatiasi, emotionaalinen syvyytesi -- nama eivat ole pehmeita taitoja, ne ovat ensisijainen alykkyyteesi. Haasteesi on oppia, mitka tunteet ovat sinun omiasi."
       }
     }
   },
   "home": {
     "greeting": "Hei, {{name}}",
-    "dailyInsight": "Päivän oivallus",
+    "dailyInsight": "Paivan oivallus",
     "currentTransits": "Nykyiset transitit",
     "moonPhase": "Kuun vaihe",
     "planetaryHours": "Planetaariset tunnit",
-    "quickAccess": "Pikakäyttö"
+    "quickAccess": "Pikakaytto"
   },
   "chart": {
-    "natal": "Syntymäkartta",
+    "natal": "Syntymakartta",
     "progressed": "Progressio",
     "solarReturn": "Aurinkopaluu",
     "lunarReturn": "Kuupaluu",
@@ -163,9 +164,9 @@
   },
   "readings": {
     "title": "Luennat",
-    "chartAdjuster": "Kartan säätäjä",
+    "chartAdjuster": "Kartan saataja",
     "transits": "Transitit",
-    "starseed": "Tähdensiemen-alkuperä",
+    "starseed": "Tahdensiemen-alkupera",
     "numerology": "Numerologia",
     "angelNumbers": "Enkelinumerot",
     "humanDesign": "Human Design",
@@ -176,33 +177,858 @@
     "firdaria": "Firdaria",
     "zodiacalReleasing": "Zodiacal Releasing",
     "planetaryHours": "Planetaariset tunnit",
+    "moonPhases": "Kuun vaiheet",
     "acg": "Astrokartografia",
-    "fixedStars": "Kiintotähdet",
+    "fixedStars": "Kiintotahdet",
     "arabicParts": "Arabialaiset pisteet",
     "compatibility": "Yhteensopivuus",
-    "rectification": "Syntymäajan rektifiointityökalu",
+    "rectification": "Syntymäajan rektifiointityokalu",
     "galacticClock": "Galaktinen kello",
     "galacticOverlay": "Galaktinen peittokuva",
     "galacticForecast": "Galaktinen ennuste",
     "midpoints": "Keskipistelaskin",
-    "aiAstrologer": "Tekoälyastrologi",
+    "aiAstrologer": "Tekoalyastrologi",
+    "yearAhead": "Vuoteni edessa",
     "savedCharts": "Tallennetut kartat",
-    "cosmicJournal": "Kosminen päiväkirja",
-    "moonPhases": "Kuun vaiheet",
-    "yearAhead": "Vuoteni edessä",
+    "cosmicJournal": "Kosminen paivakirja",
     "soulGifts": "Sielun lahjat",
-    "soulMemory": "Sielun muisto"
+    "soulMemory": "Sielun muisto",
+    "soulAscension": "Sielun nousu",
+    "dreamOracle": "Unioraakkeli",
+    "backToReadings": "Takaisin luentoihin",
+    "upgradeToTier": "Paivita tasolle {{tier}}",
+    "birthDataRequired": "Lisaa syntymatietosi profiiliisi ensin.",
+    "birthDataPromptTransits": "Lisaa syntymatietosi nahdaksesi nykyiset transittisi.",
+    "birthDataPromptCompatibility": "Lisaa syntymatietosi tarkistaaksesi yhteensopivuuden erityisen henkilon kanssa.",
+    "birthDataPromptAlerts": "Tarvitsemme syntymatietosi laskeaksemme henkilokohtaiset kosmiset halytykset kartallesi.",
+    "transitsPage": {
+      "title": "Syklisi",
+      "subtitle": "{{name}}, nama ovat syklit, jotka liikkuvat elamasi lapi juuri nyt. Ajattele niita kuin vuodenaikoja -- jokainen tuo oman energiansa, omat opetuksensa ja omat mahdollisuutensa.",
+      "loadingLabel": "Lasketaan transittejasi...",
+      "errorDefault": "Transittien lataaminen epaonnistui",
+      "emptyState": "Aktiivisia sykleja ei loytynyt. Tarkista pian uudelleen.",
+      "activeNow": "Aktiivinen nyt",
+      "storylines": "Tarinakaaret",
+      "impactingYouNow": "Vaikuttaa sinuun nyt",
+      "backToCycles": "Takaisin sykleihin",
+      "active": "aktiivinen",
+      "approaching": "Lahestyva",
+      "separating": "Erkaantyva",
+      "cycleMeaning": "Mita tama sykli tarkoittaa sinulle",
+      "howToNavigate": "Kuinka navigoida tama",
+      "technicalDetails": "Tekniset tiedot",
+      "transit": "Transitti",
+      "currentOrb": "Nykyinen orbi",
+      "direction": "Suunta",
+      "intensity": "Intensiteetti",
+      "separatingDesc": "Erkaantyva (siirtyy pois tarkasta)",
+      "applyingDesc": "Lahestyva (siirtyy kohti tarkkaa)",
+      "intensityMajor": "Suuri (ulkoinen planeetta)",
+      "intensityModerate": "Kohtalainen",
+      "intensityMinor": "Pieni",
+      "nearExact": "Lahella tarkkaa -- voimakkain vaikutus",
+      "stronglyActive": "Voimakkaasti aktiivinen",
+      "buildingMomentum": "Rakentaa vauhtia",
+      "enteringAwareness": "Saapuu tietoisuuteen",
+      "lessThanADay": "Alle paiva jaljella",
+      "daysLeft": "{{count}} paivaa jaljella",
+      "weeksLeft": "~{{count}} viikkoa jaljella",
+      "monthsLeft": "~{{count}} kuukautta jaljella",
+      "yearsLeft": "{{count}}+ vuotta",
+      "tapToRead": "Napauta lukeaksesi koko oivalluksesi",
+      "failedToLoadStorylines": "Tarinakaaria ei voitu ladata"
+    },
+    "tarotPage": {
+      "title": "Tarot-lukeminen",
+      "subtitle": "Vastaanota opastusta arkanoista",
+      "chooseSpread": "Valitse asettelusi",
+      "yourQuestion": "Kysymyksesi (valinnainen)",
+      "questionPlaceholder": "Mita opastusta etsit?",
+      "drawButton": "Nosta {{spread}}",
+      "shuffling": "Sekoitetaan kosmista pakkaa...",
+      "tapToReveal": "Napauta paljastaaksesi",
+      "revealAll": "Paljasta kaikki kortit",
+      "newReading": "Uusi lukeminen",
+      "getPersonalReading": "Hanki henkilokohtainen lukemisesi",
+      "regenerateReading": "Luo henkilokohtainen lukeminen uudelleen",
+      "personalTarotReading": "Henkilokohtainen tarot-lukeminen",
+      "channeling": "Kanavoidaan karttaasi ja korttejasi...",
+      "shareReading": "Jaa lukeminen",
+      "copied": "Kopioitu!",
+      "failedToGenerate": "Lukemista ei voitu luoda. Yrita uudelleen.",
+      "reversed": "Kaannetty",
+      "majorArcana": "Suuri Arkana",
+      "minorArcana": "Pieni Arkana",
+      "spreads": {
+        "single": "Yksittainen kortti",
+        "threeCard": "Kolme korttia",
+        "celticCross": "Kelttilainen risti",
+        "relationship": "Ihmissuhde",
+        "career": "Ura"
+      },
+      "positions": {
+        "focus": "Fokus",
+        "past": "Menneisyys",
+        "present": "Nykyhetki",
+        "future": "Tulevaisuus",
+        "challenge": "Haaste",
+        "foundation": "Perusta",
+        "recentPast": "Lahinmenneisyys",
+        "crown": "Kruunu",
+        "nearFuture": "Lahitulevaisuus",
+        "self": "Itse",
+        "environment": "Ymparisto",
+        "hopesFears": "Toiveet/pelot",
+        "outcome": "Lopputulos",
+        "you": "Sina",
+        "partner": "Kumppani",
+        "connection": "Yhteys",
+        "potential": "Potentiaali",
+        "current": "Nykyinen",
+        "obstacle": "Este",
+        "hiddenFactor": "Piilotettu tekija",
+        "advice": "Neuvo"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Unioraakkeli",
+      "subtitle": "Tulkitse unesi symbolien, tunteiden, astrologian ja alitajuntasi piilotetun kielen kautta.",
+      "tabs": {
+        "record": "Tallenna",
+        "journal": "Paivakirja",
+        "symbols": "Symbolit",
+        "patterns": "Kuviot"
+      },
+      "record": {
+        "dreamTitle": "Unen otsikko (valinnainen)",
+        "titlePlaceholder": "Luodaan automaattisesti jos jätetaan tyhjaksi",
+        "describeLabel": "Kuvaile unesi *",
+        "describePlaceholder": "Sulje silmasi ja kuvaile kaikki mita muistat...",
+        "mainEmotions": "Paatunteet (enintaan 5)",
+        "peopleDream": "Ihmiset unessa",
+        "peoplePlaceholder": "esim. Aiti, ex-kumppani, tuntematon, ystava",
+        "placesDream": "Paikat unessa",
+        "placesPlaceholder": "esim. lapsuudenkoti, meri, pimea metsa",
+        "separateCommas": "Erota pilkuilla",
+        "symbolsObjects": "Symbolit / Esineet",
+        "selectSymbols": "Klikkaa valitaksesi unisymboleja",
+        "selectedCount": "{{count}} valittu",
+        "searchSymbols": "Etsi symboleja...",
+        "dreamType": "Unityyppi",
+        "dreamIntensity": "Unen intensiteetti: {{value}}/10",
+        "privacy": "Yksityisyys",
+        "interpretDream": "Tulkitse uneni",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Unesi tulkinta",
+        "mainSymbols": "Paasymbolit",
+        "coreMessage": "Ydinviesti",
+        "subconsciousMessage": "Mita alitajuntasi naytti sinulle",
+        "symbolsMatter": "Tarkeimmat symbolit",
+        "emotionalUndercurrent": "Emotionaalinen alavirtaus",
+        "whatToFace": "Mita tama uni pyytaa sinua kohtaamaan",
+        "oracleMessage": "Unioraakkelin viimeinen viesti",
+        "astroConnection": "Astrologinen yhteys",
+        "whyNow": "Miksi nait taman unen nyt",
+        "watchFor": "Mita tarkkailla",
+        "whatToDo": "Mita tehda seuraavaksi",
+        "reflectionQuestions": "Pohdintakysymykset",
+        "askAboutDream": "Kysy tasta unesta",
+        "visualizeDream": "Visualisoi uneni",
+        "comingSoon": "TULOSSA PIAN",
+        "recordAnother": "Tallenna toinen uni"
+      },
+      "journal": {
+        "loadingJournal": "Ladataan unipaivakirjaa...",
+        "searchDreams": "Etsi unia...",
+        "noDreamsYet": "Ei unia viela",
+        "noDreamsHint": "Tallenna ensimmainen unesi aloittaaksesi paivakirjan rakentamisen.",
+        "deleteConfirm": "Poista tama uni? Tata ei voi perua."
+      },
+      "dictionary": {
+        "backToSymbols": "Takaisin symboleihin",
+        "generalMeaning": "Yleinen merkitys",
+        "psychologicalMeaning": "Psykologinen merkitys",
+        "spiritualMeaning": "Henkinen merkitys",
+        "astrologicalMeaning": "Astrologinen merkitys",
+        "shadowMeaning": "Varjomerkitys",
+        "reflectionQuestion": "Pohdintakysymys"
+      },
+      "patterns": {
+        "noPatternsYet": "Ei kuvioita viela",
+        "noPatternsHint": "Tallenna vahintaan 3 unta nahdaksesi kuvioita unielämassasi.",
+        "overview": "Yleiskatsaus",
+        "totalDreams": "Unia yhteensa",
+        "avgIntensity": "Keskim. intensiteetti",
+        "nightmares": "Painajaiset",
+        "lucidDreams": "Selkounet",
+        "prophetic": "Profeettiset",
+        "recurringSymbols": "Toistuvimmat symbolit",
+        "recurringEmotions": "Toistuvimmat tunteet",
+        "recurringPeople": "Toistuvimmat ihmiset",
+        "dreamTypes": "Unityypit",
+        "dreamsByMoonPhase": "Unet kuunvaiheen mukaan",
+        "moonPhaseHint": "Kuunvaihekuvioiden seuranta aktivoituu kun sinulla on 10+ unta astrologiatietojen kanssa.",
+        "dreamsByTransit": "Unet transitin mukaan",
+        "transitHint": "Transittikorrelaatio paljastaa, mitka planeettojen aspektit aktivoivat elavimmat tai profeettiset unesi."
+      }
+    },
+    "starseedPage": {
+      "title": "Tahdensiemen-alkupera",
+      "subtitle": "Loyda kosmiset sielusi alkuperat",
+      "description": "Analysoi syntymakarttasi loytaaksesi mitka tahtijarjestelmat resonoivat sielusi kanssa.",
+      "discoverButton": "Loyda alkuperani",
+      "analyzing": "Analysoidaan...",
+      "dominantOrigin": "Hallitseva alkupera",
+      "resonancePoints": "Pistemäärä: {{score}} resonanssipistetta"
+    },
+    "numerologyPage": {
+      "title": "Numerologia",
+      "subtitle": "Kosmiset numerosi purettu",
+      "master": "Mestarinumero"
+    },
+    "angelNumbersPage": {
+      "title": "Enkelinumerot",
+      "subtitle": "Etsi nakamiesi numeroiden merkitys",
+      "searchPlaceholder": "Syota numero (esim. 111, 444)...",
+      "popular": "Suositut numerot",
+      "notFound": "Numeroa ei loytynyt. Kokeile yleista enkelinumeroa.",
+      "copiedToClipboard": "Kopioitu leikepoydale!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Energeettinen suunnitelmasi",
+      "aura": "Aura",
+      "defined": "Maaritelty",
+      "undefined": "Maarittelematon"
+    },
+    "financialPage": {
+      "title": "Talousastrologia",
+      "subtitle": "Kosminen rahasuunnitelmasi",
+      "personalIncome": "Henkilokohtaiset tulot ja arvot",
+      "sharedResources": "Jaetut resurssit ja muutos",
+      "careerStanding": "Ura ja julkinen asema",
+      "gainsNetworks": "Hyodyt ja verkostot",
+      "strengths": "Vahvuudet",
+      "challenges": "Haasteet",
+      "monthlyForecast": "Kuukausiennuste",
+      "timingWindows": "Ajoitusikkunat",
+      "favorable": "Suotuisa",
+      "mixed": "Sekoitettu",
+      "challenging": "Haastava"
+    },
+    "compatibilityPage": {
+      "title": "Yhteensopivuustarkistus",
+      "subtitle": "Tutustu kahden sielun kosmiseen yhteyteen",
+      "person2Label": "Kumppanin syntymatiedot",
+      "datePlaceholder": "Syntymapaiva",
+      "timePlaceholder": "Syntymaaika",
+      "locationPlaceholder": "Syntymapaikka",
+      "calculateButton": "Tarkista yhteensopivuus",
+      "calculating": "Lasketaan yhteensopivuutta...",
+      "overallScore": "Kokonaispistemäärä",
+      "soulLevelConnection": "Sielutason yhteys",
+      "deepCompatibility": "Syva yhteensopivuus",
+      "strongPotential": "Vahva potentiaali",
+      "moderateMatch": "Kohtalainen vastaavuus",
+      "growthRequired": "Kasvua vaaditaan",
+      "challengingDynamic": "Haastava dynamiikka",
+      "categories": {
+        "attraction": "Fyysinen vetovoima",
+        "emotional": "Emotionaalinen side",
+        "mental": "Henkinen yhteys",
+        "stability": "Pitkaaikainen vakaus",
+        "karmic": "Karminen yhteys",
+        "harmony": "Harmonia",
+        "magnetic": "Magneettinen vetovoima"
+      },
+      "showAspects": "Nayta aspektit",
+      "hideAspects": "Piilota aspektit"
+    },
+    "cosmicJournalPage": {
+      "title": "Kosminen paivakirja",
+      "subtitle": "Seuraa sisaista maailmaasi kosmoksen rinnalla",
+      "newEntry": "Uusi merkinta",
+      "moodOptions": {
+        "low": "Matala",
+        "meh": "Meh",
+        "neutral": "Neutraali",
+        "good": "Hyva",
+        "great": "Loistava"
+      },
+      "noEntries": "Ei paivakirjamerkintoja viela",
+      "noEntriesHint": "Aloita kirjoittaminen seurataksesi sisaista maailmaasi kosmoksen rinnalla."
+    },
+    "moonPhasesPage": {
+      "title": "Kuun vaiheet",
+      "tabs": {
+        "today": "Tanaan",
+        "calendar": "Kalenteri",
+        "forecast": "Ennuste",
+        "eclipses": "Pimennyikset",
+        "birthMoon": "Syntymakuu"
+      },
+      "failedToLoadChart": "Syntymakartan lataus epaonnistui"
+    },
+    "planetaryHoursPage": {
+      "title": "Planetaariset tunnit",
+      "subtitle": "Muinaista ajoitusviisautta moderniin elamaan",
+      "currentHour": "Nykyinen tunti",
+      "daySummary": "Paivan yhteenveto",
+      "hoursTable": "Tuntitaulukko"
+    },
+    "yearAheadPage": {
+      "title": "Vuoteni edessa",
+      "subtitle": "Henkilokohtainen kosminen ennusteesi vuodelle",
+      "generating": "Luodaan vuosiennustettasi...",
+      "monthlyOverview": "Kuukausikatsaus",
+      "keyTransits": "Avaintransitit",
+      "calm": "Rauhallinen",
+      "activeIntensity": "Aktiivinen",
+      "intense": "Intensiivinen"
+    },
+    "solarReturnPage": {
+      "title": "Aurinkopaluu",
+      "subtitle": "Syntymapaivakartttasi -- kosminen suunnitelma vuodellesi",
+      "generating": "Lasketaan aurinkopaluutasi...",
+      "yearTheme": "Vuoden teema",
+      "planetsOnAngles": "Planeetat kulmissa",
+      "retrogrades": "Retrogradit",
+      "monthlyTimeline": "Kuukausittainen aikajana",
+      "natalComparisons": "Syntymä vs. aurinkopaluu",
+      "criticalAspects": "Kriittiset aspektit",
+      "yearPattern": "Vuosikuvio"
+    },
+    "galacticClockPage": {
+      "title": "Galaktinen kello",
+      "subtitle": "Kosminen ajoituskayttoliittymasi"
+    },
+    "galacticForecastPage": {
+      "title": "Galaktinen ennuste",
+      "subtitle": "Syvan avaruuden energiat jotka vaikuttavat karttaasi"
+    },
+    "midpointsPage": {
+      "title": "Keskipistelaskin",
+      "subtitle": "Loyda piilotettuja yhteyksiaö kartassasi"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Muinaiset persialaiset planeettagjaksot"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistinen ajoitustekniikka"
+    },
+    "acgPage": {
+      "title": "Astrokartografia",
+      "subtitle": "Missa maailmassa planeettasi aktivoituvat"
+    },
+    "fixedStarsPage": {
+      "title": "Kiintotahdet",
+      "subtitle": "Tahtivaikutukset kartassasi"
+    },
+    "arabicPartsPage": {
+      "title": "Arabialaiset pisteet",
+      "subtitle": "Muinaiset lasketut pisteet kartassasi"
+    },
+    "pathwayPage": {
+      "title": "Polku menestykseen",
+      "subtitle": "Kosminen ura- ja elamantehtavasuunnitelmasi"
+    },
+    "rectificationPage": {
+      "title": "Syntymäajan rektifiointi",
+      "subtitle": "Hienosääda syntymäaikaasi tarkempia karttoja varten"
+    },
+    "nameAnalysisPage": {
+      "title": "Nimianalyysi",
+      "subtitle": "Nimesi numerologia"
+    },
+    "soulGiftsPage": {
+      "title": "Sielun lahjat",
+      "subtitle": "Loyda karttaasi koodatut ainutlaatuiset lahjat"
+    },
+    "soulMemoryPage": {
+      "title": "Sielun muisto",
+      "subtitle": "Aiempien elamien kaiut syntymakarttassasi"
+    },
+    "soulAscensionPage": {
+      "title": "Sielun nousu",
+      "description": "Pelaa syntymakarttaasi reinkarnaatio-RPGna karmalla, tarkoituspoluilla, sielusopimuksilla, reliikeilla ja aiempien elamien valinnoilla."
+    },
+    "chartAdjusterPage": {
+      "title": "Kartan saataja",
+      "subtitle": "Kokeile eri syntymäaikoja"
+    }
   },
   "interpretation": {
-    "aiInterpret": "Tekoälytulkinta",
-    "loading": "Luetaan tähtiä...",
+    "aiInterpret": "Tekoalytulkinta",
+    "loading": "Luetaan tahtia...",
     "modes": {
       "default": "Yleinen",
       "dating": "Seurustelu",
-      "purpose": "Elämäntarkoitus",
+      "purpose": "Elamantarkoitus",
       "spiritual": "Hengelliset lahjat",
       "passion": "Intohimo",
       "reputation": "Maine"
+    }
+  },
+  "dating": {
+    "title": "Kosminen seurustelu",
+    "subtitle": "Kuratoidut kosmiset valintasi",
+    "introTitle": "Kosminen seurustelu",
+    "introDescription": "Loyda merkityksellisia yhteyksiaö, jotka on kirjoitettu tahtiin. Luo seurusteluprofiiilisi aloittaaksesi kosmisesti yhteensopivien vastaavuuksien loyotamisen.",
+    "createProfileButton": "Luo seurusteluprofiiilisi",
+    "featurePhotos": "Lisaa kuvia ja aaniintro",
+    "featureCompatibility": "Loyda vastaavuuksia kosmisen yhteensopivuuden perusteella",
+    "featureSafety": "Turvalliset ja vahvistetut yhteydet",
+    "tabs": {
+      "discover": "Tutustu",
+      "likes": "Tykkaykset",
+      "matches": "Vastaavuudet",
+      "myProfile": "Profiilini"
+    },
+    "discovery": {
+      "consulting": "Konsultoidaan kosmosta...",
+      "noPicksTitle": "Ei kosmisia valintoja viela",
+      "allCaughtUpTitle": "Kaikki kayty lapi!",
+      "noPicksDescription": "Tahdet saatavat viela vastaavuuksiasi. Varmista etta seurusteluprofiilisi on valmis!",
+      "allCaughtUpDescription": "Tule takaisin huomenna uusien kosmisten valintojen pariin. Laatuyhteydet vaativat aikaa.",
+      "completeProfile": "Viimeistele profiili",
+      "dailyLikeLimit": "Olet saavuttanut paivittaisen tykkaysrajasi ({{limit}}). Paivita saadaksesi lisaa!",
+      "dailyRoseLimit": "Olet kayttanyt kaikki kosmiset ruususi tanaan ({{limit}}). Paivita saadaksesi lisaa!",
+      "genericError": "Jokin meni pieleen. Yrita uudelleen."
+    },
+    "likes": {
+      "title": "Tykkaykset",
+      "receivedCount": "{{count}} ihmista on kiinnostunut",
+      "sentCount": "Olet tykannyt {{count}} ihmisesta",
+      "received": "Vastaanotetut",
+      "sent": "Lahetetyt",
+      "seeWhoLikes": "Katso kuka tykkaa sinusta",
+      "upgradeHint": "Paivita Light-tasolle tai ylemmaksi paljastaaksesi profiilit",
+      "upgrade": "Paivita",
+      "noLikesYet": "Ei tykkayksiaö viela",
+      "noSentYet": "Ei lahetettyjta tykkayksiaö viela",
+      "keepFresh": "Pida profiilisi tuoreena ja kosmos toimittaa.",
+      "headToDiscover": "Siirry Tutustu-osioon loytaaksesi kosmiset yhteytesi.",
+      "mysteryAdmirer": "Mysteeriihaailija",
+      "rose": "Ruusu",
+      "likeBack": "Tykkaa takaisin",
+      "matching": "Yhdistetaan..."
+    },
+    "matches": {
+      "title": "Vastaavuutesi",
+      "connectionCount": "{{count}} kosmista yhteytta",
+      "noMatchesTitle": "Ei vastaavuuksia viela",
+      "noMatchesDescription": "Kun sina ja joku toinen molemmat tykkaatte toisistanne, naette taalla.",
+      "discoverPeople": "Loyda ihmisia",
+      "cosmicIcebreakers": "Kosmiset jäänmurtajat",
+      "message": "Viesti",
+      "unmatchConfirm": "Poista vastaavuus {{name}}?",
+      "unmatch": "Poista vastaavuus",
+      "cancel": "Peruuta",
+      "matchedToday": "Yhdistetty tanaan",
+      "matchedDaysAgo": "Yhdistetty {{days}} pv sitten",
+      "cosmicMatch": "Kosminen vastaavuus"
+    },
+    "profile": {
+      "title": "Seurusteluprofiili",
+      "datingMode": "Seurustelutila",
+      "datingModeHint": "Tee profiilistasi nakyvä kosmisessa loytokoissa",
+      "cosmicSignature": "Kosminen allekirjoituksesi",
+      "sunMoonRising": "Aurinko / Kuu / Nouseva",
+      "photos": "Kuvat",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Tietoja minusta",
+      "aboutMePlaceholder": "Kerro mahdollisille vastaavuuksille itsestasi...",
+      "cosmicPrompts": "Kosmiset kehotukset",
+      "addPrompt": "Lisaa kehotus",
+      "promptAnswerPlaceholder": "Vastauksesi...",
+      "voicePrompt": "Aanikehotus",
+      "voicePromptHint": "Nauhoita 30 sekunnin aaniintro persoonallisuutesi esille tuomiseksi",
+      "uploadingVoice": "Ladataan aanikehotusta...",
+      "reRecord": "Nauhoita uudelleen",
+      "stopRecording": "Lopeta nauhoitus",
+      "recordVoicePrompt": "Nauhoita aanikehotus",
+      "videoIntro": "Videointro",
+      "videoIntroHint": "Lataa 15 sekunnin video esitellaksesi itsesi",
+      "replaceVideo": "Vaihda video",
+      "uploadVideo": "Lataa video",
+      "showAge": "Nayta ika profiilissa",
+      "photoVerification": "Kuvaverifikointi",
+      "verified": "Verifioitu",
+      "verifyNow": "Verifioi nyt",
+      "datingPreferences": "Seurusteluasetukset",
+      "savePreferences": "Tallenna asetukset",
+      "saveProfile": "Tallenna profiili",
+      "saving": "Tallennetaan...",
+      "preferenceFields": {
+        "genderIdentity": "Sukupuoli-identiteetti",
+        "sexualOrientation": "Seksuaalinen suuntautuminen",
+        "interestedIn": "Kiinnostunut",
+        "primaryIntent": "Ensisijainen tarkoitus",
+        "ageRange": "Ikahaarukka",
+        "maxDistance": "Enimmaisetaisyys"
+      },
+      "privacyLevels": {
+        "visible": "Nakyvä",
+        "matchOnly": "Vain vastaavuudet",
+        "hidden": "Piilotettu"
+      }
+    },
+    "verify": {
+      "title": "Kuvaverifikointi",
+      "subtitle": "Vahvista henkilollisyytesi ansaitaksesi luotetun merkin seurusteluprofiiiliisi",
+      "backToProfile": "Takaisin profiiliin",
+      "verifiedTitle": "Verifioitu!",
+      "verifiedDescription": "Profiilissasi nakyy nyt verifioitu-merkki.",
+      "pendingTitle": "Tarkistettavana",
+      "pendingDescription": "Selfietasi tarkistetaan. Tama kestaa yleensa 24-48 tuntia.",
+      "rejectedTitle": "Ei hyvaksytty",
+      "rejectedHint": "Voit yrittaa uudelleen selkeammalla selfiella.",
+      "tryAgain": "Yrita uudelleen",
+      "howItWorks": "Nain se toimii:",
+      "step1": "1. Ota selkea selfie hyvalla valaistuksella",
+      "step2": "2. Varmista etta kasvosi nakyvat kokonaan",
+      "step3": "3. Vertaamme sita profiilkuviisi",
+      "step4": "4. Hyvaksynnan jalkeen saat verifioitu-merkin",
+      "takeSelfie": "Ota selfie",
+      "capture": "Kaappaa",
+      "cancel": "Peruuta",
+      "retake": "Ota uudelleen",
+      "submitForReview": "Laheta tarkistettavaksi",
+      "submitting": "Lahetetaan...",
+      "cameraAccessDenied": "Kameran kaytto estetty. Salli kameran kaytto selaimesi asetuksissa.",
+      "submissionFailed": "Lahetys epaonnistui. Yrita uudelleen.",
+      "networkError": "Verkkovirhe. Tarkista yhteytesi ja yrita uudelleen."
+    },
+    "coach": {
+      "title": "Suhdevalmentaja",
+      "subtitle": "Tekoalypohjaiset oivallukset astrologisten dynamiikkojesi perusteella",
+      "premiumFeature": "Premium-ominaisuus",
+      "backToMatches": "Takaisin vastaavuuksiin",
+      "noMatchHint": "Yhdista jonkun kanssa saadaksesi valmennusoivalluksia.",
+      "browsePicks": "Selaa valintoja",
+      "inputPlaceholder": "Kysy viestinnasta, konfliktista, laheisyydesta...",
+      "emptyHint": "Kysy ensimmainen kysymyksesi tai napauta Laheta yleisoivallusta varten.",
+      "aiInsight": "Tekoalyoivallus",
+      "template": "Malli"
+    },
+    "timing": {
+      "title": "Kosminen ajoitus",
+      "subtitle": "Planeettojen ikkunat, jotka korostavat parhaita hetkia yhteyksillesi",
+      "backToMatches": "Takaisin vastaavuuksiin",
+      "noMatchHint": "Yhdista jonkun kanssa nahdaksesi kosmisen ajoituksen ikkunat.",
+      "browsePicks": "Selaa valintoja",
+      "noWindows": "Ajoitusikkunoita ei loytynyt.",
+      "qualityExcellent": "Erinomainen",
+      "qualityGood": "Hyva",
+      "qualityNeutral": "Neutraali",
+      "qualityChallenging": "Haastava",
+      "now": "Nyt",
+      "inDays": "{{days}} pv:n paasta"
+    },
+    "events": {
+      "title": "Kosmiset tapahtumat",
+      "subtitle": "Teemoitetut seurustelutapahtumat kosmoksen mukaan",
+      "backToDating": "Takaisin seurusteluun",
+      "tabs": {
+        "upcoming": "Tulevat",
+        "myEvents": "Tapahtumani"
+      },
+      "noUpcoming": "Ei tulevia tapahtumia juuri nyt. Tarkista pian uudelleen!",
+      "noRegistered": "Et ole ilmoittautunut mihinkaan tapahtumaan viela.",
+      "live": "LIVE",
+      "maxCount": "Enintaan {{count}}",
+      "elementOnly": "Vain {{element}}-merkit",
+      "registered": "Ilmoittautunut",
+      "cancelRegistration": "Peruuta",
+      "register": "Ilmoittaudu",
+      "registering": "Ilmoittaudutaan..."
+    },
+    "milestones": {
+      "title": "Suhteen virstanpylvaat",
+      "subtitle": "Seuraa yhteista matkaanne tahtien alla",
+      "backToMatches": "Takaisin vastaavuuksiin",
+      "noMatchHint": "Yhdista jonkun kanssa seurataksesi virstanpylvaita.",
+      "browsePicks": "Selaa valintoja",
+      "journeyProgress": "Matkan edistyminen",
+      "mark": "Merkitse"
+    },
+    "datePlanner": {
+      "title": "Treffi-iltasuunnittelija",
+      "subtitle": "Kosmisesti kuratoidut treffi-ideat sinulle ja vastaavuudellesi",
+      "backToMatches": "Takaisin vastaavuuksiin",
+      "noMatchHint": "Yhdista jonkun kanssa saadaksesi treffiehdotuksia.",
+      "browsePicks": "Selaa valintoja",
+      "shuffleIdeas": "Sekoita ideoita",
+      "elementEnergy": "{{element}}-energia"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Kosminen syote",
+    "createPost": "Luo julkaisu",
+    "postTypes": {
+      "text": "Teksti",
+      "photo": "Kuva",
+      "video": "Video",
+      "poll": "Kysely"
+    },
+    "composer": {
+      "placeholder": "Mita kosmista mielessasi liikkuu?",
+      "uploadImage": "Klikkaa ladataksesi kuva",
+      "uploadVideo": "Klikkaa ladataksesi video",
+      "imageSizeLimit": "Kuvan tulee olla alle 10 MB",
+      "videoSizeLimit": "Videon tulee olla alle 200 MB",
+      "backgroundStyle": "Taustatyyli",
+      "visibility": "Nakyvyys:",
+      "visibilityPublic": "Julkinen",
+      "visibilityFriends": "Ystavat",
+      "postButton": "Julkaise",
+      "posting": "Julkaistaan...",
+      "uploadingImage": "Ladataan kuvaa...",
+      "uploadingVideo": "Ladataan videota...",
+      "addImage": "Lisaa kuva",
+      "addVideo": "Lisaa video",
+      "editPost": "Muokkaa julkaisua"
+    },
+    "poll": {
+      "question": "Kysymys",
+      "questionPlaceholder": "Kysy kosmokselta...",
+      "options": "Vaihtoehdot",
+      "optionPlaceholder": "Vaihtoehto {{number}}",
+      "addOption": "Lisaa vaihtoehto",
+      "duration": "Kesto",
+      "durationOptions": {
+        "1h": "1 tunti",
+        "6h": "6 tuntia",
+        "12h": "12 tuntia",
+        "1d": "1 paiva",
+        "3d": "3 paivaa",
+        "7d": "7 paivaa"
+      },
+      "createPoll": "Luo kysely",
+      "pollNeedsContent": "Kysely tarvitsee kysymyksen ja vahintaan 2 vaihtoehtoa"
+    },
+    "empty": {
+      "title": "Kosminen syotteesi odottaa",
+      "description": "Jaa lukemisia, karttoja ja kosmisia oivalluksia yhteisollesi.",
+      "createFirst": "Luo ensimmainen julkaisusi"
+    },
+    "loadMore": "Lataa lisaa",
+    "loading": "Ladataan..."
+  },
+  "friends": {
+    "title": "Ystavat ja yhteydet",
+    "friendCount": "{{count}} ystavaa",
+    "pendingCount": "{{count}} odottamassa",
+    "inviteFriends": "Kutsu ystavia",
+    "qrCode": "QR-koodi",
+    "tabs": {
+      "friends": "Ystavat",
+      "requests": "Pyynnot",
+      "search": "Etsi"
+    },
+    "suggestionsTitle": "Ihmisia joita saatat tuntea",
+    "addButton": "+ Lisaa",
+    "empty": {
+      "noFriends": "Ei ystavia viela",
+      "noFriendsHint": "Etsi ihmisia tai jaa Align-koodisi",
+      "findPeople": "Loyda ihmisia",
+      "noRequests": "Ei odottavia pyyntoja",
+      "noRequestsHint": "Lahetedtyt ja vastaanotetut ystavapyynnot nakyvat taalla"
+    },
+    "requests": {
+      "wantsToConnect": "Haluaa yhdistya",
+      "requestSent": "Pyynto lahetetty",
+      "accept": "Hyvaksy",
+      "decline": "Hylkaa",
+      "cancel": "Peruuta"
+    },
+    "search": {
+      "placeholder": "Etsi nimella, kayttajanimella tai Align-koodilla...",
+      "searching": "Etsitaan...",
+      "noResults": "Kayttajia ei loytynyt",
+      "noResultsHint": "Kokeile toista hakusanaa",
+      "startSearch": "Etsi ihmisia",
+      "minCharsHint": "Kirjoita vahintaan 2 merkkia..."
+    },
+    "labels": {
+      "friends": "Ystavat",
+      "pending": "Odottaa"
+    },
+    "actions": {
+      "removeFriend": "Poista ystava",
+      "blockUser": "Esta kayttaja",
+      "removeConfirm": "Poista {{name}} ystavistasi?",
+      "blockConfirm": "Esta {{name}}? He eivat voi loytaa tai ottaa sinuun yhteytta.",
+      "viewProfile": "Nayta profiili",
+      "message": "Viesti",
+      "viewFullProfile": "Nayta koko profiili",
+      "close": "Sulje",
+      "requestPending": "Pyynto odottaa",
+      "addFriend": "Lisaa ystava",
+      "acceptRequest": "Hyvaksy pyynto",
+      "confirm": "Vahvista",
+      "ok": "OK"
+    },
+    "alignCode": "Align-koodi:"
+  },
+  "messages": {
+    "signInRequired": "Kirjaudu sisaan paastaksesi viesteihin",
+    "selectConversation": "Valitse keskustelu",
+    "startNewChat": "tai aloita uusi keskustelu yhdistymiseksi",
+    "newChat": "Uusi keskustelu",
+    "contextMenu": {
+      "reply": "Vastaa",
+      "react": "Reagoi",
+      "edit": "Muokkaa",
+      "delete": "Poista",
+      "forward": "Valita eteenpain",
+      "pin": "Kiinnita",
+      "unpin": "Irrota",
+      "copyText": "Kopioi teksti"
+    },
+    "pickReaction": "Valitse reaktio",
+    "messageTypes": {
+      "image": "Kuva",
+      "gif": "GIF",
+      "voiceMessage": "Aaniviesti",
+      "location": "Sijainti",
+      "poll": "Kysely:"
+    },
+    "composer": {
+      "placeholder": "Kirjoita viesti...",
+      "send": "Laheta",
+      "attachment": "Liite"
+    }
+  },
+  "notifications": {
+    "title": "Ilmoitukset",
+    "markAllRead": "Merkitse kaikki luetuiksi",
+    "filters": {
+      "all": "Kaikki",
+      "social": "Sosiaaliset",
+      "cosmic": "Kosmiset",
+      "system": "Jarjestelma"
+    },
+    "empty": {
+      "all": "Ei ilmoituksia viela",
+      "allHint": "Kosmiset halytyksesi ja sosiaaliset paivityksesi nakyvat taalla.",
+      "social": "Ei sosiaalisia ilmoituksia",
+      "socialHint": "Ystavapyynnot, viestit ja reaktiot nakyvat taalla.",
+      "cosmic": "Ei kosmisia halytyksia",
+      "cosmicHint": "Transittihalytykset ja kosmiset tapahtumat nakyvat taalla.",
+      "system": "Ei jarjestelmailmoituksia",
+      "systemHint": "Jarjestelmapaivitykset ja tiedotteet nakyvat taalla."
+    },
+    "time": {
+      "justNow": "juuri nyt",
+      "minutesAgo": "{{count}} min sitten",
+      "hoursAgo": "{{count}} h sitten",
+      "daysAgo": "{{count}} pv sitten"
+    },
+    "grouped": "{{count}} ilmoitusta"
+  },
+  "communities": {
+    "title": "Yhteisot",
+    "subtitle": "Loyda kosminen heimosi",
+    "create": "Luo",
+    "tabs": {
+      "discover": "Tutustu",
+      "myCommunities": "Yhteisoni"
+    },
+    "searchPlaceholder": "Etsi yhteisoja...",
+    "filterAll": "Kaikki",
+    "loading": "Ladataan yhteisoja...",
+    "empty": {
+      "title": "Ei yhteisoja viela",
+      "description": "Ole ensimmainen luomassa kosminen yhteiso!",
+      "createButton": "Luo yhteiso"
+    },
+    "featured": "Esitellyt",
+    "allCommunities": "Kaikki yhteisot",
+    "noResultsSearch": "Yhteisoja ei loytynyt haulle \"{{query}}\"",
+    "noResultsCategory": "Tassa kategoriassa ei ole viela yhteisoja.",
+    "yourCircle": {
+      "title": "Kosminen piirisi odottaa",
+      "description": "Liity tai luo yhteisoja loytaaksesi heimosi.",
+      "exploreButton": "Tutustu yhteisiohin"
+    },
+    "memberCount_one": "{{count}} jasen",
+    "memberCount_other": "{{count}} jasenta",
+    "private": "Yksityinen",
+    "join": "Liity",
+    "joined": "Liitytty"
+  },
+  "profile": {
+    "title": "Profiili",
+    "editProfile": "Muokkaa profiilia",
+    "shareBigThree": "Jaa kolme suurtasi",
+    "stats": {
+      "friends": "Ystavat",
+      "posts": "Julkaisut",
+      "followers": "Seuraajat",
+      "following": "Seuratut",
+      "views": "Nayttokerrat"
+    },
+    "tabs": {
+      "posts": "Julkaisut",
+      "photos": "Kuvat",
+      "reels": "Reelsit",
+      "about": "Tietoja"
+    },
+    "alignCode": "Align-koodisi",
+    "alignCodeHint": "Jaa koodisi etta ystavat loytavat sinut",
+    "quickLinks": {
+      "gallery": "Galleria",
+      "safetyTrust": "Turvallisuus ja luottamus",
+      "subscription": "Tilaus",
+      "referrals": "Suosittelut",
+      "settings": "Asetukset"
+    },
+    "about": {
+      "bio": "Biografia",
+      "bigThree": "Kolme suurta",
+      "starseedOrigin": "Tahdensiemen-alkupera",
+      "humanDesign": "Human Design",
+      "joined": "Liittynyt",
+      "alignCode": "Align-koodi"
+    },
+    "empty": {
+      "noPosts": "Ei julkaisuja viela",
+      "noPhotos": "Ei kuvia viela",
+      "noReels": "Ei reelseja viela"
+    },
+    "loadingProfile": "Ladataan profiilia...",
+    "profileViews": "Profiilin nayttokerrat",
+    "noViews": "Ei profiilin nayttokertoja viela",
+    "editPost": "Muokkaa julkaisua"
+  },
+  "editProfile": {
+    "title": "Muokkaa profiilia",
+    "displayName": "Nayttonimi",
+    "bio": "Biografia",
+    "bioPlaceholder": "Kerro kosmokselle itsestasi...",
+    "birthData": "Syntymatiedot",
+    "date": "Paivamaara",
+    "time": "Aika",
+    "location": "Sijainti",
+    "locationPlaceholder": "Etsi kaupunkia, osavaltiota tai maata...",
+    "saveChanges": "Tallenna muutokset",
+    "saving": "Tallennetaan...",
+    "tapAddCover": "Napauta lisataksesi kansikuva",
+    "errors": {
+      "saveFailed": "Profiilin tallentaminen epaonnistui",
+      "avatarFailed": "Avatarin lataaminen epaonnistui",
+      "coverFailed": "Kansikuvan lataaminen epaonnistui"
     }
   },
   "settings": {
@@ -213,163 +1039,410 @@
     "jargonPlain": "Selkokieli",
     "subscription": "Tilaus",
     "notifications": "Ilmoitukset",
-    "houseSystem": "Huonejärjestelmä",
+    "houseSystem": "Huonejarjestelma",
     "darkMode": "Tumma tila",
     "about": "Tietoja Alignista",
-    "privacy": "Tietosuojakäytäntö",
-    "terms": "Käyttöehdot",
-    "logout": "Kirjaudu ulos"
+    "privacy": {
+      "title": "Yksityisyys ja tiedot",
+      "profileVisibility": "Profiilin nakyvyys",
+      "visibilityOptions": {
+        "public": "Julkinen",
+        "friendsOnly": "Vain ystavat",
+        "private": "Yksityinen"
+      },
+      "hideAge": "Piilota ika",
+      "hideExactLocation": "Piilota tarkka sijainti",
+      "hideLastActive": "Piilota viimeksi aktiivinen",
+      "hideFullBirthChart": "Piilota koko syntymakartta",
+      "incognitoMode": "Incognito-tila",
+      "blockUnverified": "Esta vahvistamattomat kayttajat",
+      "minimumTrustLevel": "Vahimmaisluottamustaso",
+      "trustLevels": {
+        "any": "Mikä tahansa",
+        "low": "Matala",
+        "medium": "Keskitaso",
+        "high": "Korkea"
+      },
+      "analyticsEnabled": "Analytiikka",
+      "exportData": "Vie tietoni",
+      "exportToast": "Tietojen vientipyyntosi on vastaanotettu. Saat sen sahkopostilla."
+    },
+    "terms": "Kayttoehdot",
+    "logout": "Kirjaudu ulos",
+    "account": "Tili",
+    "email": "Sahkoposti",
+    "name": "Nimi",
+    "notSet": "Ei asetettu",
+    "planLabel": "{{plan}}-paketti",
+    "upgradeHint": "Paivita saadaksesi lisaa ominaisuuksia",
+    "managedVia": "Hallinnoitu RevenueCatin kautta",
+    "manage": "Hallitse",
+    "upgrade": "Paivita",
+    "subPages": {
+      "chatTheme": "Keskusteluteema",
+      "notifications": "Ilmoitukset",
+      "privacy": "Yksityisyys",
+      "astrologyPreferences": "Astologia-asetukset",
+      "friends": "Ystavat",
+      "referrals": "Suosittelut",
+      "subscriptionPlans": "Tilauspaketit",
+      "datingIdentity": "Seurusteluidentiteetti",
+      "relationshipIntent": "Suhdeaikomus",
+      "connectionPreferences": "Yhteysasetukset",
+      "identityPrivacy": "Identiteetin yksityisyys",
+      "safety": "Turvallisuus",
+      "termsOfService": "Kayttoehdot",
+      "communityGuidelines": "Yhteison saannot"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Espanol",
+      "fr": "Francais",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Portugues",
+      "ru": "Russkij",
+      "ja": "Nihongo",
+      "ko": "Hangugeo",
+      "zh": "Zhongwen",
+      "ar": "Al-Arabiya",
+      "hi": "Hindi",
+      "tr": "Turkce",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "Thai"
+    },
+    "admin": {
+      "title": "Yllapito",
+      "manageUsers": "Hallitse kayttajatilejä",
+      "contentModeration": "Sisallon moderointi",
+      "manageCelebrities": "Hallitse julkkiksia",
+      "payoutQueue": "Maksujoono"
+    },
+    "aboutSection": {
+      "version": "Versio",
+      "poweredBy": "Voimanlahde",
+      "contact": "Yhteystiedot"
+    },
+    "signOut": "Kirjaudu ulos",
+    "deleteAccount": "Poista tili",
+    "deleteConfirm": {
+      "title": "Poista tili?",
+      "message": "Tama poistaa tilisi ja kaikki siihen liittyvat tiedot pysyvasti. Tata toimintoa ei voi perua.",
+      "confirm": "Poista tilini",
+      "cancel": "Peruuta"
+    },
+    "astrology": {
+      "title": "Astrologia-asetukset",
+      "autoSaveHint": "Muutokset tallennetaan automaattisesti ja koskevat kaikkia karttalaskelmia.",
+      "houseSystem": "Huonejarjestelma",
+      "houseSystemHint": "Maarittaa miten karttasi huoneet lasketaan",
+      "houseSystems": {
+        "wholeSign": "Koko merkki",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Tasa-arvoinen huone",
+        "porphyry": "Porphyry",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Toposentrinen",
+        "morinus": "Morinus",
+        "meridian": "Meridiaani"
+      },
+      "zodiacSystem": "Eläinratajarjestelma",
+      "zodiacSystems": {
+        "tropical": "Trooppinen (lansimainen)",
+        "sidereal": "Sideraalinen (veda)"
+      },
+      "languageLevel": "Kielitaso",
+      "languageLevelHint": "Kuinka teknisia tulkintojen tulisi olla?",
+      "jargonModes": {
+        "plain": "Selkokieli",
+        "mixed": "Sekoitettu",
+        "technical": "Tekninen"
+      },
+      "orbTightness": "Orbin tiukkuus",
+      "orbOptions": {
+        "tight": "Tiukka",
+        "standard": "Standardi",
+        "wide": "Lavea"
+      },
+      "showAsteroids": "Nayta asteroidit",
+      "showFixedStars": "Nayta kiintotahdet"
+    },
+    "notificationsPage": {
+      "title": "Ilmoitusasetukset",
+      "pauseAll": "Tauota kaikki ilmoitukset",
+      "social": {
+        "title": "Sosiaaliset ilmoitukset",
+        "friendRequests": "Ystavapyynnot",
+        "messages": "Viestit",
+        "reactions": "Reaktiot",
+        "comments": "Kommentit"
+      },
+      "cosmic": {
+        "title": "Kosmiset ilmoitukset",
+        "frequency": "Tiheys",
+        "frequencyOptions": {
+          "essential": "Olennaiset",
+          "important": "Tarkeat",
+          "all": "Kaikki"
+        },
+        "tone": "Savy",
+        "toneOptions": {
+          "gentle": "Lempea",
+          "direct": "Suora",
+          "intense": "Intensiivinen"
+        },
+        "categories": {
+          "majorTransits": "Suuret transitit",
+          "moonPhases": "Kuun vaiheet",
+          "mercuryRetrograde": "Merkurius retrogradi",
+          "loveRelationships": "Rakkaus ja suhteet",
+          "moneyValues": "Raha ja arvot",
+          "careerAmbition": "Ura ja kunnianhimo",
+          "healingGrowth": "Parantuminen ja kasvu"
+        },
+        "aspects": {
+          "title": "Aspektityypit",
+          "conjunctions": "Konjunktiot",
+          "oppositions": "Oppositiot",
+          "squares": "Neliot",
+          "trines": "Kolmiot",
+          "sextiles": "Sekstiilit"
+        },
+        "events": {
+          "title": "Kosmiset tapahtumat",
+          "moonPhases": "Kuun vaiheet",
+          "eclipses": "Pimennyikset",
+          "retrogrades": "Retrogradit",
+          "ingresses": "Sisaantuemiset"
+        },
+        "minIntensity": "Vahimmasintensteetti",
+        "advanceNotice": "Ennakkoilmoitus (paivaa)"
+      },
+      "galactic": {
+        "title": "Galaktiset ilmoitukset",
+        "planetaryHours": "Planetaariset tunnit",
+        "dayRuler": "Paivan hallitsija",
+        "goldenHour": "Kultainen tunti",
+        "eclipseWatch": "Pimennysvahti",
+        "retrogradeAlerts": "Retrogradihalytykset",
+        "minutesBefore": "Minuuttia ennen"
+      },
+      "summaries": {
+        "title": "Yhteenvedot",
+        "daily": "Paivittainen yhteenveto",
+        "weekly": "Viikoittainen yhteenveto"
+      },
+      "quietHours": {
+        "title": "Hiljaiset tunnit",
+        "enabled": "Ota hiljaiset tunnit kayttoon",
+        "start": "Alku",
+        "end": "Loppu",
+        "urgentOverride": "Salli kiireelliset ilmoitukset"
+      },
+      "delivery": {
+        "title": "Toimitus",
+        "sound": "Aani",
+        "badge": "Merkki"
+      },
+      "announcements": "Sovelluksen tiedotteet"
+    },
+    "referrals": {
+      "title": "Suosittelut",
+      "howItWorks": "Nain se toimii",
+      "step1": "Jaa ainutlaatuinen suosittelulinkkisi ystaville",
+      "step2": "Kun he rekisteroityvat linkkisi kautta, molemmat saavat 5 bonuslukemista",
+      "step3": "Rajaa ei ole -- kutsu niin monta ystavaa kuin haluat!"
+    },
+    "chatTheme": {
+      "title": "Keskusteluteema",
+      "subtitle": "Mukauta viestiesi ulkoasua"
+    },
+    "datingIdentity": {
+      "title": "Seurusteluidentiteetti",
+      "subtitle": "Kuinka identifioidut seurustelualueella"
+    },
+    "relationshipIntent": {
+      "title": "Suhdeaikomus",
+      "subtitle": "Mita etsit yhteyksista"
+    },
+    "connectionPreferences": {
+      "title": "Yhteysasetukset",
+      "subtitle": "Kenen kanssa haluaisit yhdistya"
+    },
+    "identityPrivacy": {
+      "title": "Identiteetin yksityisyys",
+      "subtitle": "Hallitse kuka nakee identiteettitietosi"
+    },
+    "safety": {
+      "title": "Turvallisuus",
+      "subtitle": "Hallitse estoja, raportteja ja turvallisuusasetuksia"
+    },
+    "friends": {
+      "title": "Ystava-asetukset",
+      "subtitle": "Hallitse ystäväpyynto- ja yhteysasetuksia"
+    },
+    "termsPage": {
+      "title": "Kayttoehdot"
+    },
+    "communityGuidelines": {
+      "title": "Yhteison saannot"
+    }
   },
   "subscription": {
-    "headline": "Tarkkaa astrologiaa. Henkilökohtaisesti sinulle.",
-    "subheadline": "Neljä tapaa käyttää kaikkien aikojen edistyneintä syntymäkarttaälyä. Ei sopimuksia. Peru milloin tahansa.",
+    "headline": "Tarkkaa astrologiaa. Henkilokohtaisesti sinulle.",
+    "subheadline": "Nelja tapaa kayttaa kaikkien aikojen edistyneinta syntymakarttaalyä. Ei sopimuksia. Peru milloin tahansa.",
     "mostPopular": "Suosituin",
     "perMonth": "/kuukausi",
     "restore": "Palauta ostokset",
     "cancel": "Peru milloin tahansa. Ei sopimuksia.",
-    "socialProof": "73 % jäsenistä valitsee tämän tilauksen.",
+    "socialProof": "73 % jasenista valitsee taman tilauksen.",
+    "title": "Valitse polkusi",
+    "subtitle": "Peruuta milloin tahansa. 14 paivan ilmaisjakso kaikilla paketeilla.",
+    "priceFree": "Ilmainen",
+    "priceCurrency": "$",
+    "loadingPlans": "Ladataan tilauspaketteja...",
+    "tapToRetry": "Napauta yrittaaksesi uudelleen",
+    "tapForDiagnostics": "Napauta taasta nayttaaksesi diagnostiikan",
+    "comparisonTitle": "Mika paketti sopii sinulle?",
+    "faqTitle": "Usein kysyttya",
+    "footerText": "Tilauksia hallitaan App Store / Google Play -kauppojen kautta.",
+    "manageButton": "Hallitse tilausta",
+    "termsOfService": "Kayttoehdot",
+    "privacyPolicy": "Tietosuojakaytanto",
+    "restorePurchase": "Palauta osto",
+    "restoring": "Palautetaan...",
     "free": {
       "name": "Ilmainen",
       "price": "$0",
-      "tagline": "Tutustu kosmokseen ilmaiseksi.",
+      "tagline": "Tutustu kosmokseen ilmaiseksi",
       "cta": "Aloita ilmaiseksi",
+      "bestFor": "Astrologiasta uteliaille aloittelijoille, jotka haluavat tutkia ennen sitoutumista.",
       "features": [
-        "Syntymäkartan peruskatsaus",
-        "Päivittäiset horoskooppioivallukset",
-        "3 tekoälyluentaa kuukaudessa",
-        "Yksittäiset tarot-korttinostot",
+        "Syntymakartan peruskatsaus",
+        "Paivittaiset horoskooppioivallukset",
+        "3 tekoalyluentaa kuukaudessa",
+        "Yksittaiset tarot-korttinostot",
         "Planetaaristen tuntien laskin",
         "1 tallennettu profiili"
-      ],
-      "bestFor": "Astrologiasta uteliailta aloittelijoilta, jotka haluavat tutkia ennen sitoutumista."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Selkeys alkaa tästä.",
+      "tagline": "Paivittainen kosminen kumppanisi",
       "cta": "Aloita Lightilla",
+      "bestFor": "Satunnaisille tutkijoille, jotka haluavat paivittaista kosmista opastusta ja perustietoa kartastaan.",
       "features": [
-        "Päivittäiset henkilökohtaiset oivallukset",
-        "Syntymäkartta ydinsijainneilla",
-        "10 tekoälyluentaa kuukaudessa",
-        "Reaaliaikaiset transittihälytykset",
-        "Päivittäinen tarot-korttiopastus",
-        "Planetaaristen tuntien laskin",
-        "Numerologian elämänpolun katsaus",
-        "1 tallennettu syntymäprofiili"
-      ],
-      "bestFor": "Satunnaisille tutkijoille, jotka haluavat päivittäistä kosmista opastusta ja perustietoa kartastaan."
+        "Kaikki Ilmainen-paketista",
+        "Taydet paivittaiset henkilokohtaiset oivallukset",
+        "30 tekoalypohjaiista lukemista kuukaudessa",
+        "Reaaliaikaiset transittihalytykset",
+        "Numerologian elamanpolun katsaus",
+        "1 tallennettu syntymaprofiili"
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Missä syvyys kohtaa selkeyden.",
-      "cta": "Hanki Premium — Paras arvo",
-      "features": [
-        "Kaikki Light-tilauksesta",
-        "50 syväluenta tekoälyllä kuukaudessa",
-        "Täysi kartta — aspektit, kuviot, kiintotähdet",
-        "Progressio- ja aurinko-/kuupaluukartat",
-        "Synastria ja komposiittiyhteensopivuus",
-        "Tähdensiemen-alkuperä ja Human Design",
-        "Kaikki 6 tarot-asettelua tekoälyllä",
-        "Talousastrologiaraportti",
-        "Selkokielitila — ei ammattikieltä",
-        "5 tallennettua syntymäprofiilia",
-        "Kaikki astrologiakurssit"
-      ],
+      "tagline": "Avaa koko kosminen suunnitelmasi",
       "badge": "SUOSITUIN",
-      "bestFor": "Innokkaille, jotka ovat valmiita sukeltamaan syvälle astrologiseen kokonaiskarttaan ja ihmissuhteisiin."
+      "cta": "Hanki Premium -- paras arvo",
+      "bestFor": "Innokkaille, jotka ovat valmiita sukeltamaan syvälle astrologiseen kokonaiskarttaan ja ihmissuhteisiin.",
+      "features": [
+        "Kaikki Light-paketista",
+        "Taysi kartta aspekteilla ja kuvioilla",
+        "100 tekoalylukemista kuukaudessa",
+        "Kaikki karttatyypit (progressio, paluut, synastria)",
+        "Yhteensopivuus- ja komposiittikartat",
+        "Tahdensiemen, numerologia, Human Design",
+        "Tarot-asettelut (kaikki 5 tyyppia)",
+        "Ammattikielen vaihto (selkokielitila)",
+        "5 tallennettua profiilia",
+        "Kaikki astrologiakurssit"
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Koko kuva. Mitään piilotettua.",
-      "cta": "Avaa Pro-käyttöoikeus",
+      "tagline": "Vakavalle harjoittajalle",
+      "cta": "Siirry Prohon",
+      "bestFor": "Ammattiastrologeille ja omistautuneille harjoittajille, jotka tarvitsevat kaikki saatavilla olevat tyokalut.",
       "features": [
-        "Kaikki Premium-tilauksesta",
-        "200 tekoälyluentaa kuukaudessa",
-        "Astrokartografian maailmankartat",
+        "Kaikki Premium-paketista",
+        "300 tekoalylukemista kuukaudessa",
+        "Talousastrologiaraportti",
+        "Astrokartografia (ACG)",
         "Firdaria ja Zodiacal Releasing",
-        "Arabialaisten pisteiden ja kiintotähtien syväanalyysit",
-        "Ensisijainen tekoäly — nopeampi käsittely",
-        "Rajaton määrä tallennettuja profiileja ja luentoja",
-        "Vietävät ammattilaisraportit",
-        "Varhainen pääsy uusiin ominaisuuksiin",
-        "Tekoäly 20 kielellä"
-      ],
-      "bestFor": "Ammattiastrologeille ja omistautuneille harjoittajille, jotka tarvitsevat kaikki saatavilla olevat työkalut."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Linkkiä ei voitu avata.",
-      "diagnostics": "Diagnostiikka",
-      "errorTitle": "Virhe",
-      "manageError": "Tilauksen hallintaa ei voitu avata. Avaa Play Store tai App Store manuaalisesti.",
-      "noActiveBody": "Tälle tilille ei löytynyt aiempaa tilausta.",
-      "noActiveTitle": "Ei aktiivista tilausta",
-      "ok": "OK",
-      "planNotFoundBody": "Tämä paketti ei ole tilapäisesti saatavilla kaupassa. Yritä myöhemmin uudelleen.",
-      "planNotFoundTitle": "Pakettia ei löytynyt",
-      "purchaseFailedDefault": "Jokin meni pieleen.",
-      "purchaseFailedLong": "Jokin meni pieleen ostosi käsittelyssä. Yritä uudelleen.",
-      "purchaseFailedTitle": "Osto epäonnistui",
-      "restoreError": "Ostoja ei voitu palauttaa",
-      "restoredBody": "Tilauksesi on palautettu onnistuneesti.",
-      "restoredTitle": "Palautettu!",
-      "retry": "Yritä uudelleen",
-      "subscriptionsUnavailableHint": "Varmista että olet kirjautunut Play Storeen ja yritä uudelleen.",
-      "subscriptionsUnavailableTitle": "Tilaukset eivät saatavilla",
-      "unavailableBody": "Tämä paketti ei ole saatavilla juuri nyt.",
-      "unavailableTitle": "Ei saatavilla",
-      "unsupportedBody": "Tilauksen hallinta on saatavilla vain iOS:ssä ja Androidissa.",
-      "unsupportedTitle": "Ei tuettu",
-      "welcomeBody": "Tilauksesi on aktiivinen. Nauti laajennetusta kosmisesta työkalupakistasi.",
-      "welcomeTitle": "Tervetuloa mukaan!"
-    },
-    "comparisonTitle": "Mikä paketti sopii sinulle?",
-    "errors": {
-      "apiKeyPlaceholder": "Tilauspalvelu ei ole määritetty tälle versiolle. (Sisäinen: RevenueCat API-avain on paikkamerkki.)",
-      "connectionFailed": "Tilauspalveluun ei saatu yhteyttä. Tarkista yhteytesi ja yritä uudelleen.",
-      "loadFailed": "Tilauspaketteja ei voitu ladata. Yritä myöhemmin uudelleen.",
-      "loadFailedConnection": "Tilauspaketteja ei voitu ladata. Tarkista yhteytesi.",
-      "nativeModuleMissing": "Tilauspalvelu ei ole saatavilla tässä versiossa. (Sisäinen: natiivimoduulia ei ole linkitetty.)",
-      "noApiKey": "Tilauspalvelu ei ole määritetty tälle alustalle. (Sisäinen: API-avain puuttuu.)",
-      "noOfferings": "Aktiivisia tilauspaketteja ei ole vielä julkaistu. Yritä myöhemmin uudelleen.",
-      "noPackages": "Tilauspaketteja viimeistellään kaupassa. Yritä myöhemmin uudelleen.",
-      "stillStarting": "Tilauspalvelu käynnistyy vielä. Odota hetki ja yritä uudelleen."
+        "Kiintotahdet ja arabialaiset pisteet",
+        "Ensisijainen tekoalykasittely",
+        "Varhainen paasy uusiin ominaisuuksiin",
+        "Rajaton maara tallennettuja profiileja",
+        "Vie ja jaa raportteja"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "Tekoälylukukerroitukset nollautuvat jokaisella laskutusjaksolla eivätkä siirry. Tämä pitää tekoälyinfrastruktuurimme nopeana ja reagoivana kaikille käyttäjille.",
-        "question": "Siirtyvätkö tekoälylukukerroitukset?"
-      },
-      "security": {
-        "answer": "Ehdottomasti. Kaikki henkilökohtaiset ja syntymätiedot on salattu sekä tallennuksessa että siirrossa. Emme koskaan myy tietojasi, ja voit poistaa tilisi ja kaikki siihen liittyvät tiedot milloin tahansa.",
-        "question": "Ovatko syntymätietoni turvassa?"
-      },
       "switch": {
-        "answer": "Kyllä! Voit päivittää tai alentaa pakettiasi milloin tahansa. Päivittäessä saat välittömän pääsyn uusiin ominaisuuksiin. Alentaessa nykyiset etusi jatkuvat laskutusjakson loppuun saakka.",
-        "question": "Voinko vaihtaa pakettia milloin tahansa?"
+        "question": "Voinko vaihtaa pakettia milloin tahansa?",
+        "answer": "Kylla! Voit paivittaa tai alentaa pakettiasi milloin tahansa. Paivittäessä saat valittoman paasyn uusiin ominaisuuksiin. Alentaessa nykyiset etusi jatkuvat laskutusjakson loppuun saakka."
       },
       "trial": {
-        "answer": "14 päivän ilmaisjaksosi antaa sinulle täyden pääsyn valitsemaasi pakettiin. Sinua ei veloiteta ennen kuin koejakso päättyy, ja voit peruuttaa milloin tahansa sitä ennen ilman sitoumuksia.",
-        "question": "Mitä tapahtuu ilmaisjakson jälkeen?"
+        "question": "Mita tapahtuu ilmaisjakson jalkeen?",
+        "answer": "14 paivan ilmaisjaksosi antaa sinulle tayden paasyn valitsemaasi pakettiin. Sinua ei veloiteta ennen kuin koejakso paattyy, ja voit peruuttaa milloin tahansa sita ennen ilman sitoumuksia."
+      },
+      "rollover": {
+        "question": "Siirtyvatko tekoalylukemiset?",
+        "answer": "Tekoalylukemiskrediiit nollautuvat jokaisella laskutusjaksolla eivatka siirry. Tama pitaa tekoalyinfrastruktuurimme nopeana ja reagoivana kaikille kayttajille."
+      },
+      "security": {
+        "question": "Ovatko syntymatietoni turvassa?",
+        "answer": "Ehdottomasti. Kaikki henkilokohtaiset ja syntymatiedot on salattu seka tallennuksessa etta siirrossa. Emme koskaan myy tietojasi, ja voit poistaa tilisi ja kaikki siihen liittyvat tiedot milloin tahansa."
       }
     },
-    "faqTitle": "Usein kysyttyä",
-    "footerText": "Tilauksia hallitaan App Store / Google Play -kauppojen kautta.",
-    "loadingPlans": "Ladataan tilauspaketteja...",
-    "manageButton": "Hallitse tilausta",
-    "priceCurrency": "$",
-    "priceFree": "Ilmainen",
-    "privacyPolicy": "Tietosuojakäytäntö",
-    "restorePurchase": "Palauta osto",
-    "restoring": "Palautetaan...",
-    "subtitle": "Peruuta milloin tahansa. 14 päivän ilmaisjakso kaikilla paketeilla.",
-    "tapForDiagnostics": "Napauta tästä näyttääksesi diagnostiikan",
-    "tapToRetry": "Napauta yrittääksesi uudelleen",
-    "termsOfService": "Käyttöehdot",
-    "title": "Valitse polkusi"
+    "alerts": {
+      "unavailableTitle": "Ei saatavilla",
+      "unavailableBody": "Tama paketti ei ole saatavilla juuri nyt.",
+      "purchaseFailedTitle": "Osto epaonnistui",
+      "purchaseFailedDefault": "Jokin meni pieleen.",
+      "purchaseFailedLong": "Jokin meni pieleen ostosi kasittelyssa. Yrita uudelleen.",
+      "welcomeTitle": "Tervetuloa mukaan!",
+      "welcomeBody": "Tilauksesi on aktiivinen. Nauti laajennetusta kosmisesta tyokalupakistasi.",
+      "ok": "OK",
+      "subscriptionsUnavailableTitle": "Tilaukset eivat saatavilla",
+      "subscriptionsUnavailableHint": "Varmista etta olet kirjautunut Play Storeen ja yrita uudelleen.",
+      "retry": "Yrita uudelleen",
+      "diagnostics": "Diagnostiikka",
+      "planNotFoundTitle": "Pakettia ei loytynyt",
+      "planNotFoundBody": "Tama paketti ei ole tilapaisesti saatavilla kaupassa. Yrita myohemmin uudelleen.",
+      "errorTitle": "Virhe",
+      "couldNotOpenLink": "Linkkia ei voitu avata.",
+      "unsupportedTitle": "Ei tuettu",
+      "unsupportedBody": "Tilauksen hallinta on saatavilla vain iOS:ssa ja Androidissa.",
+      "manageError": "Tilauksen hallintaa ei voitu avata. Avaa Play Store tai App Store manuaalisesti.",
+      "restoredTitle": "Palautettu!",
+      "restoredBody": "Tilauksesi on palautettu onnistuneesti.",
+      "noActiveTitle": "Ei aktiivista tilausta",
+      "noActiveBody": "Talle tilille ei loytynyt aiempaa tilausta.",
+      "restoreError": "Ostoja ei voitu palauttaa"
+    },
+    "errors": {
+      "loadFailed": "Tilauspaketteja ei voitu ladata. Yrita myohemmin uudelleen.",
+      "loadFailedConnection": "Tilauspaketteja ei voitu ladata. Tarkista yhteytesi.",
+      "apiKeyPlaceholder": "Tilauspalvelu ei ole maaritetty talle versiolle. (Sisainen: RevenueCat API-avain on paikkamerkki.)",
+      "noApiKey": "Tilauspalvelu ei ole maaritetty talle alustalle. (Sisainen: API-avain puuttuu.)",
+      "nativeModuleMissing": "Tilauspalvelu ei ole saatavilla tassa versiossa. (Sisainen: natiivimoduulia ei ole linkitetty.)",
+      "noOfferings": "Aktiivisia tilauspaketteja ei ole viela julkaistu. Yrita myohemmin uudelleen.",
+      "noPackages": "Tilauspaketteja viimeistellaan kaupassa. Yrita myohemmin uudelleen.",
+      "connectionFailed": "Tilauspalveluun ei saatu yhteytta. Tarkista yhteytesi ja yrita uudelleen.",
+      "stillStarting": "Tilauspalvelu kaynnistyy viela. Odota hetki ja yrita uudelleen."
+    }
   },
   "courses": {
     "title": "Opi astrologiaa",
@@ -380,20 +1453,367 @@
     "continue": "Jatka opiskelua",
     "completed": "Suoritettu"
   },
+  "cosmicAlerts": {
+    "title": "Kosminen saa",
+    "subtitle": "Henkilokohtainen kosminen ennusteesi",
+    "scanningCosmos": "Skannataan kosmosta...",
+    "filters": {
+      "all": "Kaikki",
+      "active": "Aktiiviset",
+      "upcoming": "Tulevat"
+    },
+    "emptyState": {
+      "title": "Suuria transitteja ei havaittu",
+      "filterHint": "Ei {{filter}}-halytyksia juuri nyt. Kokeile vaihtaa kohtaan \"Kaikki\".",
+      "defaultHint": "Kosmos on hiljainen kartallesi. Tarkista kun taivas muuttuu."
+    },
+    "detail": {
+      "timingWindow": "Ajoitusikkuna",
+      "start": "Alku",
+      "peak": "Huippu",
+      "end": "Loppu",
+      "fullInterpretation": "Taysi tulkinta",
+      "astrologicalDetails": "Astrologiset tiedot",
+      "transit": "Transitti",
+      "natal": "Syntyma",
+      "aspect": "Aspekti",
+      "retrograde": "Retrogradi",
+      "yes": "Kylla",
+      "no": "Ei",
+      "actionAdvice": "Toimintaneuvoja",
+      "viewFullTransits": "Nayta kaikki transitit"
+    },
+    "importance": {
+      "critical": "Kriittinen",
+      "high": "Korkea",
+      "moderate": "Kohtalainen",
+      "low": "Matala",
+      "minimal": "Minimaalinen"
+    },
+    "categories": {
+      "general": "Yleinen",
+      "love": "Rakkaus",
+      "career": "Ura",
+      "growth": "Kasvu",
+      "challenge": "Haaste",
+      "spiritual": "Henkinen",
+      "communication": "Viestinta",
+      "energy": "Energia"
+    },
+    "statusActive": "AKTIIVINEN"
+  },
+  "discover": {
+    "title": "Tutustu",
+    "moonPhases": {
+      "newMoon": "Uusikuu",
+      "waxingCrescent": "Kasvava sirppi",
+      "firstQuarter": "Ensimmainen neljännes",
+      "waxingGibbous": "Kasvava kuu",
+      "fullMoon": "Taysikuu",
+      "waningGibbous": "Vaheneva kuu",
+      "lastQuarter": "Viimeinen neljännes",
+      "waningCrescent": "Vaheneva sirppi"
+    }
+  },
+  "worldEcho": {
+    "title": "World Echo",
+    "subtitle": "Kuinka kosmiset tapahtumat heijastuvat ihmiskunnan historiaan",
+    "categories": {
+      "political": "Poliittinen",
+      "economic": "Taloudellinen",
+      "cultural": "Kulttuurinen",
+      "scientific": "Tieteellinen",
+      "natural": "Luonnollinen",
+      "social": "Sosiaalinen",
+      "technological": "Teknologinen",
+      "spiritual": "Henkinen"
+    },
+    "evidenceLabels": {
+      "strong": "Vahva",
+      "moderate": "Kohtalainen",
+      "speculative": "Spekulatiivinen"
+    },
+    "scoreLabels": {
+      "legendary": "Legendaarinen",
+      "major": "Suuri",
+      "significant": "Merkittava",
+      "notable": "Huomattava",
+      "minor": "Pieni"
+    }
+  },
+  "polls": {
+    "title": "Kyselyt",
+    "filters": {
+      "all": "Kaikki",
+      "active": "Aktiiviset",
+      "ended": "Paattyneet",
+      "mine": "Omat"
+    },
+    "duration": {
+      "hours": "{{count}} h jaljella",
+      "days": "{{count}} pv jaljella",
+      "ended": "Paattynyt"
+    },
+    "createPoll": "Luo kysely",
+    "votes": "{{count}} aanta",
+    "noPollsYet": "Ei kyselyja viela",
+    "noPollsHint": "Ole ensimmainen aloittamaan kosminen kysely!"
+  },
+  "bookmarks": {
+    "title": "Kirjanmerkit",
+    "loading": "Ladataan kirjanmerkkejä...",
+    "empty": "Ei kirjanmerkkejä vielä",
+    "emptyHint": "Tallenna julkaisuja syötteestä lukeaksesi myöhemmin",
+    "postUnavailable": "Julkaisu ei ole enää saatavilla"
+  },
+  "celebrityMatches": {
+    "title": "Julkkisvastaavuudet",
+    "subtitle": "Loyda ketkä kuuluisuudet jakavat kosmisen suunnitelmasi",
+    "searchPlaceholder": "Etsi julkkiksia...",
+    "categories": {
+      "overall": "Kokonais",
+      "emotional": "Emotionaalinen",
+      "passion": "Intohimo",
+      "marriage": "Avioliitto",
+      "karmic": "Karminen",
+      "attraction": "Vetovoima",
+      "stability": "Vakaus",
+      "mental": "Henkinen"
+    },
+    "matchScore": "{{score}}% vastaavuus",
+    "trending": "Suositut",
+    "recentlyAdded": "Äskettäin lisätyt",
+    "browseByCategory": "Selaa kategorioittain",
+    "clearFilter": "Tyhjennä suodatin",
+    "yourFavorites": "Suosikkisi",
+    "noResults": "Ei tuloksia",
+    "tryDifferent": "Kokeile eri nimeä tai kirjoitusasua",
+    "noCelebrities": "Ei julkkiksia vielä",
+    "searchOrCheckBack": "Etsi jotakuta tai tarkista myöhemmin uudelleen",
+    "noCelebritiesInCategory": "Ei julkkiksia tässä kategoriassa vielä"
+  },
+  "matches": {
+    "title": "Yhteensopivuusvastaavuudet",
+    "categories": {
+      "overall": "Kokonais",
+      "emotional": "Emotionaalinen",
+      "passion": "Intohimo",
+      "marriage": "Avioliitto",
+      "karmic": "Karminen",
+      "attraction": "Vetovoima",
+      "stability": "Vakaus",
+      "mental": "Henkinen"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Kosminen indeksi",
+    "subtitle": "Paivan kosminen energia yhdella silmayksella"
+  },
+  "creatorStudio": {
+    "title": "Luojastudio",
+    "subtitle": "Luo ja hallitse kosmista sisaltoasi"
+  },
+  "qa": {
+    "title": "Kysymykset ja vastaukset",
+    "askQuestion": "Esita kysymys",
+    "noQuestions": "Ei kysymyksia viela",
+    "placeholder": "Mika on kosminen kysymyksesi?"
+  },
+  "pricing": {
+    "title": "Valitse pakettisi",
+    "subtitle": "Avaa Alignin tayssi voima"
+  },
+  "gallery": {
+    "title": "Galleria",
+    "empty": "Ei kuvia viela"
+  },
+  "timeline": {
+    "title": "Aikajana",
+    "empty": "Ei naytettavaa viela"
+  },
+  "reels": {
+    "title": "Kosmiset reelsit",
+    "empty": "Ei reelseja viela"
+  },
+  "fragments": {
+    "title": "Kosmiset fragmentit",
+    "subtitle": "Jaettavat kosmiset viisauskortit"
+  },
+  "cosmicVideo": {
+    "title": "Kosminen video",
+    "subtitle": "Astrologisia oivalluksia liikkeessa"
+  },
+  "groupSynastry": {
+    "title": "Ryhmasynastria",
+    "subtitle": "Katso kuinka ryhman kartat vuorovaikuttavat"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "Syntymatiedot vaaditaan",
+      "defaultMessage": "Lisaa syntymapaivasi, -aikasi ja -paikkasi avataksesi taman ominaisuuden.",
+      "completeProfile": "Viimeistele profiili"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Ladataan..."
+    },
+    "paywallGate": {
+      "title": "Avaa tama lukeminen",
+      "description": "Tama ominaisuus on saatavilla",
+      "plan": "paketilla",
+      "youreOn": "sinulla on",
+      "upgradeButton": "Nayta paketit -- alkaen {{price}}",
+      "currentPlan": "Nykyinen paketti: {{plan}}",
+      "whatYouUnlock": "Mita avaat",
+      "allFeatures": "Tama lukeminen + kaikki {{tier}}-tason ominaisuudet",
+      "aiAstrologer": "Tekoalyastrologi aanikeskustelulla",
+      "fullChart": "Taysi syntymakartta aspekteilla ja kuvioilla"
+    },
+    "shareButton": {
+      "share": "Jaa",
+      "copied": "Kopioitu!"
+    },
+    "referralCard": {
+      "title": "Kutsu ystavia",
+      "subtitle": "Jaa suosittelulinkkisi ja molemmat saavat bonuslukemisia",
+      "copyLink": "Kopioi linkki",
+      "linkCopied": "Linkki kopioitu!"
+    },
+    "trialBanner": {
+      "title": "Premium-koejakso: {{count}} paiva jaljella",
+      "title_plural": "Premium-koejakso: {{count}} paivaa jaljella",
+      "daysLeft": "{{count}} paivaa jaljella",
+      "upgrade": "Paivita nyt",
+      "expired": "Koejaksosi on paattynyt. Paivita avataksesi Premiumin uudelleen.",
+      "endsTomorrow": "Koejaksosi paattyy huomenna! Paivita sailitaaksesi Premium-ominaisuudet.",
+      "endsSoon": "Koejaksosi paattyy {{count}} paivan paasta! Paivita sailitaaksesi Premium-ominaisuudet."
+    },
+    "cookieConsent": {
+      "message": "Kaytamme evasteita parantaaksemme kokemustasi.",
+      "accept": "Hyvaksy",
+      "decline": "Hylkaa",
+      "learnMore": "Lisatietoja"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Se on vastaavuus!",
+      "subtitle": "Kosmos on yhdistanyt sinut ja henkilon {{name}}",
+      "sendMessage": "Laheta viesti",
+      "keepBrowsing": "Jatka selaamista"
+    },
+    "datingFilterDrawer": {
+      "title": "Loytossuodattimet",
+      "ageRange": "Ikahaarukka",
+      "maxDistance": "Enimmaisetaisyys",
+      "showOnlyVerified": "Nayta vain verifioidut",
+      "compatibilityMin": "Vahimmaisyhteensopivuus",
+      "elements": "Elementit",
+      "applyFilters": "Kayta suodattimia",
+      "resetFilters": "Nollaa"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% yhteensopiva",
+      "like": "Tykkaa",
+      "pass": "Ohita",
+      "cosmicRose": "Kosminen ruusu",
+      "likesRemaining": "{{count}} tykkaystä jaljella",
+      "rosesRemaining": "{{count}} ruusua jaljella"
+    },
+    "sidebar": {
+      "home": "Koti",
+      "discover": "Tutustu",
+      "cosmicFeed": "Kosminen syote",
+      "worldEcho": "World Echo",
+      "chart": "Karttani",
+      "cosmicWeather": "Kosminen saa",
+      "readings": "Luennat",
+      "videoCreator": "Videoluoja",
+      "dating": "Seurustelu",
+      "friends": "Ystavat",
+      "messages": "Viestit",
+      "feed": "Syote",
+      "notifications": "Ilmoitukset",
+      "aiAstrologer": "Tekoalyastrologi",
+      "learn": "Opiskele",
+      "pricing": "Hinnoittelu",
+      "communities": "Yhteisot",
+      "profile": "Profiili",
+      "settings": "Asetukset",
+      "menu": "Valikko",
+      "close": "Sulje",
+      "more": "Lisaa",
+      "chat": "Keskustelu",
+      "yourProfile": "Profiilisi",
+      "viewProfile": "Nayta profiilisi"
+    },
+    "feedCard": {
+      "like": "Tykkaa",
+      "comment": "Kommentoi",
+      "share": "Jaa",
+      "bookmark": "Kirjanmerkki",
+      "report": "Ilmianna",
+      "deletePost": "Poista julkaisu",
+      "editPost": "Muokkaa julkaisua"
+    },
+    "commentSheet": {
+      "title": "Kommentit",
+      "placeholder": "Kirjoita kommentti...",
+      "send": "Laheta",
+      "noComments": "Ei kommentteja viela",
+      "beFirst": "Ole ensimmainen kommentoija!"
+    }
+  },
   "common": {
     "loading": "Ladataan...",
     "error": "Jokin meni pieleen",
-    "retry": "Yritä uudelleen",
+    "retry": "Yrita uudelleen",
     "save": "Tallenna",
     "cancel": "Peruuta",
     "delete": "Poista",
     "share": "Jaa",
     "premium": "Premium",
-    "free": "Ilmainen"
+    "free": "Ilmainen",
+    "close": "Sulje",
+    "confirm": "Vahvista",
+    "ok": "OK",
+    "yes": "Kylla",
+    "no": "Ei",
+    "back": "Takaisin",
+    "next": "Seuraava",
+    "done": "Valmis",
+    "edit": "Muokkaa",
+    "copy": "Kopioi",
+    "copied": "Kopioitu!",
+    "search": "Etsi",
+    "settings": "Asetukset",
+    "seeAll": "Nayta kaikki",
+    "showMore": "Nayta lisaa",
+    "showLess": "Nayta vahemman",
+    "comingSoon": "Tulossa pian",
+    "upgrade": "Paivita",
+    "signIn": "Kirjaudu sisaan",
+    "signOut": "Kirjaudu ulos",
+    "today": "Tanaan",
+    "yesterday": "Eilen",
+    "tomorrow": "Huomenna",
+    "all": "Kaikki",
+    "none": "Ei mitaan",
+    "public": "Julkinen",
+    "private": "Yksityinen",
+    "apply": "Kayta",
+    "reset": "Nollaa",
+    "remove": "Poista",
+    "add": "Lisaa",
+    "create": "Luo",
+    "submit": "Laheta",
+    "send": "Laheta",
+    "view": "Nayta",
+    "download": "Lataa",
+    "upload": "Lataa",
+    "noResults": "Tuloksia ei loytynyt",
+    "tryAgain": "Yrita uudelleen"
   },
   "zodiac": {
     "aries": "Oinas",
-    "taurus": "Härkä",
+    "taurus": "Harka",
     "gemini": "Kaksoset",
     "cancer": "Rapu",
     "leo": "Leijona",
@@ -417,17 +1837,98 @@
     "neptune": "Neptunus",
     "pluto": "Pluto",
     "northNode": "Pohjoinen solmukohta",
-    "southNode": "Eteläinen solmukohta",
+    "southNode": "Etelainen solmukohta",
     "chiron": "Chiron",
     "ascendant": "Nouseva",
-    "midheaven": "Keskitaivas"
+    "midheaven": "Keskitaivas",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
     "conjunction": "Konjunktio",
     "sextile": "Sekstiili",
-    "square": "Neliö",
+    "square": "Nelio",
     "trine": "Kolmio",
     "opposition": "Oppositio",
-    "quincunx": "Kvinkunssi"
+    "quincunx": "Kvinkunssi",
+    "semisextile": "Semisekstiili",
+    "semisquare": "Seminelio",
+    "sesquiquadrate": "Seskvikvadratti",
+    "quintile": "Kvintiili",
+    "biquintile": "Bikvintiili"
+  },
+  "elements": {
+    "fire": "Tuli",
+    "earth": "Maa",
+    "air": "Ilma",
+    "water": "Vesi"
+  },
+  "modalities": {
+    "cardinal": "Kardinaali",
+    "fixed": "Kiintea",
+    "mutable": "Muuttuva"
+  },
+  "houses": {
+    "1": "1. huone",
+    "2": "2. huone",
+    "3": "3. huone",
+    "4": "4. huone",
+    "5": "5. huone",
+    "6": "6. huone",
+    "7": "7. huone",
+    "8": "8. huone",
+    "9": "9. huone",
+    "10": "10. huone",
+    "11": "11. huone",
+    "12": "12. huone",
+    "labels": {
+      "1": "Itse ja identiteetti",
+      "2": "Arvot ja omaisuus",
+      "3": "Viestinta ja oppiminen",
+      "4": "Koti ja perhe",
+      "5": "Luovuus ja romanssi",
+      "6": "Terveys ja palvelu",
+      "7": "Kumppanuudet",
+      "8": "Muutos ja jaetut resurssit",
+      "9": "Filosofia ja matkailu",
+      "10": "Ura ja julkinen kuva",
+      "11": "Yhteiso ja pyrkimykset",
+      "12": "Henkisyys ja alitajunta"
+    }
+  },
+  "errors": {
+    "generic": "Jokin meni pieleen. Yrita uudelleen.",
+    "networkError": "Verkkovirhe. Tarkista yhteytesi.",
+    "unauthorized": "Sinun taytyy kirjautua sisaan paastaksesi tahan ominaisuuteen.",
+    "notFound": "Pyydettyä sisaltoa ei loytynyt.",
+    "serverError": "Palvelinvirhe. Yrita myohemmin uudelleen.",
+    "loadFailed": "Tietojen lataaminen epaonnistui. Yrita uudelleen.",
+    "saveFailed": "Muutosten tallentaminen epaonnistui. Yrita uudelleen.",
+    "uploadFailed": "Tiedoston lataaminen epaonnistui. Yrita uudelleen.",
+    "fileTooLarge": "Tiedosto on liian suuri. Valitse pienempi tiedosto.",
+    "invalidFormat": "Virheellinen tiedostomuoto.",
+    "permissionDenied": "Lupa evatty.",
+    "sessionExpired": "Istuntosi on vanhentunut. Kirjaudu sisaan uudelleen.",
+    "rateLimited": "Liian monta pyyntoa. Odota hetki."
+  },
+  "time": {
+    "justNow": "juuri nyt",
+    "minutesAgo": "{{count}} min sitten",
+    "hoursAgo": "{{count}} h sitten",
+    "daysAgo": "{{count}} pv sitten",
+    "weeksAgo": "{{count}} vk sitten",
+    "monthsAgo": "{{count}} kk sitten",
+    "yearsAgo": "{{count}} v sitten",
+    "inMinutes": "{{count}} min paasta",
+    "inHours": "{{count}} h paasta",
+    "inDays": "{{count}} pv paasta"
+  },
+  "tiers": {
+    "free": "Ilmainen",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

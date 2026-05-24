@@ -1,18 +1,20 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 
 export default function CommunityGuidelinesPage() {
+  const { t } = useTranslation();
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/settings" className="btn-ghost p-2 inline-flex items-center gap-1 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Settings
+        <ArrowLeft className="w-4 h-4" /> {t('common.settings')}
       </Link>
 
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <BookOpen className="w-7 h-7 text-accent-primary" />
-        Community Guidelines
+        {t('settings.communityGuidelines.title')}
       </h1>
 
       <div className="card space-y-6">

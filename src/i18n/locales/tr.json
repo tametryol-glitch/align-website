@@ -4,430 +4,1931 @@
   },
   "tabs": {
     "home": "Ana Sayfa",
-    "discover": "Keşfet",
+    "discover": "Kesfet",
     "chart": "Harita",
     "readings": "Okumalar",
-    "learn": "Öğren",
+    "learn": "Ogren",
     "profile": "Profil"
   },
   "auth": {
-    "login": "Giriş Yap",
-    "signup": "Kayıt Ol",
+    "login": "Giris Yap",
+    "signup": "Kayit Ol",
     "email": "E-posta",
-    "password": "Şifre",
-    "forgotPassword": "Şifrenizi mi unuttunuz?",
-    "noAccount": "Hesabınız yok mu?",
-    "hasAccount": "Zaten hesabınız var mı?",
-    "welcome": "Align'a Hoş Geldiniz",
-    "subtitle": "Hayatınızın kozmik planını keşfedin",
-    "enterEmail": "E-postanızı girin",
-    "enterEmailHint": "Yukarıya e-posta adresinizi yazın, ardından Şifremi Unuttum'a dokunun.",
-    "emailSent": "E-posta gönderildi",
-    "checkInbox": "Şifre sıfırlama bağlantısı için gelen kutunuzu kontrol edin.",
-    "resetEmailFailed": "Sıfırlama e-postası gönderilemedi.",
-    "loginFailed": "Giriş başarısız.",
-    "signupFailed": "Kayıt başarısız.",
-    "orContinueWith": "veya şununla devam edin",
+    "password": "Sifre",
+    "forgotPassword": "Sifrenizi mi unuttunuz?",
+    "noAccount": "Hesabiniz yok mu?",
+    "hasAccount": "Zaten hesabiniz var mi?",
+    "welcome": "Align'a Hos Geldiniz",
+    "subtitle": "Hayatinizin kozmik planini kesfedin",
+    "enterEmail": "E-postanizi girin",
+    "enterEmailHint": "Yukariya e-posta adresinizi yazin, ardindan Sifremi Unuttum'a dokunun.",
+    "emailSent": "E-posta gonderildi",
+    "checkInbox": "Sifre sifirlama baglantisi icin gelen kutunuzu kontrol edin.",
+    "resetEmailFailed": "Sifirlama e-postasi gonderilemedi.",
+    "loginFailed": "Giris basarisiz.",
+    "signupFailed": "Kayit basarisiz.",
+    "orContinueWith": "veya sununla devam edin",
     "orSignUpWithEmail": "veya e-posta ile kaydolun",
     "apple": "Apple",
     "google": "Google",
-    "displayName": "Görünen Ad",
-    "yourName": "Adınız",
-    "dateOfBirth": "Doğum Tarihi",
+    "displayName": "Gorunen Ad",
+    "yourName": "Adiniz",
+    "dateOfBirth": "Dogum Tarihi",
     "dobPlaceholder": "DD-MM-YYYY",
-    "dobRequired": "Doğum Tarihi Gerekli",
-    "dobRequiredHint": "Devam etmek için lütfen doğum tarihinizi girin.",
-    "dobInvalidFormat": "Lütfen tarihi DD-MM-YYYY olarak girin",
-    "dobInvalidMonth": "Geçersiz ay",
-    "dobInvalidDay": "Geçersiz gün",
-    "dobInvalidYear": "Geçersiz yıl",
-    "dobInvalidDate": "Geçersiz tarih",
-    "ageRestriction": "Align'ı kullanmak için en az 18 yaşında olmalısınız",
-    "ageRestrictionAlert": "Align'ı kullanmak için en az {{age}} yaşında olmalısınız.",
-    "termsRequired": "Şartların Kabulü Gerekli",
-    "termsRequiredHint": "Hesabınızı oluşturmadan önce lütfen Gizlilik Politikası ve Kullanım Şartlarını kabul edin.",
-    "referralCode": "Referans kodu (isteğe bağlı)",
+    "dobRequired": "Dogum Tarihi Gerekli",
+    "dobRequiredHint": "Devam etmek icin lutfen dogum tarihinizi girin.",
+    "dobInvalidFormat": "Lutfen tarihi DD-MM-YYYY olarak girin",
+    "dobInvalidMonth": "Gecersiz ay",
+    "dobInvalidDay": "Gecersiz gun",
+    "dobInvalidYear": "Gecersiz yil",
+    "dobInvalidDate": "Gecersiz tarih",
+    "ageRestriction": "Align'i kullanmak icin en az 18 yasinda olmaniz gerekir",
+    "ageRestrictionAlert": "Align'i kullanmak icin en az {{age}} yasinda olmaniz gerekir.",
+    "termsRequired": "Sartlarin Kabulu Gerekli",
+    "termsRequiredHint": "Hesabinizi olusturmadan once lutfen Gizlilik Politikasi ve Kullanim Sartlarini kabul edin.",
+    "referralCode": "Referans kodu (istege bagli)",
     "agreeToTerms": "Kabul ediyorum",
-    "privacyPolicy": "Gizlilik Politikası",
+    "privacyPolicy": "Gizlilik Politikasi",
     "and": "ve",
-    "termsOfService": "Kullanım Şartları"
+    "termsOfService": "Kullanim Sartlari",
+    "signInToAccess": "Mesajlara erismek icin giris yapin"
   },
   "onboarding": {
-    "title": "Doğum haritanızı oluşturalım",
-    "subtitle": "Kişiselleştirilmiş bir deneyim için doğum bilgilerinizi girin",
+    "title": "Dogum haritanizi olusturalim",
+    "subtitle": "Kisisellestirilmis bir deneyim icin dogum bilgilerinizi girin",
     "name": "Ad Soyad",
-    "birthDate": "Doğum Tarihi",
-    "birthTime": "Doğum Saati",
-    "birthPlace": "Doğum Yeri",
+    "birthDate": "Dogum Tarihi",
+    "birthTime": "Dogum Saati",
+    "birthPlace": "Dogum Yeri",
     "continue": "Devam",
-    "skip": "Şimdilik atla",
+    "skip": "Simdilik atla",
     "almostThere": "Neredeyse Tamam",
-    "personalizeHint": "Deneyiminizi kişiselleştirmemize yardımcı olun. Bu isteğe bağlıdır ve daha sonra Ayarlar'dan değiştirilebilir.",
-    "identifyAs": "Kendimi tanımlıyorum...",
-    "interestedIn": "İlgilendiğim...",
-    "readingStars": "Yıldızlarınız okunuyor...",
-    "fillBirthDetails": "Devam etmeden önce lütfen doğum bilgilerinizi doldurun.",
-    "saveFailed": "Doğum bilgileriniz kaydedilemedi. Lütfen bağlantınızı kontrol edip tekrar deneyin.",
+    "personalizeHint": "Deneyiminizi kisisellestirmemize yardimci olun. Bu istege baglidir ve daha sonra Ayarlar'dan degistirilebilir.",
+    "identifyAs": "Kendimi tanimliyorum...",
+    "interestedIn": "Ilgilendigim...",
+    "readingStars": "Yildizlariniz okunuyor...",
+    "fillBirthDetails": "Devam etmeden once lutfen dogum bilgilerinizi doldurun.",
+    "saveFailed": "Dogum bilgileriniz kaydedilemedi. Lutfen baglantinizi kontrol edip tekrar deneyin.",
     "thisIsYou": "{{name}}, bu sensin.",
     "thisIsYouNoName": "Bu sensin.",
-    "cosmicFingerprint": "Kozmik parmak iziniz — kim olduğunuzu şekillendiren üç burç.",
-    "yourSun": "GÜNEŞİNİZ",
+    "cosmicFingerprint": "Kozmik parmak iziniz -- kim oldugunuzu sekillendiren uc burc.",
+    "yourSun": "GUNESINIZ",
     "coreIdentity": "Temel Kimlik",
     "yourMoon": "AYINIZ",
-    "innerWorld": "İç Dünya",
-    "yourRising": "YÜKSELENİNİZ",
-    "firstImpression": "İlk İzlenim",
-    "dominantElement": "Baskın Elementiniz: {{element}}",
-    "exploreChart": "Tam Haritanızı Keşfedin →",
-    "justBeginning": "Bu sadece başlangıç. Tam haritanızda\n10 gezegen, 12 ev ve onlarca açı var.",
+    "innerWorld": "Ic Dunya",
+    "yourRising": "YUKSELENIN",
+    "firstImpression": "Ilk Izlenim",
+    "dominantElement": "Baskin Elementiniz: {{element}}",
+    "exploreChart": "Tam Haritanizi Kesfedin ->",
+    "justBeginning": "Bu sadece baslangic. Tam haritanizda\n10 gezegen, 12 ev ve onlarca aci var.",
     "sunSoul": {
-      "Aries": "Liderlik etmek için doğdun — unvanla değil, örnekle. Herkes kaçarken sen ateşe doğru koşarsın. Hayatın bir dizi cesur, dürtüsel sıçramadan ibaret ve evren seni asla izin istemediğin için ödüllendiriyor.",
-      "Taurus": "Uzun vade için yaratıldın. Başkaları trendlerin peşinden koşarken, sen sabır ve zevkten imparatorluklar kurarsın. En büyük gücün acele etmeyi reddetmen — değerli olan her şeyin zaman aldığını bilirsin.",
-      "Gemini": "Zihnin asla durmuyor. Kimsenin fark etmediği bağlantıları görürsün, fikirlerle konuşursun ve bir şey tahmin edilebilir hale geldiği an sıkılırsın. Kararsız değilsin — çok boyutlusun.",
-      "Cancer": "Her şeyi hissedersin. Odayı, sessizliği, kimsenin yüksek sesle söylemediği şeyi. Duygusal zekan süper gücün, ama bir bedeli var — senden bunu hiç istememiş insanların yükünü taşırsın.",
-      "Leo": "Görülmek için doğdun. Kibirden değil — ışığının bir amacı olduğuna dair derin bir bilgiden. Bir odaya girdiğinde insanlar bunu hisseder. Meydan okuman, kendini söndürmenin kimseye fayda etmediğini öğrenmek.",
-      "Virgo": "Kimsenin görmediğini fark edersin. Sistemdeki çatlağı, yanlış yerdeki kelimeyi, sessizce çökmekte olan kişiyi. Zihnin bir hassas alet ve amacın kırık şeyleri bütünlemek.",
-      "Libra": "İnsanları anlarsın. Nasıl düşündüklerini, ne duymaya ihtiyaçları olduğunu, çok fazla ile yetersiz arasındaki dengeyi. Yeteneğin uyum — lanetin ise herkesi rahat tutmaya çalışırken kendini kaybetmen.",
-      "Scorpio": "Çoğu insanın kaldıramayacağı bir derinlikte yaşarsın. Her maskenin, her yalanın, her kibar yüzeyin ardını görürsün. Yoğunluğun bir kusur değil — dönüşümünün motoru. Yarım ölçü bilmezsin.",
-      "Sagittarius": "Özgürlük için yaratıldın. Sadece seyahat değil — zihin, inanç ve ruh özgürlüğü. Kovalayacak bir ufka, keşfedecek bir soruya ve her zaman daha büyük bir şeyin beklediğine dair mutlak bir kesinliğe ihtiyacın var.",
-      "Capricorn": "Büyüklüğün doğulmadığını, inşa edildiğini anlarsın. Başkaları hayal kurarken sen plan yaparsın. Başkaları vazgeçerken sen dayanırsın. Hırsın soğuk değil — potansiyelini harcamayı reddeden birinin sessiz ateşi.",
-      "Aquarius": "Etrafındaki herkesten farklı düşünüyorsun ve bunun için özür dilemeyi bıraktın. Zihnin geleceği gelmeden gören bir frekansta çalışıyor. Sendeki en yalnız şey, ne kadar sık haklı olduğun.",
-      "Pisces": "Dünyalar arasında var olursun. Her şeyin altındaki akıntıyı hissedersin — sessizliğin altındaki müziği, gerçekliğin altındaki rüyayı. Hassasiyetin zayıflık değil; zekanın en nadir biçimi."
+      "Aries": "Liderlik etmek icin dogun -- unvanla degil, ornekle. Herkes kacarken sen atese dogru kosarsin. Hayatin bir dizi cesur, durtusal sicramadan ibaret ve evren seni asla izin istemedigin icin odullendiriyor.",
+      "Taurus": "Uzun vade icin yaratildin. Baskalari trendlerin pesinden kosarken, sen sabir ve zevkten imparatorluklar kurarsin. En buyuk gucun acele etmeyi reddetmen -- degerli olan her seyin zaman aldigini bilirsin.",
+      "Gemini": "Zihnin asla durmuyor. Kimsenin fark etmedigi baglantilari gorursun, fikirlerle konusursun ve bir sey tahmin edilebilir hale geldigi an sikilirsin. Kararsiz degilsin -- cok boyutlusun.",
+      "Cancer": "Her seyi hissedersin. Odayi, sessizligi, kimsenin yuksek sesle soylemedigini. Duygusal zekan super gucun, ama bir bedeli var -- senden bunu hic istemeyenlerin yukunu tasirsin.",
+      "Leo": "Gorulmek icin dogdun. Kibirden degil -- isiginin bir amaci olduguna dair derin bir bilgiden. Bir odaya girdiginde insanlar bunu hisseder. Meydan okuman, kendini sondurmenin kimseye fayda etmedigini ogrenmek.",
+      "Virgo": "Kimsenin gormedigi seyi fark edersin. Sistemdeki catlagi, yanlis yerdeki kelimeyi, sessizce cokmekte olan kisiyi. Zihnin bir hassas alet ve amacin kirik seyleri butunlemek.",
+      "Libra": "Insanlari anlarsin. Nasil dusundulerini, ne duymaya ihtiyaclari oldugunu, cok fazla ile yetersiz arasindaki dengeyi. Yetenegin uyum -- lanetin ise herkesi rahat tutmaya calisirken kendini kaybetmen.",
+      "Scorpio": "Cogu insanin kaldiramayacagi bir derinlikte yasarsin. Her maskenin, her yalanin, her kibar yuzeyin ardini gorursun. Yogunlugun bir kusur degil -- donusumunun motoru. Yarim olcu bilmezsin.",
+      "Sagittarius": "Ozgurluk icin yaratildin. Sadece seyahat degil -- zihin, inanc ve ruh ozgurlugu. Kovalayacak bir ufka, kesfedecek bir soruya ve her zaman daha buyuk bir seyin bekledigine dair mutlak bir kesinlige ihtiyacin var.",
+      "Capricorn": "Buyuklugun dogulmadigini, insa edildigini anlarsin. Baskalari hayal kurarken sen plan yaparsin. Baskalari vazgecerken sen dayanirsin. Hirsin soguk degil -- potansiyelini harcamayi reddeden birinin sessiz atesi.",
+      "Aquarius": "Etrafindaki herkesten farkli dusunuyorsun ve bunun icin ozur dilemeyi biraktin. Zihnin gelecegi gelmeden goren bir frekansta calisiyor. Sendeki en yalniz sey, ne kadar sik hakli oldugun.",
+      "Pisces": "Dunyalar arasinda var olursun. Her seyin altindaki akintiyi hissedersin -- sessizligin altindaki muzigi, gercekligin altindaki ruyayi. Hassasiyetin zayiflik degil; zekanin en nadir bicimi."
     },
     "moonHeart": {
-      "Aries": "Duygusal olarak sıcak ve hızlı yanarsın. Her şeyi tüm bedeninle hissedersin — öfkeyi, tutkuyu, korumacılığı. Duygularınla oturup beklemezsin; harekete geçersin. Gözünü kırpmadan ateşine eşlik edebilecek bir partnere ihtiyacın var.",
-      "Taurus": "Duygusal dünyan istikrar arar. Rutine, fiziksel konfora ve güvenli bir limana ihtiyacın var. Kendini güvende hissettiğinde, dünyanın en cömert insanısın. O güvenlik tehdit edildiğinde, tamamen kapanırsın.",
-      "Gemini": "Duyguların hava durumu gibi hareket eder — hızlı, değişken ve bazen çelişkili. Hislerini konuşarak, düşünerek, bazen de tamamen kaçınarak işlersin. Sıkılmak seni en çok acıtan duygu.",
-      "Cancer": "Duygusal hayatın evreninin merkezinde. Her şeyi iki kez hissedersin — bir kez kendin için, bir kez yanındaki kişi için. Ev senin için bir yer değil; bir histir. Ve o his eksik olduğunda, başka hiçbir şey önemli değildir.",
-      "Leo": "Özel hissetmeye ihtiyacın var. Yüzeysel bir şekilde değil — kemiklerine kadar. Sevdiğin insanlar seni görünür kıldığında parlarsın. Seni hafife aldıklarında, içindeki bir şey söner. Kalbin gerçek takdirle çalışır.",
-      "Virgo": "Sevgini söyleyerek değil, yaparak gösterirsin. Önemsediğin insanlar için endişelenirsin — sağlıkları, sorunları, başa çıkmadıkları şeyler. Duygusal hayatın sessiz, pratik ve derinden sadıktır.",
-      "Libra": "Duygusal olarak bütün hissetmek için ortaklığa ihtiyacın var. Bağımlı bir şekilde değil — hislerini bağlantı üzerinden işlersin. Çatışma seni fiziksel olarak rahatsız eder. Güzellik ve uyum senin için lüks değil; zorunluluktur.",
-      "Scorpio": "Duygusal hayatın kimsenin asla bilemeyeceği kadar derin akar. Yıkıcı bir yoğunlukla hissedersin ama nadiren gösterirsin. Güven yıllar alır. İhanet sonsuza dek affedilmez. Sevdiğinde, sahip olduğun her şeyle seversin.",
-      "Sagittarius": "Duyguların nefes alacak alan ister. Hislerini hareketle, macera ile, mizahla ve felsefi bir bakış açısıyla işlersin. Duygusal klostrofobi senin kriptonitindir — en yakın ilişkilerinde bile özgürlüğe ihtiyacın var.",
-      "Capricorn": "Erken yaşta duyguların güvenli olmadığını öğrendin. Hislerini yavaşça, özel olarak ve başkalarının soğukluk sandığı bir özdenetimle işlersin. Ama o sükunetin altında seni kırabilecek kadar şiddetli bir sadakat var.",
-      "Aquarius": "Duygusal dünyan alışılmadık. İnsanlığa derinden önem verirsin ama birebir duygusal yakınlıkla zorlanırsın. Hislerini entelektüel olarak işlersin — içinde boğulmak yerine dışından analiz edersin.",
-      "Pisces": "Her şeyi hissedersin — kendi duygularını, başkalarının duygularını, girdiğin her odanın kolektif ruh halini. Kalbinin duvarları yok. Bu hem en büyük yeteneğin hem de seni en çok tüketen şey."
+      "Aries": "Duygusal olarak sicak ve hizli yanarsin. Her seyi tum bedeninle hissedersin -- ofkeyi, tutkuyu, korumaciligi. Duygularinla oturup beklemezsin; harekete gecersin. Gozunu kirpmadan atesine eslik edebilecek bir partnere ihtiyacin var.",
+      "Taurus": "Duygusal dunyan istikrar arar. Rutine, fiziksel konfora ve guvenli bir limana ihtiyacin var. Kendini guvende hissettiginde, dunyanin en comert insanisin. O guvenlik tehdit edildiginde, tamamen kapanirsin.",
+      "Gemini": "Duyguların hava durumu gibi hareket eder -- hizli, degisken ve bazen celiskili. Hislerini konusarak, dusunerek, bazen de tamamen kacinarak islersin. Sikilmak seni en cok acitan duygu.",
+      "Cancer": "Duygusal hayatin evreninin merkezinde. Her seyi iki kez hissedersin -- bir kez kendin icin, bir kez yanindaki kisi icin. Ev senin icin bir yer degil; bir histir. Ve o his eksik oldugunda, baska hicbir sey onemli degildir.",
+      "Leo": "Ozel hissetmeye ihtiyacin var. Yuzeysel bir sekilde degil -- kemiklerine kadar. Sevdigin insanlar seni gorunur kildiginda parlarsin. Seni hafife aldiklarinda, icindeki bir sey soner. Kalbin gercek takdirle calisir.",
+      "Virgo": "Sevgini soyleyerek degil, yaparak gosterirsin. Onemsedigin insanlar icin endiselenirsin -- sagliklari, sorunlari, basa cikamadiklari seyler. Duygusal hayatin sessiz, pratik ve derinden sadiktir.",
+      "Libra": "Duygusal olarak butun hissetmek icin ortakliga ihtiyacin var. Bagimli bir sekilde degil -- hislerini baglanti uzerinden islersin. Catisma seni fiziksel olarak rahatsiz eder. Guzellik ve uyum senin icin luks degil; zorunluluktur.",
+      "Scorpio": "Duygusal hayatin kimsenin asla bilemeyecegi kadar derin akar. Yikici bir yogunlukla hissedersin ama nadiren gosterirsin. Guven yillar alir. Ihanet sonsuza dek affedilmez. Sevdiginde, sahip oldugun her seyle seversin.",
+      "Sagittarius": "Duyguların nefes alacak alan ister. Hislerini hareketle, macera ile, mizahla ve felsefi bir bakis acisiyla islersin. Duygusal klostrofobi senin kriptonitindir -- en yakin iliskilerinde bile ozgurluge ihtiyacin var.",
+      "Capricorn": "Erken yasta duyguların guvenli olmadigini ogrendin. Hislerini yavasca, ozel olarak ve baskalarin sogukluk sandigi bir ozdenetimle islersin. Ama o sukunetin altinda seni kirabilecek kadar siddetli bir sadakat var.",
+      "Aquarius": "Duygusal dunyan alışılmadık. Insanliga derinden onem verirsin ama birebir duygusal yakinlikla zorlanirsin. Hislerini entelektuel olarak islersin -- icinde bogulmak yerine disindan analiz edersin.",
+      "Pisces": "Her seyi hissedersin -- kendi duygularini, baskalarinin duygularini, girdigin her odanin kolektif ruh halini. Kalbinin duvarlari yok. Bu hem en buyuk yetenegin hem de seni en cok tuketen sey."
     },
     "risingMask": {
-      "Aries": "İnsanlar seni cesur, doğrudan ve biraz göz korkutucu olarak görür. Kontrolü ele alan biri gibi algılanırsın — kimse ne yapacağını bilmediğinde herkesin baktığı kişi. Enerji sendan önce girer.",
-      "Taurus": "İnsanlar seni dengeli, çekici ve özür dilemeden gerçek biri olarak görür. Varlığında başkalarını güvende hissettiren bir sükunet var. Sessiz bir özgüvenle ve insanların hemen fark ettiği bir güzellik anlayışıyla taşırsın kendini.",
-      "Gemini": "İnsanlar seni esprili, meraklı ve sınıflandırılması imkansız biri olarak görür. Her zaman düşünen, her zaman gözlemleyen ve her zaman konuşmanın biraz önünde olan biri gibi algılanırsın. Çok yönlülüğün silahsızlandırıcı.",
-      "Cancer": "İnsanlar seni sıcak, koruyucu ve duygusal olarak var biri olarak görür. Gerçekten önemseyen biri gibi algılanırsın — ve haklılar. Kendini korurken bile insanları çeken bir yumuşaklık var yüzünde.",
-      "Leo": "İnsanlar seni manyetik, özgüvenli ve görmezden gelinmesi imkansız biri olarak görür. Bir odaya girdiğinde enerji değişir. Varlığında insanların yanında olmak istemesine neden olan bir sıcaklık ve cömertlik var — ve nadiren nedenini bilirler.",
-      "Virgo": "İnsanlar seni sakin, zeki ve sessizce derli toplu biri olarak görür. İşleri kontrol altında tutan biri gibi algılanırsın — tutmadığın zamanlarda bile. Varlığındaki alçakgönüllülük odadaki en keskin zihni gizler.",
-      "Libra": "İnsanlar seni çekici, dengeli ve estetik olarak dikkat çekici biri olarak görür. Her şeyi zahmetsiz gösteren biri gibi algılanırsın — ilişkiler dahil. Sosyal zarafetin insanların keşke öğrenebilsek dedikleri bir şey.",
-      "Scorpio": "İnsanlar seni yoğun, gizemli ve okunması zor biri olarak görür. İnsanların içini gören biri gibi algılanırsın — ve bunu hissedebilirler. Varlığında başkalarını ya derinden çeken ya da hafifçe korkutan bir güç var.",
-      "Sagittarius": "İnsanlar seni maceracı, iyimser ve ferahlatıcı derecede dürüst biri olarak görür. Hayatı çok ciddiye almayan biri gibi algılanırsın — ve bu insanların sana güvenmesini sağlar çünkü rol yapmıyorsun. Kahkahan şifadır.",
-      "Capricorn": "İnsanlar seni olgun, hırslı ve sessizce güçlü biri olarak görür. Hayatını bir arada tutan biri gibi algılanırsın — daha tanımadan saygı duyulan biri. Varlığında istemediğin bir otorite var.",
-      "Aquarius": "İnsanlar seni benzersiz, bağımsız ve hafifçe farklı biri olarak görür — mümkün olan en iyi şekilde. Başkalarının ne düşündüğünü gerçekten umursamayan biri gibi algılanırsın ve bu özgürlük manyetik. İnsanlar sende olanı ister.",
-      "Pisces": "İnsanlar seni hayalperest, nazik ve bu dünyadan olmayan biri olarak görür. Normal gerçekliğin biraz dışında var olan biri gibi algılanırsın — eski bir ruh, bir sanatçı, bir şifacı. İnsanlar nedenini bilmeden sana açılır."
+      "Aries": "Insanlar seni cesur, dogrudan ve biraz goz korkutucu olarak gorur. Kontrolu ele alan biri gibi algilanirsin -- kimse ne yapacagini bilmediginde herkesin baktigi kisi. Enerji senden once girer.",
+      "Taurus": "Insanlar seni dengeli, cekici ve ozur dilemeden gercek biri olarak gorur. Varliginda baskalarin guvende hissettiren bir sukunet var. Sessiz bir ozguvenle ve insanlarin hemen fark ettigi bir guzellik anlayisiyla tasirsin kendini.",
+      "Gemini": "Insanlar seni esprili, merakli ve siniflandirilmasi imkansiz biri olarak gorur. Her zaman dusunen, her zaman gozlemleyen ve her zaman konusmanin biraz onunde olan biri gibi algilanirsin. Cok yonlulugun silahsizlandirici.",
+      "Cancer": "Insanlar seni sicak, koruyucu ve duygusal olarak var biri olarak gorur. Gercekten onmseyen biri gibi algilanirsin -- ve haklilar. Kendini korurken bile insanlari ceken bir yumusaklik var yuzunde.",
+      "Leo": "Insanlar seni manyetik, ozguvenli ve gormezden gelinmesi imkansiz biri olarak gorur. Bir odaya girdiginde enerji degisir. Varliginda insanlarin yaninda olmak istemesine neden olan bir sicaklik ve comertlik var -- ve nadiren nedenini bilirler.",
+      "Virgo": "Insanlar seni sakin, zeki ve sessizce derli toplu biri olarak gorur. Isleri kontrol altinda tutan biri gibi algilanirsin -- tutmadigin zamanlarda bile. Varligindaki alcakgonulluluk odadaki en keskin zihni gizler.",
+      "Libra": "Insanlar seni cekici, dengeli ve estetik olarak dikkat cekici biri olarak gorur. Her seyi zahmetsiz gosteren biri gibi algilanirsin -- iliskiler dahil. Sosyal zarafetin insanlarin keske ogrenebilsek dedikleri bir sey.",
+      "Scorpio": "Insanlar seni yogun, gizemli ve okunmasi zor biri olarak gorur. Insanlarin icini goren biri gibi algilanirsin -- ve bunu hissedebilirler. Varliginda baskalarin ya derinden ceken ya da hafifce korkutan bir guc var.",
+      "Sagittarius": "Insanlar seni maceraci, iyimser ve ferahlatici derecede durust biri olarak gorur. Hayati cok ciddiye almayan biri gibi algilanirsin -- ve bu insanlarin sana guvenmesini saglar cunku rol yapmiyorsun. Kahkahan sifadir.",
+      "Capricorn": "Insanlar seni olgun, hirsli ve sessizce guclu biri olarak gorur. Hayatini bir arada tutan biri gibi algilanirsin -- daha tanimadan saygi duyulan biri. Varliginda istemedigin bir otorite var.",
+      "Aquarius": "Insanlar seni benzersiz, bagimsiz ve hafifce farkli biri olarak gorur -- mumkun olan en iyi sekilde. Baskalarin ne dusundugunu gercekten umursamayan biri gibi algilanirsin ve bu ozgurluk manyetik. Insanlar sende olani ister.",
+      "Pisces": "Insanlar seni hayalperest, nazik ve bu dunyadan olmayan biri olarak gorur. Normal gercekligin biraz disinda var olan biri gibi algilanirsin -- eski bir ruh, bir sanatci, bir sifaci. Insanlar nedenini bilmeden sana acilir."
     },
     "elementBalance": {
       "Fire": {
-        "name": "Ateş",
-        "feel": "Tutku, içgüdü ve bir şeyleri gerçekleştirmeye yönelik sarsılmaz bir ihtiyaç tarafından yönlendirilirsin. İlhamla çalışırsın — ve ilham tükendiğinde çökersin."
+        "name": "Ates",
+        "feel": "Tutku, icgudu ve bir seyleri gerceklestirmeye yonelik sarsilmaz bir ihtiyac tarafindan yonlendirilirsin. Ilhamla calisirsin -- ve ilham tukendiginde cokersin."
       },
       "Earth": {
         "name": "Toprak",
-        "feel": "Ayakların yere basar, pratiksin ve gerçeklik için yaratıldın. Görebildiğin ve dokunabildiğin şeylere güvenirsin. Gücün dayanıklılık — riskin ise değişim zamanı geldiğinde direnmek."
+        "feel": "Ayaklarin yere basar, pratiksin ve gerceklik icin yaratildin. Gorebiledigin ve dokunabildigin seylere guvenirsin. Gucun dayaniklilik -- riskin ise degisim zamani geldiginde direnmek."
       },
       "Air": {
         "name": "Hava",
-        "feel": "Zihninde yaşarsın. Fikirler, bağlantılar, sohbetler — kendini en canlı hissettiğin yer orası. Yeteneğin bakış açısı. Gölgen bedeninden ve kalbinden kopman."
+        "feel": "Zihninde yasarsin. Fikirler, baglantilar, sohbetler -- kendini en canli hissettigin yer orasi. Yetenegin bakis acisi. Golgen bedeninden ve kalbinden kopman."
       },
       "Water": {
         "name": "Su",
-        "feel": "Duygu tarafından yönlendirilirsin. Sezgin, empatın, duygusal derinliğin — bunlar yumuşak beceriler değil, birincil zekan. Meydan okuman hangi duyguların sana ait olduğunu öğrenmek."
+        "feel": "Duygu tarafindan yonlendirilirsin. Sezgin, empatin, duygusal derinligin -- bunlar yumusak beceriler degil, birincil zekan. Meydan okuman hangi duyguların sana ait oldugunu ogrenmek."
       }
     }
   },
   "home": {
     "greeting": "Merhaba, {{name}}",
-    "dailyInsight": "Günlük İçgörü",
-    "currentTransits": "Güncel Transitler",
+    "dailyInsight": "Gunluk Icgoru",
+    "currentTransits": "Guncel Transitler",
     "moonPhase": "Ay Evresi",
     "planetaryHours": "Gezegen Saatleri",
-    "quickAccess": "Hızlı Erişim"
+    "quickAccess": "Hizli Erisim"
   },
   "chart": {
-    "natal": "Doğum Haritası",
+    "natal": "Dogum Haritasi",
     "progressed": "Progresyon",
-    "solarReturn": "Güneş Dönüşü",
-    "lunarReturn": "Ay Dönüşü",
+    "solarReturn": "Gunes Donusu",
+    "lunarReturn": "Ay Donusu",
     "synastry": "Sinastri",
     "composite": "Kompozit",
     "positions": "Konumlar",
-    "aspects": "Açılar",
+    "aspects": "Acilar",
     "houses": "Evler",
-    "patterns": "Kalıplar"
+    "patterns": "Kaliplar"
   },
   "readings": {
     "title": "Okumalar",
-    "chartAdjuster": "Harita Düzenleyici",
+    "chartAdjuster": "Harita Duzenleyici",
     "transits": "Transitler",
-    "starseed": "Yıldız Tohumu Kökenleri",
+    "starseed": "Yildiz Tohumu Kokenleri",
     "numerology": "Numeroloji",
-    "angelNumbers": "Melek Sayıları",
+    "angelNumbers": "Melek Sayilari",
     "humanDesign": "Human Design",
     "tarot": "Tarot",
     "financial": "Finansal Rapor",
-    "pathway": "Başarıya Giden Yol",
-    "nameAnalysis": "İsim Analizi",
+    "pathway": "Basariya Giden Yol",
+    "nameAnalysis": "Isim Analizi",
     "firdaria": "Firdaria",
     "zodiacalReleasing": "Zodiacal Releasing",
     "planetaryHours": "Gezegen Saatleri",
+    "moonPhases": "Ay Evreleri",
     "acg": "Astro-Kartografi",
-    "fixedStars": "Sabit Yıldızlar",
-    "arabicParts": "Arap Noktaları",
+    "fixedStars": "Sabit Yildizlar",
+    "arabicParts": "Arap Noktalari",
     "compatibility": "Uyumluluk",
-    "rectification": "Doğum Saati Düzeltme Aracı",
+    "rectification": "Dogum Saati Duzeltme Araci",
     "galacticClock": "Galaktik Saat",
     "galacticOverlay": "Galaktik Kaplama",
     "galacticForecast": "Galaktik Tahmin",
-    "midpoints": "Orta Nokta Hesaplayıcı",
-    "aiAstrologer": "Yapay Zeka Astroloğu",
-    "savedCharts": "Kayıtlı Haritalar",
-    "cosmicJournal": "Kozmik Günlük",
-    "moonPhases": "Ay Evreleri",
-    "yearAhead": "Yaklaşan Yılım",
+    "midpoints": "Orta Nokta Hesaplayici",
+    "aiAstrologer": "Yapay Zeka Astrologu",
+    "yearAhead": "Yaklasan Yilim",
+    "savedCharts": "Kayitli Haritalar",
+    "cosmicJournal": "Kozmik Gunluk",
     "soulGifts": "Ruh Yetenekleri",
-    "soulMemory": "Ruh Hafızası"
+    "soulMemory": "Ruh Hafizasi",
+    "soulAscension": "Ruh Yukselisi",
+    "dreamOracle": "Ruya Kahini",
+    "backToReadings": "Okumalara Don",
+    "upgradeToTier": "{{tier}} planina yukseltin",
+    "birthDataRequired": "Lutfen once profilinize dogum bilgilerinizi ekleyin.",
+    "birthDataPromptTransits": "Guncel transitlerinizi gormek icin dogum bilgilerinizi ekleyin.",
+    "birthDataPromptCompatibility": "Ozel birinin uyumlulugunu kontrol etmek icin dogum bilgilerinizi ekleyin.",
+    "birthDataPromptAlerts": "Haritaniz icin kisisellestirilmis kozmik uyarilar hesaplamak icin dogum bilgilerinize ihtiyacimiz var.",
+    "transitsPage": {
+      "title": "Dongulererin",
+      "subtitle": "{{name}}, bunlar su anda hayatinda hareket eden donguler. Onlari mevsimler gibi dusun -- her birinin kendi enerjisi, kendi dersleri ve kendi firsatlari var.",
+      "loadingLabel": "Transitlerin hesaplaniyor...",
+      "errorDefault": "Transitler yuklenemedi",
+      "emptyState": "Aktif dongu bulunamadi. Yakinda tekrar kontrol et.",
+      "activeNow": "Su Anda Aktif",
+      "storylines": "Hikaye Hatlari",
+      "impactingYouNow": "Seni Su Anda Etkiliyor",
+      "backToCycles": "Dongulere Don",
+      "active": "aktif",
+      "approaching": "Yaklasan",
+      "separating": "Uzaklasan",
+      "cycleMeaning": "Bu Dongunun Senin Icin Anlami",
+      "howToNavigate": "Bunu Nasil Yonetirsin",
+      "technicalDetails": "Teknik Detaylar",
+      "transit": "Transit",
+      "currentOrb": "Mevcut Orb",
+      "direction": "Yon",
+      "intensity": "Yogunluk",
+      "separatingDesc": "Uzaklasan (tam acidan uzaklasiyor)",
+      "applyingDesc": "Yaklasan (tam aciya dogru ilerliyor)",
+      "intensityMajor": "Buyuk (dis gezegen)",
+      "intensityModerate": "Orta",
+      "intensityMinor": "Kucuk",
+      "nearExact": "Neredeyse tam -- en guclu etki",
+      "stronglyActive": "Guclu sekilde aktif",
+      "buildingMomentum": "Ivme kazaniyor",
+      "enteringAwareness": "Farkindaligin basliyor",
+      "lessThanADay": "Bir gunden az kaldi",
+      "daysLeft": "{{count}} gun kaldi",
+      "weeksLeft": "~{{count}} hafta kaldi",
+      "monthsLeft": "~{{count}} ay kaldi",
+      "yearsLeft": "{{count}}+ yil",
+      "tapToRead": "Tam icgoruyu okumak icin dokun",
+      "failedToLoadStorylines": "Hikaye hatlari yuklenemedi"
+    },
+    "tarotPage": {
+      "title": "Tarot Okumasi",
+      "subtitle": "Arkanalardan rehberlik al",
+      "chooseSpread": "Acilimini Sec",
+      "yourQuestion": "Sorun (Istege Bagli)",
+      "questionPlaceholder": "Hangi rehberligi ariyorsun?",
+      "drawButton": "{{spread}} Cek",
+      "shuffling": "Kozmik Deste Karistiriliyor...",
+      "tapToReveal": "Acmak icin dokun",
+      "revealAll": "Tum Kartlari Ac",
+      "newReading": "Yeni Okuma",
+      "getPersonalReading": "Kisisel Okumani Al",
+      "regenerateReading": "Kisisel Okumayi Yeniden Olustur",
+      "personalTarotReading": "Kisisel Tarot Okumasi",
+      "channeling": "Haritan ve kartlarin kanalize ediliyor...",
+      "shareReading": "Okumayi Paylas",
+      "copied": "Kopyalandi!",
+      "failedToGenerate": "Okuma olusturulamadi. Lutfen tekrar deneyin.",
+      "reversed": "Ters",
+      "majorArcana": "Buyuk Arkana",
+      "minorArcana": "Kucuk Arkana",
+      "spreads": {
+        "single": "Tek Kart",
+        "threeCard": "Uc Kart",
+        "celticCross": "Kelt Haci",
+        "relationship": "Iliski",
+        "career": "Kariyer"
+      },
+      "positions": {
+        "focus": "Odak",
+        "past": "Gecmis",
+        "present": "Simdi",
+        "future": "Gelecek",
+        "challenge": "Zorluk",
+        "foundation": "Temel",
+        "recentPast": "Yakin Gecmis",
+        "crown": "Tac",
+        "nearFuture": "Yakin Gelecek",
+        "self": "Benlik",
+        "environment": "Cevre",
+        "hopesFears": "Umutlar/Korkular",
+        "outcome": "Sonuc",
+        "you": "Sen",
+        "partner": "Partner",
+        "connection": "Baglanti",
+        "potential": "Potansiyel",
+        "current": "Mevcut",
+        "obstacle": "Engel",
+        "hiddenFactor": "Gizli Faktor",
+        "advice": "Tavsiye"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "Ruya Kahini",
+      "subtitle": "Ruyalarini semboller, duygular, astroloji ve bilialtinin gizli dili araciligiyla coz.",
+      "tabs": {
+        "record": "Kaydet",
+        "journal": "Gunluk",
+        "symbols": "Semboller",
+        "patterns": "Kaliplar"
+      },
+      "record": {
+        "dreamTitle": "Ruya Basligi (istege bagli)",
+        "titlePlaceholder": "Bos birakilirsa otomatik olusturulur",
+        "describeLabel": "Ruyani Anlat *",
+        "describePlaceholder": "Gozlerini kapat ve hatirldigin her seyi anlat...",
+        "mainEmotions": "Ana Duygular (en fazla 5)",
+        "peopleDream": "Ruyadaki Kisiler",
+        "peoplePlaceholder": "orn. Anne, eski partner, yabanci, arkadas",
+        "placesDream": "Ruyadaki Mekanlar",
+        "placesPlaceholder": "orn. cocukluk evi, okyanus, karanlik orman",
+        "separateCommas": "Virgulle ayirin",
+        "symbolsObjects": "Semboller / Nesneler",
+        "selectSymbols": "Ruya sembolleri secmek icin tikla",
+        "selectedCount": "{{count}} secildi",
+        "searchSymbols": "Sembol ara...",
+        "dreamType": "Ruya Turu",
+        "dreamIntensity": "Ruya Yogunlugu: {{value}}/10",
+        "privacy": "Gizlilik",
+        "interpretDream": "Ruyami Yorumla",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "Ruya Yorumun",
+        "mainSymbols": "Ana Semboller",
+        "coreMessage": "Temel Mesaj",
+        "subconsciousMessage": "Bilincaltinin Sana Gosterdigi Sey",
+        "symbolsMatter": "En Onemli Semboller",
+        "emotionalUndercurrent": "Duygusal Altiakinti",
+        "whatToFace": "Bu Ruyanin Senden Yuzlesmeni Istedigi Sey",
+        "oracleMessage": "Ruya Kahininin Son Mesaji",
+        "astroConnection": "Astrolojik Baglanti",
+        "whyNow": "Bunu Neden Simdi Gordun",
+        "watchFor": "Nelere Dikkat Etmelisin",
+        "whatToDo": "Simdi Ne Yapmalisin",
+        "reflectionQuestions": "Dusunce Sorulari",
+        "askAboutDream": "Bu Ruya Hakkinda Sor",
+        "visualizeDream": "Ruyami Goruntuele",
+        "comingSoon": "YAKINDA",
+        "recordAnother": "Baska Bir Ruya Kaydet"
+      },
+      "journal": {
+        "loadingJournal": "Ruya gunlugu yukleniyor...",
+        "searchDreams": "Ruya ara...",
+        "noDreamsYet": "Henuz ruya yok",
+        "noDreamsHint": "Gunlugunuzu olusturmaya baslamak icin ilk ruyanizi kaydedin.",
+        "deleteConfirm": "Bu ruya silinsin mi? Bu islem geri alinamaz."
+      },
+      "dictionary": {
+        "backToSymbols": "Sembollere don",
+        "generalMeaning": "Genel Anlam",
+        "psychologicalMeaning": "Psikolojik Anlam",
+        "spiritualMeaning": "Ruhani Anlam",
+        "astrologicalMeaning": "Astrolojik Anlam",
+        "shadowMeaning": "Golge Anlami",
+        "reflectionQuestion": "Dusunce Sorusu"
+      },
+      "patterns": {
+        "noPatternsYet": "Henuz kalip yok",
+        "noPatternsHint": "Ruya hayatinizdaki kaliplari gormeye baslamak icin en az 3 ruya kaydedin.",
+        "overview": "Genel Bakis",
+        "totalDreams": "Toplam Ruya",
+        "avgIntensity": "Ort. Yogunluk",
+        "nightmares": "Kabuslar",
+        "lucidDreams": "Lusid Ruyalar",
+        "prophetic": "Kehanet",
+        "recurringSymbols": "En Cok Tekrarlanan Semboller",
+        "recurringEmotions": "En Cok Tekrarlanan Duygular",
+        "recurringPeople": "En Cok Tekrarlanan Kisiler",
+        "dreamTypes": "Ruya Turleri",
+        "dreamsByMoonPhase": "Ay Evresine Gore Ruyalar",
+        "moonPhaseHint": "Ay evresi kalip takibi, astroloji verileriyle baglantili 10'dan fazla ruyaniz oldugunda aktif olacaktir.",
+        "dreamsByTransit": "Transite Gore Ruyalar",
+        "transitHint": "Transit korelasyonu, hangi gezegen acilarinin en canli veya kehanet ruyalarinizi tetikledigini ortaya cikaracaktir."
+      }
+    },
+    "starseedPage": {
+      "title": "Yildiz Tohumu Kokeni",
+      "subtitle": "Kozmik ruh kokenlerini kesfet",
+      "description": "Ruhunun hangi yildiz sistemleriyle rezonansa girdigini kesfetmek icin dogum haritani analiz et.",
+      "discoverButton": "Kokenlerimi Kesfet",
+      "analyzing": "Analiz ediliyor...",
+      "dominantOrigin": "Baskin Koken",
+      "resonancePoints": "Puan: {{score}} rezonans puani"
+    },
+    "numerologyPage": {
+      "title": "Numeroloji",
+      "subtitle": "Kozmik sayilarin cozumlendi",
+      "master": "Usta"
+    },
+    "angelNumbersPage": {
+      "title": "Melek Sayilari",
+      "subtitle": "Gordugun sayilarin ardindaki anlami ara",
+      "searchPlaceholder": "Bir sayi girin (orn. 111, 444)...",
+      "popular": "Populer Sayilar",
+      "notFound": "Sayi bulunamadi. Yaygin bir melek sayisi deneyin.",
+      "copiedToClipboard": "Panoya kopyalandi!"
+    },
+    "humanDesignPage": {
+      "title": "Human Design",
+      "subtitle": "Enerjetik semaniz",
+      "aura": "Aura",
+      "defined": "Tanimli",
+      "undefined": "Tanimsiz"
+    },
+    "financialPage": {
+      "title": "Finansal Astroloji",
+      "subtitle": "Kozmik para semaniz",
+      "personalIncome": "Kisisel Gelir ve Degerler",
+      "sharedResources": "Paylasilmis Kaynaklar ve Donusum",
+      "careerStanding": "Kariyer ve Kamusal Konum",
+      "gainsNetworks": "Kazanclar ve Aglar",
+      "strengths": "Guclu Yanlar",
+      "challenges": "Zorluklar",
+      "monthlyForecast": "Aylik Tahmin",
+      "timingWindows": "Zamanlama Pencereleri",
+      "favorable": "Olumlu",
+      "mixed": "Karisik",
+      "challenging": "Zorlayici"
+    },
+    "compatibilityPage": {
+      "title": "Uyumluluk Kontrolu",
+      "subtitle": "Iki ruh arasindaki kozmik baglantiyi kesfet",
+      "person2Label": "Partnerin Dogum Verileri",
+      "datePlaceholder": "Dogum Tarihi",
+      "timePlaceholder": "Dogum Saati",
+      "locationPlaceholder": "Dogum Yeri",
+      "calculateButton": "Uyumlulugu Kontrol Et",
+      "calculating": "Uyumluluk hesaplaniyor...",
+      "overallScore": "Genel Puan",
+      "soulLevelConnection": "Ruh Duzeyinde Baglanti",
+      "deepCompatibility": "Derin Uyumluluk",
+      "strongPotential": "Guclu Potansiyel",
+      "moderateMatch": "Orta Duzey Esleme",
+      "growthRequired": "Gelisim Gerekli",
+      "challengingDynamic": "Zorlayici Dinamik",
+      "categories": {
+        "attraction": "Fiziksel Cekim",
+        "emotional": "Duygusal Bag",
+        "mental": "Zihinsel Baglanti",
+        "stability": "Uzun Vadeli Istikrar",
+        "karmic": "Karmik Bag",
+        "harmony": "Uyum",
+        "magnetic": "Manyetik Cekim"
+      },
+      "showAspects": "Acilari Goster",
+      "hideAspects": "Acilari Gizle"
+    },
+    "cosmicJournalPage": {
+      "title": "Kozmik Gunluk",
+      "subtitle": "Ic dunyanizi kozmosla birlikte takip edin",
+      "newEntry": "Yeni Kayit",
+      "moodOptions": {
+        "low": "Dusuk",
+        "meh": "Eh",
+        "neutral": "Notr",
+        "good": "Iyi",
+        "great": "Harika"
+      },
+      "noEntries": "Henuz gunluk kaydi yok",
+      "noEntriesHint": "Ic dunyanizi kozmosla birlikte takip etmeye baslamak icin yazin."
+    },
+    "moonPhasesPage": {
+      "title": "Ay Evreleri",
+      "tabs": {
+        "today": "Bugun",
+        "calendar": "Takvim",
+        "forecast": "Tahmin",
+        "eclipses": "Tutulmalar",
+        "birthMoon": "Dogum Ayi"
+      },
+      "failedToLoadChart": "Dogum haritasi yuklenemedi"
+    },
+    "planetaryHoursPage": {
+      "title": "Gezegen Saatleri",
+      "subtitle": "Modern hayat icin kadim zamanlama bilgeligi",
+      "currentHour": "Mevcut Saat",
+      "daySummary": "Gun Ozeti",
+      "hoursTable": "Saat Tablosu"
+    },
+    "yearAheadPage": {
+      "title": "Yaklasan Yilim",
+      "subtitle": "Yil icin kisisellestirilmis kozmik tahminin",
+      "generating": "Gelecek yilin hazirlaniyor...",
+      "monthlyOverview": "Aylik Genel Bakis",
+      "keyTransits": "Onemli Transitler",
+      "calm": "Sakin",
+      "activeIntensity": "Aktif",
+      "intense": "Yogun"
+    },
+    "solarReturnPage": {
+      "title": "Gunes Donusu",
+      "subtitle": "Dogum gunu haritan -- yilin icin kozmik sema",
+      "generating": "Gunes Donusun hesaplaniyor...",
+      "yearTheme": "Yil Temasi",
+      "planetsOnAngles": "Acilardaki Gezegenler",
+      "retrogrades": "Retrogradlar",
+      "monthlyTimeline": "Aylik Zaman Cizelgesi",
+      "natalComparisons": "Dogum vs Gunes Donusu",
+      "criticalAspects": "Kritik Acilar",
+      "yearPattern": "Yil Kalbi"
+    },
+    "galacticClockPage": {
+      "title": "Galaktik Saat",
+      "subtitle": "Kozmik zamanlama arayuzun"
+    },
+    "galacticForecastPage": {
+      "title": "Galaktik Tahmin",
+      "subtitle": "Haritani etkileyen derin uzay enerjileri"
+    },
+    "midpointsPage": {
+      "title": "Orta Nokta Hesaplayici",
+      "subtitle": "Haritandaki gizli baglantilari kesfet"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Kadim Pers gezegen donemleri"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Helenistik zamanlama teknigi"
+    },
+    "acgPage": {
+      "title": "Astro-Kartografi",
+      "subtitle": "Gezegenlerinin dunyanin neresinde aktif oldugu"
+    },
+    "fixedStarsPage": {
+      "title": "Sabit Yildizlar",
+      "subtitle": "Haritandaki yildiz etkileri"
+    },
+    "arabicPartsPage": {
+      "title": "Arap Noktalari",
+      "subtitle": "Haritandaki kadim hesaplanmis noktalar"
+    },
+    "pathwayPage": {
+      "title": "Basariya Giden Yol",
+      "subtitle": "Kozmik kariyer ve yasam amaci seman"
+    },
+    "rectificationPage": {
+      "title": "Dogum Saati Duzeltme",
+      "subtitle": "Daha dogru haritalar icin dogum saatini ince ayar yap"
+    },
+    "nameAnalysisPage": {
+      "title": "Isim Analizi",
+      "subtitle": "Adinin numerolojisi"
+    },
+    "soulGiftsPage": {
+      "title": "Ruh Yetenekleri",
+      "subtitle": "Haritana kodlanmis benzersiz yetenekleri kesfet"
+    },
+    "soulMemoryPage": {
+      "title": "Ruh Hafizasi",
+      "subtitle": "Dogum haritandaki gecmis yasam yankilari"
+    },
+    "soulAscensionPage": {
+      "title": "Ruh Yukselisi",
+      "description": "Dogum haritani karma, amac yollari, ruh sozlesmeleri, kalintilari ve gecmis yasam secimleriyle bir reenkarnasyon RPG'si olarak oyna."
+    },
+    "chartAdjusterPage": {
+      "title": "Harita Duzenleyici",
+      "subtitle": "Farkli dogum saatleriyle deney yap"
+    }
   },
   "interpretation": {
     "aiInterpret": "Yapay Zeka Yorumu",
-    "loading": "Yıldızlar okunuyor...",
+    "loading": "Yildizlar okunuyor...",
     "modes": {
       "default": "Genel",
-      "dating": "Flört",
-      "purpose": "Yaşam Amacı",
+      "dating": "Flort",
+      "purpose": "Yasam Amaci",
       "spiritual": "Ruhani Yetenekler",
       "passion": "Tutku",
-      "reputation": "İtibar"
+      "reputation": "Itibar"
+    }
+  },
+  "dating": {
+    "title": "Kozmik Flort",
+    "subtitle": "Senin icin secilmis kozmik eslesmeler",
+    "introTitle": "Kozmik Flort",
+    "introDescription": "Yildizlarda yazilmis anlamli baglantilar bul. Kozmik olarak uyumlu eslesmeler kesfetmeye baslamak icin flort profilini olustur.",
+    "createProfileButton": "Flort Profilini Olustur",
+    "featurePhotos": "Foto ve sesli tanitim ekle",
+    "featureCompatibility": "Kozmik uyumlulukla esles",
+    "featureSafety": "Guvenli ve dogrulanmis baglantilar",
+    "tabs": {
+      "discover": "Kesfet",
+      "likes": "Begeniler",
+      "matches": "Eslesmeler",
+      "myProfile": "Profilim"
+    },
+    "discovery": {
+      "consulting": "Kozmosa danisiliyor...",
+      "noPicksTitle": "Henuz Kozmik Secim Yok",
+      "allCaughtUpTitle": "Her Seyi Gordun!",
+      "noPicksDescription": "Yildizlar hala eslesmelerini hizaliyor. Flort profilinin tamamlandigindan emin ol!",
+      "allCaughtUpDescription": "Yeni kozmik secimler icin yarin tekrar gel. Kaliteli baglantilar zaman alir.",
+      "completeProfile": "Profili Tamamla",
+      "dailyLikeLimit": "Gunluk begeni limitine ulastin ({{limit}}). Daha fazlasi icin yukselt!",
+      "dailyRoseLimit": "Bugunku tum Kozmik Gullerini kullandin ({{limit}}). Daha fazlasi icin yukselt!",
+      "genericError": "Bir seyler ters gitti. Lutfen tekrar dene."
+    },
+    "likes": {
+      "title": "Begeniler",
+      "receivedCount": "{{count}} kisi ilgileniyor",
+      "sentCount": "{{count}} kisiyi begendin",
+      "received": "Alinan",
+      "sent": "Gonderilen",
+      "seeWhoLikes": "Seni kimin begenndigini gor",
+      "upgradeHint": "Profilleri gormek icin Light veya ustune yukselt",
+      "upgrade": "Yukselt",
+      "noLikesYet": "Henuz begeni yok",
+      "noSentYet": "Henuz gonderilen begeni yok",
+      "keepFresh": "Profilini guncel tut, kozmos sana ulasacaktir.",
+      "headToDiscover": "Kozmik baglantilarini bulmak icin Kesfet'e git.",
+      "mysteryAdmirer": "Gizemli hayran",
+      "rose": "Gul",
+      "likeBack": "Sen de Begen",
+      "matching": "Eslestiriliyor..."
+    },
+    "matches": {
+      "title": "Eslesmelerin",
+      "connectionCount": "{{count}} kozmik baglanti",
+      "noMatchesTitle": "Henuz esleme yok",
+      "noMatchesDescription": "Sen ve biri birbirinizi begendiginizde burada goruneceksiniz.",
+      "discoverPeople": "Insanlari Kesfet",
+      "cosmicIcebreakers": "Kozmik Buzkiricilar",
+      "message": "Mesaj",
+      "unmatchConfirm": "{{name}} ile eslemeyi kaldir?",
+      "unmatch": "Eslesmeyi Kaldir",
+      "cancel": "Iptal",
+      "matchedToday": "Bugun eslesti",
+      "matchedDaysAgo": "{{days}} gun once eslesti",
+      "cosmicMatch": "Kozmik Esleme"
+    },
+    "profile": {
+      "title": "Flort Profili",
+      "datingMode": "Flort Modu",
+      "datingModeHint": "Profilini kozmik kesfette gorunur yap",
+      "cosmicSignature": "Kozmik Imzan",
+      "sunMoonRising": "Gunes / Ay / Yukselen",
+      "photos": "Fotograflar",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "Hakkimda",
+      "aboutMePlaceholder": "Potansiyel eslesmelere kendinden bahset...",
+      "cosmicPrompts": "Kozmik Sorular",
+      "addPrompt": "Soru ekle",
+      "promptAnswerPlaceholder": "Cevabiniz...",
+      "voicePrompt": "Sesli Tanitim",
+      "voicePromptHint": "Kisiliginin parlamasini saglamak icin 30 saniyelik sesli tanitim kaydet",
+      "uploadingVoice": "Sesli tanitim yukleniyor...",
+      "reRecord": "Tekrar Kaydet",
+      "stopRecording": "Kaydi Durdur",
+      "recordVoicePrompt": "Sesli Tanitim Kaydet",
+      "videoIntro": "Video Tanitim",
+      "videoIntroHint": "Kendini tanitmak icin 15 saniyelik video yukle",
+      "replaceVideo": "Videoyu degistir",
+      "uploadVideo": "Video Yukle",
+      "showAge": "Profilde yasi goster",
+      "photoVerification": "Foto Dogrulama",
+      "verified": "Dogrulandi",
+      "verifyNow": "Simdi dogrula",
+      "datingPreferences": "Flort Tercihleri",
+      "savePreferences": "Tercihleri Kaydet",
+      "saveProfile": "Profili Kaydet",
+      "saving": "Kaydediliyor...",
+      "preferenceFields": {
+        "genderIdentity": "Cinsiyet Kimligi",
+        "sexualOrientation": "Cinsel Yonelim",
+        "interestedIn": "Ilgilenilen",
+        "primaryIntent": "Temel Amac",
+        "ageRange": "Yas Araligi",
+        "maxDistance": "Maksimum Mesafe"
+      },
+      "privacyLevels": {
+        "visible": "Gorunur",
+        "matchOnly": "Sadece eslesmeler",
+        "hidden": "Gizli"
+      }
+    },
+    "verify": {
+      "title": "Foto Dogrulama",
+      "subtitle": "Flort profilinde guvenilir rozet kazanmak icin kimligini dogrula",
+      "backToProfile": "Profile Don",
+      "verifiedTitle": "Dogrulandi!",
+      "verifiedDescription": "Profilin artik dogrulanmis rozet gosteriyor.",
+      "pendingTitle": "Inceleniyor",
+      "pendingDescription": "Selfien inceleniyor. Bu genellikle 24-48 saat surer.",
+      "rejectedTitle": "Onaylanmadi",
+      "rejectedHint": "Daha net bir selfie ile tekrar deneyebilirsin.",
+      "tryAgain": "Tekrar Dene",
+      "howItWorks": "Nasil calisir:",
+      "step1": "1. Iyi isiklandirmayla net bir selfie cek",
+      "step2": "2. Yuzunun tamamen gorunur oldugundan emin ol",
+      "step3": "3. Profil fotograflarinla karsilastiracagiz",
+      "step4": "4. Onaylaninca dogrulanmis rozet alirsin",
+      "takeSelfie": "Selfie Cek",
+      "capture": "Cek",
+      "cancel": "Iptal",
+      "retake": "Yeniden Cek",
+      "submitForReview": "Incelemeye Gonder",
+      "submitting": "Gonderiliyor...",
+      "cameraAccessDenied": "Kamera erisimi reddedildi. Lutfen tarayici ayarlarinizdan kamera erisinine izin verin.",
+      "submissionFailed": "Gonderim basarisiz. Lutfen tekrar deneyin.",
+      "networkError": "Ag hatasi. Lutfen baglantinizi kontrol edip tekrar deneyin."
+    },
+    "coach": {
+      "title": "Iliski Kocu",
+      "subtitle": "Astrolojik dinamiklerinize dayali yapay zeka destekli icgorular",
+      "premiumFeature": "Premium ozellik",
+      "backToMatches": "Eslesmelere Don",
+      "noMatchHint": "Kocluk icgoruleri almak icin biriyle esles.",
+      "browsePicks": "Secimlere Goz At",
+      "inputPlaceholder": "Iletisim, catisma, yakinlik hakkinda sor...",
+      "emptyHint": "Ilk soruyu sor veya genel bir icgoru icin Gonder'e bas.",
+      "aiInsight": "YZ Icgorusu",
+      "template": "Sablon"
+    },
+    "timing": {
+      "title": "Kozmik Zamanlama",
+      "subtitle": "Baglantilarin icin en iyi anlari vurgulayan gezegen pencereleri",
+      "backToMatches": "Eslesmelere Don",
+      "noMatchHint": "Kozmik zamanlama pencerelerini gormek icin biriyle esles.",
+      "browsePicks": "Secimlere Goz At",
+      "noWindows": "Zamanlama penceresi bulunamadi.",
+      "qualityExcellent": "Mukemmel",
+      "qualityGood": "Iyi",
+      "qualityNeutral": "Notr",
+      "qualityChallenging": "Zorlayici",
+      "now": "Simdi",
+      "inDays": "{{days}} gun icinde"
+    },
+    "events": {
+      "title": "Kozmik Etkinlikler",
+      "subtitle": "Kozmosla uyumlu temali flort etkinlikleri",
+      "backToDating": "Florte Don",
+      "tabs": {
+        "upcoming": "Yaklasan",
+        "myEvents": "Etkinliklerim"
+      },
+      "noUpcoming": "Su anda yaklasan etkinlik yok. Yakinda tekrar kontrol edin!",
+      "noRegistered": "Henuz herhangi bir etkinlige kayit olmadiniz.",
+      "live": "CANLI",
+      "maxCount": "Maks {{count}}",
+      "elementOnly": "Sadece {{element}} burclari",
+      "registered": "Kayit Olundu",
+      "cancelRegistration": "Iptal",
+      "register": "Kayit Ol",
+      "registering": "Kayit olunuyor..."
+    },
+    "milestones": {
+      "title": "Iliski Kilometre Taslari",
+      "subtitle": "Yildizlarin altinda birlikte yolculugunuzu takip edin",
+      "backToMatches": "Eslesmelere Don",
+      "noMatchHint": "Kilometre taslarini takip etmek icin biriyle esles.",
+      "browsePicks": "Secimlere Goz At",
+      "journeyProgress": "Yolculuk Ilerlemesi",
+      "mark": "Isaretle"
+    },
+    "datePlanner": {
+      "title": "Bulusma Planlayici",
+      "subtitle": "Sen ve eslesmen icin kozmik olarak secilmis bulusma fikirleri",
+      "backToMatches": "Eslesmelere Don",
+      "noMatchHint": "Bulusma onerileri almak icin biriyle esles.",
+      "browsePicks": "Secimlere Goz At",
+      "shuffleIdeas": "Fikirleri Karistir",
+      "elementEnergy": "{{element}} enerjisi"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "Kozmik Akis",
+    "createPost": "Gonderi Olustur",
+    "postTypes": {
+      "text": "Metin",
+      "photo": "Fotograf",
+      "video": "Video",
+      "poll": "Anket"
+    },
+    "composer": {
+      "placeholder": "Kozmik aklinda ne var?",
+      "uploadImage": "Gorsel yuklemek icin tikla",
+      "uploadVideo": "Video yuklemek icin tikla",
+      "imageSizeLimit": "Gorsel 10 MB'tan kucuk olmali",
+      "videoSizeLimit": "Video 200 MB'tan kucuk olmali",
+      "backgroundStyle": "Arka Plan Stili",
+      "visibility": "Gorunurluk:",
+      "visibilityPublic": "Herkese Acik",
+      "visibilityFriends": "Arkadaslar",
+      "postButton": "Paylas",
+      "posting": "Paylasiliyor...",
+      "uploadingImage": "Gorsel yukleniyor...",
+      "uploadingVideo": "Video yukleniyor...",
+      "addImage": "Gorsel Ekle",
+      "addVideo": "Video Ekle",
+      "editPost": "Gonderiyi Duzenle"
+    },
+    "poll": {
+      "question": "Soru",
+      "questionPlaceholder": "Kozmosa sor...",
+      "options": "Secenekler",
+      "optionPlaceholder": "Secenek {{number}}",
+      "addOption": "Secenek ekle",
+      "duration": "Sure",
+      "durationOptions": {
+        "1h": "1 saat",
+        "6h": "6 saat",
+        "12h": "12 saat",
+        "1d": "1 gun",
+        "3d": "3 gun",
+        "7d": "7 gun"
+      },
+      "createPoll": "Anket Olustur",
+      "pollNeedsContent": "Anketin bir soruya ve en az 2 secenege ihtiyaci var"
+    },
+    "empty": {
+      "title": "Kozmik akisin seni bekliyor",
+      "description": "Okumalari, haritalari ve kozmik icgoruleri toplulugunla paylas.",
+      "createFirst": "Ilk Gonderini Olustur"
+    },
+    "loadMore": "Daha fazla yukle",
+    "loading": "Yukleniyor..."
+  },
+  "friends": {
+    "title": "Arkadaslar ve Baglantilar",
+    "friendCount": "{{count}} arkadas",
+    "pendingCount": "{{count}} bekleyen",
+    "inviteFriends": "Arkadaslarini Davet Et",
+    "qrCode": "QR Kod",
+    "tabs": {
+      "friends": "Arkadaslar",
+      "requests": "Istekler",
+      "search": "Ara"
+    },
+    "suggestionsTitle": "Taniyabilcegin Kisiler",
+    "addButton": "+ Ekle",
+    "empty": {
+      "noFriends": "Henuz arkadas yok",
+      "noFriendsHint": "Kisilerden ara veya Align kodunu paylas",
+      "findPeople": "Kisi Bul",
+      "noRequests": "Bekleyen istek yok",
+      "noRequestsHint": "Gonderdigin veya aldigin arkadas istekleri burada gorunecek"
+    },
+    "requests": {
+      "wantsToConnect": "Baglanmak istiyor",
+      "requestSent": "Istek gonderildi",
+      "accept": "Kabul Et",
+      "decline": "Reddet",
+      "cancel": "Iptal"
+    },
+    "search": {
+      "placeholder": "Ad, kullanici adi veya Align koduyla ara...",
+      "searching": "Araniyor...",
+      "noResults": "Kullanici bulunamadi",
+      "noResultsHint": "Farkli bir arama terimi deneyin",
+      "startSearch": "Kisi ara",
+      "minCharsHint": "En az 2 karakter yazin..."
+    },
+    "labels": {
+      "friends": "Arkadaslar",
+      "pending": "Bekleyen"
+    },
+    "actions": {
+      "removeFriend": "Arkadasi Kaldir",
+      "blockUser": "Kullaniciyi Engelle",
+      "removeConfirm": "{{name}} arkadaslarindan kaldirilsin mi?",
+      "blockConfirm": "{{name}} engellensin mi? Seni bulamayacak ve iletisime gecemeyecek.",
+      "viewProfile": "Profili Gor",
+      "message": "Mesaj",
+      "viewFullProfile": "Tam Profili Gor",
+      "close": "Kapat",
+      "requestPending": "Istek Beklemede",
+      "addFriend": "Arkadas Ekle",
+      "acceptRequest": "Istegi Kabul Et",
+      "confirm": "Onayla",
+      "ok": "Tamam"
+    },
+    "alignCode": "Align Kodu:"
+  },
+  "messages": {
+    "signInRequired": "Mesajlara erismek icin giris yapin",
+    "selectConversation": "Bir konusma secin",
+    "startNewChat": "veya baglanmak icin yeni bir sohbet baslayin",
+    "newChat": "Yeni Sohbet",
+    "contextMenu": {
+      "reply": "Yanitla",
+      "react": "Tepki Ver",
+      "edit": "Duzenle",
+      "delete": "Sil",
+      "forward": "Ilet",
+      "pin": "Sabitle",
+      "unpin": "Sabitlemeyi Kaldir",
+      "copyText": "Metni kopyala"
+    },
+    "pickReaction": "Bir tepki sec",
+    "messageTypes": {
+      "image": "Gorsel",
+      "gif": "GIF",
+      "voiceMessage": "Sesli mesaj",
+      "location": "Konum",
+      "poll": "Anket:"
+    },
+    "composer": {
+      "placeholder": "Bir mesaj yazin...",
+      "send": "Gonder",
+      "attachment": "Ekle"
+    }
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "markAllRead": "Tumunu okundu isaretle",
+    "filters": {
+      "all": "Tumua",
+      "social": "Sosyal",
+      "cosmic": "Kozmik",
+      "system": "Sistem"
+    },
+    "empty": {
+      "all": "Henuz bildirim yok",
+      "allHint": "Kozmik uyarilariniz ve sosyal guncellemeleriniz burada gorunecek.",
+      "social": "Sosyal bildirim yok",
+      "socialHint": "Arkadas istekleri, mesajlar ve tepkiler burada gosterilecek.",
+      "cosmic": "Kozmik uyari yok",
+      "cosmicHint": "Transit uyarilari ve kozmik olaylar burada gorunecek.",
+      "system": "Sistem bildirimi yok",
+      "systemHint": "Sistem guncellemeleri ve duyurular burada gosterilecek."
+    },
+    "time": {
+      "justNow": "az once",
+      "minutesAgo": "{{count}}dk once",
+      "hoursAgo": "{{count}}sa once",
+      "daysAgo": "{{count}}g once"
+    },
+    "grouped": "{{count}} bildirim"
+  },
+  "communities": {
+    "title": "Topluluklar",
+    "subtitle": "Kozmik kabileni bul",
+    "create": "Olustur",
+    "tabs": {
+      "discover": "Kesfet",
+      "myCommunities": "Topluluklarim"
+    },
+    "searchPlaceholder": "Topluluk ara...",
+    "filterAll": "Tumu",
+    "loading": "Topluluklar yukleniyor...",
+    "empty": {
+      "title": "Henuz Topluluk Yok",
+      "description": "Bir kozmik topluluk olusturan ilk kisi ol!",
+      "createButton": "Topluluk Olustur"
+    },
+    "featured": "One Cikanlar",
+    "allCommunities": "Tum Topluluklar",
+    "noResultsSearch": "\"{{query}}\" icin topluluk bulunamadi",
+    "noResultsCategory": "Bu kategoride henuz topluluk yok.",
+    "yourCircle": {
+      "title": "Kozmik Cevren Seni Bekliyor",
+      "description": "Kabileni bulmak icin topluluklara katilin veya olusturun.",
+      "exploreButton": "Topluluklari Kesfet"
+    },
+    "memberCount_one": "{{count}} uye",
+    "memberCount_other": "{{count}} uye",
+    "private": "Ozel",
+    "join": "Katil",
+    "joined": "Katildin"
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Profili Duzenle",
+    "shareBigThree": "Buyuk Ucunu Paylas",
+    "stats": {
+      "friends": "Arkadaslar",
+      "posts": "Gonderiler",
+      "followers": "Takipciler",
+      "following": "Takip Edilen",
+      "views": "Goruntulemeler"
+    },
+    "tabs": {
+      "posts": "Gonderiler",
+      "photos": "Fotograflar",
+      "reels": "Reeller",
+      "about": "Hakkinda"
+    },
+    "alignCode": "Align Kodun",
+    "alignCodeHint": "Arkadaslarin seni bulabilmesi icin kodunu paylas",
+    "quickLinks": {
+      "gallery": "Galeri",
+      "safetyTrust": "Guvenlik ve Guven",
+      "subscription": "Abonelik",
+      "referrals": "Referanslar",
+      "settings": "Ayarlar"
+    },
+    "about": {
+      "bio": "Biyografi",
+      "bigThree": "Buyuk Uc",
+      "starseedOrigin": "Yildiz Tohumu Kokeni",
+      "humanDesign": "Human Design",
+      "joined": "Katilim Tarihi",
+      "alignCode": "Align Kodu"
+    },
+    "empty": {
+      "noPosts": "Henuz gonderi yok",
+      "noPhotos": "Henuz fotograf yok",
+      "noReels": "Henuz reel yok"
+    },
+    "loadingProfile": "Profil yukleniyor...",
+    "profileViews": "Profil Goruntuelemeleri",
+    "noViews": "Henuz profil goruntulemesi yok",
+    "editPost": "Gonderiyi Duzenle"
+  },
+  "editProfile": {
+    "title": "Profili Duzenle",
+    "displayName": "Gorunen Ad",
+    "bio": "Biyografi",
+    "bioPlaceholder": "Kozmosa kendinden bahset...",
+    "birthData": "Dogum Verileri",
+    "date": "Tarih",
+    "time": "Saat",
+    "location": "Konum",
+    "locationPlaceholder": "Sehir, bolge veya ulke ara...",
+    "saveChanges": "Degisiklikleri Kaydet",
+    "saving": "Kaydediliyor...",
+    "tapAddCover": "Kapak fotografi eklemek icin dokunun",
+    "errors": {
+      "saveFailed": "Profil kaydedilemedi",
+      "avatarFailed": "Avatar yuklenemedi",
+      "coverFailed": "Kapak fotografi yuklenemedi"
     }
   },
   "settings": {
     "title": "Ayarlar",
     "language": "Dil",
-    "jargonMode": "Yorum Tarzı",
+    "jargonMode": "Yorum Tarzi",
     "jargonAstrology": "Astroloji Terimleri",
     "jargonPlain": "Sade Dil",
     "subscription": "Abonelik",
     "notifications": "Bildirimler",
     "houseSystem": "Ev Sistemi",
-    "darkMode": "Karanlık Mod",
-    "about": "Align Hakkında",
-    "privacy": "Gizlilik Politikası",
-    "terms": "Kullanım Şartları",
-    "logout": "Çıkış Yap"
+    "darkMode": "Karanlik Mod",
+    "about": "Align Hakkinda",
+    "privacy": {
+      "title": "Gizlilik ve Veriler",
+      "profileVisibility": "Profil Gorunurlugu",
+      "visibilityOptions": {
+        "public": "Herkese Acik",
+        "friendsOnly": "Sadece Arkadaslar",
+        "private": "Ozel"
+      },
+      "hideAge": "Yasi Gizle",
+      "hideExactLocation": "Tam Konumu Gizle",
+      "hideLastActive": "Son Aktifliigi Gizle",
+      "hideFullBirthChart": "Tam Dogum Haritasini Gizle",
+      "incognitoMode": "Gizli Mod",
+      "blockUnverified": "Dogrulanmamis Kullanicilari Engelle",
+      "minimumTrustLevel": "Minimum Guven Duzeyi",
+      "trustLevels": {
+        "any": "Herhangi",
+        "low": "Dusuk",
+        "medium": "Orta",
+        "high": "Yuksek"
+      },
+      "analyticsEnabled": "Analitik",
+      "exportData": "Verilerimi Disa Aktar",
+      "exportToast": "Veri aktarimi talebiniz alindi. E-posta yoluyla alacaksiniz."
+    },
+    "terms": "Kullanim Sartlari",
+    "logout": "Cikis Yap",
+    "account": "Hesap",
+    "email": "E-posta",
+    "name": "Ad",
+    "notSet": "Ayarlanmadi",
+    "planLabel": "{{plan}} Plani",
+    "upgradeHint": "Daha fazla ozellik icin yukseltin",
+    "managedVia": "RevenueCat uzerinden yonetiliyor",
+    "manage": "Yonet",
+    "upgrade": "Yukselt",
+    "subPages": {
+      "chatTheme": "Sohbet Temasi",
+      "notifications": "Bildirimler",
+      "privacy": "Gizlilik",
+      "astrologyPreferences": "Astroloji Tercihleri",
+      "friends": "Arkadaslar",
+      "referrals": "Referanslar",
+      "subscriptionPlans": "Abonelik Planlari",
+      "datingIdentity": "Flort Kimligi",
+      "relationshipIntent": "Iliski Amaci",
+      "connectionPreferences": "Baglanti Tercihleri",
+      "identityPrivacy": "Kimlik Gizliligi",
+      "safety": "Guvenlik",
+      "termsOfService": "Kullanim Sartlari",
+      "communityGuidelines": "Topluluk Kurallari"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Espanol",
+      "fr": "Francais",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Portugues",
+      "ru": "Russkiy",
+      "ja": "Nihongo",
+      "ko": "Hangugeo",
+      "zh": "Zhongwen",
+      "ar": "Al-Arabiyya",
+      "hi": "Hindi",
+      "tr": "Turkce",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "Thai"
+    },
+    "admin": {
+      "title": "Yonetici",
+      "manageUsers": "Kullanici Hesaplarini Yonet",
+      "contentModeration": "Icerik Moderasyonu",
+      "manageCelebrities": "Unluleri Yonet",
+      "payoutQueue": "Odeme Kuyrugu"
+    },
+    "aboutSection": {
+      "version": "Surum",
+      "poweredBy": "Altyapi",
+      "contact": "Iletisim"
+    },
+    "signOut": "Cikis Yap",
+    "deleteAccount": "Hesabi Sil",
+    "deleteConfirm": {
+      "title": "Hesap Silinsin mi?",
+      "message": "Bu islem hesabinizi ve tum iliskili verileri kalici olarak silecektir. Bu geri alinamaz.",
+      "confirm": "Hesabimi Sil",
+      "cancel": "Iptal"
+    },
+    "astrology": {
+      "title": "Astroloji Tercihleri",
+      "autoSaveHint": "Degisiklikler otomatik olarak kaydedilir ve tum harita hesaplamalarina uygulanir.",
+      "houseSystem": "Ev Sistemi",
+      "houseSystemHint": "Harita evlerinizin nasil hesaplanacagini belirler",
+      "houseSystems": {
+        "wholeSign": "Tam Burc",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Esit Ev",
+        "porphyry": "Porphyry",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Toposentrik",
+        "morinus": "Morinus",
+        "meridian": "Meridyen"
+      },
+      "zodiacSystem": "Burc Sistemi",
+      "zodiacSystems": {
+        "tropical": "Tropikal (Bati)",
+        "sidereal": "Sideral (Vedik)"
+      },
+      "languageLevel": "Dil Duzeyi",
+      "languageLevelHint": "Yorumlar ne kadar teknik olmali?",
+      "jargonModes": {
+        "plain": "Sade Dil",
+        "mixed": "Karisik",
+        "technical": "Teknik"
+      },
+      "orbTightness": "Orb Daraligi",
+      "orbOptions": {
+        "tight": "Dar",
+        "standard": "Standart",
+        "wide": "Genis"
+      },
+      "showAsteroids": "Asteroitleri Goster",
+      "showFixedStars": "Sabit Yildizlari Goster"
+    },
+    "notificationsPage": {
+      "title": "Bildirim Tercihleri",
+      "pauseAll": "Tum Bildirimleri Duraklat",
+      "social": {
+        "title": "Sosyal Bildirimler",
+        "friendRequests": "Arkadas Istekleri",
+        "messages": "Mesajlar",
+        "reactions": "Tepkiler",
+        "comments": "Yorumlar"
+      },
+      "cosmic": {
+        "title": "Kozmik Bildirimler",
+        "frequency": "Siklik",
+        "frequencyOptions": {
+          "essential": "Temel",
+          "important": "Onemli",
+          "all": "Tumu"
+        },
+        "tone": "Ton",
+        "toneOptions": {
+          "gentle": "Yumusak",
+          "direct": "Dogrudan",
+          "intense": "Yogun"
+        },
+        "categories": {
+          "majorTransits": "Buyuk Transitler",
+          "moonPhases": "Ay Evreleri",
+          "mercuryRetrograde": "Merkur Retrosu",
+          "loveRelationships": "Ask ve Iliskiler",
+          "moneyValues": "Para ve Degerler",
+          "careerAmbition": "Kariyer ve Hirs",
+          "healingGrowth": "Sifa ve Gelisim"
+        },
+        "aspects": {
+          "title": "Aci Turleri",
+          "conjunctions": "Kavusumlar",
+          "oppositions": "Karsitliklar",
+          "squares": "Kareler",
+          "trines": "Ucgenler",
+          "sextiles": "Altmisliklar"
+        },
+        "events": {
+          "title": "Kozmik Olaylar",
+          "moonPhases": "Ay Evreleri",
+          "eclipses": "Tutulmalar",
+          "retrogrades": "Retrogradlar",
+          "ingresses": "Burc Gecisleri"
+        },
+        "minIntensity": "Minimum Yogunluk",
+        "advanceNotice": "Onceden Bildirim (gun)"
+      },
+      "galactic": {
+        "title": "Galaktik Bildirimler",
+        "planetaryHours": "Gezegen Saatleri",
+        "dayRuler": "Gun Yoneticisi",
+        "goldenHour": "Altin Saat",
+        "eclipseWatch": "Tutulma Takibi",
+        "retrogradeAlerts": "Retrograd Uyarilari",
+        "minutesBefore": "Dakika Once"
+      },
+      "summaries": {
+        "title": "Ozet Derlemeleri",
+        "daily": "Gunluk Ozet",
+        "weekly": "Haftalik Ozet"
+      },
+      "quietHours": {
+        "title": "Sessiz Saatler",
+        "enabled": "Sessiz Saatleri Etkinlestir",
+        "start": "Baslangic",
+        "end": "Bitis",
+        "urgentOverride": "Acil Bildirimlere Izin Ver"
+      },
+      "delivery": {
+        "title": "Dagitim",
+        "sound": "Ses",
+        "badge": "Rozet"
+      },
+      "announcements": "Uygulama Duyurulari"
+    },
+    "referrals": {
+      "title": "Referanslar",
+      "howItWorks": "Nasil calisir",
+      "step1": "Benzersiz referans baglantini arkadaslarinla paylas",
+      "step2": "Baglantin uzerinden kaydolduklarinda ikiniz de 5 bonus okuma kazanirsiniz",
+      "step3": "Sinir yok -- istedigin kadar arkadas davet et!"
+    },
+    "chatTheme": {
+      "title": "Sohbet Temasi",
+      "subtitle": "Mesajlarinin gorunumunu ozellestir"
+    },
+    "datingIdentity": {
+      "title": "Flort Kimligi",
+      "subtitle": "Flort alaninda kendini nasil tanimliyorsun"
+    },
+    "relationshipIntent": {
+      "title": "Iliski Amaci",
+      "subtitle": "Baglantilarda ne ariyorsun"
+    },
+    "connectionPreferences": {
+      "title": "Baglanti Tercihleri",
+      "subtitle": "Kimlerle baglanti kurmak istiyorsun"
+    },
+    "identityPrivacy": {
+      "title": "Kimlik Gizliligi",
+      "subtitle": "Kimlik bilgilerini kimin gorecegini kontrol et"
+    },
+    "safety": {
+      "title": "Guvenlik",
+      "subtitle": "Engelleme, raporlama ve guvenlik ayarlarini yonet"
+    },
+    "friends": {
+      "title": "Arkadas Ayarlari",
+      "subtitle": "Arkadas istegi ve baglanti tercihlerini yonet"
+    },
+    "termsPage": {
+      "title": "Kullanim Sartlari"
+    },
+    "communityGuidelines": {
+      "title": "Topluluk Kurallari"
+    }
   },
   "subscription": {
-    "headline": "Hassas astroloji. Tamamen size özel.",
-    "subheadline": "Şimdiye kadar oluşturulmuş en gelişmiş doğum haritası zekasına erişmenin dört yolu. Sözleşme yok. İstediğiniz zaman iptal edin.",
-    "mostPopular": "En Popüler",
+    "headline": "Hassas astroloji. Tamamen size ozel.",
+    "subheadline": "Simdiye kadar olusturulmus en gelismis dogum haritasi zekasina erismenin dort yolu. Sozlesme yok. Istediginiz zaman iptal edin.",
+    "mostPopular": "En Populer",
     "perMonth": "/ay",
-    "restore": "Satın Alımları Geri Yükle",
-    "cancel": "İstediğiniz zaman iptal edin. Sözleşme yok.",
-    "socialProof": "Üyelerin %73'ünün tercih ettiği plan.",
+    "restore": "Satin Alimlari Geri Yukle",
+    "cancel": "Istediginiz zaman iptal edin. Sozlesme yok.",
+    "socialProof": "Uyelerin %73'unun tercih ettigi plan.",
+    "title": "Yolunuzu Secin",
+    "subtitle": "Istediginiz zaman iptal edin. Tum planlarda 14 gunluk ucretsiz deneme.",
+    "priceFree": "Ucretsiz",
+    "priceCurrency": "$",
+    "loadingPlans": "Abonelik planlari yukleniyor...",
+    "tapToRetry": "Tekrar denemek icin dokunun",
+    "tapForDiagnostics": "Tanilamayi gostermek icin buraya dokunun",
+    "comparisonTitle": "Hangi plan size uygun?",
+    "faqTitle": "Sikca Sorulan Sorular",
+    "footerText": "Abonelikler App Store / Google Play uzerinden yonetilir.",
+    "manageButton": "Aboneligi yonet",
+    "termsOfService": "Kullanim Sartlari",
+    "privacyPolicy": "Gizlilik Politikasi",
+    "restorePurchase": "Satin almayi geri yukle",
+    "restoring": "Geri yukleniyor...",
     "free": {
-      "name": "Ücretsiz",
+      "name": "Ucretsiz",
       "price": "$0",
-      "tagline": "Kozmosu ücretsiz keşfedin.",
-      "cta": "Ücretsiz Başla",
+      "tagline": "Kozmosu ucretsiz kesfedin.",
+      "cta": "Ucretsiz Basla",
+      "bestFor": "Astrolojiyi merak eden, kendini adamadan once kesfetmek isteyen yeni baslayanlar icin.",
       "features": [
-        "Temel doğum haritası genel bakışı",
-        "Günlük burç yorumları",
-        "Ayda 3 yapay zeka okuması",
-        "Tekli tarot kartı çekimi",
-        "Gezegen saatleri hesaplayıcı",
-        "1 kayıtlı profil"
-      ],
-      "bestFor": "Astrolojiyi merak eden, kendini adamadan önce keşfetmek isteyen yeni başlayanlar için."
+        "Temel dogum haritasi genel bakisi",
+        "Gunluk burc yorumlari",
+        "Ayda 3 yapay zeka okumasi",
+        "Tekli tarot karti cekimi",
+        "Gezegen saatleri hesaplayici",
+        "1 kayitli profil"
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "Netlik burada başlar.",
-      "cta": "Light ile Başla",
+      "tagline": "Gunluk kozmik yol arkadasin.",
+      "cta": "Light ile Basla",
+      "bestFor": "Gunluk kozmik rehberlik ve temel harita icgoruleri isteyen rahat kesficiler icin.",
       "features": [
-        "Günlük kişiselleştirilmiş içgörüler",
-        "Temel konumlarla doğum haritası",
-        "Ayda 10 yapay zeka destekli okuma",
-        "Gerçek zamanlı transit uyarıları",
-        "Günlük tarot kartı rehberliği",
-        "Gezegen saatleri hesaplayıcı",
-        "Numeroloji yaşam yolu özeti",
-        "1 kayıtlı doğum profili"
-      ],
-      "bestFor": "Günlük kozmik rehberlik ve temel harita içgörüleri isteyen rahat keşifçiler için."
+        "Ucretsiz'deki her sey",
+        "Tam gunluk kisisellestirilmis icgorular",
+        "Ayda 30 yapay zeka destekli okuma",
+        "Gercek zamanli transit uyarilari",
+        "Numeroloji yasam yolu ozeti",
+        "1 kayitli dogum profili"
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "Derinliğin netlikle buluştuğu yer.",
-      "cta": "Premium Al — En İyi Değer",
+      "tagline": "Tam kozmik semanin kilidini ac.",
+      "badge": "EN POPULER",
+      "cta": "Premium Al -- En Iyi Deger",
+      "bestFor": "Tam astrolojik sablonuna ve iliskilerine derinlemesine dalmaya hazir meraklilar icin.",
       "features": [
-        "Light'taki her şey",
-        "Ayda 50 derin yapay zeka okuması",
-        "Tam harita — açılar, kalıplar, sabit yıldızlar",
-        "Progresyon ve güneş/ay dönüşü haritaları",
-        "Sinastri ve kompozit uyumluluk",
-        "Yıldız Tohumu kökenleri ve Human Design",
-        "Yapay zeka ile 6 tarot açılımı",
-        "Finansal astroloji raporu",
-        "Sade dil modu — jargon yok",
-        "5 kayıtlı doğum profili",
-        "Tüm astroloji kursları"
-      ],
-      "badge": "EN POPÜLER",
-      "bestFor": "Tam astrolojik şablonuna ve ilişkilerine derinlemesine dalmaya hazır meraklılar için."
+        "Light'taki her sey",
+        "Acilar ve kaliplarla tam harita",
+        "Ayda 100 yapay zeka okumasi",
+        "Tum harita turleri (progresyon, donusler, sinastri)",
+        "Uyumluluk ve kompozit haritalar",
+        "Yildiz Tohumu, numeroloji, Human Design",
+        "Tarot acilimlari (tum 5 tur)",
+        "Jargon degistirici (sade dil modu)",
+        "5 kayitli profil",
+        "Tum astroloji kurslari"
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "Tam görünüm. Hiçbir şey gizli değil.",
-      "cta": "Pro Erişimini Aç",
+      "tagline": "Ciddi uygulayicilar icin.",
+      "cta": "Pro'ya Gec",
+      "bestFor": "Mevcut tum araclara ihtiyac duyan profesyonel astrologlar ve kendini adamis uygulayicilar icin.",
       "features": [
-        "Premium'daki her şey",
-        "Ayda 200 yapay zeka okuması",
-        "Astro-kartografi dünya haritaları",
+        "Premium'daki her sey",
+        "Ayda 300 yapay zeka okumasi",
+        "Finansal astroloji raporu",
+        "Astro-kartografi (ACG)",
         "Firdaria ve Zodiacal Releasing",
-        "Arap noktaları ve sabit yıldız derinlemesine analizleri",
-        "Öncelikli yapay zeka — daha hızlı işlem",
-        "Sınırsız kayıtlı profil ve okuma",
-        "Dışa aktarılabilir profesyonel raporlar",
-        "Yeni özelliklere erken erişim",
-        "20 dilde yapay zeka"
-      ],
-      "bestFor": "Mevcut tüm araçlara ihtiyaç duyan profesyonel astrologlar ve kendini adamış uygulayıcılar için."
-    },
-    "alerts": {
-      "couldNotOpenLink": "Bağlantı açılamadı.",
-      "diagnostics": "Tanılama",
-      "errorTitle": "Hata",
-      "manageError": "Abonelik yönetimi açılamadı. Lütfen Play Store veya App Store'u manuel olarak açın.",
-      "noActiveBody": "Bu hesap için önceki bir abonelik bulunamadı.",
-      "noActiveTitle": "Aktif abonelik yok",
-      "ok": "Tamam",
-      "planNotFoundBody": "Bu plan mağazada geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
-      "planNotFoundTitle": "Plan bulunamadı",
-      "purchaseFailedDefault": "Bir şeyler ters gitti.",
-      "purchaseFailedLong": "Satın alma işlemi sırasında bir şeyler ters gitti. Lütfen tekrar deneyin.",
-      "purchaseFailedTitle": "Satın alma başarısız",
-      "restoreError": "Satın alımlar geri yüklenemedi",
-      "restoredBody": "Aboneliğiniz başarıyla geri yüklendi.",
-      "restoredTitle": "Geri yüklendi!",
-      "retry": "Tekrar dene",
-      "subscriptionsUnavailableHint": "Play Store'da oturum açtığınızdan emin olun ve tekrar deneyin.",
-      "subscriptionsUnavailableTitle": "Abonelikler kullanılamıyor",
-      "unavailableBody": "Bu plan şu anda kullanılamıyor.",
-      "unavailableTitle": "Kullanılamıyor",
-      "unsupportedBody": "Abonelik yönetimi yalnızca iOS ve Android'de kullanılabilir.",
-      "unsupportedTitle": "Desteklenmiyor",
-      "welcomeBody": "Aboneliğiniz aktif. Genişletilmiş kozmik araç setinizin tadını çıkarın.",
-      "welcomeTitle": "Hoş geldiniz!"
-    },
-    "comparisonTitle": "Hangi plan size uygun?",
-    "errors": {
-      "apiKeyPlaceholder": "Bu yapı için abonelik hizmeti kurulmadı. (Dahili: RevenueCat API anahtarı yer tutucu.)",
-      "connectionFailed": "Abonelik hizmetine ulaşılamadı. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.",
-      "loadFailed": "Abonelik planları yüklenemedi. Lütfen daha sonra tekrar deneyin.",
-      "loadFailedConnection": "Abonelik planları yüklenemedi. Lütfen bağlantınızı kontrol edin.",
-      "nativeModuleMissing": "Abonelik hizmeti bu yapıda kullanılamıyor. (Dahili: yerel modül bağlanmadı.)",
-      "noApiKey": "Bu platform için abonelik hizmeti kurulmadı. (Dahili: API anahtarı eksik.)",
-      "noOfferings": "Henüz aktif abonelik planı yayınlanmadı. Lütfen daha sonra tekrar deneyin.",
-      "noPackages": "Mağazada abonelik planları sonlandırılıyor. Lütfen daha sonra tekrar deneyin.",
-      "stillStarting": "Abonelik hizmeti hala başlatılıyor. Lütfen biraz bekleyip tekrar deneyin."
+        "Sabit yildizlar ve Arap noktalari",
+        "Oncelikli yapay zeka islemi",
+        "Yeni ozelliklere erken erisim",
+        "Sinirsiz kayitli profil",
+        "Disa aktarma ve raporlari paylasma"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "AI okuma kredileri her fatura döngüsünde sıfırlanır ve devredilmez. Bu, AI altyapımızı tüm kullanıcılar için hızlı ve duyarlı tutar.",
-        "question": "AI okumaları devrediliyor mu?"
-      },
-      "security": {
-        "answer": "Kesinlikle. Tüm kişisel veriler ve doğum verileri hem dururken hem de aktarım sırasında şifrelenir. Verilerinizi asla satmayız ve hesabınızı ve ilgili tüm verileri istediğiniz zaman silebilirsiniz.",
-        "question": "Doğum verilerim güvende mi?"
-      },
       "switch": {
-        "answer": "Evet! Planınızı istediğiniz zaman yükseltebilir veya düşürebilirsiniz. Yükselttiğinizde yeni özelliklere anında erişim elde edersiniz. Düşürdüğünüzde mevcut avantajlarınız fatura döngüsünün sonuna kadar devam eder.",
-        "question": "Plan değişikliğini istediğim zaman yapabilir miyim?"
+        "question": "Plan degisikligini istedigim zaman yapabilir miyim?",
+        "answer": "Evet! Planınızı istediginiz zaman yukseltebilir veya dusurebilirsiniz. Yukselttiginizde yeni ozelliklere aninda erisim elde edersiniz. Dusurdugunuzde mevcut avantajlariniz fatura dongusunun sonuna kadar devam eder."
       },
       "trial": {
-        "answer": "14 günlük ücretsiz denemeniz, seçilen plana tam erişim sağlar. Deneme sona erene kadar ücretlendirilmezsiniz ve daha önce herhangi bir zamanda yükümlülük olmaksızın iptal edebilirsiniz.",
-        "question": "Ücretsiz deneme süresinden sonra ne olur?"
+        "question": "Ucretsiz deneme suresinden sonra ne olur?",
+        "answer": "14 gunluk ucretsiz denemeniz, secilen plana tam erisim saglar. Deneme sona erene kadar ucretlendirilmezsiniz ve daha once herhangi bir zamanda yukumluluk olmaksizin iptal edebilirsiniz."
+      },
+      "rollover": {
+        "question": "YZ okumalari devrediyor mu?",
+        "answer": "YZ okuma kredileri her fatura dongusunde sifirlanir ve devredilmez. Bu, YZ altyapimizi tum kullanicilar icin hizli ve duyarli tutar."
+      },
+      "security": {
+        "question": "Dogum verilerim guvende mi?",
+        "answer": "Kesinlikle. Tum kisisel veriler ve dogum verileri hem dururken hem de aktarim sirasinda sifrelenir. Verilerinizi asla satmayiz ve hesabinizi ve ilgili tum verileri istediginiz zaman silebilirsiniz."
       }
     },
-    "faqTitle": "Sıkça Sorulan Sorular",
-    "footerText": "Abonelikler App Store / Google Play üzerinden yönetilir.",
-    "loadingPlans": "Abonelik planları yükleniyor...",
-    "manageButton": "Aboneliği yönet",
-    "priceCurrency": "$",
-    "priceFree": "Ücretsiz",
-    "privacyPolicy": "Gizlilik politikası",
-    "restorePurchase": "Satın almayı geri yükle",
-    "restoring": "Geri yükleniyor...",
-    "subtitle": "İstediğiniz zaman iptal edin. Tüm planlarda 14 günlük ücretsiz deneme.",
-    "tapForDiagnostics": "Tanılamayı göstermek için buraya dokunun",
-    "tapToRetry": "Tekrar denemek için dokunun",
-    "termsOfService": "Hizmet şartları",
-    "title": "Yolunuzu seçin"
+    "alerts": {
+      "unavailableTitle": "Kullanilamiyor",
+      "unavailableBody": "Bu plan su anda kullanilamiyor.",
+      "purchaseFailedTitle": "Satin alma basarisiz",
+      "purchaseFailedDefault": "Bir seyler ters gitti.",
+      "purchaseFailedLong": "Satin alma islemi sirasinda bir seyler ters gitti. Lutfen tekrar deneyin.",
+      "welcomeTitle": "Hos geldiniz!",
+      "welcomeBody": "Aboneliginiz aktif. Genisletilmis kozmik arac setinizin tadini cikarin.",
+      "ok": "Tamam",
+      "subscriptionsUnavailableTitle": "Abonelikler kullanilamiyor",
+      "subscriptionsUnavailableHint": "Play Store'da oturum actiginizdan emin olun ve tekrar deneyin.",
+      "retry": "Tekrar dene",
+      "diagnostics": "Tanilama",
+      "planNotFoundTitle": "Plan bulunamadi",
+      "planNotFoundBody": "Bu plan magazada gecici olarak kullanilamiyor. Lutfen daha sonra tekrar deneyin.",
+      "errorTitle": "Hata",
+      "couldNotOpenLink": "Baglanti acilamadi.",
+      "unsupportedTitle": "Desteklenmiyor",
+      "unsupportedBody": "Abonelik yonetimi yalnizca iOS ve Android'de kullanilabilir.",
+      "manageError": "Abonelik yonetimi acilamadi. Lutfen Play Store veya App Store'u manuel olarak acin.",
+      "restoredTitle": "Geri yuklendi!",
+      "restoredBody": "Aboneliginiz basariyla geri yuklendi.",
+      "noActiveTitle": "Aktif abonelik yok",
+      "noActiveBody": "Bu hesap icin onceki bir abonelik bulunamadi.",
+      "restoreError": "Satin alimlar geri yuklenemedi"
+    },
+    "errors": {
+      "loadFailed": "Abonelik planlari yuklenemedi. Lutfen daha sonra tekrar deneyin.",
+      "loadFailedConnection": "Abonelik planlari yuklenemedi. Lutfen baglantinizi kontrol edin.",
+      "apiKeyPlaceholder": "Bu yapi icin abonelik hizmeti kurulmadi. (Dahili: RevenueCat API anahtari yer tutucu.)",
+      "noApiKey": "Bu platform icin abonelik hizmeti kurulmadi. (Dahili: API anahtari eksik.)",
+      "nativeModuleMissing": "Abonelik hizmeti bu yapida kullanilamiyor. (Dahili: yerel modul baglanmadi.)",
+      "noOfferings": "Henuz aktif abonelik plani yayinlanmadi. Lutfen daha sonra tekrar deneyin.",
+      "noPackages": "Magazada abonelik planlari sonlandiriliyor. Lutfen daha sonra tekrar deneyin.",
+      "connectionFailed": "Abonelik hizmetine ulasilamadi. Lutfen baglantinizi kontrol edin ve tekrar deneyin.",
+      "stillStarting": "Abonelik hizmeti hala baslatiliyor. Lutfen biraz bekleyip tekrar deneyin."
+    }
   },
   "courses": {
-    "title": "Astroloji Öğren",
-    "beginner": "Başlangıç",
-    "intermediate": "Orta Düzey",
-    "advanced": "İleri Düzey",
-    "startCourse": "Kursa Başla",
-    "continue": "Öğrenmeye Devam Et",
-    "completed": "Tamamlandı"
+    "title": "Astroloji Ogren",
+    "beginner": "Baslangic",
+    "intermediate": "Orta Duzey",
+    "advanced": "Ileri Duzey",
+    "startCourse": "Kursa Basla",
+    "continue": "Ogrenmeye Devam Et",
+    "completed": "Tamamlandi"
+  },
+  "cosmicAlerts": {
+    "title": "Kozmik Hava Durumu",
+    "subtitle": "Kisisellestirilmis kozmik tahminin",
+    "scanningCosmos": "Kozmos taraniyor...",
+    "filters": {
+      "all": "Tumu",
+      "active": "Aktif",
+      "upcoming": "Yaklasan"
+    },
+    "emptyState": {
+      "title": "Buyuk transit algilanmadi",
+      "filterHint": "Su anda {{filter}} uyarisi yok. \"Tumu\"ne gecmeyi dene.",
+      "defaultHint": "Kozmos haritaniz icin sakin. Gokyuzu degistikce tekrar kontrol edin."
+    },
+    "detail": {
+      "timingWindow": "Zamanlama Penceresi",
+      "start": "Baslangic",
+      "peak": "Zirve",
+      "end": "Bitis",
+      "fullInterpretation": "Tam Yorum",
+      "astrologicalDetails": "Astrolojik Detaylar",
+      "transit": "Transit",
+      "natal": "Dogum",
+      "aspect": "Aci",
+      "retrograde": "Retrograd",
+      "yes": "Evet",
+      "no": "Hayir",
+      "actionAdvice": "Eylem Tavsiyesi",
+      "viewFullTransits": "Tam Transitleri Gor"
+    },
+    "importance": {
+      "critical": "Kritik",
+      "high": "Yuksek",
+      "moderate": "Orta",
+      "low": "Dusuk",
+      "minimal": "Minimal"
+    },
+    "categories": {
+      "general": "Genel",
+      "love": "Ask",
+      "career": "Kariyer",
+      "growth": "Gelisim",
+      "challenge": "Zorluk",
+      "spiritual": "Ruhani",
+      "communication": "Iletisim",
+      "energy": "Enerji"
+    },
+    "statusActive": "AKTIF"
+  },
+  "discover": {
+    "title": "Kesfet",
+    "moonPhases": {
+      "newMoon": "Yeni Ay",
+      "waxingCrescent": "Hilal (Buyuyen)",
+      "firstQuarter": "Ilk Dordun",
+      "waxingGibbous": "Buyuyen Ay",
+      "fullMoon": "Dolunay",
+      "waningGibbous": "Kuculen Ay",
+      "lastQuarter": "Son Dordun",
+      "waningCrescent": "Hilal (Kuculen)"
+    }
+  },
+  "worldEcho": {
+    "title": "Dunya Yankisi",
+    "subtitle": "Kozmik olaylarin insan tarihinde nasil dalgalandigi",
+    "categories": {
+      "political": "Politik",
+      "economic": "Ekonomik",
+      "cultural": "Kulturel",
+      "scientific": "Bilimsel",
+      "natural": "Dogal",
+      "social": "Sosyal",
+      "technological": "Teknolojik",
+      "spiritual": "Ruhani"
+    },
+    "evidenceLabels": {
+      "strong": "Guclu",
+      "moderate": "Orta",
+      "speculative": "Spekulatif"
+    },
+    "scoreLabels": {
+      "legendary": "Efsanevi",
+      "major": "Buyuk",
+      "significant": "Onemli",
+      "notable": "Kayda Deger",
+      "minor": "Kucuk"
+    }
+  },
+  "polls": {
+    "title": "Anketler",
+    "filters": {
+      "all": "Tumu",
+      "active": "Aktif",
+      "ended": "Sona Erdi",
+      "mine": "Benimkiler"
+    },
+    "duration": {
+      "hours": "{{count}} saat kaldi",
+      "days": "{{count}} gun kaldi",
+      "ended": "Sona Erdi"
+    },
+    "createPoll": "Anket Olustur",
+    "votes": "{{count}} oy",
+    "noPollsYet": "Henuz anket yok",
+    "noPollsHint": "Bir kozmik anket baslatan ilk kisi ol!"
+  },
+  "bookmarks": {
+    "title": "Yer İşaretleri",
+    "loading": "Yer işaretleri yükleniyor...",
+    "empty": "Henüz yer işareti yok",
+    "emptyHint": "Daha sonra okumak için akıştaki gönderileri kaydedin",
+    "postUnavailable": "Gönderi artık mevcut değil"
+  },
+  "celebrityMatches": {
+    "title": "Unlu Eslesmeleri",
+    "subtitle": "Kozmik semanizi hangi unlulerin paylastigini kesfedin",
+    "searchPlaceholder": "Unlu ara...",
+    "categories": {
+      "overall": "Genel",
+      "emotional": "Duygusal",
+      "passion": "Tutku",
+      "marriage": "Evlilik",
+      "karmic": "Karmik",
+      "attraction": "Cekim",
+      "stability": "Istikrar",
+      "mental": "Zihinsel"
+    },
+    "matchScore": "%{{score}} esleme",
+    "trending": "Trend",
+    "recentlyAdded": "Son eklenenler",
+    "browseByCategory": "Kategoriye göre göz at",
+    "clearFilter": "Filtreyi temizle",
+    "yourFavorites": "Favorileriniz",
+    "noResults": "Sonuç yok",
+    "tryDifferent": "Farklı bir isim veya yazım deneyin",
+    "noCelebrities": "Henüz ünlü yok",
+    "searchOrCheckBack": "Birini arayın veya yakında tekrar kontrol edin",
+    "noCelebritiesInCategory": "Bu kategoride henüz ünlü yok"
+  },
+  "matches": {
+    "title": "Uyumluluk Eslesmeleri",
+    "categories": {
+      "overall": "Genel",
+      "emotional": "Duygusal",
+      "passion": "Tutku",
+      "marriage": "Evlilik",
+      "karmic": "Karmik",
+      "attraction": "Cekim",
+      "stability": "Istikrar",
+      "mental": "Zihinsel"
+    }
+  },
+  "cosmicIndex": {
+    "title": "Kozmik Endeks",
+    "subtitle": "Bugunun kozmik enerjisi bir bakista"
+  },
+  "creatorStudio": {
+    "title": "Icerik Studyosu",
+    "subtitle": "Kozmik icerigini olustur ve yonet"
+  },
+  "qa": {
+    "title": "Soru-Cevap",
+    "askQuestion": "Soru Sor",
+    "noQuestions": "Henuz soru yok",
+    "placeholder": "Kozmik sorun ne?"
+  },
+  "pricing": {
+    "title": "Planini Sec",
+    "subtitle": "Align'in tam gucunu ac"
+  },
+  "gallery": {
+    "title": "Galeri",
+    "empty": "Henuz fotograf yok"
+  },
+  "timeline": {
+    "title": "Zaman Cizelgesi",
+    "empty": "Henuz gosterilecek bir sey yok"
+  },
+  "reels": {
+    "title": "Kozmik Reeller",
+    "empty": "Henuz reel yok"
+  },
+  "fragments": {
+    "title": "Kozmik Fragmanlar",
+    "subtitle": "Paylasilabilir kozmik bilgelik kartlari"
+  },
+  "cosmicVideo": {
+    "title": "Kozmik Video",
+    "subtitle": "Hareket halinde astrolojik icgorular"
+  },
+  "groupSynastry": {
+    "title": "Grup Sinastrisi",
+    "subtitle": "Bir grubun haritalarinin nasil etkilestigini gor"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "Dogum Verileri Gerekli",
+      "defaultMessage": "Bu ozelligi acmak icin dogum tarihi, saati ve konumunu ekle.",
+      "completeProfile": "Profili Tamamla"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Yukleniyor..."
+    },
+    "paywallGate": {
+      "title": "Bu Okumanin Kilidini Ac",
+      "description": "Bu ozellik su planda mevcut:",
+      "plan": "plan",
+      "youreOn": "su anda",
+      "upgradeButton": "Planlari Gor -- {{price}}'den baslayan",
+      "currentPlan": "Mevcut plan: {{plan}}",
+      "whatYouUnlock": "Nelerin kilidini aciyorsun",
+      "allFeatures": "Bu okuma + tum {{tier}} seviye ozellikleri",
+      "aiAstrologer": "Sesli sohbetle YZ Astrologu",
+      "fullChart": "Acilar ve kaliplarla tam dogum haritasi"
+    },
+    "shareButton": {
+      "share": "Paylas",
+      "copied": "Kopyalandi!"
+    },
+    "referralCard": {
+      "title": "Arkadaslarini Davet Et",
+      "subtitle": "Referans baglantini paylas, ikiniz de bonus okuma kazanin",
+      "copyLink": "Baglantyi Kopyala",
+      "linkCopied": "Baglanti kopyalandi!"
+    },
+    "trialBanner": {
+      "title": "Premium Deneme: {{count}} gun kaldi",
+      "title_plural": "Premium Deneme: {{count}} gun kaldi",
+      "daysLeft": "{{count}} gun kaldi",
+      "upgrade": "Simdi Yukselt",
+      "expired": "Denemeniz sona erdi. Premium'u tekrar acmak icin yukseltin.",
+      "endsTomorrow": "Denemeniz yarin bitiyor! Premium ozelliklerini korumak icin yukseltin.",
+      "endsSoon": "Denemeniz {{count}} gun icinde bitiyor! Premium ozelliklerini korumak icin yukseltin."
+    },
+    "cookieConsent": {
+      "message": "Deneyiminizi iyilestirmek icin cerezler kullaniyoruz.",
+      "accept": "Kabul Et",
+      "decline": "Reddet",
+      "learnMore": "Daha Fazla Bilgi"
+    },
+    "matchCelebration": {
+      "itsAMatch": "Eslestiniz!",
+      "subtitle": "Kozmos seni ve {{name}} adli kisiyi hizaladi",
+      "sendMessage": "Mesaj Gonder",
+      "keepBrowsing": "Gezmeye Devam Et"
+    },
+    "datingFilterDrawer": {
+      "title": "Kesif Filtreleri",
+      "ageRange": "Yas Araligi",
+      "maxDistance": "Maksimum Mesafe",
+      "showOnlyVerified": "Sadece Dogrulanmislari Goster",
+      "compatibilityMin": "Minimum Uyumluluk",
+      "elements": "Elementler",
+      "applyFilters": "Filtreleri Uygula",
+      "resetFilters": "Sifirla"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "%{{score}} Uyumlu",
+      "like": "Begen",
+      "pass": "Gec",
+      "cosmicRose": "Kozmik Gul",
+      "likesRemaining": "{{count}} begeni kaldi",
+      "rosesRemaining": "{{count}} gul kaldi"
+    },
+    "sidebar": {
+      "home": "Ana Sayfa",
+      "discover": "Kesfet",
+      "cosmicFeed": "Kozmik Akis",
+      "worldEcho": "Dunya Yankisi",
+      "chart": "Haritam",
+      "cosmicWeather": "Kozmik Hava",
+      "readings": "Okumalar",
+      "videoCreator": "Video Olusturucu",
+      "dating": "Flort",
+      "friends": "Arkadaslar",
+      "messages": "Mesajlar",
+      "feed": "Akis",
+      "notifications": "Bildirimler",
+      "aiAstrologer": "YZ Astrologu",
+      "learn": "Ogren",
+      "pricing": "Fiyatlandirma",
+      "communities": "Topluluklar",
+      "profile": "Profil",
+      "settings": "Ayarlar",
+      "menu": "Menu",
+      "close": "Kapat",
+      "more": "Daha Fazla",
+      "chat": "Sohbet",
+      "yourProfile": "Profilin",
+      "viewProfile": "Profilini gor"
+    },
+    "feedCard": {
+      "like": "Begen",
+      "comment": "Yorum",
+      "share": "Paylas",
+      "bookmark": "Yer Imi",
+      "report": "Sikayet",
+      "deletePost": "Gonderiyi Sil",
+      "editPost": "Gonderiyi Duzenle"
+    },
+    "commentSheet": {
+      "title": "Yorumlar",
+      "placeholder": "Bir yorum yazin...",
+      "send": "Gonder",
+      "noComments": "Henuz yorum yok",
+      "beFirst": "Ilk yorumu yazan sen ol!"
+    }
   },
   "common": {
-    "loading": "Yükleniyor...",
-    "error": "Bir şeyler yanlış gitti",
+    "loading": "Yukleniyor...",
+    "error": "Bir seyler yanlis gitti",
     "retry": "Tekrar Dene",
     "save": "Kaydet",
-    "cancel": "İptal",
+    "cancel": "Iptal",
     "delete": "Sil",
-    "share": "Paylaş",
+    "share": "Paylas",
     "premium": "Premium",
-    "free": "Ücretsiz"
+    "free": "Ucretsiz",
+    "close": "Kapat",
+    "confirm": "Onayla",
+    "ok": "Tamam",
+    "yes": "Evet",
+    "no": "Hayir",
+    "back": "Geri",
+    "next": "Ileri",
+    "done": "Tamam",
+    "edit": "Duzenle",
+    "copy": "Kopyala",
+    "copied": "Kopyalandi!",
+    "search": "Ara",
+    "settings": "Ayarlar",
+    "seeAll": "Tumunu Gor",
+    "showMore": "Daha Fazla Goster",
+    "showLess": "Daha Az Goster",
+    "comingSoon": "Yakinda",
+    "upgrade": "Yukselt",
+    "signIn": "Giris Yap",
+    "signOut": "Cikis Yap",
+    "today": "Bugun",
+    "yesterday": "Dun",
+    "tomorrow": "Yarin",
+    "all": "Tumu",
+    "none": "Hicbiri",
+    "public": "Herkese Acik",
+    "private": "Ozel",
+    "apply": "Uygula",
+    "reset": "Sifirla",
+    "remove": "Kaldir",
+    "add": "Ekle",
+    "create": "Olustur",
+    "submit": "Gonder",
+    "send": "Gonder",
+    "view": "Goruntule",
+    "download": "Indir",
+    "upload": "Yukle",
+    "noResults": "Sonuc bulunamadi",
+    "tryAgain": "Tekrar dene"
   },
   "zodiac": {
-    "aries": "Koç",
-    "taurus": "Boğa",
-    "gemini": "İkizler",
-    "cancer": "Yengeç",
+    "aries": "Koc",
+    "taurus": "Boga",
+    "gemini": "Ikizler",
+    "cancer": "Yengec",
     "leo": "Aslan",
-    "virgo": "Başak",
+    "virgo": "Basak",
     "libra": "Terazi",
     "scorpio": "Akrep",
     "sagittarius": "Yay",
-    "capricorn": "Oğlak",
+    "capricorn": "Oglak",
     "aquarius": "Kova",
-    "pisces": "Balık"
+    "pisces": "Balik"
   },
   "planets": {
-    "sun": "Güneş",
+    "sun": "Gunes",
     "moon": "Ay",
-    "mercury": "Merkür",
-    "venus": "Venüs",
+    "mercury": "Merkur",
+    "venus": "Venus",
     "mars": "Mars",
-    "jupiter": "Jüpiter",
-    "saturn": "Satürn",
-    "uranus": "Uranüs",
-    "neptune": "Neptün",
-    "pluto": "Plüton",
-    "northNode": "Kuzey Düğümü",
-    "southNode": "Güney Düğümü",
+    "jupiter": "Jupiter",
+    "saturn": "Saturn",
+    "uranus": "Uranus",
+    "neptune": "Neptun",
+    "pluto": "Pluton",
+    "northNode": "Kuzey Dugumu",
+    "southNode": "Guney Dugumu",
     "chiron": "Chiron",
-    "ascendant": "Yükselen",
-    "midheaven": "Gökyüzü Ortası"
+    "ascendant": "Yukselen",
+    "midheaven": "Gokyuzu Ortasi",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
-    "conjunction": "Kavuşum",
-    "sextile": "Altmışlık",
+    "conjunction": "Kavusum",
+    "sextile": "Altmislik",
     "square": "Kare",
-    "trine": "Üçgen",
-    "opposition": "Karşıt",
-    "quincunx": "Kuinkunks"
+    "trine": "Ucgen",
+    "opposition": "Karsit",
+    "quincunx": "Kuinkunks",
+    "semisextile": "Yari-Altmislik",
+    "semisquare": "Yari-Kare",
+    "sesquiquadrate": "Birbuculkkare",
+    "quintile": "Beslik",
+    "biquintile": "Cift Beslik"
+  },
+  "elements": {
+    "fire": "Ates",
+    "earth": "Toprak",
+    "air": "Hava",
+    "water": "Su"
+  },
+  "modalities": {
+    "cardinal": "Oncul",
+    "fixed": "Sabit",
+    "mutable": "Degisken"
+  },
+  "houses": {
+    "1": "1. Ev",
+    "2": "2. Ev",
+    "3": "3. Ev",
+    "4": "4. Ev",
+    "5": "5. Ev",
+    "6": "6. Ev",
+    "7": "7. Ev",
+    "8": "8. Ev",
+    "9": "9. Ev",
+    "10": "10. Ev",
+    "11": "11. Ev",
+    "12": "12. Ev",
+    "labels": {
+      "1": "Benlik ve Kimlik",
+      "2": "Degerler ve Varliklar",
+      "3": "Iletisim ve Ogrenme",
+      "4": "Ev ve Aile",
+      "5": "Yaraticilik ve Romantizm",
+      "6": "Saglik ve Hizmet",
+      "7": "Ortakliklar",
+      "8": "Donusum ve Paylasilmis Kaynaklar",
+      "9": "Felsefe ve Seyahat",
+      "10": "Kariyer ve Kamusal Imaj",
+      "11": "Topluluk ve Hedefler",
+      "12": "Maneviyat ve Bilincalti"
+    }
+  },
+  "errors": {
+    "generic": "Bir seyler ters gitti. Lutfen tekrar deneyin.",
+    "networkError": "Ag hatasi. Lutfen baglantinizi kontrol edin.",
+    "unauthorized": "Bu ozellidge erismek icin giris yapmaniz gerekiyor.",
+    "notFound": "Istenen icerik bulunamadi.",
+    "serverError": "Sunucu hatasi. Lutfen daha sonra tekrar deneyin.",
+    "loadFailed": "Veriler yuklenemedi. Lutfen tekrar deneyin.",
+    "saveFailed": "Degisiklikler kaydedilemedi. Lutfen tekrar deneyin.",
+    "uploadFailed": "Dosya yuklenemedi. Lutfen tekrar deneyin.",
+    "fileTooLarge": "Dosya cok buyuk. Lutfen daha kucuk bir dosya secin.",
+    "invalidFormat": "Gecersiz dosya formati.",
+    "permissionDenied": "Erisim reddedildi.",
+    "sessionExpired": "Oturumunuz sona erdi. Lutfen tekrar giris yapin.",
+    "rateLimited": "Cok fazla istek. Lutfen biraz bekleyin."
+  },
+  "time": {
+    "justNow": "az once",
+    "minutesAgo": "{{count}}dk once",
+    "hoursAgo": "{{count}}sa once",
+    "daysAgo": "{{count}}g once",
+    "weeksAgo": "{{count}}h once",
+    "monthsAgo": "{{count}}ay once",
+    "yearsAgo": "{{count}}y once",
+    "inMinutes": "{{count}}dk icinde",
+    "inHours": "{{count}}sa icinde",
+    "inDays": "{{count}}g icinde"
+  },
+  "tiers": {
+    "free": "Ucretsiz",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

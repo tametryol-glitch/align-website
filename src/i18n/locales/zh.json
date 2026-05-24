@@ -50,7 +50,8 @@
     "agreeToTerms": "我同意",
     "privacyPolicy": "隐私政策",
     "and": "和",
-    "termsOfService": "服务条款"
+    "termsOfService": "服务条款",
+    "signInToAccess": "登录以访问消息"
   },
   "onboarding": {
     "title": "让我们创建你的出生星盘",
@@ -191,7 +192,374 @@
     "moonPhases": "月相",
     "yearAhead": "我的未来一年",
     "soulGifts": "灵魂天赋",
-    "soulMemory": "灵魂记忆"
+    "soulMemory": "灵魂记忆",
+    "soulAscension": "灵魂飞升",
+    "dreamOracle": "梦境神谕",
+    "backToReadings": "返回解读",
+    "upgradeToTier": "升级至 {{tier}}",
+    "birthDataRequired": "请先在个人资料中添加出生数据。",
+    "birthDataPromptTransits": "添加出生数据以查看当前行运。",
+    "birthDataPromptCompatibility": "添加出生数据以查看与特别之人的配对。",
+    "birthDataPromptAlerts": "我们需要您的出生数据来计算个性化的宇宙提醒。",
+    "transitsPage": {
+      "title": "你的周期",
+      "subtitle": "{{name}}，这些是当前正在你生命中运行的周期。把它们想象成季节——每一个都带来独特的能量、课题和机遇。",
+      "loadingLabel": "正在计算行运...",
+      "errorDefault": "加载行运失败",
+      "emptyState": "未检测到活跃周期。请稍后再查看。",
+      "activeNow": "当前活跃",
+      "storylines": "故事线",
+      "impactingYouNow": "正在影响你",
+      "backToCycles": "返回周期",
+      "active": "活跃",
+      "approaching": "趋近",
+      "separating": "分离",
+      "cycleMeaning": "这个周期对你意味着什么",
+      "howToNavigate": "如何应对",
+      "technicalDetails": "技术细节",
+      "transit": "行运",
+      "currentOrb": "当前容许度",
+      "direction": "方向",
+      "intensity": "强度",
+      "separatingDesc": "分离中（远离精确相位）",
+      "applyingDesc": "趋近中（接近精确相位）",
+      "intensityMajor": "重大（外行星）",
+      "intensityModerate": "中等",
+      "intensityMinor": "轻微",
+      "nearExact": "接近精确——影响最强",
+      "stronglyActive": "强烈活跃",
+      "buildingMomentum": "能量积聚中",
+      "enteringAwareness": "进入感知范围",
+      "lessThanADay": "不到一天",
+      "daysLeft": "剩余 {{count}} 天",
+      "weeksLeft": "约 {{count}} 周",
+      "monthsLeft": "约 {{count}} 个月",
+      "yearsLeft": "{{count}}+ 年",
+      "tapToRead": "点击阅读完整洞察",
+      "failedToLoadStorylines": "加载故事线失败"
+    },
+    "tarotPage": {
+      "title": "塔罗牌解读",
+      "subtitle": "从大小阿尔克那中获取指引",
+      "chooseSpread": "选择牌阵",
+      "yourQuestion": "你的问题（可选）",
+      "questionPlaceholder": "你在寻求什么指引？",
+      "drawButton": "抽取 {{spread}}",
+      "shuffling": "正在洗牌...",
+      "tapToReveal": "点击翻牌",
+      "revealAll": "翻开所有牌",
+      "newReading": "新的解读",
+      "getPersonalReading": "获取你的个人解读",
+      "regenerateReading": "重新生成个人解读",
+      "personalTarotReading": "个人塔罗解读",
+      "channeling": "正在连接你的星盘与牌面...",
+      "shareReading": "分享解读",
+      "copied": "已复制！",
+      "failedToGenerate": "生成解读失败。请重试。",
+      "reversed": "逆位",
+      "majorArcana": "大阿尔克那",
+      "minorArcana": "小阿尔克那",
+      "spreads": {
+        "single": "单张牌",
+        "threeCard": "三张牌",
+        "celticCross": "凯尔特十字",
+        "relationship": "关系牌阵",
+        "career": "事业牌阵"
+      },
+      "positions": {
+        "focus": "焦点",
+        "past": "过去",
+        "present": "现在",
+        "future": "未来",
+        "challenge": "挑战",
+        "foundation": "基础",
+        "recentPast": "近期过去",
+        "crown": "王冠",
+        "nearFuture": "近期未来",
+        "self": "自我",
+        "environment": "环境",
+        "hopesFears": "希望/恐惧",
+        "outcome": "结果",
+        "you": "你",
+        "partner": "伴侣",
+        "connection": "连接",
+        "potential": "潜力",
+        "current": "当前",
+        "obstacle": "障碍",
+        "hiddenFactor": "隐藏因素",
+        "advice": "建议"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "梦境神谕",
+      "subtitle": "通过符号、情感、占星和潜意识的隐秘语言解读你的梦境。",
+      "tabs": {
+        "record": "记录",
+        "journal": "日记",
+        "symbols": "符号",
+        "patterns": "模式"
+      },
+      "record": {
+        "dreamTitle": "梦境标题（可选）",
+        "titlePlaceholder": "留空则自动生成",
+        "describeLabel": "描述你的梦境 *",
+        "describePlaceholder": "闭上眼睛，描述你记得的一切...",
+        "mainEmotions": "主要情绪（最多5个）",
+        "peopleDream": "梦中的人物",
+        "peoplePlaceholder": "例如：母亲、前任、陌生人、朋友",
+        "placesDream": "梦中的地点",
+        "placesPlaceholder": "例如：童年的家、海洋、黑暗森林",
+        "separateCommas": "用逗号分隔",
+        "symbolsObjects": "符号/物品",
+        "selectSymbols": "点击选择梦境符号",
+        "selectedCount": "已选择 {{count}} 个",
+        "searchSymbols": "搜索符号...",
+        "dreamType": "梦境类型",
+        "dreamIntensity": "梦境强度：{{value}}/10",
+        "privacy": "隐私",
+        "interpretDream": "解读我的梦境",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "你的梦境解读",
+        "mainSymbols": "主要符号",
+        "coreMessage": "核心信息",
+        "subconsciousMessage": "潜意识在向你展示什么",
+        "symbolsMatter": "最重要的符号",
+        "emotionalUndercurrent": "情感暗流",
+        "whatToFace": "这个梦在要求你面对什么",
+        "oracleMessage": "梦境神谕的最终信息",
+        "astroConnection": "占星关联",
+        "whyNow": "为什么你现在做了这个梦",
+        "watchFor": "需要留意的事",
+        "whatToDo": "接下来该做什么",
+        "reflectionQuestions": "反思问题",
+        "askAboutDream": "询问关于这个梦",
+        "visualizeDream": "可视化我的梦境",
+        "comingSoon": "即将推出",
+        "recordAnother": "记录另一个梦"
+      },
+      "journal": {
+        "loadingJournal": "加载梦境日记中...",
+        "searchDreams": "搜索梦境...",
+        "noDreamsYet": "还没有梦境",
+        "noDreamsHint": "记录你的第一个梦境，开始建立你的日记。",
+        "deleteConfirm": "删除这个梦境？此操作无法撤销。"
+      },
+      "dictionary": {
+        "backToSymbols": "返回符号",
+        "generalMeaning": "一般含义",
+        "psychologicalMeaning": "心理学含义",
+        "spiritualMeaning": "灵性含义",
+        "astrologicalMeaning": "占星含义",
+        "shadowMeaning": "阴影含义",
+        "reflectionQuestion": "反思问题"
+      },
+      "patterns": {
+        "noPatternsYet": "还没有模式",
+        "noPatternsHint": "记录至少3个梦境后，才能开始发现梦境中的模式。",
+        "overview": "概览",
+        "totalDreams": "总梦境数",
+        "avgIntensity": "平均强度",
+        "nightmares": "噩梦",
+        "lucidDreams": "清醒梦",
+        "prophetic": "预言梦",
+        "recurringSymbols": "最常出现的符号",
+        "recurringEmotions": "最常出现的情绪",
+        "recurringPeople": "最常出现的人物",
+        "dreamTypes": "梦境类型",
+        "dreamsByMoonPhase": "按月相分类的梦境",
+        "moonPhaseHint": "当你拥有10个以上关联占星数据的梦境后，月相模式追踪将被激活。",
+        "dreamsByTransit": "按行运分类的梦境",
+        "transitHint": "行运关联将揭示哪些行星相位会激活你最生动或预言性的梦境。"
+      }
+    },
+    "starseedPage": {
+      "title": "星际种子起源",
+      "subtitle": "发现你的宇宙灵魂起源",
+      "description": "分析你的本命盘，发现你的灵魂与哪些星系产生共鸣。",
+      "discoverButton": "发现我的起源",
+      "analyzing": "分析中...",
+      "dominantOrigin": "主导起源",
+      "resonancePoints": "评分：{{score}} 共鸣点"
+    },
+    "numerologyPage": {
+      "title": "数字命理",
+      "subtitle": "你的宇宙数字解码",
+      "master": "大师"
+    },
+    "angelNumbersPage": {
+      "title": "天使数字",
+      "subtitle": "查找你看到的数字背后的含义",
+      "searchPlaceholder": "输入一个数字（例如 111、444）...",
+      "popular": "热门数字",
+      "notFound": "未找到该数字。请尝试常见的天使数字。",
+      "copiedToClipboard": "已复制到剪贴板！"
+    },
+    "humanDesignPage": {
+      "title": "人类图",
+      "subtitle": "你的能量蓝图",
+      "aura": "气场",
+      "defined": "有定义",
+      "undefined": "未定义"
+    },
+    "financialPage": {
+      "title": "财务占星",
+      "subtitle": "你的宇宙金钱蓝图",
+      "personalIncome": "个人收入与价值观",
+      "sharedResources": "共享资源与转化",
+      "careerStanding": "事业与公众地位",
+      "gainsNetworks": "收益与人脉",
+      "strengths": "优势",
+      "challenges": "挑战",
+      "monthlyForecast": "月度预测",
+      "timingWindows": "时机窗口",
+      "favorable": "有利",
+      "mixed": "混合",
+      "challenging": "具有挑战性"
+    },
+    "compatibilityPage": {
+      "title": "配对检测",
+      "subtitle": "探索两个灵魂之间的宇宙连接",
+      "person2Label": "伴侣的出生数据",
+      "datePlaceholder": "出生日期",
+      "timePlaceholder": "出生时间",
+      "locationPlaceholder": "出生地点",
+      "calculateButton": "检测配对",
+      "calculating": "正在计算配对...",
+      "overallScore": "综合评分",
+      "soulLevelConnection": "灵魂层面的连接",
+      "deepCompatibility": "深度契合",
+      "strongPotential": "强大潜力",
+      "moderateMatch": "中等匹配",
+      "growthRequired": "需要成长",
+      "challengingDynamic": "具有挑战性的关系",
+      "categories": {
+        "attraction": "身体吸引力",
+        "emotional": "情感纽带",
+        "mental": "心灵连接",
+        "stability": "长期稳定性",
+        "karmic": "业力连接",
+        "harmony": "和谐度",
+        "magnetic": "磁性吸引"
+      },
+      "showAspects": "显示相位",
+      "hideAspects": "隐藏相位"
+    },
+    "cosmicJournalPage": {
+      "title": "宇宙日记",
+      "subtitle": "追踪你的内心世界与宇宙同步",
+      "newEntry": "新条目",
+      "moodOptions": {
+        "low": "低落",
+        "meh": "一般",
+        "neutral": "平静",
+        "good": "不错",
+        "great": "很好"
+      },
+      "noEntries": "还没有日记条目",
+      "noEntriesHint": "开始写作，追踪你的内心世界与宇宙的同步。"
+    },
+    "moonPhasesPage": {
+      "title": "月相",
+      "tabs": {
+        "today": "今天",
+        "calendar": "日历",
+        "forecast": "预测",
+        "eclipses": "日月食",
+        "birthMoon": "出生月亮"
+      },
+      "failedToLoadChart": "加载本命盘失败"
+    },
+    "planetaryHoursPage": {
+      "title": "行星时",
+      "subtitle": "古老的时间智慧，服务现代生活",
+      "currentHour": "当前时辰",
+      "daySummary": "日概要",
+      "hoursTable": "时辰表"
+    },
+    "yearAheadPage": {
+      "title": "我的未来一年",
+      "subtitle": "你的个性化宇宙年度预测",
+      "generating": "正在生成你的年度预测...",
+      "monthlyOverview": "月度概览",
+      "keyTransits": "关键行运",
+      "calm": "平静",
+      "activeIntensity": "活跃",
+      "intense": "强烈"
+    },
+    "solarReturnPage": {
+      "title": "太阳回归",
+      "subtitle": "你的生日星盘——年度宇宙蓝图",
+      "generating": "正在计算太阳回归盘...",
+      "yearTheme": "年度主题",
+      "planetsOnAngles": "轴点行星",
+      "retrogrades": "逆行",
+      "monthlyTimeline": "月度时间线",
+      "natalComparisons": "本命盘 vs 太阳回归盘",
+      "criticalAspects": "关键相位",
+      "yearPattern": "年度模式"
+    },
+    "galacticClockPage": {
+      "title": "银河时钟",
+      "subtitle": "你的宇宙计时界面"
+    },
+    "galacticForecastPage": {
+      "title": "银河预测",
+      "subtitle": "影响你星盘的深空能量"
+    },
+    "midpointsPage": {
+      "title": "中点计算器",
+      "subtitle": "发现星盘中的隐藏连接"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "古波斯行星时期"
+    },
+    "zodiacalReleasingPage": {
+      "title": "黄道释放",
+      "subtitle": "希腊化择时技术"
+    },
+    "acgPage": {
+      "title": "星象地图",
+      "subtitle": "世界上哪些地方会激活你的行星"
+    },
+    "fixedStarsPage": {
+      "title": "恒星",
+      "subtitle": "星盘中的恒星影响"
+    },
+    "arabicPartsPage": {
+      "title": "阿拉伯点",
+      "subtitle": "星盘中的古老计算点"
+    },
+    "pathwayPage": {
+      "title": "成功之路",
+      "subtitle": "你的宇宙事业与人生使命蓝图"
+    },
+    "rectificationPage": {
+      "title": "出生时间校正",
+      "subtitle": "微调出生时间以获得更准确的星盘"
+    },
+    "nameAnalysisPage": {
+      "title": "姓名分析",
+      "subtitle": "你名字的数字命理"
+    },
+    "soulGiftsPage": {
+      "title": "灵魂天赋",
+      "subtitle": "发现编码在你星盘中的独特天赋"
+    },
+    "soulMemoryPage": {
+      "title": "灵魂记忆",
+      "subtitle": "本命盘中的前世回响"
+    },
+    "soulAscensionPage": {
+      "title": "灵魂飞升",
+      "description": "将你的本命盘当作转世RPG来玩，包含业力、使命路径、灵魂契约、遗物和前世选择。"
+    },
+    "chartAdjusterPage": {
+      "title": "星盘调整器",
+      "subtitle": "尝试不同的出生时间"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI 解读",
@@ -205,6 +573,464 @@
       "reputation": "声誉"
     }
   },
+  "dating": {
+    "title": "宇宙交友",
+    "subtitle": "为你精选的宇宙匹配",
+    "introTitle": "宇宙交友",
+    "introDescription": "找到写在星星中的有意义的连接。创建你的交友档案，开始发现宇宙级别的匹配。",
+    "createProfileButton": "创建你的交友档案",
+    "featurePhotos": "添加照片和语音介绍",
+    "featureCompatibility": "通过宇宙配对进行匹配",
+    "featureSafety": "安全且经过验证的连接",
+    "tabs": {
+      "discover": "发现",
+      "likes": "喜欢",
+      "matches": "匹配",
+      "myProfile": "我的档案"
+    },
+    "discovery": {
+      "consulting": "正在咨询宇宙...",
+      "noPicksTitle": "还没有宇宙推荐",
+      "allCaughtUpTitle": "已全部查看！",
+      "noPicksDescription": "星星仍在为你排列匹配。请确保你的交友档案已完善！",
+      "allCaughtUpDescription": "明天再来看新的宇宙推荐。高质量的连接需要时间。",
+      "completeProfile": "完善档案",
+      "dailyLikeLimit": "你已达到每日喜欢上限（{{limit}}）。升级以获取更多！",
+      "dailyRoseLimit": "你今天的宇宙玫瑰已用完（{{limit}}）。升级以获取更多！",
+      "genericError": "出了点问题。请重试。"
+    },
+    "likes": {
+      "title": "喜欢",
+      "receivedCount": "{{count}} 人对你感兴趣",
+      "sentCount": "你喜欢了 {{count}} 人",
+      "received": "收到的",
+      "sent": "发出的",
+      "seeWhoLikes": "查看谁喜欢你",
+      "upgradeHint": "升级至 Light 或更高级别以查看档案",
+      "upgrade": "升级",
+      "noLikesYet": "还没有收到喜欢",
+      "noSentYet": "还没有发出喜欢",
+      "keepFresh": "保持档案活跃，宇宙会为你送达。",
+      "headToDiscover": "前往发现页面寻找你的宇宙连接。",
+      "mysteryAdmirer": "神秘仰慕者",
+      "rose": "玫瑰",
+      "likeBack": "回赞",
+      "matching": "匹配中..."
+    },
+    "matches": {
+      "title": "你的匹配",
+      "connectionCount": "{{count}} 个宇宙连接",
+      "noMatchesTitle": "还没有匹配",
+      "noMatchesDescription": "当你和某人互相喜欢时，你们会出现在这里。",
+      "discoverPeople": "发现新的人",
+      "cosmicIcebreakers": "宇宙破冰话题",
+      "message": "消息",
+      "unmatchConfirm": "取消与 {{name}} 的匹配？",
+      "unmatch": "取消匹配",
+      "cancel": "取消",
+      "matchedToday": "今天匹配",
+      "matchedDaysAgo": "{{days}}天前匹配",
+      "cosmicMatch": "宇宙匹配"
+    },
+    "profile": {
+      "title": "交友档案",
+      "datingMode": "交友模式",
+      "datingModeHint": "在宇宙发现中显示你的档案",
+      "cosmicSignature": "你的宇宙签名",
+      "sunMoonRising": "太阳 / 月亮 / 上升",
+      "photos": "照片",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "关于我",
+      "aboutMePlaceholder": "向潜在匹配介绍你自己...",
+      "cosmicPrompts": "宇宙提示",
+      "addPrompt": "添加提示",
+      "promptAnswerPlaceholder": "你的回答...",
+      "voicePrompt": "语音提示",
+      "voicePromptHint": "录制30秒的语音介绍，展示你的个性",
+      "uploadingVoice": "正在上传语音提示...",
+      "reRecord": "重新录制",
+      "stopRecording": "停止录制",
+      "recordVoicePrompt": "录制语音提示",
+      "videoIntro": "视频介绍",
+      "videoIntroHint": "上传15秒视频介绍你自己",
+      "replaceVideo": "替换视频",
+      "uploadVideo": "上传视频",
+      "showAge": "在档案中显示年龄",
+      "photoVerification": "照片验证",
+      "verified": "已验证",
+      "verifyNow": "立即验证",
+      "datingPreferences": "交友偏好",
+      "savePreferences": "保存偏好",
+      "saveProfile": "保存档案",
+      "saving": "保存中...",
+      "preferenceFields": {
+        "genderIdentity": "性别认同",
+        "sexualOrientation": "性取向",
+        "interestedIn": "感兴趣的对象",
+        "primaryIntent": "主要目的",
+        "ageRange": "年龄范围",
+        "maxDistance": "最大距离"
+      },
+      "privacyLevels": {
+        "visible": "可见",
+        "matchOnly": "仅匹配可见",
+        "hidden": "隐藏"
+      }
+    },
+    "verify": {
+      "title": "照片验证",
+      "subtitle": "验证你的身份，在交友档案上获得认证徽章",
+      "backToProfile": "返回档案",
+      "verifiedTitle": "已验证！",
+      "verifiedDescription": "你的档案现在显示认证徽章。",
+      "pendingTitle": "审核中",
+      "pendingDescription": "你的自拍正在审核中。通常需要24-48小时。",
+      "rejectedTitle": "未通过",
+      "rejectedHint": "你可以用更清晰的自拍重试。",
+      "tryAgain": "重试",
+      "howItWorks": "工作原理：",
+      "step1": "1. 在光线充足的环境下拍摄清晰的自拍",
+      "step2": "2. 确保你的面部完全可见",
+      "step3": "3. 我们会将其与你的档案照片进行比对",
+      "step4": "4. 通过后你将获得认证徽章",
+      "takeSelfie": "拍摄自拍",
+      "capture": "拍摄",
+      "cancel": "取消",
+      "retake": "重拍",
+      "submitForReview": "提交审核",
+      "submitting": "提交中...",
+      "cameraAccessDenied": "摄像头访问被拒绝。请在浏览器设置中允许摄像头访问。",
+      "submissionFailed": "提交失败。请重试。",
+      "networkError": "网络错误。请检查连接后重试。"
+    },
+    "coach": {
+      "title": "关系教练",
+      "subtitle": "基于占星动态的AI洞察",
+      "premiumFeature": "高级功能",
+      "backToMatches": "返回匹配",
+      "noMatchHint": "与某人匹配后获取教练建议。",
+      "browsePicks": "浏览推荐",
+      "inputPlaceholder": "询问关于沟通、冲突、亲密关系...",
+      "emptyHint": "提出你的第一个问题或点击发送获取一般性洞察。",
+      "aiInsight": "AI 洞察",
+      "template": "模板"
+    },
+    "timing": {
+      "title": "宇宙时机",
+      "subtitle": "行星窗口，凸显你连接的最佳时刻",
+      "backToMatches": "返回匹配",
+      "noMatchHint": "与某人匹配后查看宇宙时机窗口。",
+      "browsePicks": "浏览推荐",
+      "noWindows": "未找到时机窗口。",
+      "qualityExcellent": "极佳",
+      "qualityGood": "良好",
+      "qualityNeutral": "中性",
+      "qualityChallenging": "具有挑战性",
+      "now": "现在",
+      "inDays": "{{days}}天后"
+    },
+    "events": {
+      "title": "宇宙活动",
+      "subtitle": "与宇宙对齐的主题交友活动",
+      "backToDating": "返回交友",
+      "tabs": {
+        "upcoming": "即将到来",
+        "myEvents": "我的活动"
+      },
+      "noUpcoming": "目前没有即将到来的活动。请稍后再查看！",
+      "noRegistered": "你还没有报名任何活动。",
+      "live": "直播中",
+      "maxCount": "最多 {{count}} 人",
+      "elementOnly": "仅限 {{element}} 元素星座",
+      "registered": "已报名",
+      "cancelRegistration": "取消",
+      "register": "报名",
+      "registering": "报名中..."
+    },
+    "milestones": {
+      "title": "关系里程碑",
+      "subtitle": "在星空下追踪你们的旅程",
+      "backToMatches": "返回匹配",
+      "noMatchHint": "与某人匹配后追踪里程碑。",
+      "browsePicks": "浏览推荐",
+      "journeyProgress": "旅程进度",
+      "mark": "标记"
+    },
+    "datePlanner": {
+      "title": "约会策划",
+      "subtitle": "为你和匹配对象精心策划的宇宙约会创意",
+      "backToMatches": "返回匹配",
+      "noMatchHint": "与某人匹配后获取约会建议。",
+      "browsePicks": "浏览推荐",
+      "shuffleIdeas": "换一批创意",
+      "elementEnergy": "{{element}} 能量"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "宇宙动态",
+    "createPost": "创建帖子",
+    "postTypes": {
+      "text": "文字",
+      "photo": "照片",
+      "video": "视频",
+      "poll": "投票"
+    },
+    "composer": {
+      "placeholder": "你的宇宙心事是什么？",
+      "uploadImage": "点击上传图片",
+      "uploadVideo": "点击上传视频",
+      "imageSizeLimit": "图片必须小于 10 MB",
+      "videoSizeLimit": "视频必须小于 200 MB",
+      "backgroundStyle": "背景样式",
+      "visibility": "可见性：",
+      "visibilityPublic": "公开",
+      "visibilityFriends": "仅好友",
+      "postButton": "发布",
+      "posting": "发布中...",
+      "uploadingImage": "上传图片中...",
+      "uploadingVideo": "上传视频中...",
+      "addImage": "添加图片",
+      "addVideo": "添加视频",
+      "editPost": "编辑帖子"
+    },
+    "poll": {
+      "question": "问题",
+      "questionPlaceholder": "向宇宙发问...",
+      "options": "选项",
+      "optionPlaceholder": "选项 {{number}}",
+      "addOption": "添加选项",
+      "duration": "持续时间",
+      "durationOptions": {
+        "1h": "1 小时",
+        "6h": "6 小时",
+        "12h": "12 小时",
+        "1d": "1 天",
+        "3d": "3 天",
+        "7d": "7 天"
+      },
+      "createPoll": "创建投票",
+      "pollNeedsContent": "投票需要一个问题和至少2个选项"
+    },
+    "empty": {
+      "title": "你的宇宙动态等待着你",
+      "description": "与社区分享解读、星盘和宇宙洞察。",
+      "createFirst": "创建你的第一条帖子"
+    },
+    "loadMore": "加载更多",
+    "loading": "加载中..."
+  },
+  "friends": {
+    "title": "好友与连接",
+    "friendCount": "{{count}} 位好友",
+    "pendingCount": "{{count}} 个待处理",
+    "inviteFriends": "邀请好友",
+    "qrCode": "二维码",
+    "tabs": {
+      "friends": "好友",
+      "requests": "请求",
+      "search": "搜索"
+    },
+    "suggestionsTitle": "你可能认识的人",
+    "addButton": "+ 添加",
+    "empty": {
+      "noFriends": "还没有好友",
+      "noFriendsHint": "搜索其他人或分享你的 Align 代码",
+      "findPeople": "寻找好友",
+      "noRequests": "没有待处理的请求",
+      "noRequestsHint": "你发送或收到的好友请求将显示在这里"
+    },
+    "requests": {
+      "wantsToConnect": "想要连接",
+      "requestSent": "请求已发送",
+      "accept": "接受",
+      "decline": "拒绝",
+      "cancel": "取消"
+    },
+    "search": {
+      "placeholder": "按姓名、用户名或 Align 代码搜索...",
+      "searching": "搜索中...",
+      "noResults": "未找到用户",
+      "noResultsHint": "试试其他搜索词",
+      "startSearch": "搜索用户",
+      "minCharsHint": "至少输入2个字符..."
+    },
+    "labels": {
+      "friends": "好友",
+      "pending": "待处理"
+    },
+    "actions": {
+      "removeFriend": "删除好友",
+      "blockUser": "屏蔽用户",
+      "removeConfirm": "从好友列表中删除 {{name}}？",
+      "blockConfirm": "屏蔽 {{name}}？对方将无法找到你或联系你。",
+      "viewProfile": "查看档案",
+      "message": "消息",
+      "viewFullProfile": "查看完整档案",
+      "close": "关闭",
+      "requestPending": "请求待处理",
+      "addFriend": "添加好友",
+      "acceptRequest": "接受请求",
+      "confirm": "确认",
+      "ok": "确定"
+    },
+    "alignCode": "Align 代码："
+  },
+  "messages": {
+    "signInRequired": "登录以访问消息",
+    "selectConversation": "选择一个对话",
+    "startNewChat": "或开始新聊天进行连接",
+    "newChat": "新聊天",
+    "contextMenu": {
+      "reply": "回复",
+      "react": "回应",
+      "edit": "编辑",
+      "delete": "删除",
+      "forward": "转发",
+      "pin": "置顶",
+      "unpin": "取消置顶",
+      "copyText": "复制文本"
+    },
+    "pickReaction": "选择一个表情回应",
+    "messageTypes": {
+      "image": "图片",
+      "gif": "GIF",
+      "voiceMessage": "语音消息",
+      "location": "位置",
+      "poll": "投票："
+    },
+    "composer": {
+      "placeholder": "输入消息...",
+      "send": "发送",
+      "attachment": "附件"
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "全部标为已读",
+    "filters": {
+      "all": "全部",
+      "social": "社交",
+      "cosmic": "宇宙",
+      "system": "系统"
+    },
+    "empty": {
+      "all": "还没有通知",
+      "allHint": "你的宇宙提醒和社交动态将显示在这里。",
+      "social": "没有社交通知",
+      "socialHint": "好友请求、消息和回应将显示在这里。",
+      "cosmic": "没有宇宙提醒",
+      "cosmicHint": "行运提醒和宇宙事件将显示在这里。",
+      "system": "没有系统通知",
+      "systemHint": "系统更新和公告将显示在这里。"
+    },
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo": "{{count}}分钟前",
+      "hoursAgo": "{{count}}小时前",
+      "daysAgo": "{{count}}天前"
+    },
+    "grouped": "{{count}} 条通知"
+  },
+  "communities": {
+    "title": "社区",
+    "subtitle": "找到你的宇宙部落",
+    "create": "创建",
+    "tabs": {
+      "discover": "发现",
+      "myCommunities": "我的社区"
+    },
+    "searchPlaceholder": "搜索社区...",
+    "filterAll": "全部",
+    "loading": "加载社区中...",
+    "empty": {
+      "title": "还没有社区",
+      "description": "成为第一个创建宇宙社区的人！",
+      "createButton": "创建社区"
+    },
+    "featured": "精选",
+    "allCommunities": "所有社区",
+    "noResultsSearch": "未找到与\"{{query}}\"相关的社区",
+    "noResultsCategory": "该分类暂无社区。",
+    "yourCircle": {
+      "title": "你的宇宙圈等待着你",
+      "description": "加入或创建社区，找到你的部落。",
+      "exploreButton": "探索社区"
+    },
+    "memberCount_one": "{{count}} 位成员",
+    "memberCount_other": "{{count}} 位成员",
+    "private": "私密",
+    "join": "加入",
+    "joined": "已加入"
+  },
+  "profile": {
+    "title": "个人主页",
+    "editProfile": "编辑档案",
+    "shareBigThree": "分享你的三大星座",
+    "stats": {
+      "friends": "好友",
+      "posts": "帖子",
+      "followers": "关注者",
+      "following": "正在关注",
+      "views": "浏览量"
+    },
+    "tabs": {
+      "posts": "帖子",
+      "photos": "照片",
+      "reels": "短视频",
+      "about": "关于"
+    },
+    "alignCode": "你的 Align 代码",
+    "alignCodeHint": "分享你的代码，让好友找到你",
+    "quickLinks": {
+      "gallery": "相册",
+      "safetyTrust": "安全与信任",
+      "subscription": "订阅",
+      "referrals": "推荐",
+      "settings": "设置"
+    },
+    "about": {
+      "bio": "简介",
+      "bigThree": "三大星座",
+      "starseedOrigin": "星际种子起源",
+      "humanDesign": "人类图",
+      "joined": "加入时间",
+      "alignCode": "Align 代码"
+    },
+    "empty": {
+      "noPosts": "还没有帖子",
+      "noPhotos": "还没有照片",
+      "noReels": "还没有短视频"
+    },
+    "loadingProfile": "加载档案中...",
+    "profileViews": "档案浏览量",
+    "noViews": "还没有档案浏览记录",
+    "editPost": "编辑帖子"
+  },
+  "editProfile": {
+    "title": "编辑档案",
+    "displayName": "显示名称",
+    "bio": "简介",
+    "bioPlaceholder": "向宇宙介绍你自己...",
+    "birthData": "出生数据",
+    "date": "日期",
+    "time": "时间",
+    "location": "地点",
+    "locationPlaceholder": "搜索城市、省份或国家...",
+    "saveChanges": "保存更改",
+    "saving": "保存中...",
+    "tapAddCover": "点击添加封面照片",
+    "errors": {
+      "saveFailed": "保存档案失败",
+      "avatarFailed": "上传头像失败",
+      "coverFailed": "上传封面照片失败"
+    }
+  },
   "settings": {
     "title": "设置",
     "language": "语言",
@@ -216,9 +1042,259 @@
     "houseSystem": "宫位系统",
     "darkMode": "深色模式",
     "about": "关于 Align",
-    "privacy": "隐私政策",
+    "privacy": {
+      "title": "隐私与数据",
+      "profileVisibility": "档案可见性",
+      "visibilityOptions": {
+        "public": "公开",
+        "friendsOnly": "仅好友",
+        "private": "私密"
+      },
+      "hideAge": "隐藏年龄",
+      "hideExactLocation": "隐藏精确位置",
+      "hideLastActive": "隐藏最后活跃时间",
+      "hideFullBirthChart": "隐藏完整出生星盘",
+      "incognitoMode": "隐身模式",
+      "blockUnverified": "屏蔽未验证用户",
+      "minimumTrustLevel": "最低信任等级",
+      "trustLevels": {
+        "any": "任何",
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      },
+      "analyticsEnabled": "分析",
+      "exportData": "导出我的数据",
+      "exportToast": "你的数据导出请求已提交。你将通过邮件收到导出数据。"
+    },
     "terms": "服务条款",
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "account": "账户",
+    "email": "邮箱",
+    "name": "姓名",
+    "notSet": "未设置",
+    "planLabel": "{{plan}} 套餐",
+    "upgradeHint": "升级以获取更多功能",
+    "managedVia": "通过 RevenueCat 管理",
+    "manage": "管理",
+    "upgrade": "升级",
+    "subPages": {
+      "chatTheme": "聊天主题",
+      "notifications": "通知",
+      "privacy": "隐私",
+      "astrologyPreferences": "占星偏好",
+      "friends": "好友",
+      "referrals": "推荐",
+      "subscriptionPlans": "订阅套餐",
+      "datingIdentity": "交友身份",
+      "relationshipIntent": "关系意向",
+      "connectionPreferences": "连接偏好",
+      "identityPrivacy": "身份隐私",
+      "safety": "安全",
+      "termsOfService": "服务条款",
+      "communityGuidelines": "社区准则"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "管理员",
+      "manageUsers": "管理用户账户",
+      "contentModeration": "内容审核",
+      "manageCelebrities": "管理名人",
+      "payoutQueue": "付款队列"
+    },
+    "aboutSection": {
+      "version": "版本",
+      "poweredBy": "技术支持",
+      "contact": "联系方式"
+    },
+    "signOut": "退出登录",
+    "deleteAccount": "删除账户",
+    "deleteConfirm": {
+      "title": "删除账户？",
+      "message": "这将永久删除你的账户和所有关联数据。此操作无法撤销。",
+      "confirm": "删除我的账户",
+      "cancel": "取消"
+    },
+    "astrology": {
+      "title": "占星偏好",
+      "autoSaveHint": "更改会自动保存并应用到所有星盘计算。",
+      "houseSystem": "宫位系统",
+      "houseSystemHint": "决定星盘宫位的计算方式",
+      "houseSystems": {
+        "wholeSign": "整宫制",
+        "placidus": "普拉西德斯",
+        "koch": "科赫",
+        "campanus": "坎帕努斯",
+        "regiomontanus": "雷焦蒙塔努斯",
+        "equal": "等宫制",
+        "porphyry": "波菲利",
+        "alcabitius": "阿尔卡比提乌斯",
+        "topocentric": "地心制",
+        "morinus": "莫林纳斯",
+        "meridian": "子午线"
+      },
+      "zodiacSystem": "黄道系统",
+      "zodiacSystems": {
+        "tropical": "回归制（西方）",
+        "sidereal": "恒星制（吠陀）"
+      },
+      "languageLevel": "语言级别",
+      "languageLevelHint": "解读的专业程度应该如何？",
+      "jargonModes": {
+        "plain": "通俗语言",
+        "mixed": "混合",
+        "technical": "专业术语"
+      },
+      "orbTightness": "容许度松紧",
+      "orbOptions": {
+        "tight": "紧密",
+        "standard": "标准",
+        "wide": "宽松"
+      },
+      "showAsteroids": "显示小行星",
+      "showFixedStars": "显示恒星"
+    },
+    "notificationsPage": {
+      "title": "通知偏好",
+      "pauseAll": "暂停所有通知",
+      "social": {
+        "title": "社交通知",
+        "friendRequests": "好友请求",
+        "messages": "消息",
+        "reactions": "回应",
+        "comments": "评论"
+      },
+      "cosmic": {
+        "title": "宇宙通知",
+        "frequency": "频率",
+        "frequencyOptions": {
+          "essential": "基本",
+          "important": "重要",
+          "all": "全部"
+        },
+        "tone": "语气",
+        "toneOptions": {
+          "gentle": "温和",
+          "direct": "直接",
+          "intense": "强烈"
+        },
+        "categories": {
+          "majorTransits": "重大行运",
+          "moonPhases": "月相",
+          "mercuryRetrograde": "水星逆行",
+          "loveRelationships": "爱情与关系",
+          "moneyValues": "金钱与价值",
+          "careerAmbition": "事业与抱负",
+          "healingGrowth": "疗愈与成长"
+        },
+        "aspects": {
+          "title": "相位类型",
+          "conjunctions": "合相",
+          "oppositions": "冲相",
+          "squares": "刑相",
+          "trines": "拱相",
+          "sextiles": "六分相"
+        },
+        "events": {
+          "title": "宇宙事件",
+          "moonPhases": "月相",
+          "eclipses": "日月食",
+          "retrogrades": "逆行",
+          "ingresses": "入境"
+        },
+        "minIntensity": "最低强度",
+        "advanceNotice": "提前通知（天数）"
+      },
+      "galactic": {
+        "title": "银河通知",
+        "planetaryHours": "行星时",
+        "dayRuler": "日主星",
+        "goldenHour": "黄金时刻",
+        "eclipseWatch": "日月食观测",
+        "retrogradeAlerts": "逆行提醒",
+        "minutesBefore": "提前分钟数"
+      },
+      "summaries": {
+        "title": "摘要推送",
+        "daily": "每日摘要",
+        "weekly": "每周摘要"
+      },
+      "quietHours": {
+        "title": "免打扰时段",
+        "enabled": "启用免打扰时段",
+        "start": "开始",
+        "end": "结束",
+        "urgentOverride": "允许紧急通知"
+      },
+      "delivery": {
+        "title": "推送方式",
+        "sound": "声音",
+        "badge": "角标"
+      },
+      "announcements": "应用公告"
+    },
+    "referrals": {
+      "title": "推荐",
+      "howItWorks": "工作原理",
+      "step1": "将你的专属推荐链接分享给好友",
+      "step2": "当他们通过你的链接注册时，你们双方都会获得5次额外解读",
+      "step3": "没有上限——你可以邀请任意多的好友！"
+    },
+    "chatTheme": {
+      "title": "聊天主题",
+      "subtitle": "自定义消息外观"
+    },
+    "datingIdentity": {
+      "title": "交友身份",
+      "subtitle": "你在交友空间中的身份认同"
+    },
+    "relationshipIntent": {
+      "title": "关系意向",
+      "subtitle": "你在连接中寻找什么"
+    },
+    "connectionPreferences": {
+      "title": "连接偏好",
+      "subtitle": "你希望与谁连接"
+    },
+    "identityPrivacy": {
+      "title": "身份隐私",
+      "subtitle": "控制谁能看到你的身份信息"
+    },
+    "safety": {
+      "title": "安全",
+      "subtitle": "管理屏蔽、举报和安全设置"
+    },
+    "friends": {
+      "title": "好友设置",
+      "subtitle": "管理好友请求和连接偏好"
+    },
+    "termsPage": {
+      "title": "服务条款"
+    },
+    "communityGuidelines": {
+      "title": "社区准则"
+    }
   },
   "subscription": {
     "headline": "精准占星。专属于你。",
@@ -380,6 +1456,314 @@
     "continue": "继续学习",
     "completed": "已完成"
   },
+  "cosmicAlerts": {
+    "title": "宇宙天气",
+    "subtitle": "你的个性化宇宙预报",
+    "scanningCosmos": "正在扫描宇宙...",
+    "filters": {
+      "all": "全部",
+      "active": "活跃",
+      "upcoming": "即将到来"
+    },
+    "emptyState": {
+      "title": "未检测到重大行运",
+      "filterHint": "目前没有{{filter}}提醒。试试切换到\"全部\"。",
+      "defaultHint": "宇宙对你的星盘暂时安静。随着天象变化，请稍后再查看。"
+    },
+    "detail": {
+      "timingWindow": "时间窗口",
+      "start": "开始",
+      "peak": "高峰",
+      "end": "结束",
+      "fullInterpretation": "完整解读",
+      "astrologicalDetails": "占星细节",
+      "transit": "行运",
+      "natal": "本命",
+      "aspect": "相位",
+      "retrograde": "逆行",
+      "yes": "是",
+      "no": "否",
+      "actionAdvice": "行动建议",
+      "viewFullTransits": "查看完整行运"
+    },
+    "importance": {
+      "critical": "关键",
+      "high": "高",
+      "moderate": "中等",
+      "low": "低",
+      "minimal": "轻微"
+    },
+    "categories": {
+      "general": "综合",
+      "love": "爱情",
+      "career": "事业",
+      "growth": "成长",
+      "challenge": "挑战",
+      "spiritual": "灵性",
+      "communication": "沟通",
+      "energy": "能量"
+    },
+    "statusActive": "活跃中"
+  },
+  "discover": {
+    "title": "发现",
+    "moonPhases": {
+      "newMoon": "新月",
+      "waxingCrescent": "蛾眉月",
+      "firstQuarter": "上弦月",
+      "waxingGibbous": "盈凸月",
+      "fullMoon": "满月",
+      "waningGibbous": "亏凸月",
+      "lastQuarter": "下弦月",
+      "waningCrescent": "残月"
+    }
+  },
+  "worldEcho": {
+    "title": "世界回响",
+    "subtitle": "宇宙事件如何在人类历史中激起涟漪",
+    "categories": {
+      "political": "政治",
+      "economic": "经济",
+      "cultural": "文化",
+      "scientific": "科学",
+      "natural": "自然",
+      "social": "社会",
+      "technological": "科技",
+      "spiritual": "灵性"
+    },
+    "evidenceLabels": {
+      "strong": "强",
+      "moderate": "中等",
+      "speculative": "推测性"
+    },
+    "scoreLabels": {
+      "legendary": "传奇",
+      "major": "重大",
+      "significant": "显著",
+      "notable": "值得注意",
+      "minor": "轻微"
+    }
+  },
+  "polls": {
+    "title": "投票",
+    "filters": {
+      "all": "全部",
+      "active": "活跃",
+      "ended": "已结束",
+      "mine": "我的"
+    },
+    "duration": {
+      "hours": "剩余 {{count}} 小时",
+      "days": "剩余 {{count}} 天",
+      "ended": "已结束"
+    },
+    "createPoll": "创建投票",
+    "votes": "{{count}} 票",
+    "noPollsYet": "还没有投票",
+    "noPollsHint": "成为第一个发起宇宙投票的人！"
+  },
+  "bookmarks": {
+    "title": "书签",
+    "loading": "正在加载书签...",
+    "empty": "还没有书签",
+    "emptyHint": "保存动态中的帖子以便稍后阅读",
+    "postUnavailable": "帖子已不可用"
+  },
+  "celebrityMatches": {
+    "title": "名人匹配",
+    "subtitle": "发现哪些名人与你共享宇宙蓝图",
+    "searchPlaceholder": "搜索名人...",
+    "categories": {
+      "overall": "综合",
+      "emotional": "情感",
+      "passion": "激情",
+      "marriage": "婚姻",
+      "karmic": "业力",
+      "attraction": "吸引力",
+      "stability": "稳定性",
+      "mental": "心灵"
+    },
+    "matchScore": "{{score}}% 匹配",
+    "trending": "热门",
+    "recentlyAdded": "最近添加",
+    "browseByCategory": "按类别浏览",
+    "clearFilter": "清除筛选",
+    "yourFavorites": "你的收藏",
+    "noResults": "无结果",
+    "tryDifferent": "尝试不同的名字或拼写",
+    "noCelebrities": "还没有名人",
+    "searchOrCheckBack": "搜索某人或稍后再来",
+    "noCelebritiesInCategory": "此类别中还没有名人"
+  },
+  "matches": {
+    "title": "配对匹配",
+    "categories": {
+      "overall": "综合",
+      "emotional": "情感",
+      "passion": "激情",
+      "marriage": "婚姻",
+      "karmic": "业力",
+      "attraction": "吸引力",
+      "stability": "稳定性",
+      "mental": "心灵"
+    }
+  },
+  "cosmicIndex": {
+    "title": "宇宙指数",
+    "subtitle": "今日宇宙能量一览"
+  },
+  "creatorStudio": {
+    "title": "创作工作室",
+    "subtitle": "创建和管理你的宇宙内容"
+  },
+  "qa": {
+    "title": "问答",
+    "askQuestion": "提出问题",
+    "noQuestions": "还没有问题",
+    "placeholder": "你的宇宙问题是什么？"
+  },
+  "pricing": {
+    "title": "选择套餐",
+    "subtitle": "解锁 Align 的全部功能"
+  },
+  "gallery": {
+    "title": "相册",
+    "empty": "还没有照片"
+  },
+  "timeline": {
+    "title": "时间线",
+    "empty": "暂无内容"
+  },
+  "reels": {
+    "title": "宇宙短视频",
+    "empty": "还没有短视频"
+  },
+  "fragments": {
+    "title": "宇宙碎片",
+    "subtitle": "可分享的宇宙智慧卡片"
+  },
+  "cosmicVideo": {
+    "title": "宇宙视频",
+    "subtitle": "动态占星洞察"
+  },
+  "groupSynastry": {
+    "title": "群组合盘",
+    "subtitle": "查看一个群组的星盘如何互动"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "需要出生数据",
+      "defaultMessage": "添加你的出生日期、时间和地点以解锁此功能。",
+      "completeProfile": "完善档案"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "加载中..."
+    },
+    "paywallGate": {
+      "title": "解锁此解读",
+      "description": "此功能适用于",
+      "plan": "套餐",
+      "youreOn": "你当前是",
+      "upgradeButton": "查看套餐 — 起价 {{price}}",
+      "currentPlan": "当前套餐：{{plan}}",
+      "whatYouUnlock": "你将解锁的内容",
+      "allFeatures": "此解读 + 所有 {{tier}} 级别功能",
+      "aiAstrologer": "AI 占星师语音聊天",
+      "fullChart": "含相位和图形相位的完整本命盘"
+    },
+    "shareButton": {
+      "share": "分享",
+      "copied": "已复制！"
+    },
+    "referralCard": {
+      "title": "邀请好友",
+      "subtitle": "分享你的推荐链接，双方都能获得额外解读",
+      "copyLink": "复制链接",
+      "linkCopied": "链接已复制！"
+    },
+    "trialBanner": {
+      "title": "高级版试用：剩余 {{count}} 天",
+      "title_plural": "高级版试用：剩余 {{count}} 天",
+      "daysLeft": "剩余 {{count}} 天",
+      "upgrade": "立即升级",
+      "expired": "你的试用已结束。升级以重新解锁高级版。",
+      "endsTomorrow": "你的试用明天到期！升级以保留高级功能。",
+      "endsSoon": "你的试用将在 {{count}} 天后到期！升级以保留高级功能。"
+    },
+    "cookieConsent": {
+      "message": "我们使用 Cookie 来改善你的体验。",
+      "accept": "接受",
+      "decline": "拒绝",
+      "learnMore": "了解更多"
+    },
+    "matchCelebration": {
+      "itsAMatch": "匹配成功！",
+      "subtitle": "宇宙让你和 {{name}} 相遇了",
+      "sendMessage": "发送消息",
+      "keepBrowsing": "继续浏览"
+    },
+    "datingFilterDrawer": {
+      "title": "发现筛选",
+      "ageRange": "年龄范围",
+      "maxDistance": "最大距离",
+      "showOnlyVerified": "仅显示已验证",
+      "compatibilityMin": "最低配对度",
+      "elements": "元素",
+      "applyFilters": "应用筛选",
+      "resetFilters": "重置"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% 配对度",
+      "like": "喜欢",
+      "pass": "跳过",
+      "cosmicRose": "宇宙玫瑰",
+      "likesRemaining": "剩余 {{count}} 次喜欢",
+      "rosesRemaining": "剩余 {{count}} 朵玫瑰"
+    },
+    "sidebar": {
+      "home": "首页",
+      "discover": "发现",
+      "cosmicFeed": "宇宙动态",
+      "worldEcho": "世界回响",
+      "chart": "我的星盘",
+      "cosmicWeather": "宇宙天气",
+      "readings": "解读",
+      "videoCreator": "视频创作",
+      "dating": "交友",
+      "friends": "好友",
+      "messages": "消息",
+      "feed": "动态",
+      "notifications": "通知",
+      "aiAstrologer": "AI 占星师",
+      "learn": "学习",
+      "pricing": "价格",
+      "communities": "社区",
+      "profile": "个人资料",
+      "settings": "设置",
+      "menu": "菜单",
+      "close": "关闭",
+      "more": "更多",
+      "chat": "聊天",
+      "yourProfile": "你的档案",
+      "viewProfile": "查看你的档案"
+    },
+    "feedCard": {
+      "like": "喜欢",
+      "comment": "评论",
+      "share": "分享",
+      "bookmark": "收藏",
+      "report": "举报",
+      "deletePost": "删除帖子",
+      "editPost": "编辑帖子"
+    },
+    "commentSheet": {
+      "title": "评论",
+      "placeholder": "写一条评论...",
+      "send": "发送",
+      "noComments": "还没有评论",
+      "beFirst": "成为第一个评论的人！"
+    }
+  },
   "common": {
     "loading": "加载中...",
     "error": "出了点问题",
@@ -389,7 +1773,46 @@
     "delete": "删除",
     "share": "分享",
     "premium": "高级版",
-    "free": "免费"
+    "free": "免费",
+    "close": "关闭",
+    "confirm": "确认",
+    "ok": "确定",
+    "yes": "是",
+    "no": "否",
+    "back": "返回",
+    "next": "下一步",
+    "done": "完成",
+    "edit": "编辑",
+    "copy": "复制",
+    "copied": "已复制！",
+    "search": "搜索",
+    "settings": "设置",
+    "seeAll": "查看全部",
+    "showMore": "显示更多",
+    "showLess": "收起",
+    "comingSoon": "即将推出",
+    "upgrade": "升级",
+    "signIn": "登录",
+    "signOut": "退出登录",
+    "today": "今天",
+    "yesterday": "昨天",
+    "tomorrow": "明天",
+    "all": "全部",
+    "none": "无",
+    "public": "公开",
+    "private": "私密",
+    "apply": "应用",
+    "reset": "重置",
+    "remove": "移除",
+    "add": "添加",
+    "create": "创建",
+    "submit": "提交",
+    "send": "发送",
+    "view": "查看",
+    "download": "下载",
+    "upload": "上传",
+    "noResults": "未找到结果",
+    "tryAgain": "重试"
   },
   "zodiac": {
     "aries": "白羊座",
@@ -420,7 +1843,11 @@
     "southNode": "南交点",
     "chiron": "凯龙星",
     "ascendant": "上升点",
-    "midheaven": "天顶"
+    "midheaven": "天顶",
+    "vesta": "灶神星",
+    "juno": "婚神星",
+    "ceres": "谷神星",
+    "pallas": "智神星"
   },
   "aspects": {
     "conjunction": "合相",
@@ -428,6 +1855,83 @@
     "square": "刑相",
     "trine": "拱相",
     "opposition": "冲相",
-    "quincunx": "梅花相"
+    "quincunx": "梅花相",
+    "semisextile": "半六分相",
+    "semisquare": "半刑相",
+    "sesquiquadrate": "补八分相",
+    "quintile": "五分相",
+    "biquintile": "倍五分相"
+  },
+  "elements": {
+    "fire": "火",
+    "earth": "土",
+    "air": "风",
+    "water": "水"
+  },
+  "modalities": {
+    "cardinal": "基本",
+    "fixed": "固定",
+    "mutable": "变动"
+  },
+  "houses": {
+    "1": "第一宫",
+    "2": "第二宫",
+    "3": "第三宫",
+    "4": "第四宫",
+    "5": "第五宫",
+    "6": "第六宫",
+    "7": "第七宫",
+    "8": "第八宫",
+    "9": "第九宫",
+    "10": "第十宫",
+    "11": "第十一宫",
+    "12": "第十二宫",
+    "labels": {
+      "1": "自我与身份",
+      "2": "价值与财产",
+      "3": "沟通与学习",
+      "4": "家庭与家族",
+      "5": "创造力与浪漫",
+      "6": "健康与服务",
+      "7": "伴侣关系",
+      "8": "转化与共享资源",
+      "9": "哲学与旅行",
+      "10": "事业与公众形象",
+      "11": "社群与愿望",
+      "12": "灵性与潜意识"
+    }
+  },
+  "errors": {
+    "generic": "出了点问题。请重试。",
+    "networkError": "网络错误。请检查你的连接。",
+    "unauthorized": "你需要登录才能访问此功能。",
+    "notFound": "未找到请求的内容。",
+    "serverError": "服务器错误。请稍后重试。",
+    "loadFailed": "加载数据失败。请重试。",
+    "saveFailed": "保存更改失败。请重试。",
+    "uploadFailed": "上传文件失败。请重试。",
+    "fileTooLarge": "文件太大。请选择较小的文件。",
+    "invalidFormat": "无效的文件格式。",
+    "permissionDenied": "权限被拒绝。",
+    "sessionExpired": "你的会话已过期。请重新登录。",
+    "rateLimited": "请求过多。请稍候。"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}}分钟前",
+    "hoursAgo": "{{count}}小时前",
+    "daysAgo": "{{count}}天前",
+    "weeksAgo": "{{count}}周前",
+    "monthsAgo": "{{count}}个月前",
+    "yearsAgo": "{{count}}年前",
+    "inMinutes": "{{count}}分钟后",
+    "inHours": "{{count}}小时后",
+    "inDays": "{{count}}天后"
+  },
+  "tiers": {
+    "free": "免费",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }

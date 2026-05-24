@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { Sparkles, MessageCircle, X } from 'lucide-react';
 import type { DatingMatch } from '@/lib/datingDiscoveryService';
@@ -26,6 +27,7 @@ export function MatchCelebration({
   onStartChat,
   onDismiss,
 }: MatchCelebrationProps) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const partner = match.partner_profile;
 
@@ -60,7 +62,7 @@ export function MatchCelebration({
         {/* Stars animation placeholder */}
         <div className="flex items-center justify-center gap-1 mb-6">
           <Sparkles size={20} color="#F5A623" className="animate-pulse" />
-          <span className="text-gold-primary font-display text-lg">It&apos;s Written in the Stars</span>
+          <span className="text-gold-primary font-display text-lg">{t('components.matchCelebration.itsAMatch')}</span>
           <Sparkles size={20} color="#F5A623" className="animate-pulse" />
         </div>
 
@@ -135,14 +137,14 @@ export function MatchCelebration({
           }}
         >
           <MessageCircle size={18} />
-          Say Hello
+          {t('components.matchCelebration.sendMessage')}
         </button>
 
         <button
           onClick={onDismiss}
           className="mt-3 text-sm text-text-muted hover:text-text-secondary transition-colors"
         >
-          Keep Browsing
+          {t('components.matchCelebration.keepBrowsing')}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -53,6 +54,7 @@ function AnswerItem({
   onUpvote: (answerId: string) => void;
   onDelete: (answerId: string) => void;
 }) {
+  const { t } = useTranslation();
   const isOwnAnswer = answer.authorId === currentUserId;
 
   return (
@@ -124,7 +126,7 @@ function AnswerItem({
             onClick={() => onDelete(answer.id)}
             className="flex items-center gap-1 text-xs text-text-muted hover:text-red-400 transition-colors ml-auto"
           >
-            <Trash2 className="w-3 h-3" /> Delete
+            <Trash2 className="w-3 h-3" /> {t('common.delete')}
           </button>
         )}
       </div>
@@ -137,6 +139,7 @@ function AnswerItem({
 // ═══════════════════════════════════════════════════════════════════
 
 export default function QuestionDetailPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const questionId = params.id as string;
@@ -238,19 +241,19 @@ export default function QuestionDetailPage() {
 
   // ── Loading ───
   if (loading) {
-    return <LoadingCosmic label="Loading question..." />;
+    return <LoadingCosmic label={t('common.loading')} />;
   }
 
   // ── Not found ───
   if (!question) {
     return (
       <div className="max-w-3xl mx-auto text-center py-20">
-        <p className="text-text-muted mb-4">Question not found</p>
+        <p className="text-text-muted mb-4">{t('errors.notFound')}</p>
         <button
           onClick={() => router.push('/qa')}
           className="text-accent-primary hover:underline text-sm"
         >
-          Back to Q&A
+          {t('qa.title')}
         </button>
       </div>
     );
@@ -267,7 +270,7 @@ export default function QuestionDetailPage() {
         className="flex items-center gap-1.5 text-sm text-text-muted hover:text-accent-primary transition-colors mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Q&A
+        {t('qa.title')}
       </button>
 
       {/* Question section */}
@@ -367,7 +370,7 @@ export default function QuestionDetailPage() {
                 }`}
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                {deleteConfirm === 'question' ? 'Confirm?' : 'Delete'}
+                {deleteConfirm === 'question' ? t('common.confirm') : t('common.delete')}
               </button>
             )}
           </div>
@@ -385,7 +388,7 @@ export default function QuestionDetailPage() {
       {answers.length === 0 ? (
         <div className="bg-bg-secondary border border-border-primary rounded-xl text-center py-12 mb-4">
           <p className="text-2xl mb-2">💭</p>
-          <p className="text-sm text-text-muted">No answers yet. Be the first!</p>
+          <p className="text-sm text-text-muted">{t('qa.noQuestions')}</p>
         </div>
       ) : (
         <div className="space-y-2.5 mb-4">
@@ -410,7 +413,7 @@ export default function QuestionDetailPage() {
           <textarea
             value={answerText}
             onChange={(e) => setAnswerText(e.target.value)}
-            placeholder="Write your answer..."
+            placeholder={t('qa.placeholder')}
             maxLength={2000}
             rows={4}
             className="w-full bg-bg-primary border border-border-primary rounded-lg px-3.5 py-2.5 text-text-primary text-sm placeholder:text-text-muted resize-none focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/20 transition-colors mb-3"
@@ -427,13 +430,13 @@ export default function QuestionDetailPage() {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              {submittingAnswer ? 'Posting...' : 'Post Answer'}
+              {submittingAnswer ? t('feed.composer.posting') : t('common.submit')}
             </button>
           </div>
         </div>
       ) : (
         <div className="bg-bg-secondary border border-border-primary rounded-xl text-center py-6 mb-8">
-          <p className="text-sm text-text-muted">Sign in to post an answer</p>
+          <p className="text-sm text-text-muted">{t('common.signIn')}</p>
         </div>
       )}
     </div>

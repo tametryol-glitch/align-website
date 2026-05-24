@@ -36,6 +36,7 @@ import {
   Flag,
   Trash2,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -623,6 +624,7 @@ function ReportModal({
 // ─── Main Page ──────────────────────────────────────────────────────
 
 export default function ReelsPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
 
   const [reels, setReels] = useState<Reel[]>([]);

@@ -9,6 +9,7 @@ import {
   Star, FileText, Eye, Heart, MessageCircle
 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import { useTranslation } from 'react-i18next';
 
 interface CreatorStats {
   total_posts: number;
@@ -20,6 +21,7 @@ interface CreatorStats {
 }
 
 export default function CreatorStudioPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [stats, setStats] = useState<CreatorStats | null>(null);
   const [isCreator, setIsCreator] = useState(false);
@@ -106,7 +108,7 @@ export default function CreatorStudioPage() {
       <div className="max-w-2xl mx-auto">
         <div className="card text-center py-12">
           <Palette className="w-16 h-16 text-accent-primary mx-auto mb-4" />
-          <h1 className="text-2xl font-display font-bold text-text-primary mb-3">Creator Studio</h1>
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-3">{t('creatorStudio.title')}</h1>
           <p className="text-sm text-text-tertiary mb-6 max-w-md mx-auto">
             Become an Align Creator to share your astrological insights, build a following, and earn from your content.
           </p>
@@ -144,7 +146,7 @@ export default function CreatorStudioPage() {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
         <Palette className="w-7 h-7 text-accent-primary" />
-        Creator Studio
+        {t('creatorStudio.title')}
       </h1>
 
       {/* Stats grid */}

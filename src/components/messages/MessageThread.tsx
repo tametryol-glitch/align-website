@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
@@ -61,6 +62,7 @@ export function MessageThread({
   onPollVote, onMessageSearchChange, onCallStart, onGroupSettings,
   onOpenReactionPicker,
 }: MessageThreadProps) {
+  const { t } = useTranslation();
 
   // Date headers
   const messagesWithHeaders = useMemo(() => {
@@ -122,9 +124,9 @@ export function MessageThread({
           </p>
           <p className="text-[10px] text-text-muted">
             {isOtherTyping ? (
-              <span className="text-accent-primary">typing...</span>
+              <span className="text-accent-primary">{t('messages.typing', 'typing...')}</span>
             ) : activeConv.other_user_online ? (
-              <span className="text-green-400">online</span>
+              <span className="text-green-400">{t('messages.online', 'online')}</span>
             ) : null}
           </p>
         </div>
@@ -135,7 +137,7 @@ export function MessageThread({
             type="text"
             value={messageSearchQuery}
             onChange={(e) => onMessageSearchChange(e.target.value)}
-            placeholder="Search messages..."
+            placeholder={t('messages.searchMessages', 'Search messages...')}
             className="bg-bg-tertiary border border-border-primary rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted w-48 focus:outline-none focus:border-accent-primary"
           />
         </div>
@@ -171,7 +173,7 @@ export function MessageThread({
         {/* Load more indicator */}
         {loadingMore && (
           <div className="text-center py-2">
-            <span className="text-xs text-text-muted">Loading older messages...</span>
+            <span className="text-xs text-text-muted">{t('messages.loadingOlder', 'Loading older messages...')}</span>
           </div>
         )}
         {hasMore && !loadingMore && messages.length > 0 && (
@@ -179,12 +181,12 @@ export function MessageThread({
             onClick={onLoadMore}
             className="w-full text-center py-2 text-xs text-accent-primary hover:text-accent-secondary"
           >
-            Load earlier messages
+            {t('messages.loadEarlier', 'Load earlier messages')}
           </button>
         )}
 
         {messagesLoading ? (
-          <div className="py-12"><LoadingCosmic label="Loading messages..." /></div>
+          <div className="py-12"><LoadingCosmic label={t('messages.loadingMessages', 'Loading messages...')} /></div>
         ) : (
           <div className="space-y-1">
             {messagesWithHeaders.map((item, idx) => {

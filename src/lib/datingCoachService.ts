@@ -7,7 +7,7 @@ export interface CoachInsight {
   created_at: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
 
 export async function getCoachInsight(
   userId: string,

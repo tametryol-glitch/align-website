@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -67,6 +68,7 @@ function mapPost(
 // ── Unauthenticated landing page ─────────────────────────────────
 
 function UnauthLanding({ post }: { post: any | null }) {
+  const { t } = useTranslation();
   const preview = post?.content?.slice(0, 200) || '';
   const authorName = (post?.profile as any)?.display_name || 'someone';
   const authorAvatar = (post?.profile as any)?.avatar_url;
@@ -83,10 +85,10 @@ function UnauthLanding({ post }: { post: any | null }) {
         </Link>
         <div className="flex items-center gap-3">
           <Link href="/auth/login" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-            Sign In
+            {t('auth.login')}
           </Link>
           <Link href="/auth/signup" className="bg-accent-primary hover:bg-accent-primary/90 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors">
-            Sign Up Free
+            {t('auth.signup')}
           </Link>
         </div>
       </nav>
@@ -149,13 +151,13 @@ function UnauthLanding({ post }: { post: any | null }) {
               href="/auth/signup"
               className="block w-full bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold py-3 rounded-xl transition-colors text-center"
             >
-              Sign Up Free
+              {t('auth.signup')}
             </Link>
             <Link
               href="/auth/login"
               className="block w-full bg-bg-tertiary hover:bg-bg-elevated text-text-secondary font-medium py-3 rounded-xl transition-colors text-center"
             >
-              Already have an account? Sign In
+              {t('auth.hasAccount')} {t('auth.login')}
             </Link>
             <a
               href="https://play.google.com/store/apps/details?id=com.align.astrology"
@@ -175,6 +177,7 @@ function UnauthLanding({ post }: { post: any | null }) {
 // ── Authenticated post view ──────────────────────────────────────
 
 function AuthPostView({ postId }: { postId: string }) {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const router = useRouter();
   const [post, setPost] = useState<FeedPost | null>(null);
@@ -254,7 +257,7 @@ function AuthPostView({ postId }: { postId: string }) {
       <AppShell>
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
           <div className="animate-spin w-8 h-8 border-2 border-accent-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-text-muted text-sm mt-4">Loading post...</p>
+          <p className="text-text-muted text-sm mt-4">{t('common.loading')}</p>
         </div>
       </AppShell>
     );
@@ -265,8 +268,8 @@ function AuthPostView({ postId }: { postId: string }) {
       <AppShell>
         <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-4">
           <p className="text-4xl">&#x1F50D;</p>
-          <h2 className="text-xl font-bold text-text-primary">Post not found</h2>
-          <p className="text-sm text-text-muted">{error || 'This post may have been deleted.'}</p>
+          <h2 className="text-xl font-bold text-text-primary">{t('errors.notFound')}</h2>
+          <p className="text-sm text-text-muted">{error || t('errors.notFound')}</p>
           <button
             onClick={() => router.push('/feed')}
             className="bg-accent-primary text-white font-semibold px-6 py-2.5 rounded-xl"
@@ -306,6 +309,7 @@ function AuthPostView({ postId }: { postId: string }) {
 // ── Page component ───────────────────────────────────────────────
 
 export default function PostDeepLinkPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const postId = params?.id as string;
   const { isAuthenticated, isLoading } = useAuthStore();

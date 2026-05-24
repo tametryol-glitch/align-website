@@ -50,7 +50,8 @@
     "agreeToTerms": "أوافق على",
     "privacyPolicy": "سياسة الخصوصية",
     "and": "و",
-    "termsOfService": "شروط الخدمة"
+    "termsOfService": "شروط الخدمة",
+    "signInToAccess": "سجّل الدخول للوصول إلى الرسائل"
   },
   "onboarding": {
     "title": "لننشئ خريطة ميلادك",
@@ -173,9 +174,10 @@
     "financial": "التقرير المالي",
     "pathway": "مسار النجاح",
     "nameAnalysis": "تحليل الاسم",
-    "firdaria": "Firdaria",
+    "firdaria": "الفردارية",
     "zodiacalReleasing": "الإطلاق البرجي",
     "planetaryHours": "الساعات الكوكبية",
+    "moonPhases": "أطوار القمر",
     "acg": "خرائط الأبراج الجغرافية",
     "fixedStars": "النجوم الثابتة",
     "arabicParts": "الأجزاء العربية",
@@ -186,12 +188,378 @@
     "galacticForecast": "التوقعات المجرّية",
     "midpoints": "حاسبة نقاط الوسط",
     "aiAstrologer": "المنجّم الذكي",
+    "yearAhead": "عامي القادم",
     "savedCharts": "الخرائط المحفوظة",
     "cosmicJournal": "اليوميات الكونية",
-    "moonPhases": "أطوار القمر",
-    "yearAhead": "عامي القادم",
     "soulGifts": "مواهب الروح",
-    "soulMemory": "ذاكرة الروح"
+    "soulMemory": "ذاكرة الروح",
+    "soulAscension": "صعود الروح",
+    "dreamOracle": "وحي الأحلام",
+    "backToReadings": "العودة إلى القراءات",
+    "upgradeToTier": "ترقية إلى {{tier}}",
+    "birthDataRequired": "يرجى إضافة بيانات ميلادك في ملفك الشخصي أولاً.",
+    "birthDataPromptTransits": "أضف بيانات ميلادك لرؤية عبوراتك الحالية.",
+    "birthDataPromptCompatibility": "أضف بيانات ميلادك للتحقق من التوافق مع شخص مميز.",
+    "birthDataPromptAlerts": "نحتاج بيانات ميلادك لحساب تنبيهات كونية مخصصة لخريطتك.",
+    "transitsPage": {
+      "title": "دوراتك",
+      "subtitle": "{{name}}، هذه هي الدورات التي تتحرك في حياتك الآن. فكّر فيها كفصول — لكل منها طاقتها ودروسها وفرصها الخاصة.",
+      "loadingLabel": "جارٍ حساب عبوراتك...",
+      "errorDefault": "فشل تحميل العبورات",
+      "emptyState": "لم يتم العثور على دورات نشطة. تحقق لاحقًا.",
+      "activeNow": "نشطة الآن",
+      "storylines": "القصص",
+      "impactingYouNow": "تؤثر فيك الآن",
+      "backToCycles": "العودة إلى الدورات",
+      "active": "نشط",
+      "approaching": "يقترب",
+      "separating": "يبتعد",
+      "cycleMeaning": "ماذا تعني هذه الدورة لك",
+      "howToNavigate": "كيف تتعامل مع هذا",
+      "technicalDetails": "التفاصيل التقنية",
+      "transit": "العبور",
+      "currentOrb": "نطاق الحركة الحالي",
+      "direction": "الاتجاه",
+      "intensity": "الشدة",
+      "separatingDesc": "يبتعد (يتحرك بعيدًا عن الدقة)",
+      "applyingDesc": "يقترب (يتحرك نحو الدقة)",
+      "intensityMajor": "رئيسي (كوكب خارجي)",
+      "intensityModerate": "متوسط",
+      "intensityMinor": "ثانوي",
+      "nearExact": "شبه دقيق — أقوى تأثير",
+      "stronglyActive": "نشط بقوة",
+      "buildingMomentum": "يكتسب زخمًا",
+      "enteringAwareness": "يدخل الوعي",
+      "lessThanADay": "أقل من يوم متبقٍ",
+      "daysLeft": "{{count}} أيام متبقية",
+      "weeksLeft": "~{{count}} أسابيع متبقية",
+      "monthsLeft": "~{{count}} أشهر متبقية",
+      "yearsLeft": "{{count}}+ سنوات",
+      "tapToRead": "انقر لقراءة رؤيتك الكاملة",
+      "failedToLoadStorylines": "فشل تحميل القصص"
+    },
+    "tarotPage": {
+      "title": "قراءة التاروت",
+      "subtitle": "تلقّ إرشادات من الأركانا",
+      "chooseSpread": "اختر انتشارك",
+      "yourQuestion": "سؤالك (اختياري)",
+      "questionPlaceholder": "أي إرشاد تبحث عنه؟",
+      "drawButton": "اسحب {{spread}}",
+      "shuffling": "خلط المجموعة الكونية...",
+      "tapToReveal": "انقر للكشف",
+      "revealAll": "اكشف جميع البطاقات",
+      "newReading": "قراءة جديدة",
+      "getPersonalReading": "احصل على قراءتك الشخصية",
+      "regenerateReading": "أعد توليد القراءة الشخصية",
+      "personalTarotReading": "قراءة تاروت شخصية",
+      "channeling": "نربط خريطتك بالبطاقات...",
+      "shareReading": "شارك القراءة",
+      "copied": "تم النسخ!",
+      "failedToGenerate": "فشل توليد القراءة. يرجى المحاولة مرة أخرى.",
+      "reversed": "مقلوبة",
+      "majorArcana": "الأركانا الكبرى",
+      "minorArcana": "الأركانا الصغرى",
+      "spreads": {
+        "single": "بطاقة واحدة",
+        "threeCard": "ثلاث بطاقات",
+        "celticCross": "الصليب السلتي",
+        "relationship": "العلاقة",
+        "career": "المهنة"
+      },
+      "positions": {
+        "focus": "التركيز",
+        "past": "الماضي",
+        "present": "الحاضر",
+        "future": "المستقبل",
+        "challenge": "التحدي",
+        "foundation": "الأساس",
+        "recentPast": "الماضي القريب",
+        "crown": "التاج",
+        "nearFuture": "المستقبل القريب",
+        "self": "الذات",
+        "environment": "البيئة",
+        "hopesFears": "الآمال/المخاوف",
+        "outcome": "النتيجة",
+        "you": "أنت",
+        "partner": "الشريك",
+        "connection": "الاتصال",
+        "potential": "الإمكانية",
+        "current": "الحالي",
+        "obstacle": "العائق",
+        "hiddenFactor": "العامل الخفي",
+        "advice": "النصيحة"
+      }
+    },
+    "dreamOraclePage": {
+      "title": "وحي الأحلام",
+      "subtitle": "فكّ رموز أحلامك من خلال الرموز والعواطف والتنجيم ولغة اللاوعي الخفية.",
+      "tabs": {
+        "record": "تسجيل",
+        "journal": "اليوميات",
+        "symbols": "الرموز",
+        "patterns": "الأنماط"
+      },
+      "record": {
+        "dreamTitle": "عنوان الحلم (اختياري)",
+        "titlePlaceholder": "يُنشأ تلقائيًا إذا تُرك فارغًا",
+        "describeLabel": "صِف حلمك *",
+        "describePlaceholder": "أغمض عينيك وصِف كل ما تتذكره...",
+        "mainEmotions": "المشاعر الرئيسية (حتى 5)",
+        "peopleDream": "الأشخاص في الحلم",
+        "peoplePlaceholder": "مثلاً: الأم، شريك سابق، غريب، صديق",
+        "placesDream": "الأماكن في الحلم",
+        "placesPlaceholder": "مثلاً: بيت الطفولة، المحيط، غابة مظلمة",
+        "separateCommas": "افصل بالفواصل",
+        "symbolsObjects": "رموز / أشياء",
+        "selectSymbols": "انقر لاختيار رموز الحلم",
+        "selectedCount": "{{count}} محدد",
+        "searchSymbols": "ابحث عن رموز...",
+        "dreamType": "نوع الحلم",
+        "dreamIntensity": "شدة الحلم: {{value}}/10",
+        "privacy": "الخصوصية",
+        "interpretDream": "فسّر حلمي",
+        "charCount": "{{count}}/5000"
+      },
+      "interpretation": {
+        "title": "تفسير حلمك",
+        "mainSymbols": "الرموز الرئيسية",
+        "coreMessage": "الرسالة الجوهرية",
+        "subconsciousMessage": "ما كان يُظهره لك اللاوعي",
+        "symbolsMatter": "الرموز الأكثر أهمية",
+        "emotionalUndercurrent": "التيار العاطفي الخفي",
+        "whatToFace": "ما يطلب منك هذا الحلم مواجهته",
+        "oracleMessage": "الرسالة الأخيرة من وحي الأحلام",
+        "astroConnection": "الصلة الفلكية",
+        "whyNow": "لماذا حلمت بهذا الآن",
+        "watchFor": "ما يجب الانتباه إليه",
+        "whatToDo": "ماذا تفعل بعد ذلك",
+        "reflectionQuestions": "أسئلة للتأمل",
+        "askAboutDream": "اسأل عن هذا الحلم",
+        "visualizeDream": "تصوّر حلمي",
+        "comingSoon": "قريبًا",
+        "recordAnother": "سجّل حلمًا آخر"
+      },
+      "journal": {
+        "loadingJournal": "جارٍ تحميل يوميات الأحلام...",
+        "searchDreams": "ابحث في الأحلام...",
+        "noDreamsYet": "لا أحلام بعد",
+        "noDreamsHint": "سجّل حلمك الأول لبدء بناء يومياتك.",
+        "deleteConfirm": "حذف هذا الحلم؟ لا يمكن التراجع عن هذا."
+      },
+      "dictionary": {
+        "backToSymbols": "العودة إلى الرموز",
+        "generalMeaning": "المعنى العام",
+        "psychologicalMeaning": "المعنى النفسي",
+        "spiritualMeaning": "المعنى الروحاني",
+        "astrologicalMeaning": "المعنى الفلكي",
+        "shadowMeaning": "معنى الظل",
+        "reflectionQuestion": "سؤال للتأمل"
+      },
+      "patterns": {
+        "noPatternsYet": "لا أنماط بعد",
+        "noPatternsHint": "سجّل 3 أحلام على الأقل لبدء رؤية الأنماط في حياتك الحلمية.",
+        "overview": "نظرة عامة",
+        "totalDreams": "إجمالي الأحلام",
+        "avgIntensity": "متوسط الشدة",
+        "nightmares": "كوابيس",
+        "lucidDreams": "أحلام واعية",
+        "prophetic": "نبوئية",
+        "recurringSymbols": "الرموز الأكثر تكرارًا",
+        "recurringEmotions": "المشاعر الأكثر تكرارًا",
+        "recurringPeople": "الأشخاص الأكثر تكرارًا",
+        "dreamTypes": "أنواع الأحلام",
+        "dreamsByMoonPhase": "الأحلام حسب طور القمر",
+        "moonPhaseHint": "سيتم تفعيل تتبع أنماط أطوار القمر عندما يكون لديك 10+ أحلام مع بيانات فلكية متصلة.",
+        "dreamsByTransit": "الأحلام حسب العبور",
+        "transitHint": "سيكشف ارتباط العبورات عن أي الجوانب الكوكبية تنشّط أحلامك الأكثر حيوية أو نبوئية."
+      }
+    },
+    "starseedPage": {
+      "title": "أصول النجوم",
+      "subtitle": "اكتشف أصول روحك الكونية",
+      "description": "تحليل خريطة ميلادك لاكتشاف أي المنظومات النجمية تتردد معها روحك.",
+      "discoverButton": "اكتشف أصولي",
+      "analyzing": "جارٍ التحليل...",
+      "dominantOrigin": "الأصل المهيمن",
+      "resonancePoints": "النتيجة: {{score}} نقاط رنين"
+    },
+    "numerologyPage": {
+      "title": "علم الأعداد",
+      "subtitle": "أرقامك الكونية مفكّكة",
+      "master": "رقم رئيسي"
+    },
+    "angelNumbersPage": {
+      "title": "أرقام الملائكة",
+      "subtitle": "اكتشف المعنى وراء الأرقام التي تراها",
+      "searchPlaceholder": "أدخل رقمًا (مثلاً 111، 444)...",
+      "popular": "أرقام شائعة",
+      "notFound": "الرقم غير موجود. جرّب رقم ملائكة شائعًا.",
+      "copiedToClipboard": "تم النسخ إلى الحافظة!"
+    },
+    "humanDesignPage": {
+      "title": "التصميم البشري",
+      "subtitle": "مخططك الطاقي",
+      "aura": "الهالة",
+      "defined": "مُعرَّف",
+      "undefined": "غير مُعرَّف"
+    },
+    "financialPage": {
+      "title": "التنجيم المالي",
+      "subtitle": "مخططك الكوني للمال",
+      "personalIncome": "الدخل الشخصي والقيم",
+      "sharedResources": "الموارد المشتركة والتحول",
+      "careerStanding": "المهنة والمكانة العامة",
+      "gainsNetworks": "المكاسب والشبكات",
+      "strengths": "نقاط القوة",
+      "challenges": "التحديات",
+      "monthlyForecast": "التوقعات الشهرية",
+      "timingWindows": "نوافذ التوقيت",
+      "favorable": "ملائم",
+      "mixed": "مختلط",
+      "challenging": "صعب"
+    },
+    "compatibilityPage": {
+      "title": "فحص التوافق",
+      "subtitle": "استكشف الاتصال الكوني بين روحين",
+      "person2Label": "بيانات ميلاد الشريك",
+      "datePlaceholder": "تاريخ الميلاد",
+      "timePlaceholder": "وقت الميلاد",
+      "locationPlaceholder": "مكان الميلاد",
+      "calculateButton": "تحقق من التوافق",
+      "calculating": "جارٍ حساب التوافق...",
+      "overallScore": "النتيجة الإجمالية",
+      "soulLevelConnection": "اتصال على مستوى الروح",
+      "deepCompatibility": "توافق عميق",
+      "strongPotential": "إمكانية قوية",
+      "moderateMatch": "توافق متوسط",
+      "growthRequired": "يحتاج نموًا",
+      "challengingDynamic": "ديناميكية صعبة",
+      "categories": {
+        "attraction": "الانجذاب الجسدي",
+        "emotional": "الرابط العاطفي",
+        "mental": "الاتصال الفكري",
+        "stability": "الاستقرار طويل المدى",
+        "karmic": "الرابط الكرمي",
+        "harmony": "الانسجام",
+        "magnetic": "الجاذبية المغناطيسية"
+      },
+      "showAspects": "عرض الجوانب",
+      "hideAspects": "إخفاء الجوانب"
+    },
+    "cosmicJournalPage": {
+      "title": "اليوميات الكونية",
+      "subtitle": "تتبع عالمك الداخلي مع الكون",
+      "newEntry": "إدخال جديد",
+      "moodOptions": {
+        "low": "منخفض",
+        "meh": "عادي",
+        "neutral": "محايد",
+        "good": "جيد",
+        "great": "ممتاز"
+      },
+      "noEntries": "لا يوجد إدخالات بعد",
+      "noEntriesHint": "ابدأ الكتابة لتتبع عالمك الداخلي مع الكون."
+    },
+    "moonPhasesPage": {
+      "title": "أطوار القمر",
+      "tabs": {
+        "today": "اليوم",
+        "calendar": "التقويم",
+        "forecast": "التوقعات",
+        "eclipses": "الخسوفات",
+        "birthMoon": "قمر الميلاد"
+      },
+      "failedToLoadChart": "فشل تحميل خريطة الميلاد"
+    },
+    "planetaryHoursPage": {
+      "title": "الساعات الكوكبية",
+      "subtitle": "حكمة التوقيت القديمة للحياة المعاصرة",
+      "currentHour": "الساعة الحالية",
+      "daySummary": "ملخص اليوم",
+      "hoursTable": "جدول الساعات"
+    },
+    "yearAheadPage": {
+      "title": "عامي القادم",
+      "subtitle": "توقعاتك الكونية المخصصة للعام",
+      "generating": "جارٍ توليد عامك القادم...",
+      "monthlyOverview": "نظرة شهرية",
+      "keyTransits": "العبورات الرئيسية",
+      "calm": "هادئ",
+      "activeIntensity": "نشط",
+      "intense": "مكثف"
+    },
+    "solarReturnPage": {
+      "title": "العودة الشمسية",
+      "subtitle": "خريطة عيد ميلادك — المخطط الكوني لعامك",
+      "generating": "جارٍ حساب العودة الشمسية...",
+      "yearTheme": "موضوع العام",
+      "planetsOnAngles": "كواكب على الزوايا",
+      "retrogrades": "التراجعات",
+      "monthlyTimeline": "الجدول الزمني الشهري",
+      "natalComparisons": "الميلاد مقابل العودة الشمسية",
+      "criticalAspects": "الجوانب الحرجة",
+      "yearPattern": "نمط العام"
+    },
+    "galacticClockPage": {
+      "title": "الساعة المجرّية",
+      "subtitle": "واجهة التوقيت الكوني الخاصة بك"
+    },
+    "galacticForecastPage": {
+      "title": "التوقعات المجرّية",
+      "subtitle": "طاقات الفضاء العميق المؤثرة على خريطتك"
+    },
+    "midpointsPage": {
+      "title": "حاسبة نقاط الوسط",
+      "subtitle": "اكتشف الروابط الخفية في خريطتك"
+    },
+    "firdariaPage": {
+      "title": "الفردارية",
+      "subtitle": "الفترات الكوكبية الفارسية القديمة"
+    },
+    "zodiacalReleasingPage": {
+      "title": "الإطلاق البرجي",
+      "subtitle": "تقنية التوقيت الهلنستية"
+    },
+    "acgPage": {
+      "title": "خرائط الأبراج الجغرافية",
+      "subtitle": "أين في العالم تنشط كواكبك"
+    },
+    "fixedStarsPage": {
+      "title": "النجوم الثابتة",
+      "subtitle": "التأثيرات النجمية في خريطتك"
+    },
+    "arabicPartsPage": {
+      "title": "الأجزاء العربية",
+      "subtitle": "نقاط محسوبة قديمة في خريطتك"
+    },
+    "pathwayPage": {
+      "title": "مسار النجاح",
+      "subtitle": "مخططك الكوني للمهنة وهدف الحياة"
+    },
+    "rectificationPage": {
+      "title": "تصحيح وقت الميلاد",
+      "subtitle": "ضبط دقيق لوقت ميلادك للحصول على خرائط أدق"
+    },
+    "nameAnalysisPage": {
+      "title": "تحليل الاسم",
+      "subtitle": "علم الأعداد في اسمك"
+    },
+    "soulGiftsPage": {
+      "title": "مواهب الروح",
+      "subtitle": "اكتشف المواهب الفريدة المشفّرة في خريطتك"
+    },
+    "soulMemoryPage": {
+      "title": "ذاكرة الروح",
+      "subtitle": "أصداء الحيوات السابقة في خريطة ميلادك"
+    },
+    "soulAscensionPage": {
+      "title": "صعود الروح",
+      "description": "العب خريطة ميلادك كلعبة تقمّص أدوار للتناسخ مع الكارما ومسارات الهدف وعقود الروح والآثار وخيارات الحياة السابقة."
+    },
+    "chartAdjusterPage": {
+      "title": "معدّل الخريطة",
+      "subtitle": "جرّب أوقات ميلاد مختلفة"
+    }
   },
   "interpretation": {
     "aiInterpret": "تفسير ذكي",
@@ -205,6 +573,464 @@
       "reputation": "السمعة"
     }
   },
+  "dating": {
+    "title": "المواعدة الكونية",
+    "subtitle": "اختياراتك الكونية المنتقاة",
+    "introTitle": "المواعدة الكونية",
+    "introDescription": "اعثر على روابط ذات معنى مكتوبة في النجوم. أنشئ ملف المواعدة الخاص بك لبدء اكتشاف توافقات كونية.",
+    "createProfileButton": "أنشئ ملف المواعدة الخاص بك",
+    "featurePhotos": "أضف صورًا ومقدمة صوتية",
+    "featureCompatibility": "توافق بناءً على التوافق الكوني",
+    "featureSafety": "اتصالات آمنة وموثّقة",
+    "tabs": {
+      "discover": "اكتشف",
+      "likes": "الإعجابات",
+      "matches": "التوافقات",
+      "myProfile": "ملفي"
+    },
+    "discovery": {
+      "consulting": "نستشير الكون...",
+      "noPicksTitle": "لا اختيارات كونية بعد",
+      "allCaughtUpTitle": "أنت متابع لكل شيء!",
+      "noPicksDescription": "لا تزال النجوم تصطف مع توافقاتك. تأكد من اكتمال ملف المواعدة الخاص بك!",
+      "allCaughtUpDescription": "عد غدًا لاختيارات كونية جديدة. الروابط الحقيقية تحتاج وقتًا.",
+      "completeProfile": "أكمل ملفك",
+      "dailyLikeLimit": "لقد وصلت إلى حدّك اليومي من الإعجابات ({{limit}}). رقِّ للمزيد!",
+      "dailyRoseLimit": "لقد استخدمت كل ورودك الكونية اليوم ({{limit}}). رقِّ للمزيد!",
+      "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+    },
+    "likes": {
+      "title": "الإعجابات",
+      "receivedCount": "{{count}} أشخاص مهتمون",
+      "sentCount": "أعجبت بـ {{count}} أشخاص",
+      "received": "مستلمة",
+      "sent": "مرسلة",
+      "seeWhoLikes": "شاهد من أعجب بك",
+      "upgradeHint": "رقِّ إلى Light أو أعلى لكشف الملفات",
+      "upgrade": "ترقية",
+      "noLikesYet": "لا إعجابات بعد",
+      "noSentYet": "لا إعجابات مرسلة بعد",
+      "keepFresh": "حافظ على ملفك محدّثًا وسيوصلك الكون.",
+      "headToDiscover": "توجه إلى اكتشف لإيجاد روابطك الكونية.",
+      "mysteryAdmirer": "معجب غامض",
+      "rose": "وردة",
+      "likeBack": "إعجاب بالمقابل",
+      "matching": "جارٍ المطابقة..."
+    },
+    "matches": {
+      "title": "توافقاتك",
+      "connectionCount": "{{count}} روابط كونية",
+      "noMatchesTitle": "لا توافقات بعد",
+      "noMatchesDescription": "عندما تتبادلان الإعجاب، ستظهران هنا.",
+      "discoverPeople": "اكتشف أشخاصًا",
+      "cosmicIcebreakers": "كاسرات جليد كونية",
+      "message": "رسالة",
+      "unmatchConfirm": "إلغاء توافق {{name}}؟",
+      "unmatch": "إلغاء التوافق",
+      "cancel": "إلغاء",
+      "matchedToday": "تطابقتما اليوم",
+      "matchedDaysAgo": "تطابقتما منذ {{days}} يوم",
+      "cosmicMatch": "توافق كوني"
+    },
+    "profile": {
+      "title": "ملف المواعدة",
+      "datingMode": "وضع المواعدة",
+      "datingModeHint": "اجعل ملفك مرئيًا في الاكتشاف الكوني",
+      "cosmicSignature": "بصمتك الكونية",
+      "sunMoonRising": "الشمس / القمر / الطالع",
+      "photos": "الصور",
+      "photosCount": "{{count}} / {{max}}",
+      "aboutMe": "عنّي",
+      "aboutMePlaceholder": "أخبر التوافقات المحتملة عن نفسك...",
+      "cosmicPrompts": "مطالبات كونية",
+      "addPrompt": "أضف مطالبة",
+      "promptAnswerPlaceholder": "إجابتك...",
+      "voicePrompt": "مطالبة صوتية",
+      "voicePromptHint": "سجّل مقدمة صوتية مدتها 30 ثانية لإبراز شخصيتك",
+      "uploadingVoice": "جارٍ رفع المطالبة الصوتية...",
+      "reRecord": "إعادة التسجيل",
+      "stopRecording": "إيقاف التسجيل",
+      "recordVoicePrompt": "سجّل مطالبة صوتية",
+      "videoIntro": "مقدمة فيديو",
+      "videoIntroHint": "ارفع فيديو مدته 15 ثانية لتقديم نفسك",
+      "replaceVideo": "استبدل الفيديو",
+      "uploadVideo": "ارفع فيديو",
+      "showAge": "إظهار العمر في الملف",
+      "photoVerification": "توثيق الصور",
+      "verified": "موثّق",
+      "verifyNow": "وثّق الآن",
+      "datingPreferences": "تفضيلات المواعدة",
+      "savePreferences": "حفظ التفضيلات",
+      "saveProfile": "حفظ الملف",
+      "saving": "جارٍ الحفظ...",
+      "preferenceFields": {
+        "genderIdentity": "الهوية الجنسية",
+        "sexualOrientation": "التوجه الجنسي",
+        "interestedIn": "مهتم بـ",
+        "primaryIntent": "الهدف الأساسي",
+        "ageRange": "نطاق العمر",
+        "maxDistance": "أقصى مسافة"
+      },
+      "privacyLevels": {
+        "visible": "مرئي",
+        "matchOnly": "للتوافقات فقط",
+        "hidden": "مخفي"
+      }
+    },
+    "verify": {
+      "title": "توثيق الصور",
+      "subtitle": "وثّق هويتك للحصول على شارة موثوقة في ملف المواعدة",
+      "backToProfile": "العودة إلى الملف",
+      "verifiedTitle": "موثّق!",
+      "verifiedDescription": "يعرض ملفك الآن شارة التوثيق.",
+      "pendingTitle": "قيد المراجعة",
+      "pendingDescription": "جارٍ مراجعة صورتك الذاتية. يستغرق ذلك عادة 24-48 ساعة.",
+      "rejectedTitle": "غير معتمد",
+      "rejectedHint": "يمكنك المحاولة مرة أخرى بصورة ذاتية أوضح.",
+      "tryAgain": "حاول مرة أخرى",
+      "howItWorks": "كيف يعمل:",
+      "step1": "1. التقط صورة ذاتية واضحة بإضاءة جيدة",
+      "step2": "2. تأكد من أن وجهك مرئي بالكامل",
+      "step3": "3. سنقارنها مع صور ملفك",
+      "step4": "4. بمجرد الموافقة، تحصل على شارة التوثيق",
+      "takeSelfie": "التقط صورة ذاتية",
+      "capture": "التقط",
+      "cancel": "إلغاء",
+      "retake": "إعادة التقاط",
+      "submitForReview": "إرسال للمراجعة",
+      "submitting": "جارٍ الإرسال...",
+      "cameraAccessDenied": "تم رفض الوصول للكاميرا. يرجى السماح بالوصول للكاميرا في إعدادات المتصفح.",
+      "submissionFailed": "فشل الإرسال. يرجى المحاولة مرة أخرى.",
+      "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك والمحاولة مرة أخرى."
+    },
+    "coach": {
+      "title": "مدرّب العلاقات",
+      "subtitle": "رؤى مدعومة بالذكاء الاصطناعي بناءً على ديناميكياتك الفلكية",
+      "premiumFeature": "ميزة مميزة",
+      "backToMatches": "العودة إلى التوافقات",
+      "noMatchHint": "تطابق مع شخص للحصول على رؤى تدريبية.",
+      "browsePicks": "تصفح الاختيارات",
+      "inputPlaceholder": "اسأل عن التواصل، الصراع، الحميمية...",
+      "emptyHint": "اطرح سؤالك الأول أو انقر إرسال لرؤية عامة.",
+      "aiInsight": "رؤية ذكية",
+      "template": "قالب"
+    },
+    "timing": {
+      "title": "التوقيت الكوني",
+      "subtitle": "نوافذ كوكبية تسلط الضوء على أفضل اللحظات لعلاقاتك",
+      "backToMatches": "العودة إلى التوافقات",
+      "noMatchHint": "تطابق مع شخص لرؤية نوافذ التوقيت الكوني.",
+      "browsePicks": "تصفح الاختيارات",
+      "noWindows": "لم يتم العثور على نوافذ توقيت.",
+      "qualityExcellent": "ممتاز",
+      "qualityGood": "جيد",
+      "qualityNeutral": "محايد",
+      "qualityChallenging": "صعب",
+      "now": "الآن",
+      "inDays": "بعد {{days}} يوم"
+    },
+    "events": {
+      "title": "أحداث كونية",
+      "subtitle": "أحداث مواعدة ذات طابع متوافق مع الكون",
+      "backToDating": "العودة إلى المواعدة",
+      "tabs": {
+        "upcoming": "القادمة",
+        "myEvents": "أحداثي"
+      },
+      "noUpcoming": "لا أحداث قادمة حاليًا. تحقق لاحقًا!",
+      "noRegistered": "لم تسجل في أي أحداث بعد.",
+      "live": "مباشر",
+      "maxCount": "الحد الأقصى {{count}}",
+      "elementOnly": "أبراج {{element}} فقط",
+      "registered": "مسجّل",
+      "cancelRegistration": "إلغاء",
+      "register": "تسجيل",
+      "registering": "جارٍ التسجيل..."
+    },
+    "milestones": {
+      "title": "معالم العلاقة",
+      "subtitle": "تتبع رحلتكما معًا تحت النجوم",
+      "backToMatches": "العودة إلى التوافقات",
+      "noMatchHint": "تطابق مع شخص لتتبع المعالم.",
+      "browsePicks": "تصفح الاختيارات",
+      "journeyProgress": "تقدم الرحلة",
+      "mark": "علامة"
+    },
+    "datePlanner": {
+      "title": "مخطط ليلة الموعد",
+      "subtitle": "أفكار مواعيد منتقاة كونيًا لك ولتوافقك",
+      "backToMatches": "العودة إلى التوافقات",
+      "noMatchHint": "تطابق مع شخص للحصول على اقتراحات مواعيد.",
+      "browsePicks": "تصفح الاختيارات",
+      "shuffleIdeas": "خلط الأفكار",
+      "elementEnergy": "طاقة {{element}}"
+    },
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    }
+  },
+  "feed": {
+    "title": "الموجز الكوني",
+    "createPost": "إنشاء منشور",
+    "postTypes": {
+      "text": "نص",
+      "photo": "صورة",
+      "video": "فيديو",
+      "poll": "استطلاع"
+    },
+    "composer": {
+      "placeholder": "ما الذي يشغل بالك كونيًا؟",
+      "uploadImage": "انقر لرفع صورة",
+      "uploadVideo": "انقر لرفع فيديو",
+      "imageSizeLimit": "يجب أن تكون الصورة أقل من 10 ميجابايت",
+      "videoSizeLimit": "يجب أن يكون الفيديو أقل من 200 ميجابايت",
+      "backgroundStyle": "نمط الخلفية",
+      "visibility": "الرؤية:",
+      "visibilityPublic": "عام",
+      "visibilityFriends": "الأصدقاء",
+      "postButton": "نشر",
+      "posting": "جارٍ النشر...",
+      "uploadingImage": "جارٍ رفع الصورة...",
+      "uploadingVideo": "جارٍ رفع الفيديو...",
+      "addImage": "إضافة صورة",
+      "addVideo": "إضافة فيديو",
+      "editPost": "تعديل المنشور"
+    },
+    "poll": {
+      "question": "السؤال",
+      "questionPlaceholder": "اسأل الكون...",
+      "options": "الخيارات",
+      "optionPlaceholder": "الخيار {{number}}",
+      "addOption": "إضافة خيار",
+      "duration": "المدة",
+      "durationOptions": {
+        "1h": "ساعة واحدة",
+        "6h": "6 ساعات",
+        "12h": "12 ساعة",
+        "1d": "يوم واحد",
+        "3d": "3 أيام",
+        "7d": "7 أيام"
+      },
+      "createPoll": "إنشاء استطلاع",
+      "pollNeedsContent": "الاستطلاع يحتاج سؤالاً وخيارين على الأقل"
+    },
+    "empty": {
+      "title": "موجزك الكوني ينتظرك",
+      "description": "شارك القراءات والخرائط والرؤى الكونية مع مجتمعك.",
+      "createFirst": "أنشئ أول منشور لك"
+    },
+    "loadMore": "تحميل المزيد",
+    "loading": "جارٍ التحميل..."
+  },
+  "friends": {
+    "title": "الأصدقاء والاتصالات",
+    "friendCount": "{{count}} أصدقاء",
+    "pendingCount": "{{count}} معلّق",
+    "inviteFriends": "دعوة أصدقاء",
+    "qrCode": "رمز QR",
+    "tabs": {
+      "friends": "الأصدقاء",
+      "requests": "الطلبات",
+      "search": "بحث"
+    },
+    "suggestionsTitle": "أشخاص قد تعرفهم",
+    "addButton": "+ إضافة",
+    "empty": {
+      "noFriends": "لا أصدقاء بعد",
+      "noFriendsHint": "ابحث عن أشخاص أو شارك رمز Align الخاص بك",
+      "findPeople": "ابحث عن أشخاص",
+      "noRequests": "لا طلبات معلّقة",
+      "noRequestsHint": "ستظهر هنا طلبات الصداقة التي ترسلها أو تتلقاها"
+    },
+    "requests": {
+      "wantsToConnect": "يريد التواصل",
+      "requestSent": "تم إرسال الطلب",
+      "accept": "قبول",
+      "decline": "رفض",
+      "cancel": "إلغاء"
+    },
+    "search": {
+      "placeholder": "ابحث بالاسم أو اسم المستخدم أو رمز Align...",
+      "searching": "جارٍ البحث...",
+      "noResults": "لم يتم العثور على مستخدمين",
+      "noResultsHint": "جرّب مصطلح بحث مختلف",
+      "startSearch": "ابحث عن أشخاص",
+      "minCharsHint": "اكتب حرفين على الأقل..."
+    },
+    "labels": {
+      "friends": "أصدقاء",
+      "pending": "معلّق"
+    },
+    "actions": {
+      "removeFriend": "إزالة صديق",
+      "blockUser": "حظر المستخدم",
+      "removeConfirm": "إزالة {{name}} من أصدقائك؟",
+      "blockConfirm": "حظر {{name}}؟ لن يتمكنوا من إيجادك أو التواصل معك.",
+      "viewProfile": "عرض الملف",
+      "message": "رسالة",
+      "viewFullProfile": "عرض الملف الكامل",
+      "close": "إغلاق",
+      "requestPending": "طلب معلّق",
+      "addFriend": "إضافة صديق",
+      "acceptRequest": "قبول الطلب",
+      "confirm": "تأكيد",
+      "ok": "حسنًا"
+    },
+    "alignCode": "رمز Align:"
+  },
+  "messages": {
+    "signInRequired": "سجّل الدخول للوصول إلى الرسائل",
+    "selectConversation": "اختر محادثة",
+    "startNewChat": "أو ابدأ محادثة جديدة للتواصل",
+    "newChat": "محادثة جديدة",
+    "contextMenu": {
+      "reply": "ردّ",
+      "react": "تفاعل",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "forward": "إعادة توجيه",
+      "pin": "تثبيت",
+      "unpin": "إلغاء التثبيت",
+      "copyText": "نسخ النص"
+    },
+    "pickReaction": "اختر تفاعلاً",
+    "messageTypes": {
+      "image": "صورة",
+      "gif": "GIF",
+      "voiceMessage": "رسالة صوتية",
+      "location": "موقع",
+      "poll": "استطلاع:"
+    },
+    "composer": {
+      "placeholder": "اكتب رسالة...",
+      "send": "إرسال",
+      "attachment": "مرفق"
+    }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تعليم الكل كمقروء",
+    "filters": {
+      "all": "الكل",
+      "social": "اجتماعي",
+      "cosmic": "كوني",
+      "system": "النظام"
+    },
+    "empty": {
+      "all": "لا إشعارات بعد",
+      "allHint": "ستظهر هنا تنبيهاتك الكونية وتحديثاتك الاجتماعية.",
+      "social": "لا إشعارات اجتماعية",
+      "socialHint": "ستظهر هنا طلبات الصداقة والرسائل والتفاعلات.",
+      "cosmic": "لا تنبيهات كونية",
+      "cosmicHint": "ستظهر هنا تنبيهات العبورات والأحداث الكونية.",
+      "system": "لا إشعارات نظام",
+      "systemHint": "ستظهر هنا تحديثات النظام والإعلانات."
+    },
+    "time": {
+      "justNow": "الآن",
+      "minutesAgo": "منذ {{count}} دقيقة",
+      "hoursAgo": "منذ {{count}} ساعة",
+      "daysAgo": "منذ {{count}} يوم"
+    },
+    "grouped": "{{count}} إشعارات"
+  },
+  "communities": {
+    "title": "المجتمعات",
+    "subtitle": "اعثر على قبيلتك الكونية",
+    "create": "إنشاء",
+    "tabs": {
+      "discover": "اكتشف",
+      "myCommunities": "مجتمعاتي"
+    },
+    "searchPlaceholder": "ابحث في المجتمعات...",
+    "filterAll": "الكل",
+    "loading": "جارٍ تحميل المجتمعات...",
+    "empty": {
+      "title": "لا مجتمعات بعد",
+      "description": "كن أول من ينشئ مجتمعًا كونيًا!",
+      "createButton": "إنشاء مجتمع"
+    },
+    "featured": "مميز",
+    "allCommunities": "جميع المجتمعات",
+    "noResultsSearch": "لم يتم العثور على مجتمعات لـ \"{{query}}\"",
+    "noResultsCategory": "لا مجتمعات في هذه الفئة بعد.",
+    "yourCircle": {
+      "title": "دائرتك الكونية تنتظرك",
+      "description": "انضم إلى المجتمعات أو أنشئها لإيجاد قبيلتك.",
+      "exploreButton": "استكشف المجتمعات"
+    },
+    "memberCount_one": "{{count}} عضو",
+    "memberCount_other": "{{count}} أعضاء",
+    "private": "خاص",
+    "join": "انضمام",
+    "joined": "منضم"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "editProfile": "تعديل الملف",
+    "shareBigThree": "شارك ثالوثك الكبير",
+    "stats": {
+      "friends": "أصدقاء",
+      "posts": "منشورات",
+      "followers": "متابعون",
+      "following": "يتابع",
+      "views": "مشاهدات"
+    },
+    "tabs": {
+      "posts": "المنشورات",
+      "photos": "الصور",
+      "reels": "الريلز",
+      "about": "عن"
+    },
+    "alignCode": "رمز Align الخاص بك",
+    "alignCodeHint": "شارك رمزك ليجدك الأصدقاء",
+    "quickLinks": {
+      "gallery": "المعرض",
+      "safetyTrust": "الأمان والثقة",
+      "subscription": "الاشتراك",
+      "referrals": "الإحالات",
+      "settings": "الإعدادات"
+    },
+    "about": {
+      "bio": "نبذة",
+      "bigThree": "الثالوث الكبير",
+      "starseedOrigin": "أصل النجوم",
+      "humanDesign": "التصميم البشري",
+      "joined": "انضم",
+      "alignCode": "رمز Align"
+    },
+    "empty": {
+      "noPosts": "لا منشورات بعد",
+      "noPhotos": "لا صور بعد",
+      "noReels": "لا ريلز بعد"
+    },
+    "loadingProfile": "جارٍ تحميل الملف...",
+    "profileViews": "مشاهدات الملف",
+    "noViews": "لا مشاهدات للملف بعد",
+    "editPost": "تعديل المنشور"
+  },
+  "editProfile": {
+    "title": "تعديل الملف",
+    "displayName": "الاسم المعروض",
+    "bio": "نبذة",
+    "bioPlaceholder": "أخبر الكون عن نفسك...",
+    "birthData": "بيانات الميلاد",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "location": "الموقع",
+    "locationPlaceholder": "ابحث عن مدينة أو ولاية أو دولة...",
+    "saveChanges": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ...",
+    "tapAddCover": "انقر لإضافة صورة غلاف",
+    "errors": {
+      "saveFailed": "فشل حفظ الملف",
+      "avatarFailed": "فشل رفع الصورة الشخصية",
+      "coverFailed": "فشل رفع صورة الغلاف"
+    }
+  },
   "settings": {
     "title": "الإعدادات",
     "language": "اللغة",
@@ -216,9 +1042,259 @@
     "houseSystem": "نظام البيوت",
     "darkMode": "الوضع الداكن",
     "about": "عن Align",
-    "privacy": "سياسة الخصوصية",
+    "privacy": {
+      "title": "الخصوصية والبيانات",
+      "profileVisibility": "رؤية الملف",
+      "visibilityOptions": {
+        "public": "عام",
+        "friendsOnly": "الأصدقاء فقط",
+        "private": "خاص"
+      },
+      "hideAge": "إخفاء العمر",
+      "hideExactLocation": "إخفاء الموقع الدقيق",
+      "hideLastActive": "إخفاء آخر نشاط",
+      "hideFullBirthChart": "إخفاء خريطة الميلاد الكاملة",
+      "incognitoMode": "وضع التخفي",
+      "blockUnverified": "حظر المستخدمين غير الموثقين",
+      "minimumTrustLevel": "الحد الأدنى لمستوى الثقة",
+      "trustLevels": {
+        "any": "أي",
+        "low": "منخفض",
+        "medium": "متوسط",
+        "high": "عالي"
+      },
+      "analyticsEnabled": "التحليلات",
+      "exportData": "تصدير بياناتي",
+      "exportToast": "تم طلب تصدير بياناتك. ستستلمها عبر البريد الإلكتروني."
+    },
     "terms": "شروط الخدمة",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "account": "الحساب",
+    "email": "البريد الإلكتروني",
+    "name": "الاسم",
+    "notSet": "غير محدد",
+    "planLabel": "خطة {{plan}}",
+    "upgradeHint": "رقِّ للمزيد من الميزات",
+    "managedVia": "مُدار عبر RevenueCat",
+    "manage": "إدارة",
+    "upgrade": "ترقية",
+    "subPages": {
+      "chatTheme": "سمة المحادثة",
+      "notifications": "الإشعارات",
+      "privacy": "الخصوصية",
+      "astrologyPreferences": "تفضيلات التنجيم",
+      "friends": "الأصدقاء",
+      "referrals": "الإحالات",
+      "subscriptionPlans": "خطط الاشتراك",
+      "datingIdentity": "هوية المواعدة",
+      "relationshipIntent": "هدف العلاقة",
+      "connectionPreferences": "تفضيلات الاتصال",
+      "identityPrivacy": "خصوصية الهوية",
+      "safety": "الأمان",
+      "termsOfService": "شروط الخدمة",
+      "communityGuidelines": "إرشادات المجتمع"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
+    },
+    "admin": {
+      "title": "المسؤول",
+      "manageUsers": "إدارة حسابات المستخدمين",
+      "contentModeration": "إدارة المحتوى",
+      "manageCelebrities": "إدارة المشاهير",
+      "payoutQueue": "قائمة المدفوعات"
+    },
+    "aboutSection": {
+      "version": "الإصدار",
+      "poweredBy": "مدعوم بواسطة",
+      "contact": "اتصال"
+    },
+    "signOut": "تسجيل الخروج",
+    "deleteAccount": "حذف الحساب",
+    "deleteConfirm": {
+      "title": "حذف الحساب؟",
+      "message": "سيؤدي هذا إلى حذف حسابك وجميع البيانات المرتبطة نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+      "confirm": "حذف حسابي",
+      "cancel": "إلغاء"
+    },
+    "astrology": {
+      "title": "تفضيلات التنجيم",
+      "autoSaveHint": "تُحفظ التغييرات تلقائيًا وتُطبّق على جميع حسابات الخرائط.",
+      "houseSystem": "نظام البيوت",
+      "houseSystemHint": "يحدد كيفية حساب بيوت خريطتك",
+      "houseSystems": {
+        "wholeSign": "البرج الكامل",
+        "placidus": "بلاسيدوس",
+        "koch": "كوخ",
+        "campanus": "كامبانوس",
+        "regiomontanus": "ريجيومونتانوس",
+        "equal": "البيت المتساوي",
+        "porphyry": "بورفيري",
+        "alcabitius": "القبيسي",
+        "topocentric": "توبوسنتريك",
+        "morinus": "مورينوس",
+        "meridian": "خط الزوال"
+      },
+      "zodiacSystem": "نظام البروج",
+      "zodiacSystems": {
+        "tropical": "مداري (غربي)",
+        "sidereal": "فلكي (فيدي)"
+      },
+      "languageLevel": "مستوى اللغة",
+      "languageLevelHint": "ما مدى التقنية التي يجب أن تكون عليها التفسيرات؟",
+      "jargonModes": {
+        "plain": "لغة بسيطة",
+        "mixed": "مختلط",
+        "technical": "تقني"
+      },
+      "orbTightness": "ضيق النطاق",
+      "orbOptions": {
+        "tight": "ضيق",
+        "standard": "قياسي",
+        "wide": "واسع"
+      },
+      "showAsteroids": "إظهار الكويكبات",
+      "showFixedStars": "إظهار النجوم الثابتة"
+    },
+    "notificationsPage": {
+      "title": "تفضيلات الإشعارات",
+      "pauseAll": "إيقاف جميع الإشعارات مؤقتًا",
+      "social": {
+        "title": "الإشعارات الاجتماعية",
+        "friendRequests": "طلبات الصداقة",
+        "messages": "الرسائل",
+        "reactions": "التفاعلات",
+        "comments": "التعليقات"
+      },
+      "cosmic": {
+        "title": "الإشعارات الكونية",
+        "frequency": "التكرار",
+        "frequencyOptions": {
+          "essential": "أساسي",
+          "important": "مهم",
+          "all": "الكل"
+        },
+        "tone": "النبرة",
+        "toneOptions": {
+          "gentle": "لطيف",
+          "direct": "مباشر",
+          "intense": "مكثف"
+        },
+        "categories": {
+          "majorTransits": "العبورات الرئيسية",
+          "moonPhases": "أطوار القمر",
+          "mercuryRetrograde": "تراجع عطارد",
+          "loveRelationships": "الحب والعلاقات",
+          "moneyValues": "المال والقيم",
+          "careerAmbition": "المهنة والطموح",
+          "healingGrowth": "الشفاء والنمو"
+        },
+        "aspects": {
+          "title": "أنواع الجوانب",
+          "conjunctions": "الاقترانات",
+          "oppositions": "المقابلات",
+          "squares": "التربيعات",
+          "trines": "التثليثات",
+          "sextiles": "التسديسات"
+        },
+        "events": {
+          "title": "الأحداث الكونية",
+          "moonPhases": "أطوار القمر",
+          "eclipses": "الخسوفات والكسوفات",
+          "retrogrades": "التراجعات",
+          "ingresses": "الانتقالات"
+        },
+        "minIntensity": "الحد الأدنى للشدة",
+        "advanceNotice": "إشعار مسبق (أيام)"
+      },
+      "galactic": {
+        "title": "الإشعارات المجرّية",
+        "planetaryHours": "الساعات الكوكبية",
+        "dayRuler": "حاكم اليوم",
+        "goldenHour": "الساعة الذهبية",
+        "eclipseWatch": "مراقبة الخسوف",
+        "retrogradeAlerts": "تنبيهات التراجع",
+        "minutesBefore": "دقائق قبل"
+      },
+      "summaries": {
+        "title": "ملخصات الأخبار",
+        "daily": "ملخص يومي",
+        "weekly": "ملخص أسبوعي"
+      },
+      "quietHours": {
+        "title": "ساعات الهدوء",
+        "enabled": "تفعيل ساعات الهدوء",
+        "start": "البداية",
+        "end": "النهاية",
+        "urgentOverride": "السماح بالإشعارات العاجلة"
+      },
+      "delivery": {
+        "title": "التوصيل",
+        "sound": "الصوت",
+        "badge": "الشارة"
+      },
+      "announcements": "إعلانات التطبيق"
+    },
+    "referrals": {
+      "title": "الإحالات",
+      "howItWorks": "كيف يعمل",
+      "step1": "شارك رابط الإحالة الفريد مع أصدقائك",
+      "step2": "عندما يسجلون باستخدام رابطك، يحصل كلاكما على 5 قراءات إضافية",
+      "step3": "لا حدود — ادعُ أي عدد تريده من الأصدقاء!"
+    },
+    "chatTheme": {
+      "title": "سمة المحادثة",
+      "subtitle": "خصّص مظهر رسائلك"
+    },
+    "datingIdentity": {
+      "title": "هوية المواعدة",
+      "subtitle": "كيف تعرّف نفسك في مجال المواعدة"
+    },
+    "relationshipIntent": {
+      "title": "هدف العلاقة",
+      "subtitle": "ما تبحث عنه في العلاقات"
+    },
+    "connectionPreferences": {
+      "title": "تفضيلات الاتصال",
+      "subtitle": "مع من تريد التواصل"
+    },
+    "identityPrivacy": {
+      "title": "خصوصية الهوية",
+      "subtitle": "تحكّم في من يرى معلومات هويتك"
+    },
+    "safety": {
+      "title": "الأمان",
+      "subtitle": "إدارة الحظر والبلاغات وإعدادات الأمان"
+    },
+    "friends": {
+      "title": "إعدادات الأصدقاء",
+      "subtitle": "إدارة تفضيلات طلبات الصداقة والاتصال"
+    },
+    "termsPage": {
+      "title": "شروط الخدمة"
+    },
+    "communityGuidelines": {
+      "title": "إرشادات المجتمع"
+    }
   },
   "subscription": {
     "headline": "تنجيم دقيق. مخصص لك.",
@@ -228,11 +1304,27 @@
     "restore": "استعادة المشتريات",
     "cancel": "إلغاء في أي وقت. بدون عقود.",
     "socialProof": "الخطة التي يختارها 73% من الأعضاء.",
+    "title": "اختر طريقك",
+    "subtitle": "ألغِ في أي وقت. تجربة مجانية لمدة 14 يومًا على جميع الخطط.",
+    "priceFree": "مجانًا",
+    "priceCurrency": "$",
+    "loadingPlans": "جارٍ تحميل خطط الاشتراك...",
+    "tapToRetry": "اضغط لإعادة المحاولة",
+    "tapForDiagnostics": "اضغط هنا لعرض التشخيص",
+    "comparisonTitle": "أي خطة تناسبك؟",
+    "faqTitle": "الأسئلة الشائعة",
+    "footerText": "تتم إدارة الاشتراكات من خلال App Store / Google Play.",
+    "manageButton": "إدارة الاشتراك",
+    "termsOfService": "شروط الخدمة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "restorePurchase": "استعادة الشراء",
+    "restoring": "جارٍ الاستعادة...",
     "free": {
       "name": "مجاني",
       "price": "$0",
-      "tagline": "استكشف الكون مجانًا.",
+      "tagline": "استكشف الكون مجانًا",
       "cta": "ابدأ مجانًا",
+      "bestFor": "للمبتدئين الفضوليين بشأن علم التنجيم الذين يريدون الاستكشاف قبل الالتزام.",
       "features": [
         "نظرة عامة على خريطة الميلاد الأساسية",
         "رؤى الأبراج اليومية",
@@ -240,136 +1332,117 @@
         "سحب بطاقة تاروت واحدة",
         "حاسبة الساعات الكوكبية",
         "ملف شخصي واحد محفوظ"
-      ],
-      "bestFor": "للمبتدئين الفضوليين بشأن علم التنجيم الذين يريدون الاستكشاف قبل الالتزام."
+      ]
     },
     "light": {
       "name": "Light",
       "price": "$9",
-      "tagline": "الوضوح يبدأ من هنا.",
+      "tagline": "رفيقك الكوني اليومي",
       "cta": "ابدأ مع Light",
+      "bestFor": "للمستكشفين العاديين الذين يريدون إرشادات كونية يومية ورؤى أساسية للخريطة.",
       "features": [
-        "رؤى يومية مخصصة",
-        "خريطة ميلاد مع المواقع الأساسية",
-        "10 قراءات ذكية شهريًا",
-        "تنبيهات العبورات الفورية",
-        "إرشاد يومي ببطاقة تاروت",
-        "حاسبة الساعات الكوكبية",
+        "كل ما في المجاني",
+        "رؤى يومية مخصصة كاملة",
+        "30 قراءة ذكية شهريًا",
+        "تنبيهات عبورات فورية",
         "لمحة عن مسار الحياة بعلم الأعداد",
         "ملف ميلاد واحد محفوظ"
-      ],
-      "bestFor": "للمستكشفين العاديين الذين يريدون إرشادات كونية يومية ورؤى أساسية للخريطة."
+      ]
     },
     "premium": {
       "name": "Premium",
       "price": "$19",
-      "tagline": "حيث يلتقي العمق بالوضوح.",
+      "tagline": "أطلق مخططك الكوني الكامل",
+      "badge": "الأكثر شعبية",
       "cta": "احصل على Premium — أفضل قيمة",
+      "bestFor": "للمتحمسين المستعدين للغوص العميق في خريطتهم الفلكية الكاملة وعلاقاتهم.",
       "features": [
         "كل ما في Light",
-        "50 قراءة معمّقة ذكية شهريًا",
-        "خريطة كاملة — جوانب وأنماط ونجوم ثابتة",
-        "خرائط متقدمة وعودة شمسية/قمرية",
-        "توافق نجمي ومركّب",
-        "أصول النجوم والتصميم البشري",
-        "جميع انتشارات التاروت الـ6 مع الذكاء الاصطناعي",
-        "تقرير التنجيم المالي",
-        "وضع اللغة البسيطة — بدون مصطلحات",
-        "5 ملفات ميلاد محفوظة",
+        "خريطة كاملة مع الجوانب والأنماط",
+        "100 قراءة ذكية شهريًا",
+        "جميع أنواع الخرائط (متقدمة، عودات، توافقي)",
+        "التوافق والخرائط المركّبة",
+        "أصول النجوم، علم الأعداد، التصميم البشري",
+        "انتشارات التاروت (جميع الأنواع الخمسة)",
+        "تبديل المصطلحات (وضع اللغة البسيطة)",
+        "5 ملفات محفوظة",
         "جميع دورات التنجيم"
-      ],
-      "badge": "الأكثر شعبية",
-      "bestFor": "للمتحمسين المستعدين للغوص العميق في خريطتهم الفلكية الكاملة وعلاقاتهم."
+      ]
     },
     "pro": {
       "name": "Pro",
       "price": "$29",
-      "tagline": "الصورة الكاملة. بدون حدود.",
-      "cta": "افتح وصول Pro",
+      "tagline": "للممارس الجاد",
+      "cta": "انطلق مع Pro",
+      "bestFor": "للمنجمين المحترفين والممارسين المتفانين الذين يحتاجون إلى كل الأدوات المتاحة.",
       "features": [
         "كل ما في Premium",
-        "200 قراءة ذكية شهريًا",
-        "خرائط الأبراج الجغرافية العالمية",
-        "Firdaria والإطلاق البرجي",
-        "الأجزاء العربية والنجوم الثابتة بالتفصيل",
-        "ذكاء اصطناعي سريع — معالجة أسرع",
-        "ملفات وقراءات محفوظة بلا حدود",
-        "تقارير احترافية قابلة للتصدير",
+        "300 قراءة ذكية شهريًا",
+        "تقرير التنجيم المالي",
+        "خرائط الأبراج الجغرافية",
+        "الفردارية والإطلاق البرجي",
+        "النجوم الثابتة والأجزاء العربية",
+        "معالجة ذكاء اصطناعي ذات أولوية",
         "وصول مبكر للميزات الجديدة",
-        "ذكاء اصطناعي بـ20 لغة"
-      ],
-      "bestFor": "للمنجمين المحترفين والممارسين المتفانين الذين يحتاجون إلى كل الأدوات المتاحة."
-    },
-    "alerts": {
-      "couldNotOpenLink": "تعذر فتح الرابط.",
-      "diagnostics": "التشخيص",
-      "errorTitle": "خطأ",
-      "manageError": "تعذر فتح إدارة الاشتراك. يرجى فتح Play Store أو App Store يدويًا.",
-      "noActiveBody": "لم يتم العثور على اشتراك سابق لهذا الحساب.",
-      "noActiveTitle": "لا يوجد اشتراك نشط",
-      "ok": "حسنًا",
-      "planNotFoundBody": "هذه الخطة غير متوفرة مؤقتًا في المتجر. يرجى المحاولة لاحقًا.",
-      "planNotFoundTitle": "الخطة غير موجودة",
-      "purchaseFailedDefault": "حدث خطأ ما.",
-      "purchaseFailedLong": "حدث خطأ أثناء معالجة عملية الشراء. يرجى المحاولة مرة أخرى.",
-      "purchaseFailedTitle": "فشل الشراء",
-      "restoreError": "فشل في استعادة عمليات الشراء",
-      "restoredBody": "تمت استعادة اشتراكك بنجاح.",
-      "restoredTitle": "تمت الاستعادة!",
-      "retry": "إعادة المحاولة",
-      "subscriptionsUnavailableHint": "تأكد من تسجيل دخولك إلى Play Store وحاول مرة أخرى.",
-      "subscriptionsUnavailableTitle": "الاشتراكات غير متاحة",
-      "unavailableBody": "هذه الخطة غير متاحة حاليًا.",
-      "unavailableTitle": "غير متاح",
-      "unsupportedBody": "إدارة الاشتراك متاحة فقط على iOS و Android.",
-      "unsupportedTitle": "غير مدعوم",
-      "welcomeBody": "اشتراكك نشط. استمتع بأدواتك الكونية الموسعة.",
-      "welcomeTitle": "أهلاً بك!"
-    },
-    "comparisonTitle": "أي خطة تناسبك؟",
-    "errors": {
-      "apiKeyPlaceholder": "خدمة الاشتراك غير مهيأة لهذا الإصدار. (داخلي: مفتاح RevenueCat هو عنصر نائب.)",
-      "connectionFailed": "تعذر الوصول إلى خدمة الاشتراك. يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
-      "loadFailed": "تعذر تحميل خطط الاشتراك. يرجى المحاولة لاحقًا.",
-      "loadFailedConnection": "تعذر تحميل خطط الاشتراك. يرجى التحقق من الاتصال.",
-      "nativeModuleMissing": "خدمة الاشتراك غير متاحة في هذا الإصدار. (داخلي: الوحدة الأصلية غير مرتبطة.)",
-      "noApiKey": "خدمة الاشتراك غير مهيأة لهذه المنصة. (داخلي: مفتاح API مفقود.)",
-      "noOfferings": "لم يتم نشر خطط اشتراك نشطة بعد. يرجى المحاولة لاحقًا.",
-      "noPackages": "يتم الانتهاء من خطط الاشتراك في المتجر. يرجى المحاولة لاحقًا.",
-      "stillStarting": "لا تزال خدمة الاشتراك في مرحلة البدء. يرجى الانتظار لحظة وإعادة المحاولة."
+        "ملفات محفوظة بلا حدود",
+        "تصدير ومشاركة التقارير"
+      ]
     },
     "faq": {
-      "rollover": {
-        "answer": "تتم إعادة تعيين رصيد قراءات الذكاء الاصطناعي في كل دورة فوترة ولا يتم ترحيله. هذا يحافظ على سرعة بنيتنا التحتية للذكاء الاصطناعي لجميع المستخدمين.",
-        "question": "هل يتم ترحيل قراءات الذكاء الاصطناعي؟"
-      },
-      "security": {
-        "answer": "بالتأكيد. يتم تشفير جميع البيانات الشخصية وبيانات الميلاد أثناء التخزين والنقل. لا نبيع بياناتك أبدًا، ويمكنك حذف حسابك وجميع البيانات المرتبطة به في أي وقت.",
-        "question": "هل بيانات ميلادي آمنة؟"
-      },
       "switch": {
-        "answer": "نعم! يمكنك ترقية أو تخفيض خطتك في أي وقت. عند الترقية، تحصل على وصول فوري للميزات الجديدة. عند التخفيض، تستمر مزاياك الحالية حتى نهاية دورة الفوترة.",
-        "question": "هل يمكنني تغيير الخطط في أي وقت؟"
+        "question": "هل يمكنني تغيير الخطط في أي وقت؟",
+        "answer": "نعم! يمكنك ترقية أو تخفيض خطتك في أي وقت. عند الترقية، تحصل على وصول فوري للميزات الجديدة. عند التخفيض، تستمر مزاياك الحالية حتى نهاية دورة الفوترة."
       },
       "trial": {
-        "answer": "تمنحك التجربة المجانية لمدة 14 يومًا وصولاً كاملاً إلى الخطة المختارة. لن يتم محاسبتك حتى انتهاء التجربة، ويمكنك الإلغاء في أي وقت قبل ذلك دون التزام.",
-        "question": "ماذا يحدث بعد التجربة المجانية؟"
+        "question": "ماذا يحدث بعد التجربة المجانية؟",
+        "answer": "تمنحك التجربة المجانية لمدة 14 يومًا وصولاً كاملاً إلى الخطة المختارة. لن يتم محاسبتك حتى انتهاء التجربة، ويمكنك الإلغاء في أي وقت قبل ذلك دون التزام."
+      },
+      "rollover": {
+        "question": "هل يتم ترحيل قراءات الذكاء الاصطناعي؟",
+        "answer": "تتم إعادة تعيين رصيد قراءات الذكاء الاصطناعي في كل دورة فوترة ولا يتم ترحيله. هذا يحافظ على سرعة بنيتنا التحتية للذكاء الاصطناعي لجميع المستخدمين."
+      },
+      "security": {
+        "question": "هل بيانات ميلادي آمنة؟",
+        "answer": "بالتأكيد. يتم تشفير جميع البيانات الشخصية وبيانات الميلاد أثناء التخزين والنقل. لا نبيع بياناتك أبدًا، ويمكنك حذف حسابك وجميع البيانات المرتبطة به في أي وقت."
       }
     },
-    "faqTitle": "الأسئلة الشائعة",
-    "footerText": "تتم إدارة الاشتراكات من خلال App Store / Google Play.",
-    "loadingPlans": "جارٍ تحميل خطط الاشتراك...",
-    "manageButton": "إدارة الاشتراك",
-    "priceCurrency": "$",
-    "priceFree": "مجانًا",
-    "privacyPolicy": "سياسة الخصوصية",
-    "restorePurchase": "استعادة الشراء",
-    "restoring": "جارٍ الاستعادة...",
-    "subtitle": "ألغِ في أي وقت. تجربة مجانية لمدة 14 يومًا على جميع الخطط.",
-    "tapForDiagnostics": "اضغط هنا لعرض التشخيص",
-    "tapToRetry": "اضغط لإعادة المحاولة",
-    "termsOfService": "شروط الخدمة",
-    "title": "اختر طريقك"
+    "alerts": {
+      "unavailableTitle": "غير متاح",
+      "unavailableBody": "هذه الخطة غير متاحة حاليًا.",
+      "purchaseFailedTitle": "فشل الشراء",
+      "purchaseFailedDefault": "حدث خطأ ما.",
+      "purchaseFailedLong": "حدث خطأ أثناء معالجة عملية الشراء. يرجى المحاولة مرة أخرى.",
+      "welcomeTitle": "أهلاً بك!",
+      "welcomeBody": "اشتراكك نشط. استمتع بأدواتك الكونية الموسعة.",
+      "ok": "حسنًا",
+      "subscriptionsUnavailableTitle": "الاشتراكات غير متاحة",
+      "subscriptionsUnavailableHint": "تأكد من تسجيل دخولك إلى Play Store وحاول مرة أخرى.",
+      "retry": "إعادة المحاولة",
+      "diagnostics": "التشخيص",
+      "planNotFoundTitle": "الخطة غير موجودة",
+      "planNotFoundBody": "هذه الخطة غير متوفرة مؤقتًا في المتجر. يرجى المحاولة لاحقًا.",
+      "errorTitle": "خطأ",
+      "couldNotOpenLink": "تعذر فتح الرابط.",
+      "unsupportedTitle": "غير مدعوم",
+      "unsupportedBody": "إدارة الاشتراك متاحة فقط على iOS و Android.",
+      "manageError": "تعذر فتح إدارة الاشتراك. يرجى فتح Play Store أو App Store يدويًا.",
+      "restoredTitle": "تمت الاستعادة!",
+      "restoredBody": "تمت استعادة اشتراكك بنجاح.",
+      "noActiveTitle": "لا يوجد اشتراك نشط",
+      "noActiveBody": "لم يتم العثور على اشتراك سابق لهذا الحساب.",
+      "restoreError": "فشل في استعادة عمليات الشراء"
+    },
+    "errors": {
+      "loadFailed": "تعذر تحميل خطط الاشتراك. يرجى المحاولة لاحقًا.",
+      "loadFailedConnection": "تعذر تحميل خطط الاشتراك. يرجى التحقق من الاتصال.",
+      "apiKeyPlaceholder": "خدمة الاشتراك غير مهيأة لهذا الإصدار. (داخلي: مفتاح RevenueCat هو عنصر نائب.)",
+      "noApiKey": "خدمة الاشتراك غير مهيأة لهذه المنصة. (داخلي: مفتاح API مفقود.)",
+      "nativeModuleMissing": "خدمة الاشتراك غير متاحة في هذا الإصدار. (داخلي: الوحدة الأصلية غير مرتبطة.)",
+      "noOfferings": "لم يتم نشر خطط اشتراك نشطة بعد. يرجى المحاولة لاحقًا.",
+      "noPackages": "يتم الانتهاء من خطط الاشتراك في المتجر. يرجى المحاولة لاحقًا.",
+      "connectionFailed": "تعذر الوصول إلى خدمة الاشتراك. يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
+      "stillStarting": "لا تزال خدمة الاشتراك في مرحلة البدء. يرجى الانتظار لحظة وإعادة المحاولة."
+    }
   },
   "courses": {
     "title": "تعلّم التنجيم",
@@ -380,6 +1453,314 @@
     "continue": "تابع التعلّم",
     "completed": "مكتمل"
   },
+  "cosmicAlerts": {
+    "title": "الطقس الكوني",
+    "subtitle": "توقعاتك الكونية المخصصة",
+    "scanningCosmos": "نمسح الكون...",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "upcoming": "قادم"
+    },
+    "emptyState": {
+      "title": "لم يتم الكشف عن عبورات رئيسية",
+      "filterHint": "لا تنبيهات {{filter}} حاليًا. جرّب التبديل إلى \"الكل\".",
+      "defaultHint": "الكون هادئ لخريطتك. تحقق لاحقًا مع تغير السماء."
+    },
+    "detail": {
+      "timingWindow": "نافذة التوقيت",
+      "start": "البداية",
+      "peak": "الذروة",
+      "end": "النهاية",
+      "fullInterpretation": "التفسير الكامل",
+      "astrologicalDetails": "التفاصيل الفلكية",
+      "transit": "العبور",
+      "natal": "الميلاد",
+      "aspect": "الجانب",
+      "retrograde": "تراجع",
+      "yes": "نعم",
+      "no": "لا",
+      "actionAdvice": "نصيحة العمل",
+      "viewFullTransits": "عرض العبورات الكاملة"
+    },
+    "importance": {
+      "critical": "حرج",
+      "high": "عالي",
+      "moderate": "متوسط",
+      "low": "منخفض",
+      "minimal": "طفيف"
+    },
+    "categories": {
+      "general": "عام",
+      "love": "الحب",
+      "career": "المهنة",
+      "growth": "النمو",
+      "challenge": "التحدي",
+      "spiritual": "روحاني",
+      "communication": "التواصل",
+      "energy": "الطاقة"
+    },
+    "statusActive": "نشط"
+  },
+  "discover": {
+    "title": "اكتشف",
+    "moonPhases": {
+      "newMoon": "المحاق",
+      "waxingCrescent": "الهلال المتزايد",
+      "firstQuarter": "التربيع الأول",
+      "waxingGibbous": "الأحدب المتزايد",
+      "fullMoon": "البدر",
+      "waningGibbous": "الأحدب المتناقص",
+      "lastQuarter": "التربيع الأخير",
+      "waningCrescent": "الهلال المتناقص"
+    }
+  },
+  "worldEcho": {
+    "title": "صدى العالم",
+    "subtitle": "كيف تموج الأحداث الكونية عبر تاريخ البشرية",
+    "categories": {
+      "political": "سياسي",
+      "economic": "اقتصادي",
+      "cultural": "ثقافي",
+      "scientific": "علمي",
+      "natural": "طبيعي",
+      "social": "اجتماعي",
+      "technological": "تكنولوجي",
+      "spiritual": "روحاني"
+    },
+    "evidenceLabels": {
+      "strong": "قوي",
+      "moderate": "متوسط",
+      "speculative": "تخميني"
+    },
+    "scoreLabels": {
+      "legendary": "أسطوري",
+      "major": "رئيسي",
+      "significant": "مهم",
+      "notable": "ملحوظ",
+      "minor": "ثانوي"
+    }
+  },
+  "polls": {
+    "title": "الاستطلاعات",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "ended": "انتهى",
+      "mine": "استطلاعاتي"
+    },
+    "duration": {
+      "hours": "{{count}} ساعة متبقية",
+      "days": "{{count}} أيام متبقية",
+      "ended": "انتهى"
+    },
+    "createPoll": "إنشاء استطلاع",
+    "votes": "{{count}} صوت",
+    "noPollsYet": "لا استطلاعات بعد",
+    "noPollsHint": "كن أول من يبدأ استطلاعًا كونيًا!"
+  },
+  "bookmarks": {
+    "title": "الإشارات المرجعية",
+    "loading": "جاري تحميل الإشارات المرجعية...",
+    "empty": "لا توجد إشارات مرجعية بعد",
+    "emptyHint": "احفظ المنشورات من الخلاصة لقراءتها لاحقاً",
+    "postUnavailable": "المنشور لم يعد متاحاً"
+  },
+  "celebrityMatches": {
+    "title": "توافقات المشاهير",
+    "subtitle": "اكتشف أي المشاهير يشاركونك مخططك الكوني",
+    "searchPlaceholder": "ابحث عن مشاهير...",
+    "categories": {
+      "overall": "إجمالي",
+      "emotional": "عاطفي",
+      "passion": "شغف",
+      "marriage": "زواج",
+      "karmic": "كرمي",
+      "attraction": "انجذاب",
+      "stability": "استقرار",
+      "mental": "فكري"
+    },
+    "matchScore": "توافق {{score}}%",
+    "trending": "رائج",
+    "recentlyAdded": "أُضيف مؤخراً",
+    "browseByCategory": "تصفح حسب الفئة",
+    "clearFilter": "مسح التصفية",
+    "yourFavorites": "مفضلاتك",
+    "noResults": "لا نتائج",
+    "tryDifferent": "جرب اسماً أو تهجئة مختلفة",
+    "noCelebrities": "لا يوجد مشاهير بعد",
+    "searchOrCheckBack": "ابحث عن شخص أو تحقق لاحقاً",
+    "noCelebritiesInCategory": "لا يوجد مشاهير في هذه الفئة بعد"
+  },
+  "matches": {
+    "title": "توافقات التوافق",
+    "categories": {
+      "overall": "إجمالي",
+      "emotional": "عاطفي",
+      "passion": "شغف",
+      "marriage": "زواج",
+      "karmic": "كرمي",
+      "attraction": "انجذاب",
+      "stability": "استقرار",
+      "mental": "فكري"
+    }
+  },
+  "cosmicIndex": {
+    "title": "المؤشر الكوني",
+    "subtitle": "طاقة الكون اليوم في لمحة"
+  },
+  "creatorStudio": {
+    "title": "استوديو المبدعين",
+    "subtitle": "أنشئ وأدِر محتواك الكوني"
+  },
+  "qa": {
+    "title": "أسئلة وأجوبة",
+    "askQuestion": "اطرح سؤالاً",
+    "noQuestions": "لا أسئلة بعد",
+    "placeholder": "ما هو سؤالك الكوني؟"
+  },
+  "pricing": {
+    "title": "اختر خطتك",
+    "subtitle": "أطلق القوة الكاملة لـ Align"
+  },
+  "gallery": {
+    "title": "المعرض",
+    "empty": "لا صور بعد"
+  },
+  "timeline": {
+    "title": "الجدول الزمني",
+    "empty": "لا شيء لعرضه بعد"
+  },
+  "reels": {
+    "title": "ريلز كونية",
+    "empty": "لا ريلز بعد"
+  },
+  "fragments": {
+    "title": "شذرات كونية",
+    "subtitle": "بطاقات حكمة كونية قابلة للمشاركة"
+  },
+  "cosmicVideo": {
+    "title": "فيديو كوني",
+    "subtitle": "رؤى فلكية في حركة"
+  },
+  "groupSynastry": {
+    "title": "التوافق الجماعي",
+    "subtitle": "شاهد كيف تتفاعل خرائط المجموعة"
+  },
+  "components": {
+    "birthDataPrompt": {
+      "title": "بيانات الميلاد مطلوبة",
+      "defaultMessage": "أضف تاريخ ميلادك ووقته وموقعه لفتح هذه الميزة.",
+      "completeProfile": "أكمل ملفك"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "جارٍ التحميل..."
+    },
+    "paywallGate": {
+      "title": "أطلق هذه القراءة",
+      "description": "هذه الميزة متاحة في خطة",
+      "plan": "الخطة",
+      "youreOn": "أنت على",
+      "upgradeButton": "عرض الخطط — من {{price}}",
+      "currentPlan": "خطتك الحالية: {{plan}}",
+      "whatYouUnlock": "ما ستفتحه",
+      "allFeatures": "هذه القراءة + جميع ميزات {{tier}}",
+      "aiAstrologer": "المنجّم الذكي مع الدردشة الصوتية",
+      "fullChart": "خريطة ميلاد كاملة مع الجوانب والأنماط"
+    },
+    "shareButton": {
+      "share": "مشاركة",
+      "copied": "تم النسخ!"
+    },
+    "referralCard": {
+      "title": "ادعُ أصدقاء",
+      "subtitle": "شارك رابط إحالتك واحصلا معًا على قراءات إضافية",
+      "copyLink": "نسخ الرابط",
+      "linkCopied": "تم نسخ الرابط!"
+    },
+    "trialBanner": {
+      "title": "تجربة Premium: {{count}} يوم متبقٍ",
+      "title_plural": "تجربة Premium: {{count}} أيام متبقية",
+      "daysLeft": "{{count}} أيام متبقية",
+      "upgrade": "رقِّ الآن",
+      "expired": "انتهت تجربتك. رقِّ لفتح Premium مرة أخرى.",
+      "endsTomorrow": "تنتهي تجربتك غدًا! رقِّ للحفاظ على ميزات Premium.",
+      "endsSoon": "تنتهي تجربتك خلال {{count}} أيام! رقِّ للحفاظ على ميزات Premium."
+    },
+    "cookieConsent": {
+      "message": "نستخدم ملفات تعريف الارتباط لتحسين تجربتك.",
+      "accept": "قبول",
+      "decline": "رفض",
+      "learnMore": "اعرف المزيد"
+    },
+    "matchCelebration": {
+      "itsAMatch": "إنه توافق!",
+      "subtitle": "الكون أوصلك أنت و{{name}}",
+      "sendMessage": "أرسل رسالة",
+      "keepBrowsing": "تابع التصفح"
+    },
+    "datingFilterDrawer": {
+      "title": "فلاتر الاكتشاف",
+      "ageRange": "نطاق العمر",
+      "maxDistance": "أقصى مسافة",
+      "showOnlyVerified": "إظهار الموثقين فقط",
+      "compatibilityMin": "الحد الأدنى للتوافق",
+      "elements": "العناصر",
+      "applyFilters": "تطبيق الفلاتر",
+      "resetFilters": "إعادة تعيين"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "متوافق {{score}}%",
+      "like": "إعجاب",
+      "pass": "تمرير",
+      "cosmicRose": "وردة كونية",
+      "likesRemaining": "{{count}} إعجابات متبقية",
+      "rosesRemaining": "{{count}} ورود متبقية"
+    },
+    "sidebar": {
+      "home": "الرئيسية",
+      "discover": "اكتشف",
+      "cosmicFeed": "الموجز الكوني",
+      "worldEcho": "صدى العالم",
+      "chart": "خريطتي",
+      "cosmicWeather": "الطقس الكوني",
+      "readings": "القراءات",
+      "videoCreator": "صانع الفيديو",
+      "dating": "المواعدة",
+      "friends": "الأصدقاء",
+      "messages": "الرسائل",
+      "feed": "الموجز",
+      "notifications": "الإشعارات",
+      "aiAstrologer": "المنجّم الذكي",
+      "learn": "تعلّم",
+      "pricing": "الأسعار",
+      "communities": "المجتمعات",
+      "profile": "الملف الشخصي",
+      "settings": "الإعدادات",
+      "menu": "القائمة",
+      "close": "إغلاق",
+      "more": "المزيد",
+      "chat": "محادثة",
+      "yourProfile": "ملفك الشخصي",
+      "viewProfile": "عرض ملفك الشخصي"
+    },
+    "feedCard": {
+      "like": "إعجاب",
+      "comment": "تعليق",
+      "share": "مشاركة",
+      "bookmark": "إشارة مرجعية",
+      "report": "إبلاغ",
+      "deletePost": "حذف المنشور",
+      "editPost": "تعديل المنشور"
+    },
+    "commentSheet": {
+      "title": "التعليقات",
+      "placeholder": "اكتب تعليقًا...",
+      "send": "إرسال",
+      "noComments": "لا تعليقات بعد",
+      "beFirst": "كن أول من يعلّق!"
+    }
+  },
   "common": {
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ ما",
@@ -389,7 +1770,46 @@
     "delete": "حذف",
     "share": "مشاركة",
     "premium": "مميز",
-    "free": "مجاني"
+    "free": "مجاني",
+    "close": "إغلاق",
+    "confirm": "تأكيد",
+    "ok": "حسنًا",
+    "yes": "نعم",
+    "no": "لا",
+    "back": "رجوع",
+    "next": "التالي",
+    "done": "تم",
+    "edit": "تعديل",
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "search": "بحث",
+    "settings": "الإعدادات",
+    "seeAll": "عرض الكل",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "comingSoon": "قريبًا",
+    "upgrade": "ترقية",
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "tomorrow": "غدًا",
+    "all": "الكل",
+    "none": "لا شيء",
+    "public": "عام",
+    "private": "خاص",
+    "apply": "تطبيق",
+    "reset": "إعادة تعيين",
+    "remove": "إزالة",
+    "add": "إضافة",
+    "create": "إنشاء",
+    "submit": "إرسال",
+    "send": "إرسال",
+    "view": "عرض",
+    "download": "تحميل",
+    "upload": "رفع",
+    "noResults": "لم يتم العثور على نتائج",
+    "tryAgain": "حاول مرة أخرى"
   },
   "zodiac": {
     "aries": "الحمل",
@@ -420,7 +1840,11 @@
     "southNode": "العقدة الجنوبية",
     "chiron": "كيرون",
     "ascendant": "الطالع",
-    "midheaven": "وسط السماء"
+    "midheaven": "وسط السماء",
+    "vesta": "فيستا",
+    "juno": "جونو",
+    "ceres": "سيريس",
+    "pallas": "بالاس"
   },
   "aspects": {
     "conjunction": "اقتران",
@@ -428,6 +1852,83 @@
     "square": "تربيع",
     "trine": "تثليث",
     "opposition": "مقابلة",
-    "quincunx": "كوينكونس"
+    "quincunx": "كوينكونس",
+    "semisextile": "نصف تسديس",
+    "semisquare": "نصف تربيع",
+    "sesquiquadrate": "سيسكويكوادريت",
+    "quintile": "خماسي",
+    "biquintile": "ثنائي خماسي"
+  },
+  "elements": {
+    "fire": "نار",
+    "earth": "أرض",
+    "air": "هواء",
+    "water": "ماء"
+  },
+  "modalities": {
+    "cardinal": "أساسي",
+    "fixed": "ثابت",
+    "mutable": "متغير"
+  },
+  "houses": {
+    "1": "البيت الأول",
+    "2": "البيت الثاني",
+    "3": "البيت الثالث",
+    "4": "البيت الرابع",
+    "5": "البيت الخامس",
+    "6": "البيت السادس",
+    "7": "البيت السابع",
+    "8": "البيت الثامن",
+    "9": "البيت التاسع",
+    "10": "البيت العاشر",
+    "11": "البيت الحادي عشر",
+    "12": "البيت الثاني عشر",
+    "labels": {
+      "1": "الذات والهوية",
+      "2": "القيم والممتلكات",
+      "3": "التواصل والتعلّم",
+      "4": "البيت والعائلة",
+      "5": "الإبداع والرومانسية",
+      "6": "الصحة والخدمة",
+      "7": "الشراكات",
+      "8": "التحول والموارد المشتركة",
+      "9": "الفلسفة والسفر",
+      "10": "المهنة والصورة العامة",
+      "11": "المجتمع والتطلعات",
+      "12": "الروحانية واللاوعي"
+    }
+  },
+  "errors": {
+    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
+    "unauthorized": "تحتاج تسجيل الدخول للوصول إلى هذه الميزة.",
+    "notFound": "المحتوى المطلوب غير موجود.",
+    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقًا.",
+    "loadFailed": "فشل تحميل البيانات. يرجى المحاولة مرة أخرى.",
+    "saveFailed": "فشل حفظ التغييرات. يرجى المحاولة مرة أخرى.",
+    "uploadFailed": "فشل رفع الملف. يرجى المحاولة مرة أخرى.",
+    "fileTooLarge": "الملف كبير جدًا. يرجى اختيار ملف أصغر.",
+    "invalidFormat": "صيغة ملف غير صالحة.",
+    "permissionDenied": "تم رفض الإذن.",
+    "sessionExpired": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "rateLimited": "طلبات كثيرة جدًا. يرجى الانتظار لحظة."
+  },
+  "time": {
+    "justNow": "الآن",
+    "minutesAgo": "منذ {{count}} دقيقة",
+    "hoursAgo": "منذ {{count}} ساعة",
+    "daysAgo": "منذ {{count}} يوم",
+    "weeksAgo": "منذ {{count}} أسبوع",
+    "monthsAgo": "منذ {{count}} شهر",
+    "yearsAgo": "منذ {{count}} سنة",
+    "inMinutes": "خلال {{count}} دقيقة",
+    "inHours": "خلال {{count}} ساعة",
+    "inDays": "خلال {{count}} يوم"
+  },
+  "tiers": {
+    "free": "مجاني",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro"
   }
 }
