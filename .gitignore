@@ -41,3 +41,5 @@ next-env.d.ts
 # env check files
 .env.vercel.check
 .env*.check
+
+.vercel
