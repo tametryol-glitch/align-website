@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
-import { ArrowLeft, Check, Crown, Sparkles, Star, Zap } from 'lucide-react';
+import { ArrowLeft, Check, Crown, Sparkles, Star, Zap, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const plans = [
@@ -101,10 +102,38 @@ const faqItems = [
 ];
 
 export default function SubscriptionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg-primary" />}>
+      <SubscriptionContent />
+    </Suspense>
+  );
+}
+
+function SubscriptionContent() {
   const { tier } = useSubscriptionStore();
   const { user } = useAuthStore();
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [banner, setBanner] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+
+  // Handle URL params from Stripe redirects
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      setBanner({ type: 'success', message: t('subscription.paymentSuccess') });
+      // Clean URL params
+      window.history.replaceState({}, '', '/settings/subscription');
+    } else if (searchParams.get('canceled') === 'true') {
+      setBanner({ type: 'info', message: t('subscription.paymentCanceled') });
+      window.history.replaceState({}, '', '/settings/subscription');
+    } else if (searchParams.get('no_subscription') === 'true') {
+      setBanner({ type: 'info', message: t('subscription.noStripeSubscription') });
+      window.history.replaceState({}, '', '/settings/subscription');
+    } else if (searchParams.get('error')) {
+      setBanner({ type: 'error', message: t('subscription.portalError') });
+      window.history.replaceState({}, '', '/settings/subscription');
+    }
+  }, [searchParams, t]);
 
   function handleSelectPlan(planId: string) {
     if (planId === tier) return;
@@ -136,9 +165,40 @@ export default function SubscriptionPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-text-primary">{t('settings.subscription')}</h1>
-            <p className="text-sm text-text-muted">Choose the plan that fits your journey</p>
+            <p className="text-sm text-text-muted">{t('subscription.subtitle')}</p>
           </div>
         </div>
+
+        {/* Status banner from Stripe redirects */}
+        {banner && (
+          <div
+            className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+              banner.type === 'success'
+                ? 'bg-green-500/10 border border-green-500/30'
+                : banner.type === 'error'
+                  ? 'bg-red-500/10 border border-red-500/30'
+                  : 'bg-blue-500/10 border border-blue-500/30'
+            }`}
+          >
+            {banner.type === 'success' ? (
+              <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+            ) : banner.type === 'error' ? (
+              <XCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+            ) : null}
+            <p className={`text-sm ${
+              banner.type === 'success' ? 'text-green-300' :
+              banner.type === 'error' ? 'text-red-300' : 'text-blue-300'
+            }`}>
+              {banner.message}
+            </p>
+            <button
+              onClick={() => setBanner(null)}
+              className="ml-auto text-text-muted hover:text-text-primary text-lg"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {tier !== 'free' && (
           <div className="mb-6 p-4 rounded-xl bg-bg-secondary border border-border-primary">
