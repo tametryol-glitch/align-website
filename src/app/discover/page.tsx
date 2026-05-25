@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { getSuggestedFriends, type SuggestedUser } from '@/lib/discoveryService';
 import Link from 'next/link';
 import { Search, ChevronRight, Shield } from 'lucide-react';
+import { sanitizeSearchInput } from '@/lib/sanitize';
 import { useTranslation } from 'react-i18next';
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -183,7 +184,7 @@ export default function DiscoverPage() {
     const { data } = await supabase
       .from('profiles')
       .select('id, display_name, avatar_url, sun_sign, moon_sign')
-      .ilike('display_name', `%${query}%`)
+      .ilike('display_name', `%${sanitizeSearchInput(query)}%`)
       .limit(10);
     setSearchResults(data || []);
     setSearching(false);

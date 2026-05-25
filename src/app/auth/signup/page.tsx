@@ -16,12 +16,22 @@ export default function SignupPage() {
   );
 }
 
+function validatePassword(pw: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  if (pw.length < 8) errors.push('Password must be at least 8 characters');
+  if (!/[A-Z]/.test(pw)) errors.push('Password must contain at least 1 uppercase letter');
+  if (!/[a-z]/.test(pw)) errors.push('Password must contain at least 1 lowercase letter');
+  if (!/[0-9]/.test(pw)) errors.push('Password must contain at least 1 number');
+  return { valid: errors.length === 0, errors };
+}
+
 function SignupPageInner() {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [resending, setResending] = useState(false);
@@ -45,6 +55,12 @@ function SignupPageInner() {
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    const pwResult = validatePassword(password);
+    if (!pwResult.valid) {
+      setPasswordErrors(pwResult.errors);
+      return;
+    }
+    setPasswordErrors([]);
     setLoading(true);
 
     const supabase = createClient();
@@ -156,12 +172,19 @@ function SignupPageInner() {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); if (passwordErrors.length) setPasswordErrors([]); }}
                 className="input"
-                placeholder="••••••••"
-                minLength={6}
+                placeholder="•••••••���"
+                minLength={8}
                 required
               />
+              {passwordErrors.length > 0 && (
+                <ul className="mt-1.5 space-y-0.5">
+                  {passwordErrors.map((err, i) => (
+                    <li key={i} className="text-xs text-red-400">{err}</li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {error && (

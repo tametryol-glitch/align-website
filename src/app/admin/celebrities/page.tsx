@@ -9,6 +9,7 @@ import {
   Loader2, ArrowLeft, X, Save,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { sanitizeSearchInput } from '@/lib/sanitize';
 
 // ── Types (mirrors mobile celebrityService.ts) ──────────────────────
 
@@ -165,8 +166,8 @@ export default function AdminCelebritiesPage() {
       .order('updated_at', { ascending: false })
       .limit(500);
     if (q && q.trim()) {
-      const term = q.trim();
-      query = query.or(`name.ilike.%${term}%,profession.ilike.%${term}%,slug.ilike.%${term}%`);
+      const term = sanitizeSearchInput(q.trim());
+      if (term) query = query.or(`name.ilike.%${term}%,profession.ilike.%${term}%,slug.ilike.%${term}%`);
     }
     const { data } = await query;
     setList(data || []);

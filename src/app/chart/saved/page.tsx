@@ -8,6 +8,7 @@ import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import Link from 'next/link';
 import { ArrowLeft, Save, Trash2, Plus, Star, Search, X, Edit2, Eye, ChevronDown } from 'lucide-react';
+import { sanitizeSearchInput } from '@/lib/sanitize';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { CitySearch } from '@/components/ui/CitySearch';
@@ -105,7 +106,8 @@ export default function SavedChartsPage() {
       .order('updated_at', { ascending: false });
 
     if (searchQuery.trim()) {
-      query = query.ilike('full_name', `%${searchQuery.trim()}%`);
+      const s = sanitizeSearchInput(searchQuery.trim());
+      if (s) query = query.ilike('full_name', `%${s}%`);
     }
 
     const { data } = await query;

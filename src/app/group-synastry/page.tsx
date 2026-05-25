@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, Users, Search, Plus, X, Flame, Mountain, Wind, Droplets } from 'lucide-react';
+import { sanitizeSearchInput } from '@/lib/sanitize';
 import { useTranslation } from 'react-i18next';
 
 interface Member {
@@ -93,7 +94,7 @@ export default function GroupSynastryPage() {
     const { data } = await supabase
       .from('profiles')
       .select('id, display_name, avatar_url, sun_sign, moon_sign, rising_sign')
-      .ilike('display_name', `%${query}%`)
+      .ilike('display_name', `%${sanitizeSearchInput(query)}%`)
       .neq('id', user?.id || '')
       .limit(10);
 

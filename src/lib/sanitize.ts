@@ -1,5 +1,14 @@
 export function sanitizeSearchInput(input: string): string {
-  return input.replace(/[%_.*()\\,]/g, '');
+  if (!input) return '';
+  let result = input;
+  // Remove SQL comment sequences
+  result = result.replace(/--/g, '');
+  // Remove unsafe characters: %, _, ', ", ;, *, (, ), \, ,
+  result = result.replace(/[%_'";.*()\\,]/g, '');
+  result = result.trim();
+  // Limit to 100 characters
+  if (result.length > 100) result = result.slice(0, 100);
+  return result;
 }
 
 const ALLOWED_IMAGE_TYPES = new Set([

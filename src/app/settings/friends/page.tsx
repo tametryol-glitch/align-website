@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, Users, UserPlus, Search, MessageCircle, X, Check, Loader2 } from 'lucide-react';
+import { sanitizeSearchInput } from '@/lib/sanitize';
 
 const SIGN_GLYPHS: Record<string, string> = {
   Aries:'♈', Taurus:'♉', Gemini:'♊', Cancer:'♋', Leo:'♌', Virgo:'♍',
@@ -133,7 +134,7 @@ export default function FriendsPage() {
     const { data } = await supabase
       .from('profiles')
       .select('id, display_name, avatar_url, sun_sign')
-      .ilike('display_name', `%${searchQuery.trim()}%`)
+      .ilike('display_name', `%${sanitizeSearchInput(searchQuery.trim())}%`)
       .neq('id', userId)
       .limit(20);
 
