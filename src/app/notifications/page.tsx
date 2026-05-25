@@ -7,6 +7,11 @@ import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import {
+  prioritizeNotifications as prioritizeByImportance,
+  groupNotifications as groupByPriority,
+  type PrioritizableNotification,
+} from '@/lib/notificationPriorityEngine';
 
 interface Notification {
   id: string;
@@ -390,11 +395,37 @@ export default function NotificationsPage() {
     );
   }
 
+  const NOTIFICATION_PRIORITY_ENABLED = true;
+
   const filteredNotifications = activeTab === 'all'
     ? notifications
     : notifications.filter(n => TYPE_CATEGORIES[n.type] === activeTab);
 
-  const groups = groupNotifications(filteredNotifications);
+  // When priority sorting is enabled, pipe through the priority engine before
+  // the existing grouping logic so the most important notifications surface first.
+  const orderedNotifications = NOTIFICATION_PRIORITY_ENABLED
+    ? (() => {
+        const asPrioritizable: PrioritizableNotification[] = filteredNotifications.map(n => ({
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          body: n.body || '',
+          data: n.data ?? {},
+          is_read: n.is_read,
+          created_at: n.created_at,
+          sender_id: n.actor_id || undefined,
+        }));
+        const scored = prioritizeByImportance(asPrioritizable);
+        const grouped = groupByPriority(scored);
+        // Map back to the original Notification objects in the scored order,
+        // preserving actor_profile and other fields the engine doesn't carry.
+        const idOrder = grouped.map(s => s.id);
+        const byId = new Map(filteredNotifications.map(n => [n.id, n]));
+        return idOrder.map(id => byId.get(id)!).filter(Boolean);
+      })()
+    : filteredNotifications;
+
+  const groups = groupNotifications(orderedNotifications);
   const unreadCount = notifications.filter(n => !n.is_read).length;
   const emptyState = EMPTY_STATES[activeTab];
   const EmptyIcon = emptyState.icon;

@@ -871,7 +871,7 @@ export default function MessagesPage() {
                 onFileUpload={handleFileUpload}
                 onGifSelect={handleGifSelect}
                 onVoiceComplete={handleVoiceComplete}
-                onSmartReplySelect={(reply) => { setNewMessage(reply); inputRef.current?.focus(); }}
+                onSmartReplySelect={(reply) => { setNewMessage(reply); setTimeout(() => inputRef.current?.focus(), 50); }}
                 onToggleGifPicker={() => setShowGifPicker(!showGifPicker)}
                 onToggleAttachMenu={() => setShowAttachMenu(!showAttachMenu)}
                 onCloseAttachMenu={() => setShowAttachMenu(false)}

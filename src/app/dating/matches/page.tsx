@@ -11,7 +11,7 @@ import { getDatingMatches, unmatch } from '@/lib/datingDiscoveryService';
 import { getIcebreakersForMatch } from '@/lib/datingIcebreakerService';
 import {
   Users, Star, Heart, MessageCircle, Sparkles,
-  MoreHorizontal, UserX, Zap,
+  MoreHorizontal, UserX, Zap, Gift, UserCircle,
 } from 'lucide-react';
 import type { DatingMatch } from '@/lib/datingDiscoveryService';
 import type { Icebreaker } from '@/lib/datingIcebreakerService';
@@ -95,6 +95,10 @@ export default function DatingMatchesPage() {
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium"
           style={{ backgroundColor: 'rgba(155,111,246,0.15)', color: '#B8A0FA' }}>
           <Users size={14} /> {t('dating.tabs.matches')}
+        </Link>
+        <Link href="/dating/rewards" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <Gift size={14} /> Rewards
         </Link>
       </div>
 
@@ -257,6 +261,13 @@ function MatchCard({
             >
               <MessageCircle size={14} /> Message
             </button>
+            <Link
+              href={`/user/${userId === match.user_a_id ? match.user_b_id : match.user_a_id}`}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02]"
+              style={{ backgroundColor: 'rgba(155,111,246,0.12)', color: '#B8A0FA' }}
+            >
+              <UserCircle size={14} /> View Profile
+            </Link>
             <button
               onClick={onUnmatchToggle}
               className="w-10 h-10 rounded-xl flex items-center justify-center"

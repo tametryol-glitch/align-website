@@ -603,7 +603,49 @@ export default function FeedPage() {
     }
   }
 
+  const OPTIMISTIC_UPDATES_ENABLED = true;
+
   async function handleReaction(postId: string, emoji: ReactionEmoji) {
+    if (OPTIMISTIC_UPDATES_ENABLED) {
+      // Snapshot the current reactions for this post in case we need to revert
+      const previousPosts = posts;
+
+      // Optimistic: toggle the reaction in local state immediately
+      setPosts((prev) => prev.map((p) => {
+        if (p.id !== postId) return p;
+        const existing = p.reactions.find(r => r.emoji === emoji);
+        let nextReactions: typeof p.reactions;
+        if (existing && existing.userReacted) {
+          // User is un-reacting — decrement count or remove
+          nextReactions = p.reactions
+            .map(r => r.emoji === emoji ? { ...r, count: r.count - 1, userReacted: false } : r)
+            .filter(r => r.count > 0);
+        } else {
+          // User is reacting — remove any previous user reaction, then add this one
+          nextReactions = p.reactions
+            .map(r => r.userReacted ? { ...r, count: r.count - 1, userReacted: false } : r)
+            .filter(r => r.count > 0);
+          const target = nextReactions.find(r => r.emoji === emoji);
+          if (target) {
+            nextReactions = nextReactions.map(r => r.emoji === emoji ? { ...r, count: r.count + 1, userReacted: true } : r);
+          } else {
+            nextReactions = [...nextReactions, { emoji, count: 1, userReacted: true }];
+          }
+        }
+        return { ...p, reactions: nextReactions };
+      }));
+
+      // Fire DB call in background — reconcile or revert
+      toggleReaction(postId, userId, emoji).then((serverReactions) => {
+        setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, reactions: serverReactions } : p));
+      }).catch(() => {
+        // Revert to the snapshot on error
+        setPosts(previousPosts);
+      });
+      return;
+    }
+
+    // Original behavior (with await)
     const updated = await toggleReaction(postId, userId, emoji);
     setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, reactions: updated } : p));
   }

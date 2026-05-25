@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useDatingStore } from '@/stores/datingStore';
 import { getReceivedLikes, getSentLikes, markLikesSeen, likeDatingProfile } from '@/lib/datingDiscoveryService';
-import { Heart, Star, Users, Lock, Crown, Send } from 'lucide-react';
+import { Heart, Star, Users, Lock, Crown, Send, Gift } from 'lucide-react';
 import type { ReceivedLike, SentLike } from '@/lib/datingDiscoveryService';
 
 const ZODIAC_GLYPHS: Record<string, string> = {
@@ -114,6 +114,10 @@ export default function DatingLikesPage() {
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
+        <Link href="/dating/rewards" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <Gift size={14} /> Rewards
+        </Link>
       </div>
 
       {/* Received / Sent toggle */}
@@ -192,6 +196,9 @@ export default function DatingLikesPage() {
               : null;
             const likeType = like.like_type;
 
+            const profileId = isReceived ? like.liker_id : like.liked_user_id;
+            const canViewProfile = isReceived ? canSeeProfiles : true;
+
             return (
               <div key={like.id} className="rounded-2xl overflow-hidden relative" style={{
                 background: 'linear-gradient(180deg, #1E2640 0%, #141826 100%)',
@@ -199,8 +206,12 @@ export default function DatingLikesPage() {
                   ? '1px solid rgba(245,166,35,0.3)'
                   : '1px solid rgba(61,71,96,0.4)',
               }}>
-                {/* Photo area */}
-                <div className="aspect-[3/4] relative bg-bg-tertiary">
+                {/* Photo area — clickable to view profile */}
+                <Link
+                  href={canViewProfile && profileId ? `/user/${profileId}` : '#'}
+                  className={`block aspect-[3/4] relative bg-bg-tertiary ${canViewProfile ? 'cursor-pointer hover:opacity-90 transition-opacity' : 'cursor-default'}`}
+                  onClick={(e) => { if (!canViewProfile) e.preventDefault(); }}
+                >
                   {photo ? (
                     <Image src={photo} alt="Profile" fill className="object-cover" unoptimized />
                   ) : (
@@ -245,10 +256,14 @@ export default function DatingLikesPage() {
                   {/* Gradient overlay */}
                   <div className="absolute bottom-0 left-0 right-0 h-16"
                     style={{ background: 'linear-gradient(transparent, #1E2640)' }} />
-                </div>
+                </Link>
 
-                {/* Info */}
-                <div className="p-3 -mt-4 relative z-10">
+                {/* Info — also clickable */}
+                <Link
+                  href={canViewProfile && profileId ? `/user/${profileId}` : '#'}
+                  className={`block p-3 -mt-4 relative z-10 ${canViewProfile ? 'hover:bg-white/5 transition-colors' : ''}`}
+                  onClick={(e) => { if (!canViewProfile) e.preventDefault(); }}
+                >
                   {((isReceived && canSeeProfiles) || !isReceived) && p?.display_name ? (
                     <>
                       <p className="text-sm font-semibold text-white truncate">
@@ -270,6 +285,7 @@ export default function DatingLikesPage() {
                       {p?.sun_sign ? `${ZODIAC_GLYPHS[p.sun_sign]} ${p.sun_sign}` : t('dating.likes.mysteryAdmirer')}
                     </p>
                   )}
+                </Link>
 
                   {/* Like back button (received tab only) */}
                   {isReceived && canSeeProfiles && (
@@ -286,7 +302,6 @@ export default function DatingLikesPage() {
                       {likeBackLoading === like.liker_id ? t('dating.likes.matching') : t('dating.likes.likeBack')}
                     </button>
                   )}
-                </div>
               </div>
             );
           })}

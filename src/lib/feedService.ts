@@ -1,4 +1,5 @@
 import { createClient } from './supabase';
+import { rankFeedPosts, type RankablePost } from './feedRankingEngine';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type ReactionEmoji = '✨' | '🔥' | '💜' | '🌙' | '⚡' | '😂';
@@ -125,7 +126,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
     commentCountMap.set(c.post_id, (commentCountMap.get(c.post_id) || 0) + 1);
   }
 
-  return rawPosts.map((p: any) => {
+  const feedPosts = rawPosts.map((p: any) => {
     const profile = p.profile as any;
     const comments = commentsMap.get(p.id) || [];
     return {
@@ -151,6 +152,26 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       style: p.style || null,
     } as FeedPost;
   });
+
+  // Algorithmic ranking (flip ALGORITHMIC_FEED_ENABLED to true to activate)
+  const ALGORITHMIC_FEED_ENABLED = true;
+  if (ALGORITHMIC_FEED_ENABLED) {
+    const rankable: RankablePost[] = feedPosts.map((fp) => ({
+      id: fp.id,
+      user_id: fp.userId,
+      created_at: fp.createdAt,
+      likes_count: 0,
+      comments_count: fp.commentCount,
+      reactions_count: fp.reactions.reduce((sum: number, r: PostReaction) => sum + r.count, 0),
+      reposts_count: 0,
+      visibility: fp.visibility,
+    }));
+    const ranked = rankFeedPosts(rankable, userId);
+    const idOrder = ranked.map((r) => r.id);
+    return feedPosts.sort((a, b) => idOrder.indexOf(a.id) - idOrder.indexOf(b.id));
+  }
+
+  return feedPosts;
 }
 
 export async function getUserPosts(targetUserId: string, currentUserId: string): Promise<FeedPost[]> {

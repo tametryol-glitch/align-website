@@ -19,7 +19,8 @@ import { getDatingProfile } from '@/lib/datingProfileService';
 import { DatingProfileCard } from '@/components/dating/DatingProfileCard';
 import { MatchCelebration } from '@/components/dating/MatchCelebration';
 import { DatingFilterDrawer } from '@/components/dating/DatingFilterDrawer';
-import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield, UserCircle } from 'lucide-react';
+import { Sparkles, Heart, Users, SlidersHorizontal, Star, Camera, Mic, Shield, UserCircle, Gift } from 'lucide-react';
+import { DailyCosmicCard } from '@/components/DailyCosmicCard';
 
 export default function DatingDiscoveryPage() {
   const { t } = useTranslation();
@@ -272,6 +273,10 @@ export default function DatingDiscoveryPage() {
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
+        <Link href="/dating/rewards" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <Gift size={14} /> Rewards
+        </Link>
         <Link href="/dating/profile" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-text-tertiary hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <UserCircle size={14} /> {t('dating.tabs.myProfile')}
@@ -284,6 +289,15 @@ export default function DatingDiscoveryPage() {
           style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
           {actionError}
         </div>
+      )}
+
+      {/* Daily Cosmic Card */}
+      {profile?.sun_sign && (
+        <DailyCosmicCard
+          sunSign={profile.sun_sign}
+          moonSign={profile.moon_sign}
+          risingSign={profile.rising_sign}
+        />
       )}
 
       {/* Main content */}

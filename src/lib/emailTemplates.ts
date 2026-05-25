@@ -221,6 +221,175 @@ export const EMAIL_TEMPLATES = {
       </p>
     `),
   }),
+
+  // -------------------------------------------------------------------------
+  // Re-engagement emails — sent to dormant users via scheduleReengagementEmails
+  // -------------------------------------------------------------------------
+
+  /**
+   * Day 7 inactive — gentle nudge about missed transits.
+   */
+  day7_inactive: (name: string) => ({
+    subject: 'The stars have been busy while you were away ✨',
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">A lot has shifted, ${name}</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        While you have been away, the planets have not stopped moving. Several transits have
+        crossed key points in your birth chart this week, and some of them may explain
+        shifts you have been feeling in your mood, relationships, or motivation.
+      </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Your personalized transit timeline is waiting for you inside Align. Come back
+        and see how the cosmos has been shaping your week — you might be surprised by
+        what the stars have to say.
+      </p>
+      <!-- Highlight box -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 8px;font-size:14px;color:#a855f7;font-weight:600;">Did you know?</p>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:#c4c8e0;">
+            Even a few days away can mean missing critical planetary aspects that directly
+            affect your energy, clarity, and decision-making. Checking in regularly helps
+            you stay aligned with the cosmic flow.
+          </p>
+        </td></tr>
+      </table>
+      ${ctaButton('See What You Missed', `${APP_URL}/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Your transit insights update daily — there is always something new to discover.
+      </p>
+    `),
+  }),
+
+  /**
+   * Day 14 inactive — curiosity/FOMO about likes and matches.
+   */
+  day14_inactive: (name: string) => ({
+    subject: 'Someone may have liked your profile 💜',
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">${name}, you have admirers</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Since you have been away, other members have been browsing profiles — and yours
+        may have caught someone's eye. New likes and compatibility matches could be
+        waiting for you right now.
+      </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Align's cosmic compatibility engine matches you with people whose charts
+        harmonize with yours. These are not random connections — they are written in the stars.
+      </p>
+      <!-- Stats highlight -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;text-align:center;">
+          <p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#a855f7;">?</p>
+          <p style="margin:0;font-size:14px;color:#c4c8e0;">
+            potential likes waiting for you
+          </p>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Do not keep them waiting too long — the cosmic window for connection
+        is always moving. Log in and see who the universe has in mind for you.
+      </p>
+      ${ctaButton('Check Your Likes', `${APP_URL}/dating/likes`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        New matches appear as members join. Check back often.
+      </p>
+    `),
+  }),
+
+  /**
+   * Day 30 inactive — emotional win-back with a free reading offer.
+   */
+  day30_inactive: (name: string) => ({
+    subject: 'We miss your cosmic energy 🌙',
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">It has been a while, ${name}</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        A full month has passed since we last saw you, and the cosmos has not slowed down.
+        Major planetary shifts have been reshaping the energetic landscape — including
+        significant movements through your chart that you may want to know about.
+      </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        We want to welcome you back with something special:
+      </p>
+      <!-- Gift box -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:linear-gradient(135deg,#1a1040,#1e2240);border-radius:12px;border:1px solid #7c3aed;">
+        <tr><td style="padding:20px;text-align:center;">
+          <p style="margin:0 0 4px;font-size:28px;">🎁</p>
+          <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#a855f7;">A Free Reading — On Us</p>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:#c4c8e0;">
+            Come back to Align and unlock a complimentary personalized reading.
+            No strings attached — consider it a cosmic welcome-back gift.
+          </p>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Your birth chart is still here, fully mapped and ready. All the insights, transits,
+        and compatibility scores you have been missing are just a tap away.
+      </p>
+      ${ctaButton('Claim Your Free Reading', `${APP_URL}/readings`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        This offer is available for a limited time. We hope to see you soon.
+      </p>
+    `),
+  }),
+
+  // -------------------------------------------------------------------------
+  // Weekly digest — sent to active users via scheduleWeeklyDigestEmails
+  // -------------------------------------------------------------------------
+
+  /**
+   * Weekly cosmic digest with transit highlights and community activity.
+   */
+  weekly_digest: (name: string) => ({
+    subject: 'Your Cosmic Week Ahead ☀️',
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Happy new week, ${name}!</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Here is your cosmic snapshot for the week ahead. The planets are always in motion,
+        and staying tuned in helps you make the most of every energy shift.
+      </p>
+      <!-- Transit highlights -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 12px;font-size:16px;font-weight:700;color:#a855f7;">This Week's Transit Highlights</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:6px 0;font-size:14px;color:#c4c8e0;">
+              <span style="color:#f59e0b;margin-right:8px;">&#9679;</span>
+              Key planetary aspects are activating — check your dashboard for personal impacts
+            </td></tr>
+            <tr><td style="padding:6px 0;font-size:14px;color:#c4c8e0;">
+              <span style="color:#f59e0b;margin-right:8px;">&#9679;</span>
+              Lunar phases this week may influence emotions and intuition
+            </td></tr>
+            <tr><td style="padding:6px 0;font-size:14px;color:#c4c8e0;">
+              <span style="color:#f59e0b;margin-right:8px;">&#9679;</span>
+              Your personalized transit timeline has been updated with new insights
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+      <!-- Community activity -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 12px;font-size:16px;font-weight:700;color:#a855f7;">Community Pulse</p>
+          <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#c4c8e0;">
+            New members have joined the Align community this week. Fresh compatibility
+            matches and cosmic conversations are happening — do not miss out on the connections
+            the universe has lined up for you.
+          </p>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Dive into your full personalized forecast inside Align. Your chart has the details
+        the stars want you to see this week.
+      </p>
+      ${ctaButton('See Full Forecast', `${APP_URL}/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Sent every week to keep you cosmically aligned.
+      </p>
+    `),
+  }),
 };
 
 export type EmailTemplateKey = keyof typeof EMAIL_TEMPLATES;
