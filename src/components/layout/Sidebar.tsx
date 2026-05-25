@@ -17,6 +17,7 @@ import {
 const NAV_ITEMS = [
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
+  { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
   { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star },

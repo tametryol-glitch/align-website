@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -9,12 +9,71 @@ import { useAuthStore } from '@/stores/authStore';
 import { useDatingStore } from '@/stores/datingStore';
 import { getDatingMatches, unmatch } from '@/lib/datingDiscoveryService';
 import { getIcebreakersForMatch } from '@/lib/datingIcebreakerService';
+import { getCosmicMood } from '@/lib/cosmicTimingEngine';
+import type { ZodiacSign } from '@/lib/cosmicTimingEngine';
+import {
+  getCompatibilityBreakdown,
+  getStrengths,
+  predictRelationshipTrend,
+} from '@/lib/predictiveCompatibilityEngine';
+import type { UserProfile as PredictiveUserProfile } from '@/lib/predictiveCompatibilityEngine';
+import { generateCosmicDNA } from '@/lib/cosmicDnaEngine';
+import type { ChartData } from '@/lib/cosmicDnaEngine';
 import {
   Users, Star, Heart, MessageCircle, Sparkles,
   MoreHorizontal, UserX, Zap, Gift, UserCircle,
 } from 'lucide-react';
 import type { DatingMatch } from '@/lib/datingDiscoveryService';
 import type { Icebreaker } from '@/lib/datingIcebreakerService';
+
+/** Feature flags for predictive engines (web has no featureFlags module) */
+const PREDICTIVE_COMPATIBILITY_ENABLED = true;
+
+const SIGN_NAME_TO_INDEX: Record<string, number> = {
+  Aries: 0, Taurus: 1, Gemini: 2, Cancer: 3,
+  Leo: 4, Virgo: 5, Libra: 6, Scorpio: 7,
+  Sagittarius: 8, Capricorn: 9, Aquarius: 10, Pisces: 11,
+};
+
+/**
+ * Build a minimal PredictiveUserProfile from available sign strings.
+ * Uses sun_sign for all required fields if specific data is unavailable.
+ */
+function buildPredictiveProfile(
+  sunSign: string | null | undefined,
+  moonSign?: string | null,
+  risingSign?: string | null,
+): PredictiveUserProfile | null {
+  if (!sunSign || SIGN_NAME_TO_INDEX[sunSign] === undefined) return null;
+  const sun: number = SIGN_NAME_TO_INDEX[sunSign];
+  const moon: number = (moonSign ? SIGN_NAME_TO_INDEX[moonSign] : undefined) ?? sun;
+  const rising: number = (risingSign ? SIGN_NAME_TO_INDEX[risingSign] : undefined) ?? sun;
+  // Generate a minimal cosmicDNA from available sign data
+  const minimalChart: ChartData = {
+    signs: {
+      sun, moon, mercury: sun, venus: sun, mars: sun,
+      jupiter: sun, saturn: sun, uranus: sun, neptune: sun,
+      pluto: sun, northNode: sun, rising,
+    },
+    houses: {
+      sun: 1, moon: 4, mercury: 3, venus: 7, mars: 1,
+      jupiter: 9, saturn: 10, uranus: 11, neptune: 12,
+      pluto: 8, northNode: 6, rising: 1,
+    },
+    aspects: [],
+  };
+  return {
+    sunSign: sun,
+    moonSign: moon,
+    mercurySign: sun,
+    venusSign: sun,
+    marsSign: sun,
+    jupiterSign: sun,
+    saturnSign: sun,
+    risingSign: rising,
+    cosmicDNA: generateCosmicDNA(minimalChart),
+  };
+}
 
 const ZODIAC_GLYPHS: Record<string, string> = {
   Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋',
@@ -36,7 +95,7 @@ function daysSince(dateStr: string): number {
 export default function DatingMatchesPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, isLoading: authLoading } = useAuthStore();
+  const { user, profile: currentUserProfile, isLoading: authLoading } = useAuthStore();
   const { matches, setMatches, setMatchesLoading, matchesLoading, removeMatch } = useDatingStore();
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [icebreakers, setIcebreakers] = useState<Record<string, Icebreaker[]>>({});
@@ -127,6 +186,9 @@ export default function DatingMatchesPage() {
               key={match.id}
               match={match}
               userId={user?.id || ''}
+              currentUserSunSign={currentUserProfile?.sun_sign}
+              currentUserMoonSign={currentUserProfile?.moon_sign}
+              currentUserRisingSign={currentUserProfile?.rising_sign}
               icebreakers={icebreakers[match.id]}
               expanded={selectedMatch === match.id}
               unmatchConfirm={unmatchConfirm === match.id}
@@ -153,6 +215,9 @@ export default function DatingMatchesPage() {
 function MatchCard({
   match,
   userId,
+  currentUserSunSign,
+  currentUserMoonSign,
+  currentUserRisingSign,
   icebreakers,
   expanded,
   unmatchConfirm,
@@ -163,6 +228,9 @@ function MatchCard({
 }: {
   match: DatingMatch;
   userId: string;
+  currentUserSunSign?: string | null;
+  currentUserMoonSign?: string | null;
+  currentUserRisingSign?: string | null;
   icebreakers?: Icebreaker[];
   expanded: boolean;
   unmatchConfirm: boolean;
@@ -175,6 +243,28 @@ function MatchCard({
   const photo = partner?.photo_urls?.[0] || partner?.avatar_url;
   const score = match.compatibility_score;
   const days = daysSince(match.journey_started_at);
+
+  const cosmicMood = useMemo(() => {
+    const partnerSign = (partner?.sun_sign?.toLowerCase() || 'aries') as ZodiacSign;
+    return getCosmicMood(partnerSign, new Date());
+  }, [partner?.sun_sign]);
+
+  // Predictive compatibility insights
+  const predictiveInsights = useMemo(() => {
+    if (!PREDICTIVE_COMPATIBILITY_ENABLED || !partner?.sun_sign) return null;
+    const profileA = buildPredictiveProfile(currentUserSunSign || 'Aries', currentUserMoonSign, currentUserRisingSign);
+    const profileB = buildPredictiveProfile(partner.sun_sign, partner.moon_sign, partner.rising_sign);
+    if (!profileA || !profileB) return null;
+    const breakdown = getCompatibilityBreakdown(profileA, profileB);
+    const strengths = getStrengths(breakdown);
+    const trend = predictRelationshipTrend(score ?? breakdown.overall);
+    return { strengths: strengths.slice(0, 3), trend };
+  }, [partner?.sun_sign, partner?.moon_sign, partner?.rising_sign, score, currentUserSunSign, currentUserMoonSign, currentUserRisingSign]);
+
+  const MOOD_ICONS: Record<string, string> = {
+    electric: '⚡', flowing: '🌊', grounded: '🌿',
+    introspective: '🌙', passionate: '🔥',
+  };
 
   return (
     <div className="rounded-2xl overflow-hidden" style={{
@@ -215,6 +305,9 @@ function MatchCard({
             <span>·</span>
             <span>Matched {days === 0 ? 'today' : `${days}d ago`}</span>
           </div>
+          <span className="text-xs" style={{ color: '#A78BFA' }}>
+            {MOOD_ICONS[cosmicMood.mood] || '🌙'} {cosmicMood.description}
+          </span>
         </div>
 
         {/* Score */}
@@ -249,6 +342,19 @@ function MatchCard({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Predictive Compatibility Insights */}
+          {predictiveInsights && predictiveInsights.strengths.length > 0 && (
+            <div className="pt-2">
+              <p className="text-xs font-medium text-accent-secondary mb-1">Compatibility Insights</p>
+              {predictiveInsights.strengths.map((s, i) => (
+                <p key={i} className="text-xs text-text-secondary">{s}</p>
+              ))}
+              <p className="text-xs text-text-muted mt-1">
+                Trend: {predictiveInsights.trend === 'rising' ? 'Rising' : predictiveInsights.trend === 'stable' ? 'Stable' : 'Challenging'}
+              </p>
             </div>
           )}
 

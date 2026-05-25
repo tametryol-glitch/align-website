@@ -1,10 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { Heart, X, Sparkles, Shield, ChevronLeft, ChevronRight, Mic, Video, MoreVertical, Flag, Ban } from 'lucide-react';
 import type { DatingCandidate } from '@/lib/datingDiscoveryService';
+import { generateCosmicDNA, getCosmicDNAFingerprint } from '@/lib/cosmicDnaEngine';
+import type { ChartData } from '@/lib/cosmicDnaEngine';
+
+/** Feature flag for cosmic DNA (web has no featureFlags module) */
+const COSMIC_DNA_ENABLED = true;
+
+const SIGN_NAME_TO_INDEX: Record<string, number> = {
+  Aries: 0, Taurus: 1, Gemini: 2, Cancer: 3,
+  Leo: 4, Virgo: 5, Libra: 6, Scorpio: 7,
+  Sagittarius: 8, Capricorn: 9, Aquarius: 10, Pisces: 11,
+};
 
 interface DatingProfileCardProps {
   candidate: DatingCandidate;
@@ -59,6 +70,29 @@ export function DatingProfileCard({
     : candidate.avatar_url ? [candidate.avatar_url] : [];
 
   const score = candidate.compatibility_score ?? 0;
+
+  // Cosmic DNA fingerprint
+  const cosmicFingerprint = useMemo(() => {
+    if (!COSMIC_DNA_ENABLED || !candidate.sun_sign || SIGN_NAME_TO_INDEX[candidate.sun_sign] === undefined) return null;
+    const sun: number = SIGN_NAME_TO_INDEX[candidate.sun_sign];
+    const moon: number = (candidate.moon_sign ? SIGN_NAME_TO_INDEX[candidate.moon_sign] : undefined) ?? sun;
+    const rising: number = (candidate.rising_sign ? SIGN_NAME_TO_INDEX[candidate.rising_sign] : undefined) ?? sun;
+    const chart: ChartData = {
+      signs: {
+        sun, moon, mercury: sun, venus: sun, mars: sun,
+        jupiter: sun, saturn: sun, uranus: sun, neptune: sun,
+        pluto: sun, northNode: sun, rising,
+      },
+      houses: {
+        sun: 1, moon: 4, mercury: 3, venus: 7, mars: 1,
+        jupiter: 9, saturn: 10, uranus: 11, neptune: 12,
+        pluto: 8, northNode: 6, rising: 1,
+      },
+      aspects: [],
+    };
+    const dna = generateCosmicDNA(chart);
+    return getCosmicDNAFingerprint(dna);
+  }, [candidate.sun_sign, candidate.moon_sign, candidate.rising_sign]);
 
   return (
     <div className="relative w-full max-w-md mx-auto rounded-3xl overflow-hidden" style={{
@@ -207,7 +241,7 @@ export function DatingProfileCard({
         </div>
 
         {/* Signs */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-2">
           {candidate.sun_sign && (
             <span className="text-sm text-text-secondary">
               {ZODIAC_GLYPHS[candidate.sun_sign]} {candidate.sun_sign}
@@ -224,6 +258,19 @@ export function DatingProfileCard({
             </span>
           )}
         </div>
+
+        {/* Cosmic DNA Fingerprint */}
+        {cosmicFingerprint && (
+          <div className="mb-3">
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{
+              backgroundColor: 'rgba(139,92,246,0.12)',
+              color: '#C4B5FD',
+              border: '1px solid rgba(139,92,246,0.2)',
+            }}>
+              Cosmic DNA: {cosmicFingerprint}
+            </span>
+          </div>
+        )}
 
         {/* Intent */}
         {candidate.relationship_primary_intent && (

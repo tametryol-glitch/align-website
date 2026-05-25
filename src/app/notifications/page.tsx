@@ -12,6 +12,7 @@ import {
   groupNotifications as groupByPriority,
   type PrioritizableNotification,
 } from '@/lib/notificationPriorityEngine';
+import { getUserEngagementPattern, shouldSendNow } from '@/lib/smartNotificationScheduler';
 
 interface Notification {
   id: string;
@@ -396,6 +397,8 @@ export default function NotificationsPage() {
   }
 
   const NOTIFICATION_PRIORITY_ENABLED = true;
+  const SMART_SCHEDULING_ENABLED = true;
+  const engagementPattern = SMART_SCHEDULING_ENABLED ? getUserEngagementPattern([]) : null;
 
   const filteredNotifications = activeTab === 'all'
     ? notifications
@@ -484,6 +487,9 @@ export default function NotificationsPage() {
             if (isSingle) {
               const n = firstNotification;
               const link = getNotificationLink(n);
+              const isOptimalTime = SMART_SCHEDULING_ENABLED && engagementPattern
+                ? shouldSendNow(engagementPattern, new Date(n.created_at).getHours(), 'medium')
+                : false;
               return (
                 <Link
                   key={n.id}
@@ -509,7 +515,9 @@ export default function NotificationsPage() {
                     {n.body && (
                       <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{n.body}</p>
                     )}
-                    <p className="text-[10px] text-text-muted mt-1">{timeAgo(n.created_at)}</p>
+                    <p className="text-[10px] text-text-muted mt-1">
+                      {timeAgo(n.created_at)}{isOptimalTime && ' ⚡'}
+                    </p>
                   </div>
                   {!n.is_read && (
                     <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />

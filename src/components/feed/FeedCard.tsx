@@ -9,6 +9,41 @@ import {
 } from '@/lib/feedService';
 import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users } from 'lucide-react';
 import Link from 'next/link';
+import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creatorScoreEngine';
+import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
+
+// ── Feature flags (web has no central featureFlags config) ─────────
+const CREATOR_SCORE_ENABLED = true;
+const CONTENT_VIRALITY_ENABLED = true;
+
+// ── Creator Score Estimate (lightweight from post data) ───────────
+function estimateCreatorTierFromPost(post: FeedPost): CreatorTier {
+  const likes = post.reactions.reduce((sum, r) => sum + r.count, 0);
+  const comments = post.commentCount || post.comments.length;
+  const engagement = Math.min(100, (likes * 3) + (comments * 5));
+  return getCreatorTier(engagement);
+}
+
+// ── Virality Indicator ────────────────────────────────────────────
+function getViralityIndicatorFromPost(post: FeedPost): { label: string; emoji: string } | null {
+  const metrics: ContentMetrics = {
+    id: post.id,
+    created_at: post.createdAt,
+    content_type: post.videoUrl ? 'video' : post.imageUrl ? 'image' : 'text',
+    likes_count: post.reactions.reduce((sum, r) => sum + r.count, 0),
+    comments_count: post.commentCount || post.comments.length,
+    impressions_count: Math.max(post.reactions.reduce((sum, r) => sum + r.count, 0) * 10, 1),
+    caption: post.content || '',
+    creator_score: 50,
+    follower_count: 100,
+  };
+  const score = predictViralScore(metrics);
+  const tier = getViralTier(score);
+  if (tier === 'supernova') return { label: 'Supernova', emoji: '\u{1F4A5}' };
+  if (tier === 'viral') return { label: 'Trending', emoji: '\u{1F525}' };
+  if (tier === 'rising') return { label: 'Rising', emoji: '⚡' };
+  return null;
+}
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -192,6 +227,12 @@ export function FeedCard({
             <Link href={`/user/${post.userId}`} className="font-semibold text-sm hover:underline" style={textColor ? { color: textColor } : undefined}>
               {post.userName}
             </Link>
+            {CREATOR_SCORE_ENABLED && (() => {
+              const tier = estimateCreatorTierFromPost(post);
+              if (tier === 'newcomer') return null;
+              const badge = getCreatorBadge(tier);
+              return <span className="ml-1 text-xs" title={badge.label}>{badge.emoji}</span>;
+            })()}
             {post.type !== 'text' && TYPE_BADGES[post.type] && (
               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${TYPE_BADGES[post.type].color}`}>
                 {TYPE_BADGES[post.type].label}
@@ -346,6 +387,19 @@ export function FeedCard({
           ))}
         </div>
       )}
+
+      {/* Virality Indicator */}
+      {CONTENT_VIRALITY_ENABLED && (() => {
+        const indicator = getViralityIndicatorFromPost(post);
+        if (!indicator) return null;
+        return (
+          <div className="px-5 pb-2">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-500/12 text-orange-400">
+              {indicator.emoji} {indicator.label}
+            </span>
+          </div>
+        );
+      })()}
 
       {/* Action bar */}
       <div className="flex items-center border-t border-border-primary">
