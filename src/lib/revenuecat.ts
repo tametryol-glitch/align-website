@@ -52,10 +52,10 @@ export const PLANS = {
   starter: {
     name: 'Starter',
     price: 4.99,
-    annualPrice: 2.99,
-    annualTotal: 35.88,
-    annualSavings: 24,
-    annualSavingsPercent: 40,
+    annualPrice: 3.49,
+    annualTotal: 41.88,
+    annualSavings: 18,
+    annualSavingsPercent: 30,
     aiReadings: 10,
     features: [
       '10 AI-powered readings per month',
@@ -69,10 +69,10 @@ export const PLANS = {
   light: {
     name: 'Light',
     price: 9,
-    annualPrice: 5.49,
-    annualTotal: 65.88,
-    annualSavings: 42,
-    annualSavingsPercent: 39,
+    annualPrice: 6.49,
+    annualTotal: 77.88,
+    annualSavings: 30,
+    annualSavingsPercent: 28,
     aiReadings: 30,
     features: [
       'Everything in Starter',
@@ -86,10 +86,10 @@ export const PLANS = {
   premium: {
     name: 'Premium',
     price: 19,
-    annualPrice: 11.49,
-    annualTotal: 137.88,
-    annualSavings: 90,
-    annualSavingsPercent: 40,
+    annualPrice: 13.49,
+    annualTotal: 161.88,
+    annualSavings: 66,
+    annualSavingsPercent: 29,
     aiReadings: 100,
     features: [
       'Everything in Light',
@@ -105,10 +105,10 @@ export const PLANS = {
   pro: {
     name: 'Pro',
     price: 29,
-    annualPrice: 17.99,
-    annualTotal: 215.88,
-    annualSavings: 132,
-    annualSavingsPercent: 38,
+    annualPrice: 20.49,
+    annualTotal: 245.88,
+    annualSavings: 102,
+    annualSavingsPercent: 29,
     aiReadings: 300,
     features: [
       'Everything in Premium',
