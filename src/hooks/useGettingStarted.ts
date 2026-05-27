@@ -99,8 +99,7 @@ export function useGettingStarted() {
           },
           { onConflict: 'user_id' },
         )
-        .then(() => {})
-        .catch(() => {});
+        .then(() => { /* synced */ });
     },
     [supabase, userId],
   );
@@ -135,7 +134,8 @@ export function useGettingStarted() {
           const remoteDismissed = data.dismissed ?? false;
 
           // Union of local + remote completed items
-          const merged = [...new Set([...localIds, ...remoteItems])];
+          const mergedSet = new Set([...localIds, ...remoteItems]);
+          const merged = Array.from(mergedSet);
           const mergedDismissed = localDismissed || remoteDismissed;
 
           setCompletedIds(merged);

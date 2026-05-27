@@ -12,9 +12,10 @@ import {
 } from '@/lib/feedService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
-import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare } from 'lucide-react';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
 
@@ -649,6 +650,8 @@ export default function FeedPage() {
   const [editingPost, setEditingPost] = useState<{ id: string; content: string } | null>(null);
   const [editText, setEditText] = useState('');
   const [editSaving, setEditSaving] = useState(false);
+  const [trendingHashtags, setTrendingHashtags] = useState<{ tag: string; count: number }[]>([]);
+  const [activeHashtagFilter, setActiveHashtagFilter] = useState<string | null>(null);
 
   const loadFeed = useCallback(async () => {
     if (!userId) return;
@@ -661,6 +664,10 @@ export default function FeedPage() {
       setPosts(data);
       setBookmarkedIds(bookmarks);
       setHasMore(data.length >= 30);
+
+      // Index hashtags from loaded posts & load trending
+      data.forEach(p => { if (p.content) indexPostHashtags(p.id, p.content); });
+      setTrendingHashtags(getTrendingHashtags(8));
     } catch { /* ignore */ }
     setLoading(false);
   }, [userId]);
@@ -749,6 +756,11 @@ export default function FeedPage() {
       style: rawPost.style || null,
     };
     setPosts((prev) => [newPost, ...prev]);
+    // Index hashtags from the new post
+    if (newPost.content) {
+      indexPostHashtags(newPost.id, newPost.content);
+      setTrendingHashtags(getTrendingHashtags(8));
+    }
   }
 
   async function handleDelete(postId: string) {
@@ -835,16 +847,45 @@ export default function FeedPage() {
         }}
       />
 
-      {/* Trending Tags */}
-      <div className="flex gap-2 overflow-x-auto mb-6 scrollbar-hide">
-        {getDynamicTags().map((tag) => (
-          <span
-            key={tag}
-            className="px-3 py-1.5 rounded-full bg-bg-card border border-border-primary text-xs text-text-secondary whitespace-nowrap"
-          >
-            {tag}
-          </span>
-        ))}
+      {/* Trending Hashtags */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="w-4 h-4 text-accent-primary" />
+          <h3 className="text-sm font-semibold text-text-primary">{t('feed.trending.title', 'Trending')}</h3>
+          {activeHashtagFilter && (
+            <button
+              onClick={() => setActiveHashtagFilter(null)}
+              className="ml-auto text-xs text-accent-primary hover:text-accent-secondary transition-colors flex items-center gap-1"
+            >
+              <X className="w-3 h-3" /> {t('feed.trending.clearFilter', 'Clear filter')}
+            </button>
+          )}
+        </div>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {(trendingHashtags.length > 0 ? trendingHashtags : getDynamicTags().map(tag => ({ tag, count: 0 }))).map((item) => {
+            const tag = typeof item === 'string' ? item : item.tag;
+            const count = typeof item === 'string' ? 0 : item.count;
+            const isActive = activeHashtagFilter === tag;
+            return (
+              <button
+                key={tag}
+                onClick={() => setActiveHashtagFilter(isActive ? null : tag)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs whitespace-nowrap border transition-colors',
+                  isActive
+                    ? 'border-accent-primary bg-accent-muted text-accent-primary'
+                    : 'border-border-primary bg-bg-card text-text-secondary hover:border-accent-primary/40 hover:text-text-primary'
+                )}
+              >
+                <Hash className="w-3 h-3" />
+                <span>{tag.replace(/^#/, '')}</span>
+                {count > 0 && (
+                  <span className="text-[10px] text-text-muted">{count}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Feed */}
@@ -878,20 +919,51 @@ export default function FeedPage() {
       )}
 
       <div className="space-y-4">
-        {posts.map((post) => (
-          <FeedCard
-            key={post.id}
-            post={post}
-            currentUserId={userId}
-            onReaction={handleReaction}
-            onComment={setCommentPostId}
-            onDelete={handleDelete}
-            onEdit={handleStartEdit}
-            onRepost={handleRepost}
-            isBookmarked={bookmarkedIds.has(post.id)}
-            onBookmark={handleBookmark}
-          />
-        ))}
+        {(() => {
+          const filteredPosts = activeHashtagFilter
+            ? (() => {
+                const matchingIds = new Set(getPostIdsByHashtag(activeHashtagFilter));
+                const normalizedTag = activeHashtagFilter.startsWith('#')
+                  ? activeHashtagFilter.toLowerCase()
+                  : `#${activeHashtagFilter.toLowerCase()}`;
+                return posts.filter(p =>
+                  matchingIds.has(p.id) || p.content.toLowerCase().includes(normalizedTag)
+                );
+              })()
+            : posts;
+
+          if (filteredPosts.length === 0 && activeHashtagFilter) {
+            return (
+              <div className="card text-center py-12">
+                <Hash className="w-8 h-8 text-text-muted mx-auto mb-3" />
+                <p className="text-sm text-text-secondary mb-1">
+                  {t('feed.trending.noResults', 'No posts found for {{tag}}', { tag: activeHashtagFilter })}
+                </p>
+                <button
+                  onClick={() => setActiveHashtagFilter(null)}
+                  className="text-xs text-accent-primary hover:text-accent-secondary mt-2"
+                >
+                  {t('feed.trending.clearFilter', 'Clear filter')}
+                </button>
+              </div>
+            );
+          }
+
+          return filteredPosts.map((post) => (
+            <FeedCard
+              key={post.id}
+              post={post}
+              currentUserId={userId}
+              onReaction={handleReaction}
+              onComment={setCommentPostId}
+              onDelete={handleDelete}
+              onEdit={handleStartEdit}
+              onRepost={handleRepost}
+              isBookmarked={bookmarkedIds.has(post.id)}
+              onBookmark={handleBookmark}
+            />
+          ));
+        })()}
       </div>
 
       {/* Load more */}

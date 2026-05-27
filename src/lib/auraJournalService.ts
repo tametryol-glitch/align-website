@@ -171,6 +171,9 @@ export async function getAuraJournalEntries(
   const userId = getMyId();
   if (!userId) return [];
 
+  // Read local entries for instant rendering / merge
+  const localEntries = getFromLocalStorage(999, 0);
+
   try {
     const supabase = createClient();
     const { data, error } = await supabase
@@ -182,14 +185,33 @@ export async function getAuraJournalEntries(
 
     if (error) throw error;
     if (data && data.length > 0) {
-      return data.map(rowToEntry);
+      const remoteEntries = data.map(rowToEntry);
+
+      // Merge: remote entries + any local-only entries not yet synced
+      const remoteIds = new Set(remoteEntries.map(e => e.id));
+      const localOnly = localEntries.filter(
+        e => (e.id.startsWith('local-') || e.id.startsWith('failed-')) && !remoteIds.has(e.id),
+      );
+      const merged = [...remoteEntries, ...localOnly]
+        .sort((a, b) => new Date(b.scanDate).getTime() - new Date(a.scanDate).getTime())
+        .slice(offset, offset + limit);
+
+      // Cache remote entries locally for offline access
+      cacheToLocalStorage(remoteEntries);
+
+      // Fire-and-forget: push local-only entries to Supabase
+      if (localOnly.length > 0) {
+        syncLocalToSupabase(localOnly, userId).catch(() => {});
+      }
+
+      return merged;
     }
   } catch (err) {
     console.warn('[AuraJournal] Supabase fetch failed, checking local:', err);
   }
 
   // Fallback: read from localStorage
-  return getFromLocalStorage(limit, offset);
+  return localEntries.slice(offset, offset + limit);
 }
 
 function getFromLocalStorage(limit: number, offset: number): AuraJournalEntry[] {
@@ -200,6 +222,74 @@ function getFromLocalStorage(limit: number, offset: number): AuraJournalEntry[] 
     return entries.slice(offset, offset + limit);
   } catch {
     return [];
+  }
+}
+
+function cacheToLocalStorage(entries: AuraJournalEntry[]): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const local: AuraJournalEntry[] = raw ? JSON.parse(raw) : [];
+    // Keep local-only entries, replace everything else with remote data
+    const localOnly = local.filter(e => e.id.startsWith('local-') || e.id.startsWith('failed-'));
+    const remoteIds = new Set(entries.map(e => e.id));
+    const merged = [
+      ...entries,
+      ...localOnly.filter(e => !remoteIds.has(e.id)),
+    ].sort((a, b) => new Date(b.scanDate).getTime() - new Date(a.scanDate).getTime());
+    if (merged.length > 50) merged.length = 50;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  } catch {}
+}
+
+async function syncLocalToSupabase(
+  localEntries: AuraJournalEntry[],
+  userId: string,
+): Promise<void> {
+  const supabase = createClient();
+  for (const entry of localEntries) {
+    try {
+      const { data, error } = await supabase
+        .from('aura_sessions')
+        .insert({
+          user_id: userId,
+          scan_date: entry.scanDate,
+          scan_type: entry.scanType,
+          outer_aura_color: entry.outerAuraColor,
+          outer_aura_hex: entry.outerAuraHex,
+          inner_aura_color: entry.innerAuraColor,
+          inner_aura_hex: entry.innerAuraHex,
+          emotional_core_color: entry.emotionalCoreColor,
+          emotional_core_hex: entry.emotionalCoreHex,
+          chakra_focus: entry.chakraFocus,
+          mood: entry.mood,
+          life_area: entry.lifeArea,
+          moon_sign: entry.moonSign,
+          moon_phase: entry.moonPhase,
+          transit_highlights: entry.transitHighlights,
+          reading_summary: entry.readingSummary,
+          full_reading: entry.fullReading,
+          data_sources: JSON.stringify(entry.dataSources),
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        // Replace local ID with remote ID in localStorage
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const entries: AuraJournalEntry[] = JSON.parse(raw);
+            const idx = entries.findIndex(e => e.id === entry.id);
+            if (idx >= 0) {
+              entries[idx] = rowToEntry(data);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            }
+          }
+        } catch {}
+      }
+    } catch {
+      // Skip this entry, will retry next load
+    }
   }
 }
 

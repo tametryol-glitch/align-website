@@ -12,6 +12,7 @@ import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
   Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
+  Bookmark, BarChart3, Palette,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -24,13 +25,16 @@ const NAV_ITEMS = [
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
+  { href: '/polls', labelKey: 'components.sidebar.polls', icon: BarChart3 },
   { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
   { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
   { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },
+  { href: '/bookmarks', labelKey: 'components.sidebar.bookmarks', icon: Bookmark },
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
+  { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
 ];
 

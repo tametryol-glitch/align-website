@@ -22,7 +22,7 @@ import { generateCosmicDNA } from '@/lib/cosmicDnaEngine';
 import type { ChartData } from '@/lib/cosmicDnaEngine';
 import {
   Users, Star, Heart, MessageCircle, Sparkles,
-  MoreHorizontal, UserX, Zap, Gift, UserCircle, Crown, Lock,
+  MoreHorizontal, UserX, Zap, Gift, UserCircle, Crown, Lock, Eye,
 } from 'lucide-react';
 import type { DatingMatch } from '@/lib/datingDiscoveryService';
 import type { Icebreaker } from '@/lib/datingIcebreakerService';
@@ -403,6 +403,14 @@ function MatchCard({
               style={{ backgroundColor: 'rgba(155,111,246,0.12)', color: '#B8A0FA' }}
             >
               <UserCircle size={14} /> View Profile
+            </Link>
+            <Link
+              href={`/dating/aura-synastry?matchId=${match.id}`}
+              className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform hover:scale-[1.05]"
+              style={{ backgroundColor: 'rgba(155,111,246,0.12)' }}
+              title="Aura Synastry"
+            >
+              <Eye size={16} color="#B8A0FA" />
             </Link>
             <button
               onClick={onUnmatchToggle}

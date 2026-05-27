@@ -5,12 +5,38 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
-import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search } from 'lucide-react';
+import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search, Heart } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
+import { saveRelationshipProfile } from '@/lib/relationshipProfileService';
+import { api, buildBirthData } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
 
-const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Complete'];
+const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal'];
+
+const GENDER_OPTIONS = ['Man', 'Woman', 'Non-binary', 'Other', 'Prefer not to say'];
+const INTERESTED_IN_OPTIONS = ['Men', 'Women', 'Everyone'];
+
+// ── Personality Reveal Data ────────────────────────────────────────
+
+const SIGN_ELEMENT: Record<string, string> = {
+  Aries: 'Fire', Taurus: 'Earth', Gemini: 'Air', Cancer: 'Water',
+  Leo: 'Fire', Virgo: 'Earth', Libra: 'Air', Scorpio: 'Water',
+  Sagittarius: 'Fire', Capricorn: 'Earth', Aquarius: 'Air', Pisces: 'Water',
+};
+
+const SIGN_GLYPH: Record<string, string> = {
+  Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋',
+  Leo: '♌', Virgo: '♍', Libra: '♎', Scorpio: '♏',
+  Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓',
+};
+
+const ELEMENT_COLOR: Record<string, string> = {
+  Fire: 'from-red-500/20 to-orange-500/20 border-red-500/30',
+  Earth: 'from-green-600/20 to-emerald-500/20 border-green-500/30',
+  Air: 'from-sky-500/20 to-cyan-500/20 border-sky-500/30',
+  Water: 'from-blue-600/20 to-indigo-500/20 border-blue-500/30',
+};
 
 export default function OnboardingPage() {
   const { t } = useTranslation();
@@ -28,6 +54,23 @@ export default function OnboardingPage() {
   const [latitude, setLatitude] = useState<number | null>(profile?.latitude || null);
   const [longitude, setLongitude] = useState<number | null>(profile?.longitude || null);
   const [timezone, setTimezone] = useState(profile?.timezone || '');
+
+  // Identity step (optional)
+  const [gender, setGender] = useState('');
+  const [interestedIn, setInterestedIn] = useState<string[]>([]);
+
+  const toggleInterestedIn = (val: string) => {
+    setInterestedIn(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
+    );
+  };
+
+  // Personality reveal state
+  const [sunSign, setSunSign] = useState('');
+  const [moonSign, setMoonSign] = useState('');
+  const [risingSign, setRisingSign] = useState('');
+  const [chartLoading, setChartLoading] = useState(false);
+  const [revealVisible, setRevealVisible] = useState({ title: false, sun: false, moon: false, rising: false, element: false, cta: false });
 
   // Sync form fields when profile loads asynchronously
   useEffect(() => {
@@ -60,6 +103,8 @@ export default function OnboardingPage() {
         latitude: latitude ?? undefined,
         longitude: longitude ?? undefined,
         timezone: timezone || undefined,
+        gender_identity: gender || undefined,
+        interested_in_genders: interestedIn.length > 0 ? interestedIn : undefined,
       };
 
       Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
@@ -92,8 +137,55 @@ export default function OnboardingPage() {
   }
 
   async function handleComplete() {
+    // Save identity fields to relationship profile (fire-and-forget)
+    if (user?.id && (gender || interestedIn.length > 0)) {
+      saveRelationshipProfile(user.id, {
+        gender_identity: gender || null,
+        interested_in_genders: interestedIn.length > 0 ? interestedIn : null,
+      }).catch(() => {});
+    }
+
     const saved = await saveProfile();
     if (!saved) return;
+
+    // Try to fetch natal chart for personality reveal
+    if (birthDate && latitude != null && longitude != null && timezone) {
+      setChartLoading(true);
+      try {
+        const chartData = await api.getNatalChart({
+          birth_date: birthDate,
+          birth_time: birthTime || '12:00',
+          latitude,
+          longitude,
+          timezone,
+          house_system: 'Whole Sign',
+        });
+
+        const planets = chartData?.planets || [];
+        const sun = planets.find((p: any) => p.name === 'Sun');
+        const moon = planets.find((p: any) => p.name === 'Moon');
+        const asc = planets.find((p: any) => p.name === 'Ascendant');
+
+        if (sun?.sign) setSunSign(sun.sign);
+        if (moon?.sign) setMoonSign(moon.sign);
+        if (asc?.sign) setRisingSign(asc.sign);
+
+        setChartLoading(false);
+        setStep(7);
+
+        // Stagger the reveal animations
+        setTimeout(() => setRevealVisible(v => ({ ...v, title: true })), 200);
+        setTimeout(() => setRevealVisible(v => ({ ...v, sun: true })), 800);
+        setTimeout(() => setRevealVisible(v => ({ ...v, moon: true })), 1600);
+        setTimeout(() => setRevealVisible(v => ({ ...v, rising: true })), 2400);
+        setTimeout(() => setRevealVisible(v => ({ ...v, element: true })), 3200);
+        setTimeout(() => setRevealVisible(v => ({ ...v, cta: true })), 3800);
+        return;
+      } catch (err) {
+        console.warn('[Onboarding] Chart fetch failed, skipping reveal:', err);
+        setChartLoading(false);
+      }
+    }
 
     router.push('/dashboard');
   }
@@ -133,18 +225,20 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Progress dots */}
-        <div className="flex justify-center gap-2 mb-8">
-          {STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                i <= step ? 'bg-accent-primary' : 'bg-bg-tertiary'
-              }`}
-            />
-          ))}
-        </div>
+      <div className={`w-full ${step === 6 ? 'max-w-lg' : 'max-w-md'}`}>
+        {/* Progress dots (hide on reveal step) */}
+        {step < 6 && (
+          <div className="flex justify-center gap-2 mb-8">
+            {STEPS.slice(0, 6).map((_, i) => (
+              <div
+                key={i}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  i <= step ? 'bg-accent-primary' : 'bg-bg-tertiary'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="card text-center">
           {/* Step 0: Welcome */}
@@ -362,14 +456,105 @@ export default function OnboardingPage() {
               )}
               <button
                 onClick={handleComplete}
-                disabled={saving}
-                className="btn-primary w-full"
+                disabled={saving || chartLoading}
+                className="btn-primary w-full flex items-center justify-center gap-2"
               >
-                {saving ? t('editProfile.saving') : 'Enter the Cosmos'}
+                {saving || chartLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    {chartLoading ? t('onboarding.revealLoading') : t('editProfile.saving')}
+                  </>
+                ) : t('onboarding.enterTheCosmos')}
               </button>
               <button onClick={prev} className="btn-ghost w-full mt-2 text-sm">
                 Go back
               </button>
+            </div>
+          )}
+
+          {/* Step 6: Personality Reveal */}
+          {step === 6 && (
+            <div className="py-6 text-center">
+              {/* Title */}
+              <div className={`transition-all duration-700 ease-out ${revealVisible.title ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <div className="text-5xl mb-3">✨</div>
+                <h2 className="text-2xl font-display font-bold text-text-primary mb-1">
+                  {displayName ? t('onboarding.thisIsYou', { name: displayName.split(' ')[0] }) : t('onboarding.thisIsYouNoName')}
+                </h2>
+                <p className="text-xs text-text-tertiary mb-6">
+                  {t('onboarding.cosmicFingerprint')}
+                </p>
+              </div>
+
+              {/* Sun Sign Card */}
+              <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.sun ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <div className={`bg-gradient-to-r ${ELEMENT_COLOR[SIGN_ELEMENT[sunSign] || 'Fire']} rounded-2xl p-4 border text-left`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{SIGN_GLYPH[sunSign] || '☉'}</span>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{t('onboarding.yourSun')}</p>
+                      <p className="text-lg font-display font-bold text-text-primary">{sunSign}</p>
+                    </div>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-text-secondary">☉ {t('onboarding.coreIdentity')}</span>
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed">{t('onboarding.sunSoul.' + sunSign)}</p>
+                </div>
+              </div>
+
+              {/* Moon Sign Card */}
+              <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.moon ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <div className={`bg-gradient-to-r ${ELEMENT_COLOR[SIGN_ELEMENT[moonSign] || 'Water']} rounded-2xl p-4 border text-left`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{SIGN_GLYPH[moonSign] || '☽'}</span>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{t('onboarding.yourMoon')}</p>
+                      <p className="text-lg font-display font-bold text-text-primary">{moonSign}</p>
+                    </div>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-text-secondary">☽ {t('onboarding.innerWorld')}</span>
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed">{t('onboarding.moonHeart.' + moonSign)}</p>
+                </div>
+              </div>
+
+              {/* Rising Sign Card */}
+              <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.rising ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <div className={`bg-gradient-to-r ${ELEMENT_COLOR[SIGN_ELEMENT[risingSign] || 'Air']} rounded-2xl p-4 border text-left`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{SIGN_GLYPH[risingSign] || '↑'}</span>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{t('onboarding.yourRising')}</p>
+                      <p className="text-lg font-display font-bold text-text-primary">{risingSign}</p>
+                    </div>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-text-secondary">↑ {t('onboarding.firstImpression')}</span>
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed">{t('onboarding.risingMask.' + risingSign)}</p>
+                </div>
+              </div>
+
+              {/* Element Summary */}
+              <div className={`transition-all duration-700 ease-out mb-4 ${revealVisible.element ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <div className="bg-gradient-cosmic rounded-xl p-3 border border-accent-muted">
+                  <p className="text-sm font-display font-semibold text-text-primary">
+                    {t('onboarding.dominantElement', { element: t('onboarding.elementBalance.' + (SIGN_ELEMENT[sunSign] || 'Fire') + '.name') })}
+                  </p>
+                  <p className="text-xs text-text-tertiary mt-1">
+                    {t('onboarding.elementBalance.' + (SIGN_ELEMENT[sunSign] || 'Fire') + '.feel')}
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className={`transition-all duration-700 ease-out ${revealVisible.cta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="btn-primary w-full mb-2"
+                >
+                  {t('onboarding.exploreChart')}
+                </button>
+                <p className="text-[10px] text-text-muted">
+                  {t('onboarding.justBeginning')}
+                </p>
+              </div>
             </div>
           )}
         </div>

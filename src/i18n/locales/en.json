@@ -78,7 +78,10 @@
     "firstImpression": "First Impression",
     "dominantElement": "Your Dominant Element: {{element}}",
     "exploreChart": "Explore Your Full Chart →",
-    "justBeginning": "This is just the beginning. Your full chart has\n10 planets, 12 houses, and dozens of aspects.",
+    "justBeginning": "This is just the beginning. Your full chart has 10 planets, 12 houses, and dozens of aspects.",
+    "enterTheCosmos": "Enter the Cosmos",
+    "revealLoading": "Reading your stars...",
+    "continueToDashboard": "Continue to Dashboard",
     "sunSoul": {
       "Aries": "You were born to lead — not by title, but by example. You run toward the fire when everyone else runs away. Your life is a series of brave, impulsive leaps, and the universe rewards you for never asking permission.",
       "Taurus": "You were built for the long game. While others chase trends, you build empires out of patience and taste. Your greatest power is your refusal to be rushed — you know that everything worth having takes time.",
@@ -712,6 +715,29 @@
       "moreMatchesWaiting": "{{count}} more cosmic connections are waiting for you",
       "upgradeCta": "See All Matches"
     },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Your Match",
+      "loading": "Reading your energy fields...",
+      "matchNotFound": "Match not found",
+      "noMyAura": "You need at least one Aura Mirror scan first. Go to Readings > Aura Mirror to scan your aura.",
+      "noPartnerAura": "{{name}} hasn't done an Aura Mirror scan yet. Their aura data will appear here once they do.",
+      "loadError": "Failed to load aura data. Please try again.",
+      "scanAura": "Scan Your Aura",
+      "auraChemistry": "Aura Chemistry",
+      "harmoniousLabel": "Naturally Harmonious",
+      "warmLabel": "Warm Connection",
+      "growthLabel": "Growth Potential",
+      "differentLabel": "Different Frequencies",
+      "harmonyBreakdown": "Harmony Breakdown",
+      "emotionalSafety": "Emotional Safety",
+      "attractionHeat": "Attraction Heat",
+      "communication": "Communication",
+      "conflictWeather": "Conflict Weather",
+      "clearSkies": "Clear skies",
+      "someStorms": "Some storms",
+      "turbulent": "Turbulent"
+    },
     "profile": {
       "title": "Dating Profile",
       "datingMode": "Dating Mode",
@@ -917,6 +943,11 @@
       "quickPost": "Quick Post",
       "viewReadings": "View Readings",
       "viewCommunities": "Browse Communities"
+    },
+    "trending": {
+      "title": "Trending",
+      "clearFilter": "Clear filter",
+      "noResults": "No posts found for {{tag}}"
     }
   },
   "friends": {
@@ -1680,7 +1711,31 @@
     "loading": "Loading bookmarks...",
     "empty": "No bookmarks yet",
     "emptyHint": "Save posts from the feed to read later",
-    "postUnavailable": "Post no longer available"
+    "postUnavailable": "Post no longer available",
+    "filterAll": "All",
+    "filterPosts": "Posts",
+    "filterReadings": "Readings",
+    "saved": "Saved",
+    "unbookmark": "Remove bookmark"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search the cosmos...",
+    "searching": "Searching the stars...",
+    "noResults": "No cosmic matches found",
+    "noResultsHint": "Try different keywords or check the spelling",
+    "emptyTitle": "Search for people, posts, and communities",
+    "emptyHint": "Discover cosmic connections across the universe",
+    "recentSearches": "Recent Searches",
+    "tabAll": "All",
+    "tabUsers": "Users",
+    "tabPosts": "Posts",
+    "tabCommunities": "Communities",
+    "tabReels": "Reels",
+    "badgeUser": "User",
+    "badgePost": "Post",
+    "badgeCommunity": "Community",
+    "badgeReel": "Reel"
   },
   "celebrityMatches": {
     "title": "Celebrity Matches",
@@ -1727,7 +1782,33 @@
   },
   "creatorStudio": {
     "title": "Creator Studio",
-    "subtitle": "Create and manage your cosmic content"
+    "subtitle": "Create and manage your cosmic content",
+    "applyTitle": "Become a Creator",
+    "applyDescription": "Share your astrological insights, build a following, and earn from your content.",
+    "applyButton": "Apply as Creator",
+    "applying": "Applying...",
+    "benefitReadings": "Share Readings",
+    "benefitReadingsHint": "Post interpretations & insights",
+    "benefitCommunity": "Build Community",
+    "benefitCommunityHint": "Gain followers & influence",
+    "benefitEarn": "Earn Revenue",
+    "benefitEarnHint": "Monetize your expertise",
+    "statPosts": "Posts",
+    "statReactions": "Reactions",
+    "statViews": "Views",
+    "statFollowers": "Followers",
+    "statEarnings": "Earnings",
+    "statThisMonth": "This Month",
+    "createPost": "Create Post",
+    "createPostHint": "Share insights with the community",
+    "createPoll": "Create Poll",
+    "createPollHint": "Engage with polls & questions",
+    "myCommunities": "My Communities",
+    "myCommunitiesHint": "Manage your groups",
+    "shareReading": "Share a Reading",
+    "shareReadingHint": "Post chart interpretations",
+    "signInRequired": "Please sign in to access Creator Studio",
+    "loading": "Loading studio..."
   },
   "qa": {
     "title": "Q&A",
@@ -1870,7 +1951,10 @@
       "more": "More",
       "chat": "Chat",
       "yourProfile": "Your Profile",
-      "viewProfile": "View your profile"
+      "viewProfile": "View your profile",
+      "bookmarks": "Bookmarks",
+      "polls": "Polls",
+      "creatorStudio": "Creator Studio"
     },
     "feedCard": {
       "like": "Like",
