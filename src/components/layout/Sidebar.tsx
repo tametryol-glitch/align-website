@@ -18,19 +18,19 @@ const NAV_ITEMS = [
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
   { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
-  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe },
+  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
-  { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star },
+  { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star, coachmark: 'nav-chart' },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
-  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
+  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
   { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
   { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
   { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
-  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
-  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
+  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
+  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
 ];
 
@@ -51,7 +51,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
-        {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
+        {NAV_ITEMS.map(({ href, labelKey, icon: Icon, coachmark }) => {
           const active = pathname === href || pathname.startsWith(href + '/');
           const showBadge = href === '/messages' && totalUnread > 0;
           const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
@@ -59,6 +59,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              {...(coachmark ? { 'data-coachmark': coachmark } : {})}
               className={cn(
                 'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all',
                 active

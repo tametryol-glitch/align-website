@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
 import {
   getFeed, createPost, uploadPostMedia, toggleReaction, deletePost, editPost, repostPost, toggleBookmark, getUserBookmarks,
   type FeedPost, type ReactionEmoji,
@@ -631,6 +632,8 @@ function CreatePostModal({
 export default function FeedPage() {
   const { t } = useTranslation();
   const { user, profile } = useAuthStore();
+  const { markComplete } = useGettingStarted();
+  useEffect(() => { markComplete('share_feed'); }, [markComplete]);
   const userId = user?.id || '';
   const userName = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
   const userAvatar = profile?.avatar_url || null;

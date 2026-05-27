@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import { cn } from '@/lib/utils';
@@ -44,6 +45,8 @@ export default function ChartPage() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
   const { houseSystem } = useAstrologySettings();
+  const { markComplete } = useGettingStarted();
+  useEffect(() => { markComplete('view_natal'); }, [markComplete]);
   const [activeTab, setActiveTab] = useState('Positions');
   const [chart, setChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);

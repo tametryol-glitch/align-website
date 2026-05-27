@@ -13,6 +13,12 @@ import { Bell, ChevronRight, Globe } from 'lucide-react';
 import { StreakBadge } from '@/components/ui/StreakBadge';
 import { useStreakStore } from '@/stores/streakStore';
 import { useTranslation } from 'react-i18next';
+import { useWhatsNew } from '@/hooks/useWhatsNew';
+import { WhatsNewModal } from '@/components/ui/WhatsNewModal';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
+import { GettingStartedChecklist } from '@/components/ui/GettingStartedChecklist';
+import { useCoachmarks } from '@/hooks/useCoachmarks';
+import { CoachmarkOverlay } from '@/components/ui/CoachmarkOverlay';
 
 // ── Astronomical helpers ─────────────────────────────────────────
 
@@ -251,6 +257,11 @@ export default function DashboardPage() {
 
   const hasBirthData = !!(profile?.birth_date && profile?.latitude);
 
+  // Guidance systems
+  const { entry: whatsNewEntry, markSeen: markWhatsNewSeen } = useWhatsNew();
+  const gettingStarted = useGettingStarted();
+  const coachmarks = useCoachmarks();
+
   // Load social + feed + streak data when user is available
   useEffect(() => {
     if (!user) return;
@@ -433,9 +444,23 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ─── Getting Started Checklist ───────────────────── */}
+      {!gettingStarted.isDismissed && !gettingStarted.isAllDone && (
+        <GettingStartedChecklist
+          items={gettingStarted.items}
+          completedIds={gettingStarted.completedIds}
+          completedCount={gettingStarted.completedCount}
+          totalCount={gettingStarted.totalCount}
+          isAllDone={gettingStarted.isAllDone}
+          onDismiss={gettingStarted.dismiss}
+          onMarkComplete={gettingStarted.markComplete}
+        />
+      )}
+
       {/* ─── Your Day Banner ──────────────────────────────── */}
       <Link href="/your-day" className="block">
         <div
+          data-coachmark="daily-brief"
           className="rounded-2xl p-4 border border-accent-primary/30 flex items-center gap-4 hover:border-accent-primary/50 transition-colors"
           style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.10))' }}
         >
@@ -602,7 +627,7 @@ export default function DashboardPage() {
       )}
 
       {/* ─── Quick Access Grid ──────────────────────────── */}
-      <div>
+      <div data-coachmark="quick-access">
         <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.quickAccess')}</h3>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
           <QuickAccessButton href="/chart" glyph="☉" label="Natal Chart" />
@@ -769,6 +794,21 @@ export default function DashboardPage() {
           </Link>
         </div>
       )}
+
+      {/* ─── Guidance Systems ─────────────────────────────── */}
+      <WhatsNewModal
+        visible={!!whatsNewEntry}
+        entry={whatsNewEntry}
+        onDismiss={markWhatsNewSeen}
+      />
+      <CoachmarkOverlay
+        active={coachmarks.active}
+        steps={coachmarks.steps}
+        currentStep={coachmarks.currentStep}
+        currentStepIndex={coachmarks.currentStepIndex}
+        onNext={coachmarks.next}
+        onSkip={coachmarks.skip}
+      />
     </div>
   );
 }

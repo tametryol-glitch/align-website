@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Camera, ImageIcon } from 'lucide-react';
@@ -15,6 +16,8 @@ export default function EditProfilePage() {
   const { t } = useTranslation();
   const { user, profile, setProfile } = useAuthStore();
   const router = useRouter();
+  const { markComplete } = useGettingStarted();
+  useEffect(() => { markComplete('complete_profile'); }, [markComplete]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 

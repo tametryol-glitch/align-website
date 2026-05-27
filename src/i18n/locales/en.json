@@ -1984,5 +1984,48 @@
     "light": "Light",
     "premium": "Premium",
     "pro": "Pro"
+  },
+  "whatsNew": {
+    "title": "What's New in Align",
+    "gotIt": "Got it"
+  },
+  "gettingStarted": {
+    "title": "Getting Started",
+    "readHoroscope": "Read your daily horoscope",
+    "tryReading": "Try an AI reading",
+    "viewNatal": "View your natal chart",
+    "shareFeed": "Visit the cosmic feed",
+    "completeProfile": "Complete your profile",
+    "congrats": "You're all set! Welcome to the cosmos."
+  },
+  "coachmarks": {
+    "of": "of",
+    "next": "Next",
+    "skip": "Skip tour",
+    "finish": "Finish",
+    "dailyBrief": {
+      "title": "Your Daily Cosmic Brief",
+      "description": "Start each day here. Get your personalized cosmic card, moon phase, energy forecast, and daily guidance tailored to your chart."
+    },
+    "quickAccess": {
+      "title": "AI-Powered Readings",
+      "description": "Quick access to your natal chart, transits, tarot, compatibility readings, and more. Tap any card to dive in."
+    },
+    "natalChart": {
+      "title": "Your Natal Chart",
+      "description": "Explore your complete birth chart with planets, houses, aspects, and detailed interpretations of every placement."
+    },
+    "feed": {
+      "title": "Community Feed",
+      "description": "Share cosmic moments, post insights, react to others' posts, and connect with fellow stargazers."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrologer",
+      "description": "Chat with your personal AI astrologer. Ask anything about your chart, transits, relationships, or cosmic timing."
+    },
+    "courses": {
+      "title": "Learn Astrology",
+      "description": "Structured courses to deepen your astrological knowledge, from beginner basics to advanced techniques."
+    }
   }
 }

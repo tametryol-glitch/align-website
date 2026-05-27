@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useSubscriptionStore, type TierLevel } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { Lock, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
 
 interface ReadingItem {
   key: string;
@@ -177,6 +178,8 @@ export default function ReadingsPage() {
   const { t } = useTranslation();
   const { tier } = useSubscriptionStore();
   const profile = useAuthStore((s) => s.profile);
+  const { markComplete } = useGettingStarted();
+  useEffect(() => { markComplete('try_reading'); }, [markComplete]);
 
   const recommendations = useMemo(
     () => getRecommendations(profile?.sun_sign),

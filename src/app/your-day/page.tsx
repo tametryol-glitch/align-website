@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { useAuthStore } from '@/stores/authStore';
 import { generateDailyCard, type CosmicCard, type UserCosmicProfile } from '@/lib/dailyCosmicCardEngine';
 import { AURA_COLORS, SIGN_RULERS, PLANET_AURA_COLORS } from '@/lib/auraColors';
@@ -106,6 +107,8 @@ function getWeatherColor(value: number): string {
 export default function YourDayPage() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
+  const { markComplete } = useGettingStarted();
+  useEffect(() => { markComplete('read_horoscope'); }, [markComplete]);
 
   const [now] = useState(() => new Date());
 
