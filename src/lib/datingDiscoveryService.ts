@@ -86,6 +86,7 @@ export interface ReceivedLike {
 
 const DAILY_PICKS: Record<TierLevel, number> = {
   free: 3,
+  starter: 4,
   light: 5,
   premium: 8,
   pro: 12,
@@ -93,6 +94,7 @@ const DAILY_PICKS: Record<TierLevel, number> = {
 
 const DAILY_LIKES: Record<TierLevel, number> = {
   free: 5,
+  starter: 7,
   light: 10,
   premium: 15,
   pro: 25,
@@ -100,6 +102,7 @@ const DAILY_LIKES: Record<TierLevel, number> = {
 
 const DAILY_ROSES: Record<TierLevel, number> = {
   free: 1,
+  starter: 1,
   light: 2,
   premium: 3,
   pro: 5,
@@ -449,39 +452,45 @@ export async function getReceivedLikes(
     const likerIds = likes.map((l: any) => l.liker_id);
     if (likerIds.length === 0) return [];
 
-    const canSeeWho = tier !== 'free';
+    const canSeeAll = tier !== 'free';
 
-    if (canSeeWho) {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select(CANDIDATE_FIELDS)
-        .in('id', likerIds);
+    // Always fetch full profiles so free users can see their top 1 daily like
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select(CANDIDATE_FIELDS)
+      .in('id', likerIds);
 
-      const profileMap = new Map<string, any>();
-      if (profiles) {
-        for (const p of profiles as any[]) profileMap.set(p.id, p);
-      }
+    const fullProfileMap = new Map<string, any>();
+    if (profiles) {
+      for (const p of profiles as any[]) fullProfileMap.set(p.id, p);
+    }
 
+    if (canSeeAll) {
       return likes.map((l: any) => ({
         ...l,
-        liker_profile: profileMap.get(l.liker_id) || undefined,
+        liker_profile: fullProfileMap.get(l.liker_id) || undefined,
       }));
     }
 
-    const { data: blurredProfiles } = await supabase
-      .from('profiles')
-      .select('id, sun_sign, photo_verified')
-      .in('id', likerIds);
-
-    const profileMap = new Map<string, any>();
-    if (blurredProfiles) {
-      for (const p of blurredProfiles as any[]) profileMap.set(p.id, p);
-    }
-
-    return likes.map((l: any) => ({
-      ...l,
-      liker_profile: profileMap.get(l.liker_id) || undefined,
-    }));
+    // Free tier: reveal the first (most recent) like with full data,
+    // blur the rest so free users experience 1 real match per day
+    return likes.map((l: any, index: number) => {
+      if (index === 0) {
+        return {
+          ...l,
+          liker_profile: fullProfileMap.get(l.liker_id) || undefined,
+          is_free_preview: true,
+        };
+      }
+      // Blurred: only expose sun_sign + photo_verified
+      const full = fullProfileMap.get(l.liker_id);
+      return {
+        ...l,
+        liker_profile: full
+          ? { id: full.id, sun_sign: full.sun_sign, photo_verified: full.photo_verified }
+          : undefined,
+      };
+    });
   } catch {
     return [];
   }

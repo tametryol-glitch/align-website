@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase';
 import { getFeed, FeedPost } from '@/lib/feedService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import Link from 'next/link';
-import { Bell, ChevronRight } from 'lucide-react';
+import { Bell, ChevronRight, Globe } from 'lucide-react';
 import { StreakBadge } from '@/components/ui/StreakBadge';
 import { useStreakStore } from '@/stores/streakStore';
 import { useTranslation } from 'react-i18next';
@@ -144,6 +144,53 @@ function getDailyMessage(sign: string): string {
   return arr[dayOfYear % arr.length];
 }
 
+// ── World Echo teaser pool ──────────────────────────────────────
+// Deterministic "today in cosmic history" — rotates daily by day-of-year.
+// Used as fallback when the live API scan is unavailable.
+const WORLD_ECHO_TEASERS = [
+  { year: 1969, event: 'Apollo 11 lands on the Moon — humanity walks among the stars' },
+  { year: 1989, event: 'The Berlin Wall falls — a world order reshapes overnight' },
+  { year: 1930, event: 'Clyde Tombaugh discovers Pluto at Lowell Observatory' },
+  { year: 1945, event: 'The United Nations is founded in San Francisco' },
+  { year: 1912, event: 'The Titanic sinks under a moonless April sky' },
+  { year: 1953, event: 'Watson and Crick reveal the double helix of DNA' },
+  { year: 1961, event: 'Yuri Gagarin becomes the first human in space' },
+  { year: 1963, event: 'Martin Luther King Jr. delivers "I Have a Dream"' },
+  { year: 1859, event: 'The Carrington Event — the strongest geomagnetic storm in recorded history' },
+  { year: 1666, event: 'The Great Fire of London reshapes a city and an era' },
+  { year: 1776, event: 'The Declaration of Independence is signed under Cancer season' },
+  { year: 1986, event: 'The Chernobyl disaster changes nuclear energy forever' },
+  { year: 2001, event: 'Wikipedia launches — the age of collective knowledge begins' },
+  { year: 1687, event: 'Newton publishes Principia Mathematica — gravity gets a formula' },
+  { year: 1492, event: 'Columbus reaches the New World under a Jupiter-Saturn conjunction' },
+  { year: 1789, event: 'The French Revolution erupts — liberty, equality, fraternity' },
+  { year: 1815, event: 'Mount Tambora erupts, creating the "Year Without a Summer"' },
+  { year: 1905, event: 'Einstein publishes special relativity — spacetime is born' },
+  { year: 1947, event: 'The Roswell incident captures the world\'s imagination' },
+  { year: 1977, event: 'Voyager 1 launches — carrying Earth\'s golden record into the cosmos' },
+  { year: 1969, event: 'Woodstock draws 400,000 — a cultural supernova under Leo season' },
+  { year: 2008, event: 'The global financial crisis peaks — Pluto enters Capricorn' },
+  { year: 1859, event: 'Darwin publishes On the Origin of Species — evolution goes public' },
+  { year: 1928, event: 'Alexander Fleming discovers penicillin by accident' },
+  { year: 1903, event: 'The Wright brothers achieve powered flight at Kitty Hawk' },
+  { year: 1969, event: 'ARPANET sends its first message — the internet is born' },
+  { year: 1610, event: 'Galileo observes Jupiter\'s moons — the heliocentric revolution accelerates' },
+  { year: 1994, event: 'Comet Shoemaker-Levy 9 collides with Jupiter — a cosmic spectacle' },
+  { year: 2004, event: 'The Indian Ocean tsunami reshapes coastlines and consciousness' },
+  { year: 1755, event: 'The Lisbon earthquake shatters Enlightenment optimism' },
+  { year: 1543, event: 'Copernicus publishes De Revolutionibus — Earth is no longer the center' },
+  { year: 1945, event: 'Trinity test detonates — humanity enters the atomic age' },
+  { year: 1889, event: 'The Eiffel Tower opens — engineering meets audacity' },
+  { year: 2011, event: 'The Arab Spring spreads across the Middle East under Uranus in Aries' },
+  { year: 1804, event: 'Napoleon crowns himself Emperor under a Mars-Jupiter conjunction' },
+  { year: 1918, event: 'The Spanish Flu pandemic begins — reshaping the 20th century' },
+];
+
+function getWorldEchoTeaser(): { year: number; event: string } {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+  return WORLD_ECHO_TEASERS[dayOfYear % WORLD_ECHO_TEASERS.length];
+}
+
 // Cosmic Weather forecast categories
 const FORECAST_TABS = ['General', 'Money', 'Love', 'Career', 'Spiritual', 'Children', 'Healing'] as const;
 
@@ -200,6 +247,7 @@ export default function DashboardPage() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>([]);
   const [forecastTab, setForecastTab] = useState<string>('General');
+  const [echoTeaser, setEchoTeaser] = useState<{ year: number; event: string } | null>(null);
 
   const hasBirthData = !!(profile?.birth_date && profile?.latitude);
 
@@ -209,6 +257,7 @@ export default function DashboardPage() {
     loadSocialData();
     loadFeedPreview();
     useStreakStore.getState().fetchStreak(user.id);
+    loadEchoTeaser();
 
     // Refresh planetary hour every minute
     const hourInterval = setInterval(() => setPlanetaryHour(getPlanetaryHour()), 60000);
@@ -296,6 +345,24 @@ export default function DashboardPage() {
     }
   }
 
+  async function loadEchoTeaser() {
+    try {
+      const scan = await api.getWorldEchoToday();
+      const hits = scan?.possible_hits_json || [];
+      if (hits.length > 0) {
+        const top = hits[0];
+        setEchoTeaser({
+          year: new Date(top.event_date + 'T00:00:00').getFullYear(),
+          event: top.title,
+        });
+        return;
+      }
+    } catch {
+      // Silent — fall through to deterministic teaser
+    }
+    setEchoTeaser(getWorldEchoTeaser());
+  }
+
   async function loadAstroData() {
     try {
       const currentProfile = useAuthStore.getState().profile;
@@ -365,6 +432,53 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* ─── Your Day Banner ──────────────────────────────── */}
+      <Link href="/your-day" className="block">
+        <div
+          className="rounded-2xl p-4 border border-accent-primary/30 flex items-center gap-4 hover:border-accent-primary/50 transition-colors"
+          style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.10))' }}
+        >
+          <span className="text-2xl">✨</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-text-primary">
+              {t('home.yourDayReady', 'Your Daily Brief is ready')}
+            </p>
+            <p className="text-xs text-text-muted mt-0.5">
+              {t('home.yourDaySubtitle', 'Cosmic card, moon phase, energy forecast & more')}
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-accent-primary" />
+        </div>
+      </Link>
+
+      {/* ─── World Echo: Today in Cosmic History ─────────────── */}
+      {echoTeaser && (
+        <Link href="/world-echo" className="block">
+          <div
+            className="rounded-2xl p-4 border border-emerald-500/20 relative overflow-hidden hover:border-emerald-400/40 transition-colors"
+            style={{ background: 'linear-gradient(135deg, #0F2027, #162a35, #1a3a2a)' }}
+          >
+            <div className="flex items-start gap-3">
+              <Globe className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-emerald-400/80 text-[10px] font-semibold uppercase tracking-[2px] mb-1.5">
+                  {t('home.worldEchoTitle', 'Today in Cosmic History')}
+                </p>
+                <p className="text-sm text-text-primary leading-relaxed line-clamp-2">
+                  {echoTeaser.event}
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  {echoTeaser.year} — {t('home.worldEchoSimilar', 'under alignments mirroring today\'s sky')}
+                </p>
+                <span className="inline-flex items-center gap-1 text-emerald-400 text-xs font-medium mt-2">
+                  {t('home.worldEchoSeeMore', 'Explore more echoes')} <ChevronRight className="w-3 h-3" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
 
       {/* ─── Daily Insight Card ─────────────────────────────── */}
       <Link href="/readings/transits" className="block">

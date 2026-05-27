@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
-import { ArrowLeft, Check, Crown, Sparkles, Star, Zap, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Check, Crown, Sparkles, Star, Zap, Flame, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const plans = [
@@ -25,6 +25,23 @@ const plans = [
     ],
   },
   {
+    id: 'starter',
+    name: 'Starter',
+    price: '$4.99',
+    period: '/mo',
+    icon: Flame,
+    color: 'text-green-400',
+    borderColor: 'border-green-500/30',
+    features: [
+      'Everything in Free',
+      'Full natal chart (all planets)',
+      'Daily transit notifications',
+      'Cosmic Journal unlimited',
+      'Aura Mirror unlimited',
+      '10 AI questions/month',
+    ],
+  },
+  {
     id: 'light',
     name: 'Light',
     price: '$9',
@@ -33,10 +50,9 @@ const plans = [
     color: 'text-blue-400',
     borderColor: 'border-blue-500/30',
     features: [
-      'Everything in Free',
-      'Angel numbers',
-      'Arabic parts',
-      'Cosmic journal',
+      'Everything in Starter',
+      'Numerology & name analysis',
+      'Cosmic matches',
       'Saved charts',
       '30 AI questions/month',
     ],

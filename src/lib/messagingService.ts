@@ -304,7 +304,7 @@ export async function markAsRead(conversationId: string): Promise<void> {
   } catch { /* best effort */ }
 }
 
-// ── Delete Message (soft delete) ─────────────────────────────────────
+// ── Delete Message (soft delete — unsend for everyone) ──────────────
 
 export async function deleteMessage(messageId: string): Promise<boolean> {
   try {
@@ -321,6 +321,39 @@ export async function deleteMessage(messageId: string): Promise<boolean> {
     return !error;
   } catch {
     return false;
+  }
+}
+
+// ── Hide Message For Me (local-only, localStorage) ──────────────────
+
+const HIDDEN_MESSAGES_KEY = 'align_hidden_messages';
+
+export function hideMessageForMe(messageId: string): void {
+  try {
+    const myId = getMyId();
+    if (!myId) return;
+    const key = `${HIDDEN_MESSAGES_KEY}_${myId}`;
+    const raw = localStorage.getItem(key);
+    const ids: string[] = raw ? JSON.parse(raw) : [];
+    if (!ids.includes(messageId)) {
+      ids.push(messageId);
+      // Cap at 5000 entries
+      if (ids.length > 5000) ids.splice(0, ids.length - 5000);
+      localStorage.setItem(key, JSON.stringify(ids));
+    }
+  } catch { /* best effort */ }
+}
+
+export function getHiddenMessageIds(): Set<string> {
+  try {
+    const myId = getMyId();
+    if (!myId) return new Set();
+    const key = `${HIDDEN_MESSAGES_KEY}_${myId}`;
+    const raw = localStorage.getItem(key);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return new Set();
   }
 }
 

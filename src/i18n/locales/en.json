@@ -134,7 +134,10 @@
     "currentTransits": "Current Transits",
     "moonPhase": "Moon Phase",
     "planetaryHours": "Planetary Hours",
-    "quickAccess": "Quick Access"
+    "quickAccess": "Quick Access",
+    "worldEchoTitle": "Today in Cosmic History",
+    "worldEchoSimilar": "under alignments mirroring today's sky",
+    "worldEchoSeeMore": "Explore more echoes"
   },
   "chart": {
     "natal": "Natal Chart",
@@ -181,6 +184,7 @@
     "soulMemory": "Soul Memory",
     "soulAscension": "Soul Ascension",
     "dreamOracle": "Dream Oracle",
+    "auraMirror": "Aura Mirror",
     "backToReadings": "Back to Readings",
     "upgradeToTier": "Upgrade to {{tier}}",
     "birthDataRequired": "Please add your birth data in your profile first.",
@@ -486,6 +490,37 @@
       "criticalAspects": "Critical Aspects",
       "yearPattern": "Year Pattern"
     },
+    "auraPage": {
+      "title": "Aura Mirror",
+      "subtitle": "Discover your energy field through mood, astrology & intuition",
+      "scan": "Scan",
+      "reading": "Reading",
+      "journal": "Journal",
+      "howFeeling": "How are you feeling right now?",
+      "moodHint": "Select the mood closest to your current state",
+      "lifeArea": "What area of life is on your mind?",
+      "lifeAreaHint": "Optional — adds depth to your reading",
+      "skip": "Skip",
+      "generateReading": "Generate Reading",
+      "generating": "Reading your energy field...",
+      "noReading": "No reading yet. Start a scan to see your aura.",
+      "startScan": "Start Scan",
+      "yourAura": "Your Aura",
+      "confidence": "confidence",
+      "newScan": "New scan",
+      "outer": "Outer",
+      "inner": "Inner",
+      "core": "Core",
+      "readingSections": "Your Reading",
+      "forecast": "72-Hour Aura Forecast",
+      "shiftDirection": "Shift:",
+      "noForecast": "Generate a reading to see your forecast",
+      "patterns": "Pattern Insights",
+      "recentScans": "Recent Scans",
+      "noEntries": "No aura scans yet.",
+      "firstScan": "Start your first scan",
+      "needMoreScans": "Need at least 3 scans for pattern insights"
+    },
     "galacticClockPage": {
       "title": "Galactic Clock",
       "subtitle": "Your cosmic timing interface"
@@ -601,7 +636,9 @@
       "mysteryAdmirer": "Mystery admirer",
       "rose": "Rose",
       "likeBack": "Like Back",
-      "matching": "Matching..."
+      "matching": "Matching...",
+      "upgradeToSeeAll": "Upgrade to see all your likes",
+      "upgradeHintMore": "{{count}} more people liked you — upgrade to reveal them all"
     },
     "matches": {
       "title": "Your Matches",
@@ -616,7 +653,10 @@
       "cancel": "Cancel",
       "matchedToday": "Matched today",
       "matchedDaysAgo": "Matched {{days}}d ago",
-      "cosmicMatch": "Cosmic Match"
+      "cosmicMatch": "Cosmic Match",
+      "upgradeToSeeAll": "Upgrade to see all your matches",
+      "moreMatchesWaiting": "{{count}} more cosmic connections are waiting for you",
+      "upgradeCta": "See All Matches"
     },
     "profile": {
       "title": "Dating Profile",
@@ -809,7 +849,21 @@
       "createFirst": "Create Your First Post"
     },
     "loadMore": "Load more",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "shareReading": {
+      "title": "Share Your Cosmic Experience",
+      "subtitle": "Let the community know what the stars are telling you",
+      "templates": {
+        "aura": "Just got my aura reading! My outer aura is glowing",
+        "transit": "My transit reading is hitting different today... can anyone relate?",
+        "moon": "Moon check-in: feeling the {{moonPhase}} energy tonight",
+        "zodiac": "Any other {{sign}} Risings feeling this shift?",
+        "tarot": "Pulled some cards today and the message was crystal clear"
+      },
+      "quickPost": "Quick Post",
+      "viewReadings": "View Readings",
+      "viewCommunities": "Browse Communities"
+    }
   },
   "friends": {
     "title": "Friends & Connections",
@@ -880,7 +934,9 @@
       "forward": "Forward",
       "pin": "Pin",
       "unpin": "Unpin",
-      "copyText": "Copy text"
+      "copyText": "Copy text",
+      "deleteForMe": "Delete for me",
+      "deleteForEveryone": "Delete for everyone"
     },
     "pickReaction": "Pick a reaction",
     "messageTypes": {
@@ -1325,6 +1381,21 @@
         "1 saved profile"
       ]
     },
+    "starter": {
+      "name": "Starter",
+      "price": "$4.99",
+      "tagline": "Get your cosmic journey started",
+      "cta": "Get Starter",
+      "bestFor": "Anyone ready to go beyond the basics with full natal charts and daily insights.",
+      "features": [
+        "10 AI readings per month",
+        "Full natal chart (all planets)",
+        "Daily personalized transit notifications",
+        "Aura Mirror unlimited scans",
+        "Cosmic Journal unlimited entries",
+        "Soul Gifts & Soul Memory access"
+      ]
+    },
     "light": {
       "name": "Light",
       "price": "$9",
@@ -1612,7 +1683,18 @@
   },
   "pricing": {
     "title": "Choose Your Plan",
-    "subtitle": "Unlock the full power of Align"
+    "subtitle": "Unlock the full power of Align",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "saveUpTo": "Save up to 40%",
+    "bestValue": "Best Value",
+    "perYear": "/year",
+    "saveMoney": "Save ${{amount}}",
+    "foreverFree": "Free forever",
+    "billedMonthly": "Billed monthly",
+    "lessThanCoffee": "Less than a coffee per month",
+    "currentPlan": "Current Plan",
+    "getPlan": "Get {{name}}"
   },
   "gallery": {
     "title": "Gallery",
@@ -1898,6 +1980,7 @@
   },
   "tiers": {
     "free": "Free",
+    "starter": "Starter",
     "light": "Light",
     "premium": "Premium",
     "pro": "Pro"

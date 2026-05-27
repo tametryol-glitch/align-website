@@ -21,6 +21,8 @@ import {
   sendMessage as sendMsg,
   markAsRead,
   deleteMessage,
+  hideMessageForMe,
+  getHiddenMessageIds,
   editMessage,
   subscribeToMessages,
   subscribeToConversations,
@@ -85,6 +87,7 @@ export default function MessagesPage() {
   const [editText, setEditText] = useState('');
   const [loadingMore, setLoadingMore] = useState(false);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const [hiddenMsgIds, setHiddenMsgIds] = useState<Set<string>>(new Set());
 
   // New feature state
   const [showGifPicker, setShowGifPicker] = useState(false);
@@ -136,12 +139,15 @@ export default function MessagesPage() {
     });
   }, [store.conversations, store.searchQuery]);
 
-  // Messages filtered by search
+  // Messages filtered by hidden IDs + search
   const displayMessages = useMemo(() => {
-    if (!store.messageSearchQuery) return store.messages;
-    const q = store.messageSearchQuery.toLowerCase();
-    return store.messages.filter(m => (m.content || '').toLowerCase().includes(q));
-  }, [store.messages, store.messageSearchQuery]);
+    let msgs = store.messages.filter(m => !hiddenMsgIds.has(m.id));
+    if (store.messageSearchQuery) {
+      const q = store.messageSearchQuery.toLowerCase();
+      msgs = msgs.filter(m => (m.content || '').toLowerCase().includes(q));
+    }
+    return msgs;
+  }, [store.messages, store.messageSearchQuery, hiddenMsgIds]);
 
   // Typing state for active conversation
   const isOtherTyping = store.activeConversationId
@@ -154,9 +160,10 @@ export default function MessagesPage() {
     return getSmartReplies(lastReceived, user?.id);
   }, [store.messages, user?.id]);
 
-  // ── Load conversations on mount ──
+  // ── Load hidden messages + conversations on mount ──
   useEffect(() => {
     if (!user) return;
+    setHiddenMsgIds(getHiddenMessageIds());
     loadConversations();
   }, [user]);
 
@@ -385,9 +392,15 @@ export default function MessagesPage() {
   }
 
   // ── Context menu actions ──
-  async function handleDelete(msgId: string) {
+  async function handleDeleteForEveryone(msgId: string) {
     const success = await deleteMessage(msgId);
     if (success) store.removeMessage(msgId);
+    setContextMenu(null);
+  }
+
+  function handleDeleteForMe(msgId: string) {
+    hideMessageForMe(msgId);
+    setHiddenMsgIds(prev => { const next = new Set(prev); next.add(msgId); return next; });
     setContextMenu(null);
   }
 
@@ -920,20 +933,30 @@ export default function MessagesPage() {
             <SmilePlus className="w-4 h-4" /> {t('messages.contextMenu.react')}
           </button>
           {contextMenu.message.sender_id === user.id && (
-            <>
-              <button
-                onClick={() => handleEdit(contextMenu.message)}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
-              >
-                <Pencil className="w-4 h-4" /> {t('messages.contextMenu.edit')}
-              </button>
-              <button
-                onClick={() => handleDelete(contextMenu.message.id)}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
-              >
-                <Trash2 className="w-4 h-4" /> {t('messages.contextMenu.delete')}
-              </button>
-            </>
+            <button
+              onClick={() => handleEdit(contextMenu.message)}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+            >
+              <Pencil className="w-4 h-4" /> {t('messages.contextMenu.edit')}
+            </button>
+          )}
+          {/* Delete for me — available for ALL messages */}
+          {!contextMenu.message.is_deleted && (
+            <button
+              onClick={() => handleDeleteForMe(contextMenu.message.id)}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
+            >
+              <Trash2 className="w-4 h-4" /> {t('messages.contextMenu.deleteForMe', 'Delete for me')}
+            </button>
+          )}
+          {/* Delete for everyone — only sender's own messages */}
+          {contextMenu.message.sender_id === user.id && !contextMenu.message.is_deleted && (
+            <button
+              onClick={() => handleDeleteForEveryone(contextMenu.message.id)}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary transition-colors"
+            >
+              <Trash2 className="w-4 h-4" /> {t('messages.contextMenu.deleteForEveryone', 'Delete for everyone')}
+            </button>
           )}
           <button
             onClick={() => {

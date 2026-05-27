@@ -3,12 +3,13 @@ import { Purchases } from '@revenuecat/purchases-js';
 let purchasesInstance: Purchases | null = null;
 
 export const ENTITLEMENTS = {
+  STARTER: 'starter',
   LIGHT: 'light',
   PREMIUM: 'premium',
   PRO: 'Align Pro',
 } as const;
 
-export type TierLevel = 'free' | 'light' | 'premium' | 'pro';
+export type TierLevel = 'free' | 'starter' | 'light' | 'premium' | 'pro';
 
 export function initRevenueCat(appUserId: string): Purchases {
   if (purchasesInstance) return purchasesInstance;
@@ -30,6 +31,7 @@ export function tierFromEntitlements(activeEntitlements: Record<string, any>): T
   if (ENTITLEMENTS.PRO in activeEntitlements) return 'pro';
   if (ENTITLEMENTS.PREMIUM in activeEntitlements) return 'premium';
   if (ENTITLEMENTS.LIGHT in activeEntitlements) return 'light';
+  if (ENTITLEMENTS.STARTER in activeEntitlements) return 'starter';
   return 'free';
 }
 
@@ -47,24 +49,48 @@ export const PLANS = {
       '1 saved birth profile',
     ],
   },
+  starter: {
+    name: 'Starter',
+    price: 4.99,
+    annualPrice: 2.99,
+    annualTotal: 35.88,
+    annualSavings: 24,
+    annualSavingsPercent: 40,
+    aiReadings: 10,
+    features: [
+      '10 AI-powered readings per month',
+      'Full natal chart (all planets)',
+      'Daily personalized transit notifications',
+      'Aura Mirror unlimited scans',
+      'Cosmic Journal unlimited entries',
+      'Soul Gifts & Soul Memory access',
+    ],
+  },
   light: {
     name: 'Light',
     price: 9,
+    annualPrice: 5.49,
+    annualTotal: 65.88,
+    annualSavings: 42,
+    annualSavingsPercent: 39,
     aiReadings: 30,
     features: [
-      'Daily personalized insights',
-      'Natal chart with core positions',
+      'Everything in Starter',
       '30 AI-powered readings per month',
-      'Basic transit alerts',
       'Numerology life path reading',
+      'Name analysis & cosmic matches',
+      'Basic transit alerts',
       '5 saved chart readings',
     ],
   },
   premium: {
     name: 'Premium',
     price: 19,
+    annualPrice: 11.49,
+    annualTotal: 137.88,
+    annualSavings: 90,
+    annualSavingsPercent: 40,
     aiReadings: 100,
-    popular: true,
     features: [
       'Everything in Light',
       '100 AI-powered readings per month',
@@ -79,6 +105,10 @@ export const PLANS = {
   pro: {
     name: 'Pro',
     price: 29,
+    annualPrice: 17.99,
+    annualTotal: 215.88,
+    annualSavings: 132,
+    annualSavingsPercent: 38,
     aiReadings: 300,
     features: [
       'Everything in Premium',

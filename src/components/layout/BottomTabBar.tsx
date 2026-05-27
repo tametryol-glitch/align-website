@@ -13,7 +13,7 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart,
+  Mail, Video, Heart, MessagesSquare,
 } from 'lucide-react';
 
 const TABS = [
@@ -31,6 +31,7 @@ const MORE_ITEMS = [
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
+  { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },

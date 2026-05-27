@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useDatingStore } from '@/stores/datingStore';
 import { getReceivedLikes, getSentLikes, markLikesSeen, likeDatingProfile } from '@/lib/datingDiscoveryService';
-import { Heart, Star, Users, Lock, Crown, Send, Gift } from 'lucide-react';
+import { Heart, Star, Users, Lock, Crown, Send, Gift, Sparkles } from 'lucide-react';
 import type { ReceivedLike, SentLike } from '@/lib/datingDiscoveryService';
 
 const ZODIAC_GLYPHS: Record<string, string> = {
@@ -46,7 +46,8 @@ export default function DatingLikesPage() {
   const [likeBackLoading, setLikeBackLoading] = useState<string | null>(null);
   const [viewTab, setViewTab] = useState<'received' | 'sent'>('received');
 
-  const canSeeProfiles = tier !== 'free';
+  const isFree = tier === 'free';
+  const canSeeProfiles = !isFree;
 
   const loadReceivedLikes = useCallback(async () => {
     if (!user?.id) return;
@@ -144,16 +145,16 @@ export default function DatingLikesPage() {
         </button>
       </div>
 
-      {/* Upgrade banner for free users (received tab only) */}
-      {viewTab === 'received' && !canSeeProfiles && receivedLikes.length > 0 && (
+      {/* Upgrade banner for free users (received tab only) — show after the 1 free preview */}
+      {viewTab === 'received' && isFree && receivedLikes.length > 1 && (
         <div className="rounded-2xl p-4 mb-6 flex items-center gap-3" style={{
           background: 'linear-gradient(135deg, rgba(155,111,246,0.12), rgba(245,166,35,0.08))',
           border: '1px solid rgba(155,111,246,0.2)',
         }}>
           <Crown size={20} color="#F5A623" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-white">{t('dating.likes.seeWhoLikes')}</p>
-            <p className="text-xs text-text-tertiary">{t('dating.likes.upgradeHint')}</p>
+            <p className="text-sm font-medium text-white">{t('dating.likes.upgradeToSeeAll')}</p>
+            <p className="text-xs text-text-tertiary">{t('dating.likes.upgradeHintMore', { count: receivedLikes.length - 1 })}</p>
           </div>
           <Link href="/subscription" className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
             style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}>
@@ -187,17 +188,20 @@ export default function DatingLikesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {items.map((item) => {
+          {items.map((item, itemIndex) => {
             const isReceived = viewTab === 'received';
             const like = item as any;
             const p = isReceived ? like.liker_profile : like.liked_profile;
-            const photo = (isReceived ? canSeeProfiles : true)
+            // Free users: first received like is fully visible (free preview)
+            const isFreePreview = isReceived && isFree && itemIndex === 0;
+            const canSeeThis = isReceived ? (canSeeProfiles || isFreePreview) : true;
+            const photo = canSeeThis
               ? p?.photo_urls?.[0] || p?.avatar_url
               : null;
             const likeType = like.like_type;
 
             const profileId = isReceived ? like.liker_id : like.liked_user_id;
-            const canViewProfile = isReceived ? canSeeProfiles : true;
+            const canViewProfile = isReceived ? canSeeThis : true;
 
             return (
               <div key={like.id} className="rounded-2xl overflow-hidden relative" style={{
@@ -217,9 +221,9 @@ export default function DatingLikesPage() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center" style={{
                       background: 'linear-gradient(135deg, rgba(155,111,246,0.1), rgba(155,111,246,0.03))',
-                      filter: (isReceived && !canSeeProfiles) ? 'blur(20px)' : 'none',
+                      filter: (isReceived && !canSeeThis) ? 'blur(20px)' : 'none',
                     }}>
-                      {(isReceived && !canSeeProfiles) ? (
+                      {(isReceived && !canSeeThis) ? (
                         <Lock size={24} color="#7B849A" />
                       ) : (
                         <span className="text-4xl text-text-muted">
@@ -235,6 +239,17 @@ export default function DatingLikesPage() {
                       style={{ backgroundColor: 'rgba(245,166,35,0.2)' }}>
                       <span>🌹</span>
                       <span className="text-gold-primary">{t('dating.likes.rose')}</span>
+                    </div>
+                  )}
+
+                  {/* Compatibility badge for visible profiles */}
+                  {canSeeThis && p?.compatibility_score != null && (
+                    <div className="absolute top-2 left-2 px-2 py-1 rounded-full text-xs flex items-center gap-1"
+                      style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}>
+                      <Sparkles size={10} style={{ color: p.compatibility_score >= 75 ? '#4ADE80' : p.compatibility_score >= 55 ? '#FACC15' : '#FB923C' }} />
+                      <span style={{ color: p.compatibility_score >= 75 ? '#4ADE80' : p.compatibility_score >= 55 ? '#FACC15' : '#FB923C' }}>
+                        {p.compatibility_score}%
+                      </span>
                     </div>
                   )}
 
@@ -264,7 +279,7 @@ export default function DatingLikesPage() {
                   className={`block p-3 -mt-4 relative z-10 ${canViewProfile ? 'hover:bg-white/5 transition-colors' : ''}`}
                   onClick={(e) => { if (!canViewProfile) e.preventDefault(); }}
                 >
-                  {((isReceived && canSeeProfiles) || !isReceived) && p?.display_name ? (
+                  {((isReceived && canSeeThis) || !isReceived) && p?.display_name ? (
                     <>
                       <p className="text-sm font-semibold text-white truncate">
                         {p.display_name}
@@ -288,7 +303,7 @@ export default function DatingLikesPage() {
                 </Link>
 
                   {/* Like back button (received tab only) */}
-                  {isReceived && canSeeProfiles && (
+                  {isReceived && canSeeThis && (
                     <button
                       onClick={() => handleLikeBack(like as ReceivedLike)}
                       disabled={likeBackLoading === like.liker_id}

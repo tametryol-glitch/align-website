@@ -11,7 +11,7 @@ import { useFriendsStore } from '@/stores/friendsStore';
 import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
-  Users, Bell, Mail, Zap, Video, Heart,
+  Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
+  { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
   { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
   { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },

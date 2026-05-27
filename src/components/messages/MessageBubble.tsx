@@ -24,6 +24,8 @@ interface LinkPreview {
 }
 
 const URL_REGEX = /https?:\/\/[^\s<>]+/;
+const IMAGE_URL_RE = /https?:\/\/[^\s<>"']+\.(?:jpg|jpeg|png|gif|webp)(?:\?[^\s<>"']*)?|https?:\/\/[^\s<>"']*(?:chat-media|storage)[^\s<>"']*\.(?:jpg|jpeg|png|gif|webp)(?:\?[^\s<>"']*)?/i;
+const SUPABASE_MEDIA_RE = /https?:\/\/[^\s<>"']*supabase[^\s<>"']*\/chat-media\//i;
 
 function extractFirstUrl(text: string): string | null {
   const match = text.match(URL_REGEX);
@@ -85,6 +87,29 @@ function BubbleLinkPreview({ text, isMine }: { text: string; isMine: boolean }) 
           </p>
         )}
       </div>
+    </a>
+  );
+}
+
+// ── Inline Image Preview (detects image URLs in text messages) ──────
+
+function InlineImagePreview({ text }: { text: string }) {
+  const imageUrl = useMemo(() => {
+    const match = text.match(IMAGE_URL_RE) || text.match(SUPABASE_MEDIA_RE);
+    return match ? match[0] : null;
+  }, [text]);
+
+  if (!imageUrl) return null;
+
+  return (
+    <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="block mb-1">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imageUrl}
+        alt="Shared image"
+        className="rounded-lg max-w-full max-h-60 object-cover"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+      />
     </a>
   );
 }
@@ -245,6 +270,11 @@ export function MessageBubble({
               currentUserId={currentUserId}
               onVote={onPollVote}
             />
+          )}
+
+          {/* Inline image detection for text messages containing image URLs */}
+          {msg.type === 'text' && msg.content && (
+            <InlineImagePreview text={msg.content} />
           )}
 
           {/* Text content */}

@@ -11,7 +11,8 @@ import {
 } from '@/lib/feedService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
-import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video } from 'lucide-react';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare } from 'lucide-react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
@@ -61,23 +62,97 @@ function getDynamicTags(): string[] {
 
 // FeedCard and CommentSheet imported from @/components/feed/
 
+// ── Share Your Reading CTA ────────────────────────────────────────
+
+const QUICK_TEMPLATES = [
+  { id: 'aura', emoji: '🔮', chip: 'Aura Reading', labelKey: 'feed.shareReading.templates.aura' },
+  { id: 'transit', emoji: '🪐', chip: 'Transit', labelKey: 'feed.shareReading.templates.transit' },
+  { id: 'moon', emoji: '🌙', chip: 'Moon Check-in', labelKey: 'feed.shareReading.templates.moon' },
+  { id: 'zodiac', emoji: '♏', chip: 'Zodiac', labelKey: 'feed.shareReading.templates.zodiac' },
+  { id: 'tarot', emoji: '🃏', chip: 'Tarot', labelKey: 'feed.shareReading.templates.tarot' },
+];
+
+function ShareReadingCTA({
+  sunSign,
+  onQuickPost,
+}: {
+  sunSign: string | null;
+  onQuickPost: (content: string) => void;
+}) {
+  const { t } = useTranslation();
+  const moon = getFeedMoonPhase();
+
+  function handleTemplate(tpl: typeof QUICK_TEMPLATES[number]) {
+    let text = t(tpl.labelKey, { moonPhase: moon.name, sign: sunSign || 'Scorpio' });
+    onQuickPost(text);
+  }
+
+  return (
+    <div className="card rounded-2xl p-5 mb-6 border border-accent-primary/20 bg-gradient-to-br from-bg-card to-accent-primary/5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-accent-primary" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold text-text-primary">{t('feed.shareReading.title')}</h3>
+          <p className="text-xs text-text-secondary">{t('feed.shareReading.subtitle')}</p>
+        </div>
+      </div>
+
+      {/* Quick-post template chips */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+        {QUICK_TEMPLATES.map((tpl) => (
+          <button
+            key={tpl.id}
+            onClick={() => handleTemplate(tpl)}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bg-tertiary border border-border-primary text-xs text-text-secondary hover:border-accent-primary/40 hover:text-text-primary transition-colors"
+          >
+            <span>{tpl.emoji}</span>
+            <span className="whitespace-nowrap">{tpl.chip}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Quick links */}
+      <div className="flex items-center gap-3">
+        <Link
+          href="/readings"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-primary/15 text-accent-primary hover:bg-accent-primary/25 transition-colors"
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          {t('feed.shareReading.viewReadings')}
+        </Link>
+        <Link
+          href="/communities"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-bg-tertiary text-text-muted hover:text-text-primary hover:bg-bg-tertiary/80 transition-colors"
+        >
+          <MessagesSquare className="w-3.5 h-3.5" />
+          {t('feed.shareReading.viewCommunities')}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 // ── Create Post Modal ──────────────────────────────────────────────
 
 function CreatePostModal({
   userId,
   userName,
   userAvatar,
+  initialContent = '',
   onClose,
   onCreated,
 }: {
   userId: string;
   userName: string;
   userAvatar?: string | null;
+  initialContent?: string;
   onClose: () => void;
   onCreated: (post: any) => void;
 }) {
   const { t } = useTranslation();
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(initialContent);
   const [visibility, setVisibility] = useState<'public' | 'friends'>('public');
   const [selectedPreset, setSelectedPreset] = useState('default');
   const [posting, setPosting] = useState(false);
@@ -565,6 +640,7 @@ export default function FeedPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [prefillContent, setPrefillContent] = useState('');
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; content: string } | null>(null);
@@ -747,6 +823,15 @@ export default function FeedPage() {
       {/* Cosmic Weather Banner */}
       <FeedCosmicBanner />
 
+      {/* Share Your Reading CTA */}
+      <ShareReadingCTA
+        sunSign={profile?.sun_sign || null}
+        onQuickPost={(content) => {
+          setPrefillContent(content);
+          setShowCreate(true);
+        }}
+      />
+
       {/* Trending Tags */}
       <div className="flex gap-2 overflow-x-auto mb-6 scrollbar-hide">
         {getDynamicTags().map((tag) => (
@@ -821,7 +906,8 @@ export default function FeedPage() {
           userId={userId}
           userName={userName}
           userAvatar={userAvatar}
-          onClose={() => setShowCreate(false)}
+          initialContent={prefillContent}
+          onClose={() => { setShowCreate(false); setPrefillContent(''); }}
           onCreated={handlePostCreated}
         />
       )}

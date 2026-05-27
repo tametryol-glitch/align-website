@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useDatingStore } from '@/stores/datingStore';
 import { getDatingMatches, unmatch } from '@/lib/datingDiscoveryService';
 import { getIcebreakersForMatch } from '@/lib/datingIcebreakerService';
@@ -21,7 +22,7 @@ import { generateCosmicDNA } from '@/lib/cosmicDnaEngine';
 import type { ChartData } from '@/lib/cosmicDnaEngine';
 import {
   Users, Star, Heart, MessageCircle, Sparkles,
-  MoreHorizontal, UserX, Zap, Gift, UserCircle,
+  MoreHorizontal, UserX, Zap, Gift, UserCircle, Crown, Lock,
 } from 'lucide-react';
 import type { DatingMatch } from '@/lib/datingDiscoveryService';
 import type { Icebreaker } from '@/lib/datingIcebreakerService';
@@ -96,7 +97,10 @@ export default function DatingMatchesPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, profile: currentUserProfile, isLoading: authLoading } = useAuthStore();
+  const { tier } = useSubscriptionStore();
   const { matches, setMatches, setMatchesLoading, matchesLoading, removeMatch } = useDatingStore();
+  const isFree = tier === 'free';
+  const FREE_MATCH_LIMIT = 1;
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [icebreakers, setIcebreakers] = useState<Record<string, Icebreaker[]>>({});
   const [unmatchConfirm, setUnmatchConfirm] = useState<string | null>(null);
@@ -181,7 +185,7 @@ export default function DatingMatchesPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {matches.map((match) => (
+          {(isFree ? matches.slice(0, FREE_MATCH_LIMIT) : matches).map((match) => (
             <MatchCard
               key={match.id}
               match={match}
@@ -206,6 +210,32 @@ export default function DatingMatchesPage() {
               onUnmatchConfirm={() => handleUnmatch(match.id)}
             />
           ))}
+
+          {/* Paywall: free users see only top match, upgrade for all */}
+          {isFree && matches.length > FREE_MATCH_LIMIT && (
+            <div className="rounded-2xl p-5 text-center" style={{
+              background: 'linear-gradient(135deg, rgba(155,111,246,0.10), rgba(245,166,35,0.06))',
+              border: '1px solid rgba(155,111,246,0.2)',
+            }}>
+              <div className="flex justify-center mb-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.2), rgba(245,166,35,0.15))' }}>
+                  <Lock size={20} color="#F5A623" />
+                </div>
+              </div>
+              <p className="text-base font-semibold text-white mb-1">
+                {t('dating.matches.upgradeToSeeAll')}
+              </p>
+              <p className="text-sm text-text-tertiary mb-4">
+                {t('dating.matches.moreMatchesWaiting', { count: matches.length - FREE_MATCH_LIMIT })}
+              </p>
+              <Link href="/subscription"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C3AED)' }}>
+                <Crown size={16} /> {t('dating.matches.upgradeCta')}
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>

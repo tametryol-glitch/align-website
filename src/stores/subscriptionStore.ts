@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 
-export type TierLevel = 'free' | 'light' | 'premium' | 'pro';
+export type TierLevel = 'free' | 'starter' | 'light' | 'premium' | 'pro';
 
 export const AI_LIMITS: Record<TierLevel, number> = {
   free: 3,
+  starter: 10,
   light: 30,
   premium: 100,
   pro: 300,
@@ -16,23 +17,24 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   planetary_hours: 'free',
   transits_basic: 'free',
   galactic_clock: 'free',
+  // Starter
+  natal_full: 'starter',
+  cosmic_journal: 'starter',
+  soul_gifts: 'starter',
+  soul_memory: 'starter',
+  angel_numbers: 'starter',
+  soul_ascension: 'starter',
+  chart_adjuster: 'starter',
   // Light
-  natal_full: 'light',
   ai_readings: 'light',
   name_analysis: 'light',
   numerology_reading: 'light',
   cosmic_matches: 'light',
   soul_fragments: 'light',
   saved_charts: 'light',
-  soul_gifts: 'light',
-  soul_memory: 'light',
-  angel_numbers: 'light',
   arabic_parts: 'light',
-  cosmic_journal: 'light',
   athletes: 'light',
-  soul_ascension: 'light',
   cosmic_index: 'light',
-  chart_adjuster: 'light',
   // Premium
   ai_astrologer: 'premium',
   synastry: 'premium',
@@ -72,7 +74,7 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   dating_concierge: 'pro',
 };
 
-const TIER_RANK: Record<TierLevel, number> = { free: 0, light: 1, premium: 2, pro: 3 };
+const TIER_RANK: Record<TierLevel, number> = { free: 0, starter: 1, light: 2, premium: 3, pro: 4 };
 
 interface SubscriptionState {
   tier: TierLevel;

@@ -12,6 +12,7 @@ interface Props {
 }
 
 const TIER_CONFIG: Record<string, { icon: React.ReactNode; color: string; price: string }> = {
+  starter: { icon: <Zap className="w-5 h-5" />, color: 'text-green-400', price: '$4.99/mo' },
   light: { icon: <Zap className="w-5 h-5" />, color: 'text-blue-400', price: '$9/mo' },
   premium: { icon: <Sparkles className="w-5 h-5" />, color: 'text-accent-primary', price: '$19/mo' },
   pro: { icon: <Crown className="w-5 h-5" />, color: 'text-gold-primary', price: '$29/mo' },
