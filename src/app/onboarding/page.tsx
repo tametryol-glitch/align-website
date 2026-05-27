@@ -225,11 +225,11 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className={`w-full ${step === 6 ? 'max-w-lg' : 'max-w-md'}`}>
+      <div className={`w-full ${step === 7 ? 'max-w-lg' : 'max-w-md'}`}>
         {/* Progress dots (hide on reveal step) */}
-        {step < 6 && (
+        {step < 7 && (
           <div className="flex justify-center gap-2 mb-8">
-            {STEPS.slice(0, 6).map((_, i) => (
+            {STEPS.slice(0, 7).map((_, i) => (
               <div
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full transition-colors ${
@@ -434,8 +434,70 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 5: Complete */}
+          {/* Step 5: Identity (optional) */}
           {step === 5 && (
+            <div className="py-6">
+              <Heart className="w-10 h-10 text-accent-primary mx-auto mb-4" />
+              <h2 className="text-xl font-display font-bold text-text-primary mb-2">
+                {t('onboarding.identifyAs', { defaultValue: "I identify as..." })}
+              </h2>
+              <p className="text-sm text-text-tertiary mb-6">
+                {t('onboarding.personalizeHint', { defaultValue: "Help us personalize your experience. This is optional and can be changed later in Settings." })}
+              </p>
+
+              {/* Gender identity */}
+              <p className="text-xs text-text-secondary font-semibold mb-2 text-left uppercase tracking-wider">
+                {t('onboarding.identifyAs', { defaultValue: "I identify as..." })}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {GENDER_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    onClick={() => setGender(gender === option ? '' : option)}
+                    className={`px-4 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                      gender === option
+                        ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
+                        : 'bg-bg-tertiary border-border-primary text-text-secondary hover:border-accent-primary/50'
+                    } border`}
+                  >
+                    {gender === option && '✓ '}{option}
+                  </button>
+                ))}
+              </div>
+
+              {/* Interested in */}
+              <p className="text-xs text-text-secondary font-semibold mb-2 text-left uppercase tracking-wider">
+                {t('onboarding.interestedIn', { defaultValue: "I'm interested in..." })}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {INTERESTED_IN_OPTIONS.map(option => (
+                  <button
+                    key={option}
+                    onClick={() => toggleInterestedIn(option)}
+                    className={`px-4 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                      interestedIn.includes(option)
+                        ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
+                        : 'bg-bg-tertiary border-border-primary text-text-secondary hover:border-accent-primary/50'
+                    } border`}
+                  >
+                    {interestedIn.includes(option) && '✓ '}{option}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={prev} className="btn-secondary flex-1">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button onClick={next} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                  {gender || interestedIn.length > 0 ? 'Next' : t('onboarding.skip', { defaultValue: 'Skip for now' })} <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Complete */}
+          {step === 6 && (
             <div className="py-8">
               <div className="text-4xl mb-4">✨</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">You&apos;re all set!</h2>
@@ -472,8 +534,8 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 6: Personality Reveal */}
-          {step === 6 && (
+          {/* Step 7: Personality Reveal */}
+          {step === 7 && (
             <div className="py-6 text-center">
               {/* Title */}
               <div className={`transition-all duration-700 ease-out ${revealVisible.title ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
