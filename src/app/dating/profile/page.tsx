@@ -72,6 +72,7 @@ export default function DatingProfilePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [voiceUploading, setVoiceUploading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -109,13 +110,20 @@ export default function DatingProfilePage() {
   async function handleSave() {
     if (!user?.id) return;
     setSaving(true);
-    await saveDatingProfile(user.id, {
-      dating_bio: bio || undefined,
+    setSaveMessage(null);
+    const result = await saveDatingProfile(user.id, {
+      dating_bio: bio,
       dating_prompts: prompts,
       age_visible: ageVisible,
       photo_urls: photos,
-    } as any);
+    });
     setSaving(false);
+    if (result.success) {
+      setSaveMessage({ type: 'success', text: 'Profile saved successfully!' });
+      setTimeout(() => setSaveMessage(null), 3000);
+    } else {
+      setSaveMessage({ type: 'error', text: result.error || 'Failed to save profile.' });
+    }
   }
 
   async function handleToggleEnabled() {
@@ -144,7 +152,10 @@ export default function DatingProfilePage() {
           newPhotos.push(result.url);
         }
         setPhotos(newPhotos);
-        await saveDatingProfile(user.id, { photo_urls: newPhotos });
+        const saveResult = await saveDatingProfile(user.id, { photo_urls: newPhotos });
+        if (!saveResult.success) {
+          setUploadError('Photo uploaded but failed to save to profile. Please try saving again.');
+        }
       } else {
         setUploadError(result.error || 'Failed to upload photo. Please try again.');
       }
@@ -279,11 +290,18 @@ export default function DatingProfilePage() {
   async function handleSavePrefs() {
     if (!user?.id) return;
     setSavingPrefs(true);
-    await saveRelationshipProfile(user.id, {
+    setSaveMessage(null);
+    const result = await saveRelationshipProfile(user.id, {
       ...relProfile,
       identity_privacy_settings: privacySettings,
     });
     setSavingPrefs(false);
+    if (result.success) {
+      setSaveMessage({ type: 'success', text: 'Preferences saved successfully!' });
+      setTimeout(() => setSaveMessage(null), 3000);
+    } else {
+      setSaveMessage({ type: 'error', text: result.error || 'Failed to save preferences.' });
+    }
   }
 
   function getAge(): number | null {
@@ -669,6 +687,18 @@ export default function DatingProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Save Feedback */}
+      {saveMessage && (
+        <div className={`mb-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
+          saveMessage.type === 'success'
+            ? 'bg-green-500/10 border border-green-500/20 text-green-400'
+            : 'bg-red-500/10 border border-red-500/20 text-red-400'
+        }`}>
+          {saveMessage.type === 'success' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+          {saveMessage.text}
+        </div>
+      )}
 
       {/* Save Button */}
       <button

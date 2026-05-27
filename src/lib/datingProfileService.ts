@@ -108,6 +108,18 @@ export async function removeDatingPhoto(
     .eq('id', userId);
 
   if (error) return { success: false, error: error.message };
+
+  // Clean up the actual file from storage to prevent orphans
+  try {
+    const url = new URL(photoUrl);
+    const pathMatch = url.pathname.match(/\/dating-media\/(.+)$/);
+    if (pathMatch) {
+      await supabase.storage.from('dating-media').remove([pathMatch[1]]);
+    }
+  } catch {
+    // Non-critical — file cleanup is best-effort
+  }
+
   return { success: true };
 }
 
