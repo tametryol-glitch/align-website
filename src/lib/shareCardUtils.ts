@@ -2,7 +2,10 @@
  * Share card utilities — Web Share API, clipboard, and shareable URL generation.
  */
 
-const BASE_URL = 'https://aligncosmic.com';
+const BASE_URL =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : (process.env.NEXT_PUBLIC_APP_URL || 'https://align-web.vercel.app');
 
 // ── Web Share API with clipboard fallback ──
 
@@ -111,8 +114,7 @@ export async function downloadCardAsImage(
   // Dynamically import html2canvas if available (optional dependency).
   // If not installed, gracefully degrade.
   try {
-    // @ts-ignore — html2canvas is an optional peer dependency
-    const mod = await import(/* webpackIgnore: true */ 'html2canvas');
+    const mod = await import('html2canvas');
     const html2canvas = mod.default;
     if (elementRef.current && html2canvas) {
       const canvas = await html2canvas(elementRef.current, {
