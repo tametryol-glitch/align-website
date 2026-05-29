@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
@@ -500,9 +500,10 @@ export default function NameAnalysisPage() {
   const [compareResult, setCompareResult] = useState<NameAnalysisResult | null>(null);
   const [variantName, setVariantName] = useState('');
 
-  useState(() => {
+  useEffect(() => {
+    if (profile?.display_name && !fullName) setFullName(profile.display_name);
     if (profile?.birth_date && !birthDate) setBirthDate(profile.birth_date);
-  });
+  }, [profile?.display_name, profile?.birth_date]);
 
   const sunSign = profile?.sun_sign || undefined;
   const moonSign = profile?.moon_sign || undefined;
@@ -523,7 +524,7 @@ export default function NameAnalysisPage() {
     const chartText = buildAIPrompt(result, birthDate || undefined, sunSign, moonSign);
     try {
       await api.streamAIInterpretation(
-        { type: 'name_analysis', chart_data_text: chartText, messages: [{ role: 'user', content: 'Please give me my personal name reading.' }] },
+        { type: 'name_analysis', chart_data_text: chartText, messages: [{ role: 'user', content: `Please give me my personal name reading for ${result.full_name}.` }] },
         (chunk) => setAiReading(prev => prev + chunk), () => {},
       );
     } catch { setAiReading(generateFallbackReading(result, sunSign, moonSign)); }
