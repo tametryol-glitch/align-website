@@ -296,47 +296,58 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mb-6">
-                <input
-                  type="number"
-                  min={1} max={31}
-                  placeholder="DD"
-                  value={birthDate ? parseInt(birthDate.split('-')[2], 10) : ''}
-                  onChange={(e) => {
-                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                    const d = e.target.value.padStart(2, '0');
-                    if (parts[0] && parts[1]) setBirthDate(`${parts[0]}-${parts[1]}-${d}`);
-                    else setBirthDate(`0000-01-${d}`);
-                  }}
-                  className="input text-center flex-1"
-                />
-                <span className="text-text-tertiary font-bold">/</span>
-                <input
-                  type="number"
-                  min={1} max={12}
-                  placeholder="MM"
-                  value={birthDate ? parseInt(birthDate.split('-')[1], 10) : ''}
-                  onChange={(e) => {
-                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                    const m = e.target.value.padStart(2, '0');
-                    if (parts[0]) setBirthDate(`${parts[0]}-${m}-${parts[2] || '01'}`);
-                    else setBirthDate(`0000-${m}-${parts[2] || '01'}`);
-                  }}
-                  className="input text-center flex-1"
-                />
-                <span className="text-text-tertiary font-bold">/</span>
-                <input
-                  type="number"
-                  min={1900} max={2026}
-                  placeholder="YYYY"
-                  value={birthDate ? parseInt(birthDate.split('-')[0], 10) || '' : ''}
-                  onChange={(e) => {
-                    const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                    const y = e.target.value;
-                    setBirthDate(`${y}-${parts[1] || '01'}-${parts[2] || '01'}`);
-                  }}
-                  className="input text-center flex-[1.5]"
-                />
+              <p className="text-xs font-semibold text-amber-400 mb-1">Enter the Day first, then Month, then Year</p>
+              <p className="text-xs text-text-muted mb-3 italic">Example: 15 / 03 / 1990 = March 15, 1990</p>
+              <div className="flex items-end gap-2 mb-6">
+                <div className="flex-1 text-center">
+                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Day</label>
+                  <input
+                    type="number"
+                    min={1} max={31}
+                    placeholder="DD"
+                    value={birthDate ? parseInt(birthDate.split('-')[2], 10) : ''}
+                    onChange={(e) => {
+                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                      const d = e.target.value.padStart(2, '0');
+                      if (parts[0] && parts[1]) setBirthDate(`${parts[0]}-${parts[1]}-${d}`);
+                      else setBirthDate(`0000-01-${d}`);
+                    }}
+                    className="input text-center w-full"
+                  />
+                </div>
+                <span className="text-text-tertiary font-bold pb-3">/</span>
+                <div className="flex-1 text-center">
+                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Month</label>
+                  <input
+                    type="number"
+                    min={1} max={12}
+                    placeholder="MM"
+                    value={birthDate ? parseInt(birthDate.split('-')[1], 10) : ''}
+                    onChange={(e) => {
+                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                      const m = e.target.value.padStart(2, '0');
+                      if (parts[0]) setBirthDate(`${parts[0]}-${m}-${parts[2] || '01'}`);
+                      else setBirthDate(`0000-${m}-${parts[2] || '01'}`);
+                    }}
+                    className="input text-center w-full"
+                  />
+                </div>
+                <span className="text-text-tertiary font-bold pb-3">/</span>
+                <div className="flex-[1.5] text-center">
+                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Year</label>
+                  <input
+                    type="number"
+                    min={1900} max={2026}
+                    placeholder="YYYY"
+                    value={birthDate ? parseInt(birthDate.split('-')[0], 10) || '' : ''}
+                    onChange={(e) => {
+                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
+                      const y = e.target.value;
+                      setBirthDate(`${y}-${parts[1] || '01'}-${parts[2] || '01'}`);
+                    }}
+                    className="input text-center w-full"
+                  />
+                </div>
               </div>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
