@@ -219,21 +219,40 @@ function UsersPanel() {
   const [loading, setLoading] = useState(true);
   const [sendingReminders, setSendingReminders] = useState(false);
   const [reminderResult, setReminderResult] = useState<{ sent: number; errors: number; total: number } | null>(null);
+  const [dbCounts, setDbCounts] = useState<{ total: number; noBirthDate: number; noBirthTime: number; incomplete: number } | null>(null);
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => { loadUsers(); loadCounts(); }, []);
 
   async function loadUsers() {
     const supabase = createClient();
     const { data } = await supabase
       .from('profiles')
       .select('id, email, display_name, align_code, created_at, is_admin, sun_sign, birth_date, birth_time, birth_location')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, 4999);
 
     if (data) {
       setUsers(data);
       setFiltered(data);
     }
     setLoading(false);
+  }
+
+  async function loadCounts() {
+    const supabase = createClient();
+    // Get real counts from the database (not limited by pagination)
+    const [totalRes, noBirthDateRes, noBirthTimeRes, incompleteRes] = await Promise.all([
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).is('birth_date', null),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).not('birth_date', 'is', null).is('birth_time', null),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).or('birth_date.is.null,latitude.is.null,longitude.is.null,timezone.is.null'),
+    ]);
+    setDbCounts({
+      total: totalRes.count ?? 0,
+      noBirthDate: noBirthDateRes.count ?? 0,
+      noBirthTime: noBirthTimeRes.count ?? 0,
+      incomplete: incompleteRes.count ?? 0,
+    });
   }
 
   function handleSearch(q: string) {
@@ -270,10 +289,30 @@ function UsersPanel() {
 
   if (loading) return <p className="text-text-muted text-sm">Loading users...</p>;
 
-  const incompleteCount = users.filter(u => !u.birth_date).length;
-
   return (
     <div className="space-y-4">
+      {/* Real-time stats from DB */}
+      {dbCounts && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="bg-bg-secondary rounded-lg p-3 border border-border-primary">
+            <p className="text-lg font-bold text-text-primary">{dbCounts.total}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Total Members</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-red-500/20">
+            <p className="text-lg font-bold text-red-400">{dbCounts.noBirthDate}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">No Birth Date</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-amber-500/20">
+            <p className="text-lg font-bold text-amber-400">{dbCounts.noBirthTime}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">No Birth Time</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-orange-500/20">
+            <p className="text-lg font-bold text-orange-400">{dbCounts.incomplete}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Incomplete Data</p>
+          </div>
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -287,14 +326,22 @@ function UsersPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <p className="text-xs text-text-muted">{filtered.length} users total · {incompleteCount} missing birth data</p>
-        <button
-          onClick={sendBirthReminders}
-          disabled={sendingReminders}
-          className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
-        >
-          {sendingReminders ? 'Sending...' : `Email ${incompleteCount} Incomplete Users`}
-        </button>
+        <p className="text-xs text-text-muted">{filtered.length} users shown{dbCounts ? ` of ${dbCounts.total}` : ''}</p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { loadCounts(); loadUsers(); }}
+            className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={sendBirthReminders}
+            disabled={sendingReminders}
+            className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
+          >
+            {sendingReminders ? 'Sending...' : `Email ${dbCounts?.incomplete ?? '...'} Incomplete Users`}
+          </button>
+        </div>
       </div>
 
       {reminderResult && (
