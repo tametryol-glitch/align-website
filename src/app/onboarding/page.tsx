@@ -296,58 +296,22 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
-              <p className="text-xs font-semibold text-amber-400 mb-1">Enter the Day first, then Month, then Year</p>
-              <p className="text-xs text-text-muted mb-3 italic">Example: 15 / 03 / 1990 = March 15, 1990</p>
-              <div className="flex items-end gap-2 mb-6">
-                <div className="flex-1 text-center">
-                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Day</label>
-                  <input
-                    type="number"
-                    min={1} max={31}
-                    placeholder="DD"
-                    value={birthDate ? parseInt(birthDate.split('-')[2], 10) : ''}
-                    onChange={(e) => {
-                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                      const d = e.target.value.padStart(2, '0');
-                      if (parts[0] && parts[1]) setBirthDate(`${parts[0]}-${parts[1]}-${d}`);
-                      else setBirthDate(`0000-01-${d}`);
-                    }}
-                    className="input text-center w-full"
-                  />
-                </div>
-                <span className="text-text-tertiary font-bold pb-3">/</span>
-                <div className="flex-1 text-center">
-                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Month</label>
-                  <input
-                    type="number"
-                    min={1} max={12}
-                    placeholder="MM"
-                    value={birthDate ? parseInt(birthDate.split('-')[1], 10) : ''}
-                    onChange={(e) => {
-                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                      const m = e.target.value.padStart(2, '0');
-                      if (parts[0]) setBirthDate(`${parts[0]}-${m}-${parts[2] || '01'}`);
-                      else setBirthDate(`0000-${m}-${parts[2] || '01'}`);
-                    }}
-                    className="input text-center w-full"
-                  />
-                </div>
-                <span className="text-text-tertiary font-bold pb-3">/</span>
-                <div className="flex-[1.5] text-center">
-                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Year</label>
-                  <input
-                    type="number"
-                    min={1900} max={2026}
-                    placeholder="YYYY"
-                    value={birthDate ? parseInt(birthDate.split('-')[0], 10) || '' : ''}
-                    onChange={(e) => {
-                      const parts = birthDate ? birthDate.split('-') : ['', '', ''];
-                      const y = e.target.value;
-                      setBirthDate(`${y}-${parts[1] || '01'}-${parts[2] || '01'}`);
-                    }}
-                    className="input text-center w-full"
-                  />
-                </div>
+              <p className="text-xs text-text-muted mb-3">Select your birth date from the calendar</p>
+              <div className="mb-6">
+                <input
+                  type="date"
+                  min="1900-01-01"
+                  max={new Date().toISOString().split('T')[0]}
+                  value={birthDate || ''}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="input w-full text-center text-base cursor-pointer"
+                  style={{ colorScheme: 'dark' }}
+                />
+                {birthDate && (
+                  <p className="text-center text-sm text-accent-primary mt-2 font-medium">
+                    {new Date(birthDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                  </p>
+                )}
               </div>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
