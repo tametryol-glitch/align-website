@@ -68,7 +68,7 @@ export default async function PlutoSignPage({ params }: PageProps) {
             <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full flex items-center justify-center border-2" style={{ borderColor: elementColor, background: `radial-gradient(circle, ${elementColor}15 0%, transparent 70%)` }}>
               <span className="text-6xl sm:text-7xl">{s.glyph}</span>
             </div>
-            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border" style={{ borderColor: elementColor, color: elementColor, backgroundColor: `${elementColor}18` }}>
+            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border" style={{ borderColor: elementColor, color: elementColor, backgroundColor: `${elementColor}18` }}>
               {PLUTO_SYMBOL} Pluto
             </span>
           </div>

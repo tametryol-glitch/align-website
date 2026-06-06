@@ -137,7 +137,7 @@ export default async function RisingSignPage({ params }: PageProps) {
               <span className="text-6xl sm:text-7xl">{s.glyph}</span>
             </div>
             <span
-              className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
+              className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
               style={{ borderColor: elementColor, color: elementColor, backgroundColor: `${elementColor}18` }}
             >
               {RISING_SYMBOL}

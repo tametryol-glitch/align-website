@@ -180,7 +180,7 @@ export default async function PersonalityPage({ params }: PageProps) {
               <span className="text-5xl sm:text-6xl">{sunSign.glyph}</span>
             </div>
             <span
-              className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border whitespace-nowrap"
+              className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border whitespace-nowrap"
               style={{
                 borderColor: getElementColor(sunSign.element),
                 color: getElementColor(sunSign.element),
@@ -217,7 +217,7 @@ export default async function PersonalityPage({ params }: PageProps) {
               <span className="text-5xl sm:text-6xl">{moonSign.glyph}</span>
             </div>
             <span
-              className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border whitespace-nowrap"
+              className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border whitespace-nowrap"
               style={{
                 borderColor: getElementColor(moonSign.element),
                 color: getElementColor(moonSign.element),
