@@ -87,7 +87,7 @@ export const SIGNS: Record<ZodiacSign, SignData> = {
     glyph: '♍',
     element: 'earth',
     modality: 'mutable',
-    ruler: 'Mercury',
+    ruler: 'Vesta',
     dates: 'Aug 23 – Sep 22',
     traits: ['analytical', 'helpful', 'modest', 'precise', 'devoted'],
     loveStyle: 'Virgo shows love through acts of service and attention to detail. They notice what their partner needs before being asked and work tirelessly to improve the relationship.',
@@ -98,7 +98,7 @@ export const SIGNS: Record<ZodiacSign, SignData> = {
     glyph: '♎',
     element: 'air',
     modality: 'cardinal',
-    ruler: 'Venus',
+    ruler: 'Juno',
     dates: 'Sep 23 – Oct 22',
     traits: ['harmonious', 'charming', 'diplomatic', 'romantic', 'fair-minded'],
     loveStyle: 'Libra is the sign of partnership itself. They seek balance, beauty, and genuine connection, and they invest deeply in creating a relationship that feels harmonious and equal.',
@@ -434,11 +434,18 @@ function generateIntellectualSection(s1: SignData, s2: SignData, isSameSign: boo
     );
   } else {
     const mercuryRuled = [s1, s2].filter(s => s.ruler === 'Mercury');
+    const vestaRuled = [s1, s2].filter(s => s.ruler === 'Vesta');
     const jupiterRuled = [s1, s2].filter(s => s.ruler === 'Jupiter');
 
     if (mercuryRuled.length > 0) {
       paragraphs.push(
-        `With ${mercuryRuled[0].name}\'s Mercury rulership bringing sharp analytical skills and communication prowess, the intellectual dynamic in this pairing is lively. ${mercuryRuled[0].name} processes information quickly and articulates ideas with precision, which can either delight or overwhelm their ${mercuryRuled[0] === s1 ? s2.name : s1.name} partner depending on the moment.`
+        `With ${mercuryRuled[0].name}\'s Mercury rulership bringing sharp communication skills and quick-witted thinking, the intellectual dynamic in this pairing is lively. ${mercuryRuled[0].name} processes information quickly and articulates ideas with precision, which can either delight or overwhelm their ${mercuryRuled[0] === s1 ? s2.name : s1.name} partner depending on the moment.`
+      );
+    }
+
+    if (vestaRuled.length > 0) {
+      paragraphs.push(
+        `With ${vestaRuled[0].name}\'s Vesta rulership bringing devotion, precision, and a sacred commitment to craft, the intellectual dynamic here runs deep. ${vestaRuled[0].name} approaches understanding with ritual-like focus — they don\'t just learn, they perfect. This dedicated energy shapes how they engage with their ${vestaRuled[0] === s1 ? s2.name : s1.name} partner on every level.`
       );
     }
 

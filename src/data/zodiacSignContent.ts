@@ -284,7 +284,7 @@ const SIGN_PROFILES: Record<ZodiacSign, Omit<ZodiacSignProfile, 'sign' | 'name' 
         paragraphs: [
           'Gemini finds their most natural connections with fellow air signs Libra and Aquarius. These relationships thrive on intellectual rapport, social synergy, and mutual respect for independence. With Libra, there is elegant conversation and shared aesthetic appreciation. With Aquarius, there is a meeting of inventive minds that can feel like finding a kindred spirit.',
           'Fire signs, particularly Aries and Leo, bring excitement and passion to Gemini\'s world. Aries matches Gemini\'s pace and adds a boldness that Gemini finds thrilling. Leo brings warmth, generosity, and a theatrical flair that keeps Gemini entertained and emotionally engaged.',
-          'The more challenging matches for Gemini tend to be with Pisces and Virgo. Pisces\' emotional intensity can overwhelm Gemini\'s airy nature, while Virgo, despite sharing a Mercury rulership, approaches life with a precision and seriousness that can feel limiting. These pairings work best when both signs appreciate what the other teaches them.',
+          'The more challenging matches for Gemini tend to be with Pisces and Virgo. Pisces\' emotional intensity can overwhelm Gemini\'s airy nature, while Virgo approaches life with a precision and seriousness that can feel limiting to Gemini\'s free-flowing mind. These pairings work best when both signs appreciate what the other teaches them.',
         ],
       },
     ],
@@ -476,7 +476,7 @@ const SIGN_PROFILES: Record<ZodiacSign, Omit<ZodiacSignProfile, 'sign' | 'name' 
         title: 'Personality Overview',
         icon: '🌾',
         paragraphs: [
-          'Virgo is the zodiac\'s alchemist, quietly turning chaos into order, potential into excellence, and raw materials into refined beauty. Ruled by Mercury, Virgo shares Gemini\'s intellectual nature but applies it with a precision and purposefulness that is uniquely their own. Where Gemini collects information, Virgo curates and perfects it.',
+          'Virgo is the zodiac\'s alchemist, quietly turning chaos into order, potential into excellence, and raw materials into refined beauty. Ruled by Vesta, Virgo carries a sacred devotion to craft and service that runs deeper than mere perfectionism. Vesta\'s flame burns with quiet focus — and Virgo channels that flame into everything they touch.',
           'At their core, Virgo is driven by a deep desire to be useful. This is not about people-pleasing or seeking approval but about a genuine calling to improve, to heal, and to serve. Virgo finds meaning in making things work better, whether that thing is a spreadsheet, a recipe, a body, or a relationship.',
           'The modesty of Virgo is often misunderstood. They are not lacking in confidence so much as they are acutely aware of how much more there is to learn and improve. This awareness drives them to keep refining, keep studying, and keep getting better. It is not insecurity but intellectual honesty.',
           'Virgo\'s observational powers are extraordinary. They notice the details that everyone else misses: the slight change in your tone of voice, the typo on page 47, the ingredient that would make this dish perfect. This attention to detail, when directed constructively, makes them invaluable in any setting.',
@@ -527,7 +527,7 @@ const SIGN_PROFILES: Record<ZodiacSign, Omit<ZodiacSignProfile, 'sign' | 'name' 
         paragraphs: [
           'Virgo finds their most grounded connections with fellow earth signs Taurus and Capricorn. These relationships are built on mutual respect for reliability, shared practical values, and a combined work ethic that can move mountains. With Taurus, there is a sensual and devoted partnership. With Capricorn, there is a driven and respectful alliance of equals.',
           'Water signs, particularly Cancer and Scorpio, offer Virgo the emotional depth they secretly desire. Cancer\'s nurturing nature creates a safe space for Virgo to relax their guard. Scorpio\'s depth and intensity fascinates Virgo and draws out their more passionate, less analytical side.',
-          'The more challenging matches for Virgo tend to be with Sagittarius and Gemini. Sagittarius\' loose relationship with details and routines can feel chaotic to organized Virgo, while Gemini, despite the shared Mercury rulership, can seem unfocused and uncommitted. These pairings work best when both signs learn to appreciate rather than critique their differences.',
+          'The more challenging matches for Virgo tend to be with Sagittarius and Gemini. Sagittarius\' loose relationship with details and routines can feel chaotic to organized Virgo, while Gemini\'s restless energy can seem unfocused and uncommitted to Virgo\'s devoted nature. These pairings work best when both signs learn to appreciate rather than critique their differences.',
         ],
       },
     ],
@@ -557,7 +557,7 @@ const SIGN_PROFILES: Record<ZodiacSign, Omit<ZodiacSignProfile, 'sign' | 'name' 
         title: 'Personality Overview',
         icon: '⚖️',
         paragraphs: [
-          'Libra is the zodiac\'s diplomat, the artist of relationship, and the keeper of beauty. Ruled by Venus, the planet of love and aesthetics, Libra moves through the world seeking balance, harmony, and genuine connection. They are the ones who notice when a room is beautifully decorated, when a conversation is becoming unfair, or when someone is being left out.',
+          'Libra is the zodiac\'s diplomat, the artist of relationship, and the keeper of beauty. Ruled by Juno, the asteroid of partnership and sacred union, Libra moves through the world seeking balance, harmony, and genuine connection. They are the ones who notice when a room is beautifully decorated, when a conversation is becoming unfair, or when someone is being left out.',
           'At their core, Libra is motivated by a desire for justice and beauty. These are not separate drives but two expressions of the same impulse. For Libra, a beautiful world is a fair world, and a fair world is a beautiful one. Their quest for balance extends from their personal relationships to their vision of society.',
           'Libra possesses an almost supernatural social intelligence. They can walk into any gathering and within minutes identify the dynamics, the alliances, and the tensions. They use this awareness not to manipulate but to create conditions where everyone feels included and valued.',
           'The charm of Libra is genuine, not strategic. They are naturally gracious, attentive, and interested in others. People feel better in Libra\'s company because Libra genuinely wants them to. This is not people-pleasing but a real gift for making the world around them more pleasant.',
@@ -579,7 +579,7 @@ const SIGN_PROFILES: Record<ZodiacSign, Omit<ZodiacSignProfile, 'sign' | 'name' 
         paragraphs: [
           'Libra\'s professional gifts center on their ability to create harmony, beauty, and fairness. They are natural mediators, designers, and diplomats who bring grace and balance to every professional environment they enter.',
           'Careers in law, particularly mediation and negotiation, are ideal for Libra. Their ability to understand multiple perspectives, combined with their genuine desire for fairness, makes them exceptional at finding solutions that all parties can accept. Justice is not abstract for Libra but personal.',
-          'The creative arts are another natural Libra domain. Fashion, interior design, graphic design, art curation, and music all allow Libra to express their Venus-given aesthetic sense. They have an eye for beauty and proportion that elevates their creative work.',
+          'The creative arts are another natural Libra domain. Fashion, interior design, graphic design, art curation, and music all allow Libra to express their Juno-given sense of harmony and beauty. They have an eye for balance and proportion that elevates their creative work.',
           'The career challenge for Libra is making decisions independently. Their desire to consider every angle can result in analysis paralysis, and their tendency to seek consensus can slow down processes that require decisive leadership. The most effective Libra professionals learn to trust their own judgment and act.',
         ],
       },
