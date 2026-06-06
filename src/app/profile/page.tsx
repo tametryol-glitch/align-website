@@ -392,6 +392,31 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Compatibility invite link */}
+      {profile?.sun_sign && (
+        <div className="card p-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-bold text-text-primary">Check Our Compatibility</p>
+              <p className="text-xs text-text-muted mt-0.5">Send a friend your invite link to compare charts</p>
+            </div>
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/compatibility/invite?from=${profile.id}&name=${encodeURIComponent(profile.display_name || '')}&sign=${encodeURIComponent(profile.sun_sign || '')}`;
+                if (navigator.share) {
+                  navigator.share({ title: 'Check our compatibility on Align', text: `${profile.display_name} wants to see how your stars align!`, url });
+                } else {
+                  navigator.clipboard.writeText(url);
+                }
+              }}
+              className="px-4 py-2 rounded-lg bg-accent-primary/15 text-accent-primary text-xs font-semibold border border-accent-primary/30 hover:bg-accent-primary/25 transition-colors"
+            >
+              Share Link
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* XP Progress */}
       <div className="card p-4 mb-4">
         <XPProgressBar

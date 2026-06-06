@@ -105,3 +105,81 @@ export function getSoulLine(sunSign: string, moonSign: string): string {
   const moonElement = getMoonElement(moonSign?.charAt(0).toUpperCase() + moonSign?.slice(1).toLowerCase());
   return SOUL_LINES[sun]?.[moonElement] || 'You contain more than any chart can hold.';
 }
+
+// ── Compatibility Soul Lines ─────────────────────────────────────
+
+type ElementPair = 'fire-fire' | 'fire-earth' | 'fire-air' | 'fire-water'
+  | 'earth-earth' | 'earth-air' | 'earth-water'
+  | 'air-air' | 'air-water'
+  | 'water-water';
+
+function getSignElement(sign: string): 'fire' | 'earth' | 'air' | 'water' {
+  const fire = ['Aries', 'Leo', 'Sagittarius'];
+  const earth = ['Taurus', 'Virgo', 'Capricorn'];
+  const air = ['Gemini', 'Libra', 'Aquarius'];
+  if (fire.includes(sign)) return 'fire';
+  if (earth.includes(sign)) return 'earth';
+  if (air.includes(sign)) return 'air';
+  return 'water';
+}
+
+const COMPAT_LINES: Record<ElementPair, string[]> = {
+  'fire-fire': [
+    'Two flames that make each other burn brighter — or burn the house down.',
+    'You match each other\'s energy and dare each other to go further.',
+  ],
+  'fire-earth': [
+    'One of you builds it, the other sets it on fire — somehow the thing still stands.',
+    'You move at different speeds but arrive at the same place, amazed.',
+  ],
+  'fire-air': [
+    'You feed each other\'s wildest ideas and call it Tuesday.',
+    'Together you are either the best plan ever made or beautiful chaos — usually both.',
+  ],
+  'fire-water': [
+    'Steam. That is what happens when your worlds collide — and neither of you can look away.',
+    'You feel too much and move too fast, and somehow that is exactly right.',
+  ],
+  'earth-earth': [
+    'You build something real and neither of you needs to explain why it matters.',
+    'Two people who finally found someone who means what they say.',
+  ],
+  'earth-air': [
+    'One of you lives in the plan, the other lives in the moment — you need both.',
+    'You confuse each other in the best way and learn things no one else could teach.',
+  ],
+  'earth-water': [
+    'A garden that waters itself — you grow together without trying.',
+    'You give each other the one thing the world never does: patience.',
+  ],
+  'air-air': [
+    'Two minds that never stop talking and never get bored.',
+    'You understand each other at a frequency other people can\'t even hear.',
+  ],
+  'air-water': [
+    'You speak different languages but somehow finish each other\'s sentences.',
+    'One of you thinks it, the other feels it — together you know everything.',
+  ],
+  'water-water': [
+    'Two oceans pretending to be separate waves.',
+    'You feel each other before you speak, and the silence says more than words.',
+  ],
+};
+
+/**
+ * Get a compatibility soul line for two Sun signs.
+ * Returns a punchy line about the pair's dynamic.
+ */
+export function getCompatSoulLine(sign1: string, sign2: string): string {
+  const s1 = sign1?.charAt(0).toUpperCase() + sign1?.slice(1).toLowerCase();
+  const s2 = sign2?.charAt(0).toUpperCase() + sign2?.slice(1).toLowerCase();
+  const e1 = getSignElement(s1);
+  const e2 = getSignElement(s2);
+  // Normalize element pair order
+  const pair = [e1, e2].sort().join('-') as ElementPair;
+  const lines = COMPAT_LINES[pair];
+  if (!lines?.length) return 'The stars wrote your names in the same sentence.';
+  // Use a deterministic pick based on the sign names
+  const hash = (s1.charCodeAt(0) + s2.charCodeAt(0)) % lines.length;
+  return lines[hash];
+}

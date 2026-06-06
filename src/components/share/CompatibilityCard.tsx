@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { getCompatSoulLine } from '@/lib/soulLines';
 
 // ── Zodiac glyph map ──
 
@@ -40,6 +41,7 @@ export interface CompatibilityCardProps {
 const CompatibilityCard = forwardRef<HTMLDivElement, CompatibilityCardProps>(
   ({ user1Name, user1Sign, user2Name, user2Sign, percentage, aspect = 'square' }, ref) => {
     const isStory = aspect === 'story';
+    const soulLine = getCompatSoulLine(user1Sign, user2Sign);
 
     // SVG circle math
     const radius = 62;
@@ -293,6 +295,22 @@ const CompatibilityCard = forwardRef<HTMLDivElement, CompatibilityCardProps>(
           </div>
         </div>
 
+        {/* Soul line */}
+        <p
+          style={{
+            fontSize: 13,
+            fontStyle: 'italic',
+            color: 'rgba(208,197,253,0.75)',
+            textAlign: 'center',
+            lineHeight: 1.5,
+            padding: '0 12px',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          &ldquo;{soulLine}&rdquo;
+        </p>
+
         {/* Footer */}
         <div
           style={{
@@ -303,7 +321,7 @@ const CompatibilityCard = forwardRef<HTMLDivElement, CompatibilityCardProps>(
         >
           <p
             style={{
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: 700,
               background: 'linear-gradient(135deg, #9B6FF6, #D0C5FD)',
               WebkitBackgroundClip: 'text',
@@ -317,11 +335,11 @@ const CompatibilityCard = forwardRef<HTMLDivElement, CompatibilityCardProps>(
             style={{
               fontSize: 9,
               color: 'rgba(255,255,255,0.3)',
-              marginTop: 6,
+              marginTop: 4,
               lineHeight: 1.4,
             }}
           >
-            Discover your cosmic compatibility at aligncosmic.com
+            aligncosmic.com · Check your compatibility free
           </p>
         </div>
       </div>

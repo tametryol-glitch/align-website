@@ -5,14 +5,16 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
-import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search, Heart } from 'lucide-react';
+import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search, Heart, Share2, Copy, Check } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
 import { saveRelationshipProfile } from '@/lib/relationshipProfileService';
 import { api, buildBirthData } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
+import { BigThreeCard } from '@/components/share';
+import { generateShareUrl, shareCard } from '@/lib/shareCardUtils';
 
-const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal'];
+const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal', 'Share'];
 
 const GENDER_OPTIONS = ['Man', 'Woman', 'Non-binary', 'Other', 'Prefer not to say'];
 const INTERESTED_IN_OPTIONS = ['Men', 'Women', 'Everyone'];
@@ -71,6 +73,7 @@ export default function OnboardingPage() {
   const [risingSign, setRisingSign] = useState('');
   const [chartLoading, setChartLoading] = useState(false);
   const [revealVisible, setRevealVisible] = useState({ title: false, sun: false, moon: false, rising: false, element: false, cta: false });
+  const [shareCopied, setShareCopied] = useState(false);
 
   // Sync form fields when profile loads asynchronously
   useEffect(() => {
@@ -225,8 +228,8 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className={`w-full ${step === 7 ? 'max-w-lg' : 'max-w-md'}`}>
-        {/* Progress dots (hide on reveal step) */}
+      <div className={`w-full ${step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
+        {/* Progress dots (hide on reveal and share steps) */}
         {step < 7 && (
           <div className="flex justify-center gap-2 mb-8">
             {STEPS.slice(0, 7).map((_, i) => (
@@ -583,7 +586,7 @@ export default function OnboardingPage() {
               {/* CTA */}
               <div className={`transition-all duration-700 ease-out ${revealVisible.cta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <button
-                  onClick={() => router.push('/dashboard')}
+                  onClick={() => setStep(8)}
                   className="btn-primary w-full mb-2"
                 >
                   {t('onboarding.exploreChart')}
@@ -592,6 +595,87 @@ export default function OnboardingPage() {
                   {t('onboarding.justBeginning')}
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Step 8: Share Your Chart Card */}
+          {step === 8 && (
+            <div className="py-6 text-center">
+              <div className="text-4xl mb-3">&#x1F4AB;</div>
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
+                Share your cosmic blueprint
+              </h2>
+              <p className="text-sm text-text-tertiary mb-6">
+                Show friends your unique chart card and invite them to discover theirs
+              </p>
+
+              <div className="mb-6">
+                <BigThreeCard
+                  displayName={displayName || 'Stargazer'}
+                  sunSign={sunSign}
+                  moonSign={moonSign}
+                  risingSign={risingSign}
+                  aspect="square"
+                />
+              </div>
+
+              <div className="flex gap-3 mb-3">
+                <button
+                  onClick={async () => {
+                    const url = generateShareUrl('big-three', {
+                      sun: sunSign,
+                      moon: moonSign,
+                      rising: risingSign,
+                      name: displayName,
+                    });
+                    const result = await shareCard(
+                      'My Align Chart',
+                      `${displayName || 'My'} cosmic profile: ${sunSign} Sun, ${moonSign} Moon, ${risingSign} Rising`,
+                      url,
+                    );
+                    if (result.copied) {
+                      setShareCopied(true);
+                      setTimeout(() => setShareCopied(false), 2000);
+                    }
+                  }}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+                <button
+                  onClick={async () => {
+                    const url = generateShareUrl('big-three', {
+                      sun: sunSign,
+                      moon: moonSign,
+                      rising: risingSign,
+                      name: displayName,
+                    });
+                    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                      await navigator.clipboard.writeText(url);
+                      setShareCopied(true);
+                      setTimeout(() => setShareCopied(false), 2000);
+                    }
+                  }}
+                  className="btn-secondary flex items-center justify-center gap-2 px-4"
+                >
+                  {shareCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                  {shareCopied ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="btn-primary w-full mb-2"
+              >
+                Continue to Dashboard
+              </button>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="btn-ghost w-full text-sm text-text-muted"
+              >
+                Skip
+              </button>
             </div>
           )}
         </div>
