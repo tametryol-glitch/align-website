@@ -289,6 +289,50 @@ export default function DiscoverPage() {
         </div>
       </div>
 
+      {/* ── Zodiac Guides ── */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-text-primary mb-3 flex items-center gap-2">
+          <span className="text-xl">📖</span> Zodiac Guides
+        </h2>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <Link href="/zodiac" className="card !p-4 hover:border-accent-primary/30 transition-colors">
+            <p className="text-2xl mb-1">♈♉♊♋</p>
+            <p className="text-sm font-bold text-text-primary">12 Zodiac Signs</p>
+            <p className="text-xs text-text-muted mt-0.5">Complete sign profiles & personality</p>
+          </Link>
+          <Link href="/personality" className="card !p-4 hover:border-accent-primary/30 transition-colors">
+            <p className="text-2xl mb-1">☉☽</p>
+            <p className="text-sm font-bold text-text-primary">Sun-Moon Combos</p>
+            <p className="text-xs text-text-muted mt-0.5">144 personality profiles</p>
+          </Link>
+          <Link href="/compatibility" className="card !p-4 hover:border-accent-primary/30 transition-colors">
+            <p className="text-2xl mb-1">💕</p>
+            <p className="text-sm font-bold text-text-primary">Compatibility</p>
+            <p className="text-xs text-text-muted mt-0.5">78 sign pair analyses</p>
+          </Link>
+          {profile?.sun_sign && (
+            <Link href={`/zodiac/${profile.sun_sign.toLowerCase()}`} className="card !p-4 hover:border-accent-primary/30 transition-colors">
+              <p className="text-2xl mb-1">{SIGN_GLYPHS[profile.sun_sign] || '✦'}</p>
+              <p className="text-sm font-bold text-text-primary">Your {profile.sun_sign} Guide</p>
+              <p className="text-xs text-text-muted mt-0.5">Deep dive into your Sun sign</p>
+            </Link>
+          )}
+        </div>
+        {profile?.sun_sign && profile?.moon_sign && (
+          <Link
+            href={`/personality/${profile.sun_sign.toLowerCase()}-sun-${profile.moon_sign.toLowerCase()}-moon`}
+            className="card !p-4 flex items-center gap-3 hover:border-accent-primary/30 transition-colors"
+          >
+            <span className="text-2xl">{SIGN_GLYPHS[profile.sun_sign]}{SIGN_GLYPHS[profile.moon_sign]}</span>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-text-primary">{profile.sun_sign} Sun, {profile.moon_sign} Moon</p>
+              <p className="text-xs text-text-muted">Read your personalized Sun-Moon personality profile</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-text-muted" />
+          </Link>
+        )}
+      </div>
+
       {/* ── Upcoming Cosmic Events ── */}
       {cosmicEvents.length > 0 && (
         <div className="mb-8">
