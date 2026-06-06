@@ -331,6 +331,94 @@ export default function DiscoverPage() {
             <ChevronRight className="w-4 h-4 text-text-muted" />
           </Link>
         )}
+
+        {/* Extended Planet Guides */}
+        <h3 className="text-sm font-semibold text-text-secondary mt-4 mb-2">Planet Placements</h3>
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <Link href="/rising-sign" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">⬆</p>
+            <p className="text-xs font-bold text-text-primary">Rising Signs</p>
+          </Link>
+          <Link href="/moon-sign" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">☽</p>
+            <p className="text-xs font-bold text-text-primary">Moon Signs</p>
+          </Link>
+          <Link href="/venus-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♀</p>
+            <p className="text-xs font-bold text-text-primary">Venus Signs</p>
+          </Link>
+          <Link href="/mars-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♂</p>
+            <p className="text-xs font-bold text-text-primary">Mars Signs</p>
+          </Link>
+          <Link href="/mercury-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">☿</p>
+            <p className="text-xs font-bold text-text-primary">Mercury Signs</p>
+          </Link>
+          <Link href="/jupiter-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♃</p>
+            <p className="text-xs font-bold text-text-primary">Jupiter Signs</p>
+          </Link>
+          <Link href="/saturn-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♄</p>
+            <p className="text-xs font-bold text-text-primary">Saturn Signs</p>
+          </Link>
+          <Link href="/uranus-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♅</p>
+            <p className="text-xs font-bold text-text-primary">Uranus Signs</p>
+          </Link>
+          <Link href="/neptune-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♆</p>
+            <p className="text-xs font-bold text-text-primary">Neptune Signs</p>
+          </Link>
+          <Link href="/pluto-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">♇</p>
+            <p className="text-xs font-bold text-text-primary">Pluto Signs</p>
+          </Link>
+          <Link href="/chiron-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">⚷</p>
+            <p className="text-xs font-bold text-text-primary">Chiron Signs</p>
+          </Link>
+          <Link href="/north-node-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">☊</p>
+            <p className="text-xs font-bold text-text-primary">North Node</p>
+          </Link>
+        </div>
+
+        {/* Asteroids & Nodes */}
+        <h3 className="text-sm font-semibold text-text-secondary mt-4 mb-2">Asteroids & Advanced</h3>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <Link href="/juno-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">⚵</p>
+            <p className="text-xs font-bold text-text-primary">Juno Signs</p>
+            <p className="text-[10px] text-text-muted">Partnership & Marriage</p>
+          </Link>
+          <Link href="/vesta-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">🜨</p>
+            <p className="text-xs font-bold text-text-primary">Vesta Signs</p>
+            <p className="text-[10px] text-text-muted">Devotion & Sacred Work</p>
+          </Link>
+          <Link href="/south-node-in" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">☋</p>
+            <p className="text-xs font-bold text-text-primary">South Node Signs</p>
+            <p className="text-[10px] text-text-muted">Past Lives & Release</p>
+          </Link>
+          <Link href="/planets-in-houses" className="card !p-3 hover:border-accent-primary/30 transition-colors text-center">
+            <p className="text-lg mb-0.5">🏠</p>
+            <p className="text-xs font-bold text-text-primary">Planets in Houses</p>
+            <p className="text-[10px] text-text-muted">120 placements</p>
+          </Link>
+        </div>
+
+        {/* Synastry */}
+        <Link href="/synastry-aspects" className="card !p-4 flex items-center gap-3 hover:border-accent-primary/30 transition-colors">
+          <span className="text-2xl">☌</span>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-text-primary">Synastry Aspects</p>
+            <p className="text-xs text-text-muted">35 planet-to-planet relationship aspects</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-text-muted" />
+        </Link>
       </div>
 
       {/* ── Upcoming Cosmic Events ── */}

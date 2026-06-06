@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next';
 import { getAllCompatibilityPairs } from '@/data/compatibilityContent';
 import { ALL_SIGN_KEYS } from '@/data/zodiacSignContent';
 import { getAllSunMoonCombos } from '@/data/sunMoonContent';
+import { getAllSlugs as getAllHouseSlugs } from '@/data/planetsInHousesContent';
+import { getAllSynastrySlug } from '@/data/synastryContent';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://align-web.vercel.app';
@@ -93,6 +95,46 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  /* Planet-in-sign pages (12 signs each) */
+  const planetRoutes = [
+    'mars-in', 'venus-in', 'mercury-in', 'moon-sign', 'rising-sign',
+    'jupiter-in', 'saturn-in', 'uranus-in', 'neptune-in', 'pluto-in',
+    'juno-in', 'vesta-in', 'chiron-in', 'north-node-in', 'south-node-in',
+  ];
+  const planetPages = planetRoutes.flatMap((route) => [
+    { url: `${base}/${route}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    ...ALL_SIGN_KEYS.map((sign) => ({
+      url: `${base}/${route}/${sign}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  ]);
+
+  /* Planets in Houses (120 placements) */
+  const houseSlugs = getAllHouseSlugs();
+  const housePages = [
+    { url: `${base}/planets-in-houses`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    ...houseSlugs.map((slug) => ({
+      url: `${base}/planets-in-houses/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  ];
+
+  /* Synastry Aspects (35 aspects) */
+  const synastrySlugs = getAllSynastrySlug();
+  const synastryPages = [
+    { url: `${base}/synastry-aspects`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 },
+    ...synastrySlugs.map((slug) => ({
+      url: `${base}/synastry-aspects/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  ];
+
   return [
     ...staticRoutes.map((route) => ({
       url: `${base}${route}`,
@@ -127,5 +169,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
+    ...planetPages,
+    ...housePages,
+    ...synastryPages,
   ];
 }
