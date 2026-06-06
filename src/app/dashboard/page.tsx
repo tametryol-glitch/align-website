@@ -457,6 +457,23 @@ export default function DashboardPage() {
         />
       )}
 
+      {/* ─── Share Your Chart Card ──────────────────────────── */}
+      {profile?.sun_sign && profile?.moon_sign && profile?.rising_sign && (
+        <Link href="/profile#share" className="block">
+          <div
+            className="rounded-2xl p-4 border border-purple-500/20 flex items-center gap-4 hover:border-purple-500/40 transition-colors"
+            style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(59,31,128,0.12))' }}
+          >
+            <span className="text-2xl">✦</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-text-primary">Share Your Chart Card</p>
+              <p className="text-xs text-text-muted mt-0.5">Show your Big Three + a soul line that hits different</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-accent-primary" />
+          </div>
+        </Link>
+      )}
+
       {/* ─── Your Day Banner ──────────────────────────────── */}
       <Link href="/your-day" className="block">
         <div

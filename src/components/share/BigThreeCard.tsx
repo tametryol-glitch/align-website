@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { getSoulLine } from '@/lib/soulLines';
 
 // ── Zodiac glyph map ──
 
@@ -20,7 +21,6 @@ function getElementColor(sign: string): string {
   const fire = ['Aries', 'Leo', 'Sagittarius'];
   const earth = ['Taurus', 'Virgo', 'Capricorn'];
   const air = ['Gemini', 'Libra', 'Aquarius'];
-  // Water is the default
   if (fire.includes(sign)) return '#EF4444';
   if (earth.includes(sign)) return '#22C55E';
   if (air.includes(sign)) return '#3B82F6';
@@ -34,6 +34,8 @@ export interface BigThreeCardProps {
   sunSign: string;
   moonSign: string;
   risingSign: string;
+  venusSign?: string;
+  marsSign?: string;
   /** 'story' = 9:16 (Instagram story), 'square' = 1:1 */
   aspect?: 'story' | 'square';
 }
@@ -41,24 +43,29 @@ export interface BigThreeCardProps {
 // ── Component ──
 
 const BigThreeCard = forwardRef<HTMLDivElement, BigThreeCardProps>(
-  ({ displayName, sunSign, moonSign, risingSign, aspect = 'story' }, ref) => {
+  ({ displayName, sunSign, moonSign, risingSign, venusSign, marsSign, aspect = 'story' }, ref) => {
     const isStory = aspect === 'story';
+    const soulLine = getSoulLine(sunSign, moonSign);
 
-    const rows: { label: string; sign: string; symbol: string }[] = [
+    const bigThree: { label: string; sign: string; symbol: string }[] = [
       { label: 'Sun', sign: sunSign, symbol: '☉' },
       { label: 'Moon', sign: moonSign, symbol: '☽' },
       { label: 'Rising', sign: risingSign, symbol: '↑' },
     ];
+
+    const extras: { label: string; sign: string; symbol: string }[] = [];
+    if (venusSign) extras.push({ label: 'Venus', sign: venusSign, symbol: '♀' });
+    if (marsSign) extras.push({ label: 'Mars', sign: marsSign, symbol: '♂' });
 
     return (
       <div
         ref={ref}
         style={{
           width: isStory ? 360 : 360,
-          height: isStory ? 640 : 360,
+          height: isStory ? 640 : 400,
           background: 'linear-gradient(160deg, #0F0A2A 0%, #1E1145 30%, #2D1B69 60%, #3B1F80 80%, #1A1035 100%)',
           borderRadius: 24,
-          padding: isStory ? '48px 32px 36px' : '28px 32px 24px',
+          padding: isStory ? '40px 28px 28px' : '24px 28px 20px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -95,63 +102,59 @@ const BigThreeCard = forwardRef<HTMLDivElement, BigThreeCardProps>(
           ))}
         </div>
 
-        {/* Top: Name */}
+        {/* Top: Branding + Name */}
         <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <p
             style={{
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: '0.2em',
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: '0.25em',
               textTransform: 'uppercase',
-              color: 'rgba(155,111,246,0.8)',
-              marginBottom: 8,
+              color: 'rgba(155,111,246,0.7)',
+              marginBottom: 6,
             }}
           >
-            My Big Three
+            ✦ ALIGN ✦
           </p>
           <p
             style={{
               fontSize: 22,
               fontWeight: 700,
               color: '#FFFFFF',
-              fontFamily: "'Playfair Display', serif",
             }}
           >
             {displayName}
           </p>
         </div>
 
-        {/* Middle: Three sign rows */}
+        {/* Big Three rows */}
         <div
           style={{
-            flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center',
-            gap: isStory ? 32 : 16,
+            gap: isStory ? 14 : 10,
             width: '100%',
             position: 'relative',
             zIndex: 1,
           }}
         >
-          {rows.map((row) => (
+          {bigThree.map((row) => (
             <div
               key={row.label}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 16,
-                padding: '16px 20px',
-                borderRadius: 16,
+                gap: 14,
+                padding: '14px 18px',
+                borderRadius: 14,
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(155,111,246,0.15)',
               }}
             >
-              {/* Glyph circle */}
               <div
                 style={{
-                  width: 52,
-                  height: 52,
+                  width: 46,
+                  height: 46,
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -161,13 +164,12 @@ const BigThreeCard = forwardRef<HTMLDivElement, BigThreeCardProps>(
                   flexShrink: 0,
                 }}
               >
-                <span style={{ fontSize: 26 }}>{glyph(row.sign)}</span>
+                <span style={{ fontSize: 24 }}>{glyph(row.sign)}</span>
               </div>
-              {/* Label + Sign name */}
               <div>
                 <p
                   style={{
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: 600,
                     color: 'rgba(255,255,255,0.4)',
                     letterSpacing: '0.12em',
@@ -177,32 +179,62 @@ const BigThreeCard = forwardRef<HTMLDivElement, BigThreeCardProps>(
                 >
                   {row.symbol} {row.label}
                 </p>
-                <p
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                  }}
-                >
+                <p style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF' }}>
                   {row.sign}
                 </p>
               </div>
             </div>
           ))}
+
+          {/* Venus & Mars row */}
+          {extras.length > 0 && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              {extras.map((row) => (
+                <div
+                  key={row.label}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(155,111,246,0.1)',
+                  }}
+                >
+                  <span style={{ fontSize: 18 }}>{glyph(row.sign)}</span>
+                  <div>
+                    <p style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      {row.symbol} {row.label}
+                    </p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: '#FFFFFF' }}>{row.sign}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Bottom: Branding */}
-        <div
-          style={{
-            textAlign: 'center',
-            position: 'relative',
-            zIndex: 1,
-            paddingTop: 8,
-          }}
-        >
+        {/* Soul line */}
+        <div style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 8px' }}>
           <p
             style={{
-              fontSize: 18,
+              fontSize: 13,
+              fontStyle: 'italic',
+              color: 'rgba(208,197,253,0.8)',
+              lineHeight: 1.5,
+            }}
+          >
+            &ldquo;{soulLine}&rdquo;
+          </p>
+        </div>
+
+        {/* Bottom: CTA */}
+        <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <p
+            style={{
+              fontSize: 16,
               fontWeight: 700,
               background: 'linear-gradient(135deg, #9B6FF6, #D0C5FD)',
               WebkitBackgroundClip: 'text',
@@ -212,14 +244,8 @@ const BigThreeCard = forwardRef<HTMLDivElement, BigThreeCardProps>(
           >
             ALIGN
           </p>
-          <p
-            style={{
-              fontSize: 10,
-              color: 'rgba(255,255,255,0.3)',
-              marginTop: 4,
-            }}
-          >
-            aligncosmic.com
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+            aligncosmic.com · Get yours free
           </p>
         </div>
       </div>
