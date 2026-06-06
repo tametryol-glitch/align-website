@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getAllCompatibilityPairs } from '@/data/compatibilityContent';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://align-web.vercel.app';
@@ -11,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/pricing',
     '/courses',
     '/cosmic-index',
+    '/compatibility',
   ];
 
   const readingRoutes = [
@@ -64,6 +66,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/group-synastry',
   ];
 
+  /* Compatibility pages (78 sign pairs) */
+  const compatibilityPairs = getAllCompatibilityPairs();
+  const compatibilityRoutes = compatibilityPairs.map((pair) => ({
+    url: `${base}/compatibility/${pair.signs}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   return [
     ...staticRoutes.map((route) => ({
       url: `${base}${route}`,
@@ -83,5 +94,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily' as const,
       priority: 0.6,
     })),
+    ...compatibilityRoutes,
   ];
 }
