@@ -163,7 +163,7 @@ export default async function CompatibilityPage({ params }: PageProps) {
               <span className="text-5xl sm:text-6xl">{sign1.glyph}</span>
             </div>
             <span
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
+              className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
               style={{
                 borderColor: getElementColor(sign1.element),
                 color: getElementColor(sign1.element),
@@ -197,7 +197,7 @@ export default async function CompatibilityPage({ params }: PageProps) {
               <span className="text-5xl sm:text-6xl">{sign2.glyph}</span>
             </div>
             <span
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
+              className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-medium px-3 py-1 rounded-full border"
               style={{
                 borderColor: getElementColor(sign2.element),
                 color: getElementColor(sign2.element),
