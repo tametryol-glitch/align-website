@@ -140,6 +140,25 @@ export async function getDailyIntel(countryId: string, date?: string): Promise<G
   return data as GIDailyIntel;
 }
 
+/** Batch-fetch today's scores for all countries in a single query */
+export async function getAllDailyScores(date?: string): Promise<Record<string, GIScores>> {
+  const supabase = createClient();
+  const targetDate = date || new Date().toISOString().split('T')[0];
+  const { data, error } = await supabase
+    .from('gi_country_daily_intel')
+    .select('country_id, scores_json')
+    .eq('scan_date', targetDate)
+    .not('scores_json', 'is', null);
+  if (error || !data) return {};
+  const map: Record<string, GIScores> = {};
+  for (const row of data) {
+    if (row.scores_json && !map[row.country_id]) {
+      map[row.country_id] = row.scores_json as GIScores;
+    }
+  }
+  return map;
+}
+
 export async function getCountryEvents(countryId: string, limit = 10): Promise<GICountryEvent[]> {
   const supabase = createClient();
   const { data, error } = await supabase

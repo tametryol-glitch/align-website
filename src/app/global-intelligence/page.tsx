@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Globe, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { listCountries, getDailyIntel, type GICountry, type GIScores } from '@/lib/globalIntelligence';
+import { listCountries, getAllDailyScores, type GICountry, type GIScores } from '@/lib/globalIntelligence';
 
 const REGION_COLORS: Record<string, string> = {
   Americas: 'bg-blue-500/20 text-blue-400',
@@ -54,16 +54,15 @@ export default function GlobalIntelligencePage() {
   useEffect(() => {
     async function load() {
       try {
-        const list = await listCountries();
+        const [list, scoresMap] = await Promise.all([
+          listCountries(),
+          getAllDailyScores(),
+        ]);
 
-        // Load today's intel for each country to show scores
-        const today = new Date().toISOString().split('T')[0];
-        const withIntel: CountryWithIntel[] = await Promise.all(
-          list.map(async (c) => {
-            const intel = await getDailyIntel(c.id, today);
-            return { ...c, scores: intel?.scores_json || null };
-          })
-        );
+        const withIntel: CountryWithIntel[] = list.map((c) => ({
+          ...c,
+          scores: scoresMap[c.id] || null,
+        }));
         setCountries(withIntel);
       } catch (err) {
         console.error('[GI] Failed to load countries:', err);
