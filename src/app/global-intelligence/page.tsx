@@ -112,7 +112,7 @@ export default function GlobalIntelligencePage() {
           </div>
           <div>
             <h1 className="text-2xl font-display font-bold text-text-primary">Global Intelligence</h1>
-            <p className="text-text-muted text-sm">Mundane astrology for 30 nations — daily scores, transits & events</p>
+            <p className="text-text-muted text-sm">Mundane astrology for 196 nations — daily scores, transits & events</p>
           </div>
         </div>
       </div>
