@@ -238,16 +238,55 @@ export default function CountryDetailPage() {
         </div>
       </div>
 
-      {/* ── Summary ──────────────────────────────────────── */}
-      {intel?.summary && (
-        <div className="card bg-gradient-to-br from-blue-500/5 to-transparent">
-          <h2 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-blue-400" />
-            Intelligence Summary
-          </h2>
-          <p className="text-text-secondary text-sm leading-relaxed">{intel.summary}</p>
-        </div>
-      )}
+      {/* ── Intelligence Briefing ───────────────────────── */}
+      {intel?.summary && (() => {
+        const sections = intel.summary.split(' || ');
+        const headline = sections[0] || '';
+        const keyEvents = sections.slice(1, -1);
+        const outlook = sections.length > 1 ? sections[sections.length - 1] : '';
+        // Fallback: if no delimiters, show as single paragraph (legacy format)
+        const isStructured = sections.length > 1;
+
+        return (
+          <div className="card bg-gradient-to-br from-blue-500/5 to-transparent space-y-4">
+            <h2 className="font-semibold text-text-primary flex items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-400" />
+              Intelligence Briefing
+            </h2>
+
+            {/* Headline */}
+            <p className="text-text-primary text-sm leading-relaxed font-medium">
+              {headline}
+            </p>
+
+            {/* Key Events */}
+            {isStructured && keyEvents.length > 0 && (
+              <div className="space-y-2 border-l-2 border-blue-500/30 pl-4">
+                <p className="text-[11px] uppercase tracking-wider text-blue-400 font-semibold">Key Planetary Events</p>
+                {keyEvents.map((evt, i) => (
+                  <p key={i} className="text-text-secondary text-sm leading-relaxed">
+                    {evt}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {/* Outlook */}
+            {isStructured && outlook && (
+              <div className="bg-surface-secondary/50 rounded-lg p-3 border border-white/5">
+                <p className="text-text-secondary text-sm leading-relaxed italic">
+                  {outlook}
+                </p>
+              </div>
+            )}
+
+            {/* Legacy fallback */}
+            {!isStructured && (
+              <p className="text-text-secondary text-sm leading-relaxed">{intel.summary}</p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Transit Stats ────────────────────────────────── */}
       {intel && (
