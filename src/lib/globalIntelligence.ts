@@ -102,15 +102,27 @@ export async function getCountry(iso: string): Promise<GICountry | null> {
 
 export async function getPrimaryChart(countryId: string): Promise<GICountryChart | null> {
   const supabase = createClient();
+  // Order by chart_data_json not null first so we prefer computed charts
   const { data, error } = await supabase
     .from('gi_country_charts')
     .select('*')
     .eq('country_id', countryId)
     .eq('is_primary', true)
     .eq('is_active', true)
-    .single();
-  if (error) return null;
-  return data as GICountryChart;
+    .not('chart_data_json', 'is', null)
+    .limit(1);
+  if (error || !data?.length) {
+    // Fallback: get any primary chart even without computed data
+    const { data: fallback } = await supabase
+      .from('gi_country_charts')
+      .select('*')
+      .eq('country_id', countryId)
+      .eq('is_primary', true)
+      .eq('is_active', true)
+      .limit(1);
+    return fallback?.[0] as GICountryChart || null;
+  }
+  return data[0] as GICountryChart;
 }
 
 export async function getDailyIntel(countryId: string, date?: string): Promise<GIDailyIntel | null> {
