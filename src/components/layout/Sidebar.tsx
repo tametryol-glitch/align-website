@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
   { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
+  { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star, coachmark: 'nav-chart' },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },

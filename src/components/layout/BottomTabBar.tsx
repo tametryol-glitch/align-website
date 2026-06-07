@@ -28,6 +28,7 @@ const TABS = [
 const MORE_ITEMS = [
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
+  { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
