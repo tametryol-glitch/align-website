@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Star, Calendar, MapPin, Shield, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Star, Calendar, MapPin, Shield, AlertTriangle, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   getCountry, getPrimaryChart, getDailyIntel, getCountryEvents,
   type GICountry, type GICountryChart, type GIDailyIntel, type GICountryEvent,
@@ -68,6 +68,8 @@ export default function CountryDetailPage() {
   const [intel, setIntel] = useState<GIDailyIntel | null>(null);
   const [events, setEvents] = useState<GICountryEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
+  const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!iso) return;
@@ -84,7 +86,15 @@ export default function CountryDetailPage() {
 
       setChart(chartData);
       setIntel(intelData);
-      setEvents(eventsData);
+      // Deduplicate events by title + date
+      const seen = new Set<string>();
+      const uniqueEvents = (eventsData || []).filter((e) => {
+        const key = `${e.title}::${e.event_date}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setEvents(uniqueEvents);
     } catch (err) {
       console.error('[GI] Load failed:', err);
     } finally {
@@ -288,33 +298,69 @@ export default function CountryDetailPage() {
         );
       })()}
 
-      {/* ── Transit Stats ────────────────────────────────── */}
+      {/* ── Transit Stats (clickable) ─────────────────────── */}
       {intel && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard
-            label="Transits"
-            value={intel.transits_json?.count || intel.transits_json?.hits?.length || 0}
-            sub="active aspects"
-            icon="🔭"
-          />
-          <StatCard
-            label="Midpoints"
-            value={intel.midpoints_json?.count || intel.midpoints_json?.top?.length || 0}
-            sub="active pairs"
-            icon="⊕"
-          />
-          <StatCard
-            label="Progressions"
-            value={intel.progressions_json?.planets?.length || 0}
-            sub="progressed bodies"
-            icon="📊"
-          />
-          <StatCard
-            label="Events"
-            value={events.length}
-            sub="tracked"
-            icon="📰"
-          />
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatCardClickable
+              label="Transits"
+              value={intel.transits_json?.count || intel.transits_json?.hits?.length || 0}
+              sub="active aspects"
+              icon="🔭"
+              panelKey="transits"
+              expanded={expandedPanel === 'transits'}
+              onClick={() => setExpandedPanel(expandedPanel === 'transits' ? null : 'transits')}
+            />
+            <StatCardClickable
+              label="Midpoints"
+              value={intel.midpoints_json?.count || intel.midpoints_json?.top?.length || 0}
+              sub="active pairs"
+              icon="⊕"
+              panelKey="midpoints"
+              expanded={expandedPanel === 'midpoints'}
+              onClick={() => setExpandedPanel(expandedPanel === 'midpoints' ? null : 'midpoints')}
+            />
+            <StatCardClickable
+              label="Progressions"
+              value={intel.progressions_json?.planets?.length || 0}
+              sub="progressed bodies"
+              icon="📊"
+              panelKey="progressions"
+              expanded={expandedPanel === 'progressions'}
+              onClick={() => setExpandedPanel(expandedPanel === 'progressions' ? null : 'progressions')}
+            />
+            <StatCardClickable
+              label="Events"
+              value={events.length}
+              sub="tracked"
+              icon="📰"
+              panelKey="events"
+              expanded={expandedPanel === 'events'}
+              onClick={() => setExpandedPanel(expandedPanel === 'events' ? null : 'events')}
+            />
+          </div>
+
+          {/* Expanded transit panel */}
+          {expandedPanel === 'transits' && intel.transits_json?.hits && (
+            <TransitPanel hits={intel.transits_json.hits} />
+          )}
+
+          {/* Expanded midpoints panel */}
+          {expandedPanel === 'midpoints' && intel.midpoints_json?.top && (
+            <MidpointPanel midpoints={intel.midpoints_json.top} />
+          )}
+
+          {/* Expanded progressions panel */}
+          {expandedPanel === 'progressions' && intel.progressions_json?.planets && (
+            <ProgressionPanel planets={intel.progressions_json.planets} aspects={intel.progressions_json?.aspects} />
+          )}
+
+          {/* Expanded events panel (scrolls to events section) */}
+          {expandedPanel === 'events' && (
+            <div className="card text-center text-text-muted text-sm py-2">
+              ↓ See Recent Events section below
+            </div>
+          )}
         </div>
       )}
 
@@ -327,22 +373,53 @@ export default function CountryDetailPage() {
         {events.length === 0 ? (
           <p className="text-text-muted text-sm">No events recorded yet.</p>
         ) : (
-          <div className="space-y-2">
-            {events.map((evt) => (
-              <div key={evt.id} className="flex items-start gap-2 py-2 border-b border-border-primary/50 last:border-0">
-                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${severityDot(evt.severity)}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-text-primary text-sm font-medium">{evt.title}</p>
-                  <p className="text-text-muted text-xs mt-0.5">
-                    {evt.event_date} · {evt.category}
-                    {evt.verification_status === 'verified' ? ' ✓' : ''}
-                  </p>
-                  {evt.summary && (
-                    <p className="text-text-secondary text-xs mt-1 line-clamp-2">{evt.summary}</p>
+          <div className="space-y-1">
+            {events.map((evt) => {
+              const isExpanded = expandedEvent === evt.id;
+              return (
+                <button
+                  key={evt.id}
+                  onClick={() => setExpandedEvent(isExpanded ? null : evt.id)}
+                  className="w-full text-left rounded-lg hover:bg-white/5 transition-colors p-2"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${severityDot(evt.severity)}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-text-primary text-sm font-medium">{evt.title}</p>
+                        <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                      </div>
+                      <p className="text-text-muted text-xs mt-0.5">
+                        {evt.event_date} · {evt.category}
+                        {evt.verification_status === 'verified' ? ' ✓' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="mt-2 ml-4 space-y-2 border-l-2 border-border-primary/50 pl-3">
+                      {evt.summary && (
+                        <p className="text-text-secondary text-xs leading-relaxed">{evt.summary}</p>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
+                          Severity: {evt.severity}
+                        </span>
+                        {evt.subcategory && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
+                            {evt.subcategory}
+                          </span>
+                        )}
+                        {evt.source_name && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
+                            Source: {evt.source_name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   )}
-                </div>
-              </div>
-            ))}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -369,15 +446,197 @@ function ScoreRow({ label, value, tag }: { label: string; value: number; tag?: s
   );
 }
 
-// ─── Stat Card Component ─────────────────────────────────────
+// ─── Clickable Stat Card ─────────────────────────────────────
 
-function StatCard({ label, value, sub, icon }: { label: string; value: number; sub: string; icon: string }) {
+function StatCardClickable({ label, value, sub, icon, panelKey, expanded, onClick }: {
+  label: string; value: number; sub: string; icon: string;
+  panelKey: string; expanded: boolean; onClick: () => void;
+}) {
   return (
-    <div className="card text-center">
+    <button
+      onClick={onClick}
+      className={`card text-center cursor-pointer transition-all hover:ring-1 hover:ring-accent-primary/30 ${expanded ? 'ring-1 ring-accent-primary/50 bg-accent-primary/5' : ''}`}
+    >
       <p className="text-2xl mb-1">{icon}</p>
       <p className="text-xl font-bold text-text-primary">{value}</p>
       <p className="text-text-muted text-[10px] uppercase tracking-wider">{label}</p>
       <p className="text-text-muted text-[10px]">{sub}</p>
+      <ChevronDown className={`w-3 h-3 text-text-muted mx-auto mt-1 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+    </button>
+  );
+}
+
+// ─── Mundane house keywords ─────────────────────────────────
+
+const HOUSE_KEYWORDS: Record<number, string> = {
+  1: 'Nation & Population',
+  2: 'Treasury & Currency',
+  3: 'Media & Communication',
+  4: 'Land & Territory',
+  5: 'Culture & Entertainment',
+  6: 'Health & Workforce',
+  7: 'Foreign Relations',
+  8: 'Debt & Taxes',
+  9: 'Judiciary & International',
+  10: 'Government & Leadership',
+  11: 'Parliament & Legislature',
+  12: 'Espionage & Institutions',
+};
+
+// ─── Transit Panel ──────────────────────────────────────────
+
+interface TransitHit {
+  transit_planet: string;
+  natal_planet: string;
+  aspect: string;
+  orb: number;
+  severity: string;
+  natal_house: number;
+  is_applying: boolean;
+  transit_sign: string;
+  transit_degree: number;
+}
+
+function aspectGlyph(aspect: string): string {
+  const map: Record<string, string> = {
+    Conjunction: '☌', Opposition: '☍', Square: '□', Trine: '△',
+    Sextile: '⚹', Quincunx: '⚻',
+  };
+  return map[aspect] || aspect;
+}
+
+function TransitPanel({ hits }: { hits: TransitHit[] }) {
+  // Sort by severity then orb tightness
+  const sorted = [...hits].sort((a, b) => {
+    const sevOrder: Record<string, number> = { major: 0, moderate: 1, minor: 2 };
+    const sa = sevOrder[a.severity] ?? 3;
+    const sb = sevOrder[b.severity] ?? 3;
+    if (sa !== sb) return sa - sb;
+    return Math.abs(a.orb) - Math.abs(b.orb);
+  });
+
+  return (
+    <div className="card bg-gradient-to-br from-purple-500/5 to-transparent">
+      <h3 className="text-sm font-semibold text-text-primary mb-3">Active Transits</h3>
+      <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
+        {sorted.map((h, i) => (
+          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 text-xs">
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${severityDotColor(h.severity)}`} />
+            <span className="text-text-primary font-medium w-16 flex-shrink-0">{h.transit_planet}</span>
+            <span className="text-accent-primary text-sm">{aspectGlyph(h.aspect)}</span>
+            <span className="text-text-primary font-medium w-16 flex-shrink-0">{h.natal_planet}</span>
+            <span className="text-text-muted flex-shrink-0 w-14 text-right">
+              {Math.abs(h.orb).toFixed(1)}° {h.is_applying ? '→' : '←'}
+            </span>
+            <span className="text-text-muted ml-auto text-[10px]">
+              H{h.natal_house} {HOUSE_KEYWORDS[h.natal_house] || ''}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="text-text-muted text-[10px] mt-2">
+        → = applying (strengthening) · ← = separating · Sorted by significance
+      </p>
+    </div>
+  );
+}
+
+function severityDotColor(severity: string): string {
+  switch (severity) {
+    case 'major': return 'bg-red-500';
+    case 'moderate': return 'bg-yellow-500';
+    default: return 'bg-blue-500';
+  }
+}
+
+// ─── Midpoint Panel ─────────────────────────────────────────
+
+interface MidpointEntry {
+  pair: [string, string];
+  sign: string;
+  house: number;
+  degree: number;
+  midpoint_longitude: number;
+}
+
+function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
+  return (
+    <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent">
+      <h3 className="text-sm font-semibold text-text-primary mb-3">Active Midpoints</h3>
+      <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
+        {midpoints.map((m, i) => (
+          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 text-xs">
+            <span className="text-text-primary font-medium">
+              {m.pair[0]}/{m.pair[1]}
+            </span>
+            <span className="text-accent-primary">
+              {SIGN_GLYPHS[m.sign] || '?'} {m.degree.toFixed(1)}°
+            </span>
+            <span className="text-text-muted ml-auto text-[10px]">
+              H{m.house} {HOUSE_KEYWORDS[m.house] || ''}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="text-text-muted text-[10px] mt-2">
+        Midpoint = sensitive degree where two planetary energies converge
+      </p>
+    </div>
+  );
+}
+
+// ─── Progression Panel ──────────────────────────────────────
+
+interface ProgPlanet {
+  planet: string;
+  sign: string;
+  house: number;
+  degree: number;
+  longitude: number;
+}
+
+interface ProgAspect {
+  prog_planet: string;
+  natal_planet: string;
+  aspect: string;
+  orb: number;
+}
+
+function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects?: ProgAspect[] }) {
+  return (
+    <div className="card bg-gradient-to-br from-amber-500/5 to-transparent">
+      <h3 className="text-sm font-semibold text-text-primary mb-3">Secondary Progressions</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+        {planets.map((p, i) => (
+          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded bg-white/5 text-xs">
+            <span className="text-accent-primary text-lg">{SIGN_GLYPHS[p.sign] || '?'}</span>
+            <div>
+              <p className="text-text-primary font-medium">{p.planet}</p>
+              <p className="text-text-muted text-[10px]">
+                {p.sign} {p.degree.toFixed(1)}° · H{p.house}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {aspects && aspects.length > 0 && (
+        <>
+          <h4 className="text-xs font-semibold text-text-secondary mb-2">Progressed Aspects</h4>
+          <div className="space-y-1">
+            {aspects.map((a, i) => (
+              <div key={i} className="flex items-center gap-2 py-1 px-2 text-xs">
+                <span className="text-text-primary font-medium">{a.prog_planet}</span>
+                <span className="text-accent-primary">{aspectGlyph(a.aspect)}</span>
+                <span className="text-text-primary font-medium">{a.natal_planet}</span>
+                <span className="text-text-muted ml-auto">{Math.abs(a.orb).toFixed(1)}°</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      <p className="text-text-muted text-[10px] mt-2">
+        1 progressed day = 1 year of national evolution
+      </p>
     </div>
   );
 }
