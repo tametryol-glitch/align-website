@@ -276,12 +276,12 @@ export default function AffiliateDashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-bg-card rounded-xl p-1 border border-border-primary">
+        <div className="flex gap-1 mb-6 bg-bg-card rounded-xl p-1 border border-border-primary overflow-x-auto">
           {(['overview', 'conversions', 'clicks', 'payouts'] as const).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 min-w-0 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 tab === t
                   ? 'bg-accent-primary/20 text-accent-primary'
                   : 'text-text-muted hover:text-text-secondary'
