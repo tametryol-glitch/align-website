@@ -84,6 +84,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'affiliateId and amountCents (>0) required' }, { status: 400 });
     }
 
+    // Minimum payout threshold: $50 (5000 cents)
+    if (amountCents < 5000) {
+      return NextResponse.json(
+        { error: `Minimum payout is $50.00. Requested: $${(amountCents / 100).toFixed(2)}` },
+        { status: 400 },
+      );
+    }
+
     const admin = getAdminClient();
 
     // Verify affiliate exists and has enough unpaid balance
@@ -137,6 +145,20 @@ export async function POST(req: NextRequest) {
       .update({ status: 'paid' })
       .eq('affiliate_id', affiliateId)
       .eq('status', 'approved');
+
+    // Send payout notification email
+    try {
+      if (aff.email) {
+        const { subject, html } = EMAIL_TEMPLATES.affiliatePayoutSent(
+          aff.name || 'Affiliate',
+          `$${(amountCents / 100).toFixed(2)}`,
+          method || 'paypal',
+        );
+        await sendEmail(aff.email, subject, html);
+      }
+    } catch (emailErr) {
+      console.error('[Affiliate] Payout email failed:', emailErr);
+    }
 
     return NextResponse.json({
       ok: true,

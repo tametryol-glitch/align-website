@@ -469,6 +469,74 @@ export const EMAIL_TEMPLATES = {
     `),
   }),
 
+  affiliateCommissionEarned: (name: string, commissionAmount: string, revenueAmount: string, conversionType: string) => ({
+    subject: `Cha-ching! You earned a ${commissionAmount} commission`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">New commission earned!</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Great news, ${name} — a referred user just made a ${conversionType} and you earned a commission.
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:20px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Transaction Type</td>
+              <td style="padding:8px 0;font-size:14px;color:#ffffff;font-weight:600;text-align:right;text-transform:capitalize;">${conversionType}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Revenue</td>
+              <td style="padding:8px 0;font-size:14px;color:#ffffff;font-weight:600;text-align:right;">${revenueAmount}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Your Commission (20%)</td>
+              <td style="padding:8px 0;font-size:18px;color:#22c55e;font-weight:700;text-align:right;">${commissionAmount}</td>
+            </tr>
+          </table>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        This commission has been added to your unpaid balance. Payouts are processed once you
+        reach the $50 minimum threshold.
+      </p>
+      ${ctaButton('View Your Dashboard', `${APP_URL}/affiliates/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Keep sharing your link to earn more.
+      </p>
+    `),
+  }),
+
+  affiliatePayoutSent: (name: string, amount: string, method: string) => ({
+    subject: `Payout sent: ${amount} is on its way!`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Payout processed!</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Hey ${name}, we have just sent your affiliate payout. Here are the details:
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:20px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Amount</td>
+              <td style="padding:8px 0;font-size:20px;color:#22c55e;font-weight:700;text-align:right;">${amount}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Method</td>
+              <td style="padding:8px 0;font-size:14px;color:#ffffff;font-weight:600;text-align:right;text-transform:capitalize;">${method}</td>
+            </tr>
+          </table>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Please allow a few business days for the funds to arrive, depending on your payment method.
+        You can view all your payout history on your affiliate dashboard.
+      </p>
+      ${ctaButton('View Payout History', `${APP_URL}/affiliates/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Thank you for being an Align affiliate partner.
+      </p>
+    `),
+  }),
+
   affiliateRejected: (name: string, reason?: string) => ({
     subject: `Update on your Align affiliate application`,
     html: layout(`

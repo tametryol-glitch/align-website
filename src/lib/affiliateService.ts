@@ -18,9 +18,11 @@ export function setAffiliateCookie(affiliateId: string, cookieDays: number, clic
   if (clickId) {
     document.cookie = `${AFFILIATE_CLICK_ID}=${clickId}; expires=${expires}; path=/; SameSite=Lax`;
   }
-  // Also store in localStorage as fallback
+  // Also store in localStorage as fallback (with expiry timestamp)
   try {
+    const expiresAt = Date.now() + cookieDays * 86400000;
     localStorage.setItem(AFFILIATE_COOKIE, affiliateId);
+    localStorage.setItem('align_aff_expires', String(expiresAt));
     if (clickId) localStorage.setItem(AFFILIATE_CLICK_ID, clickId);
   } catch {}
 }
@@ -30,11 +32,19 @@ export function getAffiliateAttribution(): { affiliateId: string | null; clickId
   let affiliateId = getCookie(AFFILIATE_COOKIE);
   let clickId = getCookie(AFFILIATE_CLICK_ID);
 
-  // Fallback to localStorage
+  // Fallback to localStorage (check expiry)
   if (!affiliateId) {
     try {
-      affiliateId = localStorage.getItem(AFFILIATE_COOKIE);
-      clickId = localStorage.getItem(AFFILIATE_CLICK_ID);
+      const expiresAt = Number(localStorage.getItem('align_aff_expires') || '0');
+      if (expiresAt && Date.now() > expiresAt) {
+        // Expired — clear stale attribution
+        localStorage.removeItem(AFFILIATE_COOKIE);
+        localStorage.removeItem(AFFILIATE_CLICK_ID);
+        localStorage.removeItem('align_aff_expires');
+      } else {
+        affiliateId = localStorage.getItem(AFFILIATE_COOKIE);
+        clickId = localStorage.getItem(AFFILIATE_CLICK_ID);
+      }
     } catch {}
   }
 
@@ -47,6 +57,7 @@ export function clearAffiliateAttribution() {
   try {
     localStorage.removeItem(AFFILIATE_COOKIE);
     localStorage.removeItem(AFFILIATE_CLICK_ID);
+    localStorage.removeItem('align_aff_expires');
   } catch {}
 }
 

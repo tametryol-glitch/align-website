@@ -1,20 +1,66 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Gift, CheckCircle } from 'lucide-react';
+import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie } from '@/lib/affiliateService';
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginPageInner() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refParam = searchParams.get('ref');
+
+  // Manual affiliate code entry state
+  const [showAffiliateInput, setShowAffiliateInput] = useState(false);
+  const [affiliateCode, setAffiliateCode] = useState('');
+  const [affiliateVerified, setAffiliateVerified] = useState(false);
+  const [affiliateVerifying, setAffiliateVerifying] = useState(false);
+  const [affiliateName, setAffiliateName] = useState('');
+  const [affiliateError, setAffiliateError] = useState('');
+
+  const effectiveRef = refParam || (affiliateVerified ? affiliateCode.trim() : null);
+
+  async function verifyAndTrackCode(code: string) {
+    const trimmed = code.trim();
+    if (!trimmed) return;
+    setAffiliateVerifying(true);
+    setAffiliateError('');
+
+    const verification = await verifyAffiliateCode(trimmed);
+    if (!verification.valid) {
+      setAffiliateError('Invalid referral code');
+      setAffiliateVerified(false);
+      setAffiliateVerifying(false);
+      return;
+    }
+
+    setAffiliateName(verification.name || '');
+
+    const result = await trackAffiliateClick(trimmed);
+    if (result.ok && result.affiliate_id) {
+      setAffiliateCookie(result.affiliate_id, result.cookie_days || 30, result.click_id);
+    }
+
+    setAffiliateVerified(true);
+    setAffiliateVerifying(false);
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -34,9 +80,12 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     const supabase = createClient();
+    const redirectUrl = effectiveRef
+      ? `${window.location.origin}/auth/callback?ref=${effectiveRef}`
+      : `${window.location.origin}/auth/callback`;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: redirectUrl },
     });
   }
 
@@ -73,6 +122,61 @@ export default function LoginPage() {
                 required
               />
             </div>
+
+            {/* Affiliate referral code */}
+            {refParam ? (
+              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg px-3 py-2.5">
+                <Gift className="w-4 h-4 text-purple-400 shrink-0" />
+                <p className="text-xs text-purple-300">
+                  Referral code applied &mdash; <span className="font-semibold text-white">10% off</span> your first 2 months!
+                </p>
+              </div>
+            ) : !showAffiliateInput ? (
+              <button
+                type="button"
+                onClick={() => setShowAffiliateInput(true)}
+                className="text-sm text-text-muted hover:text-accent-primary transition-colors"
+              >
+                Have a referral code?
+              </button>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">Referral Code</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={affiliateCode}
+                    onChange={(e) => {
+                      setAffiliateCode(e.target.value);
+                      if (affiliateVerified) { setAffiliateVerified(false); setAffiliateName(''); }
+                      if (affiliateError) setAffiliateError('');
+                    }}
+                    className="input flex-1"
+                    placeholder="e.g. COSMICJANE"
+                    autoCapitalize="none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => verifyAndTrackCode(affiliateCode)}
+                    disabled={affiliateVerifying || !affiliateCode.trim()}
+                    className="btn-secondary px-4 text-sm shrink-0"
+                  >
+                    {affiliateVerifying ? 'Checking...' : 'Apply'}
+                  </button>
+                </div>
+                {affiliateVerified && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-green-400" />
+                    <p className="text-green-400 text-xs">
+                      Referred by {affiliateName || 'affiliate'} &mdash; 10% off your first 2 months!
+                    </p>
+                  </div>
+                )}
+                {affiliateError && (
+                  <p className="text-red-400 text-xs mt-1.5">{affiliateError}</p>
+                )}
+              </div>
+            )}
 
             {error && (
               <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>

@@ -20,6 +20,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getStripe, tierFromPriceId } from '@/lib/stripe';
+import { sendEmail } from '@/lib/emailService';
+import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
 import type Stripe from 'stripe';
 
 /* ── Helpers ──────────────────────────────────────────────── */
@@ -98,6 +100,27 @@ async function attributeAffiliateCommission(
     `$${(commissionCents / 100).toFixed(2)} on $${(revenueCents / 100).toFixed(2)} revenue ` +
     `(invoice ${invoiceId})`,
   );
+
+  // Send commission notification email to affiliate
+  try {
+    const { data: affProfile } = await admin
+      .from('affiliates')
+      .select('name, email')
+      .eq('id', affiliateId)
+      .single();
+
+    if (affProfile?.email) {
+      const { subject, html } = EMAIL_TEMPLATES.affiliateCommissionEarned(
+        affProfile.name || 'Affiliate',
+        `$${(commissionCents / 100).toFixed(2)}`,
+        `$${(revenueCents / 100).toFixed(2)}`,
+        conversionType,
+      );
+      await sendEmail(affProfile.email, subject, html);
+    }
+  } catch (emailErr) {
+    console.error('[Stripe Webhook] Commission email failed:', emailErr);
+  }
 }
 
 /**
