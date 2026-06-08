@@ -66,9 +66,18 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
-  const isProtected = !pathname.startsWith('/auth') &&
-    !isPublicApi &&
-    pathname !== '/';
+  const isPublicPage = pathname === '/' ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/affiliates') ||
+    pathname.startsWith('/ref/') ||
+    pathname.startsWith('/join/') ||
+    pathname.startsWith('/blog') ||
+    pathname.startsWith('/zodiac') ||
+    pathname.startsWith('/compatibility') ||
+    pathname.startsWith('/personality') ||
+    pathname.startsWith('/pricing') ||
+    pathname.startsWith('/events');
+  const isProtected = !isPublicPage && !isPublicApi;
 
   if (!user && isProtected) {
     const redirect = NextResponse.redirect(new URL('/auth/login', request.url));
