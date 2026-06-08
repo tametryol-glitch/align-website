@@ -941,6 +941,16 @@ function AffiliatesPanel() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
+  // Payout modal state
+  const [payoutAff, setPayoutAff] = useState<AffiliateRow | null>(null);
+  const [payoutAmount, setPayoutAmount] = useState('');
+  const [payoutMethod, setPayoutMethod] = useState('paypal');
+  const [payoutEmail, setPayoutEmail] = useState('');
+  const [payoutRef, setPayoutRef] = useState('');
+  const [payoutNotes, setPayoutNotes] = useState('');
+  const [payoutSubmitting, setPayoutSubmitting] = useState(false);
+  const [payoutError, setPayoutError] = useState('');
+
   useEffect(() => { loadAffiliates(); }, [filter]);
 
   async function loadAffiliates() {
@@ -972,6 +982,55 @@ function AffiliatesPanel() {
       }
     } catch {}
     setActioningId(null);
+  }
+
+  async function handlePayout() {
+    if (!payoutAff || !payoutAmount || !payoutRef.trim()) return;
+    const amountCents = Math.round(parseFloat(payoutAmount) * 100);
+    if (isNaN(amountCents) || amountCents <= 0) {
+      setPayoutError('Enter a valid dollar amount');
+      return;
+    }
+    setPayoutSubmitting(true);
+    setPayoutError('');
+    try {
+      const res = await fetch('/api/admin/affiliates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          affiliateId: payoutAff.id,
+          amountCents,
+          method: payoutMethod,
+          payoutEmail: payoutEmail || payoutAff.email,
+          transactionRef: payoutRef.trim(),
+          notes: payoutNotes || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPayoutError(data.error || 'Payout failed');
+        setPayoutSubmitting(false);
+        return;
+      }
+      setPayoutAff(null);
+      setPayoutAmount('');
+      setPayoutRef('');
+      setPayoutNotes('');
+      loadAffiliates();
+    } catch (err: any) {
+      setPayoutError(err.message || 'Network error');
+    }
+    setPayoutSubmitting(false);
+  }
+
+  function openPayoutModal(aff: AffiliateRow) {
+    setPayoutAff(aff);
+    setPayoutAmount((aff.unpaid_cents / 100).toFixed(2));
+    setPayoutMethod('paypal');
+    setPayoutEmail(aff.email);
+    setPayoutRef('');
+    setPayoutNotes('');
+    setPayoutError('');
   }
 
   function centsToUSD(cents: number): string {
@@ -1135,13 +1194,23 @@ function AffiliatesPanel() {
                   </>
                 )}
                 {aff.status === 'approved' && (
-                  <button
-                    onClick={() => handleStatus(aff.id, 'suspended')}
-                    disabled={actioningId === aff.id}
-                    className="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-medium transition-colors disabled:opacity-50"
-                  >
-                    Suspend
-                  </button>
+                  <>
+                    {aff.unpaid_cents > 0 && (
+                      <button
+                        onClick={() => openPayoutModal(aff)}
+                        className="px-3 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs font-medium transition-colors flex items-center gap-1"
+                      >
+                        <DollarSign className="w-3 h-3" /> Pay {centsToUSD(aff.unpaid_cents)}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleStatus(aff.id, 'suspended')}
+                      disabled={actioningId === aff.id}
+                      className="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-medium transition-colors disabled:opacity-50"
+                    >
+                      Suspend
+                    </button>
+                  </>
                 )}
                 {aff.status === 'suspended' && (
                   <button
@@ -1175,6 +1244,103 @@ function AffiliatesPanel() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Payout Modal */}
+      {payoutAff && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setPayoutAff(null)}>
+          <div className="bg-bg-card border border-border-primary rounded-2xl max-w-md w-full p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-green-400" /> Record Payout
+            </h2>
+            <p className="text-sm text-text-secondary">
+              {payoutAff.name} — Unpaid balance: <strong className="text-accent-primary">{centsToUSD(payoutAff.unpaid_cents)}</strong>
+            </p>
+
+            {payoutError && (
+              <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{payoutError}</p>
+            )}
+
+            <div>
+              <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Amount ($) *</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+                value={payoutAmount}
+                onChange={e => setPayoutAmount(e.target.value)}
+                placeholder="50.00"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Method</label>
+              <div className="flex flex-wrap gap-2">
+                {['paypal', 'bank_transfer', 'crypto', 'manual'].map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setPayoutMethod(m)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                      payoutMethod === m
+                        ? 'border-accent-primary bg-accent-primary/10 text-accent-primary'
+                        : 'border-border-primary text-text-secondary hover:bg-bg-tertiary'
+                    }`}
+                  >
+                    {m === 'bank_transfer' ? 'Bank Transfer' : m.charAt(0).toUpperCase() + m.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">PayPal / Email</label>
+              <input
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+                value={payoutEmail}
+                onChange={e => setPayoutEmail(e.target.value)}
+                placeholder="affiliate@email.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Transaction Reference *</label>
+              <input
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+                value={payoutRef}
+                onChange={e => setPayoutRef(e.target.value)}
+                placeholder="PayPal batch ID / wire ref / tx hash"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Notes (optional)</label>
+              <input
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+                value={payoutNotes}
+                onChange={e => setPayoutNotes(e.target.value)}
+                placeholder="Monthly payout for May 2026"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setPayoutAff(null)}
+                className="px-4 py-2 rounded-lg text-sm text-text-muted hover:bg-bg-tertiary transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePayout}
+                disabled={payoutSubmitting || !payoutRef.trim() || !payoutAmount}
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-500 transition-colors disabled:opacity-50"
+              >
+                {payoutSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                Confirm Payout
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

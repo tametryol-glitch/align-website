@@ -71,6 +71,87 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST /api/admin/affiliates — record a payout to an affiliate
+export async function POST(req: NextRequest) {
+  try {
+    const adminId = await verifyAdmin(req);
+    if (!adminId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const body = await req.json();
+    const { affiliateId, amountCents, method, payoutEmail, transactionRef, notes } = body;
+
+    if (!affiliateId || !amountCents || amountCents <= 0) {
+      return NextResponse.json({ error: 'affiliateId and amountCents (>0) required' }, { status: 400 });
+    }
+
+    const admin = getAdminClient();
+
+    // Verify affiliate exists and has enough unpaid balance
+    const { data: aff, error: affErr } = await admin
+      .from('affiliates')
+      .select('id, unpaid_cents, total_paid_cents, name, email')
+      .eq('id', affiliateId)
+      .single();
+
+    if (affErr || !aff) {
+      return NextResponse.json({ error: 'Affiliate not found' }, { status: 404 });
+    }
+
+    if ((aff.unpaid_cents || 0) < amountCents) {
+      return NextResponse.json(
+        { error: `Payout $${(amountCents / 100).toFixed(2)} exceeds unpaid balance $${((aff.unpaid_cents || 0) / 100).toFixed(2)}` },
+        { status: 400 },
+      );
+    }
+
+    const now = new Date().toISOString();
+
+    // Insert payout record
+    const { error: insertErr } = await admin.from('affiliate_payouts').insert({
+      affiliate_id: affiliateId,
+      amount_cents: amountCents,
+      method: method || 'paypal',
+      payout_email: payoutEmail || aff.email,
+      transaction_ref: transactionRef || null,
+      notes: notes || null,
+      status: 'completed',
+      completed_at: now,
+    });
+
+    if (insertErr) {
+      return NextResponse.json({ error: insertErr.message }, { status: 500 });
+    }
+
+    // Update affiliate totals
+    const newUnpaid = Math.max(0, (aff.unpaid_cents || 0) - amountCents);
+    const newPaid = (aff.total_paid_cents || 0) + amountCents;
+
+    await admin
+      .from('affiliates')
+      .update({ unpaid_cents: newUnpaid, total_paid_cents: newPaid })
+      .eq('id', affiliateId);
+
+    // Mark pending conversions as paid (up to the payout amount)
+    await admin
+      .from('affiliate_conversions')
+      .update({ status: 'paid' })
+      .eq('affiliate_id', affiliateId)
+      .eq('status', 'approved');
+
+    return NextResponse.json({
+      ok: true,
+      payout: {
+        affiliate: aff.name,
+        amount: `$${(amountCents / 100).toFixed(2)}`,
+        method: method || 'paypal',
+        newUnpaidBalance: `$${(newUnpaid / 100).toFixed(2)}`,
+      },
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 // PATCH /api/admin/affiliates — update affiliate status
 export async function PATCH(req: NextRequest) {
   try {

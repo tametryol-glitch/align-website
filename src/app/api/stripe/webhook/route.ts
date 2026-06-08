@@ -8,6 +8,7 @@
  *   checkout.session.completed     → link Stripe customer, set tier
  *   customer.subscription.updated  → update tier on plan change
  *   customer.subscription.deleted  → revert to free
+ *   invoice.paid                   → attribute affiliate commission (purchase + renewal)
  *   invoice.payment_failed         → (logged, no tier change)
  *
  * The webhook secret (STRIPE_WEBHOOK_SECRET) is used to verify
@@ -27,6 +28,74 @@ function adminClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_KEY!,
     { auth: { persistSession: false } },
+  );
+}
+
+/**
+ * Attribute an invoice payment to an affiliate.
+ * Creates a conversion record and updates running totals.
+ * Uses Stripe invoice ID in product_id for dedup.
+ */
+async function attributeAffiliateCommission(
+  affiliateId: string,
+  userId: string,
+  revenueCents: number,
+  conversionType: 'purchase' | 'renewal',
+  invoiceId: string,
+) {
+  const admin = adminClient();
+
+  // Dedup: skip if this invoice was already attributed
+  const { data: existing } = await admin
+    .from('affiliate_conversions')
+    .select('id')
+    .eq('product_id', invoiceId)
+    .maybeSingle();
+
+  if (existing) {
+    console.log(`[Stripe Webhook] Invoice ${invoiceId} already attributed — skipping`);
+    return;
+  }
+
+  // Look up affiliate's commission rate
+  const { data: aff } = await admin
+    .from('affiliates')
+    .select('id, commission_rate_bps, status')
+    .eq('id', affiliateId)
+    .single();
+
+  if (!aff || aff.status !== 'approved') {
+    console.warn(`[Stripe Webhook] Affiliate ${affiliateId} not found or not approved — skipping commission`);
+    return;
+  }
+
+  const rateBps = aff.commission_rate_bps || 2000; // default 20%
+  const commissionCents = Math.floor((revenueCents * rateBps) / 10000);
+
+  // Insert conversion record
+  await admin.from('affiliate_conversions').insert({
+    affiliate_id: affiliateId,
+    user_id: userId,
+    conversion_type: conversionType,
+    revenue_cents: revenueCents,
+    commission_cents: commissionCents,
+    commission_rate_bps: rateBps,
+    product_id: invoiceId, // Stripe invoice ID — used for dedup
+    source: 'stripe',
+    status: 'approved',
+  });
+
+  // Update affiliate running totals
+  await admin.rpc('increment_affiliate_earnings', {
+    aff_id: affiliateId,
+    rev_cents: revenueCents,
+    comm_cents: commissionCents,
+  });
+
+  console.log(
+    `[Stripe Webhook] Affiliate ${affiliateId}: ${conversionType} commission ` +
+    `$${(commissionCents / 100).toFixed(2)} on $${(revenueCents / 100).toFixed(2)} revenue ` +
+    `(invoice ${invoiceId})`,
   );
 }
 
@@ -177,6 +246,62 @@ export async function POST(req: NextRequest) {
 
         await setUserTier(userId, 'free');
         console.log(`[Stripe Webhook] User ${userId} subscription deleted → free`);
+        break;
+      }
+
+      case 'invoice.paid': {
+        // Cast to any for fields that vary across Stripe API versions
+        const paidInvoice = event.data.object as any;
+
+        // Skip zero-amount invoices (trials, credits, etc.)
+        const amountPaid: number = paidInvoice.amount_paid ?? 0;
+        if (amountPaid <= 0) break;
+
+        // Only process subscription invoices
+        const subRef = paidInvoice.subscription;
+        const subId: string | null =
+          typeof subRef === 'string' ? subRef : subRef?.id ?? null;
+
+        if (!subId) break;
+
+        // Retrieve subscription to check for affiliate metadata
+        const paidSub = await stripe.subscriptions.retrieve(subId);
+        const affiliateId = paidSub.metadata?.affiliate_id;
+
+        if (!affiliateId) break; // Not an affiliate-referred subscription
+
+        // Resolve user
+        const custRef = paidInvoice.customer;
+        const paidCustomerId: string | null =
+          typeof custRef === 'string' ? custRef : custRef?.id ?? null;
+
+        const paidUserId = paidCustomerId
+          ? await resolveUserId(paidCustomerId, paidSub.metadata as Record<string, string>)
+          : null;
+
+        if (!paidUserId) {
+          console.warn(`[Stripe Webhook] invoice.paid — user not found for customer ${paidCustomerId}`);
+          break;
+        }
+
+        // Determine conversion type from billing reason
+        const convType: 'purchase' | 'renewal' =
+          paidInvoice.billing_reason === 'subscription_create'
+            ? 'purchase'
+            : 'renewal';
+
+        await attributeAffiliateCommission(
+          affiliateId,
+          paidUserId,
+          amountPaid,
+          convType,
+          paidInvoice.id,
+        );
+
+        console.log(
+          `[Stripe Webhook] invoice.paid (${convType}): $${(amountPaid / 100).toFixed(2)} ` +
+          `for user ${paidUserId}, affiliate ${affiliateId}`,
+        );
         break;
       }
 
