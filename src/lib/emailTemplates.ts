@@ -390,7 +390,6 @@ export const EMAIL_TEMPLATES = {
       </p>
     `),
   }),
-};
 
   // -------------------------------------------------------------------------
   // Affiliate program emails
