@@ -9,6 +9,7 @@
  *   customer.subscription.updated  → update tier on plan change
  *   customer.subscription.deleted  → revert to free
  *   invoice.paid                   → attribute affiliate commission (purchase + renewal)
+ *   charge.refunded                → reverse affiliate commission on refund
  *   invoice.payment_failed         → (logged, no tier change)
  *
  * The webhook secret (STRIPE_WEBHOOK_SECRET) is used to verify
@@ -316,6 +317,68 @@ export async function POST(req: NextRequest) {
           const userId = await resolveUserId(customerId);
           console.warn(`[Stripe Webhook] Payment failed for user ${userId || customerId}`);
         }
+        break;
+      }
+
+      case 'charge.refunded': {
+        // Reverse affiliate commission when a charge is refunded.
+        // Looks up the original conversion by invoice ID and claws back
+        // the commission so the affiliate balance stays accurate.
+        const charge = event.data.object as any;
+        const refundedAmount: number = charge.amount_refunded ?? 0;
+        if (refundedAmount <= 0) break;
+
+        // Find the invoice this charge belongs to
+        const chargeInvoiceRef = charge.invoice;
+        const chargeInvoiceId: string | null =
+          typeof chargeInvoiceRef === 'string'
+            ? chargeInvoiceRef
+            : chargeInvoiceRef?.id ?? null;
+
+        if (!chargeInvoiceId) break;
+
+        const admin = adminClient();
+
+        // Find the affiliate conversion that was attributed for this invoice
+        const { data: conversion } = await admin
+          .from('affiliate_conversions')
+          .select('id, affiliate_id, user_id, commission_cents, revenue_cents, commission_rate_bps, status')
+          .eq('product_id', chargeInvoiceId)
+          .in('status', ['approved', 'paid'])
+          .maybeSingle();
+
+        if (!conversion) break; // No affiliate conversion for this invoice
+
+        // Mark original conversion as reversed
+        await admin
+          .from('affiliate_conversions')
+          .update({ status: 'reversed' })
+          .eq('id', conversion.id);
+
+        // Insert a refund reversal record (negative amounts)
+        await admin.from('affiliate_conversions').insert({
+          affiliate_id: conversion.affiliate_id,
+          user_id: conversion.user_id,
+          conversion_type: 'refund',
+          revenue_cents: -conversion.revenue_cents,
+          commission_cents: -conversion.commission_cents,
+          commission_rate_bps: conversion.commission_rate_bps,
+          product_id: `refund_${chargeInvoiceId}`,
+          source: 'stripe',
+          status: 'approved',
+        });
+
+        // Decrement affiliate running totals (negative values reverse the increment)
+        await admin.rpc('increment_affiliate_earnings', {
+          aff_id: conversion.affiliate_id,
+          rev_cents: -conversion.revenue_cents,
+          comm_cents: -conversion.commission_cents,
+        });
+
+        console.log(
+          `[Stripe Webhook] REFUND: reversed $${(conversion.commission_cents / 100).toFixed(2)} ` +
+          `commission for affiliate ${conversion.affiliate_id} (invoice ${chargeInvoiceId})`,
+        );
         break;
       }
 
