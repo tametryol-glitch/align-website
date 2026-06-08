@@ -7,15 +7,17 @@
  * Anyone can apply; admin approves.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase';
 import { applyAsAffiliate } from '@/lib/affiliateService';
 
 export default function AffiliateProgramPage() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [affiliateCode, setAffiliateCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Form fields
   const [name, setName] = useState('');
@@ -23,6 +25,21 @@ export default function AffiliateProgramPage() {
   const [website, setWebsite] = useState('');
   const [social, setSocial] = useState('');
   const [promoMethod, setPromoMethod] = useState('');
+
+  // Auto-detect logged-in user so we link the affiliate to their account
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUserId(session.user.id);
+          // Pre-fill email if available
+          if (session.user.email && !email) setEmail(session.user.email);
+        }
+      } catch {}
+    })();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +52,7 @@ export default function AffiliateProgramPage() {
       website: website || undefined,
       social_handle: social || undefined,
       promo_method: promoMethod || undefined,
+      user_id: userId || undefined,
     });
 
     if (result.ok && result.affiliate_code) {
