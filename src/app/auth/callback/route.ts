@@ -34,6 +34,8 @@ export async function GET(request: NextRequest) {
     if (!error) {
       // Process referral if a ref code was passed through
       const refCode = referralCode || data.user?.user_metadata?.referral_code;
+      let peerReferralProcessed = false;
+
       if (refCode && data.user) {
         try {
           // Look up referrer by align_code
@@ -44,6 +46,8 @@ export async function GET(request: NextRequest) {
             .single();
 
           if (referrer && referrer.id !== data.user.id) {
+            peerReferralProcessed = true;
+
             // Create reward row
             await supabase
               .from('referral_rewards')
@@ -107,6 +111,26 @@ export async function GET(request: NextRequest) {
           if (email) {
             scheduleOnboardingEmails(user.id, email, name, sunSign).catch(
               (err) => console.error('[Auth Callback] Email scheduling error:', err),
+            );
+          }
+
+          // Affiliate signup attribution (fire-and-forget)
+          // If refCode wasn't matched as a peer referral, try it as an affiliate code.
+          // The backend deduplicates, so this is safe even if the code is invalid.
+          if (!peerReferralProcessed && refCode) {
+            fetch(
+              'https://align-api-v2-production.up.railway.app/api/v1/affiliates/attribute-signup',
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  affiliate_code: refCode,
+                  user_id: user.id,
+                  source: 'web',
+                }),
+              },
+            ).catch((err) =>
+              console.error('[Auth Callback] Affiliate attribution error:', err),
             );
           }
         }
