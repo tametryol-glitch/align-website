@@ -17,6 +17,15 @@ export default function LandingPage() {
           Align
         </span>
         <div className="flex items-center gap-3">
+          <Link href="/blog" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Blog
+          </Link>
+          <Link href="/zodiac" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Zodiac
+          </Link>
+          <Link href="/compatibility" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Compatibility
+          </Link>
           <Link href="/auth/login" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
             Sign In
           </Link>
@@ -182,10 +191,15 @@ export default function LandingPage() {
           <span className="text-sm text-text-muted">
             &copy; {new Date().getFullYear()} Align. All rights reserved.
           </span>
-          <div className="flex gap-6 text-sm text-text-muted">
+          <div className="flex gap-6 text-sm text-text-muted flex-wrap justify-center">
+            <Link href="/blog" className="hover:text-text-secondary">Blog</Link>
+            <Link href="/events" className="hover:text-text-secondary">Events</Link>
+            <Link href="/zodiac" className="hover:text-text-secondary">Zodiac</Link>
+            <Link href="/compatibility" className="hover:text-text-secondary">Compatibility</Link>
             <Link href="/settings/terms" className="hover:text-text-secondary">Terms</Link>
             <Link href="/settings/privacy" className="hover:text-text-secondary">Privacy</Link>
             <Link href="/settings/community-guidelines" className="hover:text-text-secondary">Guidelines</Link>
+            <Link href="/affiliates" className="hover:text-text-secondary">Affiliates</Link>
           </div>
         </div>
       </footer>
