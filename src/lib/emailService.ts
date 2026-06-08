@@ -18,6 +18,7 @@ function getAdminClient() {
 // sendEmail — abstract send that works with Resend, or logs in dev
 // ---------------------------------------------------------------------------
 const FROM_ADDRESS = 'Align <hello@aligncosmic.com>';
+const REPLY_TO = 'tametryol@gmail.com';
 
 export async function sendEmail(
   to: string,
@@ -40,7 +41,7 @@ export async function sendEmail(
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: FROM_ADDRESS, to: [to], subject, html }),
+      body: JSON.stringify({ from: FROM_ADDRESS, reply_to: REPLY_TO, to: [to], subject, html }),
     });
 
     if (!res.ok) {
