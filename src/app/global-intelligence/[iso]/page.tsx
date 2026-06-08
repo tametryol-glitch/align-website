@@ -24,6 +24,96 @@ const RULERS: Record<string, string> = {
   Sagittarius: 'Jupiter', Capricorn: 'Saturn', Aquarius: 'Uranus', Pisces: 'Neptune',
 };
 
+const SIGN_NATIONAL_THEMES: Record<string, { identity: string; mood: string; projection: string; governance: string }> = {
+  Aries: {
+    identity: 'pioneering independence, military strength, and assertive self-determination',
+    mood: 'restless energy, impatience with stagnation, and fierce patriotic pride',
+    projection: 'bold confidence and competitive ambition',
+    governance: 'decisive executive action and strong centralized leadership',
+  },
+  Taurus: {
+    identity: 'economic stability, resource wealth, and enduring traditions',
+    mood: 'steady resilience, attachment to the land, and resistance to sudden change',
+    projection: 'material prosperity and cultural richness',
+    governance: 'conservative fiscal policy and long-term economic planning',
+  },
+  Gemini: {
+    identity: 'communication, intellectual diversity, and adaptive diplomacy',
+    mood: 'curiosity, media engagement, and a hunger for information and debate',
+    projection: 'intellectual vitality and diplomatic versatility',
+    governance: 'policy flexibility, coalition-building, and media-driven politics',
+  },
+  Cancer: {
+    identity: 'homeland security, family values, and protective national sentiment',
+    mood: 'deep emotional attachment to heritage, nostalgia, and collective memory',
+    projection: 'nurturing strength and defensive protectiveness',
+    governance: 'domestic-focused policy, social welfare, and homeland protection',
+  },
+  Leo: {
+    identity: 'national pride, cultural greatness, and a desire for global recognition',
+    mood: 'generous optimism, creative expression, and loyalty to leadership',
+    projection: 'grandeur, confidence, and cultural soft power',
+    governance: 'strong executive authority and charismatic leadership',
+  },
+  Virgo: {
+    identity: 'dedicated service, meticulous organization, and resource stewardship',
+    mood: 'practical concern for public health, efficiency, and pragmatic problem-solving',
+    projection: 'competence, reliability, and attention to detail',
+    governance: 'technocratic precision, regulatory frameworks, and data-driven policy',
+  },
+  Libra: {
+    identity: 'diplomatic balance, partnership-building, and commitment to justice',
+    mood: 'desire for fairness, aesthetic refinement, and social harmony',
+    projection: 'elegance, diplomacy, and a reputation for mediation',
+    governance: 'coalition governance, treaty-making, and balanced foreign policy',
+  },
+  Scorpio: {
+    identity: 'transformative power, strategic depth, and an affinity for intelligence operations',
+    mood: 'intense collective passion, suspicion of authority, and cycles of crisis and renewal',
+    projection: 'formidable intensity and strategic unpredictability',
+    governance: 'concentrated executive power, intelligence agencies, and resource control',
+  },
+  Sagittarius: {
+    identity: 'expansive ambition, cultural diversity, and ideological leadership',
+    mood: 'optimistic wanderlust, philosophical debate, and faith in progress',
+    projection: 'adventurous internationalism and moral authority',
+    governance: 'visionary policy, international engagement, and ideological governance',
+  },
+  Capricorn: {
+    identity: 'institutional strength, hierarchical order, and long-term strategic planning',
+    mood: 'disciplined endurance, respect for tradition, and cautious pragmatism',
+    projection: 'authority, credibility, and institutional gravitas',
+    governance: 'structured bureaucracy, austerity measures, and constitutional discipline',
+  },
+  Aquarius: {
+    identity: 'technological innovation, collective purpose, and systematic reform',
+    mood: 'progressive idealism, communal identity, and resistance to conformity',
+    projection: 'forward-thinking originality and humanitarian vision',
+    governance: 'democratic reform, technological governance, and progressive legislation',
+  },
+  Pisces: {
+    identity: 'spiritual depth, artistic heritage, and compassionate idealism',
+    mood: 'collective empathy, spiritual seeking, and susceptibility to both inspiration and confusion',
+    projection: 'mystical allure, artistic influence, and soft-power diplomacy',
+    governance: 'idealistic policy, welfare state ambitions, and sometimes unclear leadership direction',
+  },
+};
+
+const SIGN_EVOLUTION: Record<string, string> = {
+  Aries: 'assertive independence and pioneering initiative',
+  Taurus: 'steady consolidation and material security',
+  Gemini: 'intellectual agility and adaptive communication',
+  Cancer: 'protective domesticity and emotional deepening',
+  Leo: 'confident self-expression and creative authority',
+  Virgo: 'meticulous refinement and service-oriented reform',
+  Libra: 'diplomatic partnership-seeking and balanced judgment',
+  Scorpio: 'intense transformation and strategic depth',
+  Sagittarius: 'expansive exploration and philosophical growth',
+  Capricorn: 'disciplined ambition and institutional maturity',
+  Aquarius: 'progressive innovation and collective vision',
+  Pisces: 'spiritual deepening and compassionate dissolution of old forms',
+};
+
 function scoreColor(val: number): string {
   if (val >= 30) return 'text-emerald-400';
   if (val >= 0) return 'text-blue-400';
@@ -130,6 +220,7 @@ export default function CountryDetailPage() {
   const sunSign = chartJson?.planets?.Sun?.sign;
   const moonSign = chartJson?.planets?.Moon?.sign;
   const ascSign = chartJson?.ascendant?.sign;
+  const mcSign = chartJson?.mc?.sign;
   const scores = intel?.scores_json;
 
   return (
@@ -191,11 +282,12 @@ export default function CountryDetailPage() {
 
               {/* Big-3 */}
               {(sunSign || moonSign || ascSign) && (
-                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-border-primary">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border-primary">
                   {[
                     { label: 'Sun', sign: sunSign },
                     { label: 'Moon', sign: moonSign },
                     { label: 'Ascendant', sign: ascSign },
+                    { label: 'Midheaven', sign: mcSign },
                   ].filter(x => x.sign).map(({ label, sign }) => (
                     <div key={label} className="text-center">
                       <p className="text-2xl">{SIGN_GLYPHS[sign!] || '?'}</p>
@@ -216,8 +308,8 @@ export default function CountryDetailPage() {
         <div className="space-y-4">
           {scores && (
             <div className="card bg-gradient-to-br from-emerald-500/5 to-transparent">
-              <h2 className="font-semibold text-text-primary mb-1 text-sm">Today&apos;s Scores</h2>
-              <p className="text-text-muted text-[10px] mb-3">{intel?.scan_date}</p>
+              <h2 className="font-semibold text-text-primary mb-1 text-sm">Latest Intelligence</h2>
+              <p className="text-text-muted text-[10px] mb-3">as of {intel?.scan_date}</p>
 
               <div className="space-y-3">
                 <ScoreRow label="Overall Energy" value={scores.overall_energy} tag={scores.labels?.energy} />
@@ -242,11 +334,55 @@ export default function CountryDetailPage() {
           {!scores && (
             <div className="card">
               <h2 className="font-semibold text-text-primary mb-2 text-sm">Daily Intelligence</h2>
-              <p className="text-text-muted text-xs">No intelligence data for today. Check back after the daily compute runs.</p>
+              <p className="text-text-muted text-xs">No intelligence data available yet. Check back after the daily compute runs.</p>
             </div>
           )}
         </div>
       </div>
+
+      {/* ── National Character Profile ────────────────────── */}
+      {(sunSign || moonSign || ascSign) && (
+        <div className="card bg-gradient-to-br from-violet-500/5 to-transparent space-y-4">
+          <h2 className="font-semibold text-text-primary flex items-center gap-2">
+            <Star className="w-4 h-4 text-violet-400" />
+            National Character
+          </h2>
+          <div className="space-y-3">
+            {sunSign && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[sunSign]} Sun in {sunSign}</p>
+                <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                  As a {sunSign} Sun nation, {country.name}&apos;s identity is built around {SIGN_NATIONAL_THEMES[sunSign]?.identity || 'its core national values'}.
+                </p>
+              </div>
+            )}
+            {moonSign && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[moonSign]} Moon in {moonSign}</p>
+                <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                  The {moonSign} Moon gives the people of {country.name} an emotional character rooted in {SIGN_NATIONAL_THEMES[moonSign]?.mood || 'collective sentiment'}.
+                </p>
+              </div>
+            )}
+            {ascSign && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[ascSign]} {ascSign} Rising</p>
+                <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                  With {ascSign} Rising, {country.name} projects {SIGN_NATIONAL_THEMES[ascSign]?.projection || 'its national image'} to the world.
+                </p>
+              </div>
+            )}
+            {mcSign && (
+              <div className="rounded-lg bg-white/5 p-3">
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[mcSign]} Midheaven in {mcSign}</p>
+                <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                  A {mcSign} Midheaven means {country.name}&apos;s government and leadership style gravitates toward {SIGN_NATIONAL_THEMES[mcSign]?.governance || 'its governing principles'}.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Intelligence Briefing ───────────────────────── */}
       {intel?.summary && (() => {
@@ -356,9 +492,17 @@ export default function CountryDetailPage() {
           )}
 
           {/* Expanded events panel (scrolls to events section) */}
-          {expandedPanel === 'events' && (
-            <div className="card text-center text-text-muted text-sm py-2">
-              ↓ See Recent Events section below
+          {expandedPanel === 'events' && events.length > 0 && (
+            <div className="card bg-gradient-to-br from-yellow-500/5 to-transparent space-y-2">
+              <h3 className="text-sm font-semibold text-text-primary">Recent Events Preview</h3>
+              {events.slice(0, 3).map((evt) => (
+                <div key={evt.id} className="flex items-center gap-2 text-xs">
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${severityDot(evt.severity)}`} />
+                  <span className="text-text-primary">{evt.title}</span>
+                  <span className="text-text-muted ml-auto">{evt.event_date}</span>
+                </div>
+              ))}
+              <p className="text-text-muted text-[10px] text-center">↓ Full details in Recent Events below</p>
             </div>
           )}
         </div>
@@ -390,7 +534,7 @@ export default function CountryDetailPage() {
                         <ChevronDown className={`w-3.5 h-3.5 text-text-muted flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                       </div>
                       <p className="text-text-muted text-xs mt-0.5">
-                        {evt.event_date} · {evt.category}
+                        {evt.event_date} · {evt.category === 'political' ? '🏛' : evt.category === 'economic' ? '💰' : evt.category === 'military' ? '⚔️' : evt.category === 'diplomatic' ? '🌍' : evt.category === 'social' ? '👥' : '📋'} {evt.category}
                         {evt.verification_status === 'verified' ? ' ✓' : ''}
                       </p>
                     </div>
@@ -610,7 +754,7 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
                             {h.transit_planet} {aspect.verb} {h.natal_planet}
                           </p>
                           <p className="text-text-muted text-[10px] mt-0.5">
-                            {aspect.name} · {Math.abs(h.orb).toFixed(1)}° orb · {h.is_applying ? 'Building in strength' : 'Fading'}
+                            {aspect.name} · {Math.abs(h.orb) < 1 ? 'Near-exact' : Math.abs(h.orb) < 3 ? 'Close' : 'Wide'} ({Math.abs(h.orb).toFixed(1)}°) · {h.is_applying ? '⚡ Building' : 'Fading'}
                           </p>
                         </div>
                         <span className="text-[10px] text-text-muted bg-white/5 px-2 py-0.5 rounded flex-shrink-0">
@@ -642,10 +786,65 @@ interface MidpointEntry {
   midpoint_longitude: number;
 }
 
+const MIDPOINT_PAIR_THEMES: Record<string, string> = {
+  'Sun+Moon': 'national will and public sentiment',
+  'Sun+Mercury': 'government communications and official messaging',
+  'Sun+Venus': 'national diplomacy and cultural identity',
+  'Sun+Mars': 'executive action and military posture',
+  'Sun+Jupiter': 'national ambition and growth vision',
+  'Sun+Saturn': 'governmental authority and institutional discipline',
+  'Sun+Uranus': 'leadership innovation and reform impulse',
+  'Sun+Neptune': 'national ideals and collective vision',
+  'Sun+Pluto': 'state power and transformative authority',
+  'Moon+Mercury': 'public opinion and media narrative',
+  'Moon+Venus': 'cultural sentiment and social values',
+  'Moon+Mars': 'popular activism and public unrest',
+  'Moon+Jupiter': 'collective optimism and consumer confidence',
+  'Moon+Saturn': 'public austerity and collective hardship',
+  'Moon+Uranus': 'sudden shifts in public mood',
+  'Moon+Neptune': 'mass psychology and collective dreams',
+  'Moon+Pluto': 'deep undercurrents in the national psyche',
+  'Mercury+Venus': 'trade negotiations and cultural exchange',
+  'Mercury+Mars': 'media conflict and information warfare',
+  'Mercury+Jupiter': 'educational expansion and trade growth',
+  'Mercury+Saturn': 'regulatory communication and policy announcements',
+  'Mercury+Uranus': 'technological breakthroughs and breaking news',
+  'Mercury+Neptune': 'misinformation risk and unclear messaging',
+  'Mercury+Pluto': 'intelligence operations and strategic communications',
+  'Venus+Mars': 'economic competition and diplomatic tension',
+  'Venus+Jupiter': 'financial prosperity and diplomatic goodwill',
+  'Venus+Saturn': 'fiscal austerity and trade restrictions',
+  'Venus+Uranus': 'market volatility and diplomatic surprises',
+  'Venus+Neptune': 'economic illusions and idealized partnerships',
+  'Venus+Pluto': 'financial power shifts and deep economic reform',
+  'Mars+Jupiter': 'military expansion and aggressive growth',
+  'Mars+Saturn': 'military restraint and institutional friction',
+  'Mars+Uranus': 'sudden conflict and technological disruption',
+  'Mars+Neptune': 'covert operations and unclear military objectives',
+  'Mars+Pluto': 'power struggles and existential confrontation',
+  'Jupiter+Saturn': 'structural growth and cautious expansion',
+  'Jupiter+Uranus': 'breakthrough opportunities and radical reform',
+  'Jupiter+Neptune': 'ideological vision and speculative excess',
+  'Jupiter+Pluto': 'transformative ambition and power consolidation',
+  'Saturn+Uranus': 'tradition vs innovation and systemic tension',
+  'Saturn+Neptune': 'institutional erosion and ideological drift',
+  'Saturn+Pluto': 'structural crisis and forced transformation',
+  'Uranus+Neptune': 'generational upheaval and cultural revolution',
+  'Uranus+Pluto': 'revolutionary transformation and systemic overthrow',
+  'Neptune+Pluto': 'civilizational shifts and deep collective evolution',
+};
+
 function midpointInterpretation(m: MidpointEntry): string {
+  const pairKey = `${m.pair[0]}+${m.pair[1]}`;
+  const reversePairKey = `${m.pair[1]}+${m.pair[0]}`;
+  const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
+  const sector = HOUSE_KEYWORDS[m.house] || 'national affairs';
+
+  if (pairTheme) {
+    return `The intersection of ${pairTheme} activates the ${sector} sector — a sensitive point where both themes converge and amplify.`;
+  }
   const a = PLANET_THEMES[m.pair[0]] || 'planetary energy';
   const b = PLANET_THEMES[m.pair[1]] || 'planetary energy';
-  const sector = HOUSE_KEYWORDS[m.house] || 'national affairs';
   return `The combined energy of ${a} and ${b} converges in the ${sector} sector, creating a sensitive activation point.`;
 }
 
@@ -715,7 +914,11 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
           const sector = HOUSE_KEYWORDS[p.house] || `House ${p.house}`;
           const theme = PLANET_THEMES[p.planet] || 'planetary influence';
           return (
-            <div key={i} className="rounded-lg border border-amber-500/10 bg-amber-500/5 p-3">
+            <div key={i} className={`rounded-lg border p-3 ${
+              p.planet === 'Sun' || p.planet === 'Moon'
+                ? 'border-amber-400/30 bg-amber-500/10'
+                : 'border-amber-500/10 bg-amber-500/5'
+            }`}>
               <div className="flex items-center gap-2">
                 <span className="text-accent-primary text-xl">{SIGN_GLYPHS[p.sign] || '?'}</span>
                 <div className="flex-1">
@@ -726,7 +929,7 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
                 </div>
               </div>
               <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
-                The nation&apos;s evolved {theme} expresses through {p.sign} energy in the {sector.toLowerCase()} sector.
+                The nation&apos;s evolved sense of {theme} now channels through {SIGN_EVOLUTION[p.sign] || p.sign + ' energy'}, reshaping the {sector.toLowerCase()} sector over years.
               </p>
             </div>
           );

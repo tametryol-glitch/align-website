@@ -50,6 +50,7 @@ export default function GlobalIntelligencePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<string>('name');
 
   useEffect(() => {
     async function load() {
@@ -90,6 +91,25 @@ export default function GlobalIntelligencePage() {
     });
   }, [countries, search, regionFilter]);
 
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'energy_desc':
+          return (b.scores?.overall_energy ?? -999) - (a.scores?.overall_energy ?? -999);
+        case 'energy_asc':
+          return (a.scores?.overall_energy ?? -999) - (b.scores?.overall_energy ?? -999);
+        case 'conflict_desc':
+          return (b.scores?.conflict_pressure ?? -1) - (a.scores?.conflict_pressure ?? -1);
+        case 'conflict_asc':
+          return (a.scores?.conflict_pressure ?? -1) - (b.scores?.conflict_pressure ?? -1);
+        case 'economic_desc':
+          return (b.scores?.economic_momentum ?? -999) - (a.scores?.economic_momentum ?? -999);
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+  }, [filtered, sortBy]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -111,7 +131,7 @@ export default function GlobalIntelligencePage() {
           </div>
           <div>
             <h1 className="text-2xl font-display font-bold text-text-primary">Global Intelligence</h1>
-            <p className="text-text-muted text-sm">Mundane astrology for 196 nations — daily scores, transits & events</p>
+            <p className="text-text-muted text-sm">Mundane astrology for {countries.length} nations — daily scores, transits &amp; events</p>
           </div>
         </div>
       </div>
@@ -145,15 +165,50 @@ export default function GlobalIntelligencePage() {
                 regionFilter === r ? 'bg-accent-primary text-white' : 'bg-bg-card text-text-muted hover:text-text-primary border border-border-primary'
               }`}
             >
-              {r}
+              {r} ({countries.filter(c => c.region === r).length})
             </button>
           ))}
         </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-bg-card text-text-muted border border-border-primary focus:outline-none focus:border-accent-primary"
+        >
+          <option value="name">Sort: A-Z</option>
+          <option value="energy_desc">Energy: High → Low</option>
+          <option value="energy_asc">Energy: Low → High</option>
+          <option value="conflict_desc">Conflict: High → Low</option>
+          <option value="conflict_asc">Conflict: Low → High</option>
+          <option value="economic_desc">Economic: High → Low</option>
+        </select>
       </div>
+
+      {/* Summary Bar */}
+      {!loading && countries.length > 0 && (() => {
+        const withScores = countries.filter(c => c.scores);
+        const critical = withScores.filter(c => c.scores!.conflict_pressure >= 75).length;
+        const elevated = withScores.filter(c => c.scores!.conflict_pressure >= 50 && c.scores!.conflict_pressure < 75).length;
+        const favorable = withScores.filter(c => c.scores!.overall_energy >= 30).length;
+        const stressed = withScores.filter(c => c.scores!.overall_energy <= -30).length;
+        const avgEnergy = withScores.length > 0
+          ? Math.round(withScores.reduce((sum, c) => sum + c.scores!.overall_energy, 0) / withScores.length)
+          : 0;
+        return (
+          <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-card border border-border-primary text-xs">
+            <span className="text-text-muted">World Pulse:</span>
+            <span className="text-text-primary font-medium">Avg Energy {avgEnergy > 0 ? '+' : ''}{avgEnergy}</span>
+            {favorable > 0 && <span className="text-emerald-400">{favorable} favorable</span>}
+            {stressed > 0 && <span className="text-red-400">{stressed} stressed</span>}
+            {critical > 0 && <span className="text-red-400 font-semibold">{critical} critical conflict</span>}
+            {elevated > 0 && <span className="text-orange-400">{elevated} elevated tension</span>}
+            <span className="text-text-muted ml-auto">{sorted.length} of {countries.length} shown</span>
+          </div>
+        );
+      })()}
 
       {/* Countries Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {filtered.map((country) => {
+        {sorted.map((country) => {
           const conflict = country.scores ? conflictBadge(country.scores.conflict_pressure) : null;
           return (
             <Link
@@ -198,6 +253,9 @@ export default function GlobalIntelligencePage() {
                       </span>
                     </div>
                   )}
+                  {!country.scores && (
+                    <p className="text-text-muted text-[10px] mt-2 italic">Awaiting first scan</p>
+                  )}
                 </div>
                 <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-accent-primary transition mt-1 flex-shrink-0" />
               </div>
@@ -206,7 +264,7 @@ export default function GlobalIntelligencePage() {
         })}
       </div>
 
-      {filtered.length === 0 && (
+      {sorted.length === 0 && (
         <div className="text-center py-12 text-text-muted">
           <Globe className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p>No countries match your search.</p>
