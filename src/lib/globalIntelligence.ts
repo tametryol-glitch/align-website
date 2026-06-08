@@ -127,27 +127,66 @@ export async function getPrimaryChart(countryId: string): Promise<GICountryChart
 
 export async function getDailyIntel(countryId: string, date?: string): Promise<GIDailyIntel | null> {
   const supabase = createClient();
-  const targetDate = date || new Date().toISOString().split('T')[0];
+  if (date) {
+    // Explicit date — strict match
+    const { data, error } = await supabase
+      .from('gi_country_daily_intel')
+      .select('*')
+      .eq('country_id', countryId)
+      .eq('scan_date', date)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    if (error) return null;
+    return data as GIDailyIntel;
+  }
+  // No date — get the most recent available intel
+  // Handles gap between midnight UTC and the 04:00 UTC cron
   const { data, error } = await supabase
     .from('gi_country_daily_intel')
     .select('*')
     .eq('country_id', countryId)
-    .eq('scan_date', targetDate)
-    .order('created_at', { ascending: false })
+    .not('scores_json', 'is', null)
+    .order('scan_date', { ascending: false })
     .limit(1)
     .single();
   if (error) return null;
   return data as GIDailyIntel;
 }
 
-/** Batch-fetch today's scores for all countries in a single query */
+/** Batch-fetch the most recent scores for all countries in a single query.
+ *  If no date is given, fetches all rows with scores and keeps the newest per country.
+ *  This handles the midnight-to-cron gap where "today" has no data yet. */
 export async function getAllDailyScores(date?: string): Promise<Record<string, GIScores>> {
   const supabase = createClient();
-  const targetDate = date || new Date().toISOString().split('T')[0];
+  if (date) {
+    const { data, error } = await supabase
+      .from('gi_country_daily_intel')
+      .select('country_id, scores_json')
+      .eq('scan_date', date)
+      .not('scores_json', 'is', null);
+    if (error || !data) return {};
+    const map: Record<string, GIScores> = {};
+    for (const row of data) {
+      if (row.scores_json && !map[row.country_id]) {
+        map[row.country_id] = row.scores_json as GIScores;
+      }
+    }
+    return map;
+  }
+  // No date — get the most recent scan_date that has data
+  const { data: latest, error: latestErr } = await supabase
+    .from('gi_country_daily_intel')
+    .select('scan_date')
+    .not('scores_json', 'is', null)
+    .order('scan_date', { ascending: false })
+    .limit(1)
+    .single();
+  if (latestErr || !latest) return {};
   const { data, error } = await supabase
     .from('gi_country_daily_intel')
     .select('country_id, scores_json')
-    .eq('scan_date', targetDate)
+    .eq('scan_date', latest.scan_date)
     .not('scores_json', 'is', null);
   if (error || !data) return {};
   const map: Record<string, GIScores> = {};
