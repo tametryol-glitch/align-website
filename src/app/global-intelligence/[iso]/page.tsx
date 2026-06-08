@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Calendar, MapPin, Shield, AlertTriangle, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import {
   getCountry, getPrimaryChart, getDailyIntel, getCountryEvents, listCountries,
+  getCategoryMidpoints,
   type GICountry, type GICountryChart, type GIDailyIntel, type GICountryEvent,
+  type CategoryMidpointReport, type CategoryMidpointEntry,
 } from '@/lib/globalIntelligence';
 
 // ─── Zodiac glyphs ──────────────────────────────────────────
@@ -161,6 +163,10 @@ export default function CountryDetailPage() {
   const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
 
+  // Category midpoints state (lazy-loaded)
+  const [catMidpoints, setCatMidpoints] = useState<CategoryMidpointReport | null>(null);
+  const [catMidpointsLoading, setCatMidpointsLoading] = useState(false);
+
   // Synastry state
   const [allCountries, setAllCountries] = useState<GICountry[]>([]);
   const [partnerCountry, setPartnerCountry] = useState<GICountry | null>(null);
@@ -202,6 +208,17 @@ export default function CountryDetailPage() {
   }, [iso]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Lazy-load category midpoints when panel is opened
+  useEffect(() => {
+    if (expandedPanel === 'midpoints' && iso && !catMidpoints && !catMidpointsLoading) {
+      setCatMidpointsLoading(true);
+      getCategoryMidpoints(iso).then(data => {
+        setCatMidpoints(data);
+        setCatMidpointsLoading(false);
+      }).catch(() => setCatMidpointsLoading(false));
+    }
+  }, [expandedPanel, iso, catMidpoints, catMidpointsLoading]);
 
   // ─── Convergence computation ────────────────────────────────
 
@@ -449,6 +466,19 @@ export default function CountryDetailPage() {
                 </p>
               </div>
             )}
+
+            {/* Cultural Synthesis */}
+            {sunSign && moonSign && (
+              <div className="rounded-lg bg-gradient-to-br from-violet-500/10 to-transparent p-3 border border-violet-500/10">
+                <p className="text-violet-400 text-[10px] font-bold uppercase tracking-wider mb-1">Cultural Synthesis</p>
+                <p className="text-text-secondary text-xs leading-relaxed">
+                  {country.name}&apos;s astrological DNA reveals a nation whose core identity ({sunSign} Sun: {SIGN_NATIONAL_THEMES[sunSign]?.identity || 'core values'}) operates through a populace whose emotional character is shaped by {moonSign} energy ({SIGN_NATIONAL_THEMES[moonSign]?.mood || 'collective sentiment'}).
+                  {ascSign && ` The world sees ${country.name} through ${ascSign} Rising — projecting ${SIGN_NATIONAL_THEMES[ascSign]?.projection || 'its national image'}.`}
+                  {mcSign && ` Its governing philosophy leans toward ${SIGN_NATIONAL_THEMES[mcSign]?.governance || 'established principles'}.`}
+                  {' '}This combination shapes how {country.name} navigates crises, forms alliances, and projects influence — every transit and progression activates these foundational patterns.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -500,7 +530,25 @@ export default function CountryDetailPage() {
 
       {/* ── Convergence Summary (the "so what") ──────────── */}
       {hotspots.length > 0 && (
-        <ConvergencePanel hotspots={hotspots} allHouses={convergenceData} />
+        <ConvergencePanel
+          hotspots={hotspots}
+          allHouses={convergenceData}
+          transitHits={intel?.transits_json?.hits || []}
+          midpoints={intel?.midpoints_json?.top || []}
+          progressions={intel?.progressions_json?.planets || []}
+        />
+      )}
+
+      {/* ── Prediction Synthesis ────────────────────────────── */}
+      {hotspots.length > 0 && intel && (
+        <PredictionPanel
+          hotspots={hotspots}
+          transitHits={intel.transits_json?.hits || []}
+          midpoints={intel.midpoints_json?.top || []}
+          progressions={intel.progressions_json?.planets || []}
+          progAspects={intel.progressions_json?.aspects || []}
+          countryName={country?.name || 'this nation'}
+        />
       )}
 
       {/* ── Transit Stats (clickable) ─────────────────────── */}
@@ -518,7 +566,7 @@ export default function CountryDetailPage() {
             />
             <StatCardClickable
               label="Midpoints"
-              value={intel.midpoints_json?.count || intel.midpoints_json?.top?.length || 0}
+              value={intel.midpoints_json?.top?.length || 0}
               sub="active pairs"
               icon="⊕"
               panelKey="midpoints"
@@ -549,8 +597,20 @@ export default function CountryDetailPage() {
             <TransitPanel hits={intel.transits_json.hits} />
           )}
 
-          {expandedPanel === 'midpoints' && intel.midpoints_json?.top && (
-            <MidpointPanel midpoints={intel.midpoints_json.top} />
+          {expandedPanel === 'midpoints' && (
+            <>
+              {catMidpointsLoading && (
+                <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent p-6 text-center">
+                  <div className="animate-pulse text-text-muted text-sm">Loading asteroid midpoint intelligence...</div>
+                </div>
+              )}
+              {catMidpoints && (
+                <CategoryMidpointPanel report={catMidpoints} />
+              )}
+              {intel.midpoints_json?.top && (
+                <MidpointPanel midpoints={intel.midpoints_json.top} />
+              )}
+            </>
           )}
 
           {expandedPanel === 'progressions' && intel.progressions_json?.planets && (
@@ -1064,7 +1124,234 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
   );
 }
 
-// ─── Midpoint Panel ─────────────────────────────────────────
+// ─── Category Midpoint Panel (Asteroid-Enhanced) ───────────
+
+const CATEGORY_ICONS: Record<string, string> = {
+  government_leadership: '\u{1F3DB}',
+  politics_law: '\u{2696}',
+  diplomacy_treaties: '\u{1F91D}',
+  war_military: '\u{2694}',
+  civil_unrest_revolution: '\u{1F525}',
+  economy_banking: '\u{1F4B0}',
+  trade_resources: '\u{1F6A2}',
+  natural_disasters: '\u{1F30B}',
+  climate_environment: '\u{1F30D}',
+  health_disease: '\u{1FA7A}',
+  technology_cyber: '\u{1F4BB}',
+  media_propaganda: '\u{1F4F0}',
+  religion_ideology: '\u{1F54C}',
+  crime_corruption: '\u{1F575}',
+  migration_population: '\u{1F6B6}',
+  food_agriculture: '\u{1F33E}',
+  infrastructure_transport: '\u{1F3D7}',
+  leaders_royalty: '\u{1F451}',
+  sports_victory: '\u{1F3C6}',
+  cultural_social: '\u{1F3AD}',
+};
+
+function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showAllCats, setShowAllCats] = useState(false);
+
+  // Sort categories: those with activated midpoints first, then by total count
+  const sortedCategories = useMemo(() => {
+    return Object.entries(report.categories)
+      .map(([key, midpoints]) => ({
+        key,
+        label: midpoints[0]?.category_label || key,
+        midpoints,
+        activatedCount: midpoints.filter(m => m.is_activated).length,
+        totalCount: midpoints.length,
+      }))
+      .sort((a, b) => b.activatedCount - a.activatedCount || b.totalCount - a.totalCount);
+  }, [report.categories]);
+
+  // Categories with activations = "hot" categories
+  const hotCategories = sortedCategories.filter(c => c.activatedCount > 0);
+  const coldCategories = sortedCategories.filter(c => c.activatedCount === 0);
+  const visibleCold = showAllCats ? coldCategories : coldCategories.slice(0, 4);
+
+  const activeCat = activeCategory
+    ? sortedCategories.find(c => c.key === activeCategory)
+    : null;
+
+  return (
+    <div className="card bg-gradient-to-br from-purple-500/5 to-cyan-500/5 space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+          Midpoint Intelligence
+          <span className="text-[10px] font-normal text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+            {report.activated_count} active
+          </span>
+        </h3>
+        <p className="text-text-muted text-[10px] mt-0.5">
+          Category-based midpoints using {report.total_count} pairs across {Object.keys(report.categories).length} intelligence domains with asteroid enhancement
+        </p>
+      </div>
+
+      {/* Hot categories (have transit activations today) */}
+      {hotCategories.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Active Intelligence</p>
+          <div className="flex flex-wrap gap-1.5">
+            {hotCategories.map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(activeCategory === cat.key ? null : cat.key)}
+                className={`text-[11px] px-2.5 py-1.5 rounded-lg border transition-all ${
+                  activeCategory === cat.key
+                    ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
+                    : 'bg-red-500/10 border-red-500/20 text-text-secondary hover:bg-red-500/15'
+                }`}
+              >
+                <span className="mr-1">{CATEGORY_ICONS[cat.key] || '\u{1F52E}'}</span>
+                {cat.label}
+                <span className="ml-1 text-red-400 font-bold">{cat.activatedCount}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* All other categories */}
+      <div className="space-y-2">
+        {hotCategories.length > 0 && (
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">All Domains</p>
+        )}
+        <div className="flex flex-wrap gap-1.5">
+          {visibleCold.map(cat => (
+            <button
+              key={cat.key}
+              onClick={() => setActiveCategory(activeCategory === cat.key ? null : cat.key)}
+              className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all ${
+                activeCategory === cat.key
+                  ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
+                  : 'bg-white/5 border-white/10 text-text-muted hover:bg-white/10'
+              }`}
+            >
+              <span className="mr-1">{CATEGORY_ICONS[cat.key] || '\u{1F52E}'}</span>
+              {cat.label}
+              <span className="ml-1 opacity-50">{cat.totalCount}</span>
+            </button>
+          ))}
+          {!showAllCats && coldCategories.length > 4 && (
+            <button
+              onClick={() => setShowAllCats(true)}
+              className="text-[11px] px-2.5 py-1 text-accent-primary hover:underline"
+            >
+              +{coldCategories.length - 4} more
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Expanded category detail */}
+      {activeCat && (
+        <div className="space-y-2 border-t border-white/5 pt-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-text-primary">
+              {CATEGORY_ICONS[activeCat.key] || '\u{1F52E}'} {activeCat.label}
+            </h4>
+            <span className="text-[10px] text-text-muted">
+              {activeCat.activatedCount} activated / {activeCat.totalCount} pairs
+            </span>
+          </div>
+          {activeCat.midpoints[0]?.mundane_significance && (
+            <p className="text-text-muted text-[10px] italic">
+              Tracks {activeCat.midpoints[0].mundane_significance}
+            </p>
+          )}
+
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {activeCat.midpoints.slice(0, 20).map((mp, i) => (
+              <CategoryMidpointCard key={i} mp={mp} />
+            ))}
+            {activeCat.totalCount > 20 && (
+              <p className="text-text-muted text-[10px] text-center py-1">
+                Showing 20 of {activeCat.totalCount} midpoints
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Skipped asteroid audit */}
+      {report.skipped_asteroids.length > 0 && (
+        <details className="text-[10px] text-text-muted">
+          <summary className="cursor-pointer hover:text-text-secondary">
+            {report.skipped_asteroids.length} asteroid{report.skipped_asteroids.length !== 1 ? 's' : ''} unavailable
+          </summary>
+          <div className="mt-1 space-y-0.5 pl-3">
+            {report.skipped_asteroids.map((s, i) => (
+              <p key={i}>{s.name} (MPC {s.mpc_number}): {s.reason}</p>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function CategoryMidpointCard({ mp }: { mp: CategoryMidpointEntry }) {
+  const pairKey = `${mp.pair[0]}+${mp.pair[1]}`;
+  const reversePairKey = `${mp.pair[1]}+${mp.pair[0]}`;
+  const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
+  const sector = HOUSE_KEYWORDS[mp.house] || `House ${mp.house}`;
+
+  return (
+    <div className={`rounded-lg border p-3 ${
+      mp.is_activated
+        ? 'bg-gradient-to-r from-red-500/10 to-purple-500/10 border-red-500/20'
+        : 'bg-white/5 border-white/5'
+    }`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {mp.is_activated && (
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+          )}
+          <p className="text-text-primary text-sm font-medium">
+            {mp.pair[0]} + {mp.pair[1]}
+          </p>
+        </div>
+        <span className="text-[10px] text-text-muted bg-white/5 px-2 py-0.5 rounded flex-shrink-0">
+          {sector}
+        </span>
+      </div>
+
+      <p className="text-text-muted text-[10px] mt-0.5">
+        {SIGN_GLYPHS[mp.sign] || ''} {mp.sign} {mp.degree.toFixed(1)}°
+      </p>
+
+      {mp.is_activated && mp.activating_transit && (
+        <p className="text-red-400 text-[10px] mt-1 font-medium">
+          {mp.activation_aspect} from {mp.activating_transit} (orb {mp.activation_orb?.toFixed(1)}°) — ACTIVE TODAY
+        </p>
+      )}
+
+      {pairTheme && (
+        <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
+          {pairTheme.charAt(0).toUpperCase() + pairTheme.slice(1)} at {mp.degree.toFixed(0)}° {mp.sign} in the {sector.toLowerCase()} sector.
+          {mp.is_activated
+            ? ` Transit ${mp.activating_transit} activates this point today — watch for developments in this area.`
+            : ' Currently dormant — becomes significant when transited.'
+          }
+        </p>
+      )}
+
+      {!pairTheme && (
+        <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
+          {mp.pair[0]} meets {mp.pair[1]} at {mp.degree.toFixed(0)}° {mp.sign}, placing this sensitive point in the {sector.toLowerCase()} sector.
+          {mp.is_activated
+            ? ` Activated by ${mp.activating_transit} ${mp.activation_aspect?.toLowerCase()} — heightened significance today.`
+            : ''
+          }
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Midpoint Panel (Original — Natal Pairs) ──────────────
 
 interface MidpointEntry {
   pair: [string, string];
@@ -1120,6 +1407,69 @@ const MIDPOINT_PAIR_THEMES: Record<string, string> = {
   'Uranus+Neptune': 'generational upheaval and cultural revolution',
   'Uranus+Pluto': 'revolutionary transformation and systemic overthrow',
   'Neptune+Pluto': 'civilizational shifts and deep collective evolution',
+  // Asteroid & point pairs
+  'Sun+Chiron': 'leadership wounds and national healing crises',
+  'Sun+North Node': 'national destiny and leadership alignment with evolutionary path',
+  'Sun+Vesta': 'sacred national purpose and devoted service to the state',
+  'Sun+Juno': 'treaty obligations and leadership commitment to alliances',
+  'Sun+Ascendant': 'national self-image and how leadership projects identity',
+  'Sun+Midheaven': 'executive authority and the nation\'s public standing in the world',
+  'Moon+Chiron': 'collective emotional wounds and public healing processes',
+  'Moon+North Node': 'popular alignment with national destiny and future direction',
+  'Moon+Vesta': 'public devotion and collective service-mindedness',
+  'Moon+Juno': 'popular attitudes toward alliances and partnership commitments',
+  'Moon+Ascendant': 'public perception and the emotional face of the nation',
+  'Moon+Midheaven': 'public mood\'s influence on government authority and reputation',
+  'Mercury+Chiron': 'healing through communication and addressing media wounds',
+  'Mercury+North Node': 'information pathways aligned with national evolution',
+  'Mercury+Vesta': 'dedicated intellectual pursuit and focused communication strategy',
+  'Mercury+Juno': 'trade agreements and communication within alliances',
+  'Venus+Chiron': 'economic vulnerabilities and diplomatic wounds requiring healing',
+  'Venus+North Node': 'financial and diplomatic alignment with national destiny',
+  'Venus+Vesta': 'sacred economic values and devoted cultural stewardship',
+  'Venus+Juno': 'alliance economics and partnership-based diplomacy',
+  'Mars+Chiron': 'military wounds, veteran affairs, and healing through action',
+  'Mars+North Node': 'assertive pursuit of national destiny and strategic direction',
+  'Mars+Vesta': 'militant dedication and focused military commitment',
+  'Mars+Juno': 'competitive alliances and assertiveness in partnerships',
+  'Jupiter+Chiron': 'healing through expansion and philosophical growth past wounds',
+  'Jupiter+North Node': 'growth opportunities aligned with national destiny',
+  'Jupiter+Vesta': 'expansive devotion and growth through dedicated service',
+  'Jupiter+Juno': 'prosperous alliances and expanding treaty networks',
+  'Saturn+Chiron': 'structural wounds in institutions and disciplined healing processes',
+  'Saturn+North Node': 'karmic accountability and structural alignment with destiny',
+  'Saturn+Vesta': 'disciplined service and institutional dedication',
+  'Saturn+Juno': 'formal alliance obligations and structured partnership commitments',
+  'Uranus+Chiron': 'revolutionary healing and sudden breakthroughs in addressing wounds',
+  'Uranus+North Node': 'innovative disruption aligned with evolutionary direction',
+  'Neptune+Chiron': 'collective healing through compassion or confusion around wounds',
+  'Neptune+North Node': 'spiritual alignment with national destiny or ideological drift',
+  'Pluto+Chiron': 'transformative healing of the deepest national wounds',
+  'Pluto+North Node': 'powerful evolutionary pressure pushing the nation toward its destiny',
+  'Chiron+North Node': 'the nation\'s wounds and healing journey are karmically linked',
+  'Chiron+Vesta': 'wounded service traditions and healing through renewed dedication',
+  'Chiron+Juno': 'partnership wounds and healing through committed alliances',
+  'Vesta+Juno': 'devoted partnership and sacred alliance commitments',
+  'Vesta+North Node': 'dedicated service aligned with national evolutionary purpose',
+  'Juno+North Node': 'fated alliances and treaty commitments tied to national destiny',
+  'Ascendant+Midheaven': 'national self-image and governmental authority in direct interplay',
+  'Ascendant+North Node': 'the nation\'s projected identity aligns with its evolutionary path',
+  'Midheaven+North Node': 'governmental direction and national destiny converge',
+};
+
+const MIDPOINT_SECTOR_IMPACT: Record<number, string> = {
+  1: 'directly shapes how the nation defines itself and is perceived by its own people',
+  2: 'channels into fiscal policy, revenue generation, and the national treasury',
+  3: 'influences media narratives, trade routes, and how information flows domestically',
+  4: 'grounds into territorial concerns, housing, agriculture, and homeland foundations',
+  5: 'expresses through cultural output, entertainment, national creativity, and demographic trends',
+  6: 'manifests in public health, labor conditions, military readiness, and civil service',
+  7: 'activates diplomatic relationships, treaty dynamics, and foreign alliance pressures',
+  8: 'targets debt structures, foreign investment, shared resources, and crisis mechanisms',
+  9: 'shapes judicial philosophy, higher education, immigration stance, and international law',
+  10: 'bears directly on executive authority, governmental reputation, and leadership decisions',
+  11: 'feeds into parliamentary agendas, legislative reform, and the nation\'s collective aspirations',
+  12: 'operates through hidden institutional forces, intelligence networks, and behind-the-scenes power',
 };
 
 function midpointInterpretation(m: MidpointEntry): string {
@@ -1127,13 +1477,16 @@ function midpointInterpretation(m: MidpointEntry): string {
   const reversePairKey = `${m.pair[1]}+${m.pair[0]}`;
   const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
   const sector = HOUSE_KEYWORDS[m.house] || 'national affairs';
+  const impact = MIDPOINT_SECTOR_IMPACT[m.house] || `activates the ${sector.toLowerCase()} sector`;
 
   if (pairTheme) {
-    return `${pairTheme.charAt(0).toUpperCase() + pairTheme.slice(1)} — focused on ${sector.toLowerCase()}.`;
+    const themeA = PLANET_THEMES[m.pair[0]] || m.pair[0];
+    const themeB = PLANET_THEMES[m.pair[1]] || m.pair[1];
+    return `The ${m.pair[0]}/${m.pair[1]} midpoint blends ${themeA} with ${themeB}, creating a sensitive degree at ${m.degree.toFixed(0)}° ${m.sign}. This ${pairTheme} ${impact}. When transits activate this point, both themes ignite simultaneously.`;
   }
   const a = PLANET_THEMES[m.pair[0]] || 'planetary energy';
   const b = PLANET_THEMES[m.pair[1]] || 'planetary energy';
-  return `${a.charAt(0).toUpperCase() + a.slice(1)} meets ${b} — activating ${sector.toLowerCase()}.`;
+  return `${a.charAt(0).toUpperCase() + a.slice(1)} meets ${b} at ${m.degree.toFixed(0)}° ${m.sign}. This sensitive point ${impact}. Transits crossing this degree trigger both energies at once.`;
 }
 
 function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
@@ -1210,6 +1563,25 @@ interface ProgAspect {
   orb: number;
 }
 
+const PROG_RATES: Record<string, number> = {
+  Sun: 1.0, Moon: 13.0, Mercury: 1.2, Venus: 1.0, Mars: 0.5,
+  Jupiter: 0.08, Saturn: 0.03, Uranus: 0.01, Neptune: 0.005, Pluto: 0.004,
+};
+
+function progTimeContext(planet: string, degree: number): string {
+  const rate = PROG_RATES[planet];
+  if (!rate || rate < 0.01) return '';
+  const remaining = 30 - degree;
+  const yearsLeft = Math.round(remaining / rate);
+  if (planet === 'Moon') {
+    const monthsLeft = Math.round((remaining / rate) * 12);
+    return monthsLeft > 0 ? ` (~${monthsLeft} months until sign change)` : '';
+  }
+  if (yearsLeft <= 0) return ' (sign change imminent)';
+  if (yearsLeft > 200) return '';
+  return ` (~${yearsLeft} year${yearsLeft !== 1 ? 's' : ''} until sign change)`;
+}
+
 const PROGRESSION_TEMPLATES: Record<string, (sign: string, sector: string) => string> = {
   Sun: (sign, sector) => `The nation's core identity is evolving through ${SIGN_EVOLUTION[sign] || sign + ' energy'} — reshaping ${sector.toLowerCase()} priorities over decades.`,
   Moon: (sign, sector) => `Public mood and collective instincts shift toward ${SIGN_EVOLUTION[sign] || sign + ' energy'}, coloring the ${sector.toLowerCase()} landscape.`,
@@ -1255,6 +1627,7 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
                   <p className="text-text-primary text-sm font-medium">{p.planet} in {p.sign}</p>
                   <p className="text-text-muted text-[10px]">
                     {p.degree.toFixed(1)}° · {HOUSE_KEYWORDS[p.house] || `House ${p.house}`}
+                    <span className="text-amber-400/70">{progTimeContext(p.planet, p.degree)}</span>
                   </p>
                 </div>
               </div>
@@ -1272,10 +1645,14 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
           <div className="space-y-2">
             {aspects.map((a, i) => {
               const aspect = ASPECT_LABELS[a.aspect] || { name: a.aspect, verb: 'aspects', tone: '' };
+              const interp = progAspectInterpretation(a);
               return (
-                <div key={i} className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-white/5 text-xs">
-                  <span className="text-text-primary font-medium">{a.prog_planet} {aspect.verb} {a.natal_planet}</span>
-                  <span className="text-text-muted ml-auto">{Math.abs(a.orb).toFixed(1)}° · {aspect.name}</span>
+                <div key={i} className="rounded-lg bg-white/5 border border-amber-500/10 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-text-primary text-xs font-medium">{a.prog_planet} {aspect.verb} {a.natal_planet}</span>
+                    <span className="text-text-muted text-[10px]">{Math.abs(a.orb).toFixed(1)}° · {aspect.name}</span>
+                  </div>
+                  <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">{interp}</p>
                 </div>
               );
             })}
@@ -1303,7 +1680,15 @@ function convergenceLevel(sourceCount: number): { label: string; color: string; 
   return { label: 'DEVELOPING', color: 'text-blue-400', bg: 'bg-blue-500/10' };
 }
 
-function ConvergencePanel({ hotspots, allHouses }: { hotspots: HouseEvidence[]; allHouses: HouseEvidence[] }) {
+function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progressions }: {
+  hotspots: HouseEvidence[];
+  allHouses: HouseEvidence[];
+  transitHits: TransitHit[];
+  midpoints: MidpointEntry[];
+  progressions: ProgPlanet[];
+}) {
+  const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
+
   return (
     <div className="card bg-gradient-to-br from-red-500/5 to-transparent space-y-4">
       <div>
@@ -1312,7 +1697,7 @@ function ConvergencePanel({ hotspots, allHouses }: { hotspots: HouseEvidence[]; 
           Where Pressure Is Building
         </h2>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Sectors where transits, midpoints, and progressions converge — multiple independent indicators pointing to the same area
+          Sectors where transits, midpoints, and progressions converge — tap any sector to see the specific indicators
         </p>
       </div>
 
@@ -1320,35 +1705,118 @@ function ConvergencePanel({ hotspots, allHouses }: { hotspots: HouseEvidence[]; 
         {hotspots.map(h => {
           const level = convergenceLevel(h.sourceCount);
           const sector = HOUSE_KEYWORDS[h.house] || `House ${h.house}`;
+          const isExpanded = expandedHouse === h.house;
+
+          const houseTransits = transitHits.filter(t => t.natal_house === h.house);
+          const houseMidpoints = midpoints.filter(m => m.house === h.house);
+          const houseProgressions = progressions.filter(p => p.house === h.house);
+
           return (
-            <div key={h.house} className={`rounded-lg border border-white/10 p-3 ${level.bg}`}>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-text-primary text-sm font-semibold">{sector}</span>
-                  <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{level.label}</span>
+            <div key={h.house}>
+              <button
+                onClick={() => setExpandedHouse(isExpanded ? null : h.house)}
+                className={`w-full text-left rounded-lg border border-white/10 p-3 transition-colors hover:border-white/20 ${level.bg}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-primary text-sm font-semibold">{sector}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{level.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-muted text-[10px]">{h.total} indicators</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                  </div>
                 </div>
-                <span className="text-text-muted text-[10px]">{h.total} indicators</span>
-              </div>
-              <div className="flex gap-3 mt-2">
-                {h.transitCount > 0 && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                    <span className="text-text-muted text-[10px]">{h.transitCount} transit{h.transitCount !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
-                {h.midpointCount > 0 && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                    <span className="text-text-muted text-[10px]">{h.midpointCount} midpoint{h.midpointCount !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
-                {h.progressionCount > 0 && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                    <span className="text-text-muted text-[10px]">{h.progressionCount} progression{h.progressionCount !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
-              </div>
+                <div className="flex gap-3 mt-2">
+                  {h.transitCount > 0 && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                      <span className="text-text-muted text-[10px]">{h.transitCount} transit{h.transitCount !== 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                  {h.midpointCount > 0 && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      <span className="text-text-muted text-[10px]">{h.midpointCount} midpoint{h.midpointCount !== 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                  {h.progressionCount > 0 && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      <span className="text-text-muted text-[10px]">{h.progressionCount} progression{h.progressionCount !== 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="mt-1 ml-3 border-l-2 border-white/10 pl-3 space-y-3 py-2">
+                  {/* Transits in this house */}
+                  {houseTransits.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-purple-400 text-[10px] font-bold uppercase tracking-wider">Transits</p>
+                      {houseTransits.map((t, i) => {
+                        const aspect = ASPECT_LABELS[t.aspect] || { name: t.aspect, verb: 'aspects', tone: '' };
+                        return (
+                          <div key={i} className="rounded bg-purple-500/5 border border-purple-500/10 p-2.5">
+                            <div className="flex items-center justify-between">
+                              <p className="text-text-primary text-xs font-medium">
+                                {t.transit_planet} {aspect.verb} {t.natal_planet}
+                              </p>
+                              <span className="text-text-muted text-[10px]">
+                                {Math.abs(t.orb).toFixed(1)}° · {t.is_applying ? '⚡ Building' : 'Fading'}
+                              </span>
+                            </div>
+                            <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                              {transitInterpretation(t)}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Midpoints in this house */}
+                  {houseMidpoints.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-cyan-400 text-[10px] font-bold uppercase tracking-wider">Midpoints</p>
+                      {houseMidpoints.map((m, i) => (
+                        <div key={i} className="rounded bg-cyan-500/5 border border-cyan-500/10 p-2.5">
+                          <p className="text-text-primary text-xs font-medium">
+                            {m.pair[0]} + {m.pair[1]}
+                          </p>
+                          <p className="text-text-muted text-[10px] mt-0.5">
+                            {SIGN_GLYPHS[m.sign] || ''} {m.sign} {m.degree.toFixed(1)}°
+                          </p>
+                          <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                            {midpointInterpretation(m)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Progressions in this house */}
+                  {houseProgressions.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-amber-400 text-[10px] font-bold uppercase tracking-wider">Progressions</p>
+                      {houseProgressions.map((p, i) => (
+                        <div key={i} className="rounded bg-amber-500/5 border border-amber-500/10 p-2.5">
+                          <p className="text-text-primary text-xs font-medium">
+                            {p.planet} in {p.sign}
+                          </p>
+                          <p className="text-text-muted text-[10px] mt-0.5">
+                            {SIGN_GLYPHS[p.sign] || ''} {p.degree.toFixed(1)}°
+                          </p>
+                          <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                            {progressionInterpretation(p)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
@@ -1375,6 +1843,239 @@ function ConvergencePanel({ hotspots, allHouses }: { hotspots: HouseEvidence[]; 
       </div>
     </div>
   );
+}
+
+// ─── Prediction Synthesis ───────────────────────────────────
+
+function generateHousePrediction(
+  house: number,
+  houseData: HouseEvidence,
+  transitHits: TransitHit[],
+  midpoints: MidpointEntry[],
+  progressions: ProgPlanet[],
+  progAspects: ProgAspect[],
+  countryName: string,
+): string {
+  const sector = HOUSE_KEYWORDS[house] || `House ${house}`;
+  const hTransits = transitHits.filter(t => t.natal_house === house);
+  const hMidpoints = midpoints.filter(m => m.house === house);
+  const hProgs = progressions.filter(p => p.house === house);
+  const level = houseData.sourceCount >= 3 ? 'major' : 'significant';
+
+  const parts: string[] = [];
+
+  if (hTransits.length > 0) {
+    const applying = hTransits.filter(t => t.is_applying);
+    const keyTransit = applying[0] || hTransits[0];
+    const aspect = ASPECT_LABELS[keyTransit.aspect] || { verb: 'aspects', tone: '' };
+    parts.push(`Transiting ${keyTransit.transit_planet} ${aspect.verb} natal ${keyTransit.natal_planet}${applying.length > 1 ? ` (plus ${applying.length - 1} more building aspects)` : ''} — ${(PLANET_THEMES[keyTransit.transit_planet] || 'planetary energy')} directly activates this sector.`);
+  }
+
+  if (hMidpoints.length > 0) {
+    const mp = hMidpoints[0];
+    const theme = MIDPOINT_PAIR_THEMES[`${mp.pair[0]}+${mp.pair[1]}`] || MIDPOINT_PAIR_THEMES[`${mp.pair[1]}+${mp.pair[0]}`] || 'sensitive planetary energies';
+    parts.push(`The ${mp.pair[0]}/${mp.pair[1]} midpoint (${theme}) falls here at ${mp.degree.toFixed(0)}° ${mp.sign}${hMidpoints.length > 1 ? `, alongside ${hMidpoints.length - 1} more active midpoint${hMidpoints.length > 2 ? 's' : ''}` : ''}.`);
+  }
+
+  if (hProgs.length > 0) {
+    const pp = hProgs[0];
+    parts.push(`Progressed ${pp.planet} in ${pp.sign} anchors a long-term evolutionary theme in this domain.`);
+  }
+
+  const tightAspects = progAspects.filter(a => Math.abs(a.orb) < 1.0);
+  if (tightAspects.length > 0) {
+    const ta = tightAspects[0];
+    const verb = ASPECT_LABELS[ta.aspect]?.verb || 'aspects';
+    parts.push(`Progressed ${ta.prog_planet} ${verb} natal ${ta.natal_planet} (${Math.abs(ta.orb).toFixed(1)}° orb) adds a slow-burn developmental trigger.`);
+  }
+
+  const predictions: Record<number, string> = {
+    1: `Expect shifts in national identity and how ${countryName} presents itself on the world stage. Public self-image and demographic trends are in flux.`,
+    2: `Watch for economic policy changes, currency volatility, or shifts in national revenue priorities for ${countryName}. Treasury and fiscal matters demand attention.`,
+    3: `Media narratives, communication infrastructure, and trade routes face disruption or transformation in ${countryName}. Misinformation risk is elevated.`,
+    4: `Domestic conditions — housing, land disputes, agricultural policy, or homeland security — intensify in ${countryName}. Deep roots are being tested.`,
+    5: `Cultural production, entertainment policy, sports, and national creativity see major shifts. ${countryName}'s cultural exports and birth rate trends are highlighted.`,
+    6: `Public health, labor conditions, military readiness, and civil service in ${countryName} face pressure. Workforce dynamics are shifting.`,
+    7: `Foreign alliances, treaties, and diplomatic relationships come under pressure for ${countryName}. Expect renegotiations, new partnerships, or diplomatic standoffs.`,
+    8: `Debt obligations, foreign investment, shared resources, and crisis management in ${countryName} face a reckoning. Structural financial reform is likely.`,
+    9: `Judicial rulings, international law, higher education, and ideological direction shift for ${countryName}. Immigration and religious policy may be affected.`,
+    10: `Government leadership, executive authority, and the ruling administration in ${countryName} face defining moments. Power dynamics are being restructured.`,
+    11: `Parliamentary dynamics, legislative agendas, and the nation's collective aspirations are activated. Coalition politics and reform movements gain momentum in ${countryName}.`,
+    12: `Intelligence agencies, hidden institutional dynamics, and behind-the-scenes power plays intensify in ${countryName}. What is concealed may surface.`,
+  };
+
+  const forecast = predictions[house] || `The ${sector.toLowerCase()} sector faces ${level} pressure from multiple astrological techniques converging simultaneously.`;
+
+  return parts.join(' ') + ' ' + forecast;
+}
+
+function PredictionPanel({ hotspots, transitHits, midpoints, progressions, progAspects, countryName }: {
+  hotspots: HouseEvidence[];
+  transitHits: TransitHit[];
+  midpoints: MidpointEntry[];
+  progressions: ProgPlanet[];
+  progAspects: ProgAspect[];
+  countryName: string;
+}) {
+  if (hotspots.length === 0) return null;
+
+  return (
+    <div className="card bg-gradient-to-br from-violet-500/10 to-amber-500/5 space-y-4 border-l-4 border-violet-400">
+      <div>
+        <h2 className="font-semibold text-text-primary flex items-center gap-2 text-base">
+          <span className="text-xl">📡</span>
+          Astrological Forecast
+        </h2>
+        <p className="text-text-muted text-[10px] mt-0.5">
+          Forward-looking predictions synthesized from transits, midpoints, progressions, and convergence patterns
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {hotspots.slice(0, 6).map(h => {
+          const sector = HOUSE_KEYWORDS[h.house] || `House ${h.house}`;
+          const level = convergenceLevel(h.sourceCount);
+          const prediction = generateHousePrediction(h.house, h, transitHits, midpoints, progressions, progAspects, countryName);
+
+          return (
+            <div key={h.house} className={`rounded-lg border border-white/10 p-4 ${level.bg}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-text-primary text-sm font-bold">{sector}</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{level.label}</span>
+                <span className="text-text-muted text-[10px] ml-auto">{h.total} indicators from {h.sourceCount} techniques</span>
+              </div>
+              <p className="text-text-secondary text-xs leading-relaxed">
+                {prediction}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Progressed Aspect Interpretations ─────────────────────
+
+const PROG_ASPECT_THEMES: Record<string, Record<string, string>> = {
+  Sun: {
+    Moon: 'A shift in the relationship between leadership vision and public sentiment — governmental priorities and popular mood realign.',
+    Mercury: 'National communication strategy evolves. Official messaging takes on a new character, reshaping diplomatic discourse.',
+    Venus: 'The nation\'s identity and diplomatic posture harmonize or clash — alliances and cultural values undergo recalibration.',
+    Mars: 'Executive will meets military or assertive energy. A turning point in how the nation projects force and takes decisive action.',
+    Jupiter: 'National ambition expands into a new phase. Growth opportunities in governance, ideology, or international standing emerge.',
+    Saturn: 'Leadership meets structural accountability. A period of maturation where governance is tested against institutional reality.',
+    Uranus: 'Sudden shifts in national direction. Innovation disrupts established leadership patterns — expect the unexpected in governance.',
+    Neptune: 'National identity enters a period of idealism or confusion. Boundaries between vision and delusion blur in leadership.',
+    Pluto: 'A profound transformation of national identity and power. Governance structures face existential evolution over years.',
+    'North Node': 'The nation\'s leadership aligns with its evolutionary destiny — a defining moment for future direction.',
+    Chiron: 'Leadership confronts a deep national wound. Healing is possible but requires acknowledging systemic vulnerabilities.',
+  },
+  Moon: {
+    Mercury: 'Public mood and media narrative shift into a new dynamic. How the populace processes information is changing.',
+    Venus: 'Collective emotional values and social harmony evolve. Cultural sentiment and public aesthetics are transforming.',
+    Mars: 'Public restlessness meets activist energy. Popular movements and collective assertiveness reach a turning point.',
+    Jupiter: 'Optimism swells in the collective psyche. Consumer confidence and public generosity expand — but watch for overreach.',
+    Saturn: 'Public mood faces austerity and sobering reality. Collective belt-tightening and diminished expectations set in.',
+    Uranus: 'Sudden emotional shifts in the populace — mass awakenings, viral movements, or abrupt changes in public allegiance.',
+    Neptune: 'Collective dreams and anxieties intensify. Mass psychology enters a period of heightened sensitivity and idealism.',
+    Pluto: 'Deep transformation in the national psyche. Collective trauma processing and fundamental shifts in public power dynamics.',
+  },
+  Venus: {
+    Mars: 'Diplomatic assertiveness and economic competition intensify. Trade negotiations take on a sharper edge.',
+    Jupiter: 'Financial prosperity and diplomatic goodwill expand. International trade and cultural exchange flourish.',
+    Saturn: 'Fiscal discipline meets diplomatic caution. Austerity measures affect both economics and alliance-building.',
+    Neptune: 'Economic illusions or idealized partnerships may mislead. Financial agreements need extra scrutiny.',
+    Pluto: 'Deep financial transformation and power shifts in economic relationships. Currency or trade structures face upheaval.',
+    'North Node': 'Diplomatic and economic direction aligns with national destiny — new partnerships serve long-term evolution.',
+    'South Node': 'Old economic or diplomatic patterns resurface. The nation must decide whether to repeat or release past approaches.',
+  },
+  Mars: {
+    Jupiter: 'Military or executive expansion accelerates. Aggressive growth strategies and bold action define the period.',
+    Saturn: 'Military restraint meets institutional friction. Executive force is checked by structural limitations.',
+    Uranus: 'Sudden confrontations or technological breakthroughs in defense. Unpredictable disruptions in how the nation acts.',
+    Neptune: 'Covert operations and unclear strategic objectives. Military or executive direction is shrouded in confusion.',
+    Pluto: 'Power struggles intensify. Existential confrontations in governance or military posture reach critical mass.',
+  },
+  Jupiter: {
+    Saturn: 'The tension between growth and restraint defines national policy. Cautious expansion or constrained ambition marks this era.',
+    Uranus: 'Breakthrough opportunities emerge. Radical reform and sudden expansion possibilities challenge the status quo.',
+    Neptune: 'Ideological vision meets speculative excess. Grand visions for the nation may be brilliant or dangerously unrealistic.',
+    Pluto: 'Transformative ambition reshapes power structures. The nation\'s growth trajectory undergoes fundamental redirection.',
+    Sun: 'National ambition aligns with leadership identity — a period of expansive self-confidence in governance.',
+  },
+  Saturn: {
+    Uranus: 'Tradition clashes with innovation. Systemic tension between old institutional frameworks and reform movements.',
+    Neptune: 'Institutional foundations face erosion. Governance structures drift as boundaries between reality and ideology blur.',
+    Pluto: 'Structural crisis forces transformation. Old power frameworks crumble under pressure from deep evolutionary forces.',
+    Venus: 'Fiscal austerity shapes diplomatic relationships. Economic discipline influences the nation\'s cultural and social values.',
+  },
+  Uranus: {
+    Neptune: 'Generational upheaval meets collective idealism. Cultural revolution and societal transformation operate on a civilizational scale.',
+    Pluto: 'Revolutionary transformation and systemic overthrow. The deepest structures of power face radical disruption.',
+    'North Node': 'The nation\'s reform impulse aligns with its evolutionary path — innovation becomes destiny.',
+    'South Node': 'Past revolutionary patterns or reform attempts resurface. The nation revisits unfinished systemic changes.',
+  },
+};
+
+function progAspectInterpretation(a: ProgAspect): string {
+  const pair = PROG_ASPECT_THEMES[a.prog_planet]?.[a.natal_planet]
+    || PROG_ASPECT_THEMES[a.natal_planet]?.[a.prog_planet];
+  if (pair) return pair;
+  const progTheme = PLANET_THEMES[a.prog_planet] || 'evolved planetary energy';
+  const natalTheme = PLANET_THEMES[a.natal_planet] || 'foundational planetary energy';
+  return `The nation's evolved ${progTheme} engages with its foundational ${natalTheme} — a slow developmental shift with lasting implications.`;
+}
+
+// ─── Synastry Aspect Interpretations ───────────────────────
+
+const SYNASTRY_ASPECT_THEMES: Record<string, Record<string, string>> = {
+  Sun: {
+    Sun: 'Core national identities interact directly — this defines the fundamental power dynamic between both nations.',
+    Moon: 'One nation\'s leadership identity resonates with the other\'s public sentiment — emotional bonds or friction in diplomacy.',
+    Mercury: 'Leadership-to-communication channel — how well official messaging between the nations is received.',
+    Venus: 'Identity meets diplomacy — natural affinity in cultural exchange and values, or clashing national aesthetics.',
+    Mars: 'Leadership confronts assertive energy — competition, rivalry, or dynamic partnership in military and executive matters.',
+    Jupiter: 'Mutual growth potential — expansive trade, ideological alignment, or competing ambitions on the world stage.',
+    Saturn: 'Authority meets restriction — one nation\'s leadership is tested or constrained by the other\'s institutional demands.',
+    Uranus: 'Disruption meets identity — one nation brings unexpected change to the other\'s sense of self and governance.',
+    Neptune: 'Idealism meets identity — inspiration or deception colors the diplomatic relationship.',
+    Pluto: 'Power dynamics define the relationship — transformation, domination, or deep mutual evolution between nations.',
+    'North Node': 'Fated connection in leadership — these nations have a karmic trajectory that pushes both toward growth.',
+    Chiron: 'One nation\'s identity touches the other\'s deepest vulnerabilities — a relationship that can wound or heal.',
+    Juno: 'Treaty and partnership energy — natural alliance-building potential between these nations.',
+    Vesta: 'Shared dedication — both nations focus their service and sacred commitments toward similar goals.',
+  },
+  Moon: {
+    Moon: 'Public sentiments resonate — the populations intuitively understand each other, or clash at an emotional level.',
+    Venus: 'Cultural affinity — the peoples of both nations share aesthetic values, social customs, and emotional warmth.',
+    Mars: 'Popular energy meets assertive force — public opinion in one nation reacts strongly to the other\'s actions.',
+    Saturn: 'Emotional caution — the populations approach each other with reserve, duty, or historical grievance.',
+    Pluto: 'Deep psychological undercurrents — collective memories, traumas, or transformative experiences bind these nations.',
+  },
+  Venus: {
+    Mars: 'Diplomatic tension with magnetic attraction — trade competition coexists with cultural fascination.',
+    Jupiter: 'Economic prosperity through partnership — trade agreements and cultural exchange flourish naturally.',
+    Saturn: 'Trade restrictions or cautious economic relations — trust must be earned through institutional channels.',
+    Juno: 'Natural treaty partners — diplomatic agreements and formal alliances form with relative ease.',
+  },
+  Mars: {
+    Saturn: 'Military restraint — one nation\'s assertiveness is checked by the other\'s institutional boundaries.',
+    Pluto: 'Power confrontation — military and strategic competition at the deepest level.',
+    Jupiter: 'Aggressive expansion meets opportunity — trade wars or dynamic economic competition.',
+  },
+};
+
+function synastryAspectInterpretation(a: SynastryAspect): string {
+  const pair = SYNASTRY_ASPECT_THEMES[a.planetA]?.[a.planetB]
+    || SYNASTRY_ASPECT_THEMES[a.planetB]?.[a.planetA];
+  if (!pair) {
+    const ta = PLANET_THEMES[a.planetA] || 'national energy';
+    const tb = PLANET_THEMES[a.planetB] || 'national energy';
+    return `${ta.charAt(0).toUpperCase() + ta.slice(1)} interacts with ${tb} between these nations.`;
+  }
+  const tone = a.nature === 'harmonious' ? 'This connection flows constructively.' : a.nature === 'challenging' ? 'This creates friction that demands navigation.' : 'This influence is complex and situational.';
+  return `${pair} ${tone}`;
 }
 
 // ─── Synastry computation ───────────────────────────────────
@@ -1524,13 +2225,18 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
         <div className="space-y-1">
           <p className="text-text-secondary text-xs font-semibold">Inter-Chart Aspects</p>
           {visible.map((a, i) => (
-            <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded bg-white/5 text-xs">
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${a.nature === 'harmonious' ? 'bg-emerald-400' : a.nature === 'challenging' ? 'bg-red-400' : 'bg-purple-400'}`} />
-              <span className="text-text-primary font-medium">{a.planetA}</span>
-              <span className={natureColor(a.nature)}>{ASPECT_GLYPHS[a.aspect] || ''}</span>
-              <span className="text-text-primary font-medium">{a.planetB}</span>
-              <span className="text-text-muted ml-auto">{a.orb}°</span>
-              <span className={`${natureColor(a.nature)} capitalize`}>{a.aspect}</span>
+            <div key={i} className="rounded bg-white/5 border border-white/5 p-2.5">
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${a.nature === 'harmonious' ? 'bg-emerald-400' : a.nature === 'challenging' ? 'bg-red-400' : 'bg-purple-400'}`} />
+                <span className="text-text-primary font-medium">{a.planetA}</span>
+                <span className={natureColor(a.nature)}>{ASPECT_GLYPHS[a.aspect] || ''}</span>
+                <span className="text-text-primary font-medium">{a.planetB}</span>
+                <span className="text-text-muted ml-auto">{a.orb}°</span>
+                <span className={`${natureColor(a.nature)} capitalize`}>{a.aspect}</span>
+              </div>
+              <p className="text-text-secondary text-[11px] mt-1.5 leading-relaxed pl-3.5">
+                {synastryAspectInterpretation(a)}
+              </p>
             </div>
           ))}
           {!showAllAspects && aspects.length > DEFAULT_SHOW && (

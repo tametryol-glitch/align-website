@@ -198,6 +198,81 @@ export async function getAllDailyScores(date?: string): Promise<Record<string, G
   return map;
 }
 
+// ─── Category Midpoints (Asteroid-Enhanced) ────────────────
+
+export interface CategoryMidpointEntry {
+  pair: [string, string];
+  midpoint_longitude: number;
+  sign: string;
+  degree: number;
+  house: number;
+  category: string;
+  category_label: string;
+  is_activated: boolean;
+  activating_transit?: string;
+  activation_orb?: number;
+  activation_aspect?: string;
+  mundane_significance?: string;
+}
+
+export interface CategoryMidpointReport {
+  country: string;
+  iso: string;
+  date: string;
+  categories: Record<string, CategoryMidpointEntry[]>;
+  activated_count: number;
+  total_count: number;
+  skipped_asteroids: Array<{ name: string; mpc_number: number; reason: string }>;
+  engine_version: string;
+}
+
+export interface MidpointCategoryInfo {
+  key: string;
+  label: string;
+  planets: string[];
+  points: string[];
+  asteroids: string[];
+  total_bodies: number;
+}
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
+
+export async function getCategoryMidpoints(
+  iso: string,
+  date?: string,
+  category?: string,
+): Promise<CategoryMidpointReport | null> {
+  const params = new URLSearchParams();
+  if (date) params.set('date', date);
+  if (category) params.set('category', category);
+  const qs = params.toString() ? `?${params.toString()}` : '';
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/global-intelligence/countries/${iso.toUpperCase()}/midpoints${qs}`,
+      { next: { revalidate: 300 } },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getMidpointCategories(): Promise<MidpointCategoryInfo[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE}/global-intelligence/midpoint-categories`,
+      { next: { revalidate: 3600 } },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.categories || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getCountryEvents(countryId: string, limit = 10): Promise<GICountryEvent[]> {
   const supabase = createClient();
   const { data, error } = await supabase
