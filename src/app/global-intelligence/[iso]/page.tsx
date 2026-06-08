@@ -497,16 +497,68 @@ interface TransitHit {
   transit_degree: number;
 }
 
-function aspectGlyph(aspect: string): string {
-  const map: Record<string, string> = {
-    Conjunction: '☌', Opposition: '☍', Square: '□', Trine: '△',
-    Sextile: '⚹', Quincunx: '⚻',
-  };
-  return map[aspect] || aspect;
+// ─── Planet & Aspect Meanings (for transit interpretations) ──
+
+const PLANET_THEMES: Record<string, string> = {
+  Sun: 'leadership and national identity',
+  Moon: 'public mood and domestic conditions',
+  Mercury: 'media, trade, and communications',
+  Venus: 'diplomacy, finance, and cultural affairs',
+  Mars: 'military action, conflict, and executive force',
+  Jupiter: 'expansion, growth, and opportunity',
+  Saturn: 'structure, restriction, and accountability',
+  Uranus: 'disruption, innovation, and sudden change',
+  Neptune: 'idealism, confusion, and hidden forces',
+  Pluto: 'transformation, power, and deep crisis',
+  'North Node': 'national destiny and future direction',
+  'South Node': 'past patterns and karmic release',
+  Chiron: 'national wounds and healing',
+  Vesta: 'dedication, service, and sacred focus',
+  Juno: 'partnerships, treaties, and commitments',
+  Ceres: 'nurturing, resources, and sustenance',
+  Pallas: 'strategy, wisdom, and pattern recognition',
+};
+
+const ASPECT_LABELS: Record<string, { name: string; verb: string; tone: string }> = {
+  Conjunction: { name: 'Conjunction', verb: 'aligns with', tone: 'Fusion of energies — intensified focus' },
+  Opposition: { name: 'Opposition', verb: 'opposes', tone: 'Tension and polarization — competing forces' },
+  Square: { name: 'Square', verb: 'clashes with', tone: 'Friction and pressure — forced decisions' },
+  Trine: { name: 'Trine', verb: 'harmonizes with', tone: 'Flow and support — natural progress' },
+  Sextile: { name: 'Sextile', verb: 'cooperates with', tone: 'Opportunity — constructive openings' },
+  Quincunx: { name: 'Quincunx', verb: 'adjusts to', tone: 'Misalignment — awkward recalibration' },
+};
+
+function transitInterpretation(h: TransitHit): string {
+  const tTheme = PLANET_THEMES[h.transit_planet] || 'planetary influence';
+  const nTheme = PLANET_THEMES[h.natal_planet] || 'national affairs';
+  const aspect = ASPECT_LABELS[h.aspect];
+  const sector = HOUSE_KEYWORDS[h.natal_house] || 'national affairs';
+
+  if (!aspect) return `${h.transit_planet} aspects the national ${h.natal_planet} in the ${sector} sector.`;
+
+  if (h.aspect === 'Conjunction') {
+    return `The energy of ${tTheme} merges with ${nTheme}, creating a concentrated focal point in the ${sector} sector.`;
+  } else if (h.aspect === 'Opposition') {
+    return `${h.transit_planet} pulls against the national ${h.natal_planet} — tension between ${tTheme} and ${nTheme} plays out through ${sector.toLowerCase()}.`;
+  } else if (h.aspect === 'Square') {
+    return `Friction between ${tTheme} and ${nTheme} creates pressure in the ${sector} sector. Difficult decisions are likely.`;
+  } else if (h.aspect === 'Trine') {
+    return `A supportive flow between ${tTheme} and ${nTheme} eases conditions around ${sector.toLowerCase()}.`;
+  } else if (h.aspect === 'Sextile') {
+    return `A window of opportunity opens where ${tTheme} cooperates with ${nTheme} in the ${sector} sector.`;
+  }
+  return `An adjustment between ${tTheme} and ${nTheme} creates uncertainty around ${sector.toLowerCase()}.`;
+}
+
+function severityLabel(severity: string): { text: string; color: string; bg: string } {
+  switch (severity) {
+    case 'major': return { text: 'High Impact', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' };
+    case 'moderate': return { text: 'Moderate', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' };
+    default: return { text: 'Minor', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' };
+  }
 }
 
 function TransitPanel({ hits }: { hits: TransitHit[] }) {
-  // Sort by severity then orb tightness
   const sorted = [...hits].sort((a, b) => {
     const sevOrder: Record<string, number> = { major: 0, moderate: 1, minor: 2 };
     const sa = sevOrder[a.severity] ?? 3;
@@ -515,38 +567,69 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
     return Math.abs(a.orb) - Math.abs(b.orb);
   });
 
+  // Group by severity
+  const groups: Record<string, TransitHit[]> = {};
+  for (const h of sorted) {
+    const key = h.severity || 'minor';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(h);
+  }
+
+  const orderedGroups = ['major', 'moderate', 'minor'].filter(k => groups[k]);
+
   return (
-    <div className="card bg-gradient-to-br from-purple-500/5 to-transparent">
-      <h3 className="text-sm font-semibold text-text-primary mb-3">Active Transits</h3>
-      <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
-        {sorted.map((h, i) => (
-          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 text-xs">
-            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${severityDotColor(h.severity)}`} />
-            <span className="text-text-primary font-medium w-16 flex-shrink-0">{h.transit_planet}</span>
-            <span className="text-accent-primary text-sm">{aspectGlyph(h.aspect)}</span>
-            <span className="text-text-primary font-medium w-16 flex-shrink-0">{h.natal_planet}</span>
-            <span className="text-text-muted flex-shrink-0 w-14 text-right">
-              {Math.abs(h.orb).toFixed(1)}° {h.is_applying ? '→' : '←'}
-            </span>
-            <span className="text-text-muted ml-auto text-[10px]">
-              H{h.natal_house} {HOUSE_KEYWORDS[h.natal_house] || ''}
-            </span>
-          </div>
-        ))}
+    <div className="card bg-gradient-to-br from-purple-500/5 to-transparent space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-text-primary">Active Transits</h3>
+        <p className="text-text-muted text-[10px] mt-0.5">
+          Planetary transits show how current sky positions interact with the national chart
+        </p>
       </div>
-      <p className="text-text-muted text-[10px] mt-2">
-        → = applying (strengthening) · ← = separating · Sorted by significance
-      </p>
+
+      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+        {orderedGroups.map(sevKey => {
+          const sev = severityLabel(sevKey);
+          const items = groups[sevKey];
+          return (
+            <div key={sevKey}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${sev.color}`}>
+                  {sev.text}
+                </span>
+                <span className="text-text-muted text-[10px]">({items.length})</span>
+                <div className="flex-1 h-px bg-border-primary/30" />
+              </div>
+              <div className="space-y-2">
+                {items.map((h, i) => {
+                  const aspect = ASPECT_LABELS[h.aspect] || { name: h.aspect, verb: 'aspects', tone: '' };
+                  return (
+                    <div key={i} className={`rounded-lg border p-3 ${sev.bg}`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="text-text-primary text-sm font-medium">
+                            {h.transit_planet} {aspect.verb} {h.natal_planet}
+                          </p>
+                          <p className="text-text-muted text-[10px] mt-0.5">
+                            {aspect.name} · {Math.abs(h.orb).toFixed(1)}° orb · {h.is_applying ? 'Building in strength' : 'Fading'}
+                          </p>
+                        </div>
+                        <span className="text-[10px] text-text-muted bg-white/5 px-2 py-0.5 rounded flex-shrink-0">
+                          {HOUSE_KEYWORDS[h.natal_house] || `House ${h.natal_house}`}
+                        </span>
+                      </div>
+                      <p className="text-text-secondary text-xs mt-2 leading-relaxed">
+                        {transitInterpretation(h)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
-}
-
-function severityDotColor(severity: string): string {
-  switch (severity) {
-    case 'major': return 'bg-red-500';
-    case 'moderate': return 'bg-yellow-500';
-    default: return 'bg-blue-500';
-  }
 }
 
 // ─── Midpoint Panel ─────────────────────────────────────────
@@ -559,28 +642,43 @@ interface MidpointEntry {
   midpoint_longitude: number;
 }
 
+function midpointInterpretation(m: MidpointEntry): string {
+  const a = PLANET_THEMES[m.pair[0]] || 'planetary energy';
+  const b = PLANET_THEMES[m.pair[1]] || 'planetary energy';
+  const sector = HOUSE_KEYWORDS[m.house] || 'national affairs';
+  return `The combined energy of ${a} and ${b} converges in the ${sector} sector, creating a sensitive activation point.`;
+}
+
 function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
   return (
-    <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent">
-      <h3 className="text-sm font-semibold text-text-primary mb-3">Active Midpoints</h3>
-      <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
+    <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-text-primary">Active Midpoints</h3>
+        <p className="text-text-muted text-[10px] mt-0.5">
+          Midpoints are sensitive degrees where two planetary energies blend — when transits hit these points, both themes activate simultaneously
+        </p>
+      </div>
+
+      <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
         {midpoints.map((m, i) => (
-          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-white/5 text-xs">
-            <span className="text-text-primary font-medium">
-              {m.pair[0]}/{m.pair[1]}
-            </span>
-            <span className="text-accent-primary">
-              {SIGN_GLYPHS[m.sign] || '?'} {m.degree.toFixed(1)}°
-            </span>
-            <span className="text-text-muted ml-auto text-[10px]">
-              H{m.house} {HOUSE_KEYWORDS[m.house] || ''}
-            </span>
+          <div key={i} className="rounded-lg border border-cyan-500/10 bg-cyan-500/5 p-3">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-text-primary text-sm font-medium">
+                {m.pair[0]} + {m.pair[1]}
+              </p>
+              <span className="text-[10px] text-text-muted bg-white/5 px-2 py-0.5 rounded flex-shrink-0">
+                {HOUSE_KEYWORDS[m.house] || `House ${m.house}`}
+              </span>
+            </div>
+            <p className="text-text-muted text-[10px] mt-0.5">
+              {SIGN_GLYPHS[m.sign] || ''} {m.sign} {m.degree.toFixed(1)}°
+            </p>
+            <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
+              {midpointInterpretation(m)}
+            </p>
           </div>
         ))}
       </div>
-      <p className="text-text-muted text-[10px] mt-2">
-        Midpoint = sensitive degree where two planetary energies converge
-      </p>
     </div>
   );
 }
@@ -604,39 +702,53 @@ interface ProgAspect {
 
 function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects?: ProgAspect[] }) {
   return (
-    <div className="card bg-gradient-to-br from-amber-500/5 to-transparent">
-      <h3 className="text-sm font-semibold text-text-primary mb-3">Secondary Progressions</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-        {planets.map((p, i) => (
-          <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded bg-white/5 text-xs">
-            <span className="text-accent-primary text-lg">{SIGN_GLYPHS[p.sign] || '?'}</span>
-            <div>
-              <p className="text-text-primary font-medium">{p.planet}</p>
-              <p className="text-text-muted text-[10px]">
-                {p.sign} {p.degree.toFixed(1)}° · H{p.house}
+    <div className="card bg-gradient-to-br from-amber-500/5 to-transparent space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-text-primary">Secondary Progressions</h3>
+        <p className="text-text-muted text-[10px] mt-0.5">
+          Progressions track the nation&apos;s slow evolution — each progressed day represents one year of development
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {planets.map((p, i) => {
+          const sector = HOUSE_KEYWORDS[p.house] || `House ${p.house}`;
+          const theme = PLANET_THEMES[p.planet] || 'planetary influence';
+          return (
+            <div key={i} className="rounded-lg border border-amber-500/10 bg-amber-500/5 p-3">
+              <div className="flex items-center gap-2">
+                <span className="text-accent-primary text-xl">{SIGN_GLYPHS[p.sign] || '?'}</span>
+                <div className="flex-1">
+                  <p className="text-text-primary text-sm font-medium">{p.planet} in {p.sign}</p>
+                  <p className="text-text-muted text-[10px]">
+                    {p.degree.toFixed(1)}° · {sector}
+                  </p>
+                </div>
+              </div>
+              <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
+                The nation&apos;s evolved {theme} expresses through {p.sign} energy in the {sector.toLowerCase()} sector.
               </p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
       {aspects && aspects.length > 0 && (
-        <>
+        <div>
           <h4 className="text-xs font-semibold text-text-secondary mb-2">Progressed Aspects</h4>
-          <div className="space-y-1">
-            {aspects.map((a, i) => (
-              <div key={i} className="flex items-center gap-2 py-1 px-2 text-xs">
-                <span className="text-text-primary font-medium">{a.prog_planet}</span>
-                <span className="text-accent-primary">{aspectGlyph(a.aspect)}</span>
-                <span className="text-text-primary font-medium">{a.natal_planet}</span>
-                <span className="text-text-muted ml-auto">{Math.abs(a.orb).toFixed(1)}°</span>
-              </div>
-            ))}
+          <div className="space-y-2">
+            {aspects.map((a, i) => {
+              const aspect = ASPECT_LABELS[a.aspect] || { name: a.aspect, verb: 'aspects', tone: '' };
+              return (
+                <div key={i} className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-white/5 text-xs">
+                  <span className="text-text-primary font-medium">{a.prog_planet} {aspect.verb} {a.natal_planet}</span>
+                  <span className="text-text-muted ml-auto">{Math.abs(a.orb).toFixed(1)}° · {aspect.name}</span>
+                </div>
+              );
+            })}
           </div>
-        </>
+        </div>
       )}
-      <p className="text-text-muted text-[10px] mt-2">
-        1 progressed day = 1 year of national evolution
-      </p>
     </div>
   );
 }
