@@ -113,10 +113,20 @@ export default function AffiliateRefPage() {
             Referred by {affiliateName}
           </p>
         )}
-        <p className="text-text-tertiary text-sm mb-6">
+        <p className="text-text-tertiary text-sm mb-4">
           Discover your cosmic blueprint with AI-powered astrology,
           natal charts, and 26+ readings.
         </p>
+
+        {/* Affiliate discount callout */}
+        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl px-4 py-3 mb-6">
+          <p className="text-sm font-semibold text-white">
+            🎁 10% off your first 2 months
+          </p>
+          <p className="text-xs text-text-muted mt-1">
+            Exclusive discount applied at checkout
+          </p>
+        </div>
 
         {/* Redirect indicator */}
         <div className="flex items-center justify-center gap-2 text-text-muted text-xs mb-6">

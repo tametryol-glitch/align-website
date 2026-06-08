@@ -442,11 +442,24 @@ export const EMAIL_TEMPLATES = {
         </td></tr>
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
           <span style="color:#a855f7;font-weight:700;margin-right:8px;">2.</span>
-          When someone signs up and subscribes, you earn 20%
+          Anyone who signs up through your link gets <strong style="color:#22c55e;">10% off their first 2 months</strong>
         </td></tr>
         <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
           <span style="color:#a855f7;font-weight:700;margin-right:8px;">3.</span>
+          When they subscribe, you earn 20% recurring commission
+        </td></tr>
+        <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">4.</span>
           Track your earnings in real time on your dashboard
+        </td></tr>
+      </table>
+      <!-- Referral perk callout -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#1a2e1a;border:1px solid #22c55e33;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#22c55e;">Promote this to your audience:</p>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:#c4c8e0;">
+            &ldquo;Sign up through my link and get <strong style="color:#ffffff;">10% off your first 2 months</strong> of Align!&rdquo;
+          </p>
         </td></tr>
       </table>
       ${ctaButton('View Your Affiliate Dashboard', `${APP_URL}/affiliates/dashboard`)}

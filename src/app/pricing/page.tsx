@@ -24,8 +24,13 @@ export default function PricingPage() {
   const [offerings, setOfferings] = useState<any>(null);
   const [error, setError] = useState('');
   const [billing, setBilling] = useState<BillingPeriod>('monthly');
+  const [isAffiliate, setIsAffiliate] = useState(false);
 
   useEffect(() => {
+    // Check for affiliate referral cookie
+    const affCookie = document.cookie.match(/(?:^|; )align_aff=([^;]*)/);
+    if (affCookie) setIsAffiliate(true);
+
     const purchases = getRevenueCatInstance();
     if (purchases) {
       purchases.getOfferings()
@@ -36,6 +41,13 @@ export default function PricingPage() {
 
   async function handleSubscribe(planKey: string) {
     if (planKey === 'free' || planKey === tier) return;
+
+    // Affiliate-referred users go through Stripe Checkout to get their 10% discount
+    if (isAffiliate && ['light', 'premium', 'pro'].includes(planKey)) {
+      setLoading(planKey);
+      window.location.href = `/api/stripe/checkout?plan=${planKey}`;
+      return;
+    }
 
     const purchases = getRevenueCatInstance();
     if (!purchases) {
@@ -131,6 +143,18 @@ export default function PricingPage() {
         )}
       </div>
 
+      {/* Affiliate referral discount banner */}
+      {isAffiliate && (
+        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl px-5 py-4 mb-8 text-center max-w-lg mx-auto">
+          <p className="text-base font-semibold text-white">
+            🎁 You&apos;ve been referred! Get 10% off your first 2 months
+          </p>
+          <p className="text-xs text-text-muted mt-1">
+            Discount automatically applied at checkout
+          </p>
+        </div>
+      )}
+
       {error && (
         <p className="text-sm text-red-400 bg-red-400/10 px-4 py-3 rounded-xl mb-6 text-center">{error}</p>
       )}
@@ -183,6 +207,12 @@ export default function PricingPage() {
               <div className="mb-1">
                 {meta.key === 'free' ? (
                   <span className="text-4xl font-bold text-text-primary">{t('subscription.priceFree', 'Free')}</span>
+                ) : isAffiliate && !isAnnual ? (
+                  <>
+                    <span className="text-text-muted line-through text-lg mr-1">${displayPrice}</span>
+                    <span className="text-4xl font-bold text-green-400">${(displayPrice * 0.9).toFixed(2)}</span>
+                    <span className="text-text-muted">{t('subscription.perMonth')}</span>
+                  </>
                 ) : (
                   <>
                     <span className="text-4xl font-bold text-text-primary">${displayPrice}</span>
@@ -205,6 +235,8 @@ export default function PricingPage() {
                 <div className="mb-4">
                   {meta.key === 'free' ? (
                     <p className="text-xs text-text-muted">{t('pricing.foreverFree', 'Free forever')}</p>
+                  ) : isAffiliate ? (
+                    <p className="text-xs font-semibold text-green-400">10% off for first 2 months</p>
                   ) : (
                     <p className="text-xs text-text-muted">{t('pricing.billedMonthly', 'Billed monthly')}</p>
                   )}

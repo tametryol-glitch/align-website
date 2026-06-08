@@ -45,6 +45,33 @@ export function isValidPlan(s: string): s is PlanId {
   return VALID_PLANS.includes(s as PlanId);
 }
 
+/* ── Affiliate referral coupon (10 % off first 2 months) ── */
+
+const AFFILIATE_COUPON_ID = 'affiliate_10pct_2mo';
+
+/**
+ * Returns the Stripe coupon ID for the affiliate referral discount.
+ * Creates the coupon the first time it's needed.
+ */
+export async function getOrCreateAffiliateCoupon(): Promise<string> {
+  const stripe = getStripe();
+
+  try {
+    await stripe.coupons.retrieve(AFFILIATE_COUPON_ID);
+    return AFFILIATE_COUPON_ID;
+  } catch {
+    // Coupon doesn't exist yet — create it
+    await stripe.coupons.create({
+      id: AFFILIATE_COUPON_ID,
+      percent_off: 10,
+      duration: 'repeating',
+      duration_in_months: 2,
+      name: 'Affiliate Referral — 10% off first 2 months',
+    });
+    return AFFILIATE_COUPON_ID;
+  }
+}
+
 /* ── Tier from Stripe price ID (reverse lookup) ────────── */
 
 export function tierFromPriceId(priceId: string): PlanId | null {

@@ -17,7 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
-import { getStripe, isValidPlan, priceIdForPlan } from '@/lib/stripe';
+import { getStripe, isValidPlan, priceIdForPlan, getOrCreateAffiliateCoupon } from '@/lib/stripe';
 
 /* ── Helpers ──────────────────────────────────────────────── */
 
@@ -104,10 +104,22 @@ async function createCheckout(req: NextRequest) {
         .eq('id', user.id);
     }
 
-    // 4. Create Checkout Session
+    // 4. Check for affiliate referral — apply 10% off first 2 months
+    const affiliateCookie = req.cookies.get('align_aff')?.value;
+    let affiliateCouponId: string | null = null;
+
+    if (affiliateCookie) {
+      try {
+        affiliateCouponId = await getOrCreateAffiliateCoupon();
+      } catch (err) {
+        console.error('[Stripe Checkout] Failed to get affiliate coupon:', err);
+      }
+    }
+
+    // 5. Create Checkout Session
     const priceId = priceIdForPlan(plan);
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: any = {
       customer: customerId,
       client_reference_id: user.id,
       mode: 'subscription',
@@ -118,10 +130,19 @@ async function createCheckout(req: NextRequest) {
         metadata: {
           supabase_user_id: user.id,
           plan,
+          ...(affiliateCookie ? { affiliate_id: affiliateCookie } : {}),
         },
       },
-      allow_promotion_codes: true,
-    });
+    };
+
+    if (affiliateCouponId) {
+      // Stripe doesn't allow both discounts and allow_promotion_codes
+      sessionParams.discounts = [{ coupon: affiliateCouponId }];
+    } else {
+      sessionParams.allow_promotion_codes = true;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     // 5. Redirect to Stripe Checkout
     if (session.url) {
