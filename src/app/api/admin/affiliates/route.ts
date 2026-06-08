@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
+import { sendEmail } from '@/lib/emailService';
+import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -100,6 +102,22 @@ export async function PATCH(req: NextRequest) {
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Send notification email on approval or rejection
+    if (data?.email && data?.name) {
+      try {
+        if (status === 'approved' && data.affiliate_code) {
+          const { subject, html } = EMAIL_TEMPLATES.affiliateApproved(data.name, data.affiliate_code);
+          await sendEmail(data.email, subject, html);
+        } else if (status === 'rejected') {
+          const { subject, html } = EMAIL_TEMPLATES.affiliateRejected(data.name, rejectionReason);
+          await sendEmail(data.email, subject, html);
+        }
+      } catch (emailErr) {
+        // Don't fail the status update if email fails
+        console.error('[Affiliate] Email notification failed:', emailErr);
+      }
+    }
 
     return NextResponse.json({ ok: true, affiliate: data });
   } catch (err: any) {

@@ -392,4 +392,100 @@ export const EMAIL_TEMPLATES = {
   }),
 };
 
+  // -------------------------------------------------------------------------
+  // Affiliate program emails
+  // -------------------------------------------------------------------------
+
+  affiliateApproved: (name: string, code: string) => ({
+    subject: `You're in, ${name}! Your Align affiliate account is live`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Welcome to the Align Affiliate Program!</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Great news, ${name} — your application has been <strong style="color:#22c55e;">approved</strong>.
+        You can start earning <strong style="color:#a855f7;">20% recurring commission</strong> on every
+        subscriber you refer to Align.
+      </p>
+      <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#ffffff;font-weight:600;">
+        Your affiliate details:
+      </p>
+      <!-- Code + link box -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:20px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Affiliate Code</td>
+              <td style="padding:8px 0;font-size:14px;color:#a855f7;font-weight:700;text-align:right;font-family:monospace;">${code}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Your Referral Link</td>
+              <td style="padding:8px 0;font-size:13px;color:#a855f7;font-weight:600;text-align:right;">
+                <a href="${APP_URL}/ref/${code}" style="color:#a855f7;text-decoration:underline;">${APP_URL}/ref/${code}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Commission Rate</td>
+              <td style="padding:8px 0;font-size:14px;color:#22c55e;font-weight:700;text-align:right;">20% recurring</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:14px;color:#6b7196;">Cookie Window</td>
+              <td style="padding:8px 0;font-size:14px;color:#ffffff;font-weight:600;text-align:right;">30 days</td>
+            </tr>
+          </table>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Here is how it works:
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:12px 0 20px;">
+        <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">1.</span>
+          Share your referral link with your audience
+        </td></tr>
+        <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">2.</span>
+          When someone signs up and subscribes, you earn 20%
+        </td></tr>
+        <tr><td style="padding:8px 0;font-size:15px;color:#c4c8e0;">
+          <span style="color:#a855f7;font-weight:700;margin-right:8px;">3.</span>
+          Track your earnings in real time on your dashboard
+        </td></tr>
+      </table>
+      ${ctaButton('View Your Affiliate Dashboard', `${APP_URL}/affiliates/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        Questions about the program? Reply to this email — we are here to help.
+      </p>
+    `),
+  }),
+
+  affiliateRejected: (name: string, reason?: string) => ({
+    subject: `Update on your Align affiliate application`,
+    html: layout(`
+      <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">Hi ${name},</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        Thank you for your interest in the Align Affiliate Program. After reviewing your
+        application, we are unable to approve it at this time.
+      </p>
+      ${reason ? `
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#1a1f35;border-radius:12px;">
+        <tr><td style="padding:16px;">
+          <p style="margin:0 0 8px;font-size:14px;color:#f59e0b;font-weight:600;">Reason</p>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:#c4c8e0;">${reason}</p>
+        </td></tr>
+      </table>` : ''}
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        This is not necessarily permanent. You are welcome to reapply in the future if
+        your circumstances change. If you believe this was a mistake, feel free to reply
+        to this email and we will take another look.
+      </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#c4c8e0;">
+        In the meantime, you can still enjoy everything Align has to offer as a member.
+      </p>
+      ${ctaButton('Explore Align', `${APP_URL}/dashboard`)}
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#6b7196;text-align:center;">
+        We appreciate your support and interest in Align.
+      </p>
+    `),
+  }),
+};
+
 export type EmailTemplateKey = keyof typeof EMAIL_TEMPLATES;
