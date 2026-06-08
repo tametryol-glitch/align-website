@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy } from 'lucide-react';
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
@@ -35,7 +35,7 @@ interface UserRow {
   birth_location: string | null;
 }
 
-type Tab = 'moderation' | 'users' | 'verifications' | 'cosmic-index';
+type Tab = 'moderation' | 'users' | 'verifications' | 'cosmic-index' | 'affiliates';
 
 export default function AdminPage() {
   return (
@@ -49,7 +49,7 @@ function AdminPageContent() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
   const searchParams = useSearchParams();
-  const initialTab = (['moderation', 'users', 'verifications', 'cosmic-index'] as Tab[]).includes(searchParams.get('tab') as Tab)
+  const initialTab = (['moderation', 'users', 'verifications', 'cosmic-index', 'affiliates'] as Tab[]).includes(searchParams.get('tab') as Tab)
     ? (searchParams.get('tab') as Tab)
     : 'moderation';
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -116,12 +116,29 @@ function AdminPageContent() {
         >
           <Database className="w-4 h-4 inline mr-1.5" /> Cosmic Index
         </button>
+        <button
+          onClick={() => setTab('affiliates')}
+          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'affiliates' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
+        >
+          <DollarSign className="w-4 h-4 inline mr-1.5" /> Affiliates
+        </button>
+      </div>
+
+      {/* Quick links */}
+      <div className="flex gap-2 mb-6">
+        <Link
+          href="/admin/blog"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-bg-card border border-border-primary text-text-secondary hover:text-text-primary hover:border-accent-primary/30 transition-colors"
+        >
+          <FileText className="w-4 h-4" /> Blog Manager
+        </Link>
       </div>
 
       {tab === 'moderation' && <ModerationPanel />}
       {tab === 'users' && <UsersPanel />}
       {tab === 'verifications' && <VerificationsPanel />}
       {tab === 'cosmic-index' && <CosmicIndexPanel />}
+      {tab === 'affiliates' && <AffiliatesPanel />}
     </div>
   );
 }
@@ -873,6 +890,291 @@ function CosmicIndexPanel() {
               </p>
             ))}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =====================================================================
+// Affiliate Management Panel
+// =====================================================================
+
+interface AffiliateRow {
+  id: string;
+  name: string;
+  email: string;
+  website: string | null;
+  social_handle: string | null;
+  promo_method: string | null;
+  affiliate_code: string;
+  status: string;
+  commission_rate_bps: number;
+  total_clicks: number;
+  total_signups: number;
+  total_conversions: number;
+  total_earnings_cents: number;
+  total_paid_cents: number;
+  unpaid_cents: number;
+  created_at: string;
+  approved_at: string | null;
+  rejection_reason: string | null;
+}
+
+interface AffiliateStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  suspended: number;
+  totalEarnings: number;
+  totalPaid: number;
+  totalUnpaid: number;
+}
+
+function AffiliatesPanel() {
+  const [affiliates, setAffiliates] = useState<AffiliateRow[]>([]);
+  const [stats, setStats] = useState<AffiliateStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>('all');
+  const [actioningId, setActioningId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+
+  useEffect(() => { loadAffiliates(); }, [filter]);
+
+  async function loadAffiliates() {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/affiliates?status=${filter}`);
+      if (!res.ok) { setLoading(false); return; }
+      const data = await res.json();
+      setAffiliates(data.affiliates || []);
+      setStats(data.stats || null);
+    } catch {
+      setAffiliates([]);
+    }
+    setLoading(false);
+  }
+
+  async function handleStatus(affiliateId: string, status: string, rejectionReason?: string) {
+    setActioningId(affiliateId);
+    try {
+      const res = await fetch('/api/admin/affiliates', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ affiliateId, status, rejectionReason }),
+      });
+      if (res.ok) {
+        loadAffiliates();
+        setRejectingId(null);
+        setRejectReason('');
+      }
+    } catch {}
+    setActioningId(null);
+  }
+
+  function centsToUSD(cents: number): string {
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+
+  function statusColor(status: string) {
+    switch (status) {
+      case 'approved': return 'text-green-400 bg-green-500/10';
+      case 'pending': return 'text-yellow-400 bg-yellow-500/10';
+      case 'rejected': return 'text-red-400 bg-red-500/10';
+      case 'suspended': return 'text-orange-400 bg-orange-500/10';
+      default: return 'text-text-muted bg-bg-tertiary';
+    }
+  }
+
+  if (loading) return <p className="text-text-muted text-sm">Loading affiliates...</p>;
+
+  return (
+    <div className="space-y-4">
+      {/* Stats */}
+      {stats && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="bg-bg-secondary rounded-lg p-3 border border-border-primary">
+            <p className="text-lg font-bold text-text-primary">{stats.total}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Total Affiliates</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-yellow-500/20">
+            <p className="text-lg font-bold text-yellow-400">{stats.pending}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Pending Review</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-green-500/20">
+            <p className="text-lg font-bold text-green-400">{stats.approved}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Active</p>
+          </div>
+          <div className="bg-bg-secondary rounded-lg p-3 border border-accent-primary/20">
+            <p className="text-lg font-bold text-accent-primary">{centsToUSD(stats.totalUnpaid)}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Unpaid Commission</p>
+          </div>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {['all', 'pending', 'approved', 'rejected', 'suspended'].map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              filter === f ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
+            }`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f === 'pending' && stats?.pending ? ` (${stats.pending})` : ''}
+          </button>
+        ))}
+        <button
+          onClick={loadAffiliates}
+          className="ml-auto text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
+        >
+          Refresh
+        </button>
+      </div>
+
+      {/* Affiliate list */}
+      {affiliates.length === 0 ? (
+        <div className="card text-center py-12">
+          <DollarSign className="w-10 h-10 text-text-muted mx-auto mb-3" />
+          <p className="text-text-secondary">No affiliates {filter !== 'all' ? `with status "${filter}"` : 'yet'}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {affiliates.map(aff => (
+            <div key={aff.id} className="card p-4 space-y-3">
+              {/* Header row */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm font-semibold text-text-primary">{aff.name}</p>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${statusColor(aff.status)}`}>
+                      {aff.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-muted mt-0.5">{aff.email}</p>
+                  <div className="flex items-center gap-3 mt-1 text-xs text-text-secondary flex-wrap">
+                    {aff.website && (
+                      <a href={aff.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-accent-primary">
+                        <ExternalLink className="w-3 h-3" /> {aff.website.replace(/^https?:\/\//, '').slice(0, 30)}
+                      </a>
+                    )}
+                    {aff.social_handle && <span>@ {aff.social_handle}</span>}
+                    {aff.promo_method && <span className="text-text-muted italic truncate max-w-[200px]">{aff.promo_method}</span>}
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-[10px] text-text-muted">
+                    Applied {new Date(aff.created_at).toLocaleDateString()}
+                  </p>
+                  <code className="text-[10px] text-accent-primary font-mono">{aff.affiliate_code}</code>
+                </div>
+              </div>
+
+              {/* Stats row (only for approved affiliates) */}
+              {aff.status === 'approved' && (
+                <div className="flex gap-4 text-xs text-text-secondary flex-wrap">
+                  <span><strong className="text-text-primary">{aff.total_clicks}</strong> clicks</span>
+                  <span><strong className="text-text-primary">{aff.total_signups}</strong> signups</span>
+                  <span><strong className="text-text-primary">{aff.total_conversions}</strong> conversions</span>
+                  <span>Earned <strong className="text-green-400">{centsToUSD(aff.total_earnings_cents)}</strong></span>
+                  <span>Paid <strong className="text-blue-400">{centsToUSD(aff.total_paid_cents)}</strong></span>
+                  <span>Unpaid <strong className="text-accent-primary">{centsToUSD(aff.unpaid_cents)}</strong></span>
+                </div>
+              )}
+
+              {aff.rejection_reason && (
+                <p className="text-xs text-red-400">Reason: {aff.rejection_reason}</p>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {aff.status === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => handleStatus(aff.id, 'approved')}
+                      disabled={actioningId === aff.id}
+                      className="px-4 py-2 rounded-lg bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs font-medium transition-colors disabled:opacity-50"
+                    >
+                      <CheckCircle className="w-3.5 h-3.5 inline mr-1.5" /> Approve
+                    </button>
+                    {rejectingId === aff.id ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                          placeholder="Reason (optional)"
+                          className="px-3 py-2 rounded-lg bg-bg-tertiary text-xs text-text-primary border border-white/10 outline-none w-40"
+                        />
+                        <button
+                          onClick={() => handleStatus(aff.id, 'rejected', rejectReason)}
+                          disabled={actioningId === aff.id}
+                          className="px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-xs font-medium transition-colors disabled:opacity-50"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => { setRejectingId(null); setRejectReason(''); }}
+                          className="text-xs text-text-muted px-2"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setRejectingId(aff.id)}
+                        className="px-4 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-xs font-medium transition-colors"
+                      >
+                        <XCircle className="w-3.5 h-3.5 inline mr-1.5" /> Reject
+                      </button>
+                    )}
+                  </>
+                )}
+                {aff.status === 'approved' && (
+                  <button
+                    onClick={() => handleStatus(aff.id, 'suspended')}
+                    disabled={actioningId === aff.id}
+                    className="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-medium transition-colors disabled:opacity-50"
+                  >
+                    Suspend
+                  </button>
+                )}
+                {aff.status === 'suspended' && (
+                  <button
+                    onClick={() => handleStatus(aff.id, 'approved')}
+                    disabled={actioningId === aff.id}
+                    className="px-3 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs font-medium transition-colors disabled:opacity-50"
+                  >
+                    Reactivate
+                  </button>
+                )}
+                {aff.status === 'rejected' && (
+                  <button
+                    onClick={() => handleStatus(aff.id, 'approved')}
+                    disabled={actioningId === aff.id}
+                    className="px-3 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs font-medium transition-colors disabled:opacity-50"
+                  >
+                    Approve Instead
+                  </button>
+                )}
+                {/* Copy link */}
+                {aff.status === 'approved' && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://aligncosmic.com/ref/${aff.affiliate_code}`);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-text-muted text-xs font-medium transition-colors ml-auto"
+                  >
+                    <Copy className="w-3 h-3 inline mr-1" /> Copy Link
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
