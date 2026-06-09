@@ -31,37 +31,60 @@ export default function AffiliateRefPage() {
   const [affiliateName, setAffiliateName] = useState<string>('');
 
   useEffect(() => {
+    let completed = false;
+
     async function handleAffiliateClick() {
-      // 1. Verify the code
-      const verification = await verifyAffiliateCode(code);
-      if (!verification.valid) {
-        setStatus('invalid');
-        // Redirect to homepage after brief delay
-        setTimeout(() => router.replace('/'), 2000);
-        return;
+      try {
+        // 1. Verify the code
+        const verification = await verifyAffiliateCode(code);
+        if (!verification.valid) {
+          completed = true;
+          setStatus('invalid');
+          // Redirect to homepage after brief delay
+          setTimeout(() => router.replace('/'), 2000);
+          return;
+        }
+
+        setAffiliateName(verification.name || '');
+        setStatus('valid');
+        completed = true;
+
+        // 2. Track the click
+        const result = await trackAffiliateClick(code);
+        if (result.ok && result.affiliate_id) {
+          // 3. Set attribution cookie
+          setAffiliateCookie(
+            result.affiliate_id,
+            result.cookie_days || 30,
+            result.click_id,
+          );
+        }
+
+        // 4. Redirect to signup after a brief branded splash
+        setTimeout(() => {
+          router.push(`/auth/signup?ref=${encodeURIComponent(code)}&source=affiliate`);
+        }, 2500);
+      } catch {
+        // Catch-all: if anything unexpected throws, go to invalid
+        if (!completed) {
+          setStatus('invalid');
+          setTimeout(() => router.replace('/'), 2000);
+        }
       }
-
-      setAffiliateName(verification.name || '');
-      setStatus('valid');
-
-      // 2. Track the click
-      const result = await trackAffiliateClick(code);
-      if (result.ok && result.affiliate_id) {
-        // 3. Set attribution cookie
-        setAffiliateCookie(
-          result.affiliate_id,
-          result.cookie_days || 30,
-          result.click_id,
-        );
-      }
-
-      // 4. Redirect to signup after a brief branded splash
-      setTimeout(() => {
-        router.push(`/auth/signup?ref=${encodeURIComponent(code)}&source=affiliate`);
-      }, 2500);
     }
 
-    if (code) handleAffiliateClick();
+    if (code) {
+      handleAffiliateClick();
+      // Safety net: if API hangs or something unexpected happens,
+      // don't leave the user on a loading spinner forever
+      const safetyTimer = setTimeout(() => {
+        if (!completed) {
+          setStatus('invalid');
+          router.replace('/');
+        }
+      }, 10000);
+      return () => clearTimeout(safetyTimer);
+    }
   }, [code, router]);
 
   if (status === 'loading') {

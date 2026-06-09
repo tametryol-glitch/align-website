@@ -854,6 +854,7 @@ interface TransitHit {
 // ─── Planet & Aspect Meanings ───────────────────────────────
 
 const PLANET_THEMES: Record<string, string> = {
+  // Major planets
   Sun: 'leadership and national identity',
   Moon: 'public mood and domestic conditions',
   Mercury: 'media, trade, and communications',
@@ -864,13 +865,125 @@ const PLANET_THEMES: Record<string, string> = {
   Uranus: 'disruption, innovation, and sudden change',
   Neptune: 'idealism, confusion, and hidden forces',
   Pluto: 'transformation, power, and deep crisis',
+  // Points
   'North Node': 'national destiny and future direction',
   'South Node': 'past patterns and karmic release',
+  Ascendant: 'national self-image and public identity',
+  Midheaven: 'governmental authority and international standing',
+  MC: 'governmental authority and international standing',
+  IC: 'homeland foundations and territorial roots',
+  Descendant: 'foreign alliances and open adversaries',
+  'Part of Fortune': 'material prosperity and national fortune',
+  // Major asteroids
   Chiron: 'national wounds and healing',
   Vesta: 'dedication, service, and sacred focus',
   Juno: 'partnerships, treaties, and commitments',
   Ceres: 'nurturing, resources, and sustenance',
   Pallas: 'strategy, wisdom, and pattern recognition',
+  Pholus: 'small catalysts triggering large consequences',
+  // Justice & Law
+  Astraea: 'celestial justice, legal order, and divine law',
+  Themis: 'constitutional authority, sacred oaths, and moral order',
+  Dike: 'human justice, courtroom verdicts, and moral accountability',
+  Justitia: 'legal fairness, judicial balance, and due process',
+  Eunomia: 'civic order, lawful governance, and social regulation',
+  // War & Military
+  Bellona: 'war fever, military aggression, and armed conflict',
+  Achilles: 'heroic vulnerability, fatal weakness in strength',
+  Hektor: 'defensive warfare, duty-bound sacrifice, and last stands',
+  Cebriones: 'military logistics, troop movements, and tactical coordination',
+  // Victory & Success
+  Victoria: 'national triumph, competitive victory, and conquest',
+  Nike: 'decisive victory, winning momentum, and competitive edge',
+  Champion: 'athletic prowess, champions of a cause, and peak performance',
+  Gloria: 'public glory, fame, recognition, and national prestige',
+  // Economy & Finance
+  Fortuna: 'fortune, luck cycles, and unpredictable economic shifts',
+  Tyche: 'fate-driven prosperity and chance-based outcomes',
+  Abundantia: 'material abundance, surplus, and overflowing resources',
+  Midas: 'wealth obsession, golden opportunities, and speculative greed',
+  Gold: 'gold reserves, precious metals, and hard-asset value',
+  Silver: 'silver markets, secondary commodities, and industrial metals',
+  Mony: 'currency flow, monetary policy, and cash liquidity',
+  Banks: 'banking institutions, lending, and financial infrastructure',
+  Industria: 'industrial output, manufacturing, and productive labor',
+  Enterprise: 'entrepreneurship, corporate ventures, and business innovation',
+  Bonus: 'economic windfalls, surplus revenue, and unexpected gains',
+  // Fate & Karma
+  Karma: 'karmic reckoning and consequences of past actions',
+  Nemesis: 'retribution, downfall of the powerful, and poetic justice',
+  Atropos: 'inevitable endings, finality, and irreversible closure',
+  Klotho: 'new beginnings, the thread of fate being spun',
+  Lachesis: 'measured duration, the allocation of time and lifespan',
+  Destinn: 'destined outcomes and unavoidable turning points',
+  // Healing & Health
+  Hygiea: 'public health infrastructure, sanitation, and disease prevention',
+  Aesculapia: 'medical institutions, physicians, and curative intervention',
+  Asclepius: 'miraculous recovery, healing crises, and medical breakthroughs',
+  Panacea: 'universal remedies, pharmaceutical solutions, and cure-all ambitions',
+  Reiki: 'alternative healing, energy medicine, and holistic health movements',
+  // Love & Relationship
+  Eros: 'passionate desire, magnetic attraction, and raw intensity',
+  Amor: 'unconditional love, compassion-driven bonds, and selfless devotion',
+  Valentine: 'romantic idealism, fateful love, and heart-centered connection',
+  Cupido: 'infatuation, sudden attraction, and desire-driven impulses',
+  Aphrodite: 'beauty, sensuality, aesthetic power, and allure',
+  Lust: 'raw desire, physical appetite, and primal drives',
+  Casanova: 'seductive charm, romantic conquest, and charismatic influence',
+  Union: 'merging of forces, unification, and binding agreements',
+  // Psychology & Soul
+  Psyche: 'collective psychology, the national soul, and deep identity',
+  Lilith: 'suppressed truths, marginalized voices, and shadow power',
+  Hypnos: 'mass hypnosis, collective sleep, and unconscious influence',
+  // Wisdom & Strategy
+  Athene: 'strategic wisdom, calculated warfare, and intellectual defense',
+  Heracles: 'heroic effort, laborious triumph, and extraordinary strength',
+  Apollo: 'illumination, prophecy, cultural brilliance, and artistic vision',
+  Urania: 'scientific discovery, astronomical insight, and technological vision',
+  // Communication & Commerce
+  Iris: 'divine messaging, rainbow diplomacy, and bridge-building communication',
+  Hermes: 'trade routes, swift commerce, cunning negotiation, and information flow',
+  Kassandra: 'unheeded warnings, ignored prophecy, and disbelieved intelligence',
+  // Mythology & Archetype
+  Isis: 'sacred feminine power, resurrection, and institutional restoration',
+  Osiris: 'death and rebirth of institutions, cyclical renewal, and legacy',
+  Nephthys: 'hidden sanctuaries, grief processing, and shadow governance',
+  Hekate: 'crossroads decisions, liminal power, and occult statecraft',
+  Pandora: 'unleashed consequences, irreversible actions, and unintended fallout',
+  Magdalena: 'sacred witness, redemptive devotion, and spiritual testimony',
+  Prometheus: 'revolutionary innovation, forbidden knowledge, and defiant progress',
+  Lucifer: 'pride, the light-bringer, illumination through rebellion',
+  // Recklessness & Hubris
+  Icarus: 'reckless ambition, overreach, and spectacular downfall',
+  Phaethon: 'loss of control, catastrophic mismanagement, and environmental disaster',
+  Sisyphus: 'futile repetition, endless struggle, and bureaucratic gridlock',
+  Tantalus: 'temptation, unattainable goals, and tortured proximity to power',
+  'Don Quixote': 'idealistic crusades, tilting at windmills, and noble delusion',
+  // Destruction & Threat
+  Atlantis: 'civilizational collapse, hubris-driven catastrophe, and lost legacy',
+  Apophis: 'existential threat, chaos serpent, and destruction from beyond',
+  Dejanira: 'victimization, tragic vulnerability, and collateral suffering',
+  // Centaurs & TNOs
+  Nessus: 'abuse of power, toxic cycles, and karmic retribution',
+  Chariklo: 'graceful boundaries, sacred space, and healing presence',
+  Eris: 'discord, provocation, and the exposure of hidden injustice',
+  Haumea: 'fertility, rebirth, and rapid creative generation',
+  Makemake: 'environmental stewardship, resource cycles, and ecological balance',
+  Sedna: 'deep isolation, betrayal, and transformation through extreme conditions',
+  Orcus: 'oath-keeping, the underworld, and consequences of broken promises',
+  Quaoar: 'creation myths, foundational order, and cosmic law',
+  Varuna: 'cosmic order, all-seeing oversight, and celestial governance',
+  Ixion: 'ingratitude, repeated offenses, and abuse of second chances',
+  Chaos: 'primordial disruption, the void before order, and systemic entropy',
+  // Miscellaneous
+  Child: 'demographic trends, youth issues, and generational emergence',
+  Aura: 'collective atmosphere, energetic climate, and national mood field',
+  TARDIS: 'temporal anomalies, time-bending developments, and anachronistic events',
+  Orpheus: 'cultural loss, artistic mourning, and the power of music and art',
+  Poseidon: 'oceanic power, naval force, maritime events, and flooding',
+  Huma: 'blessing, sovereignty bestowed, and divine favor',
+  Chernykh: 'observation, surveillance, and the watcher\'s role',
+  Excalibur: 'rightful authority, sovereign legitimacy, and the mandate to rule',
 };
 
 const ASPECT_LABELS: Record<string, { name: string; verb: string; tone: string }> = {
@@ -1292,11 +1405,125 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
   );
 }
 
+// ─── Sign coloring for midpoint context ──────────────────────
+const SIGN_MIDPOINT_FLAVOR: Record<string, string> = {
+  Aries: 'with urgency and combative directness',
+  Taurus: 'through slow consolidation and material stakes',
+  Gemini: 'via media channels, dual narratives, and rapid information flow',
+  Cancer: 'through domestic undercurrents and protective instincts',
+  Leo: 'with dramatic visibility and leadership ego',
+  Virgo: 'through meticulous detail, service infrastructure, and systemic efficiency',
+  Libra: 'via diplomatic channels, legal proceedings, and balancing acts',
+  Scorpio: 'through covert intensity, power plays, and crisis mechanisms',
+  Sagittarius: 'via ideological conviction, international reach, and expansive vision',
+  Capricorn: 'through institutional channels, hierarchical pressure, and structural authority',
+  Aquarius: 'via collective movements, technological disruption, and systemic reform',
+  Pisces: 'through hidden currents, compassionate idealism, and spiritual undercurrents',
+};
+
+// ─── Aspect activation verbs ─────────────────────────────────
+const ASPECT_ACTIVATION: Record<string, string> = {
+  Conjunction: 'fuses directly with',
+  Opposition: 'pulls into polarized tension against',
+  Square: 'forces a crisis point at',
+  Trine: 'flows supportive energy into',
+  Sextile: 'opens a constructive window at',
+  Quincunx: 'creates awkward misalignment with',
+};
+
+// Deterministic template selector (hash pair names to pick a variation)
+function pairHash(a: string, b: string): number {
+  let h = 0;
+  const s = a + b;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
 function CategoryMidpointCard({ mp }: { mp: CategoryMidpointEntry }) {
   const pairKey = `${mp.pair[0]}+${mp.pair[1]}`;
   const reversePairKey = `${mp.pair[1]}+${mp.pair[0]}`;
   const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
   const sector = HOUSE_KEYWORDS[mp.house] || `House ${mp.house}`;
+  const themeA = PLANET_THEMES[mp.pair[0]] || mp.pair[0].toLowerCase();
+  const themeB = PLANET_THEMES[mp.pair[1]] || mp.pair[1].toLowerCase();
+  const signFlavor = SIGN_MIDPOINT_FLAVOR[mp.sign] || `in ${mp.sign}`;
+  const sectorImpact = MIDPOINT_SECTOR_IMPACT[mp.house] || `influences the ${sector.toLowerCase()} sector`;
+  const variant = pairHash(mp.pair[0], mp.pair[1]) % 5;
+
+  // Build the interpretation body
+  let body: string;
+  if (pairTheme) {
+    // We have a specific pair theme — use it with variety
+    switch (variant) {
+      case 0:
+        body = `This sensitive degree channels ${pairTheme} ${signFlavor}. Positioned at ${mp.degree.toFixed(0)}° ${mp.sign}, it ${sectorImpact}.`;
+        break;
+      case 1:
+        body = `Where ${themeA} intersects ${themeB}, a focal point for ${pairTheme} emerges at ${mp.degree.toFixed(0)}° ${mp.sign}. In the ${sector.toLowerCase()} sector, this ${sectorImpact}.`;
+        break;
+      case 2:
+        body = `At ${mp.degree.toFixed(0)}° ${mp.sign}, the convergence of ${mp.pair[0]} and ${mp.pair[1]} concentrates ${pairTheme} ${signFlavor}. This point ${sectorImpact}.`;
+        break;
+      case 3:
+        body = `The ${mp.pair[0]}/${mp.pair[1]} axis sensitizes ${mp.degree.toFixed(0)}° ${mp.sign} to ${pairTheme}. Operating ${signFlavor}, it ${sectorImpact}.`;
+        break;
+      default:
+        body = `${pairTheme.charAt(0).toUpperCase() + pairTheme.slice(1)} crystallizes at ${mp.degree.toFixed(0)}° ${mp.sign}, where ${themeA} fuses with ${themeB}. This degree ${sectorImpact}.`;
+        break;
+    }
+  } else {
+    // No specific pair theme — build from individual body themes
+    switch (variant) {
+      case 0:
+        body = `The intersection of ${themeA} and ${themeB} creates a volatile degree at ${mp.degree.toFixed(0)}° ${mp.sign}. Operating ${signFlavor}, this point ${sectorImpact}.`;
+        break;
+      case 1:
+        body = `At ${mp.degree.toFixed(0)}° ${mp.sign}, ${mp.pair[0]}'s domain of ${themeA} merges with ${mp.pair[1]}'s sphere of ${themeB}. This sensitive axis ${sectorImpact}.`;
+        break;
+      case 2:
+        body = `${themeA.charAt(0).toUpperCase() + themeA.slice(1)} collides with ${themeB} at ${mp.degree.toFixed(0)}° ${mp.sign}, forging a pressure point that ${sectorImpact}.`;
+        break;
+      case 3:
+        body = `Where ${mp.pair[0]} and ${mp.pair[1]} converge — blending ${themeA} with ${themeB} — a sensitive degree forms at ${mp.degree.toFixed(0)}° ${mp.sign} ${signFlavor}. It ${sectorImpact}.`;
+        break;
+      default:
+        body = `This midpoint concentrates ${themeA} alongside ${themeB} at ${mp.degree.toFixed(0)}° ${mp.sign}. Expressing ${signFlavor}, the degree ${sectorImpact}.`;
+        break;
+    }
+  }
+
+  // Build activation sentence
+  let activation = '';
+  if (mp.is_activated && mp.activating_transit && mp.activation_aspect) {
+    const verb = ASPECT_ACTIVATION[mp.activation_aspect] || 'activates';
+    const transitTheme = PLANET_THEMES[mp.activating_transit] || mp.activating_transit.toLowerCase();
+    switch (pairHash(mp.activating_transit, mp.pair[0]) % 4) {
+      case 0:
+        activation = ` Transit ${mp.activating_transit} ${verb} this degree today — ${transitTheme} is catalyzing developments here.`;
+        break;
+      case 1:
+        activation = ` Today's ${mp.activating_transit} ${mp.activation_aspect.toLowerCase()} lights up this point, injecting ${transitTheme} into the mix.`;
+        break;
+      case 2:
+        activation = ` With ${mp.activating_transit} ${verb.replace('with', 'at')} ${mp.degree.toFixed(0)}° ${mp.sign}, expect ${transitTheme} to trigger visible events in this area.`;
+        break;
+      default:
+        activation = ` Active now: ${mp.activating_transit}'s ${mp.activation_aspect.toLowerCase()} brings ${transitTheme} to bear on this sensitive degree.`;
+        break;
+    }
+  } else if (!mp.is_activated) {
+    switch (variant % 3) {
+      case 0:
+        activation = ' Dormant until transited — a latent trigger point.';
+        break;
+      case 1:
+        activation = ' Waiting for a transit to ignite its potential.';
+        break;
+      default:
+        activation = '';
+        break;
+    }
+  }
 
   return (
     <div className={`rounded-lg border p-3 ${
@@ -1328,25 +1555,9 @@ function CategoryMidpointCard({ mp }: { mp: CategoryMidpointEntry }) {
         </p>
       )}
 
-      {pairTheme && (
-        <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
-          {pairTheme.charAt(0).toUpperCase() + pairTheme.slice(1)} at {mp.degree.toFixed(0)}° {mp.sign} in the {sector.toLowerCase()} sector.
-          {mp.is_activated
-            ? ` Transit ${mp.activating_transit} activates this point today — watch for developments in this area.`
-            : ' Currently dormant — becomes significant when transited.'
-          }
-        </p>
-      )}
-
-      {!pairTheme && (
-        <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
-          {mp.pair[0]} meets {mp.pair[1]} at {mp.degree.toFixed(0)}° {mp.sign}, placing this sensitive point in the {sector.toLowerCase()} sector.
-          {mp.is_activated
-            ? ` Activated by ${mp.activating_transit} ${mp.activation_aspect?.toLowerCase()} — heightened significance today.`
-            : ''
-          }
-        </p>
-      )}
+      <p className="text-text-secondary text-xs mt-1.5 leading-relaxed">
+        {body}{activation}
+      </p>
     </div>
   );
 }
@@ -1478,15 +1689,33 @@ function midpointInterpretation(m: MidpointEntry): string {
   const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
   const sector = HOUSE_KEYWORDS[m.house] || 'national affairs';
   const impact = MIDPOINT_SECTOR_IMPACT[m.house] || `activates the ${sector.toLowerCase()} sector`;
+  const themeA = PLANET_THEMES[m.pair[0]] || m.pair[0].toLowerCase();
+  const themeB = PLANET_THEMES[m.pair[1]] || m.pair[1].toLowerCase();
+  const signFlavor = SIGN_MIDPOINT_FLAVOR[m.sign] || `in ${m.sign}`;
+  const variant = pairHash(m.pair[0], m.pair[1]) % 4;
 
   if (pairTheme) {
-    const themeA = PLANET_THEMES[m.pair[0]] || m.pair[0];
-    const themeB = PLANET_THEMES[m.pair[1]] || m.pair[1];
-    return `The ${m.pair[0]}/${m.pair[1]} midpoint blends ${themeA} with ${themeB}, creating a sensitive degree at ${m.degree.toFixed(0)}° ${m.sign}. This ${pairTheme} ${impact}. When transits activate this point, both themes ignite simultaneously.`;
+    switch (variant) {
+      case 0:
+        return `The ${m.pair[0]}/${m.pair[1]} midpoint at ${m.degree.toFixed(0)}° ${m.sign} channels ${pairTheme} ${signFlavor}. This degree ${impact}. When transited, both themes ignite simultaneously.`;
+      case 1:
+        return `At ${m.degree.toFixed(0)}° ${m.sign}, ${themeA} intersects ${themeB}, concentrating ${pairTheme} in the ${sector.toLowerCase()} sector. This point ${impact} — transits here activate both archetypes at once.`;
+      case 2:
+        return `Where ${m.pair[0]} and ${m.pair[1]} converge, ${pairTheme} crystallizes at ${m.degree.toFixed(0)}° ${m.sign}. Expressing ${signFlavor}, this sensitive axis ${impact}.`;
+      default:
+        return `${pairTheme.charAt(0).toUpperCase() + pairTheme.slice(1)} — that is the signature of ${m.degree.toFixed(0)}° ${m.sign}, where ${themeA} fuses with ${themeB}. This degree ${impact}, and any transit crossing it triggers both energies.`;
+    }
   }
-  const a = PLANET_THEMES[m.pair[0]] || 'planetary energy';
-  const b = PLANET_THEMES[m.pair[1]] || 'planetary energy';
-  return `${a.charAt(0).toUpperCase() + a.slice(1)} meets ${b} at ${m.degree.toFixed(0)}° ${m.sign}. This sensitive point ${impact}. Transits crossing this degree trigger both energies at once.`;
+  switch (variant) {
+    case 0:
+      return `The intersection of ${themeA} and ${themeB} sensitizes ${m.degree.toFixed(0)}° ${m.sign}. Operating ${signFlavor}, this point ${impact}. Transits here activate a potent dual signal.`;
+    case 1:
+      return `At ${m.degree.toFixed(0)}° ${m.sign}, ${m.pair[0]}'s domain of ${themeA} merges with ${m.pair[1]}'s sphere of ${themeB}. This degree ${impact} and responds sharply when transited.`;
+    case 2:
+      return `${themeA.charAt(0).toUpperCase() + themeA.slice(1)} collides with ${themeB} at ${m.degree.toFixed(0)}° ${m.sign}, creating a pressure point that ${impact}. Both themes fire when this degree is activated.`;
+    default:
+      return `This midpoint concentrates ${themeA} alongside ${themeB} at ${m.degree.toFixed(0)}° ${m.sign}, expressing ${signFlavor}. It ${impact} — a latent trigger awaiting transit contact.`;
+  }
 }
 
 function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {

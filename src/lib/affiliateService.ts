@@ -75,6 +75,8 @@ export async function trackAffiliateClick(affiliateCode: string): Promise<{
   click_id?: string;
 }> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
     const res = await fetch(`${API_BASE}/affiliates/track-click`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -85,7 +87,9 @@ export async function trackAffiliateClick(affiliateCode: string): Promise<{
         landing_page: window.location.href,
         user_agent: navigator.userAgent,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     return await res.json();
   } catch {
     return { ok: false };
@@ -98,7 +102,12 @@ export async function verifyAffiliateCode(code: string): Promise<{
   status?: string;
 }> {
   try {
-    const res = await fetch(`${API_BASE}/affiliates/verify/${encodeURIComponent(code)}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${API_BASE}/affiliates/verify/${encodeURIComponent(code)}`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
     return await res.json();
   } catch {
     return { valid: false };
