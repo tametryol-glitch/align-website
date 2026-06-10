@@ -590,6 +590,21 @@ export default function TarotPage() {
             </button>
           </div>
 
+          {showAi && aiText && !aiLoading && (
+            <button
+              onClick={handleListen}
+              className="w-full py-3.5 rounded-xl bg-[#2D1B69] border border-accent-primary/30 text-white font-medium text-base hover:bg-[#3A2580] transition-colors flex items-center justify-center gap-2"
+            >
+              {voiceState === 'preparing' ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> {t('readings.tarotPage.summoningVoice')}</>
+              ) : voiceState === 'speaking' ? (
+                <><Square className="w-4 h-4" /> {t('readings.tarotPage.stopListening')}</>
+              ) : (
+                <><Volume2 className="w-4 h-4" /> {t('readings.tarotPage.listenToReading')}</>
+              )}
+            </button>
+          )}
+
           {allRevealed && (
             <button
               onClick={requestAI}
@@ -626,20 +641,6 @@ export default function TarotPage() {
                 )}
                 {aiLoading && (
                   <span className="text-accent-primary text-base animate-pulse">{'█'}</span>
-                )}
-                {aiText && !aiLoading && (
-                  <button
-                    onClick={handleListen}
-                    className="mt-4 w-full py-3 rounded-xl bg-[#2D1B69] border border-accent-primary/30 text-white font-medium text-sm hover:bg-[#3A2580] transition-colors flex items-center justify-center gap-2"
-                  >
-                    {voiceState === 'preparing' ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> {t('readings.tarotPage.summoningVoice')}</>
-                    ) : voiceState === 'speaking' ? (
-                      <><Square className="w-4 h-4" /> {t('readings.tarotPage.stopListening')}</>
-                    ) : (
-                      <><Volume2 className="w-4 h-4" /> {t('readings.tarotPage.listenToReading')}</>
-                    )}
-                  </button>
                 )}
                 {aiText && !aiLoading && (
                   <button
