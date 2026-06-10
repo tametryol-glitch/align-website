@@ -12,7 +12,7 @@ import { drawCards as drawLocalCards, type DrawnCard } from '@/lib/tarotDeck';
 import ReactMarkdown from 'react-markdown';
 import ShareButton from '@/components/ui/ShareButton';
 import { PaywallGate } from '@/components/ui/PaywallGate';
-import { TarotOracle } from '@/components/TarotOracle';
+import { TarotOracle, OracleSpeakingOverlay } from '@/components/TarotOracle';
 import {
   voiceService,
   setVoiceAuthToken,
@@ -327,7 +327,6 @@ export default function TarotPage() {
   const [copied, setCopied] = useState(false);
   const [voiceState, setVoiceState] = useState<'idle' | 'preparing' | 'speaking'>('idle');
   const [selectedVoice, setSelectedVoice] = useState<TTSVoice>(DEFAULT_VOICE);
-  const oracleRef = useRef<HTMLDivElement>(null);
 
   // Chart data for AI readings
   const [natalData, setNatalData] = useState<any>(null);
@@ -365,11 +364,7 @@ export default function TarotPage() {
         selectedVoice,
         undefined,
         TAROT_TTS_PROVIDER,
-        () => {
-          // First audio is actually playing — bring the oracle into view.
-          setVoiceState('speaking');
-          oracleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        },
+        () => setVoiceState('speaking'),
       );
     } catch (err) {
       console.error('[Tarot] TTS error:', err);
@@ -609,12 +604,7 @@ export default function TarotPage() {
           {showAi && (
             <div className="card overflow-hidden p-0">
               <div className="bg-gradient-to-b from-accent-primary/10 to-accent-primary/[0.02] p-6 rounded-xl">
-                <div
-                  ref={oracleRef}
-                  className={`transition-transform duration-700 ${voiceState === 'speaking' ? 'scale-125 my-4' : ''}`}
-                >
-                  <TarotOracle isSpeaking={voiceState === 'speaking'} />
-                </div>
+                <TarotOracle isSpeaking={voiceState === 'speaking'} />
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm font-medium text-accent-primary flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
@@ -680,6 +670,13 @@ export default function TarotPage() {
           )}
         </div>
       )}
+      <OracleSpeakingOverlay
+        state={voiceState}
+        onStop={stopSpeaking}
+        preparingLabel={t('readings.tarotPage.summoningVoice')}
+        speakingLabel={t('readings.tarotPage.sheIsReading')}
+        stopLabel={t('readings.tarotPage.stopListening')}
+      />
     </div>
     </PaywallGate>
   );

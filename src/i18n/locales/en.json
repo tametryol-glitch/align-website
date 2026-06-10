@@ -250,6 +250,7 @@
       "listenToReading": "Listen to Your Reading",
       "stopListening": "Stop Listening",
       "summoningVoice": "Summoning her voice…",
+      "sheIsReading": "She is reading your cards…",
       "voiceUnavailable": "Could not play audio. Please check your connection and try again.",
       "copied": "Copied!",
       "failedToGenerate": "Failed to generate reading. Please try again.",
