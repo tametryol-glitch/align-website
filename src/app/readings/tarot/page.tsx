@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft, Volume2, Square } from 'lucide-react';
+import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft, Volume2, Square, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
@@ -325,8 +325,9 @@ export default function TarotPage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [showAi, setShowAi] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceState, setVoiceState] = useState<'idle' | 'preparing' | 'speaking'>('idle');
   const [selectedVoice, setSelectedVoice] = useState<TTSVoice>(DEFAULT_VOICE);
+  const oracleRef = useRef<HTMLDivElement>(null);
 
   // Chart data for AI readings
   const [natalData, setNatalData] = useState<any>(null);
@@ -348,29 +349,34 @@ export default function TarotPage() {
 
   const stopSpeaking = useCallback(async () => {
     await voiceService.stopPlayback();
-    setIsSpeaking(false);
+    setVoiceState('idle');
   }, []);
 
   const handleListen = useCallback(async () => {
-    if (isSpeaking) {
+    if (voiceState !== 'idle') {
       await stopSpeaking();
       return;
     }
     if (!aiTextRef.current) return;
     try {
-      setIsSpeaking(true);
+      setVoiceState('preparing');
       await voiceService.speak(
         prepareSpeechText(aiTextRef.current),
         selectedVoice,
         undefined,
         TAROT_TTS_PROVIDER,
+        () => {
+          // First audio is actually playing — bring the oracle into view.
+          setVoiceState('speaking');
+          oracleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        },
       );
     } catch (err) {
       console.error('[Tarot] TTS error:', err);
     } finally {
-      setIsSpeaking(false);
+      setVoiceState('idle');
     }
-  }, [isSpeaking, selectedVoice, stopSpeaking]);
+  }, [voiceState, selectedVoice, stopSpeaking]);
 
   const selectedSpread = SPREAD_OPTIONS.find((s) => s.key === spreadType)!;
   const positionLabelKeys = getPositionLabelKeys(spreadType);
@@ -603,7 +609,12 @@ export default function TarotPage() {
           {showAi && (
             <div className="card overflow-hidden p-0">
               <div className="bg-gradient-to-b from-accent-primary/10 to-accent-primary/[0.02] p-6 rounded-xl">
-                <TarotOracle isSpeaking={isSpeaking} />
+                <div
+                  ref={oracleRef}
+                  className={`transition-transform duration-700 ${voiceState === 'speaking' ? 'scale-125 my-4' : ''}`}
+                >
+                  <TarotOracle isSpeaking={voiceState === 'speaking'} />
+                </div>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm font-medium text-accent-primary flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
@@ -631,7 +642,9 @@ export default function TarotPage() {
                     onClick={handleListen}
                     className="mt-4 w-full py-3 rounded-xl bg-[#2D1B69] border border-accent-primary/30 text-white font-medium text-sm hover:bg-[#3A2580] transition-colors flex items-center justify-center gap-2"
                   >
-                    {isSpeaking ? (
+                    {voiceState === 'preparing' ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> {t('readings.tarotPage.summoningVoice')}</>
+                    ) : voiceState === 'speaking' ? (
                       <><Square className="w-4 h-4" /> {t('readings.tarotPage.stopListening')}</>
                     ) : (
                       <><Volume2 className="w-4 h-4" /> {t('readings.tarotPage.listenToReading')}</>

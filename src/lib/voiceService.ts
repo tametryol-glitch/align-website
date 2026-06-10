@@ -148,6 +148,12 @@ class VoiceService {
   private isProcessingQueue = false;
   private stopRequested = false;
   private _isPlaying = false;
+  // Incremented on every speak() — lets in-flight loops from a previous
+  // speak() detect they are stale and exit instead of fighting the new one.
+  private speakSession = 0;
+  // True while a speak() session is still fetching chunks; prevents the
+  // queue processor from declaring playback finished during a fetch gap.
+  private fetchActive = false;
   private _isRecording = false;
   private mediaRecorder: MediaRecorder | null = null;
   private recordedChunks: Blob[] = [];
@@ -196,10 +202,16 @@ class VoiceService {
     const chunks: string[] = [];
     let current = '';
 
+    // Small first chunk = fast time-to-first-sound; larger later chunks =
+    // fewer requests and fewer chances for an audible gap between chunks.
+    const FIRST_CHUNK_MAX = 160;
+    const CHUNK_MAX = 500;
+
     for (const sentence of sentences) {
       const restored = sentence.replace(/⁠/g, '.').trim();
       if (!restored) continue;
-      if (current.length + restored.length < 250) {
+      const max = chunks.length === 0 ? FIRST_CHUNK_MAX : CHUNK_MAX;
+      if (current.length + restored.length < max) {
         current += (current ? ' ' : '') + restored;
       } else {
         if (current) chunks.push(current);
@@ -250,7 +262,9 @@ class VoiceService {
       console.error('[VoiceService] queue playback error:', err);
     } finally {
       this.isProcessingQueue = false;
-      if (this.audioQueue.length === 0) {
+      // Only declare playback finished when fetching is also done — an empty
+      // queue mid-fetch is just a gap, and speak()'s drain loop will restart us.
+      if (this.audioQueue.length === 0 && !this.fetchActive) {
         this._isPlaying = false;
         this.onPlaybackEnd?.();
         this.onPlaybackEnd = null;
@@ -260,49 +274,93 @@ class VoiceService {
 
   /**
    * Speak text aloud with chunked streaming.
-   * First chunk plays immediately while rest are fetched in parallel.
+   * The first chunk is kept short for fast time-to-first-sound; remaining
+   * chunks are fetched with bounded parallelism and queued strictly in
+   * order. `onStart` fires when the first audio actually begins playing.
    */
-  async speak(text: string, voice: TTSVoice = DEFAULT_VOICE, onEnd?: () => void, provider: TTSProvider = 'openai'): Promise<void> {
+  async speak(
+    text: string,
+    voice: TTSVoice = DEFAULT_VOICE,
+    onEnd?: () => void,
+    provider: TTSProvider = 'openai',
+    onStart?: () => void,
+  ): Promise<void> {
     await this.stopPlayback();
 
+    const session = ++this.speakSession;
     this.stopRequested = false;
     this._isPlaying = true;
     this.audioQueue = [];
     this.onPlaybackEnd = onEnd || null;
+    this.fetchActive = true;
 
     const chunks = this.splitIntoChunks(text);
+    const ready: (string | null)[] = new Array(chunks.length).fill(null);
+    const failed = new Set<number>();
+    let nextToQueue = 0;
+    let started = false;
 
-    // Fetch and play first chunk immediately
-    const firstBlobUrl = await this.textToSpeech(chunks[0], voice, provider);
-    if (this.stopRequested) {
-      URL.revokeObjectURL(firstBlobUrl);
-      return;
-    }
+    // Push fetched chunks to the playback queue strictly in reading order.
+    const flushReady = () => {
+      if (this.speakSession !== session) return;
+      while (
+        nextToQueue < chunks.length &&
+        (ready[nextToQueue] !== null || failed.has(nextToQueue))
+      ) {
+        const url = ready[nextToQueue];
+        ready[nextToQueue] = null;
+        nextToQueue++;
+        if (url) {
+          this.audioQueue.push(url);
+          if (!started) {
+            started = true;
+            onStart?.();
+          }
+          if (!this.isProcessingQueue) this.processQueue();
+        }
+      }
+    };
 
-    this.audioQueue.push(firstBlobUrl);
-    this.processQueue();
-
-    // Fetch remaining chunks sequentially while first plays
-    if (chunks.length > 1) {
-      for (const chunk of chunks.slice(1)) {
-        if (this.stopRequested) break;
+    let cursor = 0;
+    const worker = async () => {
+      while (this.speakSession === session && !this.stopRequested && cursor < chunks.length) {
+        const i = cursor++;
         try {
-          const blobUrl = await this.textToSpeech(chunk, voice, provider);
-          if (!this.stopRequested) {
-            this.audioQueue.push(blobUrl);
-            if (!this.isProcessingQueue) this.processQueue();
+          const url = await this.textToSpeech(chunks[i], voice, provider);
+          if (this.speakSession === session && !this.stopRequested) {
+            ready[i] = url;
+            flushReady();
           } else {
-            URL.revokeObjectURL(blobUrl);
+            URL.revokeObjectURL(url);
+            return;
           }
         } catch (err) {
           console.error('[VoiceService] chunk TTS error:', err);
+          failed.add(i); // skip the broken chunk so playback can continue
+          flushReady();
         }
       }
-    }
+    };
 
-    // All chunks fetched — wait for playback to fully drain
-    while (!this.stopRequested && (this.audioQueue.length > 0 || this.isProcessingQueue)) {
+    const PARALLEL_FETCHES = Math.min(3, chunks.length);
+    await Promise.all(Array.from({ length: PARALLEL_FETCHES }, () => worker()));
+    if (this.speakSession !== session) return;
+    this.fetchActive = false;
+
+    // Wait for playback to fully drain, restarting the queue processor if it
+    // died during a fetch gap (otherwise queued audio would sit unplayed).
+    while (
+      this.speakSession === session &&
+      !this.stopRequested &&
+      (this.audioQueue.length > 0 || this.isProcessingQueue)
+    ) {
+      if (this.audioQueue.length > 0 && !this.isProcessingQueue) this.processQueue();
       await new Promise(r => setTimeout(r, 100));
+    }
+    if (this.speakSession === session && !this.stopRequested) {
+      this._isPlaying = false;
+      this.onPlaybackEnd?.();
+      this.onPlaybackEnd = null;
     }
   }
 
@@ -312,6 +370,7 @@ class VoiceService {
   async stopPlayback(): Promise<void> {
     this.stopRequested = true;
     this._isPlaying = false;
+    this.fetchActive = false;
 
     if (this.currentAudio) {
       try {
