@@ -11,6 +11,7 @@ import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { getPlanetGlyph } from '@/lib/utils';
 import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
+import { isDestinationCity } from '@/data/destinationCities';
 import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
 import { getDerivedAcgAccess } from '@/config/featureFlags';
 import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
@@ -310,7 +311,12 @@ function getBestForTags(nearestLines: { planet: string; lineType: LineType; dist
 
 function scoreCities(acgLines: ACGLine[]): CityScore[] {
   const scored: CityScore[] = [];
-  for (const city of WORLD_CITIES_ALL) {
+  // Best-20 ranks only recognizable destination cities — places people
+  // actually dream of visiting or moving to. Line astrology still decides
+  // the order; the curated pool only decides eligibility. Search and map
+  // taps continue to use the full WORLD_CITIES_ALL database.
+  const pool = WORLD_CITIES_ALL.filter(isDestinationCity);
+  for (const city of pool) {
     let score = 0;
     const nearestLines: { planet: string; lineType: LineType; distance: number }[] = [];
     for (const line of acgLines) {
