@@ -11,6 +11,8 @@ import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { getPlanetGlyph } from '@/lib/utils';
 import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
+import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
+import { getDerivedAcgAccess } from '@/config/featureFlags';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -33,6 +35,21 @@ const LINE_TYPE_MEANINGS: Record<LineType, string> = {
 
 const OBLIQUITY = 23.4393;
 const DEG = Math.PI / 180;
+
+// ─── Derived (Duad–Compendium) layer presentation ────────────────────────────
+// User-facing names are deliberately jargon-free: natal = "Core",
+// duad = "Inner", compendium = "Essence". Distinction never relies on color
+// alone — dash pattern, weight, and opacity differ per layer.
+type StyledDerivedLine = ACGLine & {
+  dash: string;
+  weight: number;
+  opacityOverride: number;
+  layerLabel: string;
+};
+const DERIVED_LAYER_STYLE: Record<'duad' | 'compendium', { dash: string; weight: number; opacityOverride: number; layerLabel: string }> = {
+  duad: { dash: '10,7', weight: 1.8, opacityOverride: 0.65, layerLabel: 'Inner' },
+  compendium: { dash: '2,5', weight: 1.4, opacityOverride: 0.55, layerLabel: 'Essence' },
+};
 
 const PLANET_MEANINGS: Record<string, string> = {
   Sun: 'Identity & vitality', Moon: 'Emotions & intuition',
@@ -570,6 +587,7 @@ function generateMapHTML(
   showParanLines: boolean,
   birthLat?: number,
   birthLon?: number,
+  derivedLines: StyledDerivedLine[] = [],
 ): string {
   const filteredLines = acgLines.filter(l => enabledPlanets[l.planet] !== false);
   const relevantParans = (showParanLines && selectedCity)
@@ -665,6 +683,27 @@ ${polylineData.map(pd => pd.segments.map(seg =>
     }).addTo(map).bindTooltip('${pd.label}', {permanent: false, direction: 'center', className: 'line-label'});`
   ).join('\n')).join('\n')}
 
+${derivedLines.map(line => {
+    // Derived (Inner/Essence) layers: same antimeridian segmentation as natal,
+    // distinguished by dash pattern + weight + opacity (never color alone).
+    const segments: ACGLinePoint[][] = [];
+    let seg: ACGLinePoint[] = [];
+    for (let i = 0; i < line.points.length; i++) {
+      if (i > 0 && Math.abs(line.points[i].lon - line.points[i - 1].lon) > 180) {
+        if (seg.length > 0) segments.push(seg);
+        seg = [];
+      }
+      seg.push(line.points[i]);
+    }
+    if (seg.length > 0) segments.push(seg);
+    const label = `${getPlanetGlyph(line.planet) || line.planet} ${line.planet} ${line.layerLabel} ${line.lineType}`;
+    return segments.map(s =>
+      `L.polyline([${s.map(p => `[${p.lat},${p.lon}]`).join(',')}], {
+      color: '${line.color}', weight: ${line.weight}, opacity: ${line.opacityOverride}, smoothFactor: 1.5, dashArray: '${line.dash}'
+    }).addTo(map).bindTooltip('${label}', {permanent: false, direction: 'center', className: 'line-label'});`
+    ).join('\n');
+  }).join('\n')}
+
 ${polylineData.map(pd => {
     const midIdx = Math.floor((pd.segments[0]?.length ?? 0) / 2);
     const midPt = pd.segments[0]?.[midIdx];
@@ -748,7 +787,7 @@ function RenderMarkdown({ text }: { text: string }) {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function ACGPage() {
-  const { profile } = useAuthStore();
+  const { profile, session } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -775,6 +814,14 @@ export default function ACGPage() {
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const firstName = profile?.display_name?.split(' ')[0] || 'Friend';
+
+  // ── Derived (Inner/Essence) layers — flag-gated, isolated from natal state ──
+  const derivedAccess = getDerivedAcgAccess(session?.user?.email);
+  const [showDuadLines, setShowDuadLines] = useState(false);
+  const [showCompendiumLines, setShowCompendiumLines] = useState(false);
+  const [derivedLines, setDerivedLines] = useState<DerivedACGLine[]>([]);
+  const [birthMoment, setBirthMoment] = useState<Date | null>(null);
+  const [chartPlanets, setChartPlanets] = useState<Array<{ name: string; longitude: number }>>([]);
 
   // ─── Load & Calculate ──────────────────────────────────────────────────────
 
@@ -807,6 +854,8 @@ export default function ACGPage() {
 
         const lines = calculateACGLines(planets, date);
         setAcgLines(lines);
+        setBirthMoment(date);       // shared with the derived (Inner/Essence) layers
+        setChartPlanets(planets);   // shared with the derived (Inner/Essence) layers
 
         const parans = calculateParanLines(planets, date);
         setParanLines(parans);
@@ -871,6 +920,27 @@ export default function ACGPage() {
     setEnabledPlanets(prev => ({ ...prev, [planet]: !prev[planet] }));
   }, []);
 
+  // Derived (Inner/Essence) layers — computed separately so natal lines,
+  // city scoring, Best-20, and parans are never affected. With flags off or
+  // both toggles off, this effect costs nothing and stores an empty array.
+  useEffect(() => {
+    if (!derivedAccess.anyEnabled || !birthMoment || chartPlanets.length === 0) {
+      setDerivedLines([]);
+      return;
+    }
+    const layers: Array<'duad' | 'compendium'> = [];
+    if (derivedAccess.duad && showDuadLines) layers.push('duad');
+    if (derivedAccess.compendium && showCompendiumLines) layers.push('compendium');
+    if (layers.length === 0) { setDerivedLines([]); return; }
+    try {
+      setDerivedLines(generateDerivedAcgLines(chartPlanets, birthMoment, { layers }));
+    } catch (err) {
+      // Derived-layer failure must never affect the natal map.
+      console.error('[ACG] derived layer error (natal lines unaffected):', err);
+      setDerivedLines([]);
+    }
+  }, [derivedAccess.anyEnabled, derivedAccess.duad, derivedAccess.compendium, birthMoment, chartPlanets, showDuadLines, showCompendiumLines]);
+
   // ─── Best 20 ────────────────────────────────────────────────────────────────
 
   const top20 = useMemo(() => selectTop20(cityScores), [cityScores]);
@@ -883,14 +953,22 @@ export default function ACGPage() {
 
   // ─── Map HTML ──────────────────────────────────────────────────────────────
 
+  const styledDerivedLines = useMemo<StyledDerivedLine[]>(() =>
+    derivedLines
+      .filter(l => enabledPlanets[l.planet] !== false)
+      .map(l => ({ ...l, ...DERIVED_LAYER_STYLE[l.layer as 'duad' | 'compendium'] })),
+    [derivedLines, enabledPlanets]
+  );
+
   const mapHTML = useMemo(() =>
     generateMapHTML(
       acgLines, enabledPlanets, selectedCity,
       mapCenter.lat, mapCenter.lon, mapZoom,
       paranLines, showParanLines,
       profile?.latitude ?? undefined, profile?.longitude ?? undefined,
+      styledDerivedLines,
     ),
-    [acgLines, enabledPlanets, selectedCity, mapCenter, mapZoom, paranLines, showParanLines, profile?.latitude, profile?.longitude]
+    [acgLines, enabledPlanets, selectedCity, mapCenter, mapZoom, paranLines, showParanLines, profile?.latitude, profile?.longitude, styledDerivedLines]
   );
 
   const mapBlob = useMemo(() => {
@@ -1102,6 +1180,49 @@ export default function ACGPage() {
                 Horizontal lines where two planets are simultaneously angular
               </p>
             </div>
+
+            {/* Derived layers (Duad–Compendium ACG) — flag-gated, dev preview */}
+            {derivedAccess.anyEnabled && (
+              <div className="border-t border-border-primary pt-3 mt-3">
+                <div className="flex flex-wrap gap-2">
+                  {derivedAccess.duad && (
+                    <button
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        showDuadLines
+                          ? 'bg-violet-500/10 text-violet-300'
+                          : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
+                      }`}
+                      onClick={() => setShowDuadLines(v => !v)}
+                      aria-label={`Inner lines layer, ${showDuadLines ? 'on' : 'off'}`}
+                    >
+                      <span className="text-base">╌</span>
+                      <span>Inner Lines {showDuadLines ? 'ON' : 'OFF'}</span>
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: showDuadLines ? '#A78BFA' : '#6B7280' }} />
+                    </button>
+                  )}
+                  {derivedAccess.compendium && (
+                    <button
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        showCompendiumLines
+                          ? 'bg-amber-500/10 text-amber-300'
+                          : 'bg-bg-tertiary text-text-muted hover:text-text-secondary'
+                      }`}
+                      onClick={() => setShowCompendiumLines(v => !v)}
+                      aria-label={`Essence lines layer, ${showCompendiumLines ? 'on' : 'off'}`}
+                    >
+                      <span className="text-base">┈</span>
+                      <span>Essence Lines {showCompendiumLines ? 'ON' : 'OFF'}</span>
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: showCompendiumLines ? '#FCD34D' : '#6B7280' }} />
+                    </button>
+                  )}
+                </div>
+                <p className="text-text-muted text-xs mt-1 pl-1">
+                  Core lines are solid. Inner lines (dashed) show the hidden drive beneath each
+                  planet; Essence lines (dotted) show its finest thread. An experimental Align
+                  research layer — line meanings are under active validation.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

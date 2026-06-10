@@ -1,0 +1,130 @@
+{
+  "description": "Immutable cross-platform golden dataset for Duad-Compendium Astrocartography math. Both align-app (jest) and align-web (vitest) must pass every entry within tolerance. Do NOT edit existing entries; add new ones only.",
+  "modelVersions": {
+    "duad": "duad_model_v1",
+    "compendium": "compendium_model_v1",
+    "coordinates": "zero_ecliptic_latitude_model_v1"
+  },
+  "obliquityDeg": 23.4393,
+  "longitudeToleranceDeg": 1e-6,
+  "positions": [
+    {
+      "label": "SPEC GOLDEN EXAMPLE — 27°16′ Scorpio (immutable)",
+      "natalLongitude": 237.26666666666668,
+      "natalSign": "Scorpio",
+      "duadLongitude": 177.2,
+      "duadSign": "Virgo",
+      "duadDegreesMinutes": "27°12′",
+      "compendiumLongitude": 116.4,
+      "compendiumSign": "Cancer",
+      "compendiumDegreesMinutes": "26°24′"
+    },
+    {
+      "label": "0° Aries — zero fixed point",
+      "natalLongitude": 0,
+      "natalSign": "Aries",
+      "duadLongitude": 0,
+      "duadSign": "Aries",
+      "compendiumLongitude": 0,
+      "compendiumSign": "Aries"
+    },
+    {
+      "label": "Exactly on first duad boundary — 2.5° Aries",
+      "natalLongitude": 2.5,
+      "natalSign": "Aries",
+      "duadLongitude": 30,
+      "duadSign": "Taurus",
+      "compendiumLongitude": 30,
+      "compendiumSign": "Taurus"
+    },
+    {
+      "label": "Immediately below first duad boundary — 2.4999999° Aries",
+      "natalLongitude": 2.4999999,
+      "natalSign": "Aries",
+      "duadLongitude": 29.9999988,
+      "duadSign": "Aries",
+      "compendiumLongitude": 359.9999856,
+      "compendiumSign": "Pisces"
+    },
+    {
+      "label": "5° Aries — second duad boundary",
+      "natalLongitude": 5,
+      "natalSign": "Aries",
+      "duadLongitude": 60,
+      "duadSign": "Gemini",
+      "compendiumLongitude": 60,
+      "compendiumSign": "Gemini"
+    },
+    {
+      "label": "27.5° Aries — last duad boundary",
+      "natalLongitude": 27.5,
+      "natalSign": "Aries",
+      "duadLongitude": 330,
+      "duadSign": "Pisces",
+      "compendiumLongitude": 330,
+      "compendiumSign": "Pisces"
+    },
+    {
+      "label": "29.999999° Aries — just below sign end",
+      "natalLongitude": 29.999999,
+      "natalSign": "Aries",
+      "duadLongitude": 359.999988,
+      "duadSign": "Pisces",
+      "compendiumLongitude": 329.999856,
+      "compendiumSign": "Aquarius"
+    },
+    {
+      "label": "Pisces-to-Aries wraparound — 29.9° Pisces",
+      "natalLongitude": 359.9,
+      "natalSign": "Pisces",
+      "duadLongitude": 328.8,
+      "duadSign": "Aquarius",
+      "compendiumLongitude": 285.6,
+      "compendiumSign": "Capricorn"
+    },
+    {
+      "label": "15° Taurus — mid-sign duad boundary case",
+      "natalLongitude": 45,
+      "natalSign": "Taurus",
+      "duadLongitude": 210,
+      "duadSign": "Scorpio",
+      "compendiumLongitude": 210,
+      "compendiumSign": "Scorpio"
+    },
+    {
+      "label": "High-precision decimal — 3.456° Leo",
+      "natalLongitude": 123.456,
+      "natalSign": "Leo",
+      "duadLongitude": 161.472,
+      "duadSign": "Virgo",
+      "compendiumLongitude": 287.664,
+      "compendiumSign": "Capricorn"
+    }
+  ],
+  "equatorial": [
+    {
+      "label": "λ = 0° (vernal point)",
+      "longitude": 0,
+      "rightAscension": 0,
+      "declination": 0
+    },
+    {
+      "label": "λ = 90° (summer solstice point) — δ = +ε",
+      "longitude": 90,
+      "rightAscension": 90,
+      "declination": 23.4393
+    },
+    {
+      "label": "λ = 180° (autumnal point)",
+      "longitude": 180,
+      "rightAscension": 180,
+      "declination": 0
+    },
+    {
+      "label": "λ = 270° (winter solstice point) — δ = −ε",
+      "longitude": 270,
+      "rightAscension": 270,
+      "declination": -23.4393
+    }
+  ]
+}
