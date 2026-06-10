@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft } from 'lucide-react';
+import { Star, Sparkles, RotateCcw, Eye, Check, Copy, ArrowLeft, Volume2, Square } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
@@ -12,6 +12,19 @@ import { drawCards as drawLocalCards, type DrawnCard } from '@/lib/tarotDeck';
 import ReactMarkdown from 'react-markdown';
 import ShareButton from '@/components/ui/ShareButton';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { TarotOracle } from '@/components/TarotOracle';
+import {
+  voiceService,
+  setVoiceAuthToken,
+  prepareSpeechText,
+  DEFAULT_VOICE,
+  type TTSVoice,
+  type TTSProvider,
+} from '@/lib/voiceService';
+
+// Flip to 'elevenlabs' to A/B the premium ElevenLabs voice. The backend
+// falls back to OpenAI automatically if ELEVENLABS_API_KEY is not set.
+const TAROT_TTS_PROVIDER: TTSProvider = 'openai';
 
 type SpreadType = 'single' | 'three_card' | 'celtic_cross' | 'relationship' | 'career';
 
@@ -298,7 +311,7 @@ function RevealedCard({ card }: { card: DrawnCard }) {
 
 export default function TarotPage() {
   const { t } = useTranslation();
-  const { profile } = useAuthStore();
+  const { profile, session } = useAuthStore();
   const { hasAccess } = useSubscriptionStore();
   const { houseSystem } = useAstrologySettings();
   const [spreadType, setSpreadType] = useState<SpreadType>('three_card');
@@ -312,11 +325,52 @@ export default function TarotPage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [showAi, setShowAi] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState<TTSVoice>(DEFAULT_VOICE);
 
   // Chart data for AI readings
   const [natalData, setNatalData] = useState<any>(null);
   const [progressedData, setProgressedData] = useState<any>(null);
   const aiTextRef = useRef('');
+
+  // Voice: load saved preference (shared with AI Astrologer), keep auth token
+  // in sync, and stop any audio when leaving the page.
+  useEffect(() => {
+    setSelectedVoice(voiceService.getSavedVoice());
+    return () => {
+      voiceService.stopPlayback();
+    };
+  }, []);
+
+  useEffect(() => {
+    setVoiceAuthToken(session?.access_token || null);
+  }, [session?.access_token]);
+
+  const stopSpeaking = useCallback(async () => {
+    await voiceService.stopPlayback();
+    setIsSpeaking(false);
+  }, []);
+
+  const handleListen = useCallback(async () => {
+    if (isSpeaking) {
+      await stopSpeaking();
+      return;
+    }
+    if (!aiTextRef.current) return;
+    try {
+      setIsSpeaking(true);
+      await voiceService.speak(
+        prepareSpeechText(aiTextRef.current),
+        selectedVoice,
+        undefined,
+        TAROT_TTS_PROVIDER,
+      );
+    } catch (err) {
+      console.error('[Tarot] TTS error:', err);
+    } finally {
+      setIsSpeaking(false);
+    }
+  }, [isSpeaking, selectedVoice, stopSpeaking]);
 
   const selectedSpread = SPREAD_OPTIONS.find((s) => s.key === spreadType)!;
   const positionLabelKeys = getPositionLabelKeys(spreadType);
@@ -376,6 +430,7 @@ export default function TarotPage() {
 
   const requestAI = useCallback(async () => {
     if (!result) return;
+    await stopSpeaking();
     setAiLoading(true);
     setShowAi(true);
     setAiText('');
@@ -410,9 +465,10 @@ export default function TarotPage() {
       setAiLoading(false);
       setError(err.message || t('readings.tarotPage.failedToGenerate'));
     }
-  }, [result, profile, natalData, progressedData, houseSystem]);
+  }, [result, profile, natalData, progressedData, houseSystem, stopSpeaking]);
 
   function resetReading() {
+    stopSpeaking();
     setResult(null);
     setRevealed(new Set());
     setAllRevealed(false);
@@ -547,6 +603,7 @@ export default function TarotPage() {
           {showAi && (
             <div className="card overflow-hidden p-0">
               <div className="bg-gradient-to-b from-accent-primary/10 to-accent-primary/[0.02] p-6 rounded-xl">
+                <TarotOracle isSpeaking={isSpeaking} />
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm font-medium text-accent-primary flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
@@ -568,6 +625,18 @@ export default function TarotPage() {
                 )}
                 {aiLoading && (
                   <span className="text-accent-primary text-base animate-pulse">{'█'}</span>
+                )}
+                {aiText && !aiLoading && (
+                  <button
+                    onClick={handleListen}
+                    className="mt-4 w-full py-3 rounded-xl bg-[#2D1B69] border border-accent-primary/30 text-white font-medium text-sm hover:bg-[#3A2580] transition-colors flex items-center justify-center gap-2"
+                  >
+                    {isSpeaking ? (
+                      <><Square className="w-4 h-4" /> {t('readings.tarotPage.stopListening')}</>
+                    ) : (
+                      <><Volume2 className="w-4 h-4" /> {t('readings.tarotPage.listenToReading')}</>
+                    )}
+                  </button>
                 )}
                 {aiText && !aiLoading && (
                   <button

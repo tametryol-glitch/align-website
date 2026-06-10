@@ -14,6 +14,8 @@
 
 export type TTSVoice = 'alloy' | 'ash' | 'ballad' | 'coral' | 'echo' | 'fable' | 'nova' | 'onyx' | 'sage' | 'shimmer';
 
+export type TTSProvider = 'openai' | 'elevenlabs';
+
 export interface VoiceOption {
   id: TTSVoice;
   name: string;
@@ -156,8 +158,8 @@ class VoiceService {
   /**
    * Convert text to speech via backend. Returns a blob URL for playback.
    */
-  private async textToSpeech(text: string, voice: TTSVoice = DEFAULT_VOICE): Promise<string> {
-    const result = await apiRequest('/ai/tts', { text, voice, model: 'tts-1' });
+  private async textToSpeech(text: string, voice: TTSVoice = DEFAULT_VOICE, provider: TTSProvider = 'openai'): Promise<string> {
+    const result = await apiRequest('/ai/tts', { text, voice, model: 'tts-1', provider });
     const audioBase64 = result.audio_base64;
     if (!audioBase64 || typeof audioBase64 !== 'string') {
       throw new Error('TTS returned invalid audio data');
@@ -260,7 +262,7 @@ class VoiceService {
    * Speak text aloud with chunked streaming.
    * First chunk plays immediately while rest are fetched in parallel.
    */
-  async speak(text: string, voice: TTSVoice = DEFAULT_VOICE, onEnd?: () => void): Promise<void> {
+  async speak(text: string, voice: TTSVoice = DEFAULT_VOICE, onEnd?: () => void, provider: TTSProvider = 'openai'): Promise<void> {
     await this.stopPlayback();
 
     this.stopRequested = false;
@@ -271,7 +273,7 @@ class VoiceService {
     const chunks = this.splitIntoChunks(text);
 
     // Fetch and play first chunk immediately
-    const firstBlobUrl = await this.textToSpeech(chunks[0], voice);
+    const firstBlobUrl = await this.textToSpeech(chunks[0], voice, provider);
     if (this.stopRequested) {
       URL.revokeObjectURL(firstBlobUrl);
       return;
@@ -285,7 +287,7 @@ class VoiceService {
       for (const chunk of chunks.slice(1)) {
         if (this.stopRequested) break;
         try {
-          const blobUrl = await this.textToSpeech(chunk, voice);
+          const blobUrl = await this.textToSpeech(chunk, voice, provider);
           if (!this.stopRequested) {
             this.audioQueue.push(blobUrl);
             if (!this.isProcessingQueue) this.processQueue();
