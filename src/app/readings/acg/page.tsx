@@ -13,6 +13,7 @@ import { getPlanetGlyph } from '@/lib/utils';
 import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
 import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
 import { getDerivedAcgAccess } from '@/config/featureFlags';
+import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -408,6 +409,38 @@ function selectTop20(cityScores: CityScore[]): CityScore[] {
 
 // ─── Relocation Reading Generator ──────────────────────────────────────────
 
+// ─── Reading display helpers ─────────────────────────────────────────────────
+
+/** 1° of arc ≈ 111.32 km on a great circle. Distances are shown in
+ *  human units; raw degrees stay internal. */
+function formatLineDistance(deg: number): string {
+  const km = deg * 111.32;
+  const mi = km * 0.621371;
+  const roundTo = (v: number) => (v >= 100 ? Math.round(v / 10) * 10 : Math.max(1, Math.round(v)));
+  return `~${roundTo(km)} km / ${roundTo(mi)} mi`;
+}
+
+/** Jargon-free channel names — the technical ASC/DSC/MC/IC codes stay out
+ *  of user-facing copy. */
+const LINE_CHANNEL_NAME: Record<LineType, string> = {
+  ASC: 'identity line',
+  DSC: 'relationship line',
+  MC: 'career line',
+  IC: 'home line',
+};
+
+/** How the deeper layer expresses through each channel (weave closers). */
+const LINE_CHANNEL_APPLICATION: Record<LineType, string> = {
+  ASC: 'that is what people sense in you the moment you arrive',
+  DSC: 'that is what you instinctively look for in the people you meet here',
+  MC: 'that is the engine behind the reputation you build here',
+  IC: 'that is what a home in this place quietly feeds',
+};
+
+function lcFirst(s: string): string {
+  return s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+}
+
 const PLANET_RELOCATION_THEMES: Record<string, Record<string, string>> = {
   Sun: {
     ASC: 'You shine here. Your identity comes alive, people notice you, and you feel more confident and visible. This is a place where you become more fully yourself.',
@@ -426,6 +459,12 @@ const PLANET_RELOCATION_THEMES: Record<string, Record<string, string>> = {
     DSC: 'Love finds you here. Relationships are harmonious, partnerships are profitable, and you attract people who appreciate beauty and value.',
     MC: 'Creative success and a beautiful public image await here. Careers in art, fashion, beauty, diplomacy, or luxury thrive.',
     IC: 'Your home life becomes more beautiful and harmonious here. You create a stunning living space and enjoy domestic pleasures.',
+  },
+  Mercury: {
+    ASC: 'Your mind sharpens here. Words come faster, curiosity expands, and people experience you as quick, articulate, and engaging. A natural place for learning and connecting.',
+    DSC: 'You attract talkers, thinkers, and dealmakers here. Relationships are built on conversation and ideas. Excellent for finding collaborators, agents, and intellectual partners.',
+    MC: 'Your voice becomes your career asset here. Writing, speaking, teaching, media, trade, and negotiation thrive. You become known for what you say and how clearly you say it.',
+    IC: 'Home life fills with books, conversation, and movement here. A great base for studying or writing, though the mind may struggle to fully switch off.',
   },
   Mars: {
     ASC: 'You feel energized, motivated, and action-oriented here. Physical vitality is high. You become more assertive and competitive.',
@@ -465,11 +504,19 @@ const PLANET_RELOCATION_THEMES: Record<string, Record<string, string>> = {
   },
 };
 
+const WATCH_TEXT: Record<string, string> = {
+  Saturn: 'This can bring added responsibility, delays, or a sense of heaviness. Structure is required here — things do not come easily, but they last.',
+  Pluto: 'Intensity and power dynamics may surface. Relationships and career situations can feel high-stakes. Transformation is the theme.',
+  Mars: 'Conflict, impatience, or accidents may increase. Channel this energy into productive action and physical activity.',
+};
+
 function generateLocalRelocationReading(
   city: CityData,
   lines: ACGLine[],
   firstName: string,
   paranLns: ParanLine[],
+  natalPlanets: Array<{ name: string; longitude: number }> = [],
+  includeDeepLayers: boolean = false,
 ): string {
   const lineDistances = lines.map(line => ({
     planet: line.planet,
@@ -480,38 +527,63 @@ function generateLocalRelocationReading(
   const closestLines = lineDistances.slice(0, 6);
   const veryClose = closestLines.filter(l => l.distance < 8);
   const dominantPlanet = closestLines[0]?.planet || 'Jupiter';
-  const dominantLine = closestLines[0]?.lineType || 'MC';
+  const dominantLine = (closestLines[0]?.lineType || 'MC') as LineType;
 
   const bestFor = getBestForTags(closestLines);
   const nearbyParans = paranLns.filter(p => Math.abs(p.latitude - city.lat) <= 3);
 
+  // The deeper weave: each planet's hidden drive and finest thread, written
+  // without technical vocabulary. Used for the closest few lines only.
+  const deepWeave = (planet: string, lineType: LineType): string => {
+    if (!includeDeepLayers) return '';
+    const natal = natalPlanets.find(p => p.name === planet);
+    if (!natal || !Number.isFinite(natal.longitude)) return '';
+    try {
+      const dc = getFullDuadCompendium(natal.longitude);
+      if (!dc.hiddenTheme || !dc.deepestTheme) return '';
+      return ` But your ${planet} doesn't run on its surface alone — beneath it works ${lcFirst(dc.hiddenTheme)}. And at its finest thread lives ${lcFirst(dc.deepestTheme)}. In ${city.name}, ${LINE_CHANNEL_APPLICATION[lineType]}.`;
+    } catch {
+      return ''; // the deeper layer must never break the base reading
+    }
+  };
+
   let reading = `## ${city.name} - Your Cosmic Blueprint\n\n`;
   reading += `${firstName}, ${city.name} sits at a powerful intersection of your planetary lines. `;
-  reading += `Your **${dominantPlanet} ${dominantLine}** line runs closest to this city (${closestLines[0]?.distance.toFixed(1)}° away), `;
+  reading += `Your **${dominantPlanet} ${LINE_CHANNEL_NAME[dominantLine]}** runs closest to this city (${formatLineDistance(closestLines[0]?.distance ?? 0)} away), `;
   reading += `making ${PLANET_MEANINGS[dominantPlanet] || dominantPlanet.toLowerCase() + ' energy'} the dominant influence here.\n\n`;
 
   reading += `### What Thrives Here\n\n`;
-  for (const l of veryClose.slice(0, 4)) {
+  const thrivesShown = veryClose.slice(0, 4);
+  let weavesUsed = 0;
+  for (const l of thrivesShown) {
     const theme = PLANET_RELOCATION_THEMES[l.planet]?.[l.lineType] || `${l.planet} ${l.lineType} energy activates this area of your life.`;
-    reading += `- **${getPlanetGlyph(l.planet) || ''} ${l.planet} ${l.lineType}** (${l.distance.toFixed(1)}° away): ${theme}\n\n`;
+    // The deeper layer is woven into the closest two lines only, so the
+    // reading gains depth without losing scannability.
+    const weave = weavesUsed < 2 ? deepWeave(l.planet, l.lineType) : '';
+    if (weave) weavesUsed++;
+    // A challenging line shown here carries its caution inline instead of
+    // being repeated in the next section.
+    const watch = WATCH_TEXT[l.planet] && CHALLENGING_LINES[l.planet]?.includes(l.lineType)
+      ? ` **Watch for:** ${WATCH_TEXT[l.planet]}`
+      : '';
+    reading += `- **${getPlanetGlyph(l.planet) || ''} Your ${l.planet} ${LINE_CHANNEL_NAME[l.lineType]}** (${formatLineDistance(l.distance)} away): ${theme}${weave}${watch}\n\n`;
   }
-  if (veryClose.length === 0) {
+  if (thrivesShown.length === 0) {
     reading += `- No planetary lines pass extremely close, but the combined influence of ${closestLines.slice(0, 3).map(l => l.planet).join(', ')} creates a ${closestLines[0]?.distance < 15 ? 'moderate' : 'subtle'} energetic field.\n\n`;
   }
 
-  reading += `### What to Watch For\n\n`;
+  // Only challenging lines NOT already covered above appear here.
   const challengingNearby = closestLines.filter(l =>
-    (l.planet === 'Saturn' || l.planet === 'Pluto' || l.planet === 'Mars') && l.distance < 15
+    (l.planet === 'Saturn' || l.planet === 'Pluto' || l.planet === 'Mars') && l.distance < 15 &&
+    !thrivesShown.some(t => t.planet === l.planet && t.lineType === l.lineType)
   );
   if (challengingNearby.length > 0) {
+    reading += `### What to Watch For\n\n`;
     for (const l of challengingNearby.slice(0, 2)) {
-      reading += `- **${l.planet} ${l.lineType}** (${l.distance.toFixed(1)}°): ${
-        l.planet === 'Saturn' ? 'This can bring added responsibility, delays, or a sense of heaviness. Structure is required here — things do not come easily, but they last.' :
-        l.planet === 'Pluto' ? 'Intensity and power dynamics may surface. Relationships and career situations can feel high-stakes. Transformation is the theme.' :
-        'Conflict, impatience, or accidents may increase. Channel this energy into productive action and physical activity.'
-      }\n\n`;
+      reading += `- **Your ${l.planet} ${LINE_CHANNEL_NAME[l.lineType]}** (${formatLineDistance(l.distance)}): ${WATCH_TEXT[l.planet]}\n\n`;
     }
-  } else {
+  } else if (!thrivesShown.some(t => WATCH_TEXT[t.planet] && CHALLENGING_LINES[t.planet]?.includes(t.lineType))) {
+    reading += `### What to Watch For\n\n`;
     reading += `- This location has relatively few challenging planetary influences. The main thing to watch for is becoming complacent — easy energy can breed laziness if not directed purposefully.\n\n`;
   }
 
@@ -535,7 +607,6 @@ function generateLocalRelocationReading(
   reading += `### Geographic Energy Profile\n\n`;
   const hemisphere = city.lat >= 0 ? 'Northern' : 'Southern';
   reading += `${city.name} sits at ${Math.abs(city.lat).toFixed(1)}°${city.lat >= 0 ? 'N' : 'S'}, ${Math.abs(city.lon).toFixed(1)}°${city.lon >= 0 ? 'E' : 'W'} in the ${hemisphere} Hemisphere. `;
-  reading += `At this latitude, your ${closestLines[0]?.planet || 'planetary'} line passes ${closestLines[0]?.distance < 5 ? 'directly through' : closestLines[0]?.distance < 10 ? 'very near' : closestLines[0]?.distance < 20 ? 'within range of' : 'at a distance from'} this city. `;
   if (closestLines.length >= 2) {
     const p2 = closestLines[1]?.planet;
     const secondaryDesc =
@@ -550,7 +621,7 @@ function generateLocalRelocationReading(
       p2 === 'Uranus' ? 'innovation and change' :
       p2 === 'Mercury' ? 'communication and commerce' :
       'unique energy';
-    reading += `The secondary influence comes from your ${p2} ${closestLines[1]?.lineType} line (${closestLines[1]?.distance.toFixed(1)}° away), adding a layer of ${secondaryDesc} to your experience here.\n\n`;
+    reading += `The secondary influence comes from your ${p2} ${LINE_CHANNEL_NAME[closestLines[1]?.lineType as LineType] || 'line'} (${formatLineDistance(closestLines[1]?.distance ?? 0)} away), adding a layer of ${secondaryDesc} to your experience here.\n\n`;
   }
 
   reading += `### Your ${city.name} Story\n\n`;
@@ -641,6 +712,7 @@ function generateMapHTML(
 
   return `<!DOCTYPE html>
 <html><head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
@@ -912,9 +984,12 @@ export default function ACGPage() {
     setReadingText('');
 
     // Auto-generate reading
-    const reading = generateLocalRelocationReading(city, acgLines, firstName, paranLines);
+    const reading = generateLocalRelocationReading(
+      city, acgLines, firstName, paranLines,
+      chartPlanets, derivedAccess.anyEnabled,
+    );
     setReadingText(reading);
-  }, [acgLines, firstName, paranLines]);
+  }, [acgLines, firstName, paranLines, chartPlanets, derivedAccess.anyEnabled]);
 
   const togglePlanet = useCallback((planet: string) => {
     setEnabledPlanets(prev => ({ ...prev, [planet]: !prev[planet] }));
@@ -947,9 +1022,12 @@ export default function ACGPage() {
 
   const openBestCityReading = useCallback((cs: CityScore) => {
     setExpandedBest(cs);
-    const reading = generateLocalRelocationReading(cs.city, acgLines, firstName, paranLines);
+    const reading = generateLocalRelocationReading(
+      cs.city, acgLines, firstName, paranLines,
+      chartPlanets, derivedAccess.anyEnabled,
+    );
     setExpandedReadingText(reading);
-  }, [acgLines, firstName, paranLines]);
+  }, [acgLines, firstName, paranLines, chartPlanets, derivedAccess.anyEnabled]);
 
   // ─── Map HTML ──────────────────────────────────────────────────────────────
 
