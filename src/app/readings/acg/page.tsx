@@ -11,7 +11,7 @@ import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { getPlanetGlyph } from '@/lib/utils';
 import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
-import { isDestinationCity } from '@/data/destinationCities';
+import { isDestinationCity, isIconicCity } from '@/data/destinationCities';
 import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
 import { getDerivedAcgAccess } from '@/config/featureFlags';
 import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
@@ -396,6 +396,7 @@ function selectTop20(cityScores: CityScore[]): CityScore[] {
         result.push(cs);
         regionCounts[reg] = (regionCounts[reg] || 0) + 1;
       }
+      // (final display order applied after selection — see sort below)
     }
     if (result.length < 20) {
       const included2 = new Set(result.map(r => `${r.city.name}-${r.city.country}`));
@@ -410,7 +411,15 @@ function selectTop20(cityScores: CityScore[]): CityScore[] {
   }
 
   result.sort((a, b) => b.score - a.score);
-  return result.slice(0, 20);
+  // Display order: best astrology first; among equal scores, world-icon
+  // cities float to the top (popularity never changes the score itself).
+  return result
+    .slice(0, 20)
+    .sort((a, b) =>
+      (b.score - a.score) ||
+      (Number(isIconicCity(b.city)) - Number(isIconicCity(a.city))) ||
+      a.city.name.localeCompare(b.city.name),
+    );
 }
 
 // ─── Relocation Reading Generator ──────────────────────────────────────────

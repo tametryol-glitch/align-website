@@ -162,3 +162,23 @@ export const DESTINATION_CITY_KEYS: Set<string> = new Set(
 export function isDestinationCity(city: { name: string; country: string }): boolean {
   return DESTINATION_CITY_KEYS.has(`${city.name.toLowerCase()}|${city.country.toLowerCase()}`);
 }
+
+/**
+ * World-icon cities — used ONLY as a tie-breaker when Best-20 scores are
+ * equal, so the most aspirational names float to the top of the list.
+ * Never affects the astrology score itself.
+ */
+const ICONIC_CITY_NAMES = new Set([
+  'paris', 'london', 'new york city', 'tokyo', 'rome', 'barcelona', 'sydney',
+  'dubai', 'singapore', 'hong kong', 'los angeles', 'san francisco', 'miami',
+  'amsterdam', 'berlin', 'vienna', 'prague', 'lisbon', 'istanbul', 'bangkok',
+  'denpasar', 'kyoto', 'seoul', 'cape town', 'rio de janeiro', 'buenos aires',
+  'mexico city', 'toronto', 'vancouver', 'new orleans', 'las vegas',
+  'honolulu', 'athens', 'florence', 'venice', 'madrid', 'dublin', 'edinburgh',
+  'marrakech', 'cairo', 'tel aviv', 'stockholm', 'copenhagen', 'reykjavik',
+  'queenstown', 'melbourne', 'auckland', 'tulum', 'santorini', 'nice',
+]);
+
+export function isIconicCity(city: { name: string }): boolean {
+  return ICONIC_CITY_NAMES.has(city.name.toLowerCase());
+}
