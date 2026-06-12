@@ -75,7 +75,11 @@ export default function WorldEchoScannerPage() {
   const { t } = useTranslation();
   const [preset, setPreset] = useState<Preset>('today');
   const [customDate, setCustomDate] = useState(formatISODate(new Date()));
-  const [scanType, setScanType] = useState<'global' | 'personal'>('global');
+  // Scan type is always 'global' — the backend validates scan_type
+  // against ^(global|country|city|category)$ and Personal Echo is a
+  // deferred product (see world-echo-integration-roadmap.md). A
+  // "Personal" dropdown option here previously produced a 422.
+  const scanType = 'global';
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -196,14 +200,6 @@ export default function WorldEchoScannerPage() {
         </div>
 
         <div className="flex gap-3">
-          <select
-            value={scanType}
-            onChange={(e) => setScanType(e.target.value as 'global' | 'personal')}
-            className="input w-32"
-          >
-            <option value="global">Global</option>
-            <option value="personal">Personal</option>
-          </select>
           <button onClick={scan} disabled={loading} className="btn-primary flex-1 flex items-center justify-center gap-2">
             <Search className="w-4 h-4" /> Scan {formatDate(scanDate)}
           </button>
