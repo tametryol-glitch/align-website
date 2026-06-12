@@ -1,0 +1,193 @@
+-- Seed the 10 initial blog posts into the blog_posts table
+-- Run this in Supabase SQL Editor AFTER running supabase-migration-blog.sql
+
+INSERT INTO blog_posts (slug, title, description, category, content, keywords, faqs, read_time, is_published, published_at) VALUES
+
+('what-is-a-natal-chart',
+ 'What Is a Natal Chart? Your Complete Beginner''s Guide',
+ 'Learn what a natal chart (birth chart) is, how to read one, and why it matters. Understand planets, houses, signs, and aspects in plain language.',
+ 'Fundamentals',
+ ARRAY[
+   'A natal chart — also called a birth chart — is a snapshot of the sky at the exact moment you were born. It maps the positions of the Sun, Moon, and planets across the twelve zodiac signs and twelve houses. Think of it as your cosmic fingerprint: no two charts are identical unless two people are born at the exact same time and place.',
+   'Your chart contains three key layers. First, the planets represent different drives and energies — the Sun is your core identity, the Moon is your emotional nature, Mercury is how you think and communicate, Venus is how you love, and Mars is how you take action. Each of the ten classical planets (plus modern additions like Chiron, Juno, and Vesta) tells a different part of your story.',
+   'Second, the zodiac signs color how each planet expresses itself. Your Sun might be in Aries (bold, pioneering) while your Moon is in Pisces (intuitive, empathic). The sign a planet falls in describes the style and flavor of that planetary energy.',
+   'Third, the houses represent the areas of life where these energies play out. The 1st house is your identity and appearance, the 7th house is partnerships, the 10th house is career and public reputation. When a planet sits in a particular house, it brings its energy to that life domain.',
+   'Aspects are the geometric angles between planets. A conjunction (0°) blends energies, a trine (120°) creates flow, a square (90°) generates tension that drives growth, and an opposition (180°) creates polarity that demands balance.',
+   'To generate your natal chart, you need three pieces of information: your date of birth, your time of birth (as exact as possible), and your place of birth. The time determines your Rising sign (Ascendant) and house placements, which is why it matters so much.',
+   'Your Rising sign — the zodiac sign that was on the eastern horizon when you were born — sets the entire framework of your chart. It determines which sign rules each house and is often considered just as important as your Sun sign.',
+   'Modern astrology apps like Align use the Swiss Ephemeris, the gold standard for astronomical calculations, to compute your chart with arc-second precision. This means your chart is astronomically accurate, not a rough estimate.',
+   'Understanding your natal chart is a journey, not a destination. Start with your Big Three (Sun, Moon, Rising), then explore your Venus and Mars placements, and gradually work outward to the outer planets and asteroids. Each layer adds depth to your self-understanding.'
+ ],
+ ARRAY['natal chart', 'birth chart', 'what is a natal chart', 'how to read birth chart', 'astrology basics', 'astrology for beginners'],
+ '[{"question":"What do I need to get my natal chart?","answer":"You need your date of birth, exact time of birth, and place of birth. The time determines your Rising sign and house placements."},{"question":"Is a natal chart the same as a horoscope?","answer":"No. A horoscope is a general forecast based on your Sun sign. A natal chart is a precise map of the sky at your birth, unique to you."},{"question":"Can two people have the same natal chart?","answer":"Only if born at the exact same time and place. Even twins born minutes apart can have different Rising signs and house cusps."},{"question":"What is the Big Three in astrology?","answer":"Your Big Three is your Sun sign (identity), Moon sign (emotions), and Rising sign (how others perceive you). These three form the core of your chart."}]'::jsonb,
+ '8 min read', true, '2026-01-15T00:00:00Z'),
+
+('zodiac-compatibility-guide',
+ 'Zodiac Compatibility: The Complete Guide to Love Matches',
+ 'Which zodiac signs are most compatible? Explore every element pairing, the best and most challenging matches, and what makes relationships work in astrology.',
+ 'Relationships',
+ ARRAY[
+   'Zodiac compatibility is one of the most searched topics in astrology — and for good reason. Understanding how your sign interacts with another can illuminate relationship dynamics, communication styles, and potential growth edges.',
+   'At its foundation, compatibility starts with the four elements: Fire (Aries, Leo, Sagittarius), Earth (Taurus, Virgo, Capricorn), Air (Gemini, Libra, Aquarius), and Water (Cancer, Scorpio, Pisces). Same-element pairings share a natural understanding, while complementary elements (Fire-Air, Earth-Water) tend to energize each other.',
+   'Fire and Air signs fuel each other — Fire provides passion and initiative while Air supplies ideas and perspective. Earth and Water signs nourish each other — Earth provides stability while Water brings emotional depth. These are the natural alliances of the zodiac.',
+   'The most challenging pairings tend to be between elements that don''t naturally mix: Fire and Water can create steam (intense but volatile), while Earth and Air can feel like they''re speaking different languages. However, challenging aspects often produce the most growth.',
+   'Beyond elements, modality matters. Cardinal signs (Aries, Cancer, Libra, Capricorn) are initiators, Fixed signs (Taurus, Leo, Scorpio, Aquarius) are sustainers, and Mutable signs (Gemini, Virgo, Sagittarius, Pisces) are adapters.',
+   'Sun sign compatibility is just the surface. For a complete picture, astrologers compare the full natal charts of both people — a practice called synastry. Venus signs reveal love languages, Mars signs show desire and conflict styles, and Moon signs expose emotional needs.',
+   'Composite charts go even deeper, creating a single chart that represents the relationship itself as its own entity. This can reveal the purpose and trajectory of the partnership.',
+   'The most compatible signs aren''t always the easiest. Some of the most powerful relationships arise from challenging aspects because they push both people to grow.',
+   'Explore all 78 sign pairings on Align to find detailed compatibility analysis for any combination, including emotional, intellectual, physical, and spiritual dimensions.'
+ ],
+ ARRAY['zodiac compatibility', 'zodiac love match', 'astrology compatibility', 'best zodiac matches', 'compatible zodiac signs', 'sign compatibility chart'],
+ '[{"question":"Which zodiac signs are most compatible?","answer":"Same-element pairings (Fire-Fire, Earth-Earth, Air-Air, Water-Water) and complementary elements (Fire-Air, Earth-Water) tend to be most naturally compatible."},{"question":"Can incompatible zodiac signs have good relationships?","answer":"Absolutely. Challenging aspects often drive the most growth. Awareness of differences helps partners navigate them consciously."},{"question":"Is Sun sign compatibility accurate?","answer":"Sun signs provide a useful starting point, but full synastry (comparing complete birth charts) gives a much more accurate picture of compatibility."},{"question":"What is synastry in astrology?","answer":"Synastry is the comparison of two natal charts to analyze relationship compatibility. It examines how each person''s planets interact with the other''s."}]'::jsonb,
+ '10 min read', true, '2026-02-01T00:00:00Z'),
+
+('mercury-retrograde-survival-guide',
+ 'Mercury Retrograde Survival Guide: What It Really Means',
+ 'Mercury retrograde explained: what it is, when it happens, how it actually affects you, and practical tips to navigate it without fear.',
+ 'Transits',
+ ARRAY[
+   'Mercury retrograde is the most talked-about astrological event — and the most misunderstood. Three to four times a year, Mercury appears to move backward in the sky from our perspective on Earth.',
+   'In astrology, Mercury governs communication, technology, travel, contracts, and mental processes. When it stations retrograde, these areas can experience disruptions.',
+   'But here''s what the fear-based astrology accounts won''t tell you: Mercury retrograde is not inherently bad. It''s a period designed for reflection, review, and revision.',
+   'Each retrograde occurs in a specific zodiac sign, coloring its effects. Mercury retrograde in a fire sign may disrupt creative projects. In an earth sign, it might affect finances.',
+   'Practical tips: back up your devices before it begins, double-check all travel itineraries, read contracts carefully, allow extra time for commutes.',
+   'The pre-retrograde shadow (about two weeks before) and post-retrograde shadow (about two weeks after) are transitional periods.',
+   'Mercury retrograde gets a bad reputation because it''s the transit most people notice. But every planet retrogrades (except the Sun and Moon).',
+   'The best approach to Mercury retrograde is informed awareness, not paralysis.'
+ ],
+ ARRAY['mercury retrograde', 'mercury retrograde 2026', 'what is mercury retrograde', 'mercury retrograde meaning', 'mercury retrograde survival'],
+ '[{"question":"How often does Mercury go retrograde?","answer":"Mercury retrogrades 3-4 times per year, lasting about three weeks each time."},{"question":"Should I avoid signing contracts during Mercury retrograde?","answer":"Review contracts more carefully during retrograde. If you must sign, read every detail and build in flexibility."},{"question":"Does Mercury retrograde affect everyone the same way?","answer":"No. It affects you most strongly if Mercury is prominent in your natal chart."},{"question":"What is the Mercury retrograde shadow period?","answer":"The shadow period spans about two weeks before and after the retrograde itself."}]'::jsonb,
+ '7 min read', true, '2026-02-15T00:00:00Z'),
+
+('moon-sign-meaning',
+ 'Your Moon Sign: The Hidden Key to Your Emotional World',
+ 'What is your Moon sign and why does it matter more than you think? Discover how your Moon sign shapes emotions, instincts, relationships, and inner life.',
+ 'Fundamentals',
+ ARRAY[
+   'While your Sun sign represents your conscious identity, your Moon sign reveals your emotional core, your instinctual responses, and the needs that must be met for you to feel safe.',
+   'Your Moon sign is determined by the zodiac sign the Moon occupied at the moment of your birth. Because the Moon moves through all twelve signs in about 28 days, even people born a day apart can have different Moon signs.',
+   'An Aries Moon needs independence. A Taurus Moon craves stability. A Gemini Moon processes feelings through conversation. Cancer Moon runs on deep emotional bonds.',
+   'Leo Moon needs to feel seen. Virgo Moon finds comfort in usefulness. Libra Moon requires harmony. Scorpio Moon craves emotional intensity and truth.',
+   'Sagittarius Moon needs freedom. Capricorn Moon finds security through achievement. Aquarius Moon values independence. Pisces Moon absorbs everything.',
+   'In relationships, Moon sign compatibility often matters more than Sun sign compatibility for long-term satisfaction.',
+   'Your Moon sign also shapes your relationship with your mother and reveals childhood emotional patterns.',
+   'To find your Moon sign, you need your exact birth time. Align calculates this with Swiss Ephemeris precision.'
+ ],
+ ARRAY['moon sign', 'moon sign meaning', 'what is my moon sign', 'moon sign astrology', 'lunar sign', 'moon sign compatibility'],
+ '[{"question":"How do I find my Moon sign?","answer":"You need your exact date, time, and place of birth. An astrology app like Align calculates it using the Swiss Ephemeris."},{"question":"Is my Moon sign more important than my Sun sign?","answer":"Neither is more important. Your Sun is your identity, your Moon is your emotional needs. For relationships, Moon compatibility is often more telling."},{"question":"Can my Moon sign change during the day?","answer":"Yes. The Moon spends about 2.5 days in each sign, so exact birth time is essential."},{"question":"What does it mean if my Sun and Moon are in the same sign?","answer":"This creates a double expression of that sign energy. Your inner and outer selves are aligned."}]'::jsonb,
+ '9 min read', true, '2026-03-01T00:00:00Z'),
+
+('rising-sign-ascendant-guide',
+ 'Rising Sign (Ascendant): Your First Impression & Life Path',
+ 'Your Rising sign shapes how others see you and the lens through which you experience life.',
+ 'Fundamentals',
+ ARRAY[
+   'Your Rising sign — also called the Ascendant — is the zodiac sign that was rising on the eastern horizon at the exact moment of your birth.',
+   'If your Sun sign is the actor and your Moon sign is the character''s inner life, your Rising sign is the costume, the lighting, and the stage.',
+   'The Rising sign does more than shape appearances — it sets the entire structure of your natal chart.',
+   'Aries Rising enters rooms with energy. Taurus Rising radiates calm steadiness. Gemini Rising is the eternal conversationalist.',
+   'Libra Rising charms with grace. Scorpio Rising projects intensity. Sagittarius Rising brings expansiveness and humor.',
+   'Your Rising sign also determines your chart ruler — the planet that rules your Ascendant sign.',
+   'Throughout life, your experience of your Rising sign evolves from a mask to a natural expression.',
+   'To discover your Rising sign, you need your birth time accurate to within about 15 minutes.'
+ ],
+ ARRAY['rising sign', 'ascendant', 'what is my rising sign', 'ascendant meaning', 'rising sign astrology'],
+ '[{"question":"How do I find my Rising sign?","answer":"You need your exact birth time (within 15 minutes), date, and place of birth."},{"question":"Why do I relate more to my Rising sign than my Sun sign?","answer":"Your Rising sign governs how you present to the world. In social settings, Rising sign energy is what people see first."},{"question":"Can my Rising sign be the same as my Sun sign?","answer":"Yes. If you were born around sunrise, your Sun and Rising signs will be the same."},{"question":"Does my Rising sign change?","answer":"Your natal Rising sign never changes — it is fixed at birth."}]'::jsonb,
+ '8 min read', true, '2026-03-15T00:00:00Z'),
+
+('venus-sign-love-language',
+ 'Your Venus Sign: How You Love, What You Value, What Attracts You',
+ 'Venus in astrology governs love, beauty, money, and values. Discover what your Venus sign reveals about your romantic style.',
+ 'Planets',
+ ARRAY[
+   'Venus is the planet of love, beauty, pleasure, values, and money. Your Venus sign reveals how you express affection and what you find attractive.',
+   'While your Sun sign is your identity and your Moon sign is your emotional core, Venus is your love language made cosmic.',
+   'Venus in Aries loves the chase. Venus in Taurus is sensual and loyal. Venus in Gemini flirts with wit.',
+   'Venus in Cancer nurtures and protects. Venus in Leo loves grandly. Venus in Virgo shows love through acts of service.',
+   'Venus in Libra is the quintessential romantic. Venus in Scorpio loves with volcanic intensity.',
+   'Venus in Sagittarius needs adventure. Venus in Capricorn takes commitment seriously. Venus in Aquarius values friendship first.',
+   'Venus in Pisces loves unconditionally and idealistically.',
+   'In compatibility, Venus sign pairings often matter more than Sun signs for romantic chemistry.',
+   'Venus also governs your relationship with money and material beauty.'
+ ],
+ ARRAY['venus sign', 'venus in astrology', 'venus sign meaning', 'venus love language', 'venus compatibility'],
+ '[{"question":"What does Venus sign mean in astrology?","answer":"Your Venus sign reveals how you express and receive love, what you find beautiful, and what you value in relationships."},{"question":"Is Venus sign important for compatibility?","answer":"Very. Venus sign compatibility often matters more than Sun signs for romantic chemistry."},{"question":"How is Venus different from Mars in love?","answer":"Venus represents attraction and affection. Mars represents passion and pursuit."},{"question":"Can my Venus sign be different from my Sun sign?","answer":"Yes, but Venus never strays more than two signs away from the Sun."}]'::jsonb,
+ '9 min read', true, '2026-04-01T00:00:00Z'),
+
+('what-are-houses-in-astrology',
+ 'The 12 Houses in Astrology: A Complete Guide to Life Areas',
+ 'What are the 12 houses in astrology? Learn what each house represents — from identity to career to spirituality.',
+ 'Fundamentals',
+ ARRAY[
+   'If the zodiac signs are the "how" and the planets are the "what," the houses are the "where."',
+   'The houses are determined by your Rising sign, which is why birth time is essential.',
+   'The 1st House represents your identity. The 2nd House governs money and self-worth. The 3rd House rules communication.',
+   'The 4th House is your foundation — family and roots. The 5th House governs creativity and romance.',
+   'The 6th House rules daily routines and health. The 7th House represents committed relationships.',
+   'The 8th House governs transformation and shared resources. The 9th House rules higher education and travel.',
+   'The 10th House represents career and public reputation. The 11th House governs friendships and community.',
+   'The 12th House rules the hidden realm — dreams, karma, and spirituality.',
+   'An empty house doesn''t mean that life area is inactive. Houses with multiple planets indicate areas of concentrated focus.',
+   'The sign on each house cusp and the ruling planet''s placement still tell the story.'
+ ],
+ ARRAY['houses in astrology', '12 houses astrology', 'astrological houses', 'what are houses in astrology'],
+ '[{"question":"What does it mean if a house is empty in my chart?","answer":"An empty house means no planet was in that sector at birth. The sign on the cusp and its ruling planet still describe how that life area operates."},{"question":"Which house system should I use?","answer":"Placidus is the most common. Whole Sign is gaining popularity. Both are valid."},{"question":"Why do I need my birth time for houses?","answer":"Houses are calculated from your Rising sign, which changes every two hours."},{"question":"What is a stellium in astrology?","answer":"A stellium is three or more planets concentrated in one house or sign."}]'::jsonb,
+ '10 min read', true, '2026-04-15T00:00:00Z'),
+
+('synastry-chart-reading-guide',
+ 'Synastry Charts: How to Read Relationship Astrology',
+ 'What is a synastry chart and how do you read one? The complete guide to relationship astrology.',
+ 'Relationships',
+ ARRAY[
+   'Synastry is the astrology of relationships. It compares two complete natal charts to reveal intricate dynamics between two people.',
+   'In a synastry chart, an astrologer examines how one person''s planets interact with the other''s.',
+   'The most significant synastry aspects involve personal planets connecting with each other.',
+   'House overlays add another dimension. When someone''s Sun falls in your 7th house, they naturally feel like a partner.',
+   'Not all challenging aspects are bad. Saturn contacts can provide stability and commitment.',
+   'The North Node in synastry reveals karmic connections.',
+   'Composite charts represent the relationship as its own entity.',
+   'The most fulfilling relationships typically show a mix of harmonious and challenging aspects.',
+   'Align''s synastry feature analyzes over 35 key aspects between two charts.'
+ ],
+ ARRAY['synastry chart', 'synastry astrology', 'relationship astrology', 'synastry reading', 'synastry aspects'],
+ '[{"question":"What is a synastry chart?","answer":"A synastry chart compares two natal charts to reveal how two people''s planetary energies interact."},{"question":"What is the difference between synastry and a composite chart?","answer":"Synastry shows how two individuals affect each other. A composite chart represents the relationship itself."},{"question":"What are the most important synastry aspects?","answer":"Sun-Moon, Venus-Mars, and Moon-Moon contacts are the most telling."},{"question":"Can synastry predict if a relationship will work?","answer":"Synastry reveals dynamics and potentials, not outcomes."}]'::jsonb,
+ '9 min read', true, '2026-05-01T00:00:00Z'),
+
+('tarot-and-astrology-connection',
+ 'Tarot & Astrology: How the Two Systems Connect',
+ 'Tarot and astrology are deeply intertwined. Discover the astrological correspondences in tarot cards.',
+ 'Divination',
+ ARRAY[
+   'Tarot and astrology are two of the oldest systems for understanding the human experience, and they''re more connected than most people realize.',
+   'The Major Arcana''s astrological connections begin with The Fool (Uranus), The Magician (Mercury), The High Priestess (the Moon).',
+   'The suits mirror the elements: Wands are Fire, Cups are Water, Swords are Air, Pentacles are Earth.',
+   'Court cards also carry zodiacal assignments.',
+   'Each zodiac sign has a corresponding Major Arcana card: Aries is The Emperor, Taurus is The Hierophant, and so on.',
+   'Using both systems together deepens your readings significantly.',
+   'Astrological timing can also enhance tarot practice. Reading during a New Moon invites intentions.',
+   'Align combines both systems, offering AI-powered tarot readings informed by your natal chart and current transits.'
+ ],
+ ARRAY['tarot astrology', 'tarot zodiac', 'tarot astrology connection', 'tarot signs', 'astrological tarot'],
+ '[{"question":"How are tarot and astrology connected?","answer":"Every Major Arcana card has astrological correspondences, and the four suits map to the four elements."},{"question":"Which tarot card represents my zodiac sign?","answer":"Each sign has a Major Arcana card: Aries=Emperor, Taurus=Hierophant, Gemini=Lovers, Cancer=Chariot, Leo=Strength, Virgo=Hermit, Libra=Justice, Scorpio=Death, Sagittarius=Temperance, Capricorn=Devil, Aquarius=Star, Pisces=Moon."},{"question":"Can I use tarot and astrology together?","answer":"Absolutely. Reading tarot with awareness of current transits creates deeper insights."},{"question":"What is the best time to do a tarot reading?","answer":"New Moons for intentions, Full Moons for clarity, Mercury retrograde for reviewing patterns."}]'::jsonb,
+ '8 min read', true, '2026-05-15T00:00:00Z'),
+
+('numerology-life-path-guide',
+ 'Life Path Number: Calculate Yours & Discover Your Purpose',
+ 'Learn how to calculate your Life Path number in numerology and what each number reveals about your personality and purpose.',
+ 'Numerology',
+ ARRAY[
+   'Your Life Path number is the most important number in numerology — think of it as your numerological Sun sign.',
+   'To calculate your Life Path number, reduce each component of your birth date to a single digit, then add together and reduce again.',
+   'Life Path 1: The Leader. Life Path 2: The Peacemaker. Life Path 3: The Creator. Life Path 4: The Builder.',
+   'Life Path 5: The Freedom Seeker. Life Path 6: The Nurturer.',
+   'Life Path 7: The Seeker. Life Path 8: The Powerhouse.',
+   'Life Path 9: The Humanitarian.',
+   'Master Numbers (11, 22, 33) carry amplified spiritual potential.',
+   'Your Life Path number doesn''t change — it''s fixed from birth, like your natal chart.',
+   'Align calculates your complete numerology profile alongside your natal chart, showing where numbers and stars align.'
+ ],
+ ARRAY['life path number', 'numerology', 'life path calculator', 'numerology meaning', 'life path number meaning'],
+ '[{"question":"How do I calculate my Life Path number?","answer":"Reduce your birth month, day, and year each to a single digit, then add those three digits together and reduce again."},{"question":"What is a Master Number in numerology?","answer":"Master Numbers are 11, 22, and 33. They carry amplified spiritual potential."},{"question":"Can my Life Path number change?","answer":"No. Your Life Path number is calculated from your birth date and remains constant."},{"question":"Is Life Path number the same as a zodiac sign?","answer":"They serve similar roles in their respective systems — both represent your core identity."}]'::jsonb,
+ '8 min read', true, '2026-06-01T00:00:00Z')
+
+ON CONFLICT (slug) DO NOTHING;

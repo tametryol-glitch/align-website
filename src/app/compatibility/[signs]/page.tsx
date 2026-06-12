@@ -10,6 +10,9 @@ import {
   type ZodiacSign,
   type CompatibilitySection,
 } from '@/data/compatibilityContent';
+import { FaqSchema } from '@/components/seo/FaqSchema';
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
+import { RelatedContent } from '@/components/seo/RelatedContent';
 
 /* ── Static params (78 pairs) ─────────────────────────────────── */
 
@@ -89,6 +92,19 @@ export default async function CompatibilityPage({ params }: PageProps) {
     mainEntityOfPage: `https://aligncosmic.com/compatibility/${signs}`,
   };
 
+  const faqs = [
+    { question: `Are ${sign1.name} and ${sign2.name} compatible?`, answer: `${sign1.name} and ${sign2.name} have a ${overallScore}% compatibility score. Their ${elementAffinity.label.toLowerCase()} energy creates ${elementAffinity.description}` },
+    { question: `What is the ${sign1.name} and ${sign2.name} love match like?`, answer: sections[0]?.paragraphs[0] || `${sign1.name} (${sign1.element}) and ${sign2.name} (${sign2.element}) bring unique strengths to their relationship dynamic.` },
+    { question: `Can ${sign1.name} and ${sign2.name} have a good relationship?`, answer: `With a ${overallScore}% match score, ${sign1.name} and ${sign2.name} can build a strong relationship by understanding their elemental dynamics. ${sign1.name} is ${sign1.element} and ${sign2.name} is ${sign2.element}.` },
+    { question: `What challenges do ${sign1.name} and ${sign2.name} face?`, answer: sections.find((s) => s.title.toLowerCase().includes('challenge'))?.paragraphs[0] || `Every pairing has growth edges. ${sign1.name} and ${sign2.name} can overcome differences through mutual respect and understanding.` },
+  ];
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://aligncosmic.com' },
+    { name: 'Compatibility', url: 'https://aligncosmic.com/compatibility' },
+    { name: `${sign1.name} & ${sign2.name}`, url: `https://aligncosmic.com/compatibility/${signs}` },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Structured data */}
@@ -96,6 +112,8 @@ export default async function CompatibilityPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <FaqSchema faqs={faqs} />
+      <BreadcrumbSchema items={breadcrumbs} />
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
@@ -113,6 +131,12 @@ export default async function CompatibilityPage({ params }: PageProps) {
           Align
         </Link>
         <div className="flex items-center gap-3">
+          <Link href="/blog" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Blog
+          </Link>
+          <Link href="/events" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Events
+          </Link>
           <Link
             href="/compatibility"
             className="text-sm text-text-secondary hover:text-text-primary transition-colors"
@@ -270,6 +294,19 @@ export default async function CompatibilityPage({ params }: PageProps) {
           <ContentSection key={section.title} section={section} index={idx} />
         ))}
       </main>
+
+      {/* ── Related Content (Internal Linking) ─────────────── */}
+      <RelatedContent
+        title="Dive Deeper Into These Signs"
+        links={[
+          { href: `/zodiac/${parsed.sign1}`, label: `${sign1.name} Profile`, description: 'Full sign guide' },
+          ...(isSameSign ? [] : [{ href: `/zodiac/${parsed.sign2}`, label: `${sign2.name} Profile`, description: 'Full sign guide' }]),
+          { href: `/venus-in/${parsed.sign1}`, label: `Venus in ${sign1.name}`, description: 'Love style' },
+          ...(isSameSign ? [] : [{ href: `/venus-in/${parsed.sign2}`, label: `Venus in ${sign2.name}`, description: 'Love style' }]),
+          { href: `/synastry-aspects`, label: 'Synastry Aspects', description: 'All 35 aspects' },
+          { href: `/blog/zodiac-compatibility-guide`, label: 'Compatibility Guide', description: 'Complete love match article' },
+        ]}
+      />
 
       {/* ── CTA ─────────────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 pb-20">

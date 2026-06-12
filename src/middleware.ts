@@ -76,7 +76,26 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/compatibility') ||
     pathname.startsWith('/personality') ||
     pathname.startsWith('/pricing') ||
-    pathname.startsWith('/events');
+    pathname.startsWith('/events') ||
+    pathname.startsWith('/birth-chart-calculator') ||
+    pathname.startsWith('/share') ||
+    pathname.startsWith('/moon-sign') ||
+    pathname.startsWith('/rising-sign') ||
+    pathname.startsWith('/mars-in') ||
+    pathname.startsWith('/venus-in') ||
+    pathname.startsWith('/mercury-in') ||
+    pathname.startsWith('/jupiter-in') ||
+    pathname.startsWith('/saturn-in') ||
+    pathname.startsWith('/uranus-in') ||
+    pathname.startsWith('/neptune-in') ||
+    pathname.startsWith('/pluto-in') ||
+    pathname.startsWith('/juno-in') ||
+    pathname.startsWith('/vesta-in') ||
+    pathname.startsWith('/chiron-in') ||
+    pathname.startsWith('/north-node-in') ||
+    pathname.startsWith('/south-node-in') ||
+    pathname.startsWith('/planets-in-houses') ||
+    pathname.startsWith('/synastry-aspects');
   const isProtected = !isPublicPage && !isPublicApi;
 
   if (!user && isProtected) {

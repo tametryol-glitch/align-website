@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard', '/settings', '/messages', '/admin', '/api/', '/auth/callback'],
       },
     ],
-    sitemap: 'https://align-web.vercel.app/sitemap.xml',
+    sitemap: 'https://aligncosmic.com/sitemap.xml',
   };
 }

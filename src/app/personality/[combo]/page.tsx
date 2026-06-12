@@ -13,6 +13,8 @@ import {
   type PersonalitySection,
   type ElementHarmony,
 } from '@/data/sunMoonContent';
+import { FaqSchema } from '@/components/seo/FaqSchema';
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 
 /* ── Static params (144 combos) ──────────────────────────────── */
 
@@ -106,6 +108,18 @@ export default async function PersonalityPage({ params }: PageProps) {
     mainEntityOfPage: `https://aligncosmic.com/personality/${combo}`,
   };
 
+  const faqs = [
+    { question: `What is a ${sunSign.name} Sun ${moonSign.name} Moon personality like?`, answer: `The ${sunSign.name} Sun ${moonSign.name} Moon combination creates ${elementHarmony.toLowerCase()} energy. ${soulTagline}` },
+    { question: `Are ${sunSign.name} Sun ${moonSign.name} Moon people emotional?`, answer: `With a ${moonSign.name} Moon, the emotional world is filtered through ${moonSign.element} energy, while the ${sunSign.name} Sun drives the outer identity through ${sunSign.element} expression.` },
+    { question: `What are the strengths of ${sunSign.name} Sun ${moonSign.name} Moon?`, answer: relatableBullets?.slice(0, 3).join(' ') || `This combination blends ${sunSign.name}'s ${sunSign.element} drive with ${moonSign.name}'s ${moonSign.element} emotional depth.` },
+  ];
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://aligncosmic.com' },
+    { name: 'Personality', url: 'https://aligncosmic.com/personality' },
+    { name: `${sunSign.name} Sun ${moonSign.name} Moon`, url: `https://aligncosmic.com/personality/${combo}` },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Structured data */}
@@ -113,6 +127,8 @@ export default async function PersonalityPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <FaqSchema faqs={faqs} />
+      <BreadcrumbSchema items={breadcrumbs} />
 
       {/* ── Nav ──────────────────────────────────────────────── */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
@@ -130,6 +146,12 @@ export default async function PersonalityPage({ params }: PageProps) {
           Align
         </Link>
         <div className="flex items-center gap-3">
+          <Link href="/blog" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Blog
+          </Link>
+          <Link href="/events" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Events
+          </Link>
           <Link
             href="/personality"
             className="text-sm text-text-secondary hover:text-text-primary transition-colors"

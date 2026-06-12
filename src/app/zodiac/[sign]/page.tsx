@@ -9,6 +9,9 @@ import {
   getElementColor,
   type ZodiacSign,
 } from '@/data/zodiacSignContent';
+import { FaqSchema } from '@/components/seo/FaqSchema';
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
+import { RelatedContent, type RelatedLink } from '@/components/seo/RelatedContent';
 
 /* ── Static params (12 signs) ────────────────────────────────── */
 
@@ -89,6 +92,21 @@ export default async function ZodiacSignPage({ params }: PageProps) {
     mainEntityOfPage: `https://aligncosmic.com/zodiac/${sign}`,
   };
 
+  const faqs = [
+    { question: `What are ${profile.name}'s personality traits?`, answer: `${profile.name} is known for being ${profile.personalityTraits.slice(0, 4).join(', ')}. As a ${profile.element} sign ruled by ${profile.ruler}, ${profile.name} individuals are ${profile.strengths.slice(0, 3).join(', ').toLowerCase()}.` },
+    { question: `What is ${profile.name} compatible with?`, answer: `${profile.name}'s best matches are ${profile.bestMatches.map((m) => getZodiacSignProfile(m).name).join(', ')}. More challenging pairings include ${profile.challengingMatches.map((m) => getZodiacSignProfile(m).name).join(', ')}.` },
+    { question: `What element is ${profile.name}?`, answer: `${profile.name} is a ${profile.element} sign with ${profile.modality} quality, spanning the dates ${profile.dates}.` },
+    { question: `What planet rules ${profile.name}?`, answer: `${profile.name} is ruled by ${profile.ruler}, which shapes their core drive and expression.` },
+    { question: `What is ${profile.name} like in love?`, answer: profile.loveStyle[0] },
+    { question: `What careers suit ${profile.name}?`, answer: profile.careerStrengths[0] },
+  ];
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://aligncosmic.com' },
+    { name: 'Zodiac Signs', url: 'https://aligncosmic.com/zodiac' },
+    { name: profile.name, url: `https://aligncosmic.com/zodiac/${sign}` },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Structured data */}
@@ -96,6 +114,8 @@ export default async function ZodiacSignPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <FaqSchema faqs={faqs} />
+      <BreadcrumbSchema items={breadcrumbs} />
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
@@ -113,6 +133,12 @@ export default async function ZodiacSignPage({ params }: PageProps) {
           Align
         </Link>
         <div className="flex items-center gap-3">
+          <Link href="/blog" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Blog
+          </Link>
+          <Link href="/events" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Events
+          </Link>
           <Link
             href="/zodiac"
             className="text-sm text-text-secondary hover:text-text-primary transition-colors"
@@ -502,6 +528,19 @@ export default async function ZodiacSignPage({ params }: PageProps) {
           </p>
         </article>
       </main>
+
+      {/* ── Related Content (Internal Linking) ─────────────── */}
+      <RelatedContent
+        title={`Explore ${profile.name} Placements`}
+        links={[
+          { href: `/venus-in/${sign}`, label: `Venus in ${profile.name}`, description: 'Love & attraction style' },
+          { href: `/mars-in/${sign}`, label: `Mars in ${profile.name}`, description: 'Drive & passion' },
+          { href: `/moon-sign/${sign}`, label: `${profile.name} Moon`, description: 'Emotional world' },
+          { href: `/rising-sign/${sign}`, label: `${profile.name} Rising`, description: 'First impressions' },
+          { href: `/mercury-in/${sign}`, label: `Mercury in ${profile.name}`, description: 'Communication style' },
+          { href: `/personality/${sign}-sun-${profile.bestMatches[0]}-moon`, label: `${profile.name} Sun ${getZodiacSignProfile(profile.bestMatches[0]).name} Moon`, description: 'Personality combo' },
+        ]}
+      />
 
       {/* ── CTA ────────────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 pb-20">

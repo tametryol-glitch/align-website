@@ -4,19 +4,23 @@ import { ALL_SIGN_KEYS } from '@/data/zodiacSignContent';
 import { getAllSunMoonCombos } from '@/data/sunMoonContent';
 import { getAllSlugs as getAllHouseSlugs } from '@/data/planetsInHousesContent';
 import { getAllSynastrySlug } from '@/data/synastryContent';
+import { getAllBlogSlugs } from '@/data/blogContent';
+import { getAllSeasonalSlugs } from '@/data/seasonalContent';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://align-web.vercel.app';
+  const base = 'https://aligncosmic.com';
   const now = new Date().toISOString();
 
   const staticRoutes = [
     '/',
+    '/birth-chart-calculator',
     '/auth/login',
     '/auth/signup',
     '/pricing',
     '/courses',
     '/cosmic-index',
     '/compatibility',
+    '/blog',
   ];
 
   const readingRoutes = [
@@ -172,5 +176,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...planetPages,
     ...housePages,
     ...synastryPages,
+    /* Blog posts */
+    ...getAllBlogSlugs().map((slug) => ({
+      url: `${base}/blog/${slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+    /* Seasonal / trending events */
+    {
+      url: `${base}/events`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    ...getAllSeasonalSlugs().map((slug) => ({
+      url: `${base}/events/${slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
   ];
 }

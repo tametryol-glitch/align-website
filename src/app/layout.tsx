@@ -8,7 +8,7 @@ import { CookieConsent } from '@/components/ui/CookieConsent';
 import { BadgeEarnedPopup } from '@/components/ui/BadgeEarnedPopup';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://align-web.vercel.app'),
+  metadataBase: new URL('https://aligncosmic.com'),
   title: {
     default: 'Align — AI Astrology, Natal Charts & Cosmic Compatibility',
     template: '%s | Align',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Align — AI Astrology, Natal Charts & Cosmic Compatibility',
     description: 'Professional-grade astrology powered by AI. Get your natal chart, check compatibility, and explore 26+ readings.',
-    url: 'https://align-web.vercel.app',
+    url: 'https://aligncosmic.com',
     siteName: 'Align',
     locale: 'en_US',
     type: 'website',
@@ -35,6 +35,17 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  alternates: {
+    canonical: 'https://aligncosmic.com',
+    languages: {
+      'en': 'https://aligncosmic.com',
+      'es': 'https://aligncosmic.com/es',
+      'pt': 'https://aligncosmic.com/pt',
+      'fr': 'https://aligncosmic.com/fr',
+      'hi': 'https://aligncosmic.com/hi',
+      'x-default': 'https://aligncosmic.com',
+    },
   },
 };
 

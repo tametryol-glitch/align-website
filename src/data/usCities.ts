@@ -4053,4 +4053,272 @@ export const US_CITIES: CityData[] = [
   { name: 'Laramie', country: 'United States', region: 'Wyoming', lat: 41.31137, lon: -105.5911 },
   { name: 'Rock Springs', country: 'United States', region: 'Wyoming', lat: 41.58746, lon: -109.2029 },
   { name: 'Sheridan', country: 'United States', region: 'Wyoming', lat: 44.79719, lon: -106.95618 },
+
+  // ── Hand-curated smaller US cities (not in GeoNames cities5000) ──
+
+  // -- Alabama --
+  { name: 'Scottsboro', country: 'United States', region: 'Alabama', lat: 34.6723, lon: -86.0341 },
+  { name: 'Jasper', country: 'United States', region: 'Alabama', lat: 33.8312, lon: -87.2775 },
+  { name: 'Fort Payne', country: 'United States', region: 'Alabama', lat: 34.4442, lon: -85.7197 },
+
+  // -- Alaska --
+  { name: 'Soldotna', country: 'United States', region: 'Alaska', lat: 60.4879, lon: -151.0583 },
+  { name: 'Palmer', country: 'United States', region: 'Alaska', lat: 61.5997, lon: -149.1127 },
+  { name: 'Seward', country: 'United States', region: 'Alaska', lat: 60.1042, lon: -149.4422 },
+
+  // -- Arizona --
+  { name: 'Winslow', country: 'United States', region: 'Arizona', lat: 35.0242, lon: -110.6974 },
+  { name: 'Cottonwood', country: 'United States', region: 'Arizona', lat: 34.7392, lon: -112.0099 },
+  { name: 'Payson', country: 'United States', region: 'Arizona', lat: 34.2309, lon: -111.3251 },
+
+  // -- Arkansas --
+  { name: 'Mountain Home', country: 'United States', region: 'Arkansas', lat: 36.3356, lon: -92.3854 },
+  { name: 'Heber Springs', country: 'United States', region: 'Arkansas', lat: 35.4917, lon: -92.0310 },
+  { name: 'Batesville', country: 'United States', region: 'Arkansas', lat: 35.7698, lon: -91.6407 },
+  { name: 'Harrison', country: 'United States', region: 'Arkansas', lat: 36.2298, lon: -93.1077 },
+
+  // -- California --
+  { name: 'Oakhurst', country: 'United States', region: 'California', lat: 37.3288, lon: -119.6490 },
+  { name: 'Sonora', country: 'United States', region: 'California', lat: 37.9835, lon: -120.3816 },
+  { name: 'Grass Valley', country: 'United States', region: 'California', lat: 39.2191, lon: -121.0610 },
+  { name: 'Red Bluff', country: 'United States', region: 'California', lat: 40.1785, lon: -122.2358 },
+  { name: 'Yreka', country: 'United States', region: 'California', lat: 41.7354, lon: -122.6345 },
+  { name: 'Crescent City', country: 'United States', region: 'California', lat: 41.7558, lon: -124.2026 },
+
+  // -- Colorado --
+  { name: 'Trinidad', country: 'United States', region: 'Colorado', lat: 37.1694, lon: -104.5008 },
+  { name: 'Glenwood Springs', country: 'United States', region: 'Colorado', lat: 39.5505, lon: -107.3248 },
+  { name: 'Salida', country: 'United States', region: 'Colorado', lat: 38.5347, lon: -105.9989 },
+  { name: 'Cortez', country: 'United States', region: 'Colorado', lat: 37.3489, lon: -108.5859 },
+
+  // -- Connecticut --
+  { name: 'Putnam', country: 'United States', region: 'Connecticut', lat: 41.9152, lon: -71.9090 },
+  { name: 'Willimantic', country: 'United States', region: 'Connecticut', lat: 41.7107, lon: -72.2084 },
+
+  // -- Florida --
+  { name: 'Fernandina Beach', country: 'United States', region: 'Florida', lat: 30.6694, lon: -81.4628 },
+  { name: 'Palatka', country: 'United States', region: 'Florida', lat: 29.6486, lon: -81.6376 },
+  { name: 'Starke', country: 'United States', region: 'Florida', lat: 29.9438, lon: -82.1093 },
+  { name: 'Live Oak', country: 'United States', region: 'Florida', lat: 30.2949, lon: -82.9840 },
+
+  // -- Georgia --
+  { name: 'Tifton', country: 'United States', region: 'Georgia', lat: 31.4505, lon: -83.5085 },
+  { name: 'Fitzgerald', country: 'United States', region: 'Georgia', lat: 31.7149, lon: -83.2527 },
+  { name: 'Bainbridge', country: 'United States', region: 'Georgia', lat: 30.9038, lon: -84.5755 },
+  { name: 'Blue Ridge', country: 'United States', region: 'Georgia', lat: 34.8635, lon: -84.3243 },
+
+  // -- Idaho --
+  { name: 'Sandpoint', country: 'United States', region: 'Idaho', lat: 48.2766, lon: -116.5535 },
+  { name: 'McCall', country: 'United States', region: 'Idaho', lat: 44.9110, lon: -116.0988 },
+  { name: 'Salmon', country: 'United States', region: 'Idaho', lat: 45.1766, lon: -113.8957 },
+
+  // -- Illinois --
+  { name: 'Galesburg', country: 'United States', region: 'Illinois', lat: 40.9478, lon: -90.3712 },
+  { name: 'Dixon', country: 'United States', region: 'Illinois', lat: 41.8389, lon: -89.4795 },
+  { name: 'Macomb', country: 'United States', region: 'Illinois', lat: 40.4592, lon: -90.6718 },
+  { name: 'Centralia', country: 'United States', region: 'Illinois', lat: 38.5253, lon: -89.1334 },
+
+  // -- Indiana --
+  { name: 'Bedford', country: 'United States', region: 'Indiana', lat: 38.8611, lon: -86.4872 },
+  { name: 'Jasper', country: 'United States', region: 'Indiana', lat: 38.3914, lon: -86.9311 },
+  { name: 'Vincennes', country: 'United States', region: 'Indiana', lat: 38.6773, lon: -87.5286 },
+  { name: 'Wabash', country: 'United States', region: 'Indiana', lat: 40.7978, lon: -85.8205 },
+  { name: 'Plymouth', country: 'United States', region: 'Indiana', lat: 41.3437, lon: -86.3092 },
+
+  // -- Iowa --
+  { name: 'Spirit Lake', country: 'United States', region: 'Iowa', lat: 43.4222, lon: -95.1022 },
+  { name: 'Fairfield', country: 'United States', region: 'Iowa', lat: 41.0086, lon: -91.9627 },
+  { name: 'Grinnell', country: 'United States', region: 'Iowa', lat: 41.7430, lon: -92.7224 },
+  { name: 'Decorah', country: 'United States', region: 'Iowa', lat: 43.3033, lon: -91.7857 },
+
+  // -- Kansas --
+  { name: 'Abilene', country: 'United States', region: 'Kansas', lat: 38.9172, lon: -97.2136 },
+  { name: 'Chanute', country: 'United States', region: 'Kansas', lat: 37.6792, lon: -95.4572 },
+  { name: 'Independence', country: 'United States', region: 'Kansas', lat: 37.2242, lon: -95.7083 },
+  { name: 'Coffeyville', country: 'United States', region: 'Kansas', lat: 37.0373, lon: -95.6164 },
+
+  // -- Kentucky --
+  { name: 'Corbin', country: 'United States', region: 'Kentucky', lat: 36.9487, lon: -84.0968 },
+  { name: 'Pikeville', country: 'United States', region: 'Kentucky', lat: 37.4793, lon: -82.5188 },
+  { name: 'Harlan', country: 'United States', region: 'Kentucky', lat: 36.8431, lon: -83.3218 },
+
+  // -- Louisiana --
+  { name: 'Bastrop', country: 'United States', region: 'Louisiana', lat: 32.7757, lon: -91.9082 },
+  { name: 'Opelousas', country: 'United States', region: 'Louisiana', lat: 30.5335, lon: -92.0815 },
+  { name: 'Leesville', country: 'United States', region: 'Louisiana', lat: 31.1435, lon: -93.2610 },
+
+  // -- Maine --
+  { name: 'Presque Isle', country: 'United States', region: 'Maine', lat: 46.6812, lon: -68.0158 },
+  { name: 'Calais', country: 'United States', region: 'Maine', lat: 45.1836, lon: -67.2764 },
+  { name: 'Bar Harbor', country: 'United States', region: 'Maine', lat: 44.3876, lon: -68.2039 },
+  { name: 'Machias', country: 'United States', region: 'Maine', lat: 44.7151, lon: -67.4614 },
+
+  // -- Michigan --
+  { name: 'Three Rivers', country: 'United States', region: 'Michigan', lat: 41.9439, lon: -85.6325 },
+  { name: 'Sturgis', country: 'United States', region: 'Michigan', lat: 41.7992, lon: -85.4189 },
+  { name: 'Coldwater', country: 'United States', region: 'Michigan', lat: 41.9403, lon: -85.0005 },
+  { name: 'Hillsdale', country: 'United States', region: 'Michigan', lat: 41.9200, lon: -84.6305 },
+  { name: 'Ludington', country: 'United States', region: 'Michigan', lat: 43.9528, lon: -86.4528 },
+  { name: 'Manistee', country: 'United States', region: 'Michigan', lat: 44.2444, lon: -86.3253 },
+  { name: 'Petoskey', country: 'United States', region: 'Michigan', lat: 45.3733, lon: -84.9553 },
+  { name: 'Grayling', country: 'United States', region: 'Michigan', lat: 44.6614, lon: -84.7147 },
+  { name: 'Cheboygan', country: 'United States', region: 'Michigan', lat: 45.6469, lon: -84.4747 },
+  { name: 'Alpena', country: 'United States', region: 'Michigan', lat: 45.0617, lon: -83.4327 },
+  { name: 'Cadillac', country: 'United States', region: 'Michigan', lat: 44.2519, lon: -85.4012 },
+  { name: 'Bad Axe', country: 'United States', region: 'Michigan', lat: 43.8019, lon: -83.0008 },
+  { name: 'Alma', country: 'United States', region: 'Michigan', lat: 43.3789, lon: -84.6597 },
+  { name: 'Dowagiac', country: 'United States', region: 'Michigan', lat: 41.9842, lon: -86.1086 },
+  { name: 'Niles', country: 'United States', region: 'Michigan', lat: 41.8298, lon: -86.2542 },
+  { name: 'Buchanan', country: 'United States', region: 'Michigan', lat: 41.8275, lon: -86.3611 },
+  { name: 'South Haven', country: 'United States', region: 'Michigan', lat: 42.4031, lon: -86.2736 },
+  { name: 'Paw Paw', country: 'United States', region: 'Michigan', lat: 42.2178, lon: -85.8914 },
+  { name: 'Charlotte', country: 'United States', region: 'Michigan', lat: 42.5636, lon: -84.8358 },
+  { name: 'Ionia', country: 'United States', region: 'Michigan', lat: 42.9872, lon: -85.0711 },
+  { name: 'Greenville', country: 'United States', region: 'Michigan', lat: 43.1775, lon: -85.2528 },
+  { name: 'Big Rapids', country: 'United States', region: 'Michigan', lat: 43.6981, lon: -85.4836 },
+  { name: 'Reed City', country: 'United States', region: 'Michigan', lat: 43.8750, lon: -85.5100 },
+  { name: 'Gladwin', country: 'United States', region: 'Michigan', lat: 43.9808, lon: -84.4864 },
+  { name: 'Tawas City', country: 'United States', region: 'Michigan', lat: 44.2694, lon: -83.5147 },
+  { name: 'Houghton', country: 'United States', region: 'Michigan', lat: 47.1211, lon: -88.5694 },
+  { name: 'Iron Mountain', country: 'United States', region: 'Michigan', lat: 45.8203, lon: -88.0658 },
+  { name: 'Newberry', country: 'United States', region: 'Michigan', lat: 46.3550, lon: -85.5094 },
+
+  // -- Minnesota --
+  { name: 'Bemidji', country: 'United States', region: 'Minnesota', lat: 47.4736, lon: -94.8803 },
+  { name: 'Hibbing', country: 'United States', region: 'Minnesota', lat: 47.4272, lon: -92.9377 },
+  { name: 'Grand Rapids', country: 'United States', region: 'Minnesota', lat: 47.2372, lon: -93.5303 },
+  { name: 'Worthington', country: 'United States', region: 'Minnesota', lat: 43.6200, lon: -95.5964 },
+
+  // -- Mississippi --
+  { name: 'Natchez', country: 'United States', region: 'Mississippi', lat: 31.5604, lon: -91.4032 },
+  { name: 'Brookhaven', country: 'United States', region: 'Mississippi', lat: 31.5793, lon: -90.4407 },
+  { name: 'Laurel', country: 'United States', region: 'Mississippi', lat: 31.6940, lon: -89.1307 },
+  { name: 'McComb', country: 'United States', region: 'Mississippi', lat: 31.2437, lon: -90.4532 },
+
+  // -- Missouri --
+  { name: 'Hannibal', country: 'United States', region: 'Missouri', lat: 39.7084, lon: -91.3585 },
+  { name: 'West Plains', country: 'United States', region: 'Missouri', lat: 36.7281, lon: -91.8524 },
+  { name: 'Rolla', country: 'United States', region: 'Missouri', lat: 37.9514, lon: -91.7712 },
+
+  // -- Montana --
+  { name: 'Lewistown', country: 'United States', region: 'Montana', lat: 47.0625, lon: -109.4276 },
+  { name: 'Livingston', country: 'United States', region: 'Montana', lat: 45.6617, lon: -110.5617 },
+  { name: 'Glendive', country: 'United States', region: 'Montana', lat: 47.1053, lon: -104.7125 },
+
+  // -- Nebraska --
+  { name: 'Alliance', country: 'United States', region: 'Nebraska', lat: 42.1016, lon: -102.8721 },
+  { name: 'Chadron', country: 'United States', region: 'Nebraska', lat: 42.8294, lon: -103.0002 },
+  { name: 'McCook', country: 'United States', region: 'Nebraska', lat: 40.2017, lon: -100.6254 },
+
+  // -- New Hampshire --
+  { name: 'Littleton', country: 'United States', region: 'New Hampshire', lat: 44.3062, lon: -71.7698 },
+  { name: 'Berlin', country: 'United States', region: 'New Hampshire', lat: 44.4687, lon: -71.1854 },
+
+  // -- New Mexico --
+  { name: 'Raton', country: 'United States', region: 'New Mexico', lat: 36.8975, lon: -104.4394 },
+  { name: 'Truth or Consequences', country: 'United States', region: 'New Mexico', lat: 33.1284, lon: -107.2528 },
+  { name: 'Silver City', country: 'United States', region: 'New Mexico', lat: 32.7701, lon: -108.2803 },
+
+  // -- New York --
+  { name: 'Saranac Lake', country: 'United States', region: 'New York', lat: 44.3295, lon: -74.1313 },
+  { name: 'Canandaigua', country: 'United States', region: 'New York', lat: 42.8873, lon: -77.2814 },
+  { name: 'Olean', country: 'United States', region: 'New York', lat: 42.0776, lon: -78.4297 },
+  { name: 'Malone', country: 'United States', region: 'New York', lat: 44.8487, lon: -74.2946 },
+
+  // -- North Carolina --
+  { name: 'Brevard', country: 'United States', region: 'North Carolina', lat: 35.2334, lon: -82.7343 },
+  { name: 'Boone', country: 'United States', region: 'North Carolina', lat: 36.2168, lon: -81.6746 },
+  { name: 'Burnsville', country: 'United States', region: 'North Carolina', lat: 35.9173, lon: -82.3007 },
+
+  // -- North Dakota --
+  { name: 'Wahpeton', country: 'United States', region: 'North Dakota', lat: 46.2652, lon: -96.6059 },
+  { name: 'Jamestown', country: 'United States', region: 'North Dakota', lat: 46.9106, lon: -98.7084 },
+  { name: 'Devils Lake', country: 'United States', region: 'North Dakota', lat: 48.1128, lon: -98.8651 },
+
+  // -- Ohio --
+  { name: 'Gallipolis', country: 'United States', region: 'Ohio', lat: 38.8098, lon: -82.2018 },
+  { name: 'Bucyrus', country: 'United States', region: 'Ohio', lat: 40.8081, lon: -82.9755 },
+  { name: 'Bellefontaine', country: 'United States', region: 'Ohio', lat: 40.3612, lon: -83.7599 },
+  { name: 'Celina', country: 'United States', region: 'Ohio', lat: 40.5489, lon: -84.5702 },
+
+  // -- Oklahoma --
+  { name: 'McAlester', country: 'United States', region: 'Oklahoma', lat: 34.9334, lon: -95.7697 },
+  { name: 'Ada', country: 'United States', region: 'Oklahoma', lat: 34.7745, lon: -96.6783 },
+  { name: 'Guymon', country: 'United States', region: 'Oklahoma', lat: 36.6892, lon: -101.4816 },
+
+  // -- Oregon --
+  { name: 'Astoria', country: 'United States', region: 'Oregon', lat: 46.1879, lon: -123.8313 },
+  { name: 'La Grande', country: 'United States', region: 'Oregon', lat: 45.3246, lon: -118.0877 },
+  { name: 'Burns', country: 'United States', region: 'Oregon', lat: 43.5862, lon: -119.0541 },
+  { name: 'Tillamook', country: 'United States', region: 'Oregon', lat: 45.4562, lon: -123.8428 },
+
+  // -- Pennsylvania --
+  { name: 'Lock Haven', country: 'United States', region: 'Pennsylvania', lat: 41.1370, lon: -77.4497 },
+  { name: 'Wellsboro', country: 'United States', region: 'Pennsylvania', lat: 41.7487, lon: -77.3008 },
+  { name: 'Bradford', country: 'United States', region: 'Pennsylvania', lat: 41.9559, lon: -78.6436 },
+  { name: 'Clearfield', country: 'United States', region: 'Pennsylvania', lat: 41.0278, lon: -78.4392 },
+
+  // -- South Carolina --
+  { name: 'Bennettsville', country: 'United States', region: 'South Carolina', lat: 34.6174, lon: -79.6848 },
+  { name: 'Camden', country: 'United States', region: 'South Carolina', lat: 34.2465, lon: -80.6068 },
+  { name: 'Walterboro', country: 'United States', region: 'South Carolina', lat: 32.9052, lon: -80.6687 },
+
+  // -- South Dakota --
+  { name: 'Pierre', country: 'United States', region: 'South Dakota', lat: 44.3683, lon: -100.3510 },
+  { name: 'Mobridge', country: 'United States', region: 'South Dakota', lat: 45.5369, lon: -100.4281 },
+  { name: 'Hot Springs', country: 'United States', region: 'South Dakota', lat: 43.4317, lon: -103.4746 },
+
+  // -- Tennessee --
+  { name: 'Crossville', country: 'United States', region: 'Tennessee', lat: 35.9489, lon: -85.0269 },
+  { name: 'Lawrenceburg', country: 'United States', region: 'Tennessee', lat: 35.2423, lon: -87.3347 },
+  { name: 'Paris', country: 'United States', region: 'Tennessee', lat: 36.3020, lon: -88.3267 },
+
+  // -- Texas --
+  { name: 'Alpine', country: 'United States', region: 'Texas', lat: 30.3585, lon: -103.6610 },
+  { name: 'Uvalde', country: 'United States', region: 'Texas', lat: 29.2097, lon: -99.7862 },
+  { name: 'Marfa', country: 'United States', region: 'Texas', lat: 30.3097, lon: -104.0212 },
+  { name: 'Fredericksburg', country: 'United States', region: 'Texas', lat: 30.2752, lon: -98.8720 },
+  { name: 'Nacogdoches', country: 'United States', region: 'Texas', lat: 31.6035, lon: -94.6555 },
+  { name: 'Brenham', country: 'United States', region: 'Texas', lat: 30.1669, lon: -96.3977 },
+
+  // -- Utah --
+  { name: 'Moab', country: 'United States', region: 'Utah', lat: 38.5733, lon: -109.5498 },
+  { name: 'Richfield', country: 'United States', region: 'Utah', lat: 38.7725, lon: -112.0841 },
+  { name: 'Price', country: 'United States', region: 'Utah', lat: 39.5994, lon: -110.8107 },
+
+  // -- Vermont --
+  { name: 'St. Johnsbury', country: 'United States', region: 'Vermont', lat: 44.4192, lon: -72.0151 },
+  { name: 'Bennington', country: 'United States', region: 'Vermont', lat: 42.8781, lon: -73.1968 },
+  { name: 'Newport', country: 'United States', region: 'Vermont', lat: 44.9364, lon: -72.2051 },
+
+  // -- Virginia --
+  { name: 'Galax', country: 'United States', region: 'Virginia', lat: 36.6612, lon: -80.9240 },
+  { name: 'Covington', country: 'United States', region: 'Virginia', lat: 37.7935, lon: -79.9940 },
+  { name: 'Marion', country: 'United States', region: 'Virginia', lat: 36.8346, lon: -81.5151 },
+
+  // -- Washington --
+  { name: 'Ellensburg', country: 'United States', region: 'Washington', lat: 46.9965, lon: -120.5478 },
+  { name: 'Port Townsend', country: 'United States', region: 'Washington', lat: 48.1170, lon: -122.7604 },
+  { name: 'Chelan', country: 'United States', region: 'Washington', lat: 47.8410, lon: -120.0159 },
+  { name: 'Omak', country: 'United States', region: 'Washington', lat: 48.4110, lon: -119.5276 },
+
+  // -- West Virginia --
+  { name: 'Lewisburg', country: 'United States', region: 'West Virginia', lat: 37.8018, lon: -80.4456 },
+  { name: 'Elkins', country: 'United States', region: 'West Virginia', lat: 38.9260, lon: -79.8467 },
+  { name: 'Hinton', country: 'United States', region: 'West Virginia', lat: 37.6740, lon: -80.8884 },
+
+  // -- Wisconsin --
+  { name: 'Rhinelander', country: 'United States', region: 'Wisconsin', lat: 45.6366, lon: -89.4121 },
+  { name: 'Merrill', country: 'United States', region: 'Wisconsin', lat: 45.1808, lon: -89.6837 },
+  { name: 'Antigo', country: 'United States', region: 'Wisconsin', lat: 45.1402, lon: -89.1523 },
+  { name: 'Sturgeon Bay', country: 'United States', region: 'Wisconsin', lat: 44.8341, lon: -87.3770 },
+  { name: 'Baraboo', country: 'United States', region: 'Wisconsin', lat: 43.4711, lon: -89.7443 },
+  { name: 'Medford', country: 'United States', region: 'Wisconsin', lat: 45.1386, lon: -90.3401 },
+  { name: 'Minocqua', country: 'United States', region: 'Wisconsin', lat: 45.8713, lon: -89.7115 },
+
+  // -- Wyoming --
+  { name: 'Cody', country: 'United States', region: 'Wyoming', lat: 44.5263, lon: -109.0565 },
+  { name: 'Thermopolis', country: 'United States', region: 'Wyoming', lat: 43.6461, lon: -108.2121 },
+  { name: 'Lander', country: 'United States', region: 'Wyoming', lat: 42.8330, lon: -108.7307 },
+  { name: 'Powell', country: 'United States', region: 'Wyoming', lat: 44.7538, lon: -108.7576 },
 ];
