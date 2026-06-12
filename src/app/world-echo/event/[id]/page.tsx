@@ -148,6 +148,12 @@ export default function WorldEchoEventPage() {
                     bullet.weight === 'moderate' ? 'bg-accent-secondary' :
                     'bg-text-tertiary';
                   const isMidpoint = bullet.kind === 'midpoint';
+                  const isCategoryMidpoint = bullet.kind === 'category_midpoint';
+                  const kindPrefix = isCategoryMidpoint
+                    ? `${bullet.category_label || 'Category'} Midpoint`
+                    : isMidpoint
+                      ? 'Midpoint'
+                      : null;
                   const orbSuffix =
                     bullet.orb_today != null && bullet.orb_event != null
                       ? ` (orb ${bullet.orb_today.toFixed(1)}° / ${bullet.orb_event.toFixed(1)}°)`
@@ -156,8 +162,8 @@ export default function WorldEchoEventPage() {
                     <div key={`${bullet.kind}-${bullet.key ?? bullet.label}-${i}`} className="flex items-start gap-2">
                       <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${dotColor}`} />
                       <p className="text-sm text-text-secondary leading-relaxed">
-                        {isMidpoint && <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider mr-1">Midpoint</span>}
-                        {bullet.label}{isMidpoint ? orbSuffix : ''}
+                        {kindPrefix && <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider mr-1">{kindPrefix}</span>}
+                        {bullet.label}{(isMidpoint || isCategoryMidpoint) ? orbSuffix : ''}
                       </p>
                     </div>
                   );
