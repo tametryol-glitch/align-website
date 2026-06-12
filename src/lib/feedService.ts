@@ -30,6 +30,8 @@ export interface FeedPost {
   mediaKind?: 'photo' | 'sticker' | 'gif';
   videoUrl?: string;
   posterUrl?: string;
+  /** Total video plays (unique-per-user log lives in post_video_views). */
+  videoViewsCount?: number;
   chartData?: any;
   reactions: PostReaction[];
   comments: FeedComment[];
@@ -63,6 +65,25 @@ export const POST_STYLE_PRESETS = [
 ];
 
 // ── Service ────────────────────────────────────────────────────────
+
+/**
+ * Record a view on a feed post's video. Mirrors the reels design:
+ * one row per (post, user) in post_video_views = unique-viewer log,
+ * plus a denormalized total-plays counter on the post. Best effort.
+ */
+export async function recordPostVideoView(postId: string, userId: string): Promise<void> {
+  try {
+    if (!userId) return;
+    const supabase = createClient();
+
+    await supabase.from('post_video_views').upsert(
+      { post_id: postId, user_id: userId, watched_at: new Date().toISOString() },
+      { onConflict: 'post_id,user_id' },
+    );
+
+    await supabase.rpc('increment_post_video_views', { p_post_id: postId });
+  } catch { /* best effort */ }
+}
 
 export async function getFeed(userId: string, before?: string): Promise<FeedPost[]> {
   const supabase = createClient();
@@ -140,6 +161,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       mediaKind: p.media_kind || undefined,
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
+      videoViewsCount: p.video_views_count || 0,
       chartData: p.chart_data || undefined,
       reactions: reactionsMap.get(p.id) || [],
       comments: comments.slice(0, 3),
@@ -245,6 +267,7 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       mediaKind: p.media_kind || undefined,
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
+      videoViewsCount: p.video_views_count || 0,
       chartData: p.chart_data || undefined,
       reactions: reactionsMap.get(p.id) || [],
       comments: comments.slice(0, 3),

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   type FeedPost, type ReactionEmoji, type PostReaction,
-  REACTION_OPTIONS, POST_STYLE_PRESETS, reportPost,
+  REACTION_OPTIONS, POST_STYLE_PRESETS, reportPost, recordPostVideoView,
 } from '@/lib/feedService';
 import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -15,6 +15,17 @@ import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/cont
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
 const CONTENT_VIRALITY_ENABLED = true;
+
+// ── Video view tracking ─────────────────────────────────────────────
+// One recorded view per post per page session; the DB upsert dedupes
+// per user across sessions (post_video_views PK is post_id+user_id).
+const recordedVideoViewPosts = new Set<string>();
+
+function formatViewCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
 
 // ── Creator Score Estimate (lightweight from post data) ───────────
 function estimateCreatorTierFromPost(post: FeedPost): CreatorTier {
@@ -354,7 +365,7 @@ export function FeedCard({
           );
         }
         return (
-          <div className="px-5 pb-3">
+          <div className="px-5 pb-3 relative">
             <video
               src={post.videoUrl}
               poster={post.posterUrl}
@@ -362,7 +373,18 @@ export function FeedCard({
               playsInline
               preload="metadata"
               className="w-full rounded-xl max-h-[400px] bg-black"
+              onPlay={() => {
+                // One recorded view per post per page session; the DB
+                // upsert dedupes per user across sessions.
+                if (!recordedVideoViewPosts.has(post.id)) {
+                  recordedVideoViewPosts.add(post.id);
+                  recordPostVideoView(post.id, currentUserId);
+                }
+              }}
             />
+            <span className="absolute top-2 right-7 px-2 py-0.5 rounded-md bg-black/55 text-white text-[11px] font-semibold pointer-events-none">
+              👁️ {formatViewCount(post.videoViewsCount || 0)}
+            </span>
           </div>
         );
       })()}
