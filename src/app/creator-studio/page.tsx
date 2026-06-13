@@ -28,13 +28,17 @@ interface TopContentItem {
   views: number;
 }
 
+// Canonical creator_profiles statuses (matches mobile state machine).
+// 'none' = no row yet (never applied).
+type CreatorStatus = 'none' | 'applied' | 'under_review' | 'approved' | 'rejected' | 'suspended';
+
 export default function CreatorStudioPage() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const [stats, setStats] = useState<CreatorStats | null>(null);
   const [topContent, setTopContent] = useState<TopContentItem[]>([]);
   const [eligibility, setEligibility] = useState<CreatorEligibility | null>(null);
-  const [isCreator, setIsCreator] = useState(false);
+  const [status, setStatus] = useState<CreatorStatus>('none');
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
@@ -46,33 +50,36 @@ export default function CreatorStudioPage() {
   async function checkCreatorStatus() {
     const supabase = createClient();
 
-    // Eligibility ladder loads for everyone (creator or not) — it's the
-    // motivation surface, shown before the program is even enforced.
+    // Eligibility ladder loads for everyone — it's the motivation surface,
+    // shown before the program is even enforced.
     getCreatorEligibility(user!.id).then(setEligibility).catch(() => {});
 
+    // creator_profiles keys on id (= user id); status drives the UI.
     const { data: creatorProfile } = await supabase
       .from('creator_profiles')
-      .select('*')
-      .eq('user_id', user!.id)
+      .select('id, status, lifetime_paid_cents')
+      .eq('id', user!.id)
       .maybeSingle();
 
-    if (creatorProfile) {
-      setIsCreator(true);
-      // Load stats
+    setStatus((creatorProfile?.status as CreatorStatus) || 'none');
+
+    // Load stats only for an approved creator (the only state with a dashboard).
+    if (creatorProfile?.status === 'approved') {
       const { data: posts } = await supabase
         .from('posts')
         .select('id, created_at')
         .eq('user_id', user!.id)
         .eq('is_deleted', false);
 
-      const { count: reactions } = await supabase
-        .from('reactions')
-        .select('id', { count: 'exact' })
-        .in('post_id', (posts || []).map(p => p.id));
-
-      // Real view counts: reel plays + feed video plays, both tracked
-      // since the view-counter feature (reel_views / post_video_views).
-      const [reelsRes, videoPostsRes] = await Promise.all([
+      const [reactionsRes, followersRes, reelsRes, videoPostsRes] = await Promise.all([
+        supabase
+          .from('post_reactions')
+          .select('id', { count: 'exact', head: true })
+          .in('post_id', (posts || []).map(p => p.id)),
+        supabase
+          .from('follows')
+          .select('id', { count: 'exact', head: true })
+          .eq('following_id', user!.id),
         supabase
           .from('reels')
           .select('id, caption, views_count')
@@ -114,10 +121,10 @@ export default function CreatorStudioPage() {
 
       setStats({
         total_posts: posts?.length || 0,
-        total_reactions: reactions || 0,
+        total_reactions: reactionsRes.count || 0,
         total_views: reelViews + videoViews,
-        total_followers: creatorProfile.follower_count || 0,
-        total_earnings: creatorProfile.total_earnings || 0,
+        total_followers: followersRes.count || 0,
+        total_earnings: (creatorProfile.lifetime_paid_cents || 0) / 100,
         posts_this_month: (posts || []).filter(p => p.created_at >= monthStart).length,
       });
     }
@@ -128,22 +135,13 @@ export default function CreatorStudioPage() {
     if (!user) return;
     setApplying(true);
     const supabase = createClient();
-    await supabase.from('creator_profiles').insert({
-      user_id: user.id,
-      status: 'pending',
-      follower_count: 0,
-      total_earnings: 0,
-    });
+    // Submit an APPLICATION for manual review — never a self-grant.
+    // RLS forces status='applied' server-side; id is the PK (= user id).
+    const { error } = await supabase
+      .from('creator_profiles')
+      .insert({ id: user.id, status: 'applied' });
     setApplying(false);
-    setIsCreator(true);
-    setStats({
-      total_posts: 0,
-      total_reactions: 0,
-      total_views: 0,
-      total_followers: 0,
-      total_earnings: 0,
-      posts_this_month: 0,
-    });
+    if (!error) setStatus('applied');
   }
 
   if (!user) {
@@ -156,8 +154,46 @@ export default function CreatorStudioPage() {
 
   if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading studio..." /></div>;
 
-  // Not a creator yet — show application
-  if (!isCreator) {
+  // Application under review — applied or under_review.
+  if (status === 'applied' || status === 'under_review') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="card text-center py-12 mb-6">
+          <Palette className="w-16 h-16 text-accent-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-2">Application under review</h1>
+          <p className="text-sm text-text-tertiary max-w-md mx-auto">
+            Thanks for applying to the Creator Program. We&apos;re reviewing applications by hand while Align grows —
+            keep posting and growing your audience while you wait. Your progress keeps counting below.
+          </p>
+        </div>
+        {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
+      </div>
+    );
+  }
+
+  // Rejected or suspended — informational, with the ladder still visible.
+  if (status === 'rejected' || status === 'suspended') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="card text-center py-12 mb-6">
+          <Palette className="w-16 h-16 text-text-muted mx-auto mb-4" />
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-2">
+            {status === 'suspended' ? 'Creator access suspended' : 'Application not approved'}
+          </h1>
+          <p className="text-sm text-text-tertiary max-w-md mx-auto">
+            {status === 'suspended'
+              ? 'Your creator access is currently suspended. Contact support if you believe this is a mistake.'
+              : 'Your application wasn’t approved this time. Keep building your audience — the milestones below show what strengthens a future application.'}
+          </p>
+        </div>
+        {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
+      </div>
+    );
+  }
+
+  // Not applied yet ('none') — show the application with eligibility-tiered CTA.
+  if (status === 'none') {
+    const qualifies = eligibility?.qualifies ?? false;
     return (
       <div className="max-w-2xl mx-auto">
         <div className="card text-center py-12 mb-6">
@@ -188,8 +224,13 @@ export default function CreatorStudioPage() {
             disabled={applying}
             className="btn-primary px-8"
           >
-            {applying ? 'Applying...' : 'Apply as Creator'}
+            {applying ? 'Submitting...' : qualifies ? 'Apply Now — You Qualify' : 'Request Early Access'}
           </button>
+          <p className="text-[11px] text-text-muted mt-3 max-w-sm mx-auto">
+            {qualifies
+              ? 'You meet every milestone below — applications are reviewed by our team.'
+              : 'We’re approving founding creators by hand while Align grows. Hit the milestones below to strengthen your application.'}
+          </p>
         </div>
 
         {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
@@ -197,7 +238,7 @@ export default function CreatorStudioPage() {
     );
   }
 
-  // Creator dashboard
+  // status === 'approved' — full creator dashboard
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-display font-bold text-text-primary mb-6 flex items-center gap-3">
