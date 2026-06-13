@@ -20,10 +20,18 @@ interface CreatorStats {
   posts_this_month: number;
 }
 
+interface TopContentItem {
+  id: string;
+  kind: 'reel' | 'video';
+  label: string;
+  views: number;
+}
+
 export default function CreatorStudioPage() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const [stats, setStats] = useState<CreatorStats | null>(null);
+  const [topContent, setTopContent] = useState<TopContentItem[]>([]);
   const [isCreator, setIsCreator] = useState(false);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
@@ -55,13 +63,52 @@ export default function CreatorStudioPage() {
         .select('id', { count: 'exact' })
         .in('post_id', (posts || []).map(p => p.id));
 
+      // Real view counts: reel plays + feed video plays, both tracked
+      // since the view-counter feature (reel_views / post_video_views).
+      const [reelsRes, videoPostsRes] = await Promise.all([
+        supabase
+          .from('reels')
+          .select('id, caption, views_count')
+          .eq('user_id', user!.id)
+          .order('views_count', { ascending: false })
+          .limit(50),
+        supabase
+          .from('posts')
+          .select('id, content, video_views_count')
+          .eq('user_id', user!.id)
+          .eq('is_deleted', false)
+          .not('video_url', 'is', null)
+          .order('video_views_count', { ascending: false })
+          .limit(50),
+      ]);
+      const reelViews = (reelsRes.data || []).reduce((s, r) => s + (r.views_count || 0), 0);
+      const videoViews = (videoPostsRes.data || []).reduce((s, p) => s + (p.video_views_count || 0), 0);
+
+      const top: TopContentItem[] = [
+        ...(reelsRes.data || []).map((r) => ({
+          id: r.id,
+          kind: 'reel' as const,
+          label: r.caption?.slice(0, 60) || 'Untitled reel',
+          views: r.views_count || 0,
+        })),
+        ...(videoPostsRes.data || []).map((p) => ({
+          id: p.id,
+          kind: 'video' as const,
+          label: p.content?.slice(0, 60) || 'Video post',
+          views: p.video_views_count || 0,
+        })),
+      ]
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 5);
+      setTopContent(top);
+
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
       setStats({
         total_posts: posts?.length || 0,
         total_reactions: reactions || 0,
-        total_views: 0, // Would come from analytics
+        total_views: reelViews + videoViews,
         total_followers: creatorProfile.follower_count || 0,
         total_earnings: creatorProfile.total_earnings || 0,
         posts_this_month: (posts || []).filter(p => p.created_at >= monthStart).length,
@@ -158,6 +205,30 @@ export default function CreatorStudioPage() {
         <StatCard icon={DollarSign} label="Earnings" value={`$${(stats?.total_earnings || 0).toFixed(2)}`} />
         <StatCard icon={BarChart3} label="This Month" value={stats?.posts_this_month || 0} />
       </div>
+
+      {/* Top content by views */}
+      {topContent.length > 0 && (
+        <div className="card mb-6">
+          <h2 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-accent-primary" />
+            Top Content by Views
+          </h2>
+          <div className="divide-y divide-border-primary">
+            {topContent.map((item, i) => (
+              <div key={`${item.kind}-${item.id}`} className="flex items-center gap-3 py-2.5">
+                <span className="text-xs text-text-muted w-4">{i + 1}</span>
+                <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted">
+                  {item.kind === 'reel' ? 'Reel' : 'Video'}
+                </span>
+                <p className="text-sm text-text-secondary flex-1 truncate">{item.label}</p>
+                <span className="text-sm font-semibold text-text-primary flex items-center gap-1">
+                  <Eye className="w-3.5 h-3.5 text-text-muted" /> {item.views}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
