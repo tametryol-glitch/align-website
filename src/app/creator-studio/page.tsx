@@ -6,10 +6,11 @@ import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import {
   Palette, TrendingUp, DollarSign, Users, BarChart3,
-  Star, FileText, Eye, Heart, MessageCircle
+  Star, FileText, Eye, Heart, MessageCircle, CheckCircle2, Circle
 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { useTranslation } from 'react-i18next';
+import { getCreatorEligibility, type CreatorEligibility } from '@/lib/creatorEligibility';
 
 interface CreatorStats {
   total_posts: number;
@@ -32,6 +33,7 @@ export default function CreatorStudioPage() {
   const { user } = useAuthStore();
   const [stats, setStats] = useState<CreatorStats | null>(null);
   const [topContent, setTopContent] = useState<TopContentItem[]>([]);
+  const [eligibility, setEligibility] = useState<CreatorEligibility | null>(null);
   const [isCreator, setIsCreator] = useState(false);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
@@ -43,6 +45,11 @@ export default function CreatorStudioPage() {
 
   async function checkCreatorStatus() {
     const supabase = createClient();
+
+    // Eligibility ladder loads for everyone (creator or not) — it's the
+    // motivation surface, shown before the program is even enforced.
+    getCreatorEligibility(user!.id).then(setEligibility).catch(() => {});
+
     const { data: creatorProfile } = await supabase
       .from('creator_profiles')
       .select('*')
@@ -69,7 +76,7 @@ export default function CreatorStudioPage() {
         supabase
           .from('reels')
           .select('id, caption, views_count')
-          .eq('user_id', user!.id)
+          .eq('creator_id', user!.id)
           .order('views_count', { ascending: false })
           .limit(50),
         supabase
@@ -153,7 +160,7 @@ export default function CreatorStudioPage() {
   if (!isCreator) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="card text-center py-12">
+        <div className="card text-center py-12 mb-6">
           <Palette className="w-16 h-16 text-accent-primary mx-auto mb-4" />
           <h1 className="text-2xl font-display font-bold text-text-primary mb-3">{t('creatorStudio.title')}</h1>
           <p className="text-sm text-text-tertiary mb-6 max-w-md mx-auto">
@@ -184,6 +191,8 @@ export default function CreatorStudioPage() {
             {applying ? 'Applying...' : 'Apply as Creator'}
           </button>
         </div>
+
+        {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
       </div>
     );
   }
@@ -205,6 +214,9 @@ export default function CreatorStudioPage() {
         <StatCard icon={DollarSign} label="Earnings" value={`$${(stats?.total_earnings || 0).toFixed(2)}`} />
         <StatCard icon={BarChart3} label="This Month" value={stats?.posts_this_month || 0} />
       </div>
+
+      {/* Eligibility ladder — for creators it confirms standing */}
+      {eligibility && <CreatorLadder eligibility={eligibility} isCreator={true} />}
 
       {/* Top content by views */}
       {topContent.length > 0 && (
@@ -271,6 +283,70 @@ function StatCard({ icon: Icon, label, value }: { icon: any; label: string; valu
       <Icon className="w-5 h-5 text-accent-primary mx-auto mb-1.5" />
       <p className="text-lg font-bold text-text-primary">{value}</p>
       <p className="text-[10px] text-text-muted">{label}</p>
+    </div>
+  );
+}
+
+function fmt(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+
+function CreatorLadder({ eligibility, isCreator }: { eligibility: CreatorEligibility; isCreator: boolean }) {
+  return (
+    <div className="card mb-6">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-accent-primary" />
+          {eligibility.qualifies ? 'Creator Program — Eligible' : 'Road to Creator Program'}
+        </h2>
+        <span className="text-xs text-text-muted">{eligibility.metCount}/{eligibility.totalCount} goals</span>
+      </div>
+      {!isCreator && (
+        <p className="text-xs text-text-tertiary mb-3">
+          {eligibility.qualifies
+            ? 'You meet every requirement — apply below to join the monetized Creator Program.'
+            : 'Hit these milestones to unlock the monetized Creator Program. Keep posting and engaging.'}
+        </p>
+      )}
+
+      {/* Overall progress */}
+      <div className="mb-4">
+        <div className="flex justify-between text-[11px] text-text-muted mb-1">
+          <span>Overall progress</span>
+          <span>{eligibility.overallPct}%</span>
+        </div>
+        <div className="h-2 rounded-full bg-bg-tertiary overflow-hidden">
+          <div
+            className="h-full rounded-full bg-accent-primary transition-all"
+            style={{ width: `${eligibility.overallPct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Per-requirement rows */}
+      <div className="space-y-3">
+        {eligibility.requirements.map((r) => (
+          <div key={r.key}>
+            <div className="flex items-center gap-2 mb-1">
+              {r.met
+                ? <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
+                : <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />}
+              <span className="text-xs text-text-secondary flex-1">{r.label}</span>
+              <span className={`text-xs font-medium ${r.met ? 'text-green-400' : 'text-text-primary'}`}>
+                {fmt(r.current)} / {fmt(r.target)}
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full bg-bg-tertiary overflow-hidden ml-6">
+              <div
+                className={`h-full rounded-full transition-all ${r.met ? 'bg-green-400' : 'bg-accent-primary/60'}`}
+                style={{ width: `${Math.round(r.progress * 100)}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
