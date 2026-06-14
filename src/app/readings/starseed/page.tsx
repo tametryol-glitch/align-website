@@ -89,7 +89,32 @@ export default function StarseedPage() {
             {reading.summary && (
               <div className="card border-accent-muted">
                 <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-2">Soul Mission</p>
-                <p className="text-sm text-text-secondary leading-relaxed">{reading.summary}</p>
+                <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{reading.summary}</p>
+
+                {/* Contributing factors — clean chips instead of a "(+3 pts)" prose dump */}
+                {Array.isArray(reading.contributing_factors) && reading.contributing_factors.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-accent-muted/40">
+                    <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-2">
+                      What in your chart points here
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {reading.contributing_factors.map((f: any, i: number) => (
+                        <span
+                          key={i}
+                          className="text-xs px-2.5 py-1 rounded-full bg-bg-tertiary text-text-secondary border border-accent-muted/30"
+                          title={`Weight: ${f.points}`}
+                        >
+                          {f.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-text-muted italic mt-4 leading-relaxed">
+                  Starseed origin is an interpretive, soul-level lens — a mirror for reflection and
+                  self-understanding, not a literal claim about where you were born.
+                </p>
               </div>
             )}
 
