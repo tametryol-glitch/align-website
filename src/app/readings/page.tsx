@@ -83,6 +83,14 @@ const READING_I18N_KEYS: Record<string, string> = {
 
 const TIER_RANK: Record<TierLevel, number> = { free: 0, starter: 1, light: 2, premium: 3, pro: 4 };
 
+// Founder-only soak of the deterministic Starseed Origin engine. The legacy
+// 'Starseed' entry stays for everyone; this is the closed-test of the stable
+// fingerprint reading. Drop the allowlist once it passes.
+const STARSEED_ORIGIN_ALLOWLIST = new Set<string>(['tametryol@gmail.com']);
+const STARSEED_ORIGIN_ENTRY: ReadingItem = {
+  key: 'Soul Origin', href: '/readings/starseed-origin', glyph: '✦', tier: 'premium',
+};
+
 const READINGS_BY_KEY = Object.fromEntries(READINGS.map((r) => [r.key, r]));
 
 const FIRE_SIGNS = ['Aries', 'Leo', 'Sagittarius'];
@@ -186,6 +194,16 @@ export default function ReadingsPage() {
     [profile?.sun_sign],
   );
 
+  // Founder-allowlist soak: prepend Soul Origin to the grid only for the
+  // allowlisted email. Everyone else sees the standard list unchanged.
+  const userEmail = (useAuthStore.getState().user?.email || '').toLowerCase();
+  const allReadings = useMemo(
+    () => (STARSEED_ORIGIN_ALLOWLIST.has(userEmail)
+      ? [STARSEED_ORIGIN_ENTRY, ...READINGS]
+      : READINGS),
+    [userEmail],
+  );
+
   return (
     <div className="max-w-5xl mx-auto">
       <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('readings.title')}</h1>
@@ -251,7 +269,7 @@ export default function ReadingsPage() {
       </h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {READINGS.map((reading) => {
+        {allReadings.map((reading) => {
           const locked = TIER_RANK[tier] < TIER_RANK[reading.tier];
           return (
             <Link

@@ -87,6 +87,17 @@ class AlignAPI {
     return this.request('/starseed/reading', { method: 'POST', body: JSON.stringify(birthData) });
   }
 
+  // Deterministic soul-origin (stable across reloads; persisted server-side).
+  async getStarseedOrigin(birthData: any, recalculate = false) {
+    const qs = recalculate ? '?recalculate=true' : '';
+    return this.request(`/starseed/origin${qs}`, { method: 'POST', body: JSON.stringify(birthData) });
+  }
+
+  // Current Star Activation — transient daily sky layer; never overwrites origin.
+  async getStarseedActivation() {
+    return this.request('/starseed/activation', { method: 'GET' });
+  }
+
   async getNumerology(data: any) {
     return this.request('/numerology/reading', { method: 'POST', body: JSON.stringify(data) });
   }
