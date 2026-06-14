@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { Sparkles, ArrowLeft, ChevronDown } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
-import { describeOrigin, ORIGIN_CHARACTERISTICS } from '@/lib/starseedContent';
+import { describeOrigin, ORIGIN_CHARACTERISTICS, LORE_SECTIONS } from '@/lib/starseedContent';
 
 export default function StarseedPage() {
   const { t } = useTranslation();
@@ -163,6 +163,14 @@ export default function StarseedPage() {
                           <Detail label="Life Purpose & Motive" text={chars.lifeLesson} />
                           <Detail label="Physical Traits" text={chars.physicalTraits} />
                           <Detail label="Relational Style" text={chars.relationalStyle} />
+                        </div>
+                      )}
+                      {chars?.lore && (
+                        <div className="pt-2 border-t border-accent-muted/40 space-y-3">
+                          <p className="text-[11px] uppercase tracking-widest text-amber-400 font-semibold">Cosmic Lore</p>
+                          {LORE_SECTIONS.filter((s) => chars.lore![s.key]).map((s) => (
+                            <Detail key={s.key} label={s.label} text={chars.lore![s.key]!} />
+                          ))}
                         </div>
                       )}
                     </div>

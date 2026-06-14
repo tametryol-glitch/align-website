@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Sparkles, ArrowLeft, Star, Sun, RefreshCw } from 'lucide-react';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import {
-  describeOrigin, ORIGIN_CHARACTERISTICS,
+  describeOrigin, ORIGIN_CHARACTERISTICS, LORE_SECTIONS,
 } from '@/lib/starseedContent';
 
 interface FamPublic {
@@ -183,6 +183,14 @@ export default function StarseedOriginPage() {
                   <CharRow label="Earth Challenge" text={chars.earthChallenge} />
                   <CharRow label="Physical Traits" text={chars.physicalTraits} />
                   <CharRow label="Relational Style" text={chars.relationalStyle} />
+                </div>
+              )}
+              {chars?.lore && (
+                <div className="mt-4 pt-4 border-t border-accent-muted/40 space-y-3">
+                  <p className="text-[11px] uppercase tracking-widest text-amber-400 font-semibold">Cosmic Lore</p>
+                  {LORE_SECTIONS.filter((s) => chars.lore![s.key]).map((s) => (
+                    <CharRow key={s.key} label={s.label} text={chars.lore![s.key]!} />
+                  ))}
                 </div>
               )}
             </div>

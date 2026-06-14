@@ -40,6 +40,29 @@ export const ORIGIN_DESCRIPTIONS: Record<string, string> = {
   Jupiterian: "Jupiterian souls are expansive teachers, philosophers, and abundance magnets. They see the big picture and inspire faith.",
 };
 
+// Optional deep-lore block for lineages with extended mythos. Reworded in our
+// own words to carry the source's meaning without copying. Rendered as a
+// "Cosmic Lore" deep-dive when present; absent lineages simply don't show it.
+export interface OriginLore {
+  universalOrigin?: string;
+  physicalCharacteristics?: string;
+  beliefSystem?: string;
+  cosmicAgenda?: string;
+  technology?: string;
+  consciousnessAbilities?: string;
+  dimensionalCapacity?: string;
+}
+
+export const LORE_SECTIONS: Array<{ key: keyof OriginLore; label: string }> = [
+  { key: 'universalOrigin', label: 'Universal Origin' },
+  { key: 'physicalCharacteristics', label: 'Physical Characteristics' },
+  { key: 'beliefSystem', label: 'Belief System' },
+  { key: 'cosmicAgenda', label: 'Cosmic Agenda' },
+  { key: 'technology', label: 'Technology' },
+  { key: 'consciousnessAbilities', label: 'Consciousness Abilities' },
+  { key: 'dimensionalCapacity', label: 'Dimensional Capacity' },
+];
+
 export interface OriginChar {
   traits: string[];
   earthChallenge: string;  // the shadow / what to watch out for
@@ -47,6 +70,7 @@ export interface OriginChar {
   lifeLesson: string;      // the soul's purpose & motive
   physicalTraits: string;
   relationalStyle: string;
+  lore?: OriginLore;       // optional extended mythos
 }
 
 export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
@@ -201,6 +225,15 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that a lasting legacy requires consent, collaboration, and respect for sovereignty. Empires of control fall; legacies built on love endure.",
     physicalTraits: "Often tall, imposing builds and strong bone structure. A commanding presence; drawn to architecture, ancient structures, and monumental art.",
     relationalStyle: "Approach relationships strategically. Need partners who share their vision. Can be distant until they learn that love is not a resource to manage but a force to surrender to.",
+    lore: {
+      universalOrigin: "The Annunaki are an ancient generation of gods said to come from the world of Nibiru — a name the Sumerians linked with Jupiter. Their name traces back to An, the Sumerian deity of the sky.",
+      physicalCharacteristics: "Standing far taller than modern humans, they are remembered as giants with olive skin and dark eyes. The men wore their hair long in soft waves, their beards elaborately curled in neat rows; the women kept long, flowing hair and dressed much like Grecian goddesses. They carried tremendous physical strength and an imposing, magnetic presence.",
+      beliefSystem: "Their path is one of service to self. Legend holds that they broke many cosmic laws — most notoriously, engineering a subservient race on Earth through genetic manipulation.",
+      cosmicAgenda: "Some 450,000 years ago, the Annunaki are said to have come to Earth in search of gold, the element they needed to repair Nibiru's failing atmosphere as their homeworld baked under its own sun's radiation. Settling in Sumer, they used genetic engineering to fashion a labor race to mine the metal. Back on Nibiru, the gold was transformed into a luminous liquid and spread across the sky as a shield against the harmful light. In time they left Earth behind, their lower-vibration genetic line continuing to evolve. It is said they are bound to return — the cosmic law of cause and effect means growth over time, and they remain answerable for what they created. Others claim they never really left, quietly guiding human evolution through hidden circles of power. Some traditions cast them as reptilian or reptilian-influenced beings locked in rivalry with the Draconians over dominion of Earth — or wonder whether the two are one and the same. Today, many in the extraterrestrial-research community believe the Annunaki have come to regret their past and are now working to mend their karma.",
+      technology: "The Annunaki travel in vast motherships — each a cluster of cities mirroring their former civilizations. Their smaller craft are two joined half-domes that form an oval. In transit, delicate organic tendrils extend from the vessel's core to read the vibrations of the cosmos; once it locks onto its resonant octave, it slips into the antimatter realm, riding ancient hidden hyperspace corridors their ancestors built for instant travel across the universe. They prefer to move unseen, slipping past the watchful gaze of the Galacterian Alignment.",
+      consciousnessAbilities: "Relishing their status as created gods, the Annunaki have watched their divine power erode over the ages, worn down by their own egos. What they once achieved through sheer power of mind, they increasingly replace with technology.",
+      dimensionalCapacity: "They are able to live in and travel as high as the sixth realm.",
+    },
   },
   Avian: {
     traits: ["Freedom-Loving", "Aerial Perspective", "Visionary", "Light-Bodied", "Sky-Connected", "Quick-Minded"],
