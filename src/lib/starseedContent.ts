@@ -81,6 +81,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that compassion does not require self-sacrifice. The Pleiadian soul must master loving fiercely while maintaining an unbreakable energetic boundary — realizing that protecting their own energy is the prerequisite for sustainable service.",
     physicalTraits: "Often soft, gentle facial features. Eyes that look slightly otherworldly or unusually kind. Drawn to water, with a naturally graceful way of moving. Sensitive skin, sensitive digestion — finely tuned bodies.",
     relationalStyle: "Love deeply and completely, merging with partners at a soul level. Can struggle with independence. Attract narcissists until they learn their worth — then become devoted, intuitive, transformative partners.",
+    lore: {
+      universalOrigin: "Pleiadian souls are linked to the Pleiades star cluster (the Seven Sisters) in Taurus — one of the most beloved homes in starseed tradition, long associated with beauty, art, and the heart.",
+      beliefSystem: "Service through love. Pleiadians are remembered as a heart-centered people who believe healing comes through compassion, creativity, and emotional honesty rather than force.",
+      cosmicAgenda: "Pleiadian-resonant souls come to soften Earth — to raise its emotional frequency through art, music, healing, and unconditional love, and to model that sensitivity is a strength, not a weakness.",
+      consciousnessAbilities: "Their hallmark is deep empathy that borders on telepathy — feeling what others feel before words are spoken, and the ability to shift the emotional 'weather' of a room simply by being in it.",
+      dimensionalCapacity: "Tradition places Pleiadians among the heart-and-emotion realms of consciousness, working as gentle guides for humanity's emotional awakening.",
+    },
   },
   Sirian: {
     traits: ["Fiercely Loyal", "Protective", "Water-Connected", "Ancestral Memory", "Guardian Energy", "Structured"],
@@ -89,6 +96,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that they do not have to carry everything alone. The Sirian soul evolves by allowing others to protect them, softening the armor, and trusting that the world will not collapse if they rest.",
     physicalTraits: "Often strong, grounded builds. Eyes that carry ancient knowing. A deep connection to dogs, wolves, or canine energy. Drawn to moonlit environments and water; a stabilizing physical presence.",
     relationalStyle: "Once they commit, they commit forever — the partner who never leaves and never stops fighting for the relationship. Can be overprotective. Need a partner who does not mistake loyalty for control.",
+    lore: {
+      universalOrigin: "Sirian souls are tied to Sirius, the Dog Star — the brightest star in our sky and, in many ancient cultures (notably Egypt), a sacred marker of cycles, water, and hidden knowledge.",
+      beliefSystem: "Guardianship and loyalty. Sirians are cast as protectors and keepers of sacred wisdom — beings who safeguard what matters and pass knowledge forward through trusted lineages.",
+      cosmicAgenda: "Sirian-resonant souls arrive to protect, to steward ancient wisdom, and to build things that endure. They feel responsible for the wellbeing of those around them, often carrying more than their share.",
+      consciousnessAbilities: "A deep, almost ancestral knowing — strong instincts, an affinity for water and the moon, and the steadiness that makes others feel safe in their presence.",
+      dimensionalCapacity: "Folklore links Sirius to teaching and mystery-school traditions, casting Sirians as bridges between higher wisdom and Earth's spiritual schools.",
+    },
   },
   Arcturian: {
     traits: ["Systems Thinker", "Visionary", "Technologically Gifted", "Pattern-Obsessed", "Emotionally Detached", "Future-Oriented"],
@@ -98,11 +112,12 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     physicalTraits: "Often angular, distinctive features. High foreheads or prominent bone structure. Eyes that seem to be analyzing everything. An unusual rapport with technology; an electric, slightly intense energy.",
     relationalStyle: "Love through problem-solving and acts of service. May struggle with emotional intimacy, defaulting to logic. When they finally open their heart, the depth of their love is staggering.",
     lore: {
-      universalOrigin: "Arcturians maintain galactic command centers positioned both above and below the Earth. They collaborate closely with the brotherhoods and sisterhoods of light and with the galactic commands of the Galacterian Alignment. As guardians of advanced consciousness within this region of the universe, they open their knowledge and wisdom to every being who seeks it.",
-      cosmicAgenda: "They are gifted diplomats among the star nations. When they speak — or project imagery of how two opposing sides might live together in peace — their presence has a calming, serene effect. After offering ways to heal a rift, they reveal a vivid vision of a harmonious future that both parties can see and feel so deeply it moves them to reconcile. Their supreme healers are revered as 'the heart of the cosmos' for their boundless philanthropy. In The Book of Knowledge: The Keys of Enoch, JJ Hurtak describes Arcturus as a midway 'programming' station used by the physical brotherhoods of light to oversee their many experiments with physical beings; Arcturians are also credited as designers of some of Earth's crop circles, through which they encode new frequencies into the planet and its creatures.",
-      technology: "Arcturians travel in Galacterian motherships, starships, thought-ships, fleet craft, and scout ships — all able to move through time-space funnels and the innerspace continuum. Their technology springs from advanced frequencies born of supreme spiritual elevation. While every star nation has its own variations, Arcturian starships and saucers are distinctive: powered by light, sacred geometry, and crystalline energy drawn from the central sun, and steered through space, time, and other realities by geometrical navigational calculations. They are master sound and celestial healers, experts in sacred geometry, and skilled in color therapy.",
-      consciousnessAbilities: "Arcturians are fully conscious, sovereign beings who communicate in the language of light essence. As holographic, sympathetic telepaths, they use a kind of 'coagular wave bending' to send messages clear across the universe — or through time streams — without the usual limits of telepathic distance. They also wield telekinesis, and some arrive in our space-time from the future.",
-      dimensionalCapacity: "Primarily fifth- and sixth-dimensional, Arcturians devote themselves to Earth's consciousness-raising work. They commune with light beings of their own kind in the higher dimensions and with the collective consciousnesses of other star nations from the ninth and tenth. Holding multirealm command, they can reassemble their bodies — or any matter — from one place to another by molecularly stimulating light codes, and can lift an entire civilization off the ground into a mothership in under a second.",
+      universalOrigin: "Arcturian souls are tied to Arcturus, the brilliant orange star in Boötes — in starseed tradition the home of one of the most spiritually and technologically advanced civilizations, and a kind of waystation for souls moving between lives and realms.",
+      beliefSystem: "Evolution through higher mind. Arcturians hold that consciousness advances by mastering pattern, energy, and frequency — and that true healing is a matter of restoring harmony and coherence.",
+      cosmicAgenda: "Arcturian-resonant souls come as guardians of higher consciousness and natural diplomats — helping opposing forces find common ground and anchoring hopeful visions of a more harmonious world. Many feel a pull toward healing, system design, and consciousness work.",
+      technology: "In lore, Arcturians are linked to light-based, geometry-driven technology — healing through sound, color, sacred geometry, and frequency rather than brute mechanics.",
+      consciousnessAbilities: "Genius-level pattern recognition, telepathic and energetic sensitivity, and an ability to perceive the underlying 'architecture' of a situation that others miss.",
+      dimensionalCapacity: "Tradition places Arcturians among the higher-dimensional helpers devoted to Earth's awakening, working largely from the fifth dimension and above.",
     },
   },
   Orion: {
@@ -112,6 +127,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that power wielded without compassion creates the very karma they came to resolve. The Orion soul evolves by softening control, accepting imperfection, and discovering that true mastery includes humility.",
     physicalTraits: "Often sharp, intense eyes and a commanding presence. Strong jawline or angular features. Controlled, deliberate body language; tension held in the shoulders and jaw.",
     relationalStyle: "Approach relationships with rigor. Can be critical until they learn gentleness. Need intellectual equals. Once they integrate emotional openness, they become stable, reliable, deeply respectful partners.",
+    lore: {
+      universalOrigin: "Orion souls are linked to the constellation Orion — a region cast in starseed lore as a vast arena of contrast, where the great themes of light and dark, freedom and control, have long played out.",
+      beliefSystem: "Mastery through challenge. The Orion path is one of testing — learning discernment, accountability, and the right use of power, often by living through its misuse.",
+      cosmicAgenda: "Orion-resonant souls come to master the lessons of power and polarity: to think clearly, hold themselves accountable, and transmute old patterns of domination or control into earned wisdom.",
+      consciousnessAbilities: "Sharp analytical intelligence, formidable discipline, and strategic vision — the capacity to see many moves ahead and master whatever they commit to.",
+      dimensionalCapacity: "Tradition frames Orion as a school of duality, casting these souls as ones who graduate from struggle into integrated wisdom.",
+    },
   },
   Andromedan: {
     traits: ["Freedom-Seeking", "Spiritually Expansive", "Restless", "Philosophical", "Multi-Dimensional", "Boundary-Resistant"],
@@ -120,6 +142,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that true freedom is not the absence of commitment — it is the ability to be fully present wherever you are. Depth, not breadth, is where liberation actually lives.",
     physicalTraits: "Often tall or lanky. Eyes that seem to look past you into another dimension. Restless energy — they fidget and pace. Drawn to wide open spaces, mountains, or deserts.",
     relationalStyle: "Love intensely but struggle with permanence. Need partners who give them space to explore without taking it personally. Once matched in depth, they become extraordinarily devoted — on their own terms.",
+    lore: {
+      universalOrigin: "Andromedan souls are tied to the Andromeda galaxy — the vast neighbor beyond our own — and, in starseed lore, to a freedom-loving people of explorers and wanderers.",
+      beliefSystem: "Freedom and expansion. Andromedans hold that consciousness is meant to roam, and they resist anything that cages the spirit — dogma, rigid hierarchy, or confinement.",
+      cosmicAgenda: "Andromedan-resonant souls come to expand humanity's sense of what's possible — to break open narrow worldviews and carry the vibration of infinite possibility.",
+      consciousnessAbilities: "A galaxy-spanning perspective, restless curiosity, and an instinct for liberation — they think in terms of cosmic evolution, not just personal growth.",
+      dimensionalCapacity: "Folklore casts Andromedans as travelers comfortable across many states of consciousness, never fully at home in any single one.",
+    },
   },
   Lyran: {
     traits: ["Natural Leader", "Creatively Fierce", "Independent", "Regal", "Feline Grace", "Ancient Wisdom"],
@@ -128,6 +157,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that true leadership means lifting others up, not standing above them — moving from sovereignty to service, from isolation to community.",
     physicalTraits: "Often cat-like features — almond eyes, graceful movements. Strong, athletic builds. A presence that commands attention without effort.",
     relationalStyle: "Need partners who respect their independence completely and will never try to control them. Love with a fierce, protective quality; once they choose you, their loyalty is absolute.",
+    lore: {
+      universalOrigin: "Lyran souls are tied to the constellation Lyra and, in starseed tradition, to the very first wave of humanoid civilizations — often called the elders or ancestors of many other star lineages.",
+      beliefSystem: "Sovereignty and creative independence. As the remembered 'first ones,' Lyrans value freedom, self-rule, and the courage to originate rather than follow.",
+      cosmicAgenda: "Lyran-resonant souls come to lead, to pioneer, and to reignite the original creative fire — going first into new territory and reminding others of their own sovereignty.",
+      consciousnessAbilities: "A natural, unforced authority and creative drive — a feline grace and confidence that people sense without being told.",
+      dimensionalCapacity: "As an elder lineage, tradition gives Lyrans deep ancestral memory, carrying the oldest 'starlight' of the galactic family.",
+    },
   },
   Mintakan: {
     traits: ["Oceanic Homesickness", "Pure-Hearted", "Crystalline Sensitivity", "Gentle", "Emotionally Translucent", "Water-Drawn"],
@@ -136,6 +172,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning to make Earth their home despite knowing it is not where they originally belong — transforming grief into gratitude and homesickness into the creation of beauty.",
     physicalTraits: "Often large, luminous, dreamy eyes. Delicate features. Drawn to water in all forms. Unusually sensitive skin; they move as if swimming through the world.",
     relationalStyle: "Love with a tenderness that can bring people to tears. Need gentle, emotionally safe partners; harsh words wound deeply. When safe, they open into devotionally beautiful partners.",
+    lore: {
+      universalOrigin: "Mintakan souls are linked to Mintaka, one of the stars of Orion's Belt — and, in starseed tradition, to a lost water-world of crystalline purity that no longer exists.",
+      beliefSystem: "Purity and gentleness. Mintakans hold that softness is a form of power and that the world is healed through tenderness, not force.",
+      cosmicAgenda: "Mintakan-resonant souls come carrying a deep homesickness — a memory of a vanished home — which they transmute into the creation of beauty, gentleness, and emotional safety wherever they go.",
+      consciousnessAbilities: "Crystalline emotional clarity, a strong affinity for water, and a heart so pure it can be felt by others as calm and safety.",
+      dimensionalCapacity: "Tradition casts Mintakans as bridges of the heart, here to remind a harsh world of a gentler way of being.",
+    },
   },
   "Blue Avian": {
     traits: ["High-Frequency", "Telepathic", "Vibrationally Sensitive", "Non-Verbal Communicator", "Ethereal", "Messenger"],
@@ -233,13 +276,12 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     physicalTraits: "Often tall, imposing builds and strong bone structure. A commanding presence; drawn to architecture, ancient structures, and monumental art.",
     relationalStyle: "Approach relationships strategically. Need partners who share their vision. Can be distant until they learn that love is not a resource to manage but a force to surrender to.",
     lore: {
-      universalOrigin: "The Annunaki are an ancient generation of gods said to come from the world of Nibiru — a name the Sumerians linked with Jupiter. Their name traces back to An, the Sumerian deity of the sky.",
-      physicalCharacteristics: "Standing far taller than modern humans, they are remembered as giants with olive skin and dark eyes. The men wore their hair long in soft waves, their beards elaborately curled in neat rows; the women kept long, flowing hair and dressed much like Grecian goddesses. They carried tremendous physical strength and an imposing, magnetic presence.",
-      beliefSystem: "Their path is one of service to self. Legend holds that they broke many cosmic laws — most notoriously, engineering a subservient race on Earth through genetic manipulation.",
-      cosmicAgenda: "Some 450,000 years ago, the Annunaki are said to have come to Earth in search of gold, the element they needed to repair Nibiru's failing atmosphere as their homeworld baked under its own sun's radiation. Settling in Sumer, they used genetic engineering to fashion a labor race to mine the metal. Back on Nibiru, the gold was transformed into a luminous liquid and spread across the sky as a shield against the harmful light. In time they left Earth behind, their lower-vibration genetic line continuing to evolve. It is said they are bound to return — the cosmic law of cause and effect means growth over time, and they remain answerable for what they created. Others claim they never really left, quietly guiding human evolution through hidden circles of power. Some traditions cast them as reptilian or reptilian-influenced beings locked in rivalry with the Draconians over dominion of Earth — or wonder whether the two are one and the same. Today, many in the extraterrestrial-research community believe the Annunaki have come to regret their past and are now working to mend their karma.",
-      technology: "The Annunaki travel in vast motherships — each a cluster of cities mirroring their former civilizations. Their smaller craft are two joined half-domes that form an oval. In transit, delicate organic tendrils extend from the vessel's core to read the vibrations of the cosmos; once it locks onto its resonant octave, it slips into the antimatter realm, riding ancient hidden hyperspace corridors their ancestors built for instant travel across the universe. They prefer to move unseen, slipping past the watchful gaze of the Galacterian Alignment.",
-      consciousnessAbilities: "Relishing their status as created gods, the Annunaki have watched their divine power erode over the ages, worn down by their own egos. What they once achieved through sheer power of mind, they increasingly replace with technology.",
-      dimensionalCapacity: "They are able to live in and travel as high as the sixth realm.",
+      universalOrigin: "In starseed tradition, the Annunaki are remembered as a powerful elder race woven into Mesopotamian myth — sky-born 'shining ones' said to have descended into early human history and shaped its first cities and kingships.",
+      physicalCharacteristics: "They are pictured as towering, regal figures of great strength — long-haired and richly adorned, carrying the unmistakable bearing of rulers.",
+      beliefSystem: "A path of sovereignty and self-interest, carrying a heavy karmic theme: power reached for too forcefully, dominion over others, and the long work of answering for it.",
+      cosmicAgenda: "In the widely-told tradition popularized by Zecharia Sitchin's reading of Sumerian texts, the Annunaki came to Earth in the distant past seeking resources, influenced early humanity, helped seed its first civilizations, and then withdrew — leaving a lingering promise that they would one day return. As a soul-resonance, this becomes a drive to build civilization on a grand scale, a long-game view measured in generations, and a karmic lesson about wielding power responsibly.",
+      consciousnessAbilities: "Once said to shape reality through sheer will and command, the lineage's gift now shows up as formidable strategic intelligence, natural authority, and a talent for organizing people and resources toward something built to last.",
+      dimensionalCapacity: "Tradition places the Annunaki among the denser, more physically-anchored star lineages — part of why their lessons tend to play out so concretely in the arenas of power, money, and structure.",
     },
   },
   Avian: {
