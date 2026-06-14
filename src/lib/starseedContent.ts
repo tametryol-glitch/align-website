@@ -187,6 +187,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning to translate their high-frequency awareness into forms Earth humans can receive — mastering human language and social dynamics without losing their gifts.",
     physicalTraits: "Often bird-like qualities — sharp alert eyes, quick head movements, a lightness to the body. A musical or unusually resonant voice. Drawn to birds and the sky.",
     relationalStyle: "Connect deeply with very few people, preferring energetic intimacy. Need partners comfortable with silence who communicate through presence.",
+    lore: {
+      universalOrigin: "Blue Avian souls belong to the bird-like 'messenger' lineages of starseed tradition — high-frequency beings associated with the etheric realms beyond the physical.",
+      beliefSystem: "Service through vibration. They hold that truth is carried in frequency and tone more than in words, and that raising one's own vibration is itself an act of service.",
+      cosmicAgenda: "Blue Avian-resonant souls come as messengers and frequency-keepers — here to transmit higher awareness through energy, art, and presence, and to model living from love rather than fear.",
+      consciousnessAbilities: "Naturally telepathic and vibrationally sensitive, communicating through tone, imagery, and energy. They can sense the unspoken frequency of a room and subtly shift it.",
+      dimensionalCapacity: "Tradition places them among the higher etheric realms, working more through subtle energy than dense matter.",
+    },
   },
   Hadarian: {
     traits: ["Heart-Centered", "Unconditionally Loving", "Emotionally Restorative", "Warm", "Nurturing", "Self-Sacrificing"],
@@ -195,6 +202,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that self-love is not selfish — it is the source from which all other love flows. Establishing boundaries and choosing partners who match their generosity.",
     physicalTraits: "Often warm, inviting features. Soft eyes that make people feel seen. A physical warmth others can literally feel. Drawn to pink, rose gold, and heart symbols.",
     relationalStyle: "Love with their entire being from the start. Must learn to pace themselves. When matched with an equally giving partner, the relationship becomes a sanctuary.",
+    lore: {
+      universalOrigin: "Hadarian souls are linked to Hadar (Beta Centauri) in the constellation Centaurus — remembered in starseed lore as a lineage of pure, heart-centered love.",
+      beliefSystem: "Love above all. Hadarians hold that unconditional love is the most powerful force in the cosmos and the truest medicine.",
+      cosmicAgenda: "Hadarian-resonant souls come to radiate warmth and emotional healing — restoring others simply through their presence — while learning the harder lesson of receiving love, not only giving it.",
+      consciousnessAbilities: "An extraordinarily strong heart field; people feel safe, seen, and restored around them. Deep emotional attunement that borders on healing touch.",
+      dimensionalCapacity: "Folklore casts Hadarians among the heart-centered realms, here to anchor unconditional love on Earth.",
+    },
   },
   Lemurian: {
     traits: ["Earth-Connected", "Crystal-Sensitive", "Sacred Feminine", "Sound Healer", "Nature Mystic", "Ancient Memory"],
@@ -203,6 +217,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning to bring ancient Lemurian wisdom into the modern world without retreating from it — being a bridge between the sacred past and the technological present.",
     physicalTraits: "Often drawn to natural fabrics, earth tones, and barefoot living. A sturdy, grounded build. Hands that seem to radiate healing energy; sensitive to the energy of places.",
     relationalStyle: "Seek partners who share their reverence for nature and the sacred. Need relationships that feel like spiritual partnerships, drawn to ritual and ceremony.",
+    lore: {
+      universalOrigin: "Lemurian souls carry the memory of Lemuria (Mu) — a legendary ancient Earth civilization said to have lived in deep harmony with nature, the oceans, and the sacred feminine.",
+      beliefSystem: "Harmony with the living Earth. Lemurians hold that humanity is meant to live in reciprocity with the planet, not domination over it.",
+      cosmicAgenda: "Lemurian-resonant souls come to remember and restore that lost harmony — bridging ancient earth-wisdom (crystals, sound, ritual, the sacred feminine) into the modern world.",
+      consciousnessAbilities: "Deep attunement to Earth's energy, crystals, and sound. Natural intuitive healers who read the energy of places and landscapes.",
+      dimensionalCapacity: "Tradition ties Lemurians to the heart of the Earth itself, working as keepers of planetary memory.",
+    },
   },
   Vegan: {
     traits: ["Humanitarian", "Nature-Loving", "Gentle", "Environmental Steward", "Altruistic", "Community-Minded"],
@@ -211,6 +232,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that they cannot save the world alone, but that their consistent, gentle influence creates ripples far larger than they realize.",
     physicalTraits: "Often a natural, unadorned beauty. Drawn to green spaces and gardens. Sensitive constitutions that respond poorly to processed foods or synthetic materials.",
     relationalStyle: "Seek kind, environmentally conscious partners who share their values. Conflict-averse but deeply committed once they find their match.",
+    lore: {
+      universalOrigin: "Vegan souls originate from Vega, the brightest star in Lyra — cast in starseed lore as gentle humanitarians deeply bonded to nature.",
+      beliefSystem: "Stewardship and altruism. Vegans hold that the health of the whole — ecosystems, communities, the planet — matters more than any single part.",
+      cosmicAgenda: "Vegan-resonant souls come to care for the living world — drawn to environmental healing, justice, and sustainable ways of living, often feeling the planet's pain as their own.",
+      consciousnessAbilities: "An intuitive grasp of how systems, natural and social, interconnect, paired with gentleness and practical wisdom about how to tend them.",
+      dimensionalCapacity: "Folklore casts Vegans among the nurturing, life-tending lineages devoted to balance and stewardship.",
+    },
   },
   Draconian: {
     traits: ["Dragon Energy", "Raw Power", "Ambitious", "Transformative", "Strategic", "Intimidating Presence"],
@@ -219,6 +247,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that true power is restraint — channeling their immense force into protection of the vulnerable rather than domination of the weak.",
     physicalTraits: "Often piercing, intense eyes and a powerful presence. Strong builds, prominent features. A gaze that can make others uncomfortable; drawn to fire and heat.",
     relationalStyle: "Need partners not intimidated by their intensity. Once they find an equal, devotion is fierce and protective. Can be possessive until they learn trust.",
+    lore: {
+      universalOrigin: "Draconian souls carry the energy of the Dragon — an ancient, powerful reptilian lineage echoed in countless Earth myths of dragons and serpents.",
+      beliefSystem: "Power and survival. The Draconian path turns on the right use of immense force — the long lesson of choosing protection over domination.",
+      cosmicAgenda: "Draconian-resonant souls come to master raw power — to transmute the instinct to control into the will to protect, and to forge order out of chaos.",
+      consciousnessAbilities: "Formidable willpower, strategic instinct, and a commanding presence that can transform any situation through sheer force of intent.",
+      dimensionalCapacity: "Tradition frames the dragon lineages as ancient and physically-anchored, their lessons concentrated in power, will, and transformation.",
+    },
   },
   Feline: {
     traits: ["Independent", "Graceful", "Fiercely Protective", "Sensual", "Egyptian Connection", "Night Energy"],
@@ -227,6 +262,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that interdependence is not captivity — allowing others close enough to see their soft side without feeling threatened.",
     physicalTraits: "Cat-like features — almond eyes, lithe bodies, graceful movements. Often night owls. Drawn to cats, Egyptian art, and luxurious textures.",
     relationalStyle: "Love on their own terms. Need partners who respect solitude and never try to cage them. Their loyalty, once given, is absolute — but always freely given.",
+    lore: {
+      universalOrigin: "Feline souls belong to the ancient cat lineages of starseed lore — connected to Lyra and to Egypt's reverence for the feline as a sacred guardian.",
+      beliefSystem: "Sovereign grace. Felines hold that dignity, autonomy, and instinct are sacred — and that one protects fiercely what one loves.",
+      cosmicAgenda: "Feline-resonant souls come to embody graceful independence and guardianship — protecting the vulnerable and honoring beauty and pleasure as spiritual paths.",
+      consciousnessAbilities: "Extraordinary grace, sharp instinct, and a powerful protective drive — they read a situation the way a cat reads a room.",
+      dimensionalCapacity: "Folklore links the feline lineages to the temple-mysteries of Egypt, casting them as ancient guardians of sacred space.",
+    },
   },
   "Alpha Centaurian": {
     traits: ["Scientific Explorer", "Logic-Spiritual Bridge", "Discovery-Driven", "Technologically Intuitive", "Methodical", "Curious"],
@@ -235,6 +277,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that science and spirit are not opposites — they are two lenses on the same infinite truth. Integration is their superpower.",
     physicalTraits: "Often bright, curious eyes and an alert demeanor. Drawn to astronomy, technology, and space. Their energy feels clean, precise, and refreshingly honest.",
     relationalStyle: "Need partners who stimulate them intellectually and spiritually. Bore easily with surface talk; once engaged, endlessly curious about their partner.",
+    lore: {
+      universalOrigin: "Alpha Centaurian souls hail from the Alpha Centauri system, our Sun's nearest stellar neighbor — remembered as curious explorers who bridge science and spirit.",
+      beliefSystem: "Truth through integration. They hold that reason and the sacred are two views of one reality, and refuse to abandon either.",
+      cosmicAgenda: "Alpha Centaurian-resonant souls come to unite the rational and the mystical — drawn to discovery, technology, and the frontier where science meets consciousness.",
+      consciousnessAbilities: "A clear, exploratory mind that approaches the mystical with precision and science with wonder — natural innovators and problem-solvers.",
+      dimensionalCapacity: "Tradition casts them among the explorer lineages, comfortable moving between worlds of thought and worlds of spirit.",
+    },
   },
   Nihal: {
     traits: ["Cosmic Rebel", "Activist", "Justice-Driven", "System-Disruptor", "Passionate", "Anti-Authority"],
@@ -243,6 +292,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that sustainable change requires patience and strategy — building as fiercely as they destroy. Rage is fuel; wisdom decides where to direct it.",
     physicalTraits: "Often intense, passionate features and strong body language. Visible tension from the weight of their causes; eyes that burn with conviction.",
     relationalStyle: "Need partners who share their values and can handle their intensity. Love fiercely but may prioritize their cause until they learn balance.",
+    lore: {
+      universalOrigin: "Nihal souls are linked to the star Nihal in the constellation Lepus — cast in starseed lore as cosmic rebels and reformers.",
+      beliefSystem: "Justice above comfort. Nihals hold that unjust systems must be challenged, and that silence in the face of oppression is complicity.",
+      cosmicAgenda: "Nihal-resonant souls come to disrupt what is corrupt and defend the marginalized — igniting change, while learning to build as fiercely as they tear down.",
+      consciousnessAbilities: "A fearless instinct for injustice and an ability to see through institutional facades — passion that ignites action in others.",
+      dimensionalCapacity: "Folklore casts the reformer lineages as catalysts, here to push collective consciousness past its stuck points.",
+    },
   },
   Polarian: {
     traits: ["First-Wave Being", "Unity Consciousness", "Ancient Beyond Measure", "Simplicity-Seeking", "Serene", "Original Light"],
@@ -251,6 +307,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning to participate in duality without losing their connection to unity — here to embody oneness in a world that forgot it, transforming it through presence.",
     physicalTraits: "Often an otherworldly stillness. Simple, unadorned appearance. Eyes of unfathomable depth; they may seem ageless or timeless.",
     relationalStyle: "Seek deep soul connections over surface romance. Their love is quiet, vast, and unconditional — but hard to express in the dramatic ways Earth culture expects.",
+    lore: {
+      universalOrigin: "Polarian souls are remembered as among the oldest in the cosmos — first-wave beings who carry the memory of original unity, before separation and duality.",
+      beliefSystem: "Oneness. Polarians hold that beneath all apparent separation lies a single unified consciousness, and that remembering this is the point of the journey.",
+      cosmicAgenda: "Polarian-resonant souls come to embody unity in a divided world — not to escape duality, but to hold the memory of wholeness within it.",
+      consciousnessAbilities: "A profound inner stillness and a presence that can remind others of the oneness underlying all things; deep, ancient serenity when aligned.",
+      dimensionalCapacity: "Tradition places Polarians close to source consciousness, carrying the vibration of original unity.",
+    },
   },
   Essassani: {
     traits: ["High-Frequency", "Playful", "Joy-Guided", "Excitement-Following", "Lightworker", "Optimistic"],
@@ -259,6 +322,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that following excitement IS the most logical path — and finding the courage to trust it even when the world calls it irresponsible.",
     physicalTraits: "Often bright, lively features with an energetic bounce. Quick smiles, expressive faces. Their energy feels lighter and faster; may look younger than their age.",
     relationalStyle: "Need fun, adventurous partners willing to follow synchronicity. Cannot tolerate chronic heaviness. Their love is joyful and spontaneous.",
+    lore: {
+      universalOrigin: "Essassani souls belong to a high-frequency lineage of starseed lore — a joyful people who navigate life by excitement and enthusiasm.",
+      beliefSystem: "Follow your highest joy. Essassani hold that excitement is the compass of the soul, and that following it aligns one with synchronicity.",
+      cosmicAgenda: "Essassani-resonant souls come to remind a heavy world that life is meant to be enjoyed — modeling play, optimism, and trust in one's own enthusiasm.",
+      consciousnessAbilities: "An unerring inner compass toward joy; when they follow their excitement, synchronicities multiply and doors open.",
+      dimensionalCapacity: "Folklore casts the Essassani among lighter, higher-frequency realms, here to lift the collective mood.",
+    },
   },
   Maldekian: {
     traits: ["Karmic Memory", "Responsibility-Haunted", "Consequence-Aware", "Rebuilder", "Cautious", "Deeply Serious"],
@@ -267,6 +337,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning they are not responsible for what happened on Maldek — their purpose now is to rebuild with wisdom, not carry guilt. Self-forgiveness is their liberation.",
     physicalTraits: "Often a heaviness in the eyes that seems older than their years. Drawn to preparedness, sustainability, and rebuilding; a weighty, grounded presence.",
     relationalStyle: "Need stable, reassuring partners who create safety. May over-prepare for worst cases. Once they release the guilt, they become deeply committed, wise partners.",
+    lore: {
+      universalOrigin: "Maldekian souls carry the memory of Maldek — in starseed lore, a world said to have been destroyed (its remnants imagined as the asteroid belt) through its own conflict and misuse of power.",
+      beliefSystem: "Responsibility and consequence. Maldekians hold a sober awareness that choices ripple outward, and that power without wisdom invites catastrophe.",
+      cosmicAgenda: "Maldekian-resonant souls come as rebuilders — carrying hard-won wisdom about what happens when things go wrong, here to create responsibly and to forgive themselves for the past.",
+      consciousnessAbilities: "An acute sense of consequences and risk that makes them exceptionally responsible stewards — they understand collapse, and so know how to prevent it.",
+      dimensionalCapacity: "Tradition casts Maldekians among the karmically-anchored lineages, working through themes of responsibility and redemption.",
+    },
   },
   Annunaki: {
     traits: ["Civilization Builder", "Dynastic Thinker", "Long-Term Strategist", "Authority", "Architect", "Legacy-Obsessed"],
@@ -291,6 +368,13 @@ export const ORIGIN_CHARACTERISTICS: Record<string, OriginChar> = {
     lifeLesson: "Learning that landing is not the same as being caged — discovering they can still see the sky with their feet on the earth.",
     physicalTraits: "Often sharp, alert features and quick, darting eyes. Light, lean builds. Drawn to high places, aviation, or birds; quick, precise movements.",
     relationalStyle: "Need partners who do not try to ground them. Respond to lightness, humor, and shared adventures; love expressed through freedom and shared experience.",
+    lore: {
+      universalOrigin: "Avian souls belong to the sky lineages of starseed lore — bird-natured beings tied to the element of air and the higher view.",
+      beliefSystem: "Freedom and perspective. Avians hold that wisdom comes from rising above a situation to see the whole pattern.",
+      cosmicAgenda: "Avian-resonant souls come to lift human vision — offering the aerial perspective that reveals connections and solutions invisible from the ground.",
+      consciousnessAbilities: "A quick, far-seeing mind that perceives patterns and possibilities from above; visionary insight paired with mental agility.",
+      dimensionalCapacity: "Folklore casts the avian lineages among the air-and-sky realms, here to keep humanity reaching upward.",
+    },
   },
   Venusian: {
     traits: ["Beauty-Oriented", "Sensual", "Relationally Wise", "Artistic", "Harmonious", "Pleasure-Seeking"],
