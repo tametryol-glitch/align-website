@@ -205,6 +205,55 @@ class AlignAPI {
     onDone();
   }
 
+  // Divine Timing (horary)
+  async detectDivineHouse(question: string) {
+    return this.request('/divine-timing/detect-house', { method: 'POST', body: JSON.stringify({ question }) });
+  }
+
+  async askDivineTiming(data: any) {
+    return this.request('/divine-timing/ask', { method: 'POST', body: JSON.stringify(data) }, 45000);
+  }
+
+  async markDivineOutcome(questionId: string, outcome: string) {
+    return this.request('/divine-timing/outcome', { method: 'POST', body: JSON.stringify({ question_id: questionId, outcome }) });
+  }
+
+  async streamDivineNarration(
+    data: any,
+    onChunk: (text: string) => void,
+    onDone: () => void,
+  ) {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+    const res = await fetch(`${API_BASE}/divine-timing/narrate`, {
+      method: 'POST', headers, body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => '');
+      throw new Error(`${res.status} ${t.slice(0, 200)}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error('No response body');
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const trimmed = line.replace(/\r$/, '');
+        if (trimmed.startsWith('data: ')) {
+          const raw = trimmed.slice(6);
+          if (raw === '[DONE]') { onDone(); return; }
+          try { onChunk(JSON.parse(raw)); } catch { onChunk(raw); }
+        }
+      }
+    }
+    onDone();
+  }
+
   // Pathway
   async getPathway(data: any) {
     return this.request('/pathway/reading', { method: 'POST', body: JSON.stringify(data) });
