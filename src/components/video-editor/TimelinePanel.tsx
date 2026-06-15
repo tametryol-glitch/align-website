@@ -12,6 +12,8 @@
 
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
+import { useWaveform } from './hooks/useWaveform';
+import { trackByUrl } from '@/lib/musicLibrary';
 
 // Extract evenly-spaced frame thumbnails from the source video for a filmstrip.
 // Best-effort: if the canvas is tainted (CORS) it bails and the track falls
@@ -84,14 +86,54 @@ export function TimelinePanel() {
   const removeBroll = useVideoEditorStore((s) => s.removeBroll);
   const updateBroll = useVideoEditorStore((s) => s.updateBroll);
 
+  const musicTrackUrl = useVideoEditorStore((s) => s.musicTrackUrl);
+  const musicTrimStart = useVideoEditorStore((s) => s.musicTrimStart);
+  const setActiveTool = useVideoEditorStore((s) => s.setActiveTool);
+
   const thumbs = useFilmstrip(sourceVideoUrl, videoDuration);
+  const wave = useWaveform(musicTrackUrl);
   const [dragSeg, setDragSeg] = useState<number | null>(null);
+  // Px position of the magnetic snap guide line (null = no snap active).
+  const [snapX, setSnapX] = useState<number | null>(null);
+
+  // Collect snap targets (seconds) from every timeline element, minus excluded
+  // values (e.g. the edge currently being dragged, so it can't snap to itself).
+  const buildSnapTargets = useCallback(
+    (exclude: number[] = []): number[] => {
+      const st = useVideoEditorStore.getState();
+      const vals = new Set<number>([0, st.videoDuration, st.trimStart, st.trimEnd, st.currentTime]);
+      st.brollClips.forEach((b) => { vals.add(b.timelineStart); vals.add(b.timelineStart + (b.sourceEnd - b.sourceStart)); });
+      st.textOverlays.forEach((o) => { vals.add(o.startTime); vals.add(o.endTime); });
+      st.stickerOverlays.forEach((o) => { vals.add(o.startTime); vals.add(o.endTime); });
+      st.segments.forEach((g) => { vals.add(g.sourceStart); vals.add(g.sourceEnd); });
+      return Array.from(vals).filter((v) => isFinite(v) && !exclude.some((e) => Math.abs(e - v) < 1e-6));
+    },
+    [],
+  );
+
+  // Snap a time to the nearest target within ~8px and show the guide line.
+  const snapTime = useCallback(
+    (t: number, targets: number[]): number => {
+      const thrPx = 8;
+      let best: number | null = null;
+      let bestPx = thrPx;
+      for (const tgt of targets) {
+        const dPx = Math.abs((tgt - t) * timelineZoom);
+        if (dPx < bestPx) { bestPx = dPx; best = tgt; }
+      }
+      if (best !== null) { setSnapX(best * timelineZoom + PADDING_LEFT); return best; }
+      setSnapX(null);
+      return t;
+    },
+    [timelineZoom],
+  );
 
   const totalWidth = videoDuration * timelineZoom;
   const TRACK_HEIGHT = 32;
   const VID_H = 54; // taller video track to show the frame filmstrip
   const SEG_H = 44; // segments (cut/rearrange) row
   const BROLL_H = 38; // b-roll / overlay row
+  const MUSIC_H = 34; // background-music row
   const RULER_HEIGHT = 24;
   const PADDING_LEFT = 8;
 
@@ -105,12 +147,15 @@ export function TimelinePanel() {
       const rect = container.getBoundingClientRect();
       const clip = useVideoEditorStore.getState().brollClips.find((b) => b.id === clipId);
       const len = clip ? clip.sourceEnd - clip.sourceStart : 0;
+      const targets = clip ? buildSnapTargets([clip.timelineStart, clip.timelineStart + len]) : [];
       const onMove = (ev: PointerEvent) => {
         const x = ev.clientX - rect.left + container.scrollLeft - PADDING_LEFT;
-        const t = Math.max(0, Math.min(videoDuration - len, x / timelineZoom));
+        const raw = Math.max(0, Math.min(videoDuration - len, x / timelineZoom));
+        const t = Math.max(0, Math.min(videoDuration - len, snapTime(raw, targets)));
         updateBroll(clipId, { timelineStart: t });
       };
       const onUp = () => {
+        setSnapX(null);
         useVideoEditorStore.getState().pushHistory();
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
@@ -118,7 +163,7 @@ export function TimelinePanel() {
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
     },
-    [videoDuration, timelineZoom, updateBroll],
+    [videoDuration, timelineZoom, updateBroll, buildSnapTargets, snapTime],
   );
 
   // Drag a b-roll block's left/right edge to change its start time / length.
@@ -199,11 +244,13 @@ export function TimelinePanel() {
       if (!container) return;
 
       const rect = container.getBoundingClientRect();
+      const targets = buildSnapTargets([trimStart, trimEnd]);
 
       const onMove = (ev: PointerEvent) => {
         const scrollLeft = container.scrollLeft;
         const x = ev.clientX - rect.left + scrollLeft - PADDING_LEFT;
-        const t = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        const raw = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        const t = snapTime(raw, targets);
         if (edge === 'start') {
           setTrimStart(Math.min(t, trimEnd - 0.5));
         } else {
@@ -212,6 +259,7 @@ export function TimelinePanel() {
       };
 
       const onUp = () => {
+        setSnapX(null);
         useVideoEditorStore.getState().pushHistory();
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
@@ -220,7 +268,7 @@ export function TimelinePanel() {
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
     },
-    [videoDuration, timelineZoom, trimStart, trimEnd, setTrimStart, setTrimEnd],
+    [videoDuration, timelineZoom, trimStart, trimEnd, setTrimStart, setTrimEnd, buildSnapTargets, snapTime],
   );
 
   // ── Overlay edge drag (resize start/end on timeline) ──────────
@@ -234,11 +282,16 @@ export function TimelinePanel() {
 
       const rect = container.getBoundingClientRect();
       const updateFn = kind === 'text' ? updateTextOverlay : updateStickerOverlay;
+      const startState = useVideoEditorStore.getState();
+      const startOverlays = kind === 'text' ? startState.textOverlays : startState.stickerOverlays;
+      const startOverlay = startOverlays.find((o: any) => o.id === overlayId);
+      const targets = buildSnapTargets(startOverlay ? [startOverlay.startTime, startOverlay.endTime] : []);
 
       const onMove = (ev: PointerEvent) => {
         const scrollLeft = container.scrollLeft;
         const x = ev.clientX - rect.left + scrollLeft - PADDING_LEFT;
-        const t = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        const raw = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        const t = snapTime(raw, targets);
 
         // Get current overlay times from store
         const state = useVideoEditorStore.getState();
@@ -254,6 +307,7 @@ export function TimelinePanel() {
       };
 
       const onUp = () => {
+        setSnapX(null);
         useVideoEditorStore.getState().pushHistory();
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
@@ -262,7 +316,7 @@ export function TimelinePanel() {
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
     },
-    [videoDuration, timelineZoom, updateTextOverlay, updateStickerOverlay],
+    [videoDuration, timelineZoom, updateTextOverlay, updateStickerOverlay, buildSnapTargets, snapTime],
   );
 
   // ── Pinch-to-zoom (mouse wheel) ──────────────────────────────
@@ -287,18 +341,21 @@ export function TimelinePanel() {
       const container = containerRef.current;
       if (!container) return;
       const rect = container.getBoundingClientRect();
+      const targets = buildSnapTargets([useVideoEditorStore.getState().currentTime]);
       const onMove = (ev: PointerEvent) => {
         const x = ev.clientX - rect.left + container.scrollLeft - PADDING_LEFT;
-        setCurrentTime(Math.max(0, Math.min(videoDuration, x / timelineZoom)));
+        const raw = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        setCurrentTime(snapTime(raw, targets));
       };
       const onUp = () => {
+        setSnapX(null);
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
       };
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
     },
-    [videoDuration, timelineZoom, setCurrentTime],
+    [videoDuration, timelineZoom, setCurrentTime, buildSnapTargets, snapTime],
   );
 
   // ── Auto-scroll: keep the playhead in view as it plays/seeks ──
@@ -331,7 +388,7 @@ export function TimelinePanel() {
     <div
       ref={containerRef}
       className="relative overflow-x-auto overflow-y-hidden border-t border-white/10 bg-black/40 shrink-0"
-      style={{ height: RULER_HEIGHT + VID_H + (segments.length > 0 ? SEG_H + 6 : 0) + (brollClips.length > 0 ? BROLL_H + 6 : 0) + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
+      style={{ height: RULER_HEIGHT + VID_H + (segments.length > 0 ? SEG_H + 6 : 0) + (brollClips.length > 0 ? BROLL_H + 6 : 0) + (musicTrackUrl ? MUSIC_H + 6 : 0) + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
       onClick={handleTimelineClick}
       onWheel={handleWheel}
     >
@@ -541,6 +598,54 @@ export function TimelinePanel() {
           </div>
         )}
 
+        {/* ── Background music row (waveform) ─────────────── */}
+        {musicTrackUrl && (() => {
+          const track = trackByUrl(musicTrackUrl);
+          const winLen = Math.max(0.1, trimEnd - trimStart);
+          const left = trimStart * timelineZoom + PADDING_LEFT;
+          const width = Math.max(40, winLen * timelineZoom);
+          // Slice the waveform to the part of the song that actually plays, then
+          // downsample so the bar count fits the available width.
+          let bars: number[] = [];
+          if (wave.peaks.length > 0 && wave.duration > 0) {
+            const n = wave.peaks.length;
+            const a = Math.max(0, Math.floor((musicTrimStart / wave.duration) * n));
+            const b = Math.min(n, Math.ceil(((musicTrimStart + winLen) / wave.duration) * n));
+            bars = wave.peaks.slice(a, Math.max(a + 1, b));
+            const target = Math.max(8, Math.min(bars.length, Math.round(width / 3)));
+            if (bars.length > target) {
+              const step = bars.length / target;
+              const ds: number[] = [];
+              for (let i = 0; i < target; i++) ds.push(bars[Math.floor(i * step)]);
+              bars = ds;
+            }
+          }
+          return (
+            <div className="relative" style={{ height: MUSIC_H + 6, paddingLeft: PADDING_LEFT, marginTop: 4 }}>
+              <div
+                onClick={(e) => { e.stopPropagation(); setActiveTool('audio'); }}
+                className="absolute top-1 rounded-md overflow-hidden border border-emerald-400/40 bg-emerald-500/15 cursor-pointer flex items-center"
+                style={{ left, width, height: MUSIC_H }}
+                title="Background music — click to edit"
+              >
+                <div className="absolute inset-0 flex items-center px-1 opacity-70 pointer-events-none">
+                  {bars.length > 0
+                    ? bars.map((p, i) => (
+                        <div key={i} className="flex-1 bg-emerald-300 rounded-full mx-px" style={{ height: `${Math.max(8, p * 100)}%` }} />
+                      ))
+                    : <div className="w-full h-0.5 bg-emerald-300/60" />}
+                </div>
+                <span
+                  className="relative text-[10px] font-medium text-emerald-50 px-2 truncate pointer-events-none"
+                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.9)' }}
+                >
+                  ♪ {track?.name ?? 'Music'}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── Overlay Tracks ─────────────────────────────── */}
         {allOverlays.map((overlay, idx) => {
           const barWidth = Math.max(20, (overlay.endTime - overlay.startTime) * timelineZoom);
@@ -604,6 +709,14 @@ export function TimelinePanel() {
             </div>
           );
         })}
+
+        {/* ── Snap guide line (magnetic alignment) ────────── */}
+        {snapX !== null && (
+          <div
+            className="absolute top-0 bottom-0 w-px bg-amber-300 pointer-events-none z-30"
+            style={{ left: snapX }}
+          />
+        )}
 
         {/* ── Playhead (live position indicator, draggable) ── */}
         <div

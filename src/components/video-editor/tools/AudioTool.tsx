@@ -9,6 +9,7 @@
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { Volume2, VolumeX, Music } from 'lucide-react';
 import { MUSIC_TRACKS, trackUrl, trackByUrl } from '@/lib/musicLibrary';
+import { useWaveform } from '../hooks/useWaveform';
 
 export function AudioTool() {
   const originalAudioVolume = useVideoEditorStore((s) => s.originalAudioVolume);
@@ -17,8 +18,22 @@ export function AudioTool() {
   const setMusicTrackUrl = useVideoEditorStore((s) => s.setMusicTrackUrl);
   const musicVolume = useVideoEditorStore((s) => s.musicVolume);
   const setMusicVolume = useVideoEditorStore((s) => s.setMusicVolume);
+  const musicTrimStart = useVideoEditorStore((s) => s.musicTrimStart);
+  const setMusicTrimStart = useVideoEditorStore((s) => s.setMusicTrimStart);
+  const trimStart = useVideoEditorStore((s) => s.trimStart);
+  const trimEnd = useVideoEditorStore((s) => s.trimEnd);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
   const activeTrack = trackByUrl(musicTrackUrl);
+  const wave = useWaveform(musicTrackUrl);
+  // How far into the song we can start while still covering the whole video.
+  const usedLen = Math.max(0.1, trimEnd - trimStart);
+  const maxStart = wave.duration > 0 ? Math.max(0, wave.duration - usedLen) : 0;
+
+  const fmt = (t: number) => {
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="space-y-5">
@@ -106,6 +121,26 @@ export function AudioTool() {
               onMouseUp={() => pushHistory()}
               className="w-full accent-accent-primary"
             />
+
+            {/* Where in the song to start (in-point). */}
+            {maxStart > 0.2 && (
+              <div className="pt-2">
+                <div className="flex items-center justify-between text-xs text-text-muted mb-1">
+                  <span>Start music at</span>
+                  <span className="font-mono">{fmt(musicTrimStart)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={maxStart}
+                  step={0.1}
+                  value={Math.min(musicTrimStart, maxStart)}
+                  onChange={(e) => setMusicTrimStart(parseFloat(e.target.value))}
+                  onMouseUp={() => pushHistory()}
+                  className="w-full accent-accent-primary"
+                />
+              </div>
+            )}
           </div>
         )}
         <p className="text-[10px] text-text-muted">Royalty-free tracks. Plays under your video and mixes into the export.</p>
