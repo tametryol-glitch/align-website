@@ -16,6 +16,8 @@ export function useVideoPlayback(
 ) {
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
+  // Which ordered segment is currently playing (segment/cut mode only).
+  const segIdxRef = useRef<number>(0);
 
   useEffect(() => {
     const vid = videoRef.current;
@@ -23,28 +25,55 @@ export function useVideoPlayback(
 
     const tick = () => {
       if (!vid.paused && !vid.ended) {
-        const state = useVideoEditorStore.getState();
+        const store = useVideoEditorStore.getState();
         const t = vid.currentTime;
+        const segs = store.segments;
 
-        // Enforce trim boundary
-        if (t >= state.trimEnd) {
-          if (state.loopPlayback) {
-            // Loop: jump back to trim start and keep playing
-            vid.currentTime = state.trimStart;
-            useVideoEditorStore.getState().setCurrentTime(state.trimStart);
-          } else {
-            vid.pause();
-            vid.currentTime = state.trimStart;
-            useVideoEditorStore.getState().setIsPlaying(false);
-            useVideoEditorStore.getState().setCurrentTime(state.trimStart);
+        if (segs.length > 0) {
+          // ── Segment (cut / rearrange) mode: play pieces in array order ──
+          let idx = segIdxRef.current;
+          if (idx >= segs.length) idx = segs.length - 1;
+          const seg = segs[idx];
+          if (seg && t >= seg.sourceEnd - 0.02) {
+            const next = idx + 1;
+            if (next < segs.length) {
+              segIdxRef.current = next;
+              vid.currentTime = segs[next].sourceStart;
+            } else if (store.loopPlayback) {
+              segIdxRef.current = 0;
+              vid.currentTime = segs[0].sourceStart;
+            } else {
+              vid.pause();
+              segIdxRef.current = 0;
+              vid.currentTime = segs[0].sourceStart;
+              useVideoEditorStore.getState().setIsPlaying(false);
+              useVideoEditorStore.getState().setCurrentTime(segs[0].sourceStart);
+            }
+            rafRef.current = requestAnimationFrame(tick);
+            return;
           }
-          return;
-        }
-
-        // Only update if changed (avoid unnecessary re-renders)
-        if (Math.abs(t - lastTimeRef.current) > 0.03) {
-          lastTimeRef.current = t;
-          useVideoEditorStore.getState().setCurrentTime(t);
+          if (Math.abs(t - lastTimeRef.current) > 0.03) {
+            lastTimeRef.current = t;
+            useVideoEditorStore.getState().setCurrentTime(t);
+          }
+        } else {
+          // ── Legacy single-clip mode (unchanged) ──
+          if (t >= store.trimEnd) {
+            if (store.loopPlayback) {
+              vid.currentTime = store.trimStart;
+              useVideoEditorStore.getState().setCurrentTime(store.trimStart);
+            } else {
+              vid.pause();
+              vid.currentTime = store.trimStart;
+              useVideoEditorStore.getState().setIsPlaying(false);
+              useVideoEditorStore.getState().setCurrentTime(store.trimStart);
+            }
+            return;
+          }
+          if (Math.abs(t - lastTimeRef.current) > 0.03) {
+            lastTimeRef.current = t;
+            useVideoEditorStore.getState().setCurrentTime(t);
+          }
         }
       }
       rafRef.current = requestAnimationFrame(tick);
@@ -55,6 +84,22 @@ export function useVideoPlayback(
     return () => {
       cancelAnimationFrame(rafRef.current);
     };
+  }, [videoRef]);
+
+  // On play-start in segment mode, lock onto the segment under the playhead so
+  // playback continues from there in timeline order.
+  useEffect(() => {
+    const unsubscribe = useVideoEditorStore.subscribe((state, prev) => {
+      if (state.isPlaying && !prev.isPlaying && state.segments.length > 0) {
+        const vid = videoRef.current;
+        if (!vid) return;
+        const tt = vid.currentTime;
+        let idx = state.segments.findIndex((g) => tt >= g.sourceStart - 0.05 && tt < g.sourceEnd);
+        if (idx === -1) { idx = 0; vid.currentTime = state.segments[0].sourceStart; }
+        segIdxRef.current = idx;
+      }
+    });
+    return unsubscribe;
   }, [videoRef]);
 
   // Seek the <video> when currentTime is changed EXTERNALLY (timeline click /
