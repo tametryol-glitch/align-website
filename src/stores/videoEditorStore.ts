@@ -64,6 +64,8 @@ export interface ClipSegment {
   id: string;
   sourceStart: number;
   sourceEnd: number;
+  /** Playback speed for this clip (0.5–2). Output length = srcLen / speed. */
+  speed?: number;
 }
 
 /**
@@ -236,6 +238,7 @@ interface VideoEditorState {
   removeSegment: (id: string) => void;
   selectSegment: (id: string | null) => void;
   duplicateSegment: (id: string) => void;
+  setSegmentSpeed: (id: string, speed: number) => void;
 
   // B-roll
   addBroll: (clip: BrollClip) => void;
@@ -405,8 +408,8 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
       if (idx === -1) return {}; // playhead not inside a splittable segment
       const g = segs[idx];
       const mk = () => `seg_${Date.now()}_${Math.round(t * 1000)}_${Math.random().toString(36).slice(2, 5)}`;
-      const a: ClipSegment = { id: mk(), sourceStart: g.sourceStart, sourceEnd: t };
-      const b: ClipSegment = { id: mk(), sourceStart: t, sourceEnd: g.sourceEnd };
+      const a: ClipSegment = { id: mk(), sourceStart: g.sourceStart, sourceEnd: t, speed: g.speed ?? 1 };
+      const b: ClipSegment = { id: mk(), sourceStart: t, sourceEnd: g.sourceEnd, speed: g.speed ?? 1 };
       return { segments: [...segs.slice(0, idx), a, b, ...segs.slice(idx + 1)] };
     }),
   reorderSegments: (from, to) =>
@@ -442,6 +445,10 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
       };
       return { segments: [...s.segments.slice(0, idx + 1), copy, ...s.segments.slice(idx + 1)] };
     }),
+  setSegmentSpeed: (id, speed) =>
+    set((s) => ({
+      segments: s.segments.map((g) => (g.id === id ? { ...g, speed: Math.max(0.5, Math.min(2, speed)) } : g)),
+    })),
 
   // B-roll
   addBroll: (clip) => set((s) => ({ brollClips: [...s.brollClips, clip], selectedBrollId: clip.id })),

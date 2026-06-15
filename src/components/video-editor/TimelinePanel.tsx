@@ -530,10 +530,11 @@ export function TimelinePanel() {
           return (
             <div className="relative" style={{ height: SEG_H + 6, paddingLeft: PADDING_LEFT, marginTop: 4 }}>
               {segments.map((g, i) => {
-                const len = Math.max(0.1, g.sourceEnd - g.sourceStart);
+                const sp = g.speed ?? 1;
+                const outLen = Math.max(0.1, (g.sourceEnd - g.sourceStart) / sp);
                 const left = acc * timelineZoom + PADDING_LEFT;
-                const width = Math.max(30, len * timelineZoom);
-                acc += len;
+                const width = Math.max(30, outLen * timelineZoom);
+                acc += outLen;
                 const segThumbs = thumbsInRange(g.sourceStart, g.sourceEnd);
                 const selected = selectedSegmentId === g.id;
                 return (
@@ -563,7 +564,7 @@ export function TimelinePanel() {
                         : <div className="w-full h-full bg-accent-primary/20" />}
                     </div>
                     <div className="absolute inset-0 bg-black/25" />
-                    <span className="absolute top-0.5 left-1 text-[9px] font-medium text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>Clip {i + 1}</span>
+                    <span className="absolute top-0.5 left-1 text-[9px] font-medium text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>Clip {i + 1}{sp !== 1 ? ` · ${sp}x` : ''}</span>
                     <button
                       onClick={(e) => { e.stopPropagation(); removeSegment(g.id); useVideoEditorStore.getState().pushHistory(); }}
                       className="absolute top-0.5 right-0.5 w-4 h-4 rounded bg-black/50 text-red-300 text-[10px] leading-none flex items-center justify-center hover:bg-black/70"

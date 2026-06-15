@@ -19,6 +19,7 @@ export function TrimTool() {
   const splitAtPlayhead = useVideoEditorStore((s) => s.splitAtPlayhead);
   const reorderSegments = useVideoEditorStore((s) => s.reorderSegments);
   const removeSegment = useVideoEditorStore((s) => s.removeSegment);
+  const setSegmentSpeed = useVideoEditorStore((s) => s.setSegmentSpeed);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
   const handleSplit = () => { splitAtPlayhead(); pushHistory(); };
@@ -151,6 +152,17 @@ export function TrimTool() {
                 >
                   <span className="text-text-muted select-none">⠿</span>
                   <span className="text-text-secondary flex-1">Clip {i + 1} · {formatTime(g.sourceEnd - g.sourceStart)}</span>
+                  <select
+                    value={g.speed ?? 1}
+                    onChange={(e) => { setSegmentSpeed(g.id, parseFloat(e.target.value)); pushHistory(); }}
+                    onClick={(e) => e.stopPropagation()}
+                    title="Playback speed for this clip"
+                    className="bg-white/10 text-text-secondary text-[11px] rounded px-1 py-0.5 border border-white/10 focus:outline-none"
+                  >
+                    {[0.5, 1, 1.5, 2].map((sp) => (
+                      <option key={sp} value={sp}>{sp}x</option>
+                    ))}
+                  </select>
                   <button
                     onClick={() => { removeSegment(g.id); pushHistory(); }}
                     className="text-red-400 hover:text-red-300"
@@ -162,7 +174,7 @@ export function TrimTool() {
               ))}
             </div>
             <p className="text-[10px] text-text-muted">
-              Drag clips to reorder. Preview &amp; export follow your order in the next update.
+              Drag clips to reorder, set a speed per clip. Preview &amp; export follow your edits.
             </p>
           </>
         )}

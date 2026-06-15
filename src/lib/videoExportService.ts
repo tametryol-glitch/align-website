@@ -142,19 +142,21 @@ export async function exportVideo(
   // segMode = the user split the clip into reorderable pieces. Output time is
   // the concatenated timeline; overlay enable windows are mapped onto it.
   const segMode = state.segments.length > 0;
-  const segMap: Array<{ srcStart: number; srcEnd: number; outStart: number }> = [];
+  const segMap: Array<{ srcStart: number; srcEnd: number; outStart: number; speed: number }> = [];
   let segTotal = 0; // total concatenated output duration (seconds)
   {
     const segs = segMode
-      ? state.segments.map((g) => ({ sourceStart: g.sourceStart, sourceEnd: g.sourceEnd }))
-      : [{ sourceStart: trimStart, sourceEnd: trimEnd }];
+      ? state.segments.map((g) => ({ sourceStart: g.sourceStart, sourceEnd: g.sourceEnd, speed: g.speed ?? 1 }))
+      : [{ sourceStart: trimStart, sourceEnd: trimEnd, speed: 1 }];
     for (const g of segs) {
-      const len = Math.max(0, g.sourceEnd - g.sourceStart);
-      segMap.push({ srcStart: g.sourceStart, srcEnd: g.sourceEnd, outStart: segTotal });
-      segTotal += len;
+      const sp = g.speed && g.speed > 0 ? g.speed : 1;
+      const outLen = Math.max(0, (g.sourceEnd - g.sourceStart) / sp); // speed compresses time
+      segMap.push({ srcStart: g.sourceStart, srcEnd: g.sourceEnd, outStart: segTotal, speed: sp });
+      segTotal += outLen;
     }
   }
-  // Map a source-time window [a,b] to an FFmpeg enable expression in OUTPUT time.
+  // Map a source-time window [a,b] to an FFmpeg enable expression in OUTPUT time
+  // (per-clip speed compresses the in-segment offset).
   const enableExpr = (a: number, b: number): string => {
     if (!segMode) return `between(t,${a.toFixed(2)},${b.toFixed(2)})`;
     const parts: string[] = [];
@@ -162,8 +164,8 @@ export async function exportVideo(
       const lo = Math.max(a, s.srcStart);
       const hi = Math.min(b, s.srcEnd);
       if (hi > lo + 0.01) {
-        const o0 = s.outStart + (lo - s.srcStart);
-        const o1 = s.outStart + (hi - s.srcStart);
+        const o0 = s.outStart + (lo - s.srcStart) / s.speed;
+        const o1 = s.outStart + (hi - s.srcStart) / s.speed;
         parts.push(`between(t,${o0.toFixed(2)},${o1.toFixed(2)})`);
       }
     }
@@ -241,7 +243,7 @@ export async function exportVideo(
   const brollOutStart = (tStart: number): number | null => {
     if (!segMode) return Math.max(0, tStart - trimStart);
     for (const s of segMap) {
-      if (tStart >= s.srcStart && tStart < s.srcEnd) return s.outStart + (tStart - s.srcStart);
+      if (tStart >= s.srcStart && tStart < s.srcEnd) return s.outStart + (tStart - s.srcStart) / s.speed;
     }
     return null; // starts outside any kept piece — skip
   };
@@ -484,8 +486,12 @@ export async function exportVideo(
     const n = segMap.length;
     for (let i = 0; i < n; i++) {
       const s = segMap[i];
-      fp.push(`[0:v]trim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},setpts=PTS-STARTPTS[sv${i}]`);
-      fp.push(`[0:a]atrim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},asetpts=PTS-STARTPTS[sa${i}]`);
+      // Per-clip speed: divide video PTS by speed, match audio tempo (atempo
+      // is valid for 0.5–2, which is exactly our clamp range).
+      const vpts = s.speed !== 1 ? `setpts=(PTS-STARTPTS)/${s.speed}` : 'setpts=PTS-STARTPTS';
+      const atempo = s.speed !== 1 ? `,atempo=${s.speed.toFixed(4)}` : '';
+      fp.push(`[0:v]trim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},${vpts}[sv${i}]`);
+      fp.push(`[0:a]atrim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},asetpts=PTS-STARTPTS${atempo}[sa${i}]`);
     }
     const concatPairs = segMap.map((_, i) => `[sv${i}][sa${i}]`).join('');
     fp.push(`${concatPairs}concat=n=${n}:v=1:a=1[cv][ca]`);

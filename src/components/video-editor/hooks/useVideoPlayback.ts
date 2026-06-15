@@ -34,6 +34,9 @@ export function useVideoPlayback(
           let idx = segIdxRef.current;
           if (idx >= segs.length) idx = segs.length - 1;
           const seg = segs[idx];
+          // Drive per-clip speed via the element's playbackRate.
+          const sp = seg && seg.speed ? seg.speed : 1;
+          if (seg && vid.playbackRate !== sp) vid.playbackRate = sp;
           if (seg && t >= seg.sourceEnd - 0.02) {
             const next = idx + 1;
             if (next < segs.length) {
@@ -97,6 +100,7 @@ export function useVideoPlayback(
         let idx = state.segments.findIndex((g) => tt >= g.sourceStart - 0.05 && tt < g.sourceEnd);
         if (idx === -1) { idx = 0; vid.currentTime = state.segments[0].sourceStart; }
         segIdxRef.current = idx;
+        vid.playbackRate = state.segments[idx].speed ?? 1;
       }
     });
     return unsubscribe;
@@ -124,7 +128,9 @@ export function useVideoPlayback(
         const vid = videoRef.current;
         if (vid) {
           vid.volume = state.originalAudioVolume;
-          if (vid.playbackRate !== state.playbackSpeed) {
+          // In segment mode the tick drives playbackRate per clip; only apply the
+          // global speed when there are no segments.
+          if (state.segments.length === 0 && vid.playbackRate !== state.playbackSpeed) {
             vid.playbackRate = state.playbackSpeed;
           }
         }
