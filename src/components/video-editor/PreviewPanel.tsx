@@ -199,7 +199,7 @@ export function PreviewPanel() {
         )}
 
         {/* B-roll / overlay clips (under text & stickers) */}
-        <BrollLayer />
+        <BrollLayer containerRef={containerRef} />
 
         {/* Text overlay layer */}
         <TextOverlayLayer containerRef={containerRef} />
