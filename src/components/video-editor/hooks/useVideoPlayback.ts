@@ -57,6 +57,21 @@ export function useVideoPlayback(
     };
   }, [videoRef]);
 
+  // Seek the <video> when currentTime is changed EXTERNALLY (timeline click /
+  // playhead drag). During playback the rAF tick keeps store≈video within
+  // ~0.03s, so a larger gap means a real seek the user asked for — apply it.
+  useEffect(() => {
+    const unsubscribe = useVideoEditorStore.subscribe((state, prev) => {
+      const vid = videoRef.current;
+      if (!vid) return;
+      if (state.currentTime !== prev.currentTime &&
+          Math.abs(vid.currentTime - state.currentTime) > 0.2) {
+        vid.currentTime = state.currentTime;
+      }
+    });
+    return unsubscribe;
+  }, [videoRef]);
+
   // Sync volume and playback speed with store
   useEffect(() => {
     const unsubscribe = useVideoEditorStore.subscribe(

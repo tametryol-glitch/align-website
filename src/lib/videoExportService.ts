@@ -295,9 +295,13 @@ export async function exportVideo(
   // Input video
   args.push('-i', 'input.mp4');
 
-  // Sticker overlay inputs
+  // Sticker overlay inputs. CRITICAL: each sticker is a single-frame PNG, so it
+  // MUST be looped (-loop 1) — otherwise the overlay filter's framesync ends
+  // when the sticker input ends and truncates the ENTIRE output to ~1 frame
+  // (the "adding a sticker shortens the whole video" bug). Output length stays
+  // bounded by the -to trimEnd applied below.
   for (const si of stickerInputs) {
-    args.push('-i', si.filename);
+    args.push('-loop', '1', '-i', si.filename);
   }
 
   // Trim
