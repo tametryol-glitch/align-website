@@ -123,6 +123,38 @@ export async function exportVideo(
     playbackSpeed,
   } = state;
 
+  // ── Cut/rearrange: build the source→output timeline map ─────
+  // segMode = the user split the clip into reorderable pieces. Output time is
+  // the concatenated timeline; overlay enable windows are mapped onto it.
+  const segMode = state.segments.length > 0;
+  const segMap: Array<{ srcStart: number; srcEnd: number; outStart: number }> = [];
+  let segTotal = 0; // total concatenated output duration (seconds)
+  {
+    const segs = segMode
+      ? state.segments.map((g) => ({ sourceStart: g.sourceStart, sourceEnd: g.sourceEnd }))
+      : [{ sourceStart: trimStart, sourceEnd: trimEnd }];
+    for (const g of segs) {
+      const len = Math.max(0, g.sourceEnd - g.sourceStart);
+      segMap.push({ srcStart: g.sourceStart, srcEnd: g.sourceEnd, outStart: segTotal });
+      segTotal += len;
+    }
+  }
+  // Map a source-time window [a,b] to an FFmpeg enable expression in OUTPUT time.
+  const enableExpr = (a: number, b: number): string => {
+    if (!segMode) return `between(t,${a.toFixed(2)},${b.toFixed(2)})`;
+    const parts: string[] = [];
+    for (const s of segMap) {
+      const lo = Math.max(a, s.srcStart);
+      const hi = Math.min(b, s.srcEnd);
+      if (hi > lo + 0.01) {
+        const o0 = s.outStart + (lo - s.srcStart);
+        const o1 = s.outStart + (hi - s.srcStart);
+        parts.push(`between(t,${o0.toFixed(2)},${o1.toFixed(2)})`);
+      }
+    }
+    return parts.length ? parts.join('+') : '0';
+  };
+
   const ff = await getFFmpeg();
 
   // Set up progress handler
@@ -233,7 +265,7 @@ export async function exportVideo(
       `:font=${ffmpegFont}` +
       `:x=${x}-(tw/2)` +
       `:y=${y}-(th/2)` +
-      `:enable='between(t,${overlay.startTime.toFixed(2)},${overlay.endTime.toFixed(2)})'` +
+      `:enable='${enableExpr(overlay.startTime, overlay.endTime)}'` +
       `:shadowcolor=black@0.8:shadowx=2:shadowy=2`;
 
     // Add background box if bgColor is set
@@ -304,12 +336,52 @@ export async function exportVideo(
     args.push('-loop', '1', '-i', si.filename);
   }
 
-  // Trim
-  args.push('-ss', trimStart.toFixed(3));
-  args.push('-to', trimEnd.toFixed(3));
+  // Trim — single-clip mode only. In segment mode each piece is trimmed inside
+  // the concat filtergraph below.
+  if (!segMode) {
+    args.push('-ss', trimStart.toFixed(3));
+    args.push('-to', trimEnd.toFixed(3));
+  }
 
-  // Build the complex filter graph if we have stickers
-  if (stickerInputs.length > 0) {
+  // ── Segment (cut / rearrange) mode: trim each piece + concat in order ──
+  if (segMode) {
+    const fp: string[] = [];
+    const n = segMap.length;
+    for (let i = 0; i < n; i++) {
+      const s = segMap[i];
+      fp.push(`[0:v]trim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},setpts=PTS-STARTPTS[sv${i}]`);
+      fp.push(`[0:a]atrim=start=${s.srcStart.toFixed(3)}:end=${s.srcEnd.toFixed(3)},asetpts=PTS-STARTPTS[sa${i}]`);
+    }
+    const concatPairs = segMap.map((_, i) => `[sv${i}][sa${i}]`).join('');
+    fp.push(`${concatPairs}concat=n=${n}:v=1:a=1[cv][ca]`);
+
+    let cur = '[cv]';
+    if (videoFilters.length > 0) {
+      fp.push(`${cur}${videoFilters.join(',')}[vf]`);
+      cur = '[vf]';
+    }
+    // Chain sticker overlays (their inputs are [1:v], [2:v], … — looped above)
+    for (let i = 0; i < stickerInputs.length; i++) {
+      const si = stickerInputs[i];
+      const px = Math.round((si.x / 100) * vw) - Math.round(si.size / 2);
+      const py = Math.round((si.y / 100) * vh) - Math.round(si.size / 2);
+      const out = `[vstk${i}]`;
+      fp.push(`${cur}[${i + 1}:v]overlay=x=${px}:y=${py}:enable='${enableExpr(si.startTime, si.endTime)}'${out}`);
+      cur = out;
+    }
+    let aud = '[ca]';
+    if (audioFilters.length > 0) {
+      fp.push(`[ca]${audioFilters.join(',')}[af]`);
+      aud = '[af]';
+    }
+    args.push('-filter_complex', fp.join(';'));
+    args.push('-map', cur);
+    args.push('-map', aud);
+    // CRITICAL: bound the output to the concat length. Looped sticker inputs are
+    // infinite streams and `overlay` repeats the last main frame at EOF, so
+    // without this the export runs forever.
+    args.push('-t', segTotal.toFixed(3));
+  } else if (stickerInputs.length > 0) {
     // We need a complex filter graph to overlay stickers
     const filterParts: string[] = [];
 
@@ -331,7 +403,7 @@ export async function exportVideo(
       filterParts.push(
         `${currentStream}${inputLabel}overlay=` +
         `x=${px}:y=${py}:` +
-        `enable='between(t,${si.startTime.toFixed(2)},${si.endTime.toFixed(2)})'` +
+        `enable='${enableExpr(si.startTime, si.endTime)}'` +
         outLabel,
       );
       currentStream = outLabel;

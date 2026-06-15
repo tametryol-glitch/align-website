@@ -73,14 +73,30 @@ export function TimelinePanel() {
   const setTimelineZoom = useVideoEditorStore((s) => s.setTimelineZoom);
   const updateTextOverlay = useVideoEditorStore((s) => s.updateTextOverlay);
   const updateStickerOverlay = useVideoEditorStore((s) => s.updateStickerOverlay);
+  const segments = useVideoEditorStore((s) => s.segments);
+  const selectedSegmentId = useVideoEditorStore((s) => s.selectedSegmentId);
+  const reorderSegments = useVideoEditorStore((s) => s.reorderSegments);
+  const removeSegment = useVideoEditorStore((s) => s.removeSegment);
+  const selectSegment = useVideoEditorStore((s) => s.selectSegment);
 
   const thumbs = useFilmstrip(sourceVideoUrl, videoDuration);
+  const [dragSeg, setDragSeg] = useState<number | null>(null);
 
   const totalWidth = videoDuration * timelineZoom;
   const TRACK_HEIGHT = 32;
   const VID_H = 54; // taller video track to show the frame filmstrip
+  const SEG_H = 44; // segments (cut/rearrange) row
   const RULER_HEIGHT = 24;
   const PADDING_LEFT = 8;
+
+  // Thumbnails whose source time falls inside [a,b] — for per-segment previews.
+  const thumbsInRange = (a: number, b: number): string[] => {
+    if (thumbs.length === 0 || !videoDuration) return [];
+    return thumbs.filter((_, i) => {
+      const t = ((i + 0.5) / thumbs.length) * videoDuration;
+      return t >= a && t <= b;
+    });
+  };
 
   // ── Ruler tick generation ────────────────────────────────────
 
@@ -248,7 +264,7 @@ export function TimelinePanel() {
     <div
       ref={containerRef}
       className="relative overflow-x-auto overflow-y-hidden border-t border-white/10 bg-black/40 shrink-0"
-      style={{ height: RULER_HEIGHT + VID_H + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
+      style={{ height: RULER_HEIGHT + VID_H + (segments.length > 0 ? SEG_H + 6 : 0) + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
       onClick={handleTimelineClick}
       onWheel={handleWheel}
     >
@@ -358,6 +374,59 @@ export function TimelinePanel() {
             <div className="w-1.5 h-6 rounded-full bg-accent-primary" />
           </div>
         </div>
+
+        {/* ── Segments row (cut / rearrange) — output order ── */}
+        {segments.length > 0 && (() => {
+          let acc = 0;
+          return (
+            <div className="relative" style={{ height: SEG_H + 6, paddingLeft: PADDING_LEFT, marginTop: 4 }}>
+              {segments.map((g, i) => {
+                const len = Math.max(0.1, g.sourceEnd - g.sourceStart);
+                const left = acc * timelineZoom + PADDING_LEFT;
+                const width = Math.max(30, len * timelineZoom);
+                acc += len;
+                const segThumbs = thumbsInRange(g.sourceStart, g.sourceEnd);
+                const selected = selectedSegmentId === g.id;
+                return (
+                  <div
+                    key={g.id}
+                    draggable
+                    onDragStart={() => setDragSeg(i)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => {
+                      if (dragSeg !== null && dragSeg !== i) {
+                        reorderSegments(dragSeg, i);
+                        useVideoEditorStore.getState().pushHistory();
+                      }
+                      setDragSeg(null);
+                    }}
+                    onClick={(e) => { e.stopPropagation(); selectSegment(g.id); setCurrentTime(g.sourceStart); }}
+                    className={`absolute top-1 rounded-md overflow-hidden cursor-grab border ${selected ? 'border-accent-primary ring-1 ring-accent-primary' : 'border-white/15'} ${dragSeg === i ? 'opacity-50' : ''}`}
+                    style={{ left, width, height: SEG_H }}
+                  >
+                    <div className="absolute inset-0 flex">
+                      {segThumbs.length > 0
+                        ? segThumbs.map((src, k) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img key={k} src={src} alt="" draggable={false} className="h-full object-cover" style={{ width: `${100 / segThumbs.length}%` }} />
+                          ))
+                        : <div className="w-full h-full bg-accent-primary/20" />}
+                    </div>
+                    <div className="absolute inset-0 bg-black/25" />
+                    <span className="absolute top-0.5 left-1 text-[9px] font-medium text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>Clip {i + 1}</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeSegment(g.id); useVideoEditorStore.getState().pushHistory(); }}
+                      className="absolute top-0.5 right-0.5 w-4 h-4 rounded bg-black/50 text-red-300 text-[10px] leading-none flex items-center justify-center hover:bg-black/70"
+                      title="Remove clip"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* ── Overlay Tracks ─────────────────────────────── */}
         {allOverlays.map((overlay, idx) => {
