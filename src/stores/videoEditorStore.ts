@@ -81,6 +81,7 @@ export interface BrollClip {
   y: number;              // 0–100 center % of frame height
   scale: number;          // fraction of frame width (0.1–1)
   opacity: number;        // 0–1
+  rotation?: number;      // degrees (optional; defaults to 0)
 }
 
 export type FilterPresetId =

@@ -210,7 +210,7 @@ export async function exportVideo(
   // Inputs order: main (0), stickers (1..S), then b-roll (S+1..).
   const brollInputs: Array<{
     inputIndex: number; sourceStart: number; sourceEnd: number;
-    timelineStart: number; x: number; y: number; scale: number; opacity: number;
+    timelineStart: number; x: number; y: number; scale: number; opacity: number; rotation: number;
   }> = [];
   {
     let nextIdx = 1 + stickerInputs.length;
@@ -221,6 +221,7 @@ export async function exportVideo(
         brollInputs.push({
           inputIndex: nextIdx, sourceStart: b.sourceStart, sourceEnd: b.sourceEnd,
           timelineStart: b.timelineStart, x: b.x, y: b.y, scale: b.scale, opacity: b.opacity,
+          rotation: b.rotation ?? 0,
         });
         nextIdx++;
       } catch (e) { console.warn('[Export] b-roll source fetch failed:', e); }
@@ -244,10 +245,16 @@ export async function exportVideo(
       const len = Math.max(0.1, bi.sourceEnd - bi.sourceStart);
       const w = Math.max(16, Math.round(vw * bi.scale));
       const bl = `[bsrc${k}]`;
+      // Optional rotation: rotate after yuva so exposed corners are transparent,
+      // expanding the canvas (rotw/roth) so nothing is clipped.
+      const rad = ((bi.rotation || 0) * Math.PI) / 180;
+      const rotateFilter = Math.abs(rad) > 0.001
+        ? `,rotate=${rad.toFixed(5)}:c=none:ow=rotw(${rad.toFixed(5)}):oh=roth(${rad.toFixed(5)})`
+        : '';
       fp.push(
         `[${bi.inputIndex}:v]trim=${bi.sourceStart.toFixed(3)}:${bi.sourceEnd.toFixed(3)},` +
         `setpts=PTS-STARTPTS+${outStart.toFixed(3)}/TB,scale=${w}:-1,` +
-        `format=yuva420p,colorchannelmixer=aa=${bi.opacity.toFixed(2)}${bl}`,
+        `format=yuva420p${rotateFilter},colorchannelmixer=aa=${bi.opacity.toFixed(2)}${bl}`,
       );
       const out = `[bov${k}]`;
       fp.push(

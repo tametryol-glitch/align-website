@@ -37,7 +37,7 @@ export function BrollTool() {
         sourceStart: 0,
         sourceEnd: Math.min(dur, 5),
         timelineStart: currentTime,
-        x: 72, y: 26, scale: 0.42, opacity: 1,
+        x: 72, y: 26, scale: 0.42, opacity: 1, rotation: 0,
       };
       addBroll(clip);
       pushHistory();
@@ -120,6 +120,8 @@ export function BrollTool() {
             onChange={(v) => updateBroll(selected.id, { x: v })} onCommit={pushHistory} fmt={(v) => `${Math.round(v)}%`} />
           <Range label="Vertical" min={0} max={100} step={1} value={selected.y}
             onChange={(v) => updateBroll(selected.id, { y: v })} onCommit={pushHistory} fmt={(v) => `${Math.round(v)}%`} />
+          <Range label="Rotation" min={-180} max={180} step={1} value={selected.rotation ?? 0}
+            onChange={(v) => updateBroll(selected.id, { rotation: v })} onCommit={pushHistory} fmt={(v) => `${Math.round(v)}°`} />
           <Range label="Opacity" min={0.1} max={1} step={0.01} value={selected.opacity}
             onChange={(v) => updateBroll(selected.id, { opacity: v })} onCommit={pushHistory} fmt={(v) => `${Math.round(v * 100)}%`} />
           <button

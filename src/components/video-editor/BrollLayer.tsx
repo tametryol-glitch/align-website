@@ -148,6 +148,32 @@ function BrollClipView({ clip, containerRef, onGuide }: {
     [clip.id, clip.x, containerRef, updateBroll, pushHistory],
   );
 
+  const handleRotate = useCallback(
+    (e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const cx = rect.left + (clip.x / 100) * rect.width;
+      const cy = rect.top + (clip.y / 100) * rect.height;
+      const move = (ev: PointerEvent) => {
+        const ang = (Math.atan2(ev.clientY - cy, ev.clientX - cx) * 180) / Math.PI;
+        let rot = Math.round(ang + 90); // handle sits at 12 o'clock
+        for (const s of [0, 90, 180, -90, -180]) if (Math.abs(rot - s) < 6) rot = s;
+        updateBroll(clip.id, { rotation: rot });
+      };
+      const up = () => {
+        pushHistory();
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+      };
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+    },
+    [clip.id, clip.x, clip.y, containerRef, updateBroll, pushHistory],
+  );
+
   return (
     <div
       onPointerDown={handlePointerDown}
@@ -157,7 +183,7 @@ function BrollClipView({ clip, containerRef, onGuide }: {
         left: `${clip.x}%`,
         top: `${clip.y}%`,
         width: `${clip.scale * 100}%`,
-        transform: 'translate(-50%, -50%)',
+        transform: `translate(-50%, -50%) rotate(${clip.rotation ?? 0}deg)`,
         opacity: visible ? clip.opacity : 0,
         display: visible ? 'block' : 'none',
         borderRadius: 8,
@@ -169,15 +195,27 @@ function BrollClipView({ clip, containerRef, onGuide }: {
     >
       <video ref={ref} src={clip.sourceUrl} muted playsInline className="w-full h-auto block rounded-lg pointer-events-none" />
       {selected && (
-        <div
-          onPointerDown={handleResize}
-          title="Drag to resize"
-          style={{
-            position: 'absolute', right: -7, bottom: -7, width: 16, height: 16,
-            borderRadius: '50%', background: 'var(--color-accent-primary, #8b5cf6)',
-            border: '2px solid #fff', cursor: 'nwse-resize', zIndex: 6,
-          }}
-        />
+        <>
+          <div
+            onPointerDown={handleResize}
+            title="Drag to resize"
+            style={{
+              position: 'absolute', right: -7, bottom: -7, width: 16, height: 16,
+              borderRadius: '50%', background: 'var(--color-accent-primary, #8b5cf6)',
+              border: '2px solid #fff', cursor: 'nwse-resize', zIndex: 6,
+            }}
+          />
+          {/* rotate handle (12 o'clock) */}
+          <div
+            onPointerDown={handleRotate}
+            title="Drag to rotate"
+            style={{
+              position: 'absolute', top: -24, left: '50%', transform: 'translateX(-50%)',
+              width: 16, height: 16, borderRadius: '50%', background: '#fff',
+              border: '2px solid var(--color-accent-primary, #8b5cf6)', cursor: 'grab', zIndex: 6,
+            }}
+          />
+        </>
       )}
     </div>
   );
