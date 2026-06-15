@@ -15,7 +15,18 @@ import { getStyle, type StyleId, type CosmicStyle } from '@/lib/cosmicStyles';
 const LOGO_URL = 'https://aligncosmic.com/logo.png';
 
 // ── Astrology glyphs + aspect geometry (so the wheel is real) ──────────────
-const SIGN_GLYPHS = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
+// Clean text labels (no emoji) + element-based neon colours, in the spirit of
+// the reference chart template. Ornate glyph symbols come later via a font.
+const SIGN_ABBR = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS'];
+// fire, earth, air, water — signs cycle in this order from Aries (i % 4)
+const ELEMENT_NEON = ['#FF7A7A', '#E7B85C', '#6FC9FF', '#9AA6FF'];
+const elColor = (i: number) => ELEMENT_NEON[i % 4];
+const ANGLES = [
+  { lbl: 'MC', dx: 0, dy: -1 },
+  { lbl: 'DSC', dx: 1, dy: 0 },
+  { lbl: 'IC', dx: 0, dy: 1 },
+  { lbl: 'ASC', dx: -1, dy: 0 },
+];
 const PLANET_GLYPHS: Record<string, string> = {
   sun: '☉', moon: '☽', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃',
   saturn: '♄', uranus: '♅', neptune: '♆', pluto: '♇', chiron: '⚷',
@@ -95,18 +106,18 @@ export const DailyForecastStudio: React.FC<DailyForecastStudioProps> = (props) =
       })}
 
       <Sequence from={6}>
-        <div style={{ position: 'absolute', top: 150, left: 90, right: 90 }}>
+        <div style={{ position: 'absolute', top: 230, left: 90, right: 90 }}>
           <HeadlineBlock s={s} risingSign={risingSign} headline={headline} label={label} />
         </div>
       </Sequence>
 
       <Sequence from={24}>
-        <AspectWheel s={s} cx={width / 2} cy={height * 0.5 + drift} frame={frame - 24} aspect={aspect} />
+        <AspectWheel s={s} cx={width / 2} cy={height * 0.455 + drift} frame={frame - 24} aspect={aspect} />
       </Sequence>
 
       <Sequence from={70}>
-        <div style={{ position: 'absolute', bottom: 360, left: 90, right: 90 }}>
-          <ForecastBlock s={s} title={`${aspect.p1Glyph} ${aspect.p1} ${aspect.glyph} ${aspect.p2} ${aspect.p2Glyph}`} sub={forecastSub} label={label} />
+        <div style={{ position: 'absolute', bottom: 430, left: 90, right: 90 }}>
+          <ForecastBlock s={s} title={`${aspect.p1} ${aspect.glyph} ${aspect.p2}`} sub={forecastSub} label={label} />
         </div>
       </Sequence>
 
@@ -116,10 +127,10 @@ export const DailyForecastStudio: React.FC<DailyForecastStudioProps> = (props) =
 };
 
 const Watermark: React.FC<{ s: CosmicStyle; handle: string; prog: number }> = ({ s, handle, prog }) => (
-  <div style={{ position: 'absolute', bottom: 90, left: 90, right: 90 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
-      <Img src={LOGO_URL} style={{ width: 64, height: 64, borderRadius: 14 }} />
-      <span style={{ color: s.subtext, fontSize: 30 }}>{handle}</span>
+  <div style={{ position: 'absolute', bottom: 180, left: 90, right: 90 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 18 }}>
+      <Img src={LOGO_URL} style={{ width: 92, height: 92, borderRadius: 20 }} />
+      <span style={{ color: s.text, fontSize: 34, fontWeight: 500 }}>{handle}</span>
     </div>
     <div style={{ height: 6, background: s.line, borderRadius: 999, overflow: 'hidden' }}>
       <div style={{ width: `${prog * 100}%`, height: 6, background: s.accent }} />
@@ -152,20 +163,24 @@ const ForecastBlock: React.FC<{ s: CosmicStyle; title: string; sub: string; labe
   );
 };
 
-/** A real zodiac ring with the two aspecting planets placed at the correct
- *  angular separation and the aspect line drawn between them. */
+/** Chart wheel in the reference-template structure: gold/neon concentric rings,
+ *  12 sign segments (element-coloured labels), house numbers, ASC/MC/DSC/IC
+ *  angles, and the spotlight aspect drawn between its two planets. Continuous
+ *  slow rotation keeps it alive; no emoji. */
 const AspectWheel: React.FC<{ s: CosmicStyle; cx: number; cy: number; frame: number; aspect: ParsedAspect }> = ({ s, cx, cy, frame, aspect }) => {
-  const rOuter = 380, rInner = 300, rBand = 340, rPlanet = 250;
+  const rOuter = 388, rSign = 300, rHouse = 212, rPlanet = 150;
+  const rSignLbl = (rSign + rOuter) / 2;
+  const rHouseLbl = (rHouse + rSign) / 2;
   const reveal = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: 'clamp' });
-  const signFade = interpolate(frame, [18, 38], [0, 1], { extrapolateRight: 'clamp' });
+  const labelFade = interpolate(frame, [18, 40], [0, 1], { extrapolateRight: 'clamp' });
   const aspectDraw = interpolate(frame, [40, 70], [0, 1], { extrapolateRight: 'clamp' });
+  const rot = frame * 0.06 * s.motion; // continuous slow spin — keeps it living
 
-  // longitude (0=Aries) → screen point. 0° at top, increasing clockwise.
   const toXY = (lon: number, r: number) => {
-    const rad = ((lon - 90) * Math.PI) / 180;
+    const rad = ((lon - 90 + rot) * Math.PI) / 180;
     return [cx + Math.cos(rad) * r, cy + Math.sin(rad) * r] as const;
   };
-  const p1Lon = 40; // Taurus ~10°
+  const p1Lon = 40;
   const p2Lon = (p1Lon + aspect.angle) % 360;
   const [x1, y1] = toXY(p1Lon, rPlanet);
   const [x2, y2] = toXY(p2Lon, rPlanet);
@@ -173,22 +188,34 @@ const AspectWheel: React.FC<{ s: CosmicStyle; cx: number; cy: number; frame: num
 
   return (
     <svg style={{ position: 'absolute', left: 0, top: 0 }} width="1080" height="1920" viewBox="0 0 1080 1920">
-      <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke={s.line} strokeWidth={2}
+      {/* concentric rings */}
+      <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke={s.accent} strokeWidth={2} opacity={0.55}
         strokeDasharray={2 * Math.PI * rOuter} strokeDashoffset={(1 - reveal) * 2 * Math.PI * rOuter} />
-      <circle cx={cx} cy={cy} r={rInner} fill="none" stroke={s.line} strokeWidth={1.5} opacity={0.7} />
-      {/* 12 sign spokes + glyphs */}
+      <circle cx={cx} cy={cy} r={rSign} fill="none" stroke={s.line} strokeWidth={1.5} opacity={0.7} />
+      <circle cx={cx} cy={cy} r={rHouse} fill="none" stroke={s.line} strokeWidth={1.25} opacity={0.55} />
+
+      {/* 12 segments: spokes, sign labels, house numbers */}
       {Array.from({ length: 12 }, (_, i) => {
-        const [sx1, sy1] = toXY(i * 30, rInner);
+        const [sx1, sy1] = toXY(i * 30, rHouse);
         const [sx2, sy2] = toXY(i * 30, rOuter);
-        const [gx, gy] = toXY(i * 30 + 15, rBand);
+        const [lx, ly] = toXY(i * 30 + 15, rSignLbl);
+        const [hx, hy] = toXY(i * 30 + 15, rHouseLbl);
         return (
-          <g key={i}>
-            <line x1={sx1} y1={sy1} x2={sx2} y2={sy2} stroke={s.line} strokeWidth={1} opacity={0.5} />
-            <text x={gx} y={gy + 16} fill={s.subtext} fontSize={40} textAnchor="middle" opacity={signFade}>{SIGN_GLYPHS[i]}</text>
+          <g key={i} opacity={labelFade}>
+            <line x1={sx1} y1={sy1} x2={sx2} y2={sy2} stroke={s.line} strokeWidth={1} opacity={0.45} />
+            <text x={lx} y={ly + 11} fill={elColor(i)} fontSize={30} fontWeight={500} letterSpacing={2} textAnchor="middle">{SIGN_ABBR[i]}</text>
+            <text x={hx} y={hy + 9} fill={s.subtext} fontSize={24} opacity={0.55} textAnchor="middle">{i + 1}</text>
           </g>
         );
       })}
-      {/* the aspect line */}
+
+      {/* chart angles — fixed at the screen cardinals (don't rotate) */}
+      {ANGLES.map((a) => (
+        <text key={a.lbl} x={cx + a.dx * (rOuter + 30)} y={cy + a.dy * (rOuter + 38) + 8}
+          fill={s.accent} fontSize={26} fontWeight={500} letterSpacing={3} textAnchor="middle" opacity={reveal}>{a.lbl}</text>
+      ))}
+
+      {/* spotlight aspect */}
       <line x1={x1} y1={y1} x2={x1 + (x2 - x1) * aspectDraw} y2={y1 + (y2 - y1) * aspectDraw} stroke={s.accent} strokeWidth={3} />
       {aspectDraw > 0.5 && (
         <>
@@ -196,13 +223,12 @@ const AspectWheel: React.FC<{ s: CosmicStyle; cx: number; cy: number; frame: num
           <text x={mx} y={my + 12} fill={s.accent} fontSize={34} textAnchor="middle" opacity={(aspectDraw - 0.5) * 2}>{aspect.glyph}</text>
         </>
       )}
-      {/* the two planets */}
-      {[{ x: x1, y: y1, g: aspect.p1Glyph, d: 10 }, { x: x2, y: y2, g: aspect.p2Glyph, d: 16 }].map((p, i) => {
+      {[{ x: x1, y: y1, name: aspect.p1, d: 10 }, { x: x2, y: y2, name: aspect.p2, d: 16 }].map((p, i) => {
         const pop = interpolate(frame, [p.d, p.d + 12], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
         return (
           <g key={i} opacity={pop}>
-            <circle cx={p.x} cy={p.y} r={34} fill={s.bg[0]} stroke={s.accent} strokeWidth={2} />
-            <text x={p.x} y={p.y + 15} fill={s.text} fontSize={42} textAnchor="middle">{p.g}</text>
+            <circle cx={p.x} cy={p.y} r={14} fill={s.text} stroke={s.accent} strokeWidth={2} />
+            <text x={p.x} y={p.y - 26} fill={s.text} fontSize={26} fontWeight={500} textAnchor="middle">{p.name}</text>
           </g>
         );
       })}
