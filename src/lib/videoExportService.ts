@@ -19,12 +19,22 @@ async function getFFmpeg(): Promise<FFmpeg> {
 
   ffmpeg = new FFmpeg();
 
-  // Load from CDN (avoids self-hosting the 30MB wasm)
-  const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-  });
+  // Load the core from our own origin (/public/ffmpeg) so export doesn't depend
+  // on a third-party CDN being reachable. Falls back to unpkg only if the
+  // self-hosted files are somehow unavailable.
+  const loadCore = async (base: string) => {
+    await ffmpeg!.load({
+      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+  };
+  try {
+    await loadCore('/ffmpeg');
+  } catch (err) {
+    console.warn('[Export] self-hosted ffmpeg-core unavailable, using CDN fallback:', err);
+    ffmpeg = new FFmpeg();
+    await loadCore('https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm');
+  }
 
   return ffmpeg;
 }
