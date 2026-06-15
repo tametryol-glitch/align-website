@@ -122,6 +122,9 @@ export async function exportVideo(
     originalAudioVolume,
     playbackSpeed,
     brollClips,
+    musicTrackUrl,
+    musicVolume,
+    musicTrimStart,
   } = state;
 
   // ── Cut/rearrange: build the source→output timeline map ─────
@@ -256,6 +259,18 @@ export async function exportVideo(
   };
   const hasBroll = brollInputs.length > 0;
 
+  // ── Background music: fetch + write; amix into the audio below ──
+  const hasMusic = !!musicTrackUrl;
+  let musicInputIndex = -1;
+  if (hasMusic) {
+    try {
+      const mdata = await fetchFile(musicTrackUrl);
+      await ff.writeFile('music.mp3', mdata);
+      musicInputIndex = 1 + stickerInputs.length + brollInputs.length;
+    } catch (e) { console.warn('[Export] music fetch failed:', e); }
+  }
+  const musicReady = hasMusic && musicInputIndex >= 0;
+
   // ── Build filter chain ──────────────────────────────────────
   const videoFilters: string[] = [];
 
@@ -376,6 +391,20 @@ export async function exportVideo(
     audioFilters.push(`atempo=${remaining.toFixed(4)}`);
   }
 
+  // ── Final audio: apply audio filters to the main, then amix music ──
+  const outDur = segTotal; // total output seconds (= trimEnd-trimStart normally)
+  const buildAudio = (fp: string[], mainLabel: string): string => {
+    let main = mainLabel;
+    if (audioFilters.length > 0) { fp.push(`${main}${audioFilters.join(',')}[amain]`); main = '[amain]'; }
+    if (!musicReady) return main;
+    fp.push(
+      `[${musicInputIndex}:a]atrim=start=${musicTrimStart.toFixed(3)}:end=${(musicTrimStart + outDur).toFixed(3)},` +
+      `asetpts=PTS-STARTPTS,volume=${musicVolume.toFixed(2)}[mus]`,
+    );
+    fp.push(`${main}[mus]amix=inputs=2:duration=first:normalize=0[aout]`);
+    return '[aout]';
+  };
+
   // ── Build FFmpeg command ────────────────────────────────────
   const args: string[] = [];
 
@@ -394,6 +423,11 @@ export async function exportVideo(
   // B-roll inputs — finite clips (NOT looped); they're bounded by the main video.
   for (const bi of brollInputs) {
     args.push('-i', `broll_${bi.inputIndex}.mp4`);
+  }
+
+  // Background music input (last)
+  if (musicReady) {
+    args.push('-i', 'music.mp3');
   }
 
   // Trim — single-clip mode only. In segment mode each piece is trimmed inside
@@ -430,11 +464,7 @@ export async function exportVideo(
       cur = out;
     }
     cur = chainBroll(cur, fp);
-    let aud = '[ca]';
-    if (audioFilters.length > 0) {
-      fp.push(`[ca]${audioFilters.join(',')}[af]`);
-      aud = '[af]';
-    }
+    const aud = buildAudio(fp, '[ca]'); // audio filters + optional music amix
     args.push('-filter_complex', fp.join(';'));
     args.push('-map', cur);
     args.push('-map', aud);
@@ -442,7 +472,7 @@ export async function exportVideo(
     // infinite streams and `overlay` repeats the last main frame at EOF, so
     // without this the export runs forever.
     args.push('-t', segTotal.toFixed(3));
-  } else if (stickerInputs.length > 0 || hasBroll) {
+  } else if (stickerInputs.length > 0 || hasBroll || musicReady) {
     // Complex filter graph: base filters → sticker overlays → b-roll overlays.
     const filterParts: string[] = [];
 
@@ -473,15 +503,31 @@ export async function exportVideo(
     // B-roll overlays on top of the (filtered + stickered) base
     currentStream = chainBroll(currentStream, filterParts);
 
+    // Music-only path may leave currentStream as the raw input pad [0:v], which
+    // isn't a valid filtergraph -map target. Add a passthrough to get a real label.
+    if (currentStream === '[0:v]') {
+      filterParts.push('[0:v]null[vout]');
+      currentStream = '[vout]';
+    }
+
+    // Build the final audio stream. With music we fold audio filters + amix into
+    // the filtergraph; otherwise map the source audio (optionally with -af).
+    const audMap = musicReady ? buildAudio(filterParts, '[0:a]') : '0:a?';
+
     // Map the final video stream
     const complexFilter = filterParts.join(';');
     args.push('-filter_complex', complexFilter);
     args.push('-map', currentStream);
-    args.push('-map', '0:a?');
+    args.push('-map', audMap);
 
-    // Audio filters
-    if (audioFilters.length > 0) {
+    // Audio filters (music path already folded these into the graph)
+    if (!musicReady && audioFilters.length > 0) {
       args.push('-af', audioFilters.join(','));
+    }
+    // Bound output when music is present (music is a finite-but-independent stream;
+    // amix duration=first keeps it to the main, but cap defensively).
+    if (musicReady) {
+      args.push('-t', segTotal.toFixed(3));
     }
   } else {
     // Simple mode: no stickers, use -vf and -af
@@ -534,6 +580,7 @@ export async function exportVideo(
     for (const bi of brollInputs) {
       await ff.deleteFile(`broll_${bi.inputIndex}.mp4`);
     }
+    if (musicReady) await ff.deleteFile('music.mp3');
   } catch {}
 
   return blobUrl;

@@ -14,6 +14,7 @@ import { useTransitionPreview } from './hooks/useTransitionPreview';
 import { TextOverlayLayer } from './TextOverlayLayer';
 import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { BrollLayer } from './BrollLayer';
+import { MusicPlayer } from './MusicPlayer';
 import { getFilterById } from '@/lib/videoFilters';
 import { Play, Pause, Repeat, Gauge } from 'lucide-react';
 
@@ -197,6 +198,9 @@ export function PreviewPanel() {
             style={activeTransitionStyle}
           />
         )}
+
+        {/* Background music (hidden audio, synced to playback) */}
+        <MusicPlayer />
 
         {/* B-roll / overlay clips (under text & stickers) */}
         <BrollLayer containerRef={containerRef} />
