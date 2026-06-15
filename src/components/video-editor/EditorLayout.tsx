@@ -21,14 +21,15 @@
  */
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { PreviewPanel } from './PreviewPanel';
 import { TimelinePanel } from './TimelinePanel';
 import { ToolBar } from './ToolBar';
 import { ToolPanel } from './tools/ToolPanel';
+import { ShortcutHelp } from './ShortcutHelp';
 import {
-  ChevronLeft, Undo2, Redo2, Download,
+  ChevronLeft, Undo2, Redo2, Download, Keyboard,
 } from 'lucide-react';
 
 interface EditorLayoutProps {
@@ -44,6 +45,7 @@ export function EditorLayout({ videoId }: EditorLayoutProps) {
   const canRedo = useVideoEditorStore((s) => s.canRedo);
   const setActiveTool = useVideoEditorStore((s) => s.setActiveTool);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   // Push initial history snapshot
   useEffect(() => {
@@ -70,17 +72,51 @@ export function EditorLayout({ videoId }: EditorLayoutProps) {
         e.preventDefault();
         redo();
       }
+      // Split at playhead (S) — the core editing key. Skip when Ctrl/Cmd is held
+      // so the browser's own shortcuts (e.g. Ctrl+S save) aren't hijacked.
+      if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const before = useVideoEditorStore.getState().segments.length;
+        useVideoEditorStore.getState().splitAtPlayhead();
+        // Only record history if a split actually happened.
+        if (useVideoEditorStore.getState().segments.length !== before) pushHistory();
+      }
+      // Delete the currently selected overlay / clip / B-roll.
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        const selectedId = useVideoEditorStore.getState().selectedOverlayId;
-        if (selectedId) {
+        const st = useVideoEditorStore.getState();
+        const { selectedOverlayId, selectedSegmentId, selectedBrollId } = st;
+        if (selectedOverlayId || selectedSegmentId || selectedBrollId) {
           e.preventDefault();
-          useVideoEditorStore.getState().removeTextOverlay(selectedId);
-          useVideoEditorStore.getState().removeStickerOverlay(selectedId);
+          if (selectedOverlayId) {
+            st.removeTextOverlay(selectedOverlayId);
+            st.removeStickerOverlay(selectedOverlayId);
+          }
+          if (selectedSegmentId) st.removeSegment(selectedSegmentId);
+          if (selectedBrollId) st.removeBroll(selectedBrollId);
           pushHistory();
         }
       }
+      // Zoom the timeline in / out.
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        const st = useVideoEditorStore.getState();
+        st.setTimelineZoom(st.timelineZoom + 10);
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        const st = useVideoEditorStore.getState();
+        st.setTimelineZoom(st.timelineZoom - 10);
+      }
+      // Toggle the keyboard-shortcut cheat sheet (?).
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts((v) => !v);
+      }
       if (e.key === 'Escape') {
         useVideoEditorStore.getState().selectOverlay(null);
+        useVideoEditorStore.getState().selectSegment(null);
+        useVideoEditorStore.getState().selectBroll(null);
+        setShowShortcuts(false);
         setActiveTool('none');
       }
     };
@@ -113,6 +149,13 @@ export function EditorLayout({ videoId }: EditorLayoutProps) {
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowShortcuts(true)}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors text-text-secondary"
+            title="Keyboard shortcuts (?)"
+          >
+            <Keyboard className="w-4 h-4" />
+          </button>
           <button
             onClick={undo}
             disabled={!canUndo()}
@@ -166,6 +209,9 @@ export function EditorLayout({ videoId }: EditorLayoutProps) {
           <ToolPanel />
         </div>
       )}
+
+      {/* ── Keyboard shortcut cheat sheet ────────────────── */}
+      {showShortcuts && <ShortcutHelp onClose={() => setShowShortcuts(false)} />}
     </div>
   );
 }

@@ -16,7 +16,10 @@ import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { BrollLayer } from './BrollLayer';
 import { MusicPlayer } from './MusicPlayer';
 import { getFilterById } from '@/lib/videoFilters';
-import { Play, Pause, Repeat, Gauge } from 'lucide-react';
+import { Play, Pause, Repeat, SkipBack, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// One frame at an assumed 30fps — the granularity for arrow-key / button stepping.
+const FRAME = 1 / 30;
 
 export function PreviewPanel() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -102,6 +105,19 @@ export function PreviewPanel() {
     }
   }, [isPlaying, setIsPlaying, trimStart, trimEnd]);
 
+  // Seek to an absolute source time, moving BOTH the <video> and the store so
+  // the playhead/clock stay correct even while paused (the rAF tick only runs
+  // during playback). Used by arrows, frame-step buttons, Home/End.
+  const seekTo = useCallback(
+    (t: number) => {
+      const clamped = Math.max(0, Math.min(videoDuration || 0, t));
+      const vid = videoRef.current;
+      if (vid) vid.currentTime = clamped;
+      setCurrentTime(clamped);
+    },
+    [videoDuration, setCurrentTime],
+  );
+
   // ── Progress bar scrubbing ──────────────────────────────────
   const handleScrub = useCallback(
     (clientX: number) => {
@@ -147,26 +163,40 @@ export function PreviewPanel() {
         e.preventDefault();
         togglePlay();
       }
-      // Arrow key seek
+      // Frame-step with arrows; 1-second jump with Shift held.
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        const vid = videoRef.current;
-        if (vid) vid.currentTime = Math.max(trimStart, vid.currentTime - 1);
+        const cur = useVideoEditorStore.getState().currentTime;
+        seekTo(cur - (e.shiftKey ? 1 : FRAME));
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        const vid = videoRef.current;
-        if (vid) vid.currentTime = Math.min(trimEnd, vid.currentTime + 1);
+        const cur = useVideoEditorStore.getState().currentTime;
+        seekTo(cur + (e.shiftKey ? 1 : FRAME));
+      }
+      // Jump to the start / end of the trimmed range.
+      if (e.key === 'Home') {
+        e.preventDefault();
+        seekTo(trimStart);
+      }
+      if (e.key === 'End') {
+        e.preventDefault();
+        seekTo(trimEnd);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [togglePlay, trimStart, trimEnd]);
+  }, [togglePlay, seekTo, trimStart, trimEnd]);
 
-  const formatTime = (t: number) => {
-    const mins = Math.floor(t / 60);
-    const secs = Math.floor(t % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  // m:ss, optionally with centiseconds (m:ss.cs) for a frame-accurate readout.
+  const formatTime = (t: number, withCs = false) => {
+    const safe = Math.max(0, t || 0);
+    const mins = Math.floor(safe / 60);
+    const secs = Math.floor(safe % 60);
+    const base = `${mins}:${secs.toString().padStart(2, '0')}`;
+    if (!withCs) return base;
+    const cs = Math.floor((safe % 1) * 100);
+    return `${base}.${cs.toString().padStart(2, '0')}`;
   };
 
   // Deselect overlay when clicking background
@@ -228,10 +258,26 @@ export function PreviewPanel() {
       </div>
 
       {/* Playback controls with scrubbing */}
-      <div className="flex items-center gap-2 w-full max-w-[440px] shrink-0">
+      <div className="flex items-center gap-1.5 w-full max-w-[440px] shrink-0">
+        {/* Transport: jump-start · frame-back · play · frame-fwd · jump-end */}
+        <button
+          onClick={() => seekTo(trimStart)}
+          className="p-1 rounded-md hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+          title="Jump to start (Home)"
+        >
+          <SkipBack className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => seekTo(currentTime - FRAME)}
+          className="p-1 rounded-md hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+          title="Previous frame (←)"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
         <button
           onClick={togglePlay}
           className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white"
+          title="Play / Pause (Space)"
         >
           {isPlaying ? (
             <Pause className="w-4 h-4" />
@@ -239,8 +285,22 @@ export function PreviewPanel() {
             <Play className="w-4 h-4 ml-0.5" />
           )}
         </button>
-        <span className="text-xs text-text-muted font-mono tabular-nums">
-          {formatTime(currentTime)}
+        <button
+          onClick={() => seekTo(currentTime + FRAME)}
+          className="p-1 rounded-md hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+          title="Next frame (→)"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => seekTo(trimEnd)}
+          className="p-1 rounded-md hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+          title="Jump to end (End)"
+        >
+          <SkipForward className="w-3.5 h-3.5" />
+        </button>
+        <span className="text-xs text-text-muted font-mono tabular-nums pl-0.5">
+          {formatTime(currentTime, true)}
         </span>
         {/* Scrubable progress bar */}
         <div
