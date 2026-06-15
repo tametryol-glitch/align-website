@@ -195,6 +195,40 @@ export function TimelinePanel() {
     [timelineZoom, setTimelineZoom],
   );
 
+  // ── Playhead drag (grab the head and scrub) ──────────────────
+
+  const handlePlayheadDrag = useCallback(
+    (e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const onMove = (ev: PointerEvent) => {
+        const x = ev.clientX - rect.left + container.scrollLeft - PADDING_LEFT;
+        setCurrentTime(Math.max(0, Math.min(videoDuration, x / timelineZoom)));
+      };
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    },
+    [videoDuration, timelineZoom, setCurrentTime],
+  );
+
+  // ── Auto-scroll: keep the playhead in view as it plays/seeks ──
+
+  useEffect(() => {
+    const c = containerRef.current;
+    if (!c) return;
+    const px = currentTime * timelineZoom + PADDING_LEFT;
+    if (px < c.scrollLeft + 40 || px > c.scrollLeft + c.clientWidth - 40) {
+      c.scrollLeft = Math.max(0, px - c.clientWidth / 2);
+    }
+  }, [currentTime, timelineZoom]);
+
   // ── Format time label ────────────────────────────────────────
 
   const formatTick = (t: number) => {
@@ -389,20 +423,27 @@ export function TimelinePanel() {
           );
         })}
 
-        {/* ── Playhead ───────────────────────────────────── */}
+        {/* ── Playhead (live position indicator, draggable) ── */}
         <div
-          className="absolute top-0 bottom-0 w-px bg-white/80 z-20 pointer-events-none"
+          className="absolute top-0 bottom-0 z-20"
           style={{ left: currentTime * timelineZoom + PADDING_LEFT }}
         >
-          {/* Playhead triangle */}
+          {/* Vertical line — non-interactive so track clicks still seek */}
+          <div className="absolute top-0 bottom-0 w-0.5 -translate-x-1/2 bg-accent-primary pointer-events-none" />
+          {/* Draggable head */}
           <div
-            className="absolute -top-0.5 -translate-x-1/2 w-0 h-0"
-            style={{
-              borderLeft: '5px solid transparent',
-              borderRight: '5px solid transparent',
-              borderTop: '6px solid rgba(255,255,255,0.9)',
-            }}
-          />
+            className="absolute -top-1 -translate-x-1/2 cursor-col-resize z-30 px-1.5 py-0.5"
+            onPointerDown={handlePlayheadDrag}
+          >
+            <div
+              className="w-0 h-0"
+              style={{
+                borderLeft: '6px solid transparent',
+                borderRight: '6px solid transparent',
+                borderTop: '8px solid var(--color-accent-primary, #8b5cf6)',
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
