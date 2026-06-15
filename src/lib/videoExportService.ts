@@ -121,6 +121,7 @@ export async function exportVideo(
     transitions,
     originalAudioVolume,
     playbackSpeed,
+    brollClips,
   } = state;
 
   // ── Cut/rearrange: build the source→output timeline map ─────
@@ -200,6 +201,60 @@ export async function exportVideo(
       size: clampedSize,
     });
   }
+
+  // ── Fetch + write B-roll sources; assign FFmpeg input indices ──
+  // Inputs order: main (0), stickers (1..S), then b-roll (S+1..).
+  const brollInputs: Array<{
+    inputIndex: number; sourceStart: number; sourceEnd: number;
+    timelineStart: number; x: number; y: number; scale: number; opacity: number;
+  }> = [];
+  {
+    let nextIdx = 1 + stickerInputs.length;
+    for (const b of brollClips) {
+      try {
+        const data = await fetchFile(b.sourceUrl);
+        await ff.writeFile(`broll_${nextIdx}.mp4`, data);
+        brollInputs.push({
+          inputIndex: nextIdx, sourceStart: b.sourceStart, sourceEnd: b.sourceEnd,
+          timelineStart: b.timelineStart, x: b.x, y: b.y, scale: b.scale, opacity: b.opacity,
+        });
+        nextIdx++;
+      } catch (e) { console.warn('[Export] b-roll source fetch failed:', e); }
+    }
+  }
+  // Map a b-roll's main-timeline start (source time) to OUTPUT time.
+  const brollOutStart = (tStart: number): number | null => {
+    if (!segMode) return Math.max(0, tStart - trimStart);
+    for (const s of segMap) {
+      if (tStart >= s.srcStart && tStart < s.srcEnd) return s.outStart + (tStart - s.srcStart);
+    }
+    return null; // starts outside any kept piece — skip
+  };
+  // Append b-roll PiP overlays onto a video stream label; returns the new label.
+  const chainBroll = (inStream: string, fp: string[]): string => {
+    let cur = inStream;
+    for (let k = 0; k < brollInputs.length; k++) {
+      const bi = brollInputs[k];
+      const outStart = brollOutStart(bi.timelineStart);
+      if (outStart === null) continue;
+      const len = Math.max(0.1, bi.sourceEnd - bi.sourceStart);
+      const w = Math.max(16, Math.round(vw * bi.scale));
+      const bl = `[bsrc${k}]`;
+      fp.push(
+        `[${bi.inputIndex}:v]trim=${bi.sourceStart.toFixed(3)}:${bi.sourceEnd.toFixed(3)},` +
+        `setpts=PTS-STARTPTS+${outStart.toFixed(3)}/TB,scale=${w}:-1,` +
+        `format=yuva420p,colorchannelmixer=aa=${bi.opacity.toFixed(2)}${bl}`,
+      );
+      const out = `[bov${k}]`;
+      fp.push(
+        `${cur}${bl}overlay=x=(W*${(bi.x / 100).toFixed(4)}-w/2):y=(H*${(bi.y / 100).toFixed(4)}-h/2):` +
+        `enable='between(t,${outStart.toFixed(2)},${(outStart + len).toFixed(2)})'${out}`,
+      );
+      cur = out;
+    }
+    return cur;
+  };
+  const hasBroll = brollInputs.length > 0;
 
   // ── Build filter chain ──────────────────────────────────────
   const videoFilters: string[] = [];
@@ -336,6 +391,11 @@ export async function exportVideo(
     args.push('-loop', '1', '-i', si.filename);
   }
 
+  // B-roll inputs — finite clips (NOT looped); they're bounded by the main video.
+  for (const bi of brollInputs) {
+    args.push('-i', `broll_${bi.inputIndex}.mp4`);
+  }
+
   // Trim — single-clip mode only. In segment mode each piece is trimmed inside
   // the concat filtergraph below.
   if (!segMode) {
@@ -369,6 +429,7 @@ export async function exportVideo(
       fp.push(`${cur}[${i + 1}:v]overlay=x=${px}:y=${py}:enable='${enableExpr(si.startTime, si.endTime)}'${out}`);
       cur = out;
     }
+    cur = chainBroll(cur, fp);
     let aud = '[ca]';
     if (audioFilters.length > 0) {
       fp.push(`[ca]${audioFilters.join(',')}[af]`);
@@ -381,8 +442,8 @@ export async function exportVideo(
     // infinite streams and `overlay` repeats the last main frame at EOF, so
     // without this the export runs forever.
     args.push('-t', segTotal.toFixed(3));
-  } else if (stickerInputs.length > 0) {
-    // We need a complex filter graph to overlay stickers
+  } else if (stickerInputs.length > 0 || hasBroll) {
+    // Complex filter graph: base filters → sticker overlays → b-roll overlays.
     const filterParts: string[] = [];
 
     // Apply video filters to the base video stream first
@@ -408,6 +469,9 @@ export async function exportVideo(
       );
       currentStream = outLabel;
     }
+
+    // B-roll overlays on top of the (filtered + stickered) base
+    currentStream = chainBroll(currentStream, filterParts);
 
     // Map the final video stream
     const complexFilter = filterParts.join(';');
@@ -466,6 +530,9 @@ export async function exportVideo(
     await ff.deleteFile('output.mp4');
     for (const si of stickerInputs) {
       await ff.deleteFile(si.filename);
+    }
+    for (const bi of brollInputs) {
+      await ff.deleteFile(`broll_${bi.inputIndex}.mp4`);
     }
   } catch {}
 
