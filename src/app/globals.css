@@ -147,6 +147,17 @@
   animation: scaleIn 0.3s ease-out;
 }
 
+@keyframes bounceIn {
+  0%   { transform: translate(-50%, -50%) translateY(-40px); opacity: 0; }
+  50%  { transform: translate(-50%, -50%) translateY(12px);  opacity: 1; }
+  70%  { transform: translate(-50%, -50%) translateY(-6px); }
+  100% { transform: translate(-50%, -50%) translateY(0); }
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.7s cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
 @keyframes slideInLeft {
   from { transform: translate(-150%, -50%); opacity: 0; }
   to   { transform: translate(-50%, -50%);  opacity: 1; }

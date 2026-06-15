@@ -25,7 +25,7 @@ export interface TextOverlay {
   fontFamily: string;
   startTime: number;
   endTime: number;
-  animation: 'none' | 'fade' | 'slide' | 'scale' | 'typewriter';
+  animation: 'none' | 'fade' | 'slide' | 'scale' | 'typewriter' | 'bounce' | 'word-pop' | 'karaoke';
   /** Background color behind text (empty string = transparent) */
   bgColor: string;
   /** Stroke/outline color (empty string = none) */

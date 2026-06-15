@@ -10,6 +10,7 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { FFMPEG_FILTER_MAP } from './videoFilters';
 import { buildTransitionFFmpegFilter } from './videoTransitions';
+import { buildKineticTextFilters } from './kineticText';
 
 let ffmpeg: FFmpeg | null = null;
 
@@ -327,31 +328,53 @@ export async function exportVideo(
       'Lucida Console': 'Mono',
     };
     const ffmpegFont = fontFamilyMap[overlay.fontFamily] || 'Sans';
+    const escape = (s: string) =>
+      s.replace(/\\/g, '\\\\').replace(/'/g, "'\\''").replace(/:/g, '\\:');
 
-    let dtFilter =
-      `drawtext=text='${escapedText}'` +
-      `:fontsize=${scaledFontSize}` +
-      `:fontcolor=${overlay.color}` +
-      `:font=${ffmpegFont}` +
-      `:x=${x}-(tw/2)` +
-      `:y=${y}-(th/2)` +
-      `:enable='${enableExpr(overlay.startTime, overlay.endTime)}'` +
-      `:shadowcolor=black@0.8:shadowx=2:shadowy=2`;
-
-    // Add background box if bgColor is set
+    // Shared suffix: shadow (always) + optional background box + optional outline.
+    let extras = `:shadowcolor=black@0.8:shadowx=2:shadowy=2`;
     if (overlay.bgColor) {
       const bgHex = overlay.bgColor.replace('#', '').slice(0, 6);
       const bgAlpha = overlay.bgColor.length > 7 ? overlay.bgColor.slice(7) : 'CC';
-      dtFilter += `:box=1:boxcolor=${bgHex}@0x${bgAlpha}:boxborderw=8`;
+      extras += `:box=1:boxcolor=${bgHex}@0x${bgAlpha}:boxborderw=8`;
     }
-
-    // Add text outline via borderw + bordercolor
     if (overlay.strokeWidth > 0 && overlay.strokeColor) {
       const borderW = Math.round(overlay.strokeWidth * (vh / 640));
-      dtFilter += `:borderw=${borderW}:bordercolor=${overlay.strokeColor.replace('#', '')}`;
+      extras += `:borderw=${borderW}:bordercolor=${overlay.strokeColor.replace('#', '')}`;
     }
 
-    videoFilters.push(dtFilter);
+    const enableInner = enableExpr(overlay.startTime, overlay.endTime);
+
+    // Kinetic motion needs source-time `t`, which only holds in single-clip mode.
+    // In segment (concat) mode time is re-based, so fall back to a static draw.
+    if (!segMode && overlay.animation && overlay.animation !== 'none') {
+      const filters = buildKineticTextFilters({
+        animation: overlay.animation,
+        text: overlay.text,
+        color: overlay.color,
+        font: ffmpegFont,
+        fontSize: scaledFontSize,
+        xc: x,
+        yc: y,
+        t0: overlay.startTime,
+        t1: overlay.endTime,
+        enableInner,
+        extras,
+        escape,
+      });
+      videoFilters.push(...filters);
+    } else {
+      videoFilters.push(
+        `drawtext=text='${escapedText}'` +
+        `:fontsize=${scaledFontSize}` +
+        `:fontcolor=${overlay.color}` +
+        `:font=${ffmpegFont}` +
+        `:x=${x}-(tw/2)` +
+        `:y=${y}-(th/2)` +
+        `:enable='${enableInner}'` +
+        extras,
+      );
+    }
   }
 
   // Transitions

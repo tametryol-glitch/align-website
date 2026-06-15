@@ -34,8 +34,15 @@ const BG_COLORS = [
   '#A78BFACC', '#34D399CC', '#60A5FACC',
 ];
 
-const ANIMATIONS: TextOverlay['animation'][] = [
-  'none', 'fade', 'slide', 'scale', 'typewriter',
+const ANIMATIONS: { id: TextOverlay['animation']; label: string }[] = [
+  { id: 'none', label: 'None' },
+  { id: 'fade', label: 'Fade' },
+  { id: 'slide', label: 'Slide Up' },
+  { id: 'scale', label: 'Pop' },
+  { id: 'bounce', label: 'Bounce' },
+  { id: 'word-pop', label: 'Word Pop' },
+  { id: 'typewriter', label: 'Typewriter' },
+  { id: 'karaoke', label: 'Karaoke' },
 ];
 
 /** Pre-designed text templates for quick styling */
@@ -403,18 +410,21 @@ export function TextTool() {
             <div className="flex items-center gap-1 flex-wrap">
               {ANIMATIONS.map((a) => (
                 <button
-                  key={a}
-                  onClick={() => { update({ animation: a }); pushHistory(); }}
-                  className={`px-2 py-1 rounded-md text-xs capitalize transition-colors ${
-                    selected.animation === a
+                  key={a.id}
+                  onClick={() => { update({ animation: a.id }); pushHistory(); }}
+                  className={`px-2 py-1 rounded-md text-xs transition-colors ${
+                    selected.animation === a.id
                       ? 'bg-accent-primary/20 text-accent-primary'
                       : 'bg-white/5 text-text-muted hover:bg-white/10'
                   }`}
                 >
-                  {a}
+                  {a.label}
                 </button>
               ))}
             </div>
+            <p className="text-[10px] text-text-muted mt-1.5">
+              Word Pop, Typewriter &amp; Karaoke animate word-by-word. Animations render into your export.
+            </p>
           </div>
 
           {/* Timing */}

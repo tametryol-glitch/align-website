@@ -32,6 +32,7 @@ export function TextOverlayLayer({ containerRef }: TextOverlayLayerProps) {
           <DraggableText
             key={overlay.id}
             overlay={overlay}
+            now={currentTime}
             isSelected={selectedOverlayId === overlay.id}
             containerRef={containerRef}
             onSelect={() => selectOverlay(overlay.id)}
@@ -50,6 +51,7 @@ export function TextOverlayLayer({ containerRef }: TextOverlayLayerProps) {
 
 interface DraggableTextProps {
   overlay: TextOverlay;
+  now: number;
   isSelected: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   onSelect: () => void;
@@ -57,8 +59,15 @@ interface DraggableTextProps {
   onDragEnd: () => void;
 }
 
+const WORD_ANIMS = ['word-pop', 'karaoke', 'typewriter'] as const;
+type WordAnim = (typeof WORD_ANIMS)[number];
+function isWordAnim(a: TextOverlay['animation']): a is WordAnim {
+  return (WORD_ANIMS as readonly string[]).includes(a);
+}
+
 function DraggableText({
   overlay,
+  now,
   isSelected,
   containerRef,
   onSelect,
@@ -130,11 +139,12 @@ function DraggableText({
     }
   }, [overlay.text, onUpdate, onDragEnd]);
 
-  const animationClass =
-    overlay.animation === 'fade' ? 'animate-fadeIn'
+  const wordLevel = isWordAnim(overlay.animation);
+  const animationClass = wordLevel ? ''
+    : overlay.animation === 'fade' ? 'animate-fadeIn'
     : overlay.animation === 'scale' ? 'animate-scaleIn'
     : overlay.animation === 'slide' ? 'animate-slideIn'
-    : overlay.animation === 'typewriter' ? 'animate-typewriter'
+    : overlay.animation === 'bounce' ? 'animate-bounceIn'
     : '';
 
   return (
@@ -173,8 +183,54 @@ function DraggableText({
           outline: 'none',
         }}
       >
-        {overlay.text}
+        {isEditing || !wordLevel
+          ? overlay.text
+          : <WordAnimatedText overlay={overlay} now={now} />}
       </div>
     </div>
+  );
+}
+
+// ── Word-by-word kinetic text (preview) ────────────────────────
+// Time-driven so scrubbing shows the exact state, mirroring the export.
+
+function WordAnimatedText({ overlay, now }: { overlay: TextOverlay; now: number }) {
+  const words = overlay.text.split(/\s+/).filter(Boolean);
+  const rel = Math.max(0, now - overlay.startTime);
+  const anim = overlay.animation;
+  const slice = words.length > 0 ? Math.max(0.15, (overlay.endTime - overlay.startTime) / words.length) : 0.3;
+  const activeIdx = Math.floor(rel / slice);
+
+  return (
+    <span className="inline-flex flex-wrap gap-[0.25em] justify-center">
+      {words.map((w, i) => {
+        let style: React.CSSProperties = {};
+        if (anim === 'word-pop') {
+          const at = i * 0.12;
+          const p = Math.max(0, Math.min(1, (rel - at) / 0.18));
+          style = {
+            opacity: p,
+            transform: `translateY(${(1 - p) * -14}px) scale(${0.7 + 0.3 * p})`,
+            display: 'inline-block',
+          };
+        } else if (anim === 'typewriter') {
+          const at = i * 0.16;
+          style = { opacity: rel >= at ? 1 : 0, display: 'inline-block' };
+        } else if (anim === 'karaoke') {
+          const active = i === activeIdx;
+          style = {
+            display: 'inline-block',
+            color: active ? '#FFD60A' : undefined,
+            transform: active ? 'scale(1.08)' : 'scale(1)',
+            transition: 'transform 0.1s, color 0.1s',
+          };
+        }
+        return (
+          <span key={i} style={style}>
+            {w}
+          </span>
+        );
+      })}
+    </span>
   );
 }
