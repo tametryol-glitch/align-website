@@ -85,6 +85,22 @@ export function TimelinePanel() {
   const selectBroll = useVideoEditorStore((s) => s.selectBroll);
   const removeBroll = useVideoEditorStore((s) => s.removeBroll);
   const updateBroll = useVideoEditorStore((s) => s.updateBroll);
+  const splitAtPlayhead = useVideoEditorStore((s) => s.splitAtPlayhead);
+  const duplicateSegment = useVideoEditorStore((s) => s.duplicateSegment);
+  const duplicateBroll = useVideoEditorStore((s) => s.duplicateBroll);
+
+  // Right-click context menu on timeline clips.
+  const [menu, setMenu] = useState<{ x: number; y: number; kind: 'segment' | 'broll' | 'video'; id?: string } | null>(null);
+  const openMenu = useCallback((e: React.MouseEvent, kind: 'segment' | 'broll' | 'video', id?: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMenu({ x: e.clientX, y: e.clientY, kind, id });
+  }, []);
+  const runMenu = useCallback((fn: () => void) => {
+    fn();
+    useVideoEditorStore.getState().pushHistory();
+    setMenu(null);
+  }, []);
 
   const musicTrackUrl = useVideoEditorStore((s) => s.musicTrackUrl);
   const musicTrimStart = useVideoEditorStore((s) => s.musicTrimStart);
@@ -369,6 +385,14 @@ export function TimelinePanel() {
     }
   }, [currentTime, timelineZoom]);
 
+  // Close the context menu on Escape.
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menu]);
+
   // ── Format time label ────────────────────────────────────────
 
   const formatTick = (t: number) => {
@@ -419,6 +443,7 @@ export function TimelinePanel() {
         <div
           className="relative"
           style={{ height: VID_H, paddingLeft: PADDING_LEFT }}
+          onContextMenu={(e) => openMenu(e, 'video')}
         >
           {/* Full duration: frame filmstrip if extracted, else a plain bar */}
           <div
@@ -525,6 +550,7 @@ export function TimelinePanel() {
                       setDragSeg(null);
                     }}
                     onClick={(e) => { e.stopPropagation(); selectSegment(g.id); setCurrentTime(g.sourceStart); }}
+                    onContextMenu={(e) => { selectSegment(g.id); openMenu(e, 'segment', g.id); }}
                     className={`absolute top-1 rounded-md overflow-hidden cursor-grab border ${selected ? 'border-accent-primary ring-1 ring-accent-primary' : 'border-white/15'} ${dragSeg === i ? 'opacity-50' : ''}`}
                     style={{ left, width, height: SEG_H }}
                   >
@@ -565,6 +591,7 @@ export function TimelinePanel() {
                   key={b.id}
                   onPointerDown={(e) => handleBrollDrag(b.id, e)}
                   onClick={(e) => { e.stopPropagation(); selectBroll(b.id); }}
+                  onContextMenu={(e) => { selectBroll(b.id); openMenu(e, 'broll', b.id); }}
                   className={`absolute top-1 rounded-md overflow-hidden cursor-grab border flex items-center px-2 bg-teal-500/25 ${selected ? 'border-accent-primary ring-1 ring-accent-primary' : 'border-teal-400/40'}`}
                   style={{ left, width, height: BROLL_H }}
                 >
@@ -741,6 +768,59 @@ export function TimelinePanel() {
           </div>
         </div>
       </div>
+
+      {/* ── Right-click context menu ─────────────────────── */}
+      {menu && (
+        <>
+          {/* click-catcher to dismiss */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={(e) => { e.stopPropagation(); setMenu(null); }}
+            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setMenu(null); }}
+          />
+          <div
+            className="fixed z-50 min-w-[140px] py-1 rounded-lg border border-white/10 bg-surface-secondary shadow-2xl text-sm"
+            style={{ left: menu.x, top: menu.y }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(menu.kind === 'video' || menu.kind === 'segment') && (
+              <button
+                className="block w-full text-left px-3 py-1.5 text-text-secondary hover:bg-white/10"
+                onClick={() => runMenu(() => splitAtPlayhead())}
+              >
+                Split at playhead
+              </button>
+            )}
+            {menu.kind === 'segment' && (
+              <button
+                className="block w-full text-left px-3 py-1.5 text-text-secondary hover:bg-white/10"
+                onClick={() => menu.id && runMenu(() => duplicateSegment(menu.id!))}
+              >
+                Duplicate
+              </button>
+            )}
+            {menu.kind === 'broll' && (
+              <button
+                className="block w-full text-left px-3 py-1.5 text-text-secondary hover:bg-white/10"
+                onClick={() => menu.id && runMenu(() => duplicateBroll(menu.id!))}
+              >
+                Duplicate
+              </button>
+            )}
+            {(menu.kind === 'segment' || menu.kind === 'broll') && (
+              <button
+                className="block w-full text-left px-3 py-1.5 text-red-300 hover:bg-white/10"
+                onClick={() =>
+                  menu.id &&
+                  runMenu(() => (menu.kind === 'segment' ? removeSegment(menu.id!) : removeBroll(menu.id!)))
+                }
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

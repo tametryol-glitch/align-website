@@ -234,12 +234,14 @@ interface VideoEditorState {
   reorderSegments: (from: number, to: number) => void;
   removeSegment: (id: string) => void;
   selectSegment: (id: string | null) => void;
+  duplicateSegment: (id: string) => void;
 
   // B-roll
   addBroll: (clip: BrollClip) => void;
   updateBroll: (id: string, partial: Partial<BrollClip>) => void;
   removeBroll: (id: string) => void;
   selectBroll: (id: string | null) => void;
+  duplicateBroll: (id: string) => void;
 
   // Text overlays
   addTextOverlay: (overlay: TextOverlay) => void;
@@ -427,6 +429,18 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
       };
     }),
   selectSegment: (id) => set({ selectedSegmentId: id }),
+  duplicateSegment: (id) =>
+    set((s) => {
+      if (s.segments.length === 0) return {};
+      const idx = s.segments.findIndex((g) => g.id === id);
+      if (idx === -1) return {};
+      const g = s.segments[idx];
+      const copy: ClipSegment = {
+        ...g,
+        id: `seg_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+      };
+      return { segments: [...s.segments.slice(0, idx + 1), copy, ...s.segments.slice(idx + 1)] };
+    }),
 
   // B-roll
   addBroll: (clip) => set((s) => ({ brollClips: [...s.brollClips, clip], selectedBrollId: clip.id })),
@@ -438,6 +452,18 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
       selectedBrollId: s.selectedBrollId === id ? null : s.selectedBrollId,
     })),
   selectBroll: (id) => set({ selectedBrollId: id }),
+  duplicateBroll: (id) =>
+    set((s) => {
+      const b = s.brollClips.find((x) => x.id === id);
+      if (!b) return {};
+      const len = b.sourceEnd - b.sourceStart;
+      const copy: BrollClip = {
+        ...b,
+        id: `broll_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+        timelineStart: Math.max(0, Math.min(s.videoDuration - len, b.timelineStart + len)),
+      };
+      return { brollClips: [...s.brollClips, copy], selectedBrollId: copy.id };
+    }),
 
   // Text overlays
   addTextOverlay: (overlay) =>
