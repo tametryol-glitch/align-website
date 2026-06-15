@@ -47,6 +47,11 @@ export interface RenderRequest {
     music_volume?: number;
     text_overlays?: TextOverlayConfig[];
     ar_filter_id?: string;
+    /** Cosmic Studio visual Style (decoupled look). Backend adopts this in the
+     *  renderer; older renderer versions safely ignore the extra field. */
+    style_id?: string;
+    /** Watermark handle burned into the video for shareability. */
+    watermark_handle?: string;
   };
 }
 
