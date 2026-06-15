@@ -139,19 +139,33 @@ export function EditorLayout({ videoId }: EditorLayoutProps) {
         </div>
       </div>
 
-      {/* ── Preview Panel (video + overlays) ─────────────── */}
-      <div className="flex-1 min-h-0 flex items-center justify-center bg-black/20 overflow-hidden">
-        <PreviewPanel />
+      {/* ── Main: preview column (+ desktop tool rail) ───── */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+        {/* Preview + toolbar column */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 flex items-center justify-center bg-black/20 overflow-hidden">
+            <PreviewPanel />
+          </div>
+          <ToolBar />
+        </div>
+
+        {/* Desktop: dock the active tool panel to the right to use the space */}
+        {activeTool !== 'none' && (
+          <div className="hidden lg:block lg:w-[380px] shrink-0 border-l border-white/10 bg-black/30 overflow-y-auto">
+            <ToolPanel />
+          </div>
+        )}
       </div>
 
-      {/* ── Tool Bar (icon strip) ────────────────────────── */}
-      <ToolBar />
-
-      {/* ── Timeline Panel ───────────────────────────────── */}
+      {/* ── Timeline Panel (full width) ──────────────────── */}
       <TimelinePanel />
 
-      {/* ── Active Tool Panel (bottom sheet) ─────────────── */}
-      {activeTool !== 'none' && <ToolPanel />}
+      {/* ── Mobile: tool panel as a bottom sheet ─────────── */}
+      {activeTool !== 'none' && (
+        <div className="lg:hidden">
+          <ToolPanel />
+        </div>
+      )}
     </div>
   );
 }

@@ -10,12 +10,55 @@
  * Coordinate system: time (seconds) → pixels via timelineZoom (px/sec).
  */
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
+
+// Extract evenly-spaced frame thumbnails from the source video for a filmstrip.
+// Best-effort: if the canvas is tainted (CORS) it bails and the track falls
+// back to a plain bar.
+function useFilmstrip(url: string, duration: number, count = 12): string[] {
+  const [thumbs, setThumbs] = useState<string[]>([]);
+  useEffect(() => {
+    if (!url || !duration) return;
+    let cancelled = false;
+    const v = document.createElement('video');
+    v.crossOrigin = 'anonymous';
+    v.muted = true;
+    v.preload = 'auto';
+    v.src = url;
+    const canvas = document.createElement('canvas');
+    const seek = (t: number) =>
+      new Promise<void>((res) => {
+        const on = () => { v.removeEventListener('seeked', on); res(); };
+        v.addEventListener('seeked', on);
+        v.currentTime = t;
+      });
+    const run = async () => {
+      const w = 60;
+      const h = v.videoHeight && v.videoWidth ? Math.round(w * (v.videoHeight / v.videoWidth)) : 106;
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const out: string[] = [];
+      for (let i = 0; i < count; i++) {
+        if (cancelled) return;
+        await seek(((i + 0.5) / count) * duration);
+        try { ctx.drawImage(v, 0, 0, w, h); out.push(canvas.toDataURL('image/jpeg', 0.55)); }
+        catch { return; } // tainted → graceful fallback
+      }
+      if (!cancelled) setThumbs(out);
+    };
+    const onReady = () => { run(); };
+    v.addEventListener('loadeddata', onReady);
+    return () => { cancelled = true; v.removeEventListener('loadeddata', onReady); v.src = ''; };
+  }, [url, duration, count]);
+  return thumbs;
+}
 
 export function TimelinePanel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoDuration = useVideoEditorStore((s) => s.videoDuration);
+  const sourceVideoUrl = useVideoEditorStore((s) => s.sourceVideoUrl);
   const trimStart = useVideoEditorStore((s) => s.trimStart);
   const trimEnd = useVideoEditorStore((s) => s.trimEnd);
   const currentTime = useVideoEditorStore((s) => s.currentTime);
@@ -31,8 +74,11 @@ export function TimelinePanel() {
   const updateTextOverlay = useVideoEditorStore((s) => s.updateTextOverlay);
   const updateStickerOverlay = useVideoEditorStore((s) => s.updateStickerOverlay);
 
+  const thumbs = useFilmstrip(sourceVideoUrl, videoDuration);
+
   const totalWidth = videoDuration * timelineZoom;
   const TRACK_HEIGHT = 32;
+  const VID_H = 54; // taller video track to show the frame filmstrip
   const RULER_HEIGHT = 24;
   const PADDING_LEFT = 8;
 
@@ -168,7 +214,7 @@ export function TimelinePanel() {
     <div
       ref={containerRef}
       className="relative overflow-x-auto overflow-y-hidden border-t border-white/10 bg-black/40 shrink-0"
-      style={{ height: RULER_HEIGHT + TRACK_HEIGHT + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
+      style={{ height: RULER_HEIGHT + VID_H + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
       onClick={handleTimelineClick}
       onWheel={handleWheel}
     >
@@ -195,71 +241,87 @@ export function TimelinePanel() {
           ))}
         </div>
 
-        {/* ── Video Track ────────────────────────────────── */}
+        {/* ── Video Track (filmstrip) ────────────────────── */}
         <div
           className="relative"
-          style={{ height: TRACK_HEIGHT, paddingLeft: PADDING_LEFT }}
+          style={{ height: VID_H, paddingLeft: PADDING_LEFT }}
         >
-          {/* Full duration bar */}
+          {/* Full duration: frame filmstrip if extracted, else a plain bar */}
           <div
-            className="absolute top-1 rounded-md bg-white/5"
+            className="absolute top-1 rounded-md overflow-hidden bg-white/5"
             style={{
               left: PADDING_LEFT,
               width: videoDuration * timelineZoom,
-              height: TRACK_HEIGHT - 2,
+              height: VID_H - 2,
             }}
-          />
+          >
+            {thumbs.length > 0 && (
+              <div className="flex w-full h-full">
+                {thumbs.map((src, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    draggable={false}
+                    className="h-full object-cover"
+                    style={{ width: `${100 / thumbs.length}%` }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Active trim region */}
           <div
-            className="absolute top-1 rounded-md bg-accent-primary/20 border border-accent-primary/40"
+            className="absolute top-1 rounded-md border-2 border-accent-primary pointer-events-none"
             style={{
               left: trimStart * timelineZoom + PADDING_LEFT,
               width: (trimEnd - trimStart) * timelineZoom,
-              height: TRACK_HEIGHT - 2,
+              height: VID_H - 2,
             }}
           />
 
           {/* Dimmed regions outside trim */}
           <div
-            className="absolute top-1 bg-black/50 rounded-l-md"
+            className="absolute top-1 bg-black/60 rounded-l-md"
             style={{
               left: PADDING_LEFT,
               width: trimStart * timelineZoom,
-              height: TRACK_HEIGHT - 2,
+              height: VID_H - 2,
             }}
           />
           <div
-            className="absolute top-1 bg-black/50 rounded-r-md"
+            className="absolute top-1 bg-black/60 rounded-r-md"
             style={{
               left: trimEnd * timelineZoom + PADDING_LEFT,
               width: (videoDuration - trimEnd) * timelineZoom,
-              height: TRACK_HEIGHT - 2,
+              height: VID_H - 2,
             }}
           />
 
           {/* Trim handle — start */}
           <div
-            className="absolute top-0 w-3 cursor-col-resize z-10 flex items-center justify-center"
+            className="absolute top-0 w-4 cursor-col-resize z-10 flex items-center justify-center"
             style={{
-              left: trimStart * timelineZoom + PADDING_LEFT - 6,
-              height: TRACK_HEIGHT,
+              left: trimStart * timelineZoom + PADDING_LEFT - 8,
+              height: VID_H,
             }}
             onPointerDown={(e) => handleTrimDrag('start', e)}
           >
-            <div className="w-1 h-4 rounded-full bg-accent-primary" />
+            <div className="w-1.5 h-6 rounded-full bg-accent-primary" />
           </div>
 
           {/* Trim handle — end */}
           <div
-            className="absolute top-0 w-3 cursor-col-resize z-10 flex items-center justify-center"
+            className="absolute top-0 w-4 cursor-col-resize z-10 flex items-center justify-center"
             style={{
-              left: trimEnd * timelineZoom + PADDING_LEFT - 6,
-              height: TRACK_HEIGHT,
+              left: trimEnd * timelineZoom + PADDING_LEFT - 8,
+              height: VID_H,
             }}
             onPointerDown={(e) => handleTrimDrag('end', e)}
           >
-            <div className="w-1 h-4 rounded-full bg-accent-primary" />
+            <div className="w-1.5 h-6 rounded-full bg-accent-primary" />
           </div>
         </div>
 

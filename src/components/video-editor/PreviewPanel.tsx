@@ -177,7 +177,7 @@ export function PreviewPanel() {
       {/* Video container — maintains 9:16 aspect ratio */}
       <div
         ref={containerRef}
-        className="relative flex-1 w-full max-w-[360px] aspect-[9/16] max-h-full rounded-xl overflow-hidden bg-black"
+        className="relative flex-1 w-full max-w-[440px] aspect-[9/16] max-h-full rounded-xl overflow-hidden bg-black"
         onClick={handleBackgroundClick}
       >
         {/* Video element */}
@@ -220,7 +220,7 @@ export function PreviewPanel() {
       </div>
 
       {/* Playback controls with scrubbing */}
-      <div className="flex items-center gap-2 w-full max-w-[360px] shrink-0">
+      <div className="flex items-center gap-2 w-full max-w-[440px] shrink-0">
         <button
           onClick={togglePlay}
           className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white"
