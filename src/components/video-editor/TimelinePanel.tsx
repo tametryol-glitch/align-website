@@ -121,6 +121,41 @@ export function TimelinePanel() {
     [videoDuration, timelineZoom, updateBroll],
   );
 
+  // Drag a b-roll block's left/right edge to change its start time / length.
+  const handleBrollTrim = useCallback(
+    (clipId: string, edge: 'start' | 'end', e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const onMove = (ev: PointerEvent) => {
+        const x = ev.clientX - rect.left + container.scrollLeft - PADDING_LEFT;
+        const t = Math.max(0, Math.min(videoDuration, x / timelineZoom));
+        const clip = useVideoEditorStore.getState().brollClips.find((b) => b.id === clipId);
+        if (!clip) return;
+        if (edge === 'start') {
+          // Trim the front: shift timelineStart + in-point together (right edge fixed).
+          const delta = t - clip.timelineStart;
+          const newSourceStart = Math.max(0, Math.min(clip.sourceEnd - 0.3, clip.sourceStart + delta));
+          const applied = newSourceStart - clip.sourceStart;
+          updateBroll(clipId, { sourceStart: newSourceStart, timelineStart: Math.max(0, clip.timelineStart + applied) });
+        } else {
+          const newLen = Math.max(0.3, t - clip.timelineStart);
+          updateBroll(clipId, { sourceEnd: Math.min(clip.duration, clip.sourceStart + newLen) });
+        }
+      };
+      const onUp = () => {
+        useVideoEditorStore.getState().pushHistory();
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    },
+    [videoDuration, timelineZoom, updateBroll],
+  );
+
   // Thumbnails whose source time falls inside [a,b] — for per-segment previews.
   const thumbsInRange = (a: number, b: number): string[] => {
     if (thumbs.length === 0 || !videoDuration) return [];
@@ -476,7 +511,23 @@ export function TimelinePanel() {
                   className={`absolute top-1 rounded-md overflow-hidden cursor-grab border flex items-center px-2 bg-teal-500/25 ${selected ? 'border-accent-primary ring-1 ring-accent-primary' : 'border-teal-400/40'}`}
                   style={{ left, width, height: BROLL_H }}
                 >
-                  <span className="text-[10px] font-medium text-teal-100 truncate flex-1">{'▶'} B-roll {i + 1}</span>
+                  {/* trim-start handle */}
+                  <div
+                    onPointerDown={(e) => handleBrollTrim(b.id, 'start', e)}
+                    className="absolute left-0 top-0 bottom-0 w-2.5 cursor-col-resize z-10 flex items-center justify-center hover:bg-white/25"
+                    title="Drag to trim the start"
+                  >
+                    <div className="w-0.5 h-4 rounded-full bg-teal-100" />
+                  </div>
+                  {/* trim-end handle */}
+                  <div
+                    onPointerDown={(e) => handleBrollTrim(b.id, 'end', e)}
+                    className="absolute right-0 top-0 bottom-0 w-2.5 cursor-col-resize z-10 flex items-center justify-center hover:bg-white/25"
+                    title="Drag to change the length"
+                  >
+                    <div className="w-0.5 h-4 rounded-full bg-teal-100" />
+                  </div>
+                  <span className="text-[10px] font-medium text-teal-100 truncate flex-1 px-2.5 pointer-events-none">{'▶'} B-roll {i + 1}</span>
                   <button
                     onClick={(e) => { e.stopPropagation(); removeBroll(b.id); useVideoEditorStore.getState().pushHistory(); }}
                     className="text-red-300 text-[10px] ml-1 hover:text-red-200"
