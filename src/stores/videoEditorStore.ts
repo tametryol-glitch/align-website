@@ -54,6 +54,18 @@ export interface StickerOverlay {
   rotation: number;
 }
 
+/**
+ * A piece of the source clip kept on the timeline. The editor stays in legacy
+ * single-clip mode until the first split; from then on `segments` is the
+ * ordered source of truth (reorderable). Source times are seconds into the
+ * original video.
+ */
+export interface ClipSegment {
+  id: string;
+  sourceStart: number;
+  sourceEnd: number;
+}
+
 export type FilterPresetId =
   | 'none'
   | 'warm'
@@ -95,6 +107,7 @@ export type ActiveTool =
 interface HistorySnapshot {
   trimStart: number;
   trimEnd: number;
+  segments: ClipSegment[];
   textOverlays: TextOverlay[];
   stickerOverlays: StickerOverlay[];
   activeFilter: FilterPresetId;
@@ -121,6 +134,10 @@ interface VideoEditorState {
   // Trim
   trimStart: number;
   trimEnd: number;
+
+  // Segments (cut / rearrange). Empty = legacy single-clip mode.
+  segments: ClipSegment[];
+  selectedSegmentId: string | null;
 
   // Playback
   currentTime: number;
@@ -188,6 +205,13 @@ interface VideoEditorState {
   setTrimStart: (t: number) => void;
   setTrimEnd: (t: number) => void;
 
+  // Segments
+  getEffectiveSegments: () => ClipSegment[];
+  splitAtPlayhead: () => void;
+  reorderSegments: (from: number, to: number) => void;
+  removeSegment: (id: string) => void;
+  selectSegment: (id: string | null) => void;
+
   // Text overlays
   addTextOverlay: (overlay: TextOverlay) => void;
   updateTextOverlay: (id: string, partial: Partial<TextOverlay>) => void;
@@ -248,6 +272,8 @@ const INITIAL_STATE = {
   videoDuration: 0,
   trimStart: 0,
   trimEnd: 0,
+  segments: [] as ClipSegment[],
+  selectedSegmentId: null as string | null,
   currentTime: 0,
   isPlaying: false,
   playbackSpeed: 1,
@@ -283,6 +309,7 @@ function takeSnapshot(state: VideoEditorState): HistorySnapshot {
   return {
     trimStart: state.trimStart,
     trimEnd: state.trimEnd,
+    segments: state.segments.map((g) => ({ ...g })),
     textOverlays: state.textOverlays.map((o) => ({ ...o })),
     stickerOverlays: state.stickerOverlays.map((o) => ({ ...o })),
     activeFilter: state.activeFilter,
@@ -326,6 +353,48 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
   // Trim
   setTrimStart: (t) => set({ trimStart: Math.max(0, t) }),
   setTrimEnd: (t) => set((s) => ({ trimEnd: Math.min(s.videoDuration, t) })),
+
+  // Segments — legacy single-clip until the first split, then ordered pieces.
+  getEffectiveSegments: () => {
+    const s = get();
+    if (s.segments.length > 0) return s.segments;
+    return [{ id: 'seg_base', sourceStart: s.trimStart, sourceEnd: s.trimEnd }];
+  },
+  splitAtPlayhead: () =>
+    set((s) => {
+      const segs = s.segments.length > 0
+        ? s.segments
+        : [{ id: 'seg_base', sourceStart: s.trimStart, sourceEnd: s.trimEnd }];
+      const t = s.currentTime;
+      const idx = segs.findIndex((g) => t > g.sourceStart + 0.1 && t < g.sourceEnd - 0.1);
+      if (idx === -1) return {}; // playhead not inside a splittable segment
+      const g = segs[idx];
+      const mk = () => `seg_${Date.now()}_${Math.round(t * 1000)}_${Math.random().toString(36).slice(2, 5)}`;
+      const a: ClipSegment = { id: mk(), sourceStart: g.sourceStart, sourceEnd: t };
+      const b: ClipSegment = { id: mk(), sourceStart: t, sourceEnd: g.sourceEnd };
+      return { segments: [...segs.slice(0, idx), a, b, ...segs.slice(idx + 1)] };
+    }),
+  reorderSegments: (from, to) =>
+    set((s) => {
+      const segs = s.segments.length > 0
+        ? [...s.segments]
+        : [{ id: 'seg_base', sourceStart: s.trimStart, sourceEnd: s.trimEnd }];
+      if (from < 0 || from >= segs.length || to < 0 || to >= segs.length) return {};
+      const [moved] = segs.splice(from, 1);
+      segs.splice(to, 0, moved);
+      return { segments: segs };
+    }),
+  removeSegment: (id) =>
+    set((s) => {
+      if (s.segments.length === 0) return {};
+      const next = s.segments.filter((g) => g.id !== id);
+      // Keep at least one segment; dropping the last clears segment mode.
+      return {
+        segments: next.length > 0 ? next : [],
+        selectedSegmentId: s.selectedSegmentId === id ? null : s.selectedSegmentId,
+      };
+    }),
+  selectSegment: (id) => set({ selectedSegmentId: id }),
 
   // Text overlays
   addTextOverlay: (overlay) =>

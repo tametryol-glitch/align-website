@@ -4,6 +4,7 @@
  * TrimTool — set trim start/end with input fields and quick buttons.
  */
 
+import { useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 
 export function TrimTool() {
@@ -14,6 +15,13 @@ export function TrimTool() {
   const setTrimStart = useVideoEditorStore((s) => s.setTrimStart);
   const setTrimEnd = useVideoEditorStore((s) => s.setTrimEnd);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
+  const segments = useVideoEditorStore((s) => s.segments);
+  const splitAtPlayhead = useVideoEditorStore((s) => s.splitAtPlayhead);
+  const reorderSegments = useVideoEditorStore((s) => s.reorderSegments);
+  const removeSegment = useVideoEditorStore((s) => s.removeSegment);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  const handleSplit = () => { splitAtPlayhead(); pushHistory(); };
 
   const formatTime = (t: number) => {
     const m = Math.floor(t / 60);
@@ -112,6 +120,53 @@ export function TrimTool() {
       >
         Reset to full duration
       </button>
+
+      {/* ── Cut & rearrange ─────────────────────────────── */}
+      <div className="border-t border-white/10 pt-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-text-muted">Cut &amp; rearrange</span>
+          <button
+            onClick={handleSplit}
+            className="text-xs px-2.5 py-1 rounded-md bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 transition-colors"
+            title="Cut the clip at the playhead"
+          >
+            ✂ Split at playhead
+          </button>
+        </div>
+
+        {segments.length > 0 && (
+          <>
+            <div className="space-y-1">
+              {segments.map((g, i) => (
+                <div
+                  key={g.id}
+                  draggable
+                  onDragStart={() => setDragIdx(i)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (dragIdx !== null && dragIdx !== i) { reorderSegments(dragIdx, i); pushHistory(); }
+                    setDragIdx(null);
+                  }}
+                  className={`flex items-center gap-2 px-2 py-1.5 rounded-md bg-white/5 border border-white/10 cursor-grab text-xs ${dragIdx === i ? 'opacity-50' : ''}`}
+                >
+                  <span className="text-text-muted select-none">⠿</span>
+                  <span className="text-text-secondary flex-1">Clip {i + 1} · {formatTime(g.sourceEnd - g.sourceStart)}</span>
+                  <button
+                    onClick={() => { removeSegment(g.id); pushHistory(); }}
+                    className="text-red-400 hover:text-red-300"
+                    title="Remove this piece"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-text-muted">
+              Drag clips to reorder. Preview &amp; export follow your order in the next update.
+            </p>
+          </>
+        )}
+      </div>
 
       <p className="text-xs text-text-muted">
         Tip: You can also drag the trim handles on the timeline, or use the "Set" buttons to snap to the current playhead.
