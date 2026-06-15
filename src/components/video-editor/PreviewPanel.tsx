@@ -13,6 +13,7 @@ import { useVideoPlayback } from './hooks/useVideoPlayback';
 import { useTransitionPreview } from './hooks/useTransitionPreview';
 import { TextOverlayLayer } from './TextOverlayLayer';
 import { StickerOverlayLayer } from './StickerOverlayLayer';
+import { BrollLayer } from './BrollLayer';
 import { getFilterById } from '@/lib/videoFilters';
 import { Play, Pause, Repeat, Gauge } from 'lucide-react';
 
@@ -196,6 +197,9 @@ export function PreviewPanel() {
             style={activeTransitionStyle}
           />
         )}
+
+        {/* B-roll / overlay clips (under text & stickers) */}
+        <BrollLayer />
 
         {/* Text overlay layer */}
         <TextOverlayLayer containerRef={containerRef} />

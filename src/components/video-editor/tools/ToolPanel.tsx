@@ -13,6 +13,7 @@ import { AudioTool } from './AudioTool';
 import { FilterTool } from './FilterTool';
 import { AdjustTool } from './AdjustTool';
 import { TransitionTool } from './TransitionTool';
+import { BrollTool } from './BrollTool';
 import { ExportTool } from './ExportTool';
 import { X } from 'lucide-react';
 
@@ -30,6 +31,7 @@ export function ToolPanel() {
     filter: 'Filters',
     adjust: 'Adjust',
     transition: 'Transitions',
+    broll: 'B-roll / overlay',
     export: 'Export Video',
   };
 
@@ -57,6 +59,7 @@ export function ToolPanel() {
         {activeTool === 'filter' && <FilterTool />}
         {activeTool === 'adjust' && <AdjustTool />}
         {activeTool === 'transition' && <TransitionTool />}
+        {activeTool === 'broll' && <BrollTool />}
         {activeTool === 'export' && <ExportTool />}
       </div>
     </div>

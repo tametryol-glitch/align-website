@@ -66,6 +66,23 @@ export interface ClipSegment {
   sourceEnd: number;
 }
 
+/**
+ * A B-roll / overlay clip layered on a second video track. It plays over the
+ * main video as picture-in-picture during its window on the main timeline.
+ */
+export interface BrollClip {
+  id: string;
+  sourceUrl: string;
+  duration: number;       // the b-roll's own source duration
+  sourceStart: number;    // in-point within the b-roll source
+  sourceEnd: number;
+  timelineStart: number;  // where on the MAIN timeline it starts (seconds)
+  x: number;              // 0–100 center % of frame width
+  y: number;              // 0–100 center % of frame height
+  scale: number;          // fraction of frame width (0.1–1)
+  opacity: number;        // 0–1
+}
+
 export type FilterPresetId =
   | 'none'
   | 'warm'
@@ -100,6 +117,7 @@ export type ActiveTool =
   | 'filter'
   | 'adjust'
   | 'transition'
+  | 'broll'
   | 'export';
 
 // ── History entry for undo/redo ────────────────────────────────
@@ -108,6 +126,7 @@ interface HistorySnapshot {
   trimStart: number;
   trimEnd: number;
   segments: ClipSegment[];
+  brollClips: BrollClip[];
   textOverlays: TextOverlay[];
   stickerOverlays: StickerOverlay[];
   activeFilter: FilterPresetId;
@@ -138,6 +157,10 @@ interface VideoEditorState {
   // Segments (cut / rearrange). Empty = legacy single-clip mode.
   segments: ClipSegment[];
   selectedSegmentId: string | null;
+
+  // B-roll / overlay track
+  brollClips: BrollClip[];
+  selectedBrollId: string | null;
 
   // Playback
   currentTime: number;
@@ -212,6 +235,12 @@ interface VideoEditorState {
   removeSegment: (id: string) => void;
   selectSegment: (id: string | null) => void;
 
+  // B-roll
+  addBroll: (clip: BrollClip) => void;
+  updateBroll: (id: string, partial: Partial<BrollClip>) => void;
+  removeBroll: (id: string) => void;
+  selectBroll: (id: string | null) => void;
+
   // Text overlays
   addTextOverlay: (overlay: TextOverlay) => void;
   updateTextOverlay: (id: string, partial: Partial<TextOverlay>) => void;
@@ -274,6 +303,8 @@ const INITIAL_STATE = {
   trimEnd: 0,
   segments: [] as ClipSegment[],
   selectedSegmentId: null as string | null,
+  brollClips: [] as BrollClip[],
+  selectedBrollId: null as string | null,
   currentTime: 0,
   isPlaying: false,
   playbackSpeed: 1,
@@ -310,6 +341,7 @@ function takeSnapshot(state: VideoEditorState): HistorySnapshot {
     trimStart: state.trimStart,
     trimEnd: state.trimEnd,
     segments: state.segments.map((g) => ({ ...g })),
+    brollClips: state.brollClips.map((b) => ({ ...b })),
     textOverlays: state.textOverlays.map((o) => ({ ...o })),
     stickerOverlays: state.stickerOverlays.map((o) => ({ ...o })),
     activeFilter: state.activeFilter,
@@ -395,6 +427,17 @@ export const useVideoEditorStore = create<VideoEditorState>((set, get) => ({
       };
     }),
   selectSegment: (id) => set({ selectedSegmentId: id }),
+
+  // B-roll
+  addBroll: (clip) => set((s) => ({ brollClips: [...s.brollClips, clip], selectedBrollId: clip.id })),
+  updateBroll: (id, partial) =>
+    set((s) => ({ brollClips: s.brollClips.map((b) => (b.id === id ? { ...b, ...partial } : b)) })),
+  removeBroll: (id) =>
+    set((s) => ({
+      brollClips: s.brollClips.filter((b) => b.id !== id),
+      selectedBrollId: s.selectedBrollId === id ? null : s.selectedBrollId,
+    })),
+  selectBroll: (id) => set({ selectedBrollId: id }),
 
   // Text overlays
   addTextOverlay: (overlay) =>

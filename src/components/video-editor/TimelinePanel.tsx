@@ -78,6 +78,11 @@ export function TimelinePanel() {
   const reorderSegments = useVideoEditorStore((s) => s.reorderSegments);
   const removeSegment = useVideoEditorStore((s) => s.removeSegment);
   const selectSegment = useVideoEditorStore((s) => s.selectSegment);
+  const brollClips = useVideoEditorStore((s) => s.brollClips);
+  const selectedBrollId = useVideoEditorStore((s) => s.selectedBrollId);
+  const selectBroll = useVideoEditorStore((s) => s.selectBroll);
+  const removeBroll = useVideoEditorStore((s) => s.removeBroll);
+  const updateBroll = useVideoEditorStore((s) => s.updateBroll);
 
   const thumbs = useFilmstrip(sourceVideoUrl, videoDuration);
   const [dragSeg, setDragSeg] = useState<number | null>(null);
@@ -86,8 +91,35 @@ export function TimelinePanel() {
   const TRACK_HEIGHT = 32;
   const VID_H = 54; // taller video track to show the frame filmstrip
   const SEG_H = 44; // segments (cut/rearrange) row
+  const BROLL_H = 38; // b-roll / overlay row
   const RULER_HEIGHT = 24;
   const PADDING_LEFT = 8;
+
+  // Drag a b-roll block horizontally to move when it appears on the timeline.
+  const handleBrollDrag = useCallback(
+    (clipId: string, e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const clip = useVideoEditorStore.getState().brollClips.find((b) => b.id === clipId);
+      const len = clip ? clip.sourceEnd - clip.sourceStart : 0;
+      const onMove = (ev: PointerEvent) => {
+        const x = ev.clientX - rect.left + container.scrollLeft - PADDING_LEFT;
+        const t = Math.max(0, Math.min(videoDuration - len, x / timelineZoom));
+        updateBroll(clipId, { timelineStart: t });
+      };
+      const onUp = () => {
+        useVideoEditorStore.getState().pushHistory();
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    },
+    [videoDuration, timelineZoom, updateBroll],
+  );
 
   // Thumbnails whose source time falls inside [a,b] — for per-segment previews.
   const thumbsInRange = (a: number, b: number): string[] => {
@@ -264,7 +296,7 @@ export function TimelinePanel() {
     <div
       ref={containerRef}
       className="relative overflow-x-auto overflow-y-hidden border-t border-white/10 bg-black/40 shrink-0"
-      style={{ height: RULER_HEIGHT + VID_H + (segments.length > 0 ? SEG_H + 6 : 0) + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
+      style={{ height: RULER_HEIGHT + VID_H + (segments.length > 0 ? SEG_H + 6 : 0) + (brollClips.length > 0 ? BROLL_H + 6 : 0) + allOverlays.length * (TRACK_HEIGHT + 2) + 16 }}
       onClick={handleTimelineClick}
       onWheel={handleWheel}
     >
@@ -427,6 +459,36 @@ export function TimelinePanel() {
             </div>
           );
         })()}
+
+        {/* ── B-roll / overlay row ───────────────────────── */}
+        {brollClips.length > 0 && (
+          <div className="relative" style={{ height: BROLL_H + 6, paddingLeft: PADDING_LEFT, marginTop: 4 }}>
+            {brollClips.map((b, i) => {
+              const len = Math.max(0.1, b.sourceEnd - b.sourceStart);
+              const left = b.timelineStart * timelineZoom + PADDING_LEFT;
+              const width = Math.max(30, len * timelineZoom);
+              const selected = selectedBrollId === b.id;
+              return (
+                <div
+                  key={b.id}
+                  onPointerDown={(e) => handleBrollDrag(b.id, e)}
+                  onClick={(e) => { e.stopPropagation(); selectBroll(b.id); }}
+                  className={`absolute top-1 rounded-md overflow-hidden cursor-grab border flex items-center px-2 bg-teal-500/25 ${selected ? 'border-accent-primary ring-1 ring-accent-primary' : 'border-teal-400/40'}`}
+                  style={{ left, width, height: BROLL_H }}
+                >
+                  <span className="text-[10px] font-medium text-teal-100 truncate flex-1">{'▶'} B-roll {i + 1}</span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeBroll(b.id); useVideoEditorStore.getState().pushHistory(); }}
+                    className="text-red-300 text-[10px] ml-1 hover:text-red-200"
+                    title="Remove overlay"
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* ── Overlay Tracks ─────────────────────────────── */}
         {allOverlays.map((overlay, idx) => {
