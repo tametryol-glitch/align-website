@@ -85,6 +85,31 @@ export function BrollTool() {
 
       {selected && (
         <div className="space-y-3 border-t border-white/10 pt-3">
+          <div>
+            <p className="text-xs text-text-muted mb-1.5">Quick position</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {([
+                ['Top L', { x: 22, y: 22 }], ['Top', { x: 50, y: 22 }], ['Top R', { x: 78, y: 22 }],
+                ['Left', { x: 22, y: 50 }], ['Center', { x: 50, y: 50 }], ['Right', { x: 78, y: 50 }],
+                ['Bot L', { x: 22, y: 78 }], ['Bottom', { x: 50, y: 78 }], ['Bot R', { x: 78, y: 78 }],
+              ] as [string, { x: number; y: number }][]).map(([label, pos]) => (
+                <button
+                  key={label}
+                  onClick={() => { updateBroll(selected.id, pos); pushHistory(); }}
+                  className="text-[10px] py-1 rounded-md bg-white/5 text-text-secondary hover:bg-white/10 hover:text-text-primary transition-colors"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => { updateBroll(selected.id, { x: 50, y: 50, scale: 1 }); pushHistory(); }}
+              className="w-full mt-1.5 text-[10px] py-1 rounded-md bg-accent-primary/15 text-accent-primary hover:bg-accent-primary/25 transition-colors"
+            >
+              Fill frame width
+            </button>
+          </div>
+
           <Range label="Starts at (s)" min={0} max={Math.max(0.1, videoDuration)} step={0.1} value={selected.timelineStart}
             onChange={(v) => updateBroll(selected.id, { timelineStart: v })} onCommit={pushHistory} fmt={(v) => v.toFixed(1)} />
           <Range label="Length (s)" min={0.3} max={selected.duration} step={0.1} value={selected.sourceEnd - selected.sourceStart}

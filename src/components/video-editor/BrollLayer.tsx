@@ -2,9 +2,9 @@
 
 /**
  * BrollLayer — renders B-roll / overlay clips as picture-in-picture <video>
- * elements over the main preview. Each is shown during its window on the
- * timeline, seeked to follow the main playhead, and — like stickers — can be
- * dragged to reposition, scroll-wheel resized, and corner-handle resized.
+ * elements over the main preview. Each is shown during its window, seeked to
+ * follow the playhead, and — like stickers — can be dragged to reposition
+ * (with snap-to-center/edge guides), scroll-wheel resized, and corner resized.
  */
 
 import { useRef, useEffect, useCallback, useState } from 'react';
@@ -14,18 +14,47 @@ interface BrollLayerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
+const SNAP_POINTS = [0, 50, 100];
+const SNAP_THRESHOLD = 2.8; // %
+
+function snapValue(v: number): { value: number; guide: number | null } {
+  for (const p of SNAP_POINTS) {
+    if (Math.abs(v - p) < SNAP_THRESHOLD) return { value: p, guide: p };
+  }
+  return { value: v, guide: null };
+}
+
 export function BrollLayer({ containerRef }: BrollLayerProps) {
   const brollClips = useVideoEditorStore((s) => s.brollClips);
+  // Active snap guide positions (% of frame), shown while dragging.
+  const [guideX, setGuideX] = useState<number | null>(null);
+  const [guideY, setGuideY] = useState<number | null>(null);
+
   return (
     <>
       {brollClips.map((clip) => (
-        <BrollClipView key={clip.id} clip={clip} containerRef={containerRef} />
+        <BrollClipView
+          key={clip.id}
+          clip={clip}
+          containerRef={containerRef}
+          onGuide={(gx, gy) => { setGuideX(gx); setGuideY(gy); }}
+        />
       ))}
+      {guideX !== null && (
+        <div style={{ position: 'absolute', left: `${guideX}%`, top: 0, bottom: 0, width: 1, background: 'rgba(139,92,246,0.9)', pointerEvents: 'none', zIndex: 7 }} />
+      )}
+      {guideY !== null && (
+        <div style={{ position: 'absolute', top: `${guideY}%`, left: 0, right: 0, height: 1, background: 'rgba(139,92,246,0.9)', pointerEvents: 'none', zIndex: 7 }} />
+      )}
     </>
   );
 }
 
-function BrollClipView({ clip, containerRef }: { clip: BrollClip; containerRef: React.RefObject<HTMLDivElement | null> }) {
+function BrollClipView({ clip, containerRef, onGuide }: {
+  clip: BrollClip;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  onGuide: (gx: number | null, gy: number | null) => void;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   const currentTime = useVideoEditorStore((s) => s.currentTime);
   const isPlaying = useVideoEditorStore((s) => s.isPlaying);
@@ -56,7 +85,6 @@ function BrollClipView({ clip, containerRef }: { clip: BrollClip; containerRef: 
     }
   }, [visible, isPlaying, localTarget, clip.duration]);
 
-  // Drag to reposition (same model as stickers: x/y as % of frame).
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       e.stopPropagation();
@@ -70,13 +98,14 @@ function BrollClipView({ clip, containerRef }: { clip: BrollClip; containerRef: 
       const move = (ev: PointerEvent) => {
         const dx = ((ev.clientX - start.current.x) / rect.width) * 100;
         const dy = ((ev.clientY - start.current.y) / rect.height) * 100;
-        updateBroll(clip.id, {
-          x: Math.max(0, Math.min(100, start.current.ox + dx)),
-          y: Math.max(0, Math.min(100, start.current.oy + dy)),
-        });
+        const sx = snapValue(Math.max(0, Math.min(100, start.current.ox + dx)));
+        const sy = snapValue(Math.max(0, Math.min(100, start.current.oy + dy)));
+        updateBroll(clip.id, { x: sx.value, y: sy.value });
+        onGuide(sx.guide, sy.guide);
       };
       const up = () => {
         setDragging(false);
+        onGuide(null, null);
         pushHistory();
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
@@ -84,10 +113,9 @@ function BrollClipView({ clip, containerRef }: { clip: BrollClip; containerRef: 
       window.addEventListener('pointermove', move);
       window.addEventListener('pointerup', up);
     },
-    [clip.id, clip.x, clip.y, containerRef, selectBroll, updateBroll, pushHistory],
+    [clip.id, clip.x, clip.y, containerRef, selectBroll, updateBroll, pushHistory, onGuide],
   );
 
-  // Scroll wheel to resize (matches sticker behaviour).
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       e.stopPropagation();
@@ -97,7 +125,6 @@ function BrollClipView({ clip, containerRef }: { clip: BrollClip; containerRef: 
     [clip.id, clip.scale, updateBroll],
   );
 
-  // Corner handle: drag to resize. New width fraction = 2×(cursor − center)/frame.
   const handleResize = useCallback(
     (e: React.PointerEvent) => {
       e.stopPropagation();
