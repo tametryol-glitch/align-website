@@ -7,6 +7,7 @@ import { ArrowLeft, Sparkles, Copy, Check, Wand2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { STYLE_LIST, type StyleId } from '@/lib/cosmicStyles';
 import { buildCaption, buildHashtags, ALIGN_HANDLE } from '@/lib/cosmicShare';
+import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 
 // @remotion/player is client-only — never SSR it.
 const CosmicPlayer = dynamic(() => import('@/remotion/studio/CosmicPlayer'), {
@@ -27,9 +28,57 @@ export default function CosmicStudioPage() {
 
   const [styleId, setStyleId] = useState<StyleId>('ethereal');
   const [copied, setCopied] = useState(false);
+  const [renderState, setRenderState] = useState<'idle' | 'rendering' | 'ready' | 'failed'>('idle');
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   const risingSign = profile?.rising_sign || profile?.sun_sign || 'Sagittarius';
+  // Single source of truth for the copy — drives BOTH the preview and the
+  // render request, so the final file matches what's previewed.
   const headline = 'The sky is moving in your favour';
+  const forecastTitle = 'Moon trine Jupiter';
+  const forecastSub = 'a rare window for bold asks';
+
+  async function handleRender() {
+    setRenderState('rendering');
+    setVideoUrl(null);
+    try {
+      const job = await requestRender({
+        template_id: 'daily_forecast_studio',
+        astro_data: {
+          sunSign: profile?.sun_sign ?? undefined,
+          moonSign: profile?.moon_sign ?? undefined,
+          risingSign: profile?.rising_sign ?? undefined,
+          displayName: profile?.display_name ?? undefined,
+        },
+        audio_option: { type: 'none' },
+        customizations: {
+          duration_seconds: 12,
+          style_id: styleId,
+          watermark_handle: ALIGN_HANDLE,
+          studio_headline: headline,
+          studio_forecast_title: forecastTitle,
+          studio_forecast_sub: forecastSub,
+        },
+      });
+      // Poll until ready (cap ~2 min)
+      for (let i = 0; i < 40; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const s = await getRenderStatus(job.id);
+        if (s.status === 'ready' && s.video_url) {
+          setVideoUrl(s.video_url);
+          setRenderState('ready');
+          return;
+        }
+        if (s.status === 'failed') {
+          setRenderState('failed');
+          return;
+        }
+      }
+      setRenderState('failed');
+    } catch {
+      setRenderState('failed');
+    }
+  }
 
   const caption = useMemo(
     () =>
@@ -90,7 +139,7 @@ export default function CosmicStudioPage() {
       <div className="grid md:grid-cols-[300px_1fr] gap-6 items-start">
         {/* Live preview */}
         <div>
-          <CosmicPlayer inputProps={{ styleId, risingSign, headline }} />
+          <CosmicPlayer inputProps={{ styleId, risingSign, headline, forecastTitle, forecastSub }} />
           <p className="text-xs text-text-muted mt-2 text-center">
             Live preview — what you see is what you post
           </p>
@@ -144,12 +193,32 @@ export default function CosmicStudioPage() {
             </div>
           </div>
 
-          <button className="btn-primary w-full inline-flex items-center justify-center gap-2">
-            <Wand2 className="w-4 h-4" /> Render &amp; share
+          <button
+            onClick={handleRender}
+            disabled={renderState === 'rendering'}
+            className="btn-primary w-full inline-flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            <Wand2 className="w-4 h-4" />
+            {renderState === 'rendering' ? 'Rendering…' : 'Render & share'}
           </button>
           <p className="text-xs text-text-muted text-center -mt-2">
             Renders in your chosen style with the {ALIGN_HANDLE} watermark.
           </p>
+
+          {renderState === 'rendering' && (
+            <p className="text-sm text-text-tertiary text-center">Rendering your video on our servers — this takes ~20–30s.</p>
+          )}
+          {renderState === 'failed' && (
+            <p className="text-sm text-red-400 text-center">Render didn't complete. Please try again.</p>
+          )}
+          {renderState === 'ready' && videoUrl && (
+            <div className="card">
+              <video src={videoUrl} controls playsInline className="w-full rounded-lg" style={{ aspectRatio: '9 / 16' }} />
+              <a href={videoUrl} download className="btn-secondary mt-3 inline-flex items-center gap-1.5 text-sm">
+                <Wand2 className="w-4 h-4" /> Download video
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

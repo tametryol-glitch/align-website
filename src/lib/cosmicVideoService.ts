@@ -14,7 +14,8 @@ export type TemplateId =
   | 'daily_forecast'
   | 'transit_alert'
   | 'compatibility_check'
-  | 'zodiac_personality';
+  | 'zodiac_personality'
+  | 'daily_forecast_studio';
 
 export type RenderStatus = 'queued' | 'rendering' | 'ready' | 'failed';
 
@@ -52,6 +53,10 @@ export interface RenderRequest {
     style_id?: string;
     /** Watermark handle burned into the video for shareability. */
     watermark_handle?: string;
+    /** Studio copy — sent so the rendered file matches the live preview. */
+    studio_headline?: string;
+    studio_forecast_title?: string;
+    studio_forecast_sub?: string;
   };
 }
 
