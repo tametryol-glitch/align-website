@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Copy, Check, Wand2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Copy, Check, Wand2, Upload } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { STYLE_LIST, type StyleId } from '@/lib/cosmicStyles';
 import { buildCaption, buildHashtags, ALIGN_HANDLE } from '@/lib/cosmicShare';
@@ -26,6 +26,7 @@ export default function CosmicStudioPage() {
   const userEmail = (useAuthStore.getState().user?.email || '').toLowerCase();
   const allowed = STUDIO_ALLOWLIST.has(userEmail);
 
+  const [mode, setMode] = useState<'generate' | 'upload'>('generate');
   const [styleId, setStyleId] = useState<StyleId>('ethereal');
   const [copied, setCopied] = useState(false);
   const [renderState, setRenderState] = useState<'idle' | 'rendering' | 'ready' | 'failed'>('idle');
@@ -136,6 +137,34 @@ export default function CosmicStudioPage() {
         </div>
       </div>
 
+      {/* Mode: generate from your chart, or upload your own video + edit */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setMode('generate')}
+          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium border transition-colors ${mode === 'generate' ? 'border-2 border-accent-primary text-text-primary' : 'border-border-tertiary text-text-muted hover:text-text-secondary'}`}
+        >
+          Make from your chart
+        </button>
+        <button
+          onClick={() => setMode('upload')}
+          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium border transition-colors ${mode === 'upload' ? 'border-2 border-accent-primary text-text-primary' : 'border-border-tertiary text-text-muted hover:text-text-secondary'}`}
+        >
+          Upload your own video
+        </button>
+      </div>
+
+      {mode === 'upload' ? (
+        <div className="card text-center py-12">
+          <Upload className="w-8 h-8 text-accent-primary mx-auto mb-3" />
+          <p className="text-text-primary font-medium mb-1">Upload &amp; edit your own video</p>
+          <p className="text-text-tertiary text-sm mb-5 max-w-md mx-auto">
+            Import a clip from your device — trim it, add captions, stickers, filters, music, and transitions, then export.
+          </p>
+          <Link href="/cosmic-video/edit" className="btn-primary inline-flex items-center gap-2">
+            <Upload className="w-4 h-4" /> Open the editor
+          </Link>
+        </div>
+      ) : (
       <div className="grid md:grid-cols-[300px_1fr] gap-6 items-start">
         {/* Live preview */}
         <div>
@@ -221,6 +250,7 @@ export default function CosmicStudioPage() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
