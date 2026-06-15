@@ -356,6 +356,7 @@ export async function exportVideo(
         fontSize: scaledFontSize,
         xc: x,
         yc: y,
+        maxWidth: Math.round(vw * 0.86),
         t0: overlay.startTime,
         t1: overlay.endTime,
         enableInner,

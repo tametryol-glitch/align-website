@@ -24,6 +24,7 @@ export interface KineticTextArgs {
   fontSize: number;        // already scaled to video height (px)
   xc: number;              // horizontal center (px)
   yc: number;              // vertical center (px)
+  maxWidth: number;        // wrap width (px) — long captions wrap to multiple lines
   t0: number;              // start time (s)
   t1: number;              // end time (s)
   enableInner: string;     // e.g. between(t,2.00,5.00) — no surrounding quotes
@@ -49,9 +50,10 @@ function measure(words: string[], fontPx: number): { widths: number[]; space: nu
 
 /** Returns one or more drawtext filter strings implementing the animation. */
 export function buildKineticTextFilters(a: KineticTextArgs): string[] {
-  const { color, font, fontSize, xc, yc, t0, t1, enableInner, extras, escape } = a;
+  const { color, font, fontSize, xc, yc, maxWidth, t0, t1, enableInner, extras, escape } = a;
   const xcI = Math.round(xc);
-  const ycI = Math.round(yc);
+  const t0s = t0.toFixed(2);
+  const t1s = t1.toFixed(2);
 
   const draw = (
     textEsc: string,
@@ -69,87 +71,86 @@ export function buildKineticTextFilters(a: KineticTextArgs): string[] {
     `:enable='${opts.enable ?? enableInner}'` +
     extras;
 
-  // ── Word-level presets ──────────────────────────────────────
-  if (a.animation === 'word-pop' || a.animation === 'typewriter' || a.animation === 'karaoke') {
-    const words = a.text.split(/\s+/).filter(Boolean);
-    if (words.length === 0) return [];
-    const { widths, space } = measure(words, fontSize);
-    const total = widths.reduce((s, w) => s + w, 0) + space * (words.length - 1);
-    let cursor = xc - total / 2;
-    const lefts = widths.map((w) => { const l = cursor; cursor += w + space; return Math.round(l); });
-    const yCenter = `${ycI}-(th/2)`;
-
-    if (a.animation === 'karaoke') {
-      const slice = Math.max(0.15, (t1 - t0) / words.length);
-      const base = words.map((w, i) =>
-        draw(escape(w), {
-          x: `${lefts[i]}`,
-          y: yCenter,
-          alpha: `min(1,(t-${t0.toFixed(2)})/0.25)`,
-        }),
-      );
-      const hi = words.map((w, i) => {
-        const ws = (t0 + i * slice).toFixed(2);
-        const we = (t0 + (i + 1) * slice).toFixed(2);
-        return draw(escape(w), {
-          x: `${lefts[i]}`,
-          y: `${ycI}-(th/2)-6`,
-          color: HIGHLIGHT,
-          enable: `between(t,${ws},${we})`,
-        });
-      });
-      return [...base, ...hi];
+  // ── Word-wrap into lines that fit maxWidth ───────────────────
+  const words = a.text.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
+  const { widths, space } = measure(words, fontSize);
+  const lines: { idxs: number[]; width: number }[] = [];
+  let cur: { idxs: number[]; width: number } = { idxs: [], width: 0 };
+  for (let i = 0; i < words.length; i++) {
+    const add = cur.idxs.length === 0 ? widths[i] : cur.width + space + widths[i];
+    if (cur.idxs.length > 0 && add > maxWidth) {
+      lines.push(cur);
+      cur = { idxs: [i], width: widths[i] };
+    } else {
+      cur.idxs.push(i);
+      cur.width = add;
     }
+  }
+  if (cur.idxs.length) lines.push(cur);
 
-    // word-pop & typewriter — words appear in sequence
-    const stagger = a.animation === 'typewriter' ? 0.16 : 0.12;
-    return words.map((w, i) => {
-      const at = (t0 + i * stagger).toFixed(2);
-      const alpha =
-        a.animation === 'typewriter'
-          ? `if(lt(t,${at}),0,1)`
-          : `if(lt(t,${at}),0,min(1,(t-${at})/0.18))`;
-      const y =
-        a.animation === 'typewriter'
-          ? yCenter
-          : `${ycI}-(th/2)-14*max(0,1-(t-${at})/0.18)`;
-      return draw(escape(w), { x: `${lefts[i]}`, y, alpha });
+  const lineHeight = fontSize * 1.25;
+  // Vertical center of the FIRST line so the whole block is centered on yc.
+  const firstLineYc = yc - ((lines.length - 1) * lineHeight) / 2;
+  const lineYcI = (li: number) => Math.round(firstLineYc + li * lineHeight);
+
+  // ── Word-level presets (per-word drawtext) ──────────────────
+  if (a.animation === 'word-pop' || a.animation === 'typewriter' || a.animation === 'karaoke') {
+    const out: string[] = [];
+    const hi: string[] = [];
+    const slice = Math.max(0.15, (t1 - t0) / words.length);
+    let g = 0; // global word index (reading order) for stagger / karaoke timing
+    lines.forEach((ln, li) => {
+      const yC = `${lineYcI(li)}-(th/2)`;
+      let cursor = xc - ln.width / 2;
+      ln.idxs.forEach((wi) => {
+        const left = Math.round(cursor);
+        cursor += widths[wi] + space;
+        const wEsc = escape(words[wi]);
+        if (a.animation === 'karaoke') {
+          out.push(draw(wEsc, { x: `${left}`, y: yC, alpha: `min(1,(t-${t0s})/0.25)` }));
+          const ws = (t0 + g * slice).toFixed(2);
+          const we = (t0 + (g + 1) * slice).toFixed(2);
+          hi.push(draw(wEsc, { x: `${left}`, y: `${lineYcI(li)}-(th/2)-6`, color: HIGHLIGHT, enable: `between(t,${ws},${we})` }));
+        } else {
+          const at = (t0 + g * (a.animation === 'typewriter' ? 0.16 : 0.12)).toFixed(2);
+          const alpha = a.animation === 'typewriter'
+            ? `if(lt(t,${at}),0,1)`
+            : `if(lt(t,${at}),0,min(1,(t-${at})/0.18))`;
+          const y = a.animation === 'typewriter'
+            ? yC
+            : `${lineYcI(li)}-(th/2)-14*max(0,1-(t-${at})/0.18)`;
+          out.push(draw(wEsc, { x: `${left}`, y, alpha }));
+        }
+        g++;
+      });
     });
+    return [...out, ...hi]; // highlights drawn last (on top)
   }
 
-  // ── Line-level presets ──────────────────────────────────────
-  const textEsc = escape(a.text);
+  // ── Line-level presets (per-line drawtext, block animates together) ──
   const xLine = `${xcI}-(tw/2)`;
-  const t0s = t0.toFixed(2);
-  const t1s = t1.toFixed(2);
-
-  switch (a.animation) {
-    case 'fade':
-      return [draw(textEsc, {
-        x: xLine,
-        y: `${ycI}-(th/2)`,
-        alpha: `max(0,min(1,min((t-${t0s})/0.3,(${t1s}-t)/0.3)))`,
-      })];
-    case 'slide':
-      return [draw(textEsc, {
-        x: xLine,
-        y: `${ycI}-(th/2)+45*max(0,1-(t-${t0s})/0.4)`,
-        alpha: `min(1,(t-${t0s})/0.4)`,
-      })];
-    case 'scale':
-      // drawtext can't animate fontsize; approximate the pop with a quick rise + fade.
-      return [draw(textEsc, {
-        x: xLine,
-        y: `${ycI}-(th/2)-10*max(0,1-(t-${t0s})/0.25)`,
-        alpha: `min(1,(t-${t0s})/0.25)`,
-      })];
-    case 'bounce':
-      return [draw(textEsc, {
-        x: xLine,
-        y: `${ycI}-(th/2)-40*exp(-4*(t-${t0s}))*sin(9*(t-${t0s}))`,
-        alpha: `min(1,(t-${t0s})/0.2)`,
-      })];
-    default:
-      return [draw(textEsc, { x: xLine, y: `${ycI}-(th/2)` })];
-  }
+  const lineAlpha = (): string | undefined => {
+    switch (a.animation) {
+      case 'fade': return `max(0,min(1,min((t-${t0s})/0.3,(${t1s}-t)/0.3)))`;
+      case 'slide': return `min(1,(t-${t0s})/0.4)`;
+      case 'scale': return `min(1,(t-${t0s})/0.25)`;
+      case 'bounce': return `min(1,(t-${t0s})/0.2)`;
+      default: return undefined;
+    }
+  };
+  const lineY = (li: number): string => {
+    const base = `${lineYcI(li)}-(th/2)`;
+    switch (a.animation) {
+      case 'slide': return `${base}+45*max(0,1-(t-${t0s})/0.4)`;
+      case 'scale': return `${base}-10*max(0,1-(t-${t0s})/0.25)`;
+      case 'bounce': return `${base}-40*exp(-4*(t-${t0s}))*sin(9*(t-${t0s}))`;
+      default: return base;
+    }
+  };
+  const alpha = lineAlpha();
+  return lines.map((ln, li) => {
+    const lineText = escape(ln.idxs.map((wi) => words[wi]).join(' '));
+    return draw(lineText, { x: xLine, y: lineY(li), alpha });
+  });
 }

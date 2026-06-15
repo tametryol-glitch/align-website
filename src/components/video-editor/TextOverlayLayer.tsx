@@ -164,13 +164,14 @@ function DraggableText({
         suppressContentEditableWarning
         onBlur={handleBlur}
         className={`
-          px-3 py-1.5 rounded-lg whitespace-nowrap
+          px-3 py-1.5 rounded-lg whitespace-normal break-words
           ${isSelected ? 'ring-2 ring-accent-primary ring-offset-1 ring-offset-transparent' : ''}
           ${isEditing ? 'cursor-text bg-black/40' : ''}
           ${isDragging ? 'opacity-80' : ''}
         `}
         style={{
           fontSize: `${overlay.fontSize}px`,
+          maxWidth: '86%',
           color: overlay.color,
           fontFamily: overlay.fontFamily,
           textAlign: overlay.textAlign || 'center',
