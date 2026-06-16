@@ -9,6 +9,8 @@ import {
 } from '@/lib/feedService';
 import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useAuthStore } from '@/stores/authStore';
+import { isPlatformAdmin } from '@/lib/admin';
 import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creatorScoreEngine';
 import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
 
@@ -208,6 +210,10 @@ export function FeedCard({
   const [showReportMenu, setShowReportMenu] = useState(false);
   const [reported, setReported] = useState(false);
   const isOwner = post.userId === currentUserId;
+  const { profile } = useAuthStore();
+  // Founder/platform admin: can delete any post (moderation). DB RLS enforces
+  // the actual permission; this only shows the action.
+  const canModerate = isPlatformAdmin(profile?.email);
 
   const preset = post.style?.preset
     ? POST_STYLE_PRESETS.find((p) => p.id === post.style?.preset)
@@ -278,6 +284,14 @@ export function FeedCard({
                 </>
               ) : (
                 <>
+                  {canModerate && (
+                    <button
+                      onClick={() => { onDelete(post.id); setShowMenu(false); }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" /> {t('components.feedCard.deletePost')}
+                    </button>
+                  )}
                   <button
                     onClick={() => { setShowMenu(false); setShowReportMenu(true); }}
                     className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
