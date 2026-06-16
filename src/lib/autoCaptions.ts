@@ -32,6 +32,8 @@ export const CAPTION_STYLES: { id: string; name: string; style: CaptionStyle }[]
 
 const MAX_WORDS = 6;
 const MAX_DUR = 2.8;
+// Keep in sync with the server's TRANSCRIBE_MAX_SECONDS default (cost guardrail).
+const MAX_CAPTION_SECONDS = 300;
 
 function groupWords(words: Word[]): Line[] {
   const lines: Line[] = [];
@@ -77,6 +79,11 @@ export async function generateCaptions(
   const url = s.sourceVideoUrl;
   if (!url) throw new Error('No video loaded.');
 
+  // Fail fast (before the expensive extraction) if the video is over the cap.
+  if (s.videoDuration && s.videoDuration > MAX_CAPTION_SECONDS) {
+    throw new Error(`Video is too long for auto-captions (max ${Math.round(MAX_CAPTION_SECONDS / 60)} min). Trim it and try again.`);
+  }
+
   opts?.onStage?.('Extracting audio…');
   const audio = await extractAudioForTranscription(url);
 
@@ -84,6 +91,7 @@ export async function generateCaptions(
   if (!audio || audio.byteLength === 0) throw new Error('Could not extract audio from this video.');
   const form = new FormData();
   form.append('file', new Blob([new Uint8Array(audio)], { type: 'audio/wav' }), 'audio.wav');
+  if (s.videoDuration) form.append('durationSec', String(s.videoDuration));
   if (opts?.language) form.append('language', opts.language);
 
   const res = await fetch('/api/transcribe', { method: 'POST', body: form });

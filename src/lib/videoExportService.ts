@@ -14,47 +14,58 @@ import { buildKineticTextFilters } from './kineticText';
 
 let ffmpeg: FFmpeg | null = null;
 
+const LOAD_TIMEOUT_MS = 90_000;
+
+/**
+ * Reject the returned promise after `ms` if the wrapped one hasn't settled.
+ * The underlying wasm op can't truly be aborted, but this turns a silent hang
+ * into an actionable error (and lets the loader fail over to the next source).
+ */
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`${label} timed out after ${Math.round(ms / 1000)}s`)), ms);
+    p.then(
+      (v) => { clearTimeout(t); resolve(v); },
+      (e) => { clearTimeout(t); reject(e); },
+    );
+  });
+}
+
 async function getFFmpeg(): Promise<FFmpeg> {
   if (ffmpeg && ffmpeg.loaded) return ffmpeg;
 
-  ffmpeg = new FFmpeg();
-
-  // Load the core from our own origin (/public) so export doesn't depend on a
-  // third-party CDN. `base` is single- or multi-threaded; the MT core needs a
-  // worker. We prefer MT (~4x faster) when the page is cross-origin isolated
-  // (COOP/COEP are set for /cosmic-video/edit), and otherwise use single-thread.
-  const loadCore = async (base: string, mt: boolean) => {
+  // Each attempt gets a FRESH instance (a failed load leaves the old one unusable).
+  // base = single- or multi-threaded core; the MT core also needs a worker.
+  const loadFrom = async (base: string, mt: boolean) => {
+    const inst = new FFmpeg();
     const opts: { coreURL: string; wasmURL: string; workerURL?: string } = {
       coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
     };
     if (mt) opts.workerURL = await toBlobURL(`${base}/ffmpeg-core.worker.js`, 'text/javascript');
-    await ffmpeg!.load(opts);
+    await withTimeout(inst.load(opts), LOAD_TIMEOUT_MS, 'Video engine load');
+    ffmpeg = inst;
   };
 
   const isolated = typeof window !== 'undefined' && (window as { crossOriginIsolated?: boolean }).crossOriginIsolated === true;
 
-  if (isolated) {
+  // Prefer the ~4x faster MT core when cross-origin isolated (COOP/COEP are set
+  // for /cosmic-video/edit); otherwise self-hosted single-thread, then CDN.
+  const attempts: Array<[base: string, mt: boolean, label: string]> = [];
+  if (isolated) attempts.push(['/ffmpeg-mt', true, 'multi-threaded (self-hosted)']);
+  attempts.push(['/ffmpeg', false, 'single-thread (self-hosted)']);
+  attempts.push(['https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm', false, 'single-thread (CDN)']);
+
+  for (const [base, mt, label] of attempts) {
     try {
-      await loadCore('/ffmpeg-mt', true);
-      console.info('[Export] using multi-threaded ffmpeg-core');
-      return ffmpeg;
+      await loadFrom(base, mt);
+      console.info(`[Export] ffmpeg-core loaded: ${label}`);
+      return ffmpeg!;
     } catch (e) {
-      console.warn('[Export] multi-threaded core failed; falling back to single-thread:', e);
-      ffmpeg = new FFmpeg();
+      console.warn(`[Export] ffmpeg-core ${label} failed:`, e);
     }
   }
-
-  // Single-thread self-hosted, then unpkg CDN as a last resort.
-  try {
-    await loadCore('/ffmpeg', false);
-  } catch (err) {
-    console.warn('[Export] self-hosted ffmpeg-core unavailable, using CDN fallback:', err);
-    ffmpeg = new FFmpeg();
-    await loadCore('https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm', false);
-  }
-
-  return ffmpeg;
+  throw new Error('Could not start the video engine in this browser. Please reload and try again.');
 }
 
 /**
@@ -67,8 +78,12 @@ export async function extractAudioForTranscription(videoUrl: string): Promise<Ui
   const data = await fetchFile(videoUrl);
   await ff.writeFile('asr_in.mp4', data);
   // 16kHz mono PCM WAV — pcm_s16le is in every ffmpeg build (no encoder doubt),
-  // accepted by Whisper, and tiny at 16kHz mono.
-  await ff.exec(['-i', 'asr_in.mp4', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', 'asr_out.wav']);
+  // accepted by Whisper, and tiny at 16kHz mono. Bounded so it can't hang silently.
+  await withTimeout(
+    ff.exec(['-i', 'asr_in.mp4', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', 'asr_out.wav']),
+    60_000,
+    'Audio extraction',
+  );
   const out = (await ff.readFile('asr_out.wav')) as Uint8Array;
   try { await ff.deleteFile('asr_in.mp4'); } catch {}
   try { await ff.deleteFile('asr_out.wav'); } catch {}
