@@ -16,6 +16,7 @@ import {
   getUserPosts, toggleReaction, deletePost, editPost, repostPost, toggleBookmark, getUserBookmarks,
   type FeedPost, type ReactionEmoji,
 } from '@/lib/feedService';
+import { getFollowerProfiles, getFollowingProfiles } from '@/lib/followService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { XPProgressBar } from '@/components/ui/XPProgressBar';
@@ -48,6 +49,12 @@ export default function ProfilePage() {
   const [viewCount, setViewCount] = useState(0);
   const [showViewersModal, setShowViewersModal] = useState(false);
   const [viewers, setViewers] = useState<Array<{viewer_id: string; display_name: string; avatar_url: string; viewed_at: string}>>([]);
+  type FollowProfile = { id: string; display_name: string; username: string | null; avatar_url: string | null; sun_sign: string | null };
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [followersList, setFollowersList] = useState<FollowProfile[]>([]);
+  const [followingList, setFollowingList] = useState<FollowProfile[]>([]);
+  const [followListLoading, setFollowListLoading] = useState(false);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
@@ -129,6 +136,22 @@ export default function ProfilePage() {
       })));
     }
     setShowViewersModal(true);
+  }
+
+  async function openFollowers() {
+    if (!userId) return;
+    setShowFollowersModal(true);
+    setFollowListLoading(true);
+    try { setFollowersList(await getFollowerProfiles(userId)); } catch { /* */ }
+    setFollowListLoading(false);
+  }
+
+  async function openFollowing() {
+    if (!userId) return;
+    setShowFollowingModal(true);
+    setFollowListLoading(true);
+    try { setFollowingList(await getFollowingProfiles(userId)); } catch { /* */ }
+    setFollowListLoading(false);
   }
 
   async function loadPosts() {
@@ -345,15 +368,15 @@ export default function ProfilePage() {
               <p className="text-xs text-text-tertiary">{t('profile.stats.posts')}</p>
             </div>
             <div className="w-px h-8 bg-border" />
-            <div className="text-center">
+            <button onClick={openFollowers} className="text-center hover:opacity-80 transition-opacity">
               <p className="text-lg font-bold text-text-primary">{followerCount}</p>
               <p className="text-xs text-text-tertiary">{t('profile.stats.followers')}</p>
-            </div>
+            </button>
             <div className="w-px h-8 bg-border" />
-            <div className="text-center">
+            <button onClick={openFollowing} className="text-center hover:opacity-80 transition-opacity">
               <p className="text-lg font-bold text-text-primary">{followingCount}</p>
               <p className="text-xs text-text-tertiary">{t('profile.stats.following')}</p>
-            </div>
+            </button>
             <div className="w-px h-8 bg-border" />
             <button onClick={loadViewers} className="text-center hover:opacity-80 transition-opacity">
               <p className="text-lg font-bold text-text-primary">{viewCount}</p>
@@ -678,6 +701,66 @@ export default function ProfilePage() {
                       <p className="text-sm font-medium text-text-primary truncate">{v.display_name}</p>
                       <p className="text-xs text-text-tertiary">{new Date(v.viewed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>
                     </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Followers Modal */}
+      {showFollowersModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowFollowersModal(false)}>
+          <div className="bg-bg-card border border-border rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-display font-bold text-text-primary">{t('profile.stats.followers')}</h3>
+              <button onClick={() => setShowFollowersModal(false)} className="text-text-muted hover:text-text-primary text-xl">&times;</button>
+            </div>
+            {followListLoading ? (
+              <p className="text-center text-text-muted py-8">{t('common.loading', 'Loading…')}</p>
+            ) : followersList.length === 0 ? (
+              <p className="text-center text-text-muted py-8">{t('profile.noFollowers', 'No followers yet')}</p>
+            ) : (
+              <div className="space-y-3">
+                {followersList.map(u => (
+                  <Link key={u.id} href={`/user/${u.id}`} onClick={() => setShowFollowersModal(false)} className="flex items-center gap-3 hover:bg-bg-secondary rounded-lg p-2 transition-colors">
+                    <UserAvatar displayName={u.display_name} avatarUrl={u.avatar_url} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-text-primary truncate">{u.display_name}</p>
+                      {u.username && <p className="text-xs text-text-tertiary truncate">@{u.username}</p>}
+                    </div>
+                    {u.sun_sign && <span className="text-base">{getZodiacGlyph(u.sun_sign)}</span>}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Following Modal */}
+      {showFollowingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowFollowingModal(false)}>
+          <div className="bg-bg-card border border-border rounded-2xl p-6 w-full max-w-md max-h-[70vh] overflow-y-auto mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-display font-bold text-text-primary">{t('profile.stats.following')}</h3>
+              <button onClick={() => setShowFollowingModal(false)} className="text-text-muted hover:text-text-primary text-xl">&times;</button>
+            </div>
+            {followListLoading ? (
+              <p className="text-center text-text-muted py-8">{t('common.loading', 'Loading…')}</p>
+            ) : followingList.length === 0 ? (
+              <p className="text-center text-text-muted py-8">{t('profile.noFollowing', 'Not following anyone yet')}</p>
+            ) : (
+              <div className="space-y-3">
+                {followingList.map(u => (
+                  <Link key={u.id} href={`/user/${u.id}`} onClick={() => setShowFollowingModal(false)} className="flex items-center gap-3 hover:bg-bg-secondary rounded-lg p-2 transition-colors">
+                    <UserAvatar displayName={u.display_name} avatarUrl={u.avatar_url} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-text-primary truncate">{u.display_name}</p>
+                      {u.username && <p className="text-xs text-text-tertiary truncate">@{u.username}</p>}
+                    </div>
+                    {u.sun_sign && <span className="text-base">{getZodiacGlyph(u.sun_sign)}</span>}
                   </Link>
                 ))}
               </div>
