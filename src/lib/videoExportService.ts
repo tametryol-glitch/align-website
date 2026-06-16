@@ -65,11 +65,13 @@ async function getFFmpeg(): Promise<FFmpeg> {
 export async function extractAudioForTranscription(videoUrl: string): Promise<Uint8Array> {
   const ff = await getFFmpeg();
   const data = await fetchFile(videoUrl);
-  await ff.writeFile('asr_in', data);
-  await ff.exec(['-i', 'asr_in', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'aac', '-b:a', '64k', 'asr_out.m4a']);
-  const out = (await ff.readFile('asr_out.m4a')) as Uint8Array;
-  try { await ff.deleteFile('asr_in'); } catch {}
-  try { await ff.deleteFile('asr_out.m4a'); } catch {}
+  await ff.writeFile('asr_in.mp4', data);
+  // 16kHz mono PCM WAV — pcm_s16le is in every ffmpeg build (no encoder doubt),
+  // accepted by Whisper, and tiny at 16kHz mono.
+  await ff.exec(['-i', 'asr_in.mp4', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', 'asr_out.wav']);
+  const out = (await ff.readFile('asr_out.wav')) as Uint8Array;
+  try { await ff.deleteFile('asr_in.mp4'); } catch {}
+  try { await ff.deleteFile('asr_out.wav'); } catch {}
   return out;
 }
 

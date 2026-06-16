@@ -81,8 +81,9 @@ export async function generateCaptions(
   const audio = await extractAudioForTranscription(url);
 
   opts?.onStage?.('Transcribing…');
+  if (!audio || audio.byteLength === 0) throw new Error('Could not extract audio from this video.');
   const form = new FormData();
-  form.append('file', new Blob([new Uint8Array(audio)], { type: 'audio/m4a' }), 'audio.m4a');
+  form.append('file', new Blob([new Uint8Array(audio)], { type: 'audio/wav' }), 'audio.wav');
   if (opts?.language) form.append('language', opts.language);
 
   const res = await fetch('/api/transcribe', { method: 'POST', body: form });
