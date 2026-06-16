@@ -90,14 +90,18 @@ export type FilterPresetId =
   | 'none'
   | 'clean'
   | 'vivid'
+  | 'y2k'
   | 'cinematic'
+  | 'bleach'
   | 'warm'
   | 'sunset'
   | 'cool'
   | 'moody'
   | 'vintage'
   | 'vhs'
+  | 'moss'
   | 'cosmic'
+  | 'infrared'
   | 'dreamy'
   | 'bw';
 
