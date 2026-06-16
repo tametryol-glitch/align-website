@@ -316,6 +316,30 @@ export async function createPost(post: {
   const styleToSave = post.type === 'text' && post.style?.preset && post.style.preset !== 'default'
     ? post.style : null;
 
+  // Duplicate guard: if an identical post by this user landed in the last
+  // ~15s (double-submit, network retry, double render), return it instead of
+  // inserting a second copy. Short window so deliberate re-posts still work.
+  {
+    const dupContent = (post.content ?? '').trim();
+    if (dupContent || post.imageUrl || post.videoUrl) {
+      const since = new Date(Date.now() - 15 * 1000).toISOString();
+      let dupQ = supabase
+        .from('posts')
+        .select('*, profile:profiles!posts_user_id_fkey(display_name, avatar_url, sun_sign)')
+        .eq('user_id', post.userId)
+        .eq('type', post.type)
+        .eq('is_deleted', false)
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(1) as any;
+      if (dupContent) dupQ = dupQ.eq('content', post.content);
+      if (post.imageUrl) dupQ = dupQ.eq('image_url', post.imageUrl);
+      if (post.videoUrl) dupQ = dupQ.eq('video_url', post.videoUrl);
+      const { data: existing } = await dupQ;
+      if (existing && existing.length > 0) return existing[0];
+    }
+  }
+
   const { data, error } = await supabase
     .from('posts')
     .insert({
