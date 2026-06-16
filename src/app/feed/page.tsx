@@ -680,7 +680,12 @@ export default function FeedPage() {
     try {
       const lastPost = posts[posts.length - 1];
       const more = await getFeed(userId, lastPost.createdAt);
-      setPosts((prev) => [...prev, ...more]);
+      // Dedupe by id: the cursor pages on created_at only, so posts sharing
+      // a timestamp can appear in overlapping pages — don't render them twice.
+      setPosts((prev) => {
+        const seen = new Set(prev.map((p) => p.id));
+        return [...prev, ...more.filter((p) => !seen.has(p.id))];
+      });
       setHasMore(more.length >= 30);
     } catch {
       // Silently stop loading so the UI doesn't get stuck
