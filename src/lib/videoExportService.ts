@@ -19,21 +19,39 @@ async function getFFmpeg(): Promise<FFmpeg> {
 
   ffmpeg = new FFmpeg();
 
-  // Load the core from our own origin (/public/ffmpeg) so export doesn't depend
-  // on a third-party CDN being reachable. Falls back to unpkg only if the
-  // self-hosted files are somehow unavailable.
-  const loadCore = async (base: string) => {
-    await ffmpeg!.load({
+  // Load the core from our own origin (/public) so export doesn't depend on a
+  // third-party CDN. `base` is single- or multi-threaded; the MT core needs a
+  // worker. We prefer MT (~4x faster) when the page is cross-origin isolated
+  // (COOP/COEP are set for /cosmic-video/edit), and otherwise use single-thread.
+  const loadCore = async (base: string, mt: boolean) => {
+    const opts: { coreURL: string; wasmURL: string; workerURL?: string } = {
       coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+    };
+    if (mt) opts.workerURL = await toBlobURL(`${base}/ffmpeg-core.worker.js`, 'text/javascript');
+    await ffmpeg!.load(opts);
   };
+
+  const isolated = typeof window !== 'undefined' && (window as { crossOriginIsolated?: boolean }).crossOriginIsolated === true;
+
+  if (isolated) {
+    try {
+      await loadCore('/ffmpeg-mt', true);
+      console.info('[Export] using multi-threaded ffmpeg-core');
+      return ffmpeg;
+    } catch (e) {
+      console.warn('[Export] multi-threaded core failed; falling back to single-thread:', e);
+      ffmpeg = new FFmpeg();
+    }
+  }
+
+  // Single-thread self-hosted, then unpkg CDN as a last resort.
   try {
-    await loadCore('/ffmpeg');
+    await loadCore('/ffmpeg', false);
   } catch (err) {
     console.warn('[Export] self-hosted ffmpeg-core unavailable, using CDN fallback:', err);
     ffmpeg = new FFmpeg();
-    await loadCore('https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm');
+    await loadCore('https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm', false);
   }
 
   return ffmpeg;
