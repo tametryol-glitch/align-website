@@ -88,12 +88,18 @@ export interface BrollClip {
 
 export type FilterPresetId =
   | 'none'
+  | 'clean'
+  | 'vivid'
+  | 'cinematic'
   | 'warm'
+  | 'sunset'
   | 'cool'
+  | 'moody'
   | 'vintage'
+  | 'vhs'
   | 'cosmic'
-  | 'bw'
-  | 'dreamy';
+  | 'dreamy'
+  | 'bw';
 
 export interface FilterPreset {
   id: FilterPresetId;
