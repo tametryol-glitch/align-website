@@ -114,6 +114,7 @@ export type ExportState = 'idle' | 'loading-ffmpeg' | 'processing' | 'done' | 'e
 export type ActiveTool =
   | 'none'
   | 'template'
+  | 'captions'
   | 'trim'
   | 'text'
   | 'sticker'

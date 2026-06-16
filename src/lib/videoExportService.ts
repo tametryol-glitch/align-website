@@ -58,6 +58,22 @@ async function getFFmpeg(): Promise<FFmpeg> {
 }
 
 /**
+ * Extract a compact mono 16kHz m4a audio track from the source video for speech
+ * transcription. Keeps the upload tiny (well under Whisper's 25MB limit) and
+ * reuses the already-loaded ffmpeg-wasm core.
+ */
+export async function extractAudioForTranscription(videoUrl: string): Promise<Uint8Array> {
+  const ff = await getFFmpeg();
+  const data = await fetchFile(videoUrl);
+  await ff.writeFile('asr_in', data);
+  await ff.exec(['-i', 'asr_in', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'aac', '-b:a', '64k', 'asr_out.m4a']);
+  const out = (await ff.readFile('asr_out.m4a')) as Uint8Array;
+  try { await ff.deleteFile('asr_in'); } catch {}
+  try { await ff.deleteFile('asr_out.m4a'); } catch {}
+  return out;
+}
+
+/**
  * Probe the source video to get actual width/height.
  * Falls back to 1080x1920 if probing fails.
  */

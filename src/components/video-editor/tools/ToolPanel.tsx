@@ -7,6 +7,7 @@
 
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { TemplateTool } from './TemplateTool';
+import { CaptionsTool } from './CaptionsTool';
 import { TrimTool } from './TrimTool';
 import { TextTool } from './TextTool';
 import { StickerTool } from './StickerTool';
@@ -26,6 +27,7 @@ export function ToolPanel() {
 
   const TOOL_TITLES: Record<string, string> = {
     template: 'Templates',
+    captions: 'Auto Captions',
     trim: 'Trim',
     text: 'Text Overlay',
     sticker: 'Stickers',
@@ -55,6 +57,7 @@ export function ToolPanel() {
       {/* Tool content */}
       <div className="p-4">
         {activeTool === 'template' && <TemplateTool />}
+        {activeTool === 'captions' && <CaptionsTool />}
         {activeTool === 'trim' && <TrimTool />}
         {activeTool === 'text' && <TextTool />}
         {activeTool === 'sticker' && <StickerTool />}
