@@ -8,7 +8,7 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
-import { FFMPEG_FILTER_MAP } from './videoFilters';
+import { FFMPEG_FILTER_MAP, scaleFfmpegGrade } from './videoFilters';
 import { buildTransitionFFmpegFilter } from './videoTransitions';
 import { buildKineticTextFilters } from './kineticText';
 
@@ -345,11 +345,11 @@ export async function exportVideo(
   // ── Build filter chain ──────────────────────────────────────
   const videoFilters: string[] = [];
 
-  // Color filter (only apply when intensity > 10%)
-  if (filterIntensity > 0.1) {
+  // Color filter — scaled by intensity (the slider dials the look up/down).
+  if (filterIntensity > 0.02) {
     const colorFilter = FFMPEG_FILTER_MAP[activeFilter];
     if (colorFilter) {
-      videoFilters.push(colorFilter);
+      videoFilters.push(scaleFfmpegGrade(colorFilter, filterIntensity));
     }
   }
 

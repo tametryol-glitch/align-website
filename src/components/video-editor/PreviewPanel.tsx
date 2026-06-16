@@ -15,7 +15,7 @@ import { TextOverlayLayer } from './TextOverlayLayer';
 import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { BrollLayer } from './BrollLayer';
 import { MusicPlayer } from './MusicPlayer';
-import { getFilterById } from '@/lib/videoFilters';
+import { getFilterById, scaleCssFilter } from '@/lib/videoFilters';
 import { Play, Pause, Repeat, SkipBack, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // One frame at an assumed 30fps — the granularity for arrow-key / button stepping.
@@ -60,13 +60,10 @@ export function PreviewPanel() {
   const combinedCssFilter = useMemo(() => {
     const parts: string[] = [];
 
-    // Preset filter with intensity blending
-    if (filter.css !== 'none' && filterIntensity > 0) {
-      // We can't easily lerp CSS filter strings, so we apply at full intensity
-      // when > 0.5, and skip when intensity is very low
-      if (filterIntensity > 0.1) {
-        parts.push(filter.css);
-      }
+    // Preset filter, scaled by intensity (the slider really dials the look).
+    if (filter.css !== 'none' && filterIntensity > 0.02) {
+      const scaled = scaleCssFilter(filter.css, filterIntensity);
+      if (scaled) parts.push(scaled);
     }
 
     // Manual adjustments — convert -1..+1 range to CSS filter values
