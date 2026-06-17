@@ -66,6 +66,68 @@ function getScoreColor(score: number): string {
   return '#ef4444';
 }
 
+interface RichGuidance {
+  connectionTheme?: string;
+  whatYouMayFeel?: string;
+  whatTheyMayFeel?: string;
+  cycleLesson?: string;
+  bestApproach?: string;
+  whatToAvoid?: string;
+  ifHandledWell?: string;
+  ifHandledPoorly?: string;
+  counselorAdvice?: string;
+  doThis?: string;
+  avoidThis?: string;
+  reachOutLabel?: string;
+  energyKeywords?: string[];
+  connectionArchetype?: string;
+}
+
+/** cycle_guidance is a JSON-stringified GuidanceResult. Parse it; fall back to
+ *  null for legacy plain-text rows. */
+function parseRichGuidance(raw: string | null | undefined): RichGuidance | null {
+  if (!raw) return null;
+  try {
+    const p = JSON.parse(raw);
+    if (p && typeof p.connectionTheme === 'string') return p as RichGuidance;
+  } catch { /* legacy plain text */ }
+  return null;
+}
+
+const ARCHETYPE_LABELS: Record<string, string> = {
+  'magnetic-unstable': 'Magnetic but Unstable',
+  'bonded-blocked': 'Deeply Bonded, Emotionally Blocked',
+  'romantic-uncertain': 'Romantic, Direction Unclear',
+  'karmic-intense': 'Karmic & Intense',
+  'supportive-expanding': 'Supportive & Expanding',
+  'drifting': 'Drifting or Disconnecting',
+  'healing-softening': 'Healing & Softening',
+  'commitment-ready': 'Commitment Ready',
+};
+
+/** Collapsible guidance section — collapsed by default so the reading is
+ *  scannable instead of a wall of text. */
+function GuidanceAccordion({ icon, title, body, color, defaultOpen }: {
+  icon: string; title: string; body: string; color: string; defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(!!defaultOpen);
+  const teaser = body.split('\n')[0];
+  return (
+    <div className="card mb-3 border-l-4" style={{ borderLeftColor: color }}>
+      <button onClick={() => setOpen(o => !o)} className="w-full flex items-center gap-2 text-left">
+        <span className="text-lg">{icon}</span>
+        <span className="text-sm font-semibold flex-1" style={{ color }}>{title}</span>
+        <span className="text-text-muted text-lg leading-none">{open ? '⌃' : '⌄'}</span>
+      </button>
+      {open ? (
+        <p className="text-sm text-text-secondary whitespace-pre-line mt-2 leading-relaxed">{body}</p>
+      ) : (
+        <p className="text-xs text-text-muted mt-1 truncate">{teaser}</p>
+      )}
+    </div>
+  );
+}
+
 export default function FragmentDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -124,6 +186,7 @@ export default function FragmentDetailPage() {
   }
 
   const cycle = fragment?.active_cycle ? CYCLE_CONFIG[fragment.active_cycle.toLowerCase()] : null;
+  const rich = parseRichGuidance(calc?.cycle_guidance);
 
   if (loading) {
     return (
@@ -278,13 +341,60 @@ export default function FragmentDetailPage() {
         </div>
       )}
 
-      {/* Guidance */}
-      {calc?.cycle_guidance && (
+      {/* Guidance — parsed rich sections (or legacy plain text) */}
+      {rich ? (
+        <>
+          {/* Energy chips + connection archetype */}
+          {((rich.energyKeywords && rich.energyKeywords.length > 0) || rich.connectionArchetype) && (
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              {rich.energyKeywords?.slice(0, 5).map((k, i) => (
+                <span key={i} className="text-[11px] font-semibold capitalize px-2.5 py-1 rounded-full"
+                  style={{ background: 'rgba(155,111,246,0.12)', color: '#C4A2F7', border: '1px solid rgba(155,111,246,0.25)' }}>{k}</span>
+              ))}
+              {rich.connectionArchetype && (
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full ml-auto"
+                  style={{ background: 'rgba(168,85,247,0.15)', color: '#A855F7' }}>
+                  {ARCHETYPE_LABELS[rich.connectionArchetype] || rich.connectionArchetype}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Glanceable Do / Avoid — the actionable bit, up top */}
+          {(rich.doThis || rich.avoidThis) && (
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {rich.doThis && (
+                <div className="card border" style={{ borderColor: 'rgba(34,197,94,0.35)' }}>
+                  <p className="text-[11px] font-bold uppercase mb-1 text-green-400">✅ Do</p>
+                  <p className="text-xs text-text-secondary leading-relaxed">{rich.doThis}</p>
+                </div>
+              )}
+              {rich.avoidThis && (
+                <div className="card border" style={{ borderColor: 'rgba(245,166,35,0.35)' }}>
+                  <p className="text-[11px] font-bold uppercase mb-1 text-amber-400">⚠️ Avoid</p>
+                  <p className="text-xs text-text-secondary leading-relaxed">{rich.avoidThis}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sections — lead open, the rest collapsed for scannability */}
+          {rich.connectionTheme && <GuidanceAccordion icon="🌌" title="The Connection" body={rich.connectionTheme} color="#9B6FF6" defaultOpen />}
+          {rich.whatYouMayFeel && <GuidanceAccordion icon="💜" title="What You May Be Feeling" body={rich.whatYouMayFeel} color="#A855F7" />}
+          {rich.whatTheyMayFeel && <GuidanceAccordion icon="🧠" title={`What May Be Happening With ${fragment.display_name}`} body={rich.whatTheyMayFeel} color="#6366F1" />}
+          {rich.cycleLesson && <GuidanceAccordion icon="🌟" title="What This Cycle Is Teaching" body={rich.cycleLesson} color="#9B6FF6" />}
+          {rich.bestApproach && <GuidanceAccordion icon="✅" title="Best Approach Right Now" body={rich.bestApproach} color="#22c55e" />}
+          {rich.whatToAvoid && <GuidanceAccordion icon="⚠️" title="What To Avoid" body={rich.whatToAvoid} color="#F5A623" />}
+          {rich.ifHandledWell && <GuidanceAccordion icon="✨" title="If Handled Well" body={rich.ifHandledWell} color="#10B981" />}
+          {rich.ifHandledPoorly && <GuidanceAccordion icon="🚨" title="If Handled Poorly" body={rich.ifHandledPoorly} color="#ef4444" />}
+          {rich.counselorAdvice && <GuidanceAccordion icon="💬" title="Counselor's Advice" body={rich.counselorAdvice} color="#A855F7" />}
+        </>
+      ) : calc?.cycle_guidance ? (
         <div className="card mb-4">
           <h3 className="text-sm font-semibold text-text-primary mb-2">Cycle Guidance</h3>
           <p className="text-sm text-text-secondary whitespace-pre-line">{calc.cycle_guidance}</p>
         </div>
-      )}
+      ) : null}
 
       {/* Meta info */}
       <div className="text-center py-4">
