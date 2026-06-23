@@ -154,6 +154,14 @@ class AlignAPI {
     });
   }
 
+  async getCourseProgress(userId: string) {
+    return this.request(`/courses/progress?user_id=${encodeURIComponent(userId)}`);
+  }
+
+  async getCoursesMeta() {
+    return this.request('/courses/meta');
+  }
+
   // Subscription
   async getSubscriptionStatus() {
     return this.request('/subscription/status');

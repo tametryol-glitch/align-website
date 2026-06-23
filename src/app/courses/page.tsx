@@ -1,100 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { Lock } from 'lucide-react';
+import { api } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 
-interface Course {
+interface ApiLesson { id: string; title: string; duration_minutes: number }
+interface ApiCourse {
   id: string;
   title: string;
   description: string;
-  lessons: number;
-  completed: number;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  glyph: string;
+  level: string;
+  level_order: number;
+  level_label: string;
+  is_free: boolean;
+  image_emoji: string;
+  prerequisite_id: string | null;
+  lesson_count: number;
+  lessons: ApiLesson[];
 }
-
-const COURSES: Course[] = [
-  { id: '1', title: 'Introduction to Astrology', description: 'Learn the basics of zodiac signs, planets, and houses', lessons: 12, completed: 0, level: 'beginner', glyph: '☉' },
-  { id: '2', title: 'The Zodiac Signs', description: 'Deep dive into all 12 zodiac signs and their meanings', lessons: 12, completed: 0, level: 'beginner', glyph: '♈' },
-  { id: '3', title: 'Planetary Influences', description: 'Understanding how planets shape personality and events', lessons: 10, completed: 0, level: 'beginner', glyph: '♃' },
-  { id: '4', title: 'Houses & Angles', description: 'The 12 houses and their life areas', lessons: 14, completed: 0, level: 'intermediate', glyph: '⌂' },
-  { id: '5', title: 'Aspects & Orbs', description: 'How planets communicate through geometric angles', lessons: 8, completed: 0, level: 'intermediate', glyph: '△' },
-  { id: '6', title: 'Chart Patterns', description: 'Grand trines, T-squares, yods and more', lessons: 10, completed: 0, level: 'advanced', glyph: '★' },
-  { id: '7', title: 'Transits & Progressions', description: 'Predictive astrology techniques', lessons: 12, completed: 0, level: 'advanced', glyph: '↻' },
-  { id: '8', title: 'Synastry & Composite', description: 'Relationship astrology mastery', lessons: 10, completed: 0, level: 'advanced', glyph: '♥' },
-];
-
-const LEVELS = [
-  { key: 'beginner', labelKey: 'courses.beginner' },
-  { key: 'intermediate', labelKey: 'courses.intermediate' },
-  { key: 'advanced', labelKey: 'courses.advanced' },
-];
 
 export default function CoursesPage() {
   const { t } = useTranslation();
-  const [activeLevel, setActiveLevel] = useState('beginner');
-  const filtered = COURSES.filter((c) => c.level === activeLevel);
+  const { user } = useAuthStore();
+  const [courses, setCourses] = useState<ApiCourse[]>([]);
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const list = await api.getCourses();
+        setCourses(Array.isArray(list) ? list : []);
+        if (user?.id) {
+          const prog = await api.getCourseProgress(user.id).catch(() => null);
+          if (prog?.completed_lessons) setCompleted(new Set<string>(prog.completed_lessons));
+        }
+      } catch { /* leave empty */ }
+      setLoading(false);
+    })();
+  }, [user?.id]);
+
+  const completedCount = (c: ApiCourse) => c.lessons.filter(l => completed.has(l.id)).length;
+  const isCourseDone = (c: ApiCourse) => c.lesson_count > 0 && completedCount(c) >= c.lesson_count;
+  const isLocked = (c: ApiCourse) => {
+    if (!c.prerequisite_id) return false;
+    const prereq = courses.find(x => x.id === c.prerequisite_id);
+    return !!prereq && !isCourseDone(prereq);
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">{t('courses.title')}</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-1">{t('courses.title', 'Learn')}</h1>
+      <p className="text-sm text-text-tertiary mb-6">
+        Whole Sign houses · the Align rulership system · beginner to certified, one level at a time.
+      </p>
 
-      {/* Level filter pills */}
-      <div className="flex gap-2 mb-6">
-        {LEVELS.map((level) => (
-          <button
-            key={level.key}
-            onClick={() => setActiveLevel(level.key)}
-            className={cn(
-              'level-pill',
-              activeLevel === level.key && 'level-pill-active'
-            )}
-          >
-            {t(level.labelKey)}
-          </button>
-        ))}
-      </div>
+      {loading ? (
+        <p className="text-sm text-text-muted py-8 text-center">{t('common.loading', 'Loading…')}</p>
+      ) : (
+        <div className="space-y-4">
+          {courses.map((course) => {
+            const done = completedCount(course);
+            const pct = course.lesson_count > 0 ? (done / course.lesson_count) * 100 : 0;
+            const locked = isLocked(course);
+            const prereq = course.prerequisite_id ? courses.find(x => x.id === course.prerequisite_id) : null;
+            return (
+              <div key={course.id} className={`card ${locked ? 'opacity-70' : ''}`}>
+                <div className="flex gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-accent-muted flex items-center justify-center flex-shrink-0 text-2xl">
+                    {course.image_emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-accent-secondary/10 text-accent-secondary">
+                        {course.level_label || course.level}
+                      </span>
+                      {!course.is_free && (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Premium</span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-text-primary mt-1">{course.title}</h3>
+                    <p className="text-sm text-text-tertiary">{course.description}</p>
+                  </div>
+                </div>
 
-      {/* Course cards */}
-      <div className="space-y-4">
-        {filtered.map((course) => {
-          const progress = course.lessons > 0 ? (course.completed / course.lessons) * 100 : 0;
-          return (
-            <div key={course.id} className="card">
-              {/* Header row */}
-              <div className="flex gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-accent-muted flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl text-accent-secondary">{course.glyph}</span>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex-1 h-1 bg-bg-tertiary rounded-full overflow-hidden">
+                    <div className="h-full bg-accent-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-xs text-text-muted whitespace-nowrap">{done}/{course.lesson_count} lessons</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-text-primary">{course.title}</h3>
-                  <p className="text-sm text-text-tertiary">{course.description}</p>
-                </div>
+
+                {locked ? (
+                  <div className="w-full py-3 text-sm rounded-xl border border-border text-text-muted flex items-center justify-center gap-2">
+                    <Lock className="w-4 h-4" /> Complete {prereq?.level_label || 'the previous level'} to unlock
+                  </div>
+                ) : (
+                  <Link href={`/courses/${course.id}`} className="w-full btn-primary py-3 text-sm block text-center">
+                    {done > 0 ? (isCourseDone(course) ? t('courses.review', 'Review') : t('courses.continue', 'Continue')) : t('courses.startCourse', 'Start')}
+                  </Link>
+                )}
               </div>
-
-              {/* Progress bar */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex-1 h-1 bg-bg-tertiary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-accent-primary rounded-full transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <span className="text-xs text-text-muted whitespace-nowrap">
-                  {course.completed}/{course.lessons} lessons
-                </span>
-              </div>
-
-              {/* Start button */}
-              <Link href={`/courses/${course.id}`} className="w-full btn-primary py-3 text-sm block text-center">
-                {course.completed > 0 ? t('courses.continue') : t('courses.startCourse')}
-              </Link>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
