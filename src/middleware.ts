@@ -68,6 +68,9 @@ export async function middleware(request: NextRequest) {
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
   const isPublicPage = pathname === '/' ||
     pathname.startsWith('/auth') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/rush-nation') ||
     pathname.startsWith('/affiliates') ||
     pathname.startsWith('/ref/') ||
     pathname.startsWith('/join/') ||
