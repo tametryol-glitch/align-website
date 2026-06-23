@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import { LessonBody, LessonObjectives, ChartFocusCard, KeyTerms, LessonQuiz } from '@/components/courses/LessonExtras';
 
 export default function LessonPage() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function LessonPage() {
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState('');
   const [slideIndex, setSlideIndex] = useState(0);
+  const [glossary, setGlossary] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function load() {
@@ -30,6 +32,7 @@ export default function LessonPage() {
         const data = await api.getLesson(courseId, lessonId);
         setLesson(data);
         setSlideIndex(0);
+        api.getCoursesMeta().then((m: any) => setGlossary(m?.glossary || {})).catch(() => {});
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -79,20 +82,24 @@ export default function LessonPage() {
         </h1>
 
         {/* Lesson content */}
-        <div className="flex-1 text-text-secondary text-sm leading-relaxed space-y-4">
+        <div className="flex-1">
+          <LessonObjectives objectives={lesson?.objectives} />
+
           {typeof currentSlide?.content === 'string' ? (
-            currentSlide.content.split('\n').map((paragraph: string, i: number) => (
-              paragraph.trim() ? <p key={i}>{paragraph}</p> : null
-            ))
+            <LessonBody content={currentSlide.content} />
           ) : (
-            <p>{lesson?.description || 'Lesson content is loading...'}</p>
+            <p className="text-text-secondary text-sm">{lesson?.description || 'Lesson content is loading...'}</p>
           )}
 
           {currentSlide?.image_url && (
-            <div className="rounded-xl overflow-hidden">
+            <div className="rounded-xl overflow-hidden mt-4">
               <Image src={currentSlide.image_url} alt="Lesson slide" width={800} height={450} className="w-full" unoptimized />
             </div>
           )}
+
+          <ChartFocusCard chartFocus={lesson?.chart_focus} />
+          <KeyTerms terms={lesson?.key_terms} glossary={glossary} />
+          <LessonQuiz quiz={lesson?.quiz} />
         </div>
 
         {/* Navigation */}
