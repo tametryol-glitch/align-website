@@ -140,7 +140,10 @@
         "name": "Water",
         "feel": "Je wordt gedreven door gevoel. Je intuïtie, je empathie, je emotionele diepte — dit zijn geen zachte vaardigheden, het is je primaire intelligentie. Je uitdaging is leren welke gevoelens van jou zijn."
       }
-    }
+    },
+    "enterTheCosmos": "Voer de Kosmos in",
+    "revealLoading": "Je sterren lezen...",
+    "continueToDashboard": "Ga door naar Dashboard"
   },
   "home": {
     "greeting": "Hallo, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Huidige transits",
     "moonPhase": "Maanfase",
     "planetaryHours": "Planetaire uren",
-    "quickAccess": "Snelle toegang"
+    "quickAccess": "Snelle toegang",
+    "worldEchoTitle": "Vandaag in Kosmische Geschiedenis",
+    "worldEchoSimilar": "onder uitlijningen die de lucht van vandaag weerspiegelen",
+    "worldEchoSeeMore": "Verken meer echo's"
   },
   "chart": {
     "natal": "Geboortehoroscoop",
@@ -289,7 +295,12 @@
         "obstacle": "Obstakel",
         "hiddenFactor": "Verborgen factor",
         "advice": "Advies"
-      }
+      },
+      "listenToReading": "Luister naar Je Lezing",
+      "stopListening": "Stop met Luisteren",
+      "summoningVoice": "Haar stem oproepen…",
+      "sheIsReading": "Ze leest je kaarten…",
+      "voiceUnavailable": "Kon audio niet afspelen. Controleer je verbinding en probeer het opnieuw."
     },
     "dreamOraclePage": {
       "title": "Droomorakel",
@@ -515,7 +526,7 @@
       "generateReading": "Lezing Genereren",
       "generating": "Je energieveld wordt gelezen...",
       "noReading": "Nog geen lezing. Start een scan om je aura te zien.",
-      "startScan": "Start Scan",
+      "startScan": "Scan Starten",
       "yourAura": "Jouw Aura",
       "confidence": "vertrouwen",
       "newScan": "Nieuwe scan",
@@ -530,7 +541,61 @@
       "recentScans": "Recente Scans",
       "noEntries": "Nog geen aura scans.",
       "firstScan": "Start je eerste scan",
-      "needMoreScans": "Minimaal 3 scans nodig voor patroonanalyse"
+      "needMoreScans": "Minimaal 3 scans nodig voor patroonanalyse",
+      "chooseYourScan": "Kies je Scan",
+      "scanModeHint": "Elke modus leest je energie op een andere manier",
+      "pictureScanTitle": "Foto Aura Scan",
+      "pictureScanDesc": "Neem een selfie of upload een foto",
+      "voiceScanTitle": "Stem Aura Scan",
+      "voiceScanDesc": "Vertel Align wat je nu voelt",
+      "videoScanTitle": "Live Video Scan",
+      "videoScanDesc": "15-seconden video van je energie",
+      "deepReadingTitle": "Diepe Aura Lezing",
+      "deepReadingDesc": "Foto + stem + humeur + astrologie gecombineerd",
+      "quickScan": "Snelle scan — alleen humeur + astrologie",
+      "photoStepDeep": "Stap 1: Foto",
+      "photoStepTitle": "Neem je Foto",
+      "photoStepDesc": "Kijk in de camera. Laat Align de energie in je uitdrukking lezen.",
+      "takeSelfie": "Neem Selfie",
+      "uploadPhoto": "Upload Foto",
+      "skipPhoto": "Sla foto over",
+      "retake": "Neem opnieuw",
+      "continue": "Doorgaan",
+      "voiceStepDeep": "Stap 2: Stem",
+      "voiceStepTitle": "Stem Aura Scan",
+      "voiceStepDesc": "Vertel Align wat je nu voelt. Spreek natuurlijk voor 10-60 seconden.",
+      "analyzingVoice": "Je stem analyseren...",
+      "listening": "Aan het luisteren...",
+      "speakNaturally": "Spreek natuurlijk over hoe je je voelt",
+      "stopRecording": "Stop",
+      "startRecording": "Begin met opnemen",
+      "orType": "of typ het",
+      "typeFeelingPlaceholder": "Typ wat je voelt...",
+      "skipVoice": "Sla stemscan over",
+      "voiceCaptured": "Stem vastgelegd",
+      "detectedTone": "Gedetecteerde toon:",
+      "micDenied": "Microfoon toegang niet beschikbaar",
+      "micDeniedHint": "Je kunt typen wat je voelt in plaats daarvan",
+      "videoStepTitle2": "Live Video Scan",
+      "videoStepDesc": "Kijk in de camera. Adem normaal. Neem 15 seconden op.",
+      "recordVideo": "Video Opnemen",
+      "skipVideo": "Video scan overslaan",
+      "stopVideo": "Opname Stoppen",
+      "videoCaptured": "Video vastgelegd",
+      "recordAgain": "Opnieuw opnemen",
+      "cameraDenied": "Camera toegang niet beschikbaar",
+      "cameraDeniedHint": "Schakel camera machtigingen in je browserinstellingen in om video scan te gebruiken",
+      "continueWithoutVideo": "Doorgaan zonder video",
+      "photoAdded": "Foto toegevoegd",
+      "voiceAdded": "Stem toegevoegd",
+      "videoAdded": "Video toegevoegd",
+      "generatingWithScan": "Je scan gegevens analyseren met kosmische uitlijningen...",
+      "generatingMoodOnly": "Je stemming verbinden met het huidige kosmische weer...",
+      "chatTitle": "Vraag over je lezing",
+      "chatPlaceholder": "Vraag over je lezing...",
+      "chatError": "Sorry, ik kon je vraag niet verwerken. Probeer het opnieuw.",
+      "chatLimitReached": "Gratis vervolglimiet bereikt. Upgrade voor onbeperkte vragen.",
+      "chatLimitInfo": "{{remaining}} van {{total}} gratis vervolgen over."
     },
     "galacticClockPage": {
       "title": "Galactische klok",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Geheime bewonderaar",
       "rose": "Roos",
       "likeBack": "Terug liken",
-      "matching": "Matchen..."
+      "matching": "Matchen...",
+      "upgradeToSeeAll": "Upgrade om al je likes te zien",
+      "upgradeHintMore": "{{count}} meer mensen vonden je leuk — upgrade om ze allemaal te onthullen"
     },
     "matches": {
       "title": "Jouw Matches",
@@ -662,7 +729,10 @@
       "cancel": "Annuleren",
       "matchedToday": "Vandaag gematcht",
       "matchedDaysAgo": "{{days}}d geleden gematcht",
-      "cosmicMatch": "Kosmische Match"
+      "cosmicMatch": "Kosmische Match",
+      "upgradeToSeeAll": "Upgrade om al je matches te zien",
+      "moreMatchesWaiting": "{{count}} meer kosmische verbindingen wachten op jou",
+      "upgradeCta": "Bekijk Alle Matches"
     },
     "profile": {
       "title": "Datingprofiel",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Jouw Match",
+      "loading": "Je energievelden aan het lezen...",
+      "matchNotFound": "Match niet gevonden",
+      "noMyAura": "Je hebt eerst minimaal één Aura Mirror-scan nodig. Ga naar Lezingen > Aura Mirror om je aura te scannen.",
+      "noPartnerAura": "{{name}} heeft nog geen Aura Mirror-scan gedaan. Hun aura-gegevens verschijnen hier zodra ze dat doen.",
+      "loadError": "Kon aura-gegevens niet laden. Probeer het opnieuw.",
+      "scanAura": "Scan Je Aura",
+      "auraChemistry": "Aura Chemie",
+      "harmoniousLabel": "Natuurlijk Harmonieus",
+      "warmLabel": "Warme Verbinding",
+      "growthLabel": "Groei Potentieel",
+      "differentLabel": "Verschillende Frequenties",
+      "harmonyBreakdown": "Harmonie Onderbreking",
+      "emotionalSafety": "Emotionele Veiligheid",
+      "attractionHeat": "Aantrekkingswarmte",
+      "communication": "Communicatie",
+      "conflictWeather": "Conflict Weer",
+      "clearSkies": "Helder weer",
+      "someStorms": "Enkele stormen",
+      "turbulent": "Turbulent"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Maak je eerste bericht"
     },
     "loadMore": "Meer laden",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "shareReading": {
+      "title": "Deel je kosmische ervaring",
+      "subtitle": "Laat de gemeenschap weten wat de sterren je vertellen",
+      "templates": {
+        "aura": "Ik heb net mijn aura-reading gehad! Mijn buitenste aura straalt",
+        "transit": "Mijn transit-reading voelt vandaag anders... kan iemand zich hierin herkennen?",
+        "moon": "Maan check-in: voel de {{moonPhase}} energie vanavond",
+        "zodiac": "Zijn er nog andere {{sign}} Risings die deze verandering voelen?",
+        "tarot": "Vandaag wat kaarten getrokken en de boodschap was kristalhelder"
+      },
+      "quickPost": "Snelle Post",
+      "viewReadings": "Bekijk Leesingen",
+      "viewCommunities": "Blader door Gemeenschappen"
+    },
+    "trending": {
+      "title": "Trending",
+      "clearFilter": "Filter wissen",
+      "noResults": "Geen berichten gevonden voor {{tag}}"
+    }
   },
   "friends": {
     "title": "Vrienden & Connecties",
@@ -972,7 +1084,7 @@
     "grouped": "{{count}} meldingen"
   },
   "communities": {
-    "title": "Communities",
+    "title": "Gemeenschappen",
     "subtitle": "Vind je kosmische stam",
     "create": "Maken",
     "tabs": {
@@ -1129,29 +1241,29 @@
       "communityGuidelines": "Communityrichtlijnen"
     },
     "languages": {
-      "en": "English",
+      "en": "Engels",
       "es": "Español",
-      "fr": "Français",
-      "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "fr": "Frans",
+      "de": "Duits",
+      "it": "Italiaans",
+      "pt": "Portugees",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
       "zh": "中文",
       "ar": "العربية",
       "hi": "हिन्दी",
-      "tr": "Türkçe",
-      "pl": "Polski",
+      "tr": "Turks",
+      "pl": "Pools",
       "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "sv": "Zweeds",
+      "da": "Deens",
+      "fi": "Fins",
+      "nb": "Noors",
       "th": "ไทย"
     },
     "admin": {
-      "title": "Admin",
+      "title": "Beheerder",
       "manageUsers": "Gebruikersaccounts beheren",
       "contentModeration": "Inhoudsmoderatie",
       "manageCelebrities": "Beroemdheden beheren",
@@ -1480,6 +1592,23 @@
       "noPackages": "Abonnementspakketten worden gefinaliseerd in de winkel. Probeer het later opnieuw.",
       "connectionFailed": "Kan de abonnementsdienst niet bereiken. Controleer je verbinding en probeer het opnieuw.",
       "stillStarting": "De abonnementsdienst is nog aan het opstarten. Wacht een moment en probeer het opnieuw."
+    },
+    "paymentUnavailable": "We hadden problemen om onze betalingsprovider te bereiken. Probeer het over een moment opnieuw.",
+    "cardDeclined": "Uw kaart is geweigerd. Werk uw betaalmethode bij en probeer het opnieuw.",
+    "checkoutFailed": "Er is iets misgegaan bij het starten van uw abonnement. Probeer het opnieuw.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Begin uw kosmische reis",
+      "cta": "Krijg Starter",
+      "bestFor": "Iedereen klaar om verder te gaan dan de basis met volledige geboortehoroscopen en dagelijkse inzichten.",
+      "features": [
+        "10 AI-lezingen per maand",
+        "Volledige geboortehoroscoop (alle planeten)",
+        "Dagelijkse gepersonaliseerde transitsmeldingen",
+        "Aura Mirror onbeperkte scans",
+        "Cosmic Journal onbeperkte invoer",
+        "Toegang tot Zielsgeschenken & Zielgeheugen"
+      ]
     }
   },
   "courses": {
@@ -1580,7 +1709,7 @@
     }
   },
   "polls": {
-    "title": "Polls",
+    "title": "Peilingen",
     "filters": {
       "all": "Alle",
       "active": "Actief",
@@ -1602,7 +1731,12 @@
     "loading": "Bladwijzers laden...",
     "empty": "Nog geen bladwijzers",
     "emptyHint": "Bewaar berichten uit de feed om later te lezen",
-    "postUnavailable": "Bericht niet meer beschikbaar"
+    "postUnavailable": "Bericht niet meer beschikbaar",
+    "filterAll": "Alles",
+    "filterPosts": "Berichten",
+    "filterReadings": "Lezingen",
+    "saved": "Opgeslagen",
+    "unbookmark": "Verwijder bladwijzer"
   },
   "celebrityMatches": {
     "title": "Beroemdhedenmatches",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Creator Studio",
-    "subtitle": "Maak en beheer je kosmische content"
+    "subtitle": "Maak en beheer je kosmische content",
+    "applyTitle": "Word een Creator",
+    "applyDescription": "Deel je astrologische inzichten, bouw een volgersschare op en verdien met je content.",
+    "applyButton": "Aanmelden als Creator",
+    "applying": "Aan het aanmelden...",
+    "benefitReadings": "Deel Lezingen",
+    "benefitReadingsHint": "Plaats interpretaties & inzichten",
+    "benefitCommunity": "Bouw Gemeenschap",
+    "benefitCommunityHint": "Verkrijg volgers & invloed",
+    "benefitEarn": "Verdien Inkomsten",
+    "benefitEarnHint": "Monetiseer je expertise",
+    "statPosts": "Berichten",
+    "statReactions": "Reacties",
+    "statViews": "Weergaven",
+    "statFollowers": "Volgers",
+    "statEarnings": "Inkomsten",
+    "statThisMonth": "Deze Maand",
+    "createPost": "Maak Bericht",
+    "createPostHint": "Deel inzichten met de gemeenschap",
+    "createPoll": "Maak Poll",
+    "createPollHint": "Neem deel aan polls & vragen",
+    "myCommunities": "Mijn Gemeenschappen",
+    "myCommunitiesHint": "Beheer je groepen",
+    "shareReading": "Deel een Lezing",
+    "shareReadingHint": "Plaats kaartinterpretaties",
+    "signInRequired": "Log in om toegang te krijgen tot Creator Studio",
+    "loading": "Studio laden..."
   },
   "qa": {
     "title": "V&A",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Kies je pakket",
-    "subtitle": "Ontgrendel de volledige kracht van Align"
+    "subtitle": "Ontgrendel de volledige kracht van Align",
+    "monthly": "Maandelijks",
+    "annual": "Jaarlijks",
+    "saveUpTo": "Besparen tot 40%",
+    "bestValue": "Beste waarde",
+    "perYear": "/jaar",
+    "saveMoney": "Besparen ${{amount}}",
+    "foreverFree": "Gratis voor altijd",
+    "billedMonthly": "Maandelijks gefactureerd",
+    "lessThanCoffee": "Minder dan een koffie per maand",
+    "currentPlan": "Huidig plan",
+    "getPlan": "Krijg {{name}}"
   },
   "gallery": {
     "title": "Galerij",
@@ -1745,11 +1916,11 @@
       "compatibilityMin": "Minimale compatibiliteit",
       "elements": "Elementen",
       "applyFilters": "Filters toepassen",
-      "resetFilters": "Reset"
+      "resetFilters": "Resetten"
     },
     "datingProfileCard": {
       "compatibilityScore": "{{score}}% compatibel",
-      "like": "Like",
+      "like": "Leuk",
       "pass": "Overslaan",
       "cosmicRose": "Kosmische Roos",
       "likesRemaining": "{{count}} likes over",
@@ -1764,7 +1935,7 @@
       "friends": "Vrienden",
       "messages": "Berichten",
       "feed": "Feed",
-      "communities": "Communities",
+      "communities": "Gemeenschappen",
       "notifications": "Meldingen",
       "profile": "Profiel",
       "settings": "Instellingen",
@@ -1780,7 +1951,11 @@
       "videoCreator": "Video Maker",
       "viewProfile": "Bekijk je profiel",
       "worldEcho": "Wereld Echo",
-      "yourProfile": "Jouw Profiel"
+      "yourProfile": "Jouw Profiel",
+      "search": "Zoeken",
+      "bookmarks": "Bladwijzers",
+      "polls": "Peilingen",
+      "creatorStudio": "Creator Studio"
     },
     "feedCard": {
       "like": "Leuk",
@@ -1837,7 +2012,7 @@
     "public": "Openbaar",
     "private": "Privé",
     "apply": "Toepassen",
-    "reset": "Reset",
+    "reset": "Resetten",
     "remove": "Verwijderen",
     "add": "Toevoegen",
     "create": "Maken",
@@ -1967,6 +2142,69 @@
     "free": "Gratis",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Zoeken",
+    "placeholder": "Zoek in de kosmos...",
+    "searching": "Sterren aan het doorzoeken...",
+    "noResults": "Geen kosmische overeenkomsten gevonden",
+    "noResultsHint": "Probeer andere zoekwoorden of controleer de spelling",
+    "emptyTitle": "Zoek naar mensen, berichten en gemeenschappen",
+    "emptyHint": "Ontdek kosmische verbindingen in het universum",
+    "recentSearches": "Recente zoekopdrachten",
+    "tabAll": "Alles",
+    "tabUsers": "Gebruikers",
+    "tabPosts": "Berichten",
+    "tabCommunities": "Gemeenschappen",
+    "tabReels": "Reels",
+    "badgeUser": "Gebruiker",
+    "badgePost": "Bericht",
+    "badgeCommunity": "Gemeenschap",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Wat is nieuw in Align",
+    "gotIt": "Snap"
+  },
+  "gettingStarted": {
+    "title": "Aan de slag",
+    "readHoroscope": "Lees je dagelijkse horoscoop",
+    "tryReading": "Probeer een AI-lezing",
+    "viewNatal": "Bekijk je geboortehoroscoop",
+    "shareFeed": "Bezoek de kosmische feed",
+    "completeProfile": "Voltooi je profiel",
+    "congrats": "Je bent klaar! Welkom in de kosmos."
+  },
+  "coachmarks": {
+    "of": "van",
+    "next": "Volgende",
+    "skip": "Sla rondleiding over",
+    "finish": "Voltooien",
+    "dailyBrief": {
+      "title": "Je dagelijkse kosmische samenvatting",
+      "description": "Begin elke dag hier. Ontvang je gepersonaliseerde kosmische kaart, maanfase, energievoorspelling en dagelijkse begeleiding op maat van jouw horoscoop."
+    },
+    "quickAccess": {
+      "title": "AI-gestuurde lezingen",
+      "description": "Snelle toegang tot je geboortehoroscoop, transits, tarot, compatibiliteitsanalyses en meer. Tik op een kaart om verder te duiken."
+    },
+    "natalChart": {
+      "title": "Je Geboortehoroscoop",
+      "description": "Verken je volledige geboortehoroscoop met planeten, huizen, aspecten en gedetailleerde interpretaties van elke plaatsing."
+    },
+    "feed": {
+      "title": "Community Feed",
+      "description": "Deel kosmische momenten, plaats inzichten, reageer op berichten van anderen en verbind met medestargazers."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrologe",
+      "description": "Chat met je persoonlijke AI astrologe. Vraag alles over je horoscoop, transits, relaties of kosmische timing."
+    },
+    "courses": {
+      "title": "Leer Astrologie",
+      "description": "Gestructureerde cursussen om je astrologische kennis te verdiepen, van basisbeginselen tot geavanceerde technieken."
+    }
   }
 }

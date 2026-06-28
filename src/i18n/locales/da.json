@@ -29,12 +29,12 @@
     "signupFailed": "Oprettelse mislykkedes.",
     "orContinueWith": "eller fortsaet med",
     "orSignUpWithEmail": "eller opret konto med e-mail",
-    "apple": "Apple",
+    "apple": "Æble",
     "google": "Google",
     "displayName": "Visningsnavn",
     "yourName": "Dit navn",
     "dateOfBirth": "Foedselsdato",
-    "dobPlaceholder": "DD-MM-YYYY",
+    "dobPlaceholder": "DD-MM-ÅÅÅÅ",
     "dobRequired": "Foedselsdato paakraevet",
     "dobRequiredHint": "Indtast venligst din foedselsdato for at fortsaette.",
     "dobInvalidFormat": "Indtast dato som DD-MM-YYYY",
@@ -140,7 +140,10 @@
         "name": "Vand",
         "feel": "Du drives af foelelse. Din intuition, din empati, din emotionelle dybde -- det er ikke bloede kompetencer, det er din primaere intelligens. Din udfordring er at laere, hvilke foelelser der er dine."
       }
-    }
+    },
+    "enterTheCosmos": "Indtast Kosmos",
+    "revealLoading": "Læser dine stjerner...",
+    "continueToDashboard": "Fortsæt til Dashboard"
   },
   "home": {
     "greeting": "Hej, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Aktuelle transitter",
     "moonPhase": "Manefase",
     "planetaryHours": "Planetaere timer",
-    "quickAccess": "Hurtig adgang"
+    "quickAccess": "Hurtig adgang",
+    "worldEchoTitle": "I dag i Kosmisk Historie",
+    "worldEchoSimilar": "under justeringer, der spejler dagens himmel",
+    "worldEchoSeeMore": "Udforsk flere ekkoer"
   },
   "chart": {
     "natal": "Foedselshoroskop",
@@ -289,7 +295,12 @@
         "obstacle": "Forhindring",
         "hiddenFactor": "Skjult faktor",
         "advice": "Rad"
-      }
+      },
+      "listenToReading": "Lyt til din læsning",
+      "stopListening": "Stop med at lytte",
+      "summoningVoice": "Kald hendes stemme…",
+      "sheIsReading": "Hun læser dine kort…",
+      "voiceUnavailable": "Kunne ikke afspille lyd. Tjek din forbindelse og prøv igen."
     },
     "dreamOraclePage": {
       "title": "Droemmeorakel",
@@ -530,7 +541,61 @@
       "recentScans": "Seneste Scanninger",
       "noEntries": "Ingen aura-scanninger endnu.",
       "firstScan": "Start din første scanning",
-      "needMoreScans": "Mindst 3 scanninger kræves til mønsteranalyse"
+      "needMoreScans": "Mindst 3 scanninger kræves til mønsteranalyse",
+      "chooseYourScan": "Vælg din scan",
+      "scanModeHint": "Hver tilstand læser din energi på en anden måde",
+      "pictureScanTitle": "Billede Aura Scan",
+      "pictureScanDesc": "Tag et selfie eller upload et foto",
+      "voiceScanTitle": "Stemmeskanning af aura",
+      "voiceScanDesc": "Fortæl Align, hvordan du har det lige nu",
+      "videoScanTitle": "Live videoskanning",
+      "videoScanDesc": "15-sekunders video af din energi",
+      "deepReadingTitle": "Dyb aura læsning",
+      "deepReadingDesc": "Foto + stemme + humør + astrologi kombineret",
+      "quickScan": "Hurtig scanning — humør + astrologi kun",
+      "photoStepDeep": "Trin 1: Foto",
+      "photoStepTitle": "Tag dit foto",
+      "photoStepDesc": "Se ind i kameraet. Lad Align læse energien i dit udtryk.",
+      "takeSelfie": "Tag selfie",
+      "uploadPhoto": "Upload foto",
+      "skipPhoto": "Spring foto over",
+      "retake": "Tag igen",
+      "continue": "Fortsæt",
+      "voiceStepDeep": "Trin 2: Stemme",
+      "voiceStepTitle": "Stemmeskanning af aura",
+      "voiceStepDesc": "Fortæl Align, hvordan du har det lige nu. Tal naturligt i 10-60 sekunder.",
+      "analyzingVoice": "Analyserer din stemme...",
+      "listening": "Lytter...",
+      "speakNaturally": "Tal naturligt om, hvordan du har det",
+      "stopRecording": "Stop",
+      "startRecording": "Start optagelse",
+      "orType": "eller skriv det",
+      "typeFeelingPlaceholder": "Skriv, hvordan du har det...",
+      "skipVoice": "Spring stemmeskanning over",
+      "voiceCaptured": "Stemme fanget",
+      "detectedTone": "Registreret tone:",
+      "micDenied": "Adgang til mikrofon ikke tilgængelig",
+      "micDeniedHint": "Du kan skrive, hvad du føler i stedet",
+      "videoStepTitle2": "Live Video Scan",
+      "videoStepDesc": "Se ind i kameraet. Træk vejret normalt. Optag 15 sekunder.",
+      "recordVideo": "Optag Video",
+      "skipVideo": "Spring video scan over",
+      "stopVideo": "Stop optagelse",
+      "videoCaptured": "Video optaget",
+      "recordAgain": "Optag igen",
+      "cameraDenied": "Kameraadgang ikke tilgængelig",
+      "cameraDeniedHint": "Aktivér kameratilladelser i dine browserindstillinger for at bruge video scan",
+      "continueWithoutVideo": "Fortsæt uden video",
+      "photoAdded": "Foto tilføjet",
+      "voiceAdded": "Stemmeskud tilføjet",
+      "videoAdded": "Video tilføjet",
+      "generatingWithScan": "Analyserer dine scanningsdata med kosmiske justeringer...",
+      "generatingMoodOnly": "Forbinder dit humør med det nuværende kosmiske vejr...",
+      "chatTitle": "Spørg om din læsning",
+      "chatPlaceholder": "Spørg om din læsning...",
+      "chatError": "Beklager, jeg kunne ikke behandle dit spørgsmål. Prøv venligst igen.",
+      "chatLimitReached": "Gratis opfølgningsgrænse nået. Opgrader for ubegrænsede spørgsmål.",
+      "chatLimitInfo": "{{remaining}} af {{total}} gratis opfølgninger tilbage"
     },
     "galacticClockPage": {
       "title": "Galaktisk ur",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Mysteriebeundrer",
       "rose": "Rose",
       "likeBack": "Lik tilbage",
-      "matching": "Matcher..."
+      "matching": "Matcher...",
+      "upgradeToSeeAll": "Opgrader for at se alle dine likes",
+      "upgradeHintMore": "{{count}} flere personer kunne lide dig — opgrader for at afsløre dem alle"
     },
     "matches": {
       "title": "Dine matches",
@@ -662,7 +729,10 @@
       "cancel": "Annuller",
       "matchedToday": "Matchet i dag",
       "matchedDaysAgo": "Matchet for {{days}} dage siden",
-      "cosmicMatch": "Kosmisk match"
+      "cosmicMatch": "Kosmisk match",
+      "upgradeToSeeAll": "Opgrader for at se alle dine matches",
+      "moreMatchesWaiting": "{{count}} flere kosmiske forbindelser venter på dig",
+      "upgradeCta": "Se Alle Matches"
     },
     "profile": {
       "title": "Datingprofil",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Dit Match",
+      "loading": "Læser dine energifelter...",
+      "matchNotFound": "Match ikke fundet",
+      "noMyAura": "Du skal have mindst én Aura Mirror scanning først. Gå til Læsninger > Aura Mirror for at scanne din aura.",
+      "noPartnerAura": "{{name}} har ikke lavet en Aura Mirror scanning endnu. Deres aura data vil vises her, når de gør.",
+      "loadError": "Kunne ikke indlæse aura data. Prøv venligst igen.",
+      "scanAura": "Scan Din Aura",
+      "auraChemistry": "Aura Kemi",
+      "harmoniousLabel": "Naturligt Harmonisk",
+      "warmLabel": "Varm Forbindelse",
+      "growthLabel": "Vækstpotentiale",
+      "differentLabel": "Forskellige Frekvenser",
+      "harmonyBreakdown": "Harmonisk Nedbrydning",
+      "emotionalSafety": "Emosionel Sikkerhed",
+      "attractionHeat": "Tiltrækningsvarme",
+      "communication": "Kommunikation",
+      "conflictWeather": "Konfliktvejr",
+      "clearSkies": "Klare himmelstræk",
+      "someStorms": "Nogle storme",
+      "turbulent": "Turbulent"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Opret dit foerste opslag"
     },
     "loadMore": "Indlaes mere",
-    "loading": "Indlaeser..."
+    "loading": "Indlaeser...",
+    "shareReading": {
+      "title": "Del din kosmiske oplevelse",
+      "subtitle": "Lad fællesskabet vide, hvad stjernerne fortæller dig",
+      "templates": {
+        "aura": "Har lige fået min aura-læsning! Min ydre aura stråler",
+        "transit": "Min transitlæsning rammer anderledes i dag... kan nogen relatere?",
+        "moon": "Måne tjek-in: føler energien fra {{moonPhase}} i aften",
+        "zodiac": "Er der andre {{sign}} Risings, der føler dette skift?",
+        "tarot": "Trak nogle kort i dag, og budskabet var krystalklart"
+      },
+      "quickPost": "Hurtig post",
+      "viewReadings": "Se læsninger",
+      "viewCommunities": "Udforsk fællesskaber"
+    },
+    "trending": {
+      "title": "Tendens",
+      "clearFilter": "Ryd filter",
+      "noResults": "Ingen indlæg fundet for {{tag}}"
+    }
   },
   "friends": {
     "title": "Venner og forbindelser",
@@ -1129,7 +1241,7 @@
       "communityGuidelines": "Faellesskabsretningslinjer"
     },
     "languages": {
-      "en": "English",
+      "en": "Engelsk",
       "es": "Espanol",
       "fr": "Francais",
       "de": "Deutsch",
@@ -1147,7 +1259,7 @@
       "sv": "Svenska",
       "da": "Dansk",
       "fi": "Suomi",
-      "nb": "Norsk",
+      "nb": "Dansk",
       "th": "Thai"
     },
     "admin": {
@@ -1480,6 +1592,23 @@
       "noPackages": "Abonnementsplaner finaliseres i butikken. Proev venligst igen senere.",
       "connectionFailed": "Kunne ikke na abonnementstjenesten. Tjek venligst din forbindelse og proev igen.",
       "stillStarting": "Abonnementstjenesten starter stadig op. Vent venligst et oejeblik og proev igen."
+    },
+    "paymentUnavailable": "Vi havde problemer med at nå vores betalingsudbyder. Prøv venligst igen om et øjeblik.",
+    "cardDeclined": "Dit kort blev afvist. Opdater venligst din betalingsmetode og prøv igen.",
+    "checkoutFailed": "Noget gik galt med at starte dit abonnement. Prøv venligst igen.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Få din kosmiske rejse startet",
+      "cta": "Få Starter",
+      "bestFor": "Er der nogen klar til at gå ud over det grundlæggende med fulde fødselshoroskoper og daglige indsigter.",
+      "features": [
+        "10 AI læsninger pr. måned",
+        "Fuldt fødselshoroskop (alle planeter)",
+        "Daglige personlige transitnotifikationer",
+        "Aura Spejl ubegrænsede scanninger",
+        "Kosmisk Journal ubegrænsede indlæg",
+        "Sjæl Gaver & Sjæl Hukommelse adgang"
+      ]
     }
   },
   "courses": {
@@ -1554,7 +1683,7 @@
     }
   },
   "worldEcho": {
-    "title": "World Echo",
+    "title": "Verdens Eko",
     "subtitle": "Hvordan kosmiske begivenheder forplanter sig gennem menneskets historie",
     "categories": {
       "political": "Politisk",
@@ -1602,7 +1731,12 @@
     "loading": "Indlæser bogmærker...",
     "empty": "Ingen bogmærker endnu",
     "emptyHint": "Gem opslag fra feedet til at læse senere",
-    "postUnavailable": "Opslag ikke længere tilgængeligt"
+    "postUnavailable": "Opslag ikke længere tilgængeligt",
+    "filterAll": "Alle",
+    "filterPosts": "Indlæg",
+    "filterReadings": "Læsnings",
+    "saved": "Gemte",
+    "unbookmark": "Fjern bogmærke"
   },
   "celebrityMatches": {
     "title": "Kendismatches",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Skabervaerksted",
-    "subtitle": "Opret og administrer dit kosmiske indhold"
+    "subtitle": "Opret og administrer dit kosmiske indhold",
+    "applyTitle": "Bliv en Skaber",
+    "applyDescription": "Del dine astrologiske indsigter, opbyg et publikum, og tjen penge på dit indhold.",
+    "applyButton": "Ansøg som Skaber",
+    "applying": "Ansøger...",
+    "benefitReadings": "Del Læsninger",
+    "benefitReadingsHint": "Post fortolkninger & indsigter",
+    "benefitCommunity": "Opbyg Fællesskab",
+    "benefitCommunityHint": "Få følgere & indflydelse",
+    "benefitEarn": "Tjen Indtægter",
+    "benefitEarnHint": "Monetiser din ekspertise",
+    "statPosts": "Indlæg",
+    "statReactions": "Reaktioner",
+    "statViews": "Visninger",
+    "statFollowers": "Følgere",
+    "statEarnings": "Indtægter",
+    "statThisMonth": "Denne Måned",
+    "createPost": "Opret Indlæg",
+    "createPostHint": "Del indsigter med fællesskabet",
+    "createPoll": "Opret Afstemning",
+    "createPollHint": "Engager dig med afstemninger & spørgsmål",
+    "myCommunities": "Mine Fællesskaber",
+    "myCommunitiesHint": "Administrer dine grupper",
+    "shareReading": "Del en Læsning",
+    "shareReadingHint": "Post diagramfortolkninger",
+    "signInRequired": "Log venligst ind for at få adgang til Creator Studio",
+    "loading": "Indlæser studio..."
   },
   "qa": {
     "title": "Spoergsmal og svar",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Vaelg din plan",
-    "subtitle": "Las op for hele kraften i Align"
+    "subtitle": "Las op for hele kraften i Align",
+    "monthly": "Månedlig",
+    "annual": "Årlig",
+    "saveUpTo": "Spar op til 40%",
+    "bestValue": "Bedste værdi",
+    "perYear": "/år",
+    "saveMoney": "Spar ${{amount}}",
+    "foreverFree": "Gratis for evigt",
+    "billedMonthly": "Faktureret månedligt",
+    "lessThanCoffee": "Mindre end en kaffe om måneden",
+    "currentPlan": "Nuværende plan",
+    "getPlan": "Få {{name}}"
   },
   "gallery": {
     "title": "Galleri",
@@ -1759,7 +1930,7 @@
       "home": "Hjem",
       "discover": "Udforsk",
       "cosmicFeed": "Kosmisk feed",
-      "worldEcho": "World Echo",
+      "worldEcho": "Verdens Eko",
       "chart": "Mit horoskop",
       "cosmicWeather": "Kosmisk vejr",
       "readings": "Tolkninger",
@@ -1780,7 +1951,11 @@
       "more": "Mere",
       "chat": "Chat",
       "yourProfile": "Din profil",
-      "viewProfile": "Se din profil"
+      "viewProfile": "Se din profil",
+      "search": "Søg",
+      "bookmarks": "Bogmærker",
+      "polls": "Afstemninger",
+      "creatorStudio": "Creator Studio"
     },
     "feedCard": {
       "like": "Lik",
@@ -1889,7 +2064,7 @@
     "sextile": "Sekstil",
     "square": "Kvadratur",
     "trine": "Trigon",
-    "opposition": "Opposition",
+    "opposition": "Modstand",
     "quincunx": "Kvinkunx",
     "semisextile": "Semisekstil",
     "semisquare": "Semikvadrat",
@@ -1967,6 +2142,69 @@
     "free": "Gratis",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Søg",
+    "placeholder": "Søg i kosmos...",
+    "searching": "Søger blandt stjernerne...",
+    "noResults": "Ingen kosmiske matches fundet",
+    "noResultsHint": "Prøv forskellige søgeord eller tjek stavningen",
+    "emptyTitle": "Søg efter personer, indlæg og fællesskaber",
+    "emptyHint": "Opdag kosmiske forbindelser på tværs af universet",
+    "recentSearches": "Seneste Søgninger",
+    "tabAll": "Alle",
+    "tabUsers": "Brugere",
+    "tabPosts": "Indlæg",
+    "tabCommunities": "Fællesskaber",
+    "tabReels": "Reels",
+    "badgeUser": "Bruger",
+    "badgePost": "Indlæg",
+    "badgeCommunity": "Fællesskab",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Hvad er nyt i Align",
+    "gotIt": "Forstået"
+  },
+  "gettingStarted": {
+    "title": "Kom i gang",
+    "readHoroscope": "Læs dit daglige horoskop",
+    "tryReading": "Prøv en AI-læsning",
+    "viewNatal": "Se dit fødselshoroskop",
+    "shareFeed": "Besøg den kosmiske feed",
+    "completeProfile": "Udfyld din profil",
+    "congrats": "Du er klar! Velkommen til kosmos."
+  },
+  "coachmarks": {
+    "of": "af",
+    "next": "Næste",
+    "skip": "Spring turen over",
+    "finish": "Afslut",
+    "dailyBrief": {
+      "title": "Dit Daglige Kosmiske Resumé",
+      "description": "Start hver dag her. Få dit personlige kosmiske kort, månefase, energiforudsigelse og daglig vejledning tilpasset dit kort."
+    },
+    "quickAccess": {
+      "title": "AI-Drevne Læsninger",
+      "description": "Hurtig adgang til dit fødselshoroskop, transitter, tarot, kompatibilitetslæsninger og mere. Tryk på et kort for at dykke ind."
+    },
+    "natalChart": {
+      "title": "Dit Fødselshoroskop",
+      "description": "Udforsk dit komplette fødselshoroskop med planeter, huse, aspekter og detaljerede fortolkninger af hver placering."
+    },
+    "feed": {
+      "title": "Fællesskabsfeed",
+      "description": "Del kosmiske øjeblikke, del indsigt, reager på andres indlæg, og forbind med andre stjernekiggere."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrolog",
+      "description": "Chat med din personlige AI astrolog. Spørg om hvad som helst vedrørende dit horoskop, transitter, relationer eller kosmisk timing."
+    },
+    "courses": {
+      "title": "Lær Astrologi",
+      "description": "Strukturerede kurser til at uddybe din astrologiske viden, fra begynderniveau til avancerede teknikker."
+    }
   }
 }

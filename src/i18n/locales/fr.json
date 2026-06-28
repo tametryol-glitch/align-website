@@ -140,7 +140,10 @@
         "name": "Eau",
         "feel": "Vous etes anime par le ressenti. Votre intuition, votre empathie, votre profondeur emotionnelle -- ce ne sont pas des competences douces, c'est votre intelligence premiere. Votre defi est d'apprendre quels sentiments vous appartiennent."
       }
-    }
+    },
+    "enterTheCosmos": "Entrez dans le Cosmos",
+    "revealLoading": "Lecture de vos étoiles...",
+    "continueToDashboard": "Continuer vers le Tableau de bord"
   },
   "home": {
     "greeting": "Bonjour, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Transits en cours",
     "moonPhase": "Phase lunaire",
     "planetaryHours": "Heures planetaires",
-    "quickAccess": "Acces rapide"
+    "quickAccess": "Acces rapide",
+    "worldEchoTitle": "Aujourd'hui dans l'Histoire Cosmique",
+    "worldEchoSimilar": "sous des alignements reflétant le ciel d'aujourd'hui",
+    "worldEchoSeeMore": "Explorer plus d'échos"
   },
   "chart": {
     "natal": "Theme natal",
@@ -175,7 +181,7 @@
     "pathway": "Chemin vers le succes",
     "nameAnalysis": "Analyse du nom",
     "firdaria": "Firdaria",
-    "zodiacalReleasing": "Zodiacal Releasing",
+    "zodiacalReleasing": "Libération Zodiacale",
     "planetaryHours": "Heures planetaires",
     "moonPhases": "Phases de la Lune",
     "acg": "Astro-cartographie",
@@ -268,9 +274,9 @@
         "career": "Carriere"
       },
       "positions": {
-        "focus": "Focus",
+        "focus": "Concentration",
         "past": "Passe",
-        "present": "Present",
+        "present": "Présent",
         "future": "Futur",
         "challenge": "Defi",
         "foundation": "Fondation",
@@ -289,7 +295,12 @@
         "obstacle": "Obstacle",
         "hiddenFactor": "Facteur Cache",
         "advice": "Conseil"
-      }
+      },
+      "listenToReading": "Écoutez votre lecture",
+      "stopListening": "Arrêter l'écoute",
+      "summoningVoice": "Invoquant sa voix…",
+      "sheIsReading": "Elle lit vos cartes…",
+      "voiceUnavailable": "Impossible de lire l'audio. Veuillez vérifier votre connexion et réessayer."
     },
     "dreamOraclePage": {
       "title": "Oracle des Reves",
@@ -467,7 +478,7 @@
         "today": "Aujourd'hui",
         "calendar": "Calendrier",
         "forecast": "Previsions",
-        "eclipses": "Eclipses",
+        "eclipses": "Éclipses",
         "birthMoon": "Lune Natale"
       },
       "failedToLoadChart": "Echec du chargement du theme natal"
@@ -530,7 +541,61 @@
       "recentScans": "Scans Récents",
       "noEntries": "Pas encore de scans d'aura.",
       "firstScan": "Lancez votre premier scan",
-      "needMoreScans": "Au moins 3 scans nécessaires pour les analyses"
+      "needMoreScans": "Au moins 3 scans nécessaires pour les analyses",
+      "chooseYourScan": "Choisissez votre scan",
+      "scanModeHint": "Chaque mode lit votre énergie de manière différente",
+      "pictureScanTitle": "Scan d'Aura Photo",
+      "pictureScanDesc": "Prenez un selfie ou téléchargez une photo",
+      "voiceScanTitle": "Scan d'Aura Vocal",
+      "voiceScanDesc": "Dites à Align ce que vous ressentez en ce moment",
+      "videoScanTitle": "Scan Vidéo en Direct",
+      "videoScanDesc": "Vidéo de 15 secondes de votre énergie",
+      "deepReadingTitle": "Lecture d'Aura Profonde",
+      "deepReadingDesc": "Photo + voix + humeur + astrologie combinées",
+      "quickScan": "Scan rapide — humeur + astrologie seulement",
+      "photoStepDeep": "Étape 1 : Photo",
+      "photoStepTitle": "Prenez votre photo",
+      "photoStepDesc": "Regardez dans la caméra. Laissez Align lire l'énergie dans votre expression.",
+      "takeSelfie": "Prenez un Selfie",
+      "uploadPhoto": "Téléchargez une photo",
+      "skipPhoto": "Passer la photo",
+      "retake": "Reprendre",
+      "continue": "Continuer",
+      "voiceStepDeep": "Étape 2 : Voix",
+      "voiceStepTitle": "Scan d'Aura Vocal",
+      "voiceStepDesc": "Dites à Align ce que vous ressentez en ce moment. Parlez naturellement pendant 10 à 60 secondes.",
+      "analyzingVoice": "Analyse de votre voix...",
+      "listening": "Écoute...",
+      "speakNaturally": "Parlez naturellement de ce que vous ressentez",
+      "stopRecording": "Arrêter",
+      "startRecording": "Commencer l'enregistrement",
+      "orType": "ou tapez-le",
+      "typeFeelingPlaceholder": "Tapez ce que vous ressentez...",
+      "skipVoice": "Passer l'analyse vocale",
+      "voiceCaptured": "Voix capturée",
+      "detectedTone": "Ton détecté :",
+      "micDenied": "Accès au microphone non disponible",
+      "micDeniedHint": "Vous pouvez taper ce que vous ressentez à la place",
+      "videoStepTitle2": "Analyse vidéo en direct",
+      "videoStepDesc": "Regardez dans la caméra. Respirez normalement. Enregistrez 15 secondes.",
+      "recordVideo": "Enregistrer la vidéo",
+      "skipVideo": "Passer l'analyse vidéo",
+      "stopVideo": "Arrêter l'enregistrement",
+      "videoCaptured": "Vidéo capturée",
+      "recordAgain": "Enregistrer à nouveau",
+      "cameraDenied": "Accès à la caméra non disponible",
+      "cameraDeniedHint": "Activez les autorisations de la caméra dans les paramètres de votre navigateur pour utiliser l'analyse vidéo",
+      "continueWithoutVideo": "Continuer sans vidéo",
+      "photoAdded": "Photo ajoutée",
+      "voiceAdded": "Voix ajoutée",
+      "videoAdded": "Vidéo ajoutée",
+      "generatingWithScan": "Analyse de vos données de scan avec les alignements cosmiques...",
+      "generatingMoodOnly": "Connexion de votre humeur avec la météo cosmique actuelle...",
+      "chatTitle": "Demandez votre lecture",
+      "chatPlaceholder": "Demandez à propos de votre lecture...",
+      "chatError": "Désolé, je n'ai pas pu traiter votre question. Veuillez réessayer.",
+      "chatLimitReached": "Limite de suivi gratuite atteinte. Mettez à niveau pour des questions illimitées.",
+      "chatLimitInfo": "{{remaining}} sur {{total}} suivis gratuits restants"
     },
     "galacticClockPage": {
       "title": "Horloge Galactique",
@@ -549,7 +614,7 @@
       "subtitle": "Periodes planetaires persanes anciennes"
     },
     "zodiacalReleasingPage": {
-      "title": "Zodiacal Releasing",
+      "title": "Libération zodiacale",
       "subtitle": "Technique de timing hellenistique"
     },
     "acgPage": {
@@ -597,12 +662,12 @@
     "aiInterpret": "Interpretation IA",
     "loading": "Lecture des etoiles...",
     "modes": {
-      "default": "General",
+      "default": "Général",
       "dating": "Relations amoureuses",
       "purpose": "Mission de vie",
       "spiritual": "Dons spirituels",
       "passion": "Passion",
-      "reputation": "Reputation"
+      "reputation": "Réputation"
     }
   },
   "dating": {
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Admirateur mystere",
       "rose": "Rose",
       "likeBack": "Aimer en Retour",
-      "matching": "Mise en correspondance..."
+      "matching": "Mise en correspondance...",
+      "upgradeToSeeAll": "Mettez à niveau pour voir tous vos likes",
+      "upgradeHintMore": "{{count}} personnes de plus vous ont aimé — mettez à niveau pour les révéler toutes"
     },
     "matches": {
       "title": "Vos Correspondances",
@@ -662,7 +729,10 @@
       "cancel": "Annuler",
       "matchedToday": "Apparies aujourd'hui",
       "matchedDaysAgo": "Apparies il y a {{days}}j",
-      "cosmicMatch": "Correspondance Cosmique"
+      "cosmicMatch": "Correspondance Cosmique",
+      "upgradeToSeeAll": "Mettez à niveau pour voir tous vos matchs",
+      "moreMatchesWaiting": "{{count}} connexions cosmiques supplémentaires vous attendent",
+      "upgradeCta": "Voir tous les matchs"
     },
     "profile": {
       "title": "Profil de Rencontres",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Synastrie d'Aura",
+      "yourMatch": "Votre Match",
+      "loading": "Lecture de vos champs d'énergie...",
+      "matchNotFound": "Match non trouvé",
+      "noMyAura": "Vous devez d'abord effectuer au moins un scan d'Aura Mirror. Allez à Lectures > Aura Mirror pour scanner votre aura.",
+      "noPartnerAura": "{{name}} n'a pas encore effectué de scan d'Aura Mirror. Les données de leur aura apparaîtront ici une fois qu'ils l'auront fait.",
+      "loadError": "Échec du chargement des données d'aura. Veuillez réessayer.",
+      "scanAura": "Scannez votre Aura",
+      "auraChemistry": "Chimie d'Aura",
+      "harmoniousLabel": "Naturellement Harmonieux",
+      "warmLabel": "Connexion Chaleureuse",
+      "growthLabel": "Potentiel de Croissance",
+      "differentLabel": "Fréquences Différentes",
+      "harmonyBreakdown": "Effondrement de l'Harmonie",
+      "emotionalSafety": "Sécurité Émotionnelle",
+      "attractionHeat": "Chaleur d'Attraction",
+      "communication": "Communication",
+      "conflictWeather": "Météo de Conflit",
+      "clearSkies": "Ciels Dégagés",
+      "someStorms": "Quelques Tempêtes",
+      "turbulent": "Turbulent"
     }
   },
   "feed": {
@@ -810,7 +903,7 @@
     "postTypes": {
       "text": "Texte",
       "photo": "Photo",
-      "video": "Video",
+      "video": "Vidéo",
       "poll": "Sondage"
     },
     "composer": {
@@ -855,7 +948,26 @@
       "createFirst": "Creez Votre Premiere Publication"
     },
     "loadMore": "Charger plus",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "shareReading": {
+      "title": "Partagez votre expérience cosmique",
+      "subtitle": "Faites savoir à la communauté ce que les étoiles vous disent",
+      "templates": {
+        "aura": "Je viens de recevoir ma lecture d'aura ! Mon aura extérieure brille",
+        "transit": "Ma lecture de transit est différente aujourd'hui... quelqu'un peut-il s'y identifier ?",
+        "moon": "Vérification de la lune : je ressens l'énergie de {{moonPhase}} ce soir",
+        "zodiac": "D'autres Ascendants {{sign}} ressentent-ils ce changement ?",
+        "tarot": "J'ai tiré quelques cartes aujourd'hui et le message était clair comme de l'eau de roche"
+      },
+      "quickPost": "Publication rapide",
+      "viewReadings": "Voir les lectures",
+      "viewCommunities": "Parcourir les communautés"
+    },
+    "trending": {
+      "title": "Tendances",
+      "clearFilter": "Effacer le filtre",
+      "noResults": "Aucun post trouvé pour {{tag}}"
+    }
   },
   "friends": {
     "title": "Amis et Connexions",
@@ -1129,11 +1241,11 @@
       "communityGuidelines": "Regles de la Communaute"
     },
     "languages": {
-      "en": "English",
+      "en": "Anglais",
       "es": "Espanol",
       "fr": "Francais",
-      "de": "Deutsch",
-      "it": "Italiano",
+      "de": "Allemand",
+      "it": "Italien",
       "pt": "Portugues",
       "ru": "Russkij",
       "ja": "Nihongo",
@@ -1142,12 +1254,12 @@
       "ar": "Al-Arabiyya",
       "hi": "Hindi",
       "tr": "Turkce",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "pl": "Polonais",
+      "nl": "Néerlandais",
+      "sv": "Suédois",
+      "da": "Danois",
+      "fi": "Finnois",
+      "nb": "Norvégien",
       "th": "Thai"
     },
     "admin": {
@@ -1216,7 +1328,7 @@
         "title": "Notifications Sociales",
         "friendRequests": "Demandes d'Amis",
         "messages": "Messages",
-        "reactions": "Reactions",
+        "reactions": "Réactions",
         "comments": "Commentaires"
       },
       "cosmic": {
@@ -1253,7 +1365,7 @@
         "events": {
           "title": "Evenements Cosmiques",
           "moonPhases": "Phases Lunaires",
-          "eclipses": "Eclipses",
+          "eclipses": "Éclipses",
           "retrogrades": "Retrogradations",
           "ingresses": "Ingresses"
         },
@@ -1480,6 +1592,23 @@
       "noPackages": "Les forfaits d'abonnement sont en cours de finalisation dans le store. Veuillez reessayer plus tard.",
       "connectionFailed": "Impossible de joindre le service d'abonnement. Veuillez verifier votre connexion et reessayer.",
       "stillStarting": "Le service d'abonnement demarre encore. Veuillez patienter un instant et reessayer."
+    },
+    "paymentUnavailable": "Nous avons rencontré des problèmes pour contacter notre fournisseur de paiement. Veuillez réessayer dans un moment.",
+    "cardDeclined": "Votre carte a été refusée. Veuillez mettre à jour votre méthode de paiement et réessayer.",
+    "checkoutFailed": "Une erreur s'est produite lors du démarrage de votre abonnement. Veuillez réessayer.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Commencez votre voyage cosmique",
+      "cta": "Obtenir Starter",
+      "bestFor": "Quiconque prêt à aller au-delà des bases avec des cartes natales complètes et des aperçus quotidiens.",
+      "features": [
+        "10 lectures AI par mois",
+        "Carte natale complète (tous les planètes)",
+        "Notifications de transit personnalisées quotidiennes",
+        "Scans illimités de l'Aura Mirror",
+        "Entrées illimitées dans le Cosmic Journal",
+        "Accès aux Cadeaux de l'Âme et à la Mémoire de l'Âme"
+      ]
     }
   },
   "courses": {
@@ -1515,7 +1644,7 @@
       "transit": "Transit",
       "natal": "Natal",
       "aspect": "Aspect",
-      "retrograde": "Retrograde",
+      "retrograde": "Rétrograde",
       "yes": "Oui",
       "no": "Non",
       "actionAdvice": "Conseil d'Action",
@@ -1529,7 +1658,7 @@
       "minimal": "Minimal"
     },
     "categories": {
-      "general": "General",
+      "general": "Général",
       "love": "Amour",
       "career": "Carriere",
       "growth": "Croissance",
@@ -1602,7 +1731,12 @@
     "loading": "Chargement des signets...",
     "empty": "Pas encore de signets",
     "emptyHint": "Enregistrez des publications du fil pour les lire plus tard",
-    "postUnavailable": "Publication plus disponible"
+    "postUnavailable": "Publication plus disponible",
+    "filterAll": "Tout",
+    "filterPosts": "Publications",
+    "filterReadings": "Lectures",
+    "saved": "Sauvegardé",
+    "unbookmark": "Retirer le signet"
   },
   "celebrityMatches": {
     "title": "Correspondances Celebrites",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Studio Createur",
-    "subtitle": "Creez et gerez votre contenu cosmique"
+    "subtitle": "Creez et gerez votre contenu cosmique",
+    "applyTitle": "Devenir un Créateur",
+    "applyDescription": "Partagez vos insights astrologiques, construisez une audience et gagnez de l'argent avec votre contenu.",
+    "applyButton": "Postuler en tant que Créateur",
+    "applying": "En cours de candidature...",
+    "benefitReadings": "Partager des Interprétations",
+    "benefitReadingsHint": "Publiez des interprétations et des insights",
+    "benefitCommunity": "Construire une Communauté",
+    "benefitCommunityHint": "Gagnez des abonnés et de l'influence",
+    "benefitEarn": "Gagner des Revenus",
+    "benefitEarnHint": "Monétisez votre expertise",
+    "statPosts": "Publications",
+    "statReactions": "Réactions",
+    "statViews": "Vues",
+    "statFollowers": "Abonnés",
+    "statEarnings": "Gains",
+    "statThisMonth": "Ce Mois-ci",
+    "createPost": "Créer une Publication",
+    "createPostHint": "Partagez des insights avec la communauté",
+    "createPoll": "Créer un Sondage",
+    "createPollHint": "Participez à des sondages et des questions",
+    "myCommunities": "Mes Communautés",
+    "myCommunitiesHint": "Gérez vos groupes",
+    "shareReading": "Partager une Interprétation",
+    "shareReadingHint": "Publiez des interprétations de graphiques",
+    "signInRequired": "Veuillez vous connecter pour accéder au Studio Créateur",
+    "loading": "Chargement du studio..."
   },
   "qa": {
     "title": "Questions/Reponses",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Choisissez Votre Forfait",
-    "subtitle": "Debloquez toute la puissance d'Align"
+    "subtitle": "Debloquez toute la puissance d'Align",
+    "monthly": "Mensuel",
+    "annual": "Annuel",
+    "saveUpTo": "Économisez jusqu'à 40%",
+    "bestValue": "Meilleure valeur",
+    "perYear": "/an",
+    "saveMoney": "Économisez ${{amount}}",
+    "foreverFree": "Gratuit pour toujours",
+    "billedMonthly": "Facturé mensuellement",
+    "lessThanCoffee": "Moins qu'un café par mois",
+    "currentPlan": "Plan actuel",
+    "getPlan": "Obtenez {{name}}"
   },
   "gallery": {
     "title": "Galerie",
@@ -1743,7 +1914,7 @@
       "maxDistance": "Distance Maximale",
       "showOnlyVerified": "Afficher Uniquement les Verifies",
       "compatibilityMin": "Compatibilite Minimale",
-      "elements": "Elements",
+      "elements": "Éléments",
       "applyFilters": "Appliquer les Filtres",
       "resetFilters": "Reinitialiser"
     },
@@ -1780,7 +1951,11 @@
       "videoCreator": "Créateur Vidéo",
       "viewProfile": "Voir votre profil",
       "worldEcho": "Écho Mondial",
-      "yourProfile": "Votre Profil"
+      "yourProfile": "Votre Profil",
+      "search": "Recherche",
+      "bookmarks": "Signets",
+      "polls": "Sondages",
+      "creatorStudio": "Studio de création"
     },
     "feedCard": {
       "like": "J'aime",
@@ -1867,7 +2042,7 @@
     "sun": "Soleil",
     "moon": "Lune",
     "mercury": "Mercure",
-    "venus": "Venus",
+    "venus": "Vénus",
     "mars": "Mars",
     "jupiter": "Jupiter",
     "saturn": "Saturne",
@@ -1881,7 +2056,7 @@
     "midheaven": "Milieu du Ciel",
     "vesta": "Vesta",
     "juno": "Junon",
-    "ceres": "Ceres",
+    "ceres": "Cérès",
     "pallas": "Pallas"
   },
   "aspects": {
@@ -1967,6 +2142,69 @@
     "free": "Gratuit",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher dans le cosmos...",
+    "searching": "Recherche dans les étoiles...",
+    "noResults": "Aucune correspondance cosmique trouvée",
+    "noResultsHint": "Essayez des mots-clés différents ou vérifiez l'orthographe",
+    "emptyTitle": "Rechercher des personnes, des publications et des communautés",
+    "emptyHint": "Découvrez des connexions cosmiques à travers l'univers",
+    "recentSearches": "Recherches récentes",
+    "tabAll": "Tout",
+    "tabUsers": "Utilisateurs",
+    "tabPosts": "Publications",
+    "tabCommunities": "Communautés",
+    "tabReels": "Reels",
+    "badgeUser": "Utilisateur",
+    "badgePost": "Publication",
+    "badgeCommunity": "Communauté",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Quoi de neuf dans Align",
+    "gotIt": "Compris"
+  },
+  "gettingStarted": {
+    "title": "Commencer",
+    "readHoroscope": "Lisez votre horoscope quotidien",
+    "tryReading": "Essayez une lecture IA",
+    "viewNatal": "Voir votre carte natale",
+    "shareFeed": "Visitez le fil cosmique",
+    "completeProfile": "Complétez votre profil",
+    "congrats": "Vous êtes prêt ! Bienvenue dans le cosmos."
+  },
+  "coachmarks": {
+    "of": "de",
+    "next": "Suivant",
+    "skip": "Passer la visite",
+    "finish": "Terminer",
+    "dailyBrief": {
+      "title": "Votre Brief Cosmique Quotidien",
+      "description": "Commencez chaque jour ici. Obtenez votre carte cosmique personnalisée, la phase de la lune, les prévisions énergétiques et les conseils quotidiens adaptés à votre carte."
+    },
+    "quickAccess": {
+      "title": "Lectures Alimentées par IA",
+      "description": "Accès rapide à votre carte natale, transits, tarot, lectures de compatibilité, et plus. Touchez n'importe quelle carte pour plonger."
+    },
+    "natalChart": {
+      "title": "Votre Carte Natale",
+      "description": "Explorez votre carte de naissance complète avec les planètes, les maisons, les aspects et des interprétations détaillées de chaque position."
+    },
+    "feed": {
+      "title": "Fil Communautaire",
+      "description": "Partagez des moments cosmiques, publiez des idées, réagissez aux publications des autres et connectez-vous avec d'autres passionnés d'astrologie."
+    },
+    "aiAstrologer": {
+      "title": "Astrologue IA",
+      "description": "Discutez avec votre astrologue IA personnel. Posez des questions sur votre carte, vos transits, vos relations ou le timing cosmique."
+    },
+    "courses": {
+      "title": "Apprendre l'Astrologie",
+      "description": "Cours structurés pour approfondir vos connaissances en astrologie, des bases pour débutants aux techniques avancées."
+    }
   }
 }

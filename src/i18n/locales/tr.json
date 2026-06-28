@@ -34,7 +34,7 @@
     "displayName": "Gorunen Ad",
     "yourName": "Adiniz",
     "dateOfBirth": "Dogum Tarihi",
-    "dobPlaceholder": "DD-MM-YYYY",
+    "dobPlaceholder": "GG-AA-YYYY",
     "dobRequired": "Dogum Tarihi Gerekli",
     "dobRequiredHint": "Devam etmek icin lutfen dogum tarihinizi girin.",
     "dobInvalidFormat": "Lutfen tarihi DD-MM-YYYY olarak girin",
@@ -140,7 +140,10 @@
         "name": "Su",
         "feel": "Duygu tarafindan yonlendirilirsin. Sezgin, empatin, duygusal derinligin -- bunlar yumusak beceriler degil, birincil zekan. Meydan okuman hangi duyguların sana ait oldugunu ogrenmek."
       }
-    }
+    },
+    "enterTheCosmos": "Kozmosu Girin",
+    "revealLoading": "Yıldızlarınızı okuyor...",
+    "continueToDashboard": "Gösterge Paneline Devam Et"
   },
   "home": {
     "greeting": "Merhaba, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Guncel Transitler",
     "moonPhase": "Ay Evresi",
     "planetaryHours": "Gezegen Saatleri",
-    "quickAccess": "Hizli Erisim"
+    "quickAccess": "Hizli Erisim",
+    "worldEchoTitle": "Kozmik Tarihte Bugün",
+    "worldEchoSimilar": "bugünün gökyüzünü yansıtan hizalamalarda",
+    "worldEchoSeeMore": "daha fazla yankıyı keşfedin"
   },
   "chart": {
     "natal": "Dogum Haritasi",
@@ -169,13 +175,13 @@
     "starseed": "Yildiz Tohumu Kokenleri",
     "numerology": "Numeroloji",
     "angelNumbers": "Melek Sayilari",
-    "humanDesign": "Human Design",
+    "humanDesign": "İnsan Tasarımı",
     "tarot": "Tarot",
     "financial": "Finansal Rapor",
     "pathway": "Basariya Giden Yol",
     "nameAnalysis": "Isim Analizi",
     "firdaria": "Firdaria",
-    "zodiacalReleasing": "Zodiacal Releasing",
+    "zodiacalReleasing": "Burçsal Serbest Bırakma",
     "planetaryHours": "Gezegen Saatleri",
     "moonPhases": "Ay Evreleri",
     "acg": "Astro-Kartografi",
@@ -218,7 +224,7 @@
       "cycleMeaning": "Bu Dongunun Senin Icin Anlami",
       "howToNavigate": "Bunu Nasil Yonetirsin",
       "technicalDetails": "Teknik Detaylar",
-      "transit": "Transit",
+      "transit": "Geçiş",
       "currentOrb": "Mevcut Orb",
       "direction": "Yon",
       "intensity": "Yogunluk",
@@ -282,14 +288,19 @@
         "hopesFears": "Umutlar/Korkular",
         "outcome": "Sonuc",
         "you": "Sen",
-        "partner": "Partner",
+        "partner": "Ortak",
         "connection": "Baglanti",
         "potential": "Potansiyel",
         "current": "Mevcut",
         "obstacle": "Engel",
         "hiddenFactor": "Gizli Faktor",
         "advice": "Tavsiye"
-      }
+      },
+      "listenToReading": "Okumanızı Dinleyin",
+      "stopListening": "Dinlemeyi Durdur",
+      "summoningVoice": "onun sesini çağırıyor…",
+      "sheIsReading": "kartlarınızı okuyor…",
+      "voiceUnavailable": "Ses oynatılamadı. Lütfen bağlantınızı kontrol edin ve tekrar deneyin."
     },
     "dreamOraclePage": {
       "title": "Ruya Kahini",
@@ -398,7 +409,7 @@
       "copiedToClipboard": "Panoya kopyalandi!"
     },
     "humanDesignPage": {
-      "title": "Human Design",
+      "title": "İnsan Tasarımı",
       "subtitle": "Enerjetik semaniz",
       "aura": "Aura",
       "defined": "Tanimli",
@@ -530,7 +541,61 @@
       "recentScans": "Son Taramalar",
       "noEntries": "Henüz aura taraması yok.",
       "firstScan": "İlk taramanızı başlatın",
-      "needMoreScans": "Örüntü analizi için en az 3 tarama gerekli"
+      "needMoreScans": "Örüntü analizi için en az 3 tarama gerekli",
+      "chooseYourScan": "Taramanızı Seçin",
+      "scanModeHint": "Her mod enerjinizi farklı bir şekilde okur",
+      "pictureScanTitle": "Resim Aura Taraması",
+      "pictureScanDesc": "Bir selfie çekin veya bir fotoğraf yükleyin",
+      "voiceScanTitle": "Sesli Aura Taraması",
+      "voiceScanDesc": "Align'a şu anda ne hissettiğinizi söyleyin",
+      "videoScanTitle": "Canlı Video Tarama",
+      "videoScanDesc": "Enerjinizin 15 saniyelik videosu",
+      "deepReadingTitle": "Derin Aura Okuması",
+      "deepReadingDesc": "Fotoğraf + ses + ruh hali + astroloji bir arada",
+      "quickScan": "Hızlı tarama — sadece ruh hali + astroloji",
+      "photoStepDeep": "Adım 1: Fotoğraf",
+      "photoStepTitle": "Fotoğrafınızı Çekin",
+      "photoStepDesc": "Kameraya bakın. Align'in ifadenizdeki enerjiyi okumasına izin verin.",
+      "takeSelfie": "Selfie Çekin",
+      "uploadPhoto": "Fotoğraf Yükle",
+      "skipPhoto": "Fotoğrafı Atla",
+      "retake": "Yeniden Çek",
+      "continue": "Devam Et",
+      "voiceStepDeep": "Adım 2: Ses",
+      "voiceStepTitle": "Ses Aura Tarama",
+      "voiceStepDesc": "Align'e şu anda ne hissettiğinizi söyleyin. Doğal bir şekilde 10-60 saniye konuşun.",
+      "analyzingVoice": "Sesinizi analiz ediliyor...",
+      "listening": "Dinleniyor...",
+      "speakNaturally": "Nasıl hissettiğiniz hakkında doğal bir şekilde konuşun",
+      "stopRecording": "Durdur",
+      "startRecording": "Kaydı Başlat",
+      "orType": "veya yazın",
+      "typeFeelingPlaceholder": "Ne hissettiğinizi yazın...",
+      "skipVoice": "Ses taramasını atla",
+      "voiceCaptured": "Ses kaydedildi",
+      "detectedTone": "Tespit edilen ton:",
+      "micDenied": "Mikrofon erişimi mevcut değil",
+      "micDeniedHint": "Bunun yerine ne hissettiğinizi yazabilirsiniz",
+      "videoStepTitle2": "Canlı Video Tarama",
+      "videoStepDesc": "Kameraya bakın. Normal nefes alın. 15 saniye kaydedin.",
+      "recordVideo": "Video Kaydet",
+      "skipVideo": "Video taramasını atla",
+      "stopVideo": "Kaydı Durdur",
+      "videoCaptured": "Video kaydedildi",
+      "recordAgain": "Tekrar kaydet",
+      "cameraDenied": "Kamera erişimi mevcut değil",
+      "cameraDeniedHint": "Video taraması için tarayıcı ayarlarında kamera izinlerini etkinleştir",
+      "continueWithoutVideo": "Videoyu atlayarak devam et",
+      "photoAdded": "Fotoğraf eklendi",
+      "voiceAdded": "Ses eklendi",
+      "videoAdded": "Video eklendi",
+      "generatingWithScan": "Tarama verilerinizi kozmik hizalamalarla analiz ediliyor...",
+      "generatingMoodOnly": "Modunuzu mevcut kozmik hava ile ilişkilendiriliyor...",
+      "chatTitle": "Okumanız Hakkında Sorun",
+      "chatPlaceholder": "Okumanız hakkında sorun...",
+      "chatError": "Üzgünüm, sorunuz işlenemedi. Lütfen tekrar deneyin.",
+      "chatLimitReached": "Ücretsiz takip sınırına ulaşıldı. Sınırsız sorular için yükseltin.",
+      "chatLimitInfo": "{{remaining}} / {{total}} ücretsiz takip hakkı kaldı"
     },
     "galacticClockPage": {
       "title": "Galaktik Saat",
@@ -549,7 +614,7 @@
       "subtitle": "Kadim Pers gezegen donemleri"
     },
     "zodiacalReleasingPage": {
-      "title": "Zodiacal Releasing",
+      "title": "Burçsal Serbest Bırakma",
       "subtitle": "Helenistik zamanlama teknigi"
     },
     "acgPage": {
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Gizemli hayran",
       "rose": "Gul",
       "likeBack": "Sen de Begen",
-      "matching": "Eslestiriliyor..."
+      "matching": "Eslestiriliyor...",
+      "upgradeToSeeAll": "Tüm beğenilerinizi görmek için yükseltin",
+      "upgradeHintMore": "{{count}} kişi daha sizi beğendi — hepsini görmek için yükseltin"
     },
     "matches": {
       "title": "Eslesmelerin",
@@ -662,7 +729,10 @@
       "cancel": "Iptal",
       "matchedToday": "Bugun eslesti",
       "matchedDaysAgo": "{{days}} gun once eslesti",
-      "cosmicMatch": "Kozmik Esleme"
+      "cosmicMatch": "Kozmik Esleme",
+      "upgradeToSeeAll": "Tüm eşleşmelerinizi görmek için yükseltin",
+      "moreMatchesWaiting": "{{count}} kozmik bağlantı sizi bekliyor",
+      "upgradeCta": "Tüm Eşleşmeleri Gör"
     },
     "profile": {
       "title": "Flort Profili",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Sinastrisi",
+      "yourMatch": "Eşleşmeniz",
+      "loading": "Enerji alanlarınızı okuyor...",
+      "matchNotFound": "Eşleşme bulunamadı",
+      "noMyAura": "Öncelikle en az bir Aura Ayna taraması yapmalısınız. Aura'nızı taramak için Okumalar > Aura Ayna'ya gidin.",
+      "noPartnerAura": "{{name}} henüz bir Aura Ayna taraması yapmadı. Aura verileri burada görünecek.",
+      "loadError": "Aura verileri yüklenemedi. Lütfen tekrar deneyin.",
+      "scanAura": "Auranızı Tara",
+      "auraChemistry": "Aura Kimyası",
+      "harmoniousLabel": "Doğal Uyumluluk",
+      "warmLabel": "Sıcak Bağlantı",
+      "growthLabel": "Büyüme Potansiyeli",
+      "differentLabel": "Farklı Frekanslar",
+      "harmonyBreakdown": "Uyum Bozulması",
+      "emotionalSafety": "Duygusal Güvenlik",
+      "attractionHeat": "Çekim Isısı",
+      "communication": "İletişim",
+      "conflictWeather": "Çatışma Havası",
+      "clearSkies": "Açık gökyüzü",
+      "someStorms": "Bazı fırtınalar",
+      "turbulent": "Hırçın"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Ilk Gonderini Olustur"
     },
     "loadMore": "Daha fazla yukle",
-    "loading": "Yukleniyor..."
+    "loading": "Yukleniyor...",
+    "shareReading": {
+      "title": "Kozmik Deneyiminizi Paylaşın",
+      "subtitle": "Topluluğa yıldızların size ne söylediğini bildirin",
+      "templates": {
+        "aura": "Aura okumamı yeni aldım! Dış auraım parlıyor",
+        "transit": "Transit okumam bugün farklı geliyor... kimse ilişki kurabiliyor mu?",
+        "moon": "Ay kontrolü: bu gece {{moonPhase}} enerjisini hissediyorum",
+        "zodiac": "Başka {{sign}} Yükselenler bu değişimi hissediyor mu?",
+        "tarot": "Bugün bazı kartlar çektim ve mesaj kristal gibi açıktı"
+      },
+      "quickPost": "Hızlı Gönderi",
+      "viewReadings": "Okumaları Gör",
+      "viewCommunities": "Toplulukları Keşfet"
+    },
+    "trending": {
+      "title": "Trend Olanlar",
+      "clearFilter": "Filtreyi Temizle",
+      "noResults": "{{tag}} için hiç gönderi bulunamadı"
+    }
   },
   "friends": {
     "title": "Arkadaslar ve Baglantilar",
@@ -1032,7 +1144,7 @@
       "bio": "Biyografi",
       "bigThree": "Buyuk Uc",
       "starseedOrigin": "Yildiz Tohumu Kokeni",
-      "humanDesign": "Human Design",
+      "humanDesign": "İnsan Tasarımı",
       "joined": "Katilim Tarihi",
       "alignCode": "Align Kodu"
     },
@@ -1129,11 +1241,11 @@
       "communityGuidelines": "Topluluk Kurallari"
     },
     "languages": {
-      "en": "English",
+      "en": "İngilizce",
       "es": "Espanol",
       "fr": "Francais",
-      "de": "Deutsch",
-      "it": "Italiano",
+      "de": "Almanca",
+      "it": "İtalyanca",
       "pt": "Portugues",
       "ru": "Russkiy",
       "ja": "Nihongo",
@@ -1142,12 +1254,12 @@
       "ar": "Al-Arabiyya",
       "hi": "Hindi",
       "tr": "Turkce",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "pl": "Lehçe",
+      "nl": "Hollandaca",
+      "sv": "İsveççe",
+      "da": "Danca",
+      "fi": "Fince",
+      "nb": "Norveççe",
       "th": "Thai"
     },
     "admin": {
@@ -1480,6 +1592,23 @@
       "noPackages": "Magazada abonelik planlari sonlandiriliyor. Lutfen daha sonra tekrar deneyin.",
       "connectionFailed": "Abonelik hizmetine ulasilamadi. Lutfen baglantinizi kontrol edin ve tekrar deneyin.",
       "stillStarting": "Abonelik hizmeti hala baslatiliyor. Lutfen biraz bekleyip tekrar deneyin."
+    },
+    "paymentUnavailable": "Ödeme sağlayıcımıza ulaşmada sorun yaşadık. Lütfen bir süre sonra tekrar deneyin.",
+    "cardDeclined": "Kartınız reddedildi. Lütfen ödeme yönteminizi güncelleyin ve tekrar deneyin.",
+    "checkoutFailed": "Aboneliğinizi başlatırken bir sorun oluştu. Lütfen tekrar deneyin.",
+    "starter": {
+      "name": "Başlangıç",
+      "tagline": "Kozmik yolculuğunuza başlayın",
+      "cta": "Başlangıç Al",
+      "bestFor": "Tam doğum haritaları ve günlük içgörülerle temellerin ötesine geçmeye hazır olan herkes.",
+      "features": [
+        "Ayda 10 AI okuması",
+        "Tam doğum haritası (tüm gezegenler)",
+        "Günlük kişiselleştirilmiş transit bildirimleri",
+        "Aura Aynası sınırsız taramalar",
+        "Kozmik Günlük sınırsız girişler",
+        "Ruh Hediyeleri ve Ruh Hafızası erişimi"
+      ]
     }
   },
   "courses": {
@@ -1602,7 +1731,12 @@
     "loading": "Yer işaretleri yükleniyor...",
     "empty": "Henüz yer işareti yok",
     "emptyHint": "Daha sonra okumak için akıştaki gönderileri kaydedin",
-    "postUnavailable": "Gönderi artık mevcut değil"
+    "postUnavailable": "Gönderi artık mevcut değil",
+    "filterAll": "Tüm",
+    "filterPosts": "Gönderiler",
+    "filterReadings": "Okumalar",
+    "saved": "Kaydedildi",
+    "unbookmark": "Yer imi kaldır"
   },
   "celebrityMatches": {
     "title": "Unlu Eslesmeleri",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Icerik Studyosu",
-    "subtitle": "Kozmik icerigini olustur ve yonet"
+    "subtitle": "Kozmik icerigini olustur ve yonet",
+    "applyTitle": "Yaratıcı Ol",
+    "applyDescription": "Astrolojik içgörülerinizi paylaşın, bir takipçi kitlesi oluşturun ve içeriğinizden kazanç sağlayın.",
+    "applyButton": "Yaratıcı Olarak Başvur",
+    "applying": "Başvuruluyor...",
+    "benefitReadings": "Okumaları Paylaş",
+    "benefitReadingsHint": "Yorumlar ve içgörüler paylaş",
+    "benefitCommunity": "Topluluk Oluştur",
+    "benefitCommunityHint": "Takipçi kazan ve etki yarat",
+    "benefitEarn": "Gelir Elde Et",
+    "benefitEarnHint": "Uzmanlığını paraya çevir",
+    "statPosts": "Gönderiler",
+    "statReactions": "Tepkiler",
+    "statViews": "Görüntülemeler",
+    "statFollowers": "Takipçiler",
+    "statEarnings": "Kazançlar",
+    "statThisMonth": "Bu Ay",
+    "createPost": "Gönderi Oluştur",
+    "createPostHint": "Toplulukla içgörü paylaş",
+    "createPoll": "Anket Oluştur",
+    "createPollHint": "Anketler ve sorularla etkileşimde bulun",
+    "myCommunities": "Topluluklarım",
+    "myCommunitiesHint": "Gruplarını yönet",
+    "shareReading": "Bir Okuma Paylaş",
+    "shareReadingHint": "Grafik yorumları paylaş",
+    "signInRequired": "Yaratıcı Stüdyoya erişmek için lütfen oturum açın",
+    "loading": "Stüdyo yükleniyor..."
   },
   "qa": {
     "title": "Soru-Cevap",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Planini Sec",
-    "subtitle": "Align'in tam gucunu ac"
+    "subtitle": "Align'in tam gucunu ac",
+    "monthly": "Aylık",
+    "annual": "Yıllık",
+    "saveUpTo": "Yüzde 40'a kadar tasarruf et",
+    "bestValue": "En İyi Değer",
+    "perYear": "/yıl",
+    "saveMoney": "{{amount}} $ tasarruf et",
+    "foreverFree": "Sonsuz ücretsiz",
+    "billedMonthly": "Aylık faturalandırma",
+    "lessThanCoffee": "Ayda bir kahveden daha az",
+    "currentPlan": "Mevcut Plan",
+    "getPlan": "{{name}}'i Al"
   },
   "gallery": {
     "title": "Galeri",
@@ -1775,12 +1946,16 @@
       "communities": "Topluluklar",
       "profile": "Profil",
       "settings": "Ayarlar",
-      "menu": "Menu",
+      "menu": "Menü",
       "close": "Kapat",
       "more": "Daha Fazla",
       "chat": "Sohbet",
       "yourProfile": "Profilin",
-      "viewProfile": "Profilini gor"
+      "viewProfile": "Profilini gor",
+      "search": "Ara",
+      "bookmarks": "Yer İşaretleri",
+      "polls": "Anketler",
+      "creatorStudio": "Yaratıcı Stüdyo"
     },
     "feedCard": {
       "like": "Begen",
@@ -1867,11 +2042,11 @@
     "sun": "Gunes",
     "moon": "Ay",
     "mercury": "Merkur",
-    "venus": "Venus",
+    "venus": "Venüs",
     "mars": "Mars",
-    "jupiter": "Jupiter",
-    "saturn": "Saturn",
-    "uranus": "Uranus",
+    "jupiter": "Jüpiter",
+    "saturn": "Satürn",
+    "uranus": "Uranüs",
     "neptune": "Neptun",
     "pluto": "Pluton",
     "northNode": "Kuzey Dugumu",
@@ -1965,8 +2140,71 @@
   },
   "tiers": {
     "free": "Ucretsiz",
-    "light": "Light",
+    "light": "Hafif",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Başlangıç"
+  },
+  "search": {
+    "title": "Ara",
+    "placeholder": "Evreni ara...",
+    "searching": "Yıldızları arıyor...",
+    "noResults": "Hiçbir kozmik eşleşme bulunamadı",
+    "noResultsHint": "Farklı anahtar kelimeler deneyin veya yazımını kontrol edin",
+    "emptyTitle": "İnsanları, gönderileri ve toplulukları ara",
+    "emptyHint": "Evren genelinde kozmik bağlantıları keşfet",
+    "recentSearches": "Son Aramalar",
+    "tabAll": "Tüm",
+    "tabUsers": "Kullanıcılar",
+    "tabPosts": "Gönderiler",
+    "tabCommunities": "Topluluklar",
+    "tabReels": "Reels",
+    "badgeUser": "Kullanıcı",
+    "badgePost": "Gönderi",
+    "badgeCommunity": "Topluluk",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Align'de Neler Yeni",
+    "gotIt": "Tamam"
+  },
+  "gettingStarted": {
+    "title": "Başlarken",
+    "readHoroscope": "Günlük burcunu oku",
+    "tryReading": "Bir AI okumasını dene",
+    "viewNatal": "Doğum haritanı görüntüle",
+    "shareFeed": "Kozmik akışa git",
+    "completeProfile": "Profilini tamamla",
+    "congrats": "Her şey hazır! Kozmosa hoş geldin."
+  },
+  "coachmarks": {
+    "of": "şu",
+    "next": "Sonraki",
+    "skip": "Turu atla",
+    "finish": "Tamamla",
+    "dailyBrief": {
+      "title": "Günlük Kozmik Bültenin",
+      "description": "Her güne burada başla. Kişiselleştirilmiş kozmik kartını, ay evresini, enerji tahminini ve haritana özel günlük rehberliği al."
+    },
+    "quickAccess": {
+      "title": "AI Destekli Okumalar",
+      "description": "Doğum haritana, geçişlere, tarot, uyum okumalarına ve daha fazlasına hızlı erişim. Herhangi bir karta dokunarak derinlemesine dal."
+    },
+    "natalChart": {
+      "title": "Doğum Haritan",
+      "description": "Gezegenler, evler, açılar ve her yerleşimin detaylı yorumlarıyla tam doğum haritanı keşfet."
+    },
+    "feed": {
+      "title": "Topluluk Akışı",
+      "description": "Kozmik anları paylaş, içgörüleri gönder, diğerlerinin paylaşımlarına tepki ver ve diğer yıldız gözlemcileriyle bağlantı kur."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrolog",
+      "description": "Kişisel AI astrologunla sohbet et. Haritan, geçişler, ilişkiler veya kozmik zamanlama hakkında her şeyi sor."
+    },
+    "courses": {
+      "title": "Astroloji Öğren",
+      "description": "Başlangıç seviyesinden ileri tekniklere kadar astrolojik bilginizi derinleştirmek için yapılandırılmış kurslar."
+    }
   }
 }

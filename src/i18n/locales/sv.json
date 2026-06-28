@@ -29,12 +29,12 @@
     "signupFailed": "Registreringen misslyckades.",
     "orContinueWith": "eller fortsätt med",
     "orSignUpWithEmail": "eller registrera med e-post",
-    "apple": "Apple",
+    "apple": "Äpple",
     "google": "Google",
     "displayName": "Visningsnamn",
     "yourName": "Ditt namn",
     "dateOfBirth": "Födelsedatum",
-    "dobPlaceholder": "DD-MM-YYYY",
+    "dobPlaceholder": "DD-MM-ÅÅÅÅ",
     "dobRequired": "Födelsedatum krävs",
     "dobRequiredHint": "Ange ditt födelsedatum för att fortsätta.",
     "dobInvalidFormat": "Ange datum som DD-MM-YYYY",
@@ -140,7 +140,10 @@
         "name": "Vatten",
         "feel": "Du drivs av känsla. Din intuition, din empati, ditt emotionella djup — dessa är inte mjuka färdigheter, de är din primära intelligens. Din utmaning är att lära dig vilka känslor som är dina."
       }
-    }
+    },
+    "enterTheCosmos": "Gå in i Kosmos",
+    "revealLoading": "Läser dina stjärnor...",
+    "continueToDashboard": "Fortsätt till Instrumentpanelen"
   },
   "home": {
     "greeting": "Hej, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Aktuella transiter",
     "moonPhase": "Månfas",
     "planetaryHours": "Planetära timmar",
-    "quickAccess": "Snabbåtkomst"
+    "quickAccess": "Snabbåtkomst",
+    "worldEchoTitle": "Idag i Kosmisk Historia",
+    "worldEchoSimilar": "under justeringar som speglar dagens himmel",
+    "worldEchoSeeMore": "Utforska fler ekon"
   },
   "chart": {
     "natal": "Födelsehoroskop",
@@ -175,7 +181,7 @@
     "pathway": "Vägen till framgång",
     "nameAnalysis": "Namnanalys",
     "firdaria": "Firdaria",
-    "zodiacalReleasing": "Zodiacal Releasing",
+    "zodiacalReleasing": "Zodiakal Utsläpp",
     "planetaryHours": "Planetära timmar",
     "moonPhases": "Månfaser",
     "acg": "Astrokartografi",
@@ -289,7 +295,12 @@
         "obstacle": "Hinder",
         "hiddenFactor": "Dold faktor",
         "advice": "Råd"
-      }
+      },
+      "listenToReading": "Lyssna på din läsning",
+      "stopListening": "Sluta Lyssna",
+      "summoningVoice": "Kallar på hennes röst…",
+      "sheIsReading": "Hon läser dina kort…",
+      "voiceUnavailable": "Kunde inte spela upp ljud. Kontrollera din anslutning och försök igen."
     },
     "dreamOraclePage": {
       "title": "Drömorakel",
@@ -530,7 +541,61 @@
       "recentScans": "Senaste Skanningar",
       "noEntries": "Inga aura-skanningar ännu.",
       "firstScan": "Starta din första skanning",
-      "needMoreScans": "Minst 3 skanningar behövs för mönsteranalys"
+      "needMoreScans": "Minst 3 skanningar behövs för mönsteranalys",
+      "chooseYourScan": "Välj din Skanning",
+      "scanModeHint": "Varje läge läser din energi på ett annat sätt",
+      "pictureScanTitle": "Bild Aura Skanning",
+      "pictureScanDesc": "Ta en selfie eller ladda upp ett foto",
+      "voiceScanTitle": "Röst Aura Skanning",
+      "voiceScanDesc": "Berätta för Align hur du känner just nu",
+      "videoScanTitle": "Live Video Skanning",
+      "videoScanDesc": "15-sekunders video av din energi",
+      "deepReadingTitle": "Djup Aura Läsning",
+      "deepReadingDesc": "Foto + röst + humör + astrologi kombinerat",
+      "quickScan": "Snabb skanning — humör + astrologi endast",
+      "photoStepDeep": "Steg 1: Foto",
+      "photoStepTitle": "Ta ditt foto",
+      "photoStepDesc": "Titta in i kameran. Låt Align läsa energin i ditt uttryck.",
+      "takeSelfie": "Ta Selfie",
+      "uploadPhoto": "Ladda upp foto",
+      "skipPhoto": "Hoppa över foto",
+      "retake": "Ta om",
+      "continue": "Fortsätt",
+      "voiceStepDeep": "Steg 2: Röst",
+      "voiceStepTitle": "Röst Aura Skanning",
+      "voiceStepDesc": "Berätta för Align hur du känner just nu. Prata naturligt i 10-60 sekunder.",
+      "analyzingVoice": "Analyserar din röst...",
+      "listening": "Lyssnar...",
+      "speakNaturally": "Prata naturligt om hur du känner",
+      "stopRecording": "Stoppa",
+      "startRecording": "Börja spela in",
+      "orType": "eller skriv det",
+      "typeFeelingPlaceholder": "Skriv vad du känner...",
+      "skipVoice": "Hoppa över röstskanning",
+      "voiceCaptured": "Röst fångad",
+      "detectedTone": "Upptäckt ton:",
+      "micDenied": "Mikrofonåtkomst är inte tillgänglig",
+      "micDeniedHint": "Du kan istället skriva vad du känner",
+      "videoStepTitle2": "Live Video Scan",
+      "videoStepDesc": "Titta in i kameran. Andas normalt. Spela in 15 sekunder.",
+      "recordVideo": "Spela in video",
+      "skipVideo": "Hoppa över videoskanning",
+      "stopVideo": "Stoppa inspelning",
+      "videoCaptured": "Video fångad",
+      "recordAgain": "Spela in igen",
+      "cameraDenied": "Kameraåtkomst är inte tillgänglig",
+      "cameraDeniedHint": "Aktivera kamerabehörigheter i dina webbläsarinställningar för att använda videoskanning",
+      "continueWithoutVideo": "Fortsätt utan video",
+      "photoAdded": "Foto tillagt",
+      "voiceAdded": "Röst tillagd",
+      "videoAdded": "Video tillagd",
+      "generatingWithScan": "Analyserar dina skanningsdata med kosmiska justeringar...",
+      "generatingMoodOnly": "Kopplar ditt humör med det aktuella kosmiska vädret...",
+      "chatTitle": "Fråga om din läsning",
+      "chatPlaceholder": "Fråga om din läsning...",
+      "chatError": "Förlåt, jag kunde inte bearbeta din fråga. Försök igen.",
+      "chatLimitReached": "Gratiskvoten för uppföljningar är nådd. Uppgradera för obegränsade frågor.",
+      "chatLimitInfo": "{{remaining}} av {{total}} gratiskvoter kvar"
     },
     "galacticClockPage": {
       "title": "Galaktisk klocka",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Hemlig beundrare",
       "rose": "Ros",
       "likeBack": "Gilla tillbaka",
-      "matching": "Matchar..."
+      "matching": "Matchar...",
+      "upgradeToSeeAll": "Uppgradera för att se alla dina gillanden",
+      "upgradeHintMore": "{{count}} fler personer gillade dig — uppgradera för att avslöja dem alla"
     },
     "matches": {
       "title": "Dina Matchningar",
@@ -662,7 +729,10 @@
       "cancel": "Avbryt",
       "matchedToday": "Matchade idag",
       "matchedDaysAgo": "Matchade för {{days}}d sedan",
-      "cosmicMatch": "Kosmisk Match"
+      "cosmicMatch": "Kosmisk Match",
+      "upgradeToSeeAll": "Uppgradera för att se alla dina matchningar",
+      "moreMatchesWaiting": "{{count}} fler kosmiska kopplingar väntar på dig",
+      "upgradeCta": "Se alla matchningar"
     },
     "profile": {
       "title": "Dejtingprofil",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Din match",
+      "loading": "Läser dina energifält...",
+      "matchNotFound": "Matchning hittades inte",
+      "noMyAura": "Du behöver minst en Aura Mirror-skanning först. Gå till Läsningar > Aura Mirror för att skanna din aura.",
+      "noPartnerAura": "{{name}} har inte gjort en Aura Mirror-skanning än. Deras aura-data kommer att visas här när de gör det.",
+      "loadError": "Misslyckades med att ladda aura-data. Försök igen.",
+      "scanAura": "Skanna din aura",
+      "auraChemistry": "Aura-kemi",
+      "harmoniousLabel": "Naturligt harmonisk",
+      "warmLabel": "Varm koppling",
+      "growthLabel": "Tillväxtpotential",
+      "differentLabel": "Olika frekvenser",
+      "harmonyBreakdown": "Harmonibrist",
+      "emotionalSafety": "Emotionell säkerhet",
+      "attractionHeat": "Attraktionsvärme",
+      "communication": "Kommunikation",
+      "conflictWeather": "Konfliktväder",
+      "clearSkies": "Klart väder",
+      "someStorms": "Några stormar",
+      "turbulent": "Turbulent"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Skapa ditt första inlägg"
     },
     "loadMore": "Ladda fler",
-    "loading": "Laddar..."
+    "loading": "Laddar...",
+    "shareReading": {
+      "title": "Dela din kosmiska upplevelse",
+      "subtitle": "Låt gemenskapen veta vad stjärnorna säger till dig",
+      "templates": {
+        "aura": "Har precis fått min auraavläsning! Min yttre aura lyser",
+        "transit": "Min transitavläsning känns annorlunda idag... kan någon relatera?",
+        "moon": "Månkoll: känner energin från {{moonPhase}} ikväll",
+        "zodiac": "Är det några andra {{sign}} Risings som känner denna förändring?",
+        "tarot": "Drog några kort idag och budskapet var kristallklart"
+      },
+      "quickPost": "Snabbt inlägg",
+      "viewReadings": "Visa avläsningar",
+      "viewCommunities": "Bläddra bland gemenskaper"
+    },
+    "trending": {
+      "title": "Trendar",
+      "clearFilter": "Rensa filter",
+      "noResults": "Inga inlägg hittades för {{tag}}"
+    }
   },
   "friends": {
     "title": "Vänner & Kopplingar",
@@ -1129,7 +1241,7 @@
       "communityGuidelines": "Gemenskapsriktlinjer"
     },
     "languages": {
-      "en": "English",
+      "en": "Engelska",
       "es": "Español",
       "fr": "Français",
       "de": "Deutsch",
@@ -1146,7 +1258,7 @@
       "nl": "Nederlands",
       "sv": "Svenska",
       "da": "Dansk",
-      "fi": "Suomi",
+      "fi": "Svenska",
       "nb": "Norsk",
       "th": "ไทย"
     },
@@ -1480,6 +1592,23 @@
       "noPackages": "Prenumerationspaket håller på att slutföras i butiken. Försök igen senare.",
       "connectionFailed": "Kunde inte nå prenumerationstjänsten. Kontrollera anslutningen och försök igen.",
       "stillStarting": "Prenumerationstjänsten startar fortfarande. Vänta en stund och försök igen."
+    },
+    "paymentUnavailable": "Vi hade problem med att nå vår betalningsleverantör. Försök igen om en stund.",
+    "cardDeclined": "Ditt kort blev avvisat. Vänligen uppdatera din betalningsmetod och försök igen.",
+    "checkoutFailed": "Något gick fel när din prenumeration skulle startas. Försök igen.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Börja din kosmiska resa",
+      "cta": "Få Starter",
+      "bestFor": "Är någon redo att gå bortom grunderna med fullständiga födelsekartor och dagliga insikter.",
+      "features": [
+        "10 AI-läsningar per månad",
+        "Fullständig födelsekarta (alla planeter)",
+        "Dagliga personliga transitnotifikationer",
+        "Aura Spegel obegränsade skanningar",
+        "Kosmisk Journal obegränsade inlägg",
+        "Självgåvor & Själminne åtkomst"
+      ]
     }
   },
   "courses": {
@@ -1602,7 +1731,12 @@
     "loading": "Laddar bokmärken...",
     "empty": "Inga bokmärken ännu",
     "emptyHint": "Spara inlägg från flödet för att läsa senare",
-    "postUnavailable": "Inlägget är inte längre tillgängligt"
+    "postUnavailable": "Inlägget är inte längre tillgängligt",
+    "filterAll": "Alla",
+    "filterPosts": "Inlägg",
+    "filterReadings": "Läsningar",
+    "saved": "Sparade",
+    "unbookmark": "Ta bort bokmärke"
   },
   "celebrityMatches": {
     "title": "Kändismatchningar",
@@ -1648,8 +1782,34 @@
     "subtitle": "Dagens kosmiska energi i ett ögonkast"
   },
   "creatorStudio": {
-    "title": "Creator Studio",
-    "subtitle": "Skapa och hantera ditt kosmiska innehåll"
+    "title": "Skaparestudio",
+    "subtitle": "Skapa och hantera ditt kosmiska innehåll",
+    "applyTitle": "Bli en skapare",
+    "applyDescription": "Dela dina astrologiska insikter, bygg en följarskara och tjäna på ditt innehåll.",
+    "applyButton": "Ansök som skapare",
+    "applying": "Tillämpa...",
+    "benefitReadings": "Dela läsningar",
+    "benefitReadingsHint": "Publicera tolkningar & insikter",
+    "benefitCommunity": "Bygg gemenskap",
+    "benefitCommunityHint": "Få följare & inflytande",
+    "benefitEarn": "Tjäna intäkter",
+    "benefitEarnHint": "Monetisera din expertis",
+    "statPosts": "Inlägg",
+    "statReactions": "Reaktioner",
+    "statViews": "Visningar",
+    "statFollowers": "Följare",
+    "statEarnings": "Intäkter",
+    "statThisMonth": "Denna månad",
+    "createPost": "Skapa inlägg",
+    "createPostHint": "Dela insikter med gemenskapen",
+    "createPoll": "Skapa omröstning",
+    "createPollHint": "Engagera dig med omröstningar & frågor",
+    "myCommunities": "Mina gemenskaper",
+    "myCommunitiesHint": "Hantera dina grupper",
+    "shareReading": "Dela en läsning",
+    "shareReadingHint": "Publicera diagramtolkningar",
+    "signInRequired": "Vänligen logga in för att få tillgång till Creator Studio",
+    "loading": "Laddar studio..."
   },
   "qa": {
     "title": "Frågor & Svar",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Välj ditt paket",
-    "subtitle": "Lås upp Aligns fulla kraft"
+    "subtitle": "Lås upp Aligns fulla kraft",
+    "monthly": "Månatlig",
+    "annual": "Årlig",
+    "saveUpTo": "Spara upp till 40%",
+    "bestValue": "Bästa värde",
+    "perYear": "/år",
+    "saveMoney": "Spara ${{amount}}",
+    "foreverFree": "Gratis för alltid",
+    "billedMonthly": "Faktureras månadsvis",
+    "lessThanCoffee": "Mindre än en kaffe per månad",
+    "currentPlan": "Nuvarande plan",
+    "getPlan": "Få {{name}}"
   },
   "gallery": {
     "title": "Galleri",
@@ -1780,7 +1951,11 @@
       "videoCreator": "Videoskapare",
       "viewProfile": "Visa din profil",
       "worldEcho": "Världseko",
-      "yourProfile": "Din profil"
+      "yourProfile": "Din profil",
+      "search": "Sök",
+      "bookmarks": "Bokmärken",
+      "polls": "Omröstningar",
+      "creatorStudio": "Skaparsstudio"
     },
     "feedCard": {
       "like": "Gilla",
@@ -1967,6 +2142,69 @@
     "free": "Gratis",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Sök",
+    "placeholder": "Sök i kosmos...",
+    "searching": "Söker bland stjärnorna...",
+    "noResults": "Inga kosmiska träffar hittades",
+    "noResultsHint": "Försök med andra nyckelord eller kontrollera stavningen",
+    "emptyTitle": "Sök efter personer, inlägg och gemenskaper",
+    "emptyHint": "Upptäck kosmiska kopplingar över universum",
+    "recentSearches": "Senaste sökningar",
+    "tabAll": "Alla",
+    "tabUsers": "Användare",
+    "tabPosts": "Inlägg",
+    "tabCommunities": "Gemenskaper",
+    "tabReels": "Reels",
+    "badgeUser": "Användare",
+    "badgePost": "Inlägg",
+    "badgeCommunity": "Gemenskap",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Vad är nytt i Align",
+    "gotIt": "Förstått"
+  },
+  "gettingStarted": {
+    "title": "Kom igång",
+    "readHoroscope": "Läs ditt dagliga horoskop",
+    "tryReading": "Prova en AI-läsning",
+    "viewNatal": "Visa ditt födelsehoroskop",
+    "shareFeed": "Besök det kosmiska flödet",
+    "completeProfile": "Slutför din profil",
+    "congrats": "Du är redo! Välkommen till kosmos."
+  },
+  "coachmarks": {
+    "of": "av",
+    "next": "Nästa",
+    "skip": "Hoppa över turen",
+    "finish": "Avsluta",
+    "dailyBrief": {
+      "title": "Ditt Dagliga Kosmiska Sammanfattning",
+      "description": "Börja varje dag här. Få ditt personliga kosmiska kort, månfas, energiförutsägelse och daglig vägledning anpassad till ditt horoskop."
+    },
+    "quickAccess": {
+      "title": "AI-Drevna Läsningar",
+      "description": "Snabb åtkomst till ditt födelsehoroskop, transiter, tarot, kompatibilitetsläsningar och mer. Tryck på vilket kort som helst för att dyka in."
+    },
+    "natalChart": {
+      "title": "Ditt Födelsehoroskop",
+      "description": "Utforska ditt kompletta födelsehoroskop med planeter, hus, aspekter och detaljerade tolkningar av varje placering."
+    },
+    "feed": {
+      "title": "Gemenskapsflöde",
+      "description": "Dela kosmiska stunder, posta insikter, reagera på andras inlägg och koppla ihop med andra stjärnskådare."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrolog",
+      "description": "Chatta med din personliga AI-astrolog. Fråga vad som helst om ditt horoskop, transiter, relationer eller kosmisk timing."
+    },
+    "courses": {
+      "title": "Lär dig Astrologi",
+      "description": "Strukturerade kurser för att fördjupa din astrologiska kunskap, från nybörjargrunder till avancerade tekniker."
+    }
   }
 }

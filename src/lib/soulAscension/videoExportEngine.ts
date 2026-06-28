@@ -160,17 +160,17 @@ export function buildSoulTypeMoment(
 export function generateShareCaption(moment: ShareableMoment): string {
   switch (moment.type) {
     case 'choice':
-      return `I faced "${moment.title}" in Soul Ascension and chose my path. What would you do?\n\n✨ Play your past lives at alignapp.co/soul-ascension`;
+      return `I faced "${moment.title}" in Soul Ascension and chose my path. What would you do?\n\n✨ Play your past lives at aligncosmic.com/soul-ascension`;
     case 'boss':
-      return `I encountered ${moment.title} in Soul Ascension. The stakes were real.\n\n⚔️ Face your karmic bosses at alignapp.co/soul-ascension`;
+      return `I encountered ${moment.title} in Soul Ascension. The stakes were real.\n\n⚔️ Face your karmic bosses at aligncosmic.com/soul-ascension`;
     case 'review':
-      return `My soul review is in: ${moment.title}. Ascension Level ${moment.subtitle}.\n\n🔮 Discover your soul's journey at alignapp.co/soul-ascension`;
+      return `My soul review is in: ${moment.title}. Ascension Level ${moment.subtitle}.\n\n🔮 Discover your soul's journey at aligncosmic.com/soul-ascension`;
     case 'reincarnation':
-      return `I reincarnated in Soul Ascension! New lifetime, new choices.\n\n♻️ Begin your soul journey at alignapp.co/soul-ascension`;
+      return `I reincarnated in Soul Ascension! New lifetime, new choices.\n\n♻️ Begin your soul journey at aligncosmic.com/soul-ascension`;
     case 'soul_type':
-      return `My soul type is ${moment.title}! What's yours?\n\n🌟 Find out at alignapp.co/soul-ascension`;
+      return `My soul type is ${moment.title}! What's yours?\n\n🌟 Find out at aligncosmic.com/soul-ascension`;
     default:
-      return `Playing Soul Ascension — where your birth chart becomes a game.\n\n🎮 alignapp.co/soul-ascension`;
+      return `Playing Soul Ascension — where your birth chart becomes a game.\n\n🎮 aligncosmic.com/soul-ascension`;
   }
 }
 

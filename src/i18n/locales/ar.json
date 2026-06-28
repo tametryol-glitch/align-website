@@ -140,7 +140,10 @@
         "name": "ماء",
         "feel": "يحركك الشعور. حدسك، تعاطفك، عمقك العاطفي — هذه ليست مهارات ناعمة، هي ذكاؤك الأساسي. تحديك هو أن تتعلم أي المشاعر هي مشاعرك أنت."
       }
-    }
+    },
+    "enterTheCosmos": "ادخل الكون",
+    "revealLoading": "قراءة نجومك...",
+    "continueToDashboard": "استمر إلى لوحة التحكم"
   },
   "home": {
     "greeting": "مرحبًا، {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "العبورات الحالية",
     "moonPhase": "طور القمر",
     "planetaryHours": "الساعات الكوكبية",
-    "quickAccess": "وصول سريع"
+    "quickAccess": "وصول سريع",
+    "worldEchoTitle": "اليوم في التاريخ الكوني",
+    "worldEchoSimilar": "تحت المحاذاة التي تعكس سماء اليوم",
+    "worldEchoSeeMore": "استكشف المزيد من الصدى"
   },
   "chart": {
     "natal": "خريطة الميلاد",
@@ -289,7 +295,12 @@
         "obstacle": "العائق",
         "hiddenFactor": "العامل الخفي",
         "advice": "النصيحة"
-      }
+      },
+      "listenToReading": "استمع إلى قراءتك",
+      "stopListening": "أوقف الاستماع",
+      "summoningVoice": "استدعاء صوتها...",
+      "sheIsReading": "هي تقرأ بطاقاتك...",
+      "voiceUnavailable": "لم يتمكن من تشغيل الصوت. يرجى التحقق من اتصالك والمحاولة مرة أخرى."
     },
     "dreamOraclePage": {
       "title": "وحي الأحلام",
@@ -530,7 +541,61 @@
       "recentScans": "عمليات المسح الأخيرة",
       "noEntries": "لا توجد عمليات مسح للهالة بعد.",
       "firstScan": "ابدأ مسحك الأول",
-      "needMoreScans": "يلزم 3 عمليات مسح على الأقل للتحليل"
+      "needMoreScans": "يلزم 3 عمليات مسح على الأقل للتحليل",
+      "chooseYourScan": "اختر مسحك",
+      "scanModeHint": "كل وضع يقرأ طاقتك بطريقة مختلفة",
+      "pictureScanTitle": "مسح الهالة بالصورة",
+      "pictureScanDesc": "التقط سيلفي أو قم بتحميل صورة",
+      "voiceScanTitle": "مسح الهالة بالصوت",
+      "voiceScanDesc": "قل لـ Align كيف تشعر الآن",
+      "videoScanTitle": "مسح الفيديو المباشر",
+      "videoScanDesc": "فيديو مدته 15 ثانية عن طاقتك",
+      "deepReadingTitle": "قراءة عميقة للهالة",
+      "deepReadingDesc": "صورة + صوت + مزاج + علم الفلك مجتمعة",
+      "quickScan": "مسح سريع — مزاج + علم الفلك فقط",
+      "photoStepDeep": "الخطوة 1: الصورة",
+      "photoStepTitle": "التقط صورتك",
+      "photoStepDesc": "انظر إلى الكاميرا. دع Align تقرأ الطاقة في تعبيرك.",
+      "takeSelfie": "التقط صورة سيلفي",
+      "uploadPhoto": "رفع صورة",
+      "skipPhoto": "تخطي الصورة",
+      "retake": "أعد التصوير",
+      "continue": "تابع",
+      "voiceStepDeep": "الخطوة 2: الصوت",
+      "voiceStepTitle": "مسح هالة الصوت",
+      "voiceStepDesc": "أخبر Align بما تشعر به الآن. تحدث بشكل طبيعي لمدة 10-60 ثانية.",
+      "analyzingVoice": "جارٍ تحليل صوتك...",
+      "listening": "جارٍ الاستماع...",
+      "speakNaturally": "تحدث بشكل طبيعي عن شعورك",
+      "stopRecording": "توقف",
+      "startRecording": "ابدأ التسجيل",
+      "orType": "أو اكتبها",
+      "typeFeelingPlaceholder": "اكتب ما تشعر به...",
+      "skipVoice": "تخطي مسح الصوت",
+      "voiceCaptured": "تم التقاط الصوت",
+      "detectedTone": "تم الكشف عن النغمة:",
+      "micDenied": "لا يتوفر الوصول إلى الميكروفون",
+      "micDeniedHint": "يمكنك كتابة ما تشعر به بدلاً من ذلك",
+      "videoStepTitle2": "مسح الفيديو المباشر",
+      "videoStepDesc": "انظر إلى الكاميرا. تنفس بشكل طبيعي. سجل لمدة 15 ثانية.",
+      "recordVideo": "سجل الفيديو",
+      "skipVideo": "تخطي مسح الفيديو",
+      "stopVideo": "توقف عن التسجيل",
+      "videoCaptured": "تم التقاط الفيديو",
+      "recordAgain": "سجل مرة أخرى",
+      "cameraDenied": "لا يتوفر الوصول إلى الكاميرا",
+      "cameraDeniedHint": "قم بتمكين أذونات الكاميرا في إعدادات المتصفح الخاص بك لاستخدام مسح الفيديو",
+      "continueWithoutVideo": "تابع بدون فيديو",
+      "photoAdded": "تم إضافة صورة",
+      "voiceAdded": "تم إضافة صوت",
+      "videoAdded": "تم إضافة فيديو",
+      "generatingWithScan": "جارٍ تحليل بيانات المسح الخاصة بك مع التوافقات الكونية...",
+      "generatingMoodOnly": "جارٍ ربط مزاجك مع الطقس الكوني الحالي...",
+      "chatTitle": "اسأل عن قراءتك",
+      "chatPlaceholder": "اسأل عن قراءتك...",
+      "chatError": "عذرًا، لم أستطع معالجة سؤالك. يرجى المحاولة مرة أخرى.",
+      "chatLimitReached": "تم الوصول إلى حد المتابعة المجانية. قم بالترقية لطرح أسئلة غير محدودة.",
+      "chatLimitInfo": "{{remaining}} من {{total}} متابعات مجانية متبقية"
     },
     "galacticClockPage": {
       "title": "الساعة المجرّية",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "معجب غامض",
       "rose": "وردة",
       "likeBack": "إعجاب بالمقابل",
-      "matching": "جارٍ المطابقة..."
+      "matching": "جارٍ المطابقة...",
+      "upgradeToSeeAll": "قم بالترقية لرؤية جميع إعجاباتك",
+      "upgradeHintMore": "{{count}} أشخاص آخرين أعجبوا بك — قم بالترقية لكشفهم جميعًا"
     },
     "matches": {
       "title": "توافقاتك",
@@ -662,7 +729,10 @@
       "cancel": "إلغاء",
       "matchedToday": "تطابقتما اليوم",
       "matchedDaysAgo": "تطابقتما منذ {{days}} يوم",
-      "cosmicMatch": "توافق كوني"
+      "cosmicMatch": "توافق كوني",
+      "upgradeToSeeAll": "قم بالترقية لرؤية جميع تطابقاتك",
+      "moreMatchesWaiting": "{{count}} اتصالات كونية أخرى في انتظارك",
+      "upgradeCta": "رؤية جميع التطابقات"
     },
     "profile": {
       "title": "ملف المواعدة",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "توافق الهالة",
+      "yourMatch": "تطابقك",
+      "loading": "جارٍ قراءة حقول طاقتك...",
+      "matchNotFound": "لم يتم العثور على تطابق",
+      "noMyAura": "تحتاج إلى إجراء مسح واحد على الأقل من Aura Mirror أولاً. اذهب إلى القراءات > Aura Mirror لمسح هالتك.",
+      "noPartnerAura": "{{name}} لم يقم بعد بإجراء مسح Aura Mirror. ستظهر بيانات هالتهم هنا بمجرد أن يفعلوا ذلك.",
+      "loadError": "فشل في تحميل بيانات الهالة. يرجى المحاولة مرة أخرى.",
+      "scanAura": "امسح هالتك",
+      "auraChemistry": "كيمياء الهالة",
+      "harmoniousLabel": "متناغم بشكل طبيعي",
+      "warmLabel": "اتصال دافئ",
+      "growthLabel": "إمكانات النمو",
+      "differentLabel": "ترددات مختلفة",
+      "harmonyBreakdown": "انهيار التناغم",
+      "emotionalSafety": "أمان عاطفي",
+      "attractionHeat": "حرارة الجذب",
+      "communication": "التواصل",
+      "conflictWeather": "طقس الصراع",
+      "clearSkies": "سماء صافية",
+      "someStorms": "بعض العواصف",
+      "turbulent": "مضطرب"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "أنشئ أول منشور لك"
     },
     "loadMore": "تحميل المزيد",
-    "loading": "جارٍ التحميل..."
+    "loading": "جارٍ التحميل...",
+    "shareReading": {
+      "title": "شارك تجربتك الكونية",
+      "subtitle": "دع المجتمع يعرف ماذا تخبرك النجوم",
+      "templates": {
+        "aura": "لقد حصلت للتو على قراءة هالتي! هالتي الخارجية تتألق",
+        "transit": "قراءة العبور الخاصة بي مختلفة اليوم... هل يمكن لأحد أن يشعر بذلك؟",
+        "moon": "تسجيل القمر: أشعر بطاقة {{moonPhase}} الليلة",
+        "zodiac": "هل يشعر أي من مواليد {{sign}} بهذا التحول؟",
+        "tarot": "سحبت بعض البطاقات اليوم وكانت الرسالة واضحة تمامًا"
+      },
+      "quickPost": "منشور سريع",
+      "viewReadings": "عرض القراءات",
+      "viewCommunities": "تصفح المجتمعات"
+    },
+    "trending": {
+      "title": "الرائج",
+      "clearFilter": "مسح الفلتر",
+      "noResults": "لم يتم العثور على منشورات لـ {{tag}}"
+    }
   },
   "friends": {
     "title": "الأصدقاء والاتصالات",
@@ -1129,12 +1241,12 @@
       "communityGuidelines": "إرشادات المجتمع"
     },
     "languages": {
-      "en": "English",
-      "es": "Español",
-      "fr": "Français",
-      "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "en": "الإنجليزية",
+      "es": "الإسبانية",
+      "fr": "الفرنسية",
+      "de": "الألمانية",
+      "it": "الإيطالية",
+      "pt": "العربية",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
@@ -1480,6 +1592,23 @@
       "noPackages": "يتم الانتهاء من خطط الاشتراك في المتجر. يرجى المحاولة لاحقًا.",
       "connectionFailed": "تعذر الوصول إلى خدمة الاشتراك. يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
       "stillStarting": "لا تزال خدمة الاشتراك في مرحلة البدء. يرجى الانتظار لحظة وإعادة المحاولة."
+    },
+    "paymentUnavailable": "واجهتنا مشكلة في الوصول إلى مزود الدفع. يرجى المحاولة مرة أخرى بعد لحظة.",
+    "cardDeclined": "تم رفض بطاقتك. يرجى تحديث طريقة الدفع الخاصة بك والمحاولة مرة أخرى.",
+    "checkoutFailed": "حدث خطأ أثناء بدء اشتراكك. يرجى المحاولة مرة أخرى.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "ابدأ رحلتك الكونية",
+      "cta": "احصل على Starter",
+      "bestFor": "هل هناك أي شخص مستعد للذهاب إلى ما هو أبعد من الأساسيات مع الخرائط الفلكية الكاملة والرؤى اليومية.",
+      "features": [
+        "10 قراءات AI شهريًا",
+        "خريطة فلكية كاملة (جميع الكواكب)",
+        "إشعارات يومية مخصصة للانتقالات",
+        "مسح غير محدود لمرآة الهالة",
+        "مدخلات غير محدودة في دفتر الكونية",
+        "الوصول إلى هدايا الروح وذاكرة الروح"
+      ]
     }
   },
   "courses": {
@@ -1602,7 +1731,12 @@
     "loading": "جاري تحميل الإشارات المرجعية...",
     "empty": "لا توجد إشارات مرجعية بعد",
     "emptyHint": "احفظ المنشورات من الخلاصة لقراءتها لاحقاً",
-    "postUnavailable": "المنشور لم يعد متاحاً"
+    "postUnavailable": "المنشور لم يعد متاحاً",
+    "filterAll": "الكل",
+    "filterPosts": "المشاركات",
+    "filterReadings": "القراءات",
+    "saved": "المحفوظة",
+    "unbookmark": "إزالة الإشارة المرجعية"
   },
   "celebrityMatches": {
     "title": "توافقات المشاهير",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "استوديو المبدعين",
-    "subtitle": "أنشئ وأدِر محتواك الكوني"
+    "subtitle": "أنشئ وأدِر محتواك الكوني",
+    "applyTitle": "كن منشئ محتوى",
+    "applyDescription": "شارك رؤاك الفلكية، وابنِ جمهورًا، واكسب من محتواك.",
+    "applyButton": "تقدم كمنشئ محتوى",
+    "applying": "يتم التقديم...",
+    "benefitReadings": "شارك القراءات",
+    "benefitReadingsHint": "انشر التفسيرات والرؤى",
+    "benefitCommunity": "ابنِ مجتمعًا",
+    "benefitCommunityHint": "احصل على متابعين وتأثير",
+    "benefitEarn": "اكسب إيرادات",
+    "benefitEarnHint": "حقق الدخل من خبرتك",
+    "statPosts": "المنشورات",
+    "statReactions": "ردود الفعل",
+    "statViews": "المشاهدات",
+    "statFollowers": "المتابعون",
+    "statEarnings": "الأرباح",
+    "statThisMonth": "هذا الشهر",
+    "createPost": "أنشئ منشورًا",
+    "createPostHint": "شارك الرؤى مع المجتمع",
+    "createPoll": "أنشئ استطلاع",
+    "createPollHint": "شارك في الاستطلاعات والأسئلة",
+    "myCommunities": "مجتمعاتي",
+    "myCommunitiesHint": "إدارة مجموعاتك",
+    "shareReading": "شارك قراءة",
+    "shareReadingHint": "نشر تفسيرات الخرائط",
+    "signInRequired": "يرجى تسجيل الدخول للوصول إلى استوديو المبدعين",
+    "loading": "جارٍ تحميل الاستوديو..."
   },
   "qa": {
     "title": "أسئلة وأجوبة",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "اختر خطتك",
-    "subtitle": "أطلق القوة الكاملة لـ Align"
+    "subtitle": "أطلق القوة الكاملة لـ Align",
+    "monthly": "شهري",
+    "annual": "سنوي",
+    "saveUpTo": "وفر حتى 40%",
+    "bestValue": "أفضل قيمة",
+    "perYear": "/سنة",
+    "saveMoney": "وفر ${{amount}}",
+    "foreverFree": "مجاني إلى الأبد",
+    "billedMonthly": "يتم الفوترة شهريًا",
+    "lessThanCoffee": "أقل من فنجان قهوة في الشهر",
+    "currentPlan": "الخطة الحالية",
+    "getPlan": "احصل على {{name}}"
   },
   "gallery": {
     "title": "المعرض",
@@ -1780,7 +1951,11 @@
       "more": "المزيد",
       "chat": "محادثة",
       "yourProfile": "ملفك الشخصي",
-      "viewProfile": "عرض ملفك الشخصي"
+      "viewProfile": "عرض ملفك الشخصي",
+      "search": "بحث",
+      "bookmarks": "علامات مرجعية",
+      "polls": "استطلاعات",
+      "creatorStudio": "استوديو المبدعين"
     },
     "feedCard": {
       "like": "إعجاب",
@@ -1967,6 +2142,69 @@
     "free": "مجاني",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "بحث",
+    "placeholder": "ابحث في الكون...",
+    "searching": "البحث في النجوم...",
+    "noResults": "لم يتم العثور على تطابقات كونية",
+    "noResultsHint": "حاول كلمات مفتاحية مختلفة أو تحقق من الإملاء",
+    "emptyTitle": "ابحث عن الأشخاص والمشاركات والمجتمعات",
+    "emptyHint": "اكتشف الروابط الكونية عبر الكون",
+    "recentSearches": "البحث الأخير",
+    "tabAll": "الكل",
+    "tabUsers": "المستخدمون",
+    "tabPosts": "المنشورات",
+    "tabCommunities": "المجتمعات",
+    "tabReels": "مقاطع الفيديو",
+    "badgeUser": "مستخدم",
+    "badgePost": "منشور",
+    "badgeCommunity": "مجتمع",
+    "badgeReel": "مقطع فيديو"
+  },
+  "whatsNew": {
+    "title": "ما الجديد في Align",
+    "gotIt": "فهمت"
+  },
+  "gettingStarted": {
+    "title": "البدء",
+    "readHoroscope": "اقرأ برجك اليومي",
+    "tryReading": "جرب قراءة بواسطة الذكاء الاصطناعي",
+    "viewNatal": "عرض خريطتك الفلكية",
+    "shareFeed": "زيارة الخلاصة الكونية",
+    "completeProfile": "أكمل ملفك الشخصي",
+    "congrats": "أنت جاهز! مرحبًا بك في الكون."
+  },
+  "coachmarks": {
+    "of": "من",
+    "next": "التالي",
+    "skip": "تخطي الجولة",
+    "finish": "إنهاء",
+    "dailyBrief": {
+      "title": "ملخصك الكوني اليومي",
+      "description": "ابدأ كل يوم هنا. احصل على بطاقتك الكونية الشخصية، مرحلة القمر، توقعات الطاقة، وإرشادات يومية مصممة خصيصًا لخريطتك."
+    },
+    "quickAccess": {
+      "title": "قراءات مدعومة بالذكاء الاصطناعي",
+      "description": "وصول سريع إلى خريطتك الفلكية، العبور، تاروت، قراءات التوافق، والمزيد. اضغط على أي بطاقة للغوص في التفاصيل."
+    },
+    "natalChart": {
+      "title": "خريطتك الفلكية",
+      "description": "استكشف خريطتك الفلكية الكاملة مع الكواكب، المنازل، الجوانب، وتفسيرات مفصلة لكل موضع."
+    },
+    "feed": {
+      "title": "خلاصة المجتمع",
+      "description": "شارك لحظات كونية، انشر رؤى، تفاعل مع منشورات الآخرين، وتواصل مع زملائك من مراقبي النجوم."
+    },
+    "aiAstrologer": {
+      "title": "عالم الفلك الذكي",
+      "description": "تحدث مع عالم الفلك الذكي الشخصي الخاص بك. اسأل أي شيء عن خريطتك، العبور، العلاقات، أو التوقيت الكوني."
+    },
+    "courses": {
+      "title": "تعلم الفلك",
+      "description": "دورات منظمة لتعميق معرفتك الفلكية، من الأساسيات للمبتدئين إلى التقنيات المتقدمة."
+    }
   }
 }

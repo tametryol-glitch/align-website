@@ -34,7 +34,7 @@
     "displayName": "Nayttonimi",
     "yourName": "Nimesi",
     "dateOfBirth": "Syntymaaika",
-    "dobPlaceholder": "DD-MM-YYYY",
+    "dobPlaceholder": "PP-KK-VVVV",
     "dobRequired": "Syntymaaika vaaditaan",
     "dobRequiredHint": "Syota syntymaaika jatkaaksesi.",
     "dobInvalidFormat": "Syota paivamaara muodossa DD-MM-YYYY",
@@ -140,7 +140,10 @@
         "name": "Vesi",
         "feel": "Sinua ajavat tunteet. Intuitiosi, empatiasi, emotionaalinen syvyytesi -- nama eivat ole pehmeita taitoja, ne ovat ensisijainen alykkyyteesi. Haasteesi on oppia, mitka tunteet ovat sinun omiasi."
       }
-    }
+    },
+    "enterTheCosmos": "Syötä Kosmos",
+    "revealLoading": "Luen tähtiäsi...",
+    "continueToDashboard": "Jatka Hallintapaneeliin"
   },
   "home": {
     "greeting": "Hei, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Nykyiset transitit",
     "moonPhase": "Kuun vaihe",
     "planetaryHours": "Planetaariset tunnit",
-    "quickAccess": "Pikakaytto"
+    "quickAccess": "Pikakaytto",
+    "worldEchoTitle": "Tänään kosmisessa historiassa",
+    "worldEchoSimilar": "allineisuuksien peilaten tämän päivän taivasta",
+    "worldEchoSeeMore": "Tutki lisää kaikuja"
   },
   "chart": {
     "natal": "Syntymakartta",
@@ -169,7 +175,7 @@
     "starseed": "Tahdensiemen-alkupera",
     "numerology": "Numerologia",
     "angelNumbers": "Enkelinumerot",
-    "humanDesign": "Human Design",
+    "humanDesign": "Ihmisen Suunnitelma",
     "tarot": "Tarot",
     "financial": "Talousraportti",
     "pathway": "Polku menestykseen",
@@ -289,7 +295,12 @@
         "obstacle": "Este",
         "hiddenFactor": "Piilotettu tekija",
         "advice": "Neuvo"
-      }
+      },
+      "listenToReading": "Kuuntele Lukemisesi",
+      "stopListening": "Lopeta Kuuntelu",
+      "summoningVoice": "Kutsuen hänen ääntään…",
+      "sheIsReading": "Hän lukee korttejasi…",
+      "voiceUnavailable": "Ääntä ei voitu toistaa. Tarkista yhteytesi ja yritä uudelleen."
     },
     "dreamOraclePage": {
       "title": "Unioraakkeli",
@@ -398,7 +409,7 @@
       "copiedToClipboard": "Kopioitu leikepoydale!"
     },
     "humanDesignPage": {
-      "title": "Human Design",
+      "title": "Ihmisen Suunnitelma",
       "subtitle": "Energeettinen suunnitelmasi",
       "aura": "Aura",
       "defined": "Maaritelty",
@@ -453,7 +464,7 @@
       "newEntry": "Uusi merkinta",
       "moodOptions": {
         "low": "Matala",
-        "meh": "Meh",
+        "meh": "Hmh",
         "neutral": "Neutraali",
         "good": "Hyva",
         "great": "Loistava"
@@ -530,7 +541,61 @@
       "recentScans": "Viimeaikaiset Skannaukset",
       "noEntries": "Ei vielä auraskannauksia.",
       "firstScan": "Aloita ensimmäinen skannauksesi",
-      "needMoreScans": "Kuvioanalyysi vaatii vähintään 3 skannausta"
+      "needMoreScans": "Kuvioanalyysi vaatii vähintään 3 skannausta",
+      "chooseYourScan": "Valitse Skannauksesi",
+      "scanModeHint": "Jokainen tila lukee energiasi eri tavalla",
+      "pictureScanTitle": "Kuva Aura Skannaus",
+      "pictureScanDesc": "Ota selfie tai lataa kuva",
+      "voiceScanTitle": "Ääni Aura Skannaus",
+      "voiceScanDesc": "Kerro Alignille, mitä tunnet juuri nyt",
+      "videoScanTitle": "Live Video Skannaus",
+      "videoScanDesc": "15 sekunnin video energiastasi",
+      "deepReadingTitle": "Syvä Aura-luku",
+      "deepReadingDesc": "Valokuva + ääni + mieliala + astrologia yhdistettynä",
+      "quickScan": "Nopea skannaus — mieliala + astrologia vain",
+      "photoStepDeep": "Vaihe 1: Valokuva",
+      "photoStepTitle": "Ota valokuvasi",
+      "photoStepDesc": "Katso kameraan. Anna Alignin lukea energiasi ilmeestäsi.",
+      "takeSelfie": "Ota selfie",
+      "uploadPhoto": "Lataa valokuva",
+      "skipPhoto": "Ohita valokuva",
+      "retake": "Ota uudelleen",
+      "continue": "Jatka",
+      "voiceStepDeep": "Vaihe 2: Ääni",
+      "voiceStepTitle": "Ääni Aura-skannaus",
+      "voiceStepDesc": "Kerro Alignille, mitä tunnet juuri nyt. Puhu luonnollisesti 10-60 sekuntia.",
+      "analyzingVoice": "Analysoidaan ääntäsi...",
+      "listening": "Kuunnellaan...",
+      "speakNaturally": "Puhu luonnollisesti siitä, miltä sinusta tuntuu",
+      "stopRecording": "Pysäytä",
+      "startRecording": "Aloita nauhoitus",
+      "orType": "tai kirjoita se",
+      "typeFeelingPlaceholder": "Kirjoita, mitä tunnet...",
+      "skipVoice": "Ohita ääni-skannaus",
+      "voiceCaptured": "Ääni tallennettu",
+      "detectedTone": "Havaittu sävy:",
+      "micDenied": "Mikrofonin käyttöoikeus ei ole saatavilla",
+      "micDeniedHint": "Voit kirjoittaa, mitä tunnet sen sijaan",
+      "videoStepTitle2": "Live Video Skannaus",
+      "videoStepDesc": "Katso kameraan. Hengitä normaalisti. Tallenna 15 sekuntia.",
+      "recordVideo": "Tallenna video",
+      "skipVideo": "Ohita videoskannaus",
+      "stopVideo": "Pysäytä tallennus",
+      "videoCaptured": "Video tallennettu",
+      "recordAgain": "Tallenna uudelleen",
+      "cameraDenied": "Kameran käyttöoikeus ei ole saatavilla",
+      "cameraDeniedHint": "Ota käyttöön kameran käyttöoikeudet selaimesi asetuksista videoskannauksen käyttämiseksi",
+      "continueWithoutVideo": "Jatka ilman videota",
+      "photoAdded": "Valokuva lisätty",
+      "voiceAdded": "Ääni lisätty",
+      "videoAdded": "Video lisätty",
+      "generatingWithScan": "Analysoidaan skannausdataasi kosmisilla linjauksilla...",
+      "generatingMoodOnly": "Yhdistetään mielialasi nykyiseen kosmiseen säähän...",
+      "chatTitle": "Kysy lukemisestasi",
+      "chatPlaceholder": "Kysy lukemisestasi...",
+      "chatError": "Anteeksi, en voinut käsitellä kysymystäsi. Yritä uudelleen.",
+      "chatLimitReached": "Ilmaisten jatkokysymysten raja saavutettu. Päivitä saadaksesi rajattomasti kysymyksiä.",
+      "chatLimitInfo": "{{remaining}}/{{total}} ilmaista jatkokysymystä jäljellä"
     },
     "galacticClockPage": {
       "title": "Galaktinen kello",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Mysteeriihaailija",
       "rose": "Ruusu",
       "likeBack": "Tykkaa takaisin",
-      "matching": "Yhdistetaan..."
+      "matching": "Yhdistetaan...",
+      "upgradeToSeeAll": "Päivitä nähdäksesi kaikki tykkäyksesi",
+      "upgradeHintMore": "{{count}} muuta henkilöä tykkäsi sinusta — päivitä paljastaaksesi heidät kaikki"
     },
     "matches": {
       "title": "Vastaavuutesi",
@@ -662,7 +729,10 @@
       "cancel": "Peruuta",
       "matchedToday": "Yhdistetty tanaan",
       "matchedDaysAgo": "Yhdistetty {{days}} pv sitten",
-      "cosmicMatch": "Kosminen vastaavuus"
+      "cosmicMatch": "Kosminen vastaavuus",
+      "upgradeToSeeAll": "Päivitä nähdäksesi kaikki ottelusi",
+      "moreMatchesWaiting": "{{count}} lisää kosmisia yhteyksiä odottaa sinua",
+      "upgradeCta": "Näytä kaikki ottelut"
     },
     "profile": {
       "title": "Seurusteluprofiili",
@@ -771,7 +841,7 @@
       },
       "noUpcoming": "Ei tulevia tapahtumia juuri nyt. Tarkista pian uudelleen!",
       "noRegistered": "Et ole ilmoittautunut mihinkaan tapahtumaan viela.",
-      "live": "LIVE",
+      "live": "LIVENÄ",
       "maxCount": "Enintaan {{count}}",
       "elementOnly": "Vain {{element}}-merkit",
       "registered": "Ilmoittautunut",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Ottelusi",
+      "loading": "Luen energiakenttäsi...",
+      "matchNotFound": "Ottelua ei löytynyt",
+      "noMyAura": "Tarvitset ensin vähintään yhden Aura Mirror -skannauksen. Siirry Lukemiset > Aura Mirror skannataksesi aurasi.",
+      "noPartnerAura": "{{name}} ei ole vielä tehnyt Aura Mirror -skannausta. Hänen aura-datansa ilmestyy tänne, kun hän tekee sen.",
+      "loadError": "Aura-datan lataaminen epäonnistui. Yritä uudelleen.",
+      "scanAura": "Skannaa auraasi",
+      "auraChemistry": "Auran kemia",
+      "harmoniousLabel": "Luonnollisesti harmoninen",
+      "warmLabel": "Lämmin yhteys",
+      "growthLabel": "Kasvumahdollisuus",
+      "differentLabel": "Eri taajuudet",
+      "harmonyBreakdown": "Harmonian hajoaminen",
+      "emotionalSafety": "Emotionaalinen turvallisuus",
+      "attractionHeat": "Vetovoiman lämpö",
+      "communication": "Viestintä",
+      "conflictWeather": "Konfliktisää",
+      "clearSkies": "Selkeät taivaat",
+      "someStorms": "Joita myrskyjä",
+      "turbulent": "Myllertävä"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Luo ensimmainen julkaisusi"
     },
     "loadMore": "Lataa lisaa",
-    "loading": "Ladataan..."
+    "loading": "Ladataan...",
+    "shareReading": {
+      "title": "Jaa kosminen kokemuksesi",
+      "subtitle": "Kerro yhteisölle, mitä tähdet sanovat sinulle",
+      "templates": {
+        "aura": "Sain juuri aura-lukemani! Ulkoinen aurani loistaa",
+        "transit": "Transit-lukemani tuntuu erilaiselta tänään... voiko joku samaistua?",
+        "moon": "Kuun tarkistus: tunnen {{moonPhase}} energian tänä iltana",
+        "zodiac": "Onko muita {{sign}} nousuja, jotka tuntevat tämän muutoksen?",
+        "tarot": "Vedettiin tänään kortteja ja viesti oli kristallinkirkas"
+      },
+      "quickPost": "Nopea julkaisu",
+      "viewReadings": "Näe lukemiset",
+      "viewCommunities": "Selaa yhteisöjä"
+    },
+    "trending": {
+      "title": "Suosituimmat",
+      "clearFilter": "Tyhjennä suodatin",
+      "noResults": "Ei viestejä löytynyt tagille {{tag}}"
+    }
   },
   "friends": {
     "title": "Ystavat ja yhteydet",
@@ -1032,7 +1144,7 @@
       "bio": "Biografia",
       "bigThree": "Kolme suurta",
       "starseedOrigin": "Tahdensiemen-alkupera",
-      "humanDesign": "Human Design",
+      "humanDesign": "Ihmisen suunnittelu",
       "joined": "Liittynyt",
       "alignCode": "Align-koodi"
     },
@@ -1129,11 +1241,11 @@
       "communityGuidelines": "Yhteison saannot"
     },
     "languages": {
-      "en": "English",
+      "en": "Englanti",
       "es": "Espanol",
       "fr": "Francais",
-      "de": "Deutsch",
-      "it": "Italiano",
+      "de": "Saksa",
+      "it": "Italia",
       "pt": "Portugues",
       "ru": "Russkij",
       "ja": "Nihongo",
@@ -1142,12 +1254,12 @@
       "ar": "Al-Arabiya",
       "hi": "Hindi",
       "tr": "Turkce",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
+      "pl": "Puola",
+      "nl": "Hollanti",
+      "sv": "Ruotsi",
+      "da": "Tanska",
       "fi": "Suomi",
-      "nb": "Norsk",
+      "nb": "Norja",
       "th": "Thai"
     },
     "admin": {
@@ -1182,7 +1294,7 @@
         "campanus": "Campanus",
         "regiomontanus": "Regiomontanus",
         "equal": "Tasa-arvoinen huone",
-        "porphyry": "Porphyry",
+        "porphyry": "Porfyri",
         "alcabitius": "Alcabitius",
         "topocentric": "Toposentrinen",
         "morinus": "Morinus",
@@ -1480,6 +1592,23 @@
       "noPackages": "Tilauspaketteja viimeistellaan kaupassa. Yrita myohemmin uudelleen.",
       "connectionFailed": "Tilauspalveluun ei saatu yhteytta. Tarkista yhteytesi ja yrita uudelleen.",
       "stillStarting": "Tilauspalvelu kaynnistyy viela. Odota hetki ja yrita uudelleen."
+    },
+    "paymentUnavailable": "Meillä oli ongelmia maksupalveluntarjoajamme kanssa. Yritä hetken kuluttua uudelleen.",
+    "cardDeclined": "Korttisi hylättiin. Päivitä maksutapa ja yritä uudelleen.",
+    "checkoutFailed": "Jotain meni pieleen tilauksen aloittamisessa. Yritä uudelleen.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Aloita kosminen matkasi",
+      "cta": "Hanki Starter",
+      "bestFor": "Onko kukaan valmis menemään perusasioiden yli täydellisten syntymäkarttojen ja päivittäisten oivallusten avulla.",
+      "features": [
+        "10 AI-lukuja kuukaudessa",
+        "Täydellinen syntymäkartta (kaikki planeetat)",
+        "Päivittäiset henkilökohtaiset transitioilmoitukset",
+        "Aura Peili rajoittamattomat skannaukset",
+        "Kosminen Päiväkirja rajoittamattomat merkinnät",
+        "Sielulahjat & Sielumuisti pääsy"
+      ]
     }
   },
   "courses": {
@@ -1554,7 +1683,7 @@
     }
   },
   "worldEcho": {
-    "title": "World Echo",
+    "title": "Maailman Kaiku",
     "subtitle": "Kuinka kosmiset tapahtumat heijastuvat ihmiskunnan historiaan",
     "categories": {
       "political": "Poliittinen",
@@ -1602,7 +1731,12 @@
     "loading": "Ladataan kirjanmerkkejä...",
     "empty": "Ei kirjanmerkkejä vielä",
     "emptyHint": "Tallenna julkaisuja syötteestä lukeaksesi myöhemmin",
-    "postUnavailable": "Julkaisu ei ole enää saatavilla"
+    "postUnavailable": "Julkaisu ei ole enää saatavilla",
+    "filterAll": "Kaikki",
+    "filterPosts": "Julkaisut",
+    "filterReadings": "Luku",
+    "saved": "Tallennettu",
+    "unbookmark": "Poista kirjanmerkki"
   },
   "celebrityMatches": {
     "title": "Julkkisvastaavuudet",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Luojastudio",
-    "subtitle": "Luo ja hallitse kosmista sisaltoasi"
+    "subtitle": "Luo ja hallitse kosmista sisaltoasi",
+    "applyTitle": "Tule luojaksi",
+    "applyDescription": "Jaa astrologiset näkemyksesi, rakenna seuraajakunta ja ansaitse sisällöstäsi.",
+    "applyButton": "Hae luojaksi",
+    "applying": "Hakee...",
+    "benefitReadings": "Jaa lukemiset",
+    "benefitReadingsHint": "Julkaise tulkintoja ja näkemyksiä",
+    "benefitCommunity": "Rakenna yhteisö",
+    "benefitCommunityHint": "Hanki seuraajia ja vaikutusvaltaa",
+    "benefitEarn": "Ansaitse tuloja",
+    "benefitEarnHint": "Hyödynnä asiantuntemustasi",
+    "statPosts": "Julkaisut",
+    "statReactions": "Reaktiot",
+    "statViews": "Näytöt",
+    "statFollowers": "Seuraajat",
+    "statEarnings": "Tulokset",
+    "statThisMonth": "Tämä kuukausi",
+    "createPost": "Luo julkaisu",
+    "createPostHint": "Jaa näkemyksiä yhteisölle",
+    "createPoll": "Luo kysely",
+    "createPollHint": "Osallistu kyselyihin ja kysymyksiin",
+    "myCommunities": "Omat yhteisöt",
+    "myCommunitiesHint": "Hallitse ryhmiäsi",
+    "shareReading": "Jaa lukeminen",
+    "shareReadingHint": "Julkaise karttatulkintoja",
+    "signInRequired": "Kirjaudu sisään päästäksesi Creator Studioon",
+    "loading": "Ladataan studioa..."
   },
   "qa": {
     "title": "Kysymykset ja vastaukset",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Valitse pakettisi",
-    "subtitle": "Avaa Alignin tayssi voima"
+    "subtitle": "Avaa Alignin tayssi voima",
+    "monthly": "Kuukausittain",
+    "annual": "Vuosittain",
+    "saveUpTo": "Säästä jopa 40%",
+    "bestValue": "Paras arvo",
+    "perYear": "/vuosi",
+    "saveMoney": "Tallenna ${{amount}}",
+    "foreverFree": "Ilmainen ikuisesti",
+    "billedMonthly": "Laskutetaan kuukausittain",
+    "lessThanCoffee": "Alle kahvin hinta kuukaudessa",
+    "currentPlan": "Nykyinen suunnitelma",
+    "getPlan": "Hanki {{name}}"
   },
   "gallery": {
     "title": "Galleria",
@@ -1759,7 +1930,7 @@
       "home": "Koti",
       "discover": "Tutustu",
       "cosmicFeed": "Kosminen syote",
-      "worldEcho": "World Echo",
+      "worldEcho": "Maailman Kaiku",
       "chart": "Karttani",
       "cosmicWeather": "Kosminen saa",
       "readings": "Luennat",
@@ -1780,7 +1951,11 @@
       "more": "Lisaa",
       "chat": "Keskustelu",
       "yourProfile": "Profiilisi",
-      "viewProfile": "Nayta profiilisi"
+      "viewProfile": "Nayta profiilisi",
+      "search": "Haku",
+      "bookmarks": "Kirjanmerkit",
+      "polls": "Kyselyt",
+      "creatorStudio": "Luojastudio"
     },
     "feedCard": {
       "like": "Tykkaa",
@@ -1965,8 +2140,71 @@
   },
   "tiers": {
     "free": "Ilmainen",
-    "light": "Light",
+    "light": "Kevyt",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Aloittelija"
+  },
+  "search": {
+    "title": "Haku",
+    "placeholder": "Hae kosmosta...",
+    "searching": "Etsii tähtiä...",
+    "noResults": "Ei kosmisia osumia löytynyt",
+    "noResultsHint": "Kokeile erilaisia avainsanoja tai tarkista oikeinkirjoitus",
+    "emptyTitle": "Hae ihmisiä, julkaisuja ja yhteisöjä",
+    "emptyHint": "Löydä kosmisia yhteyksiä universumissa",
+    "recentSearches": "Viimeisimmät haut",
+    "tabAll": "Kaikki",
+    "tabUsers": "Käyttäjät",
+    "tabPosts": "Julkaisut",
+    "tabCommunities": "Yhteisöt",
+    "tabReels": "Reels",
+    "badgeUser": "Käyttäjä",
+    "badgePost": "Julkaisu",
+    "badgeCommunity": "Yhteisö",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Uutta Alignissa",
+    "gotIt": "Ymmärrän"
+  },
+  "gettingStarted": {
+    "title": "Aloittaminen",
+    "readHoroscope": "Lue päivittäinen horoskooppisi",
+    "tryReading": "Kokeile AI-lukemista",
+    "viewNatal": "Katso syntymäkarttasi",
+    "shareFeed": "Vieraile kosmisessa syötteessä",
+    "completeProfile": "Täydennä profiilisi",
+    "congrats": "Olet valmis! Tervetuloa kosmokseen."
+  },
+  "coachmarks": {
+    "of": "of",
+    "next": "Seuraava",
+    "skip": "Ohita kierros",
+    "finish": "Valmis",
+    "dailyBrief": {
+      "title": "Päivittäinen kosminen tiivistelmäsi",
+      "description": "Aloita jokainen päivä täältä. Saat henkilökohtaisen kosmisen korttisi, kuun vaiheen, energian ennusteen ja päivittäiset ohjeet, jotka on räätälöity kartallesi."
+    },
+    "quickAccess": {
+      "title": "AI-vetoiset lukemiset",
+      "description": "Nopea pääsy syntymäkarttaasi, transiitteihin, tarot-kortteihin, yhteensopivuuslukemisiin ja muuhun. Napauta mitä tahansa korttia syventyäksesi."
+    },
+    "natalChart": {
+      "title": "Syntymäkarttasi",
+      "description": "Tutki täydellistä syntymäkarttaasi planeettoineen, huoneineen, aspekteineen ja yksityiskohtaisine tulkintoineen jokaisesta sijainnista."
+    },
+    "feed": {
+      "title": "Yhteisön syöte",
+      "description": "Jaa kosmisia hetkiä, julkaise oivalluksia, reagoi muiden julkaisuisiin ja yhdisty tähtitieteilijöiden kanssa."
+    },
+    "aiAstrologer": {
+      "title": "AI-astrologi",
+      "description": "Keskustele henkilökohtaisen AI-astrologisi kanssa. Kysy mitä tahansa kartastasi, transiiteista, suhteista tai kosmisesta ajoituksesta."
+    },
+    "courses": {
+      "title": "Opettele astrologiaa",
+      "description": "Rakenteelliset kurssit syventämään astrologista tietämystäsi, aloittelijan perusteista edistyneisiin tekniikoihin."
+    }
   }
 }

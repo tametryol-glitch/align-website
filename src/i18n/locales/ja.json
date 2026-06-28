@@ -140,7 +140,10 @@
         "name": "水",
         "feel": "あなたは感情に突き動かされている。直感、共感、感情の深さ——これらはソフトスキルじゃない、あなたの第一の知性だ。あなたの課題は、どの感情が自分のものかを見分けること。"
       }
-    }
+    },
+    "enterTheCosmos": "宇宙に入る",
+    "revealLoading": "星を読み取っています...",
+    "continueToDashboard": "ダッシュボードに進む"
   },
   "home": {
     "greeting": "こんにちは、{{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "現在のトランジット",
     "moonPhase": "月の満ち欠け",
     "planetaryHours": "プラネタリーアワー",
-    "quickAccess": "クイックアクセス"
+    "quickAccess": "クイックアクセス",
+    "worldEchoTitle": "今日の宇宙の歴史",
+    "worldEchoSimilar": "今日の空を反映するアライメントの下で",
+    "worldEchoSeeMore": "さらにエコーを探る"
   },
   "chart": {
     "natal": "出生チャート",
@@ -289,7 +295,12 @@
         "obstacle": "障害",
         "hiddenFactor": "隠れた要因",
         "advice": "アドバイス"
-      }
+      },
+      "listenToReading": "リーディングを聞く",
+      "stopListening": "聞くのを止める",
+      "summoningVoice": "彼女の声を呼び出しています…",
+      "sheIsReading": "彼女があなたのカードを読み取っています…",
+      "voiceUnavailable": "音声を再生できませんでした。接続を確認して再試行してください。"
     },
     "dreamOraclePage": {
       "title": "ドリームオラクル",
@@ -530,7 +541,61 @@
       "recentScans": "最近のスキャン",
       "noEntries": "まだオーラスキャンがありません。",
       "firstScan": "最初のスキャンを開始",
-      "needMoreScans": "パターン分析には最低3回のスキャンが必要です"
+      "needMoreScans": "パターン分析には最低3回のスキャンが必要です",
+      "chooseYourScan": "スキャンを選択",
+      "scanModeHint": "各モードは異なる方法であなたのエネルギーを読み取ります",
+      "pictureScanTitle": "オーラスキャンの写真",
+      "pictureScanDesc": "セルフィーを撮るか、写真をアップロードしてください",
+      "voiceScanTitle": "オーラスキャンの音声",
+      "voiceScanDesc": "今感じていることをAlignに伝えてください",
+      "videoScanTitle": "ライブビデオスキャン",
+      "videoScanDesc": "あなたのエネルギーの15秒ビデオ",
+      "deepReadingTitle": "ディープオーラリーディング",
+      "deepReadingDesc": "写真 + 音声 + 気分 + 星占いの組み合わせ",
+      "quickScan": "クイックスキャン — 気分 + 星占いのみ",
+      "photoStepDeep": "ステップ1: 写真",
+      "photoStepTitle": "あなたの写真を撮る",
+      "photoStepDesc": "カメラを見つめてください。Alignがあなたの表情のエネルギーを読み取ります。",
+      "takeSelfie": "セルフィーを撮る",
+      "uploadPhoto": "写真をアップロード",
+      "skipPhoto": "写真をスキップ",
+      "retake": "再撮影",
+      "continue": "続ける",
+      "voiceStepDeep": "ステップ 2: 音声",
+      "voiceStepTitle": "音声オーラスキャン",
+      "voiceStepDesc": "今感じていることをAlignに伝えてください。自然に10〜60秒話してください。",
+      "analyzingVoice": "音声を分析中...",
+      "listening": "聞いています...",
+      "speakNaturally": "感じていることについて自然に話してください",
+      "stopRecording": "停止",
+      "startRecording": "録音開始",
+      "orType": "または入力してください",
+      "typeFeelingPlaceholder": "感じていることを入力...",
+      "skipVoice": "音声スキャンをスキップ",
+      "voiceCaptured": "音声をキャプチャしました",
+      "detectedTone": "検出されたトーン:",
+      "micDenied": "マイクへのアクセスがありません",
+      "micDeniedHint": "代わりに感じていることを入力できます",
+      "videoStepTitle2": "ライブビデオスキャン",
+      "videoStepDesc": "カメラを見て、普通に呼吸してください。15秒間録画します。",
+      "recordVideo": "ビデオを録画",
+      "skipVideo": "ビデオスキャンをスキップ",
+      "stopVideo": "録画停止",
+      "videoCaptured": "ビデオをキャプチャしました",
+      "recordAgain": "再録画",
+      "cameraDenied": "カメラへのアクセスがありません",
+      "cameraDeniedHint": "ビデオスキャンを使用するには、ブラウザの設定でカメラの権限を有効にしてください",
+      "continueWithoutVideo": "ビデオなしで続ける",
+      "photoAdded": "写真が追加されました",
+      "voiceAdded": "音声が追加されました",
+      "videoAdded": "ビデオが追加されました",
+      "generatingWithScan": "宇宙のアライメントでスキャンデータを分析中...",
+      "generatingMoodOnly": "現在の宇宙の天気とあなたの気分を結びつけています...",
+      "chatTitle": "リーディングについて尋ねる",
+      "chatPlaceholder": "リーディングについて尋ねています...",
+      "chatError": "申し訳ありませんが、あなたの質問を処理できませんでした。もう一度お試しください。",
+      "chatLimitReached": "無料のフォローアップ制限に達しました。無制限の質問のためにアップグレードしてください。",
+      "chatLimitInfo": "{{remaining}} / {{total}} の無料フォローアップが残っています"
     },
     "galacticClockPage": {
       "title": "ギャラクティッククロック",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "秘密の崇拝者",
       "rose": "ローズ",
       "likeBack": "いいねを返す",
-      "matching": "マッチング中..."
+      "matching": "マッチング中...",
+      "upgradeToSeeAll": "すべてのいいねを表示するにはアップグレードしてください",
+      "upgradeHintMore": "{{count}} 人があなたをもっといいねしました — すべてを表示するにはアップグレードしてください"
     },
     "matches": {
       "title": "あなたのマッチ",
@@ -662,7 +729,10 @@
       "cancel": "キャンセル",
       "matchedToday": "今日マッチ",
       "matchedDaysAgo": "{{days}}日前にマッチ",
-      "cosmicMatch": "コズミックマッチ"
+      "cosmicMatch": "コズミックマッチ",
+      "upgradeToSeeAll": "すべてのマッチを表示するにはアップグレードしてください",
+      "moreMatchesWaiting": "{{count}} の宇宙的なつながりがあなたを待っています",
+      "upgradeCta": "すべてのマッチを見る"
     },
     "profile": {
       "title": "デーティングプロフィール",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "オーラシナストリー",
+      "yourMatch": "あなたのマッチ",
+      "loading": "あなたのエネルギーフィールドを読み取っています...",
+      "matchNotFound": "マッチが見つかりません",
+      "noMyAura": "最初に少なくとも1つのオーラミラーのスキャンが必要です。リーディング > オーラミラーに移動してオーラをスキャンしてください。",
+      "noPartnerAura": "{{name}} はまだオーラミラーのスキャンを行っていません。彼らのオーラデータはスキャン後にここに表示されます。",
+      "loadError": "オーラデータの読み込みに失敗しました。もう一度お試しください。",
+      "scanAura": "あなたのオーラをスキャンする",
+      "auraChemistry": "オーラケミストリー",
+      "harmoniousLabel": "自然に調和している",
+      "warmLabel": "温かいつながり",
+      "growthLabel": "成長の可能性",
+      "differentLabel": "異なる周波数",
+      "harmonyBreakdown": "調和の崩壊",
+      "emotionalSafety": "感情的な安全",
+      "attractionHeat": "魅力の熱",
+      "communication": "コミュニケーション",
+      "conflictWeather": "対立の天気",
+      "clearSkies": "晴れ",
+      "someStorms": "いくつかの嵐",
+      "turbulent": "不安定"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "最初の投稿を作成"
     },
     "loadMore": "もっと読み込む",
-    "loading": "読み込み中..."
+    "loading": "読み込み中...",
+    "shareReading": {
+      "title": "あなたの宇宙体験を共有",
+      "subtitle": "コミュニティに星が何を言っているか知らせてください",
+      "templates": {
+        "aura": "オーラリーディングを受けたばかり！外側のオーラが輝いています",
+        "transit": "今日のトランジットリーディングは違う感じ...誰か共感できる？",
+        "moon": "月のチェックイン：今夜の{{moonPhase}}エネルギーを感じています",
+        "zodiac": "他の{{sign}}のアセンダントもこの変化を感じていますか？",
+        "tarot": "今日はカードを引いて、メッセージは明確でした"
+      },
+      "quickPost": "クイック投稿",
+      "viewReadings": "リーディングを見る",
+      "viewCommunities": "コミュニティをブラウズ"
+    },
+    "trending": {
+      "title": "トレンド",
+      "clearFilter": "フィルターをクリア",
+      "noResults": "{{tag}}の投稿は見つかりませんでした"
+    }
   },
   "friends": {
     "title": "友達とつながり",
@@ -1129,25 +1241,25 @@
       "communityGuidelines": "コミュニティガイドライン"
     },
     "languages": {
-      "en": "English",
-      "es": "Español",
-      "fr": "Français",
-      "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "en": "英語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "de": "ドイツ語",
+      "it": "イタリア語",
+      "pt": "ポルトガル語",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
       "zh": "中文",
       "ar": "العربية",
       "hi": "हिन्दी",
-      "tr": "Türkçe",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "tr": "トルコ語",
+      "pl": "ポーランド語",
+      "nl": "オランダ語",
+      "sv": "スウェーデン語",
+      "da": "デンマーク語",
+      "fi": "フィンランド語",
+      "nb": "ノルウェー語",
       "th": "ไทย"
     },
     "admin": {
@@ -1373,7 +1485,7 @@
       ]
     },
     "light": {
-      "name": "Light",
+      "name": "ライト",
       "price": "$9",
       "tagline": "あなたの毎日の宇宙的なコンパニオン",
       "cta": "Lightで始める",
@@ -1388,7 +1500,7 @@
       ]
     },
     "premium": {
-      "name": "Premium",
+      "name": "プレミアム",
       "price": "$19",
       "tagline": "あなたの完全な宇宙的設計図をアンロック",
       "badge": "最も人気",
@@ -1408,7 +1520,7 @@
       ]
     },
     "pro": {
-      "name": "Pro",
+      "name": "プロ",
       "price": "$29",
       "tagline": "本格的な実践者のために",
       "cta": "Proにする",
@@ -1480,6 +1592,23 @@
       "noPackages": "ストアでサブスクリプションプランを最終調整中です。後でもう一度お試しください。",
       "connectionFailed": "サブスクリプションサービスに接続できませんでした。接続を確認してもう一度お試しください。",
       "stillStarting": "サブスクリプションサービスはまだ起動中です。少し待ってから再試行してください。"
+    },
+    "paymentUnavailable": "決済プロバイダーへの接続に問題が発生しました。しばらくしてから再試行してください。",
+    "cardDeclined": "カードが拒否されました。支払い方法を更新して再試行してください。",
+    "checkoutFailed": "サブスクリプションの開始中に問題が発生しました。再試行してください。",
+    "starter": {
+      "name": "スターター",
+      "tagline": "あなたの宇宙の旅を始めましょう",
+      "cta": "スターターを取得",
+      "bestFor": "フルネイタルチャートと日々の洞察で基本を超えたい方。",
+      "features": [
+        "月に10回のAIリーディング",
+        "フルネイタルチャート（すべての惑星）",
+        "毎日のパーソナライズされたトランジット通知",
+        "オーラミラー無制限スキャン",
+        "コズミックジャーナル無制限エントリー",
+        "ソウルギフト＆ソウルメモリーアクセス"
+      ]
     }
   },
   "courses": {
@@ -1602,7 +1731,12 @@
     "loading": "ブックマークを読み込み中...",
     "empty": "まだブックマークはありません",
     "emptyHint": "フィードの投稿を保存して後で読む",
-    "postUnavailable": "投稿は利用できなくなりました"
+    "postUnavailable": "投稿は利用できなくなりました",
+    "filterAll": "すべて",
+    "filterPosts": "投稿",
+    "filterReadings": "リーディング",
+    "saved": "保存済み",
+    "unbookmark": "ブックマークを削除"
   },
   "celebrityMatches": {
     "title": "セレブリティマッチ",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "クリエイタースタジオ",
-    "subtitle": "宇宙的なコンテンツを作成・管理"
+    "subtitle": "宇宙的なコンテンツを作成・管理",
+    "applyTitle": "クリエイターになる",
+    "applyDescription": "あなたの占星術の洞察を共有し、フォロワーを増やし、コンテンツから収益を得ましょう。",
+    "applyButton": "クリエイターとして応募",
+    "applying": "応募中...",
+    "benefitReadings": "リーディングを共有",
+    "benefitReadingsHint": "解釈と洞察を投稿",
+    "benefitCommunity": "コミュニティを築く",
+    "benefitCommunityHint": "フォロワーと影響力を得る",
+    "benefitEarn": "収益を得る",
+    "benefitEarnHint": "専門知識をマネタイズ",
+    "statPosts": "投稿",
+    "statReactions": "リアクション",
+    "statViews": "ビュー",
+    "statFollowers": "フォロワー",
+    "statEarnings": "収益",
+    "statThisMonth": "今月",
+    "createPost": "投稿を作成",
+    "createPostHint": "コミュニティと洞察を共有",
+    "createPoll": "投票を作成",
+    "createPollHint": "投票や質問に参加",
+    "myCommunities": "私のコミュニティ",
+    "myCommunitiesHint": "グループを管理",
+    "shareReading": "リーディングを共有",
+    "shareReadingHint": "チャート解釈を投稿",
+    "signInRequired": "クリエイタースタジオにアクセスするにはサインインしてください",
+    "loading": "スタジオを読み込み中..."
   },
   "qa": {
     "title": "Q&A",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "プランを選ぶ",
-    "subtitle": "Alignのフルパワーをアンロック"
+    "subtitle": "Alignのフルパワーをアンロック",
+    "monthly": "月次",
+    "annual": "年次",
+    "saveUpTo": "最大40%オフ",
+    "bestValue": "最良の価値",
+    "perYear": "/年",
+    "saveMoney": "${{amount}}を節約",
+    "foreverFree": "永久に無料",
+    "billedMonthly": "月額請求",
+    "lessThanCoffee": "月にコーヒー1杯未満",
+    "currentPlan": "現在のプラン",
+    "getPlan": "{{name}}を取得"
   },
   "gallery": {
     "title": "ギャラリー",
@@ -1780,7 +1951,11 @@
       "videoCreator": "動画クリエイター",
       "viewProfile": "プロフィールを見る",
       "worldEcho": "ワールドエコー",
-      "yourProfile": "あなたのプロフィール"
+      "yourProfile": "あなたのプロフィール",
+      "search": "検索",
+      "bookmarks": "ブックマーク",
+      "polls": "投票",
+      "creatorStudio": "クリエイタースタジオ"
     },
     "feedCard": {
       "like": "いいね",
@@ -1965,8 +2140,71 @@
   },
   "tiers": {
     "free": "無料",
-    "light": "Light",
-    "premium": "Premium",
-    "pro": "Pro"
+    "light": "ライト",
+    "premium": "プレミアム",
+    "pro": "プロ",
+    "starter": "スターター"
+  },
+  "search": {
+    "title": "検索",
+    "placeholder": "宇宙を検索中...",
+    "searching": "星を検索中...",
+    "noResults": "コズミックマッチが見つかりませんでした",
+    "noResultsHint": "異なるキーワードを試すか、スペルを確認してください",
+    "emptyTitle": "人、投稿、コミュニティを検索",
+    "emptyHint": "宇宙全体の宇宙的なつながりを発見",
+    "recentSearches": "最近の検索",
+    "tabAll": "すべて",
+    "tabUsers": "ユーザー",
+    "tabPosts": "投稿",
+    "tabCommunities": "コミュニティ",
+    "tabReels": "リール",
+    "badgeUser": "ユーザー",
+    "badgePost": "投稿",
+    "badgeCommunity": "コミュニティ",
+    "badgeReel": "リール"
+  },
+  "whatsNew": {
+    "title": "Alignの新機能",
+    "gotIt": "了解しました"
+  },
+  "gettingStarted": {
+    "title": "はじめに",
+    "readHoroscope": "日々のホロスコープを読む",
+    "tryReading": "AIリーディングを試す",
+    "viewNatal": "出生図を表示",
+    "shareFeed": "コズミックフィードを訪れる",
+    "completeProfile": "プロフィールを完成させる",
+    "congrats": "すべて準備完了！宇宙へようこそ。"
+  },
+  "coachmarks": {
+    "of": "の",
+    "next": "次へ",
+    "skip": "ツアーをスキップ",
+    "finish": "終了",
+    "dailyBrief": {
+      "title": "あなたのデイリーコズミックブリーフ",
+      "description": "ここから毎日を始めましょう。あなたのチャートに合わせたパーソナライズされたコズミックカード、月のフェーズ、エネルギー予報、日々のガイダンスを取得します。"
+    },
+    "quickAccess": {
+      "title": "AIによるリーディング",
+      "description": "出生図、トランジット、タロット、相性リーディングなどへの迅速なアクセス。任意のカードをタップして深く掘り下げてください。"
+    },
+    "natalChart": {
+      "title": "あなたの出生図",
+      "description": "惑星、ハウス、アスペクト、各配置の詳細な解釈を含む完全な出生図を探索します。"
+    },
+    "feed": {
+      "title": "コミュニティフィード",
+      "description": "コズミックな瞬間を共有し、洞察を投稿し、他の投稿に反応し、星を見上げる仲間とつながります。"
+    },
+    "aiAstrologer": {
+      "title": "AI占星術師",
+      "description": "あなたの個人のAI占星術師とチャット。チャート、トランジット、関係、またはコズミックタイミングについて何でも質問してください。"
+    },
+    "courses": {
+      "title": "占星術を学ぶ",
+      "description": "初心者の基本から高度な技術まで、占星術の知識を深めるための構造化されたコース。"
+    }
   }
 }

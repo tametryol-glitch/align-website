@@ -29,8 +29,8 @@
     "signupFailed": "注册失败。",
     "orContinueWith": "或通过以下方式继续",
     "orSignUpWithEmail": "或使用邮箱注册",
-    "apple": "Apple",
-    "google": "Google",
+    "apple": "苹果",
+    "google": "谷歌",
     "displayName": "显示名称",
     "yourName": "您的姓名",
     "dateOfBirth": "出生日期",
@@ -140,7 +140,10 @@
         "name": "水",
         "feel": "你被感受驱动。你的直觉、你的共情、你的情感深度——这些不是软技能，它们是你的主要智慧。你的挑战是学会分辨哪些感受是你自己的。"
       }
-    }
+    },
+    "enterTheCosmos": "进入宇宙",
+    "revealLoading": "正在解读你的星星...",
+    "continueToDashboard": "继续到仪表板"
   },
   "home": {
     "greeting": "你好，{{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "当前行运",
     "moonPhase": "月相",
     "planetaryHours": "行星时",
-    "quickAccess": "快速访问"
+    "quickAccess": "快速访问",
+    "worldEchoTitle": "今天的宇宙历史",
+    "worldEchoSimilar": "在与今天的天空相映的排列下",
+    "worldEchoSeeMore": "探索更多回响"
   },
   "chart": {
     "natal": "本命盘",
@@ -289,7 +295,12 @@
         "obstacle": "障碍",
         "hiddenFactor": "隐藏因素",
         "advice": "建议"
-      }
+      },
+      "listenToReading": "听你的解读",
+      "stopListening": "停止听取",
+      "summoningVoice": "召唤她的声音…",
+      "sheIsReading": "她正在解读你的牌…",
+      "voiceUnavailable": "无法播放音频。请检查你的连接并重试。"
     },
     "dreamOraclePage": {
       "title": "梦境神谕",
@@ -530,7 +541,61 @@
       "recentScans": "最近扫描",
       "noEntries": "还没有光环扫描。",
       "firstScan": "开始你的第一次扫描",
-      "needMoreScans": "模式分析至少需要3次扫描"
+      "needMoreScans": "模式分析至少需要3次扫描",
+      "chooseYourScan": "选择你的扫描",
+      "scanModeHint": "每种模式以不同方式读取你的能量",
+      "pictureScanTitle": "图片气场扫描",
+      "pictureScanDesc": "拍一张自拍或上传照片",
+      "voiceScanTitle": "语音气场扫描",
+      "voiceScanDesc": "告诉Align你现在的感受",
+      "videoScanTitle": "实时视频扫描",
+      "videoScanDesc": "15秒的视频展示你的能量",
+      "deepReadingTitle": "深度气场解读",
+      "deepReadingDesc": "照片 + 语音 + 情绪 + 占星结合",
+      "quickScan": "快速扫描 — 仅情绪 + 占星",
+      "photoStepDeep": "步骤 1：照片",
+      "photoStepTitle": "拍摄你的照片",
+      "photoStepDesc": "看着摄像头。让 Align 读取你表情中的能量。",
+      "takeSelfie": "拍自拍",
+      "uploadPhoto": "上传照片",
+      "skipPhoto": "跳过照片",
+      "retake": "重新拍摄",
+      "continue": "继续",
+      "voiceStepDeep": "步骤 2：声音",
+      "voiceStepTitle": "声音气场扫描",
+      "voiceStepDesc": "告诉 Align 你现在的感受。自然地说 10-60 秒。",
+      "analyzingVoice": "正在分析你的声音...",
+      "listening": "正在监听...",
+      "speakNaturally": "自然地说出你的感受",
+      "stopRecording": "停止",
+      "startRecording": "开始录音",
+      "orType": "或输入",
+      "typeFeelingPlaceholder": "输入你的感受...",
+      "skipVoice": "跳过声音扫描",
+      "voiceCaptured": "声音已捕获",
+      "detectedTone": "检测到的语调：",
+      "micDenied": "麦克风访问不可用",
+      "micDeniedHint": "你可以输入你的感受",
+      "videoStepTitle2": "实时视频扫描",
+      "videoStepDesc": "看着摄像头，正常呼吸。录制 15 秒。",
+      "recordVideo": "录制视频",
+      "skipVideo": "跳过视频扫描",
+      "stopVideo": "停止录制",
+      "videoCaptured": "视频已捕获",
+      "recordAgain": "重新录制",
+      "cameraDenied": "相机访问不可用",
+      "cameraDeniedHint": "在浏览器设置中启用相机权限以使用视频扫描",
+      "continueWithoutVideo": "继续无视频",
+      "photoAdded": "照片已添加",
+      "voiceAdded": "语音已添加",
+      "videoAdded": "视频已添加",
+      "generatingWithScan": "正在分析您的扫描数据与宇宙对齐...",
+      "generatingMoodOnly": "正在将您的情绪与当前宇宙天气连接...",
+      "chatTitle": "询问您的解读",
+      "chatPlaceholder": "询问关于您的解读...",
+      "chatError": "抱歉，我无法处理您的问题。请再试一次。",
+      "chatLimitReached": "免费后续限制已达到。升级以获得无限提问。",
+      "chatLimitInfo": "{{remaining}} / {{total}} 次免费后续剩余"
     },
     "galacticClockPage": {
       "title": "银河时钟",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "神秘仰慕者",
       "rose": "玫瑰",
       "likeBack": "回赞",
-      "matching": "匹配中..."
+      "matching": "匹配中...",
+      "upgradeToSeeAll": "升级以查看您所有的点赞",
+      "upgradeHintMore": "{{count}} 更多人喜欢您 — 升级以查看他们全部"
     },
     "matches": {
       "title": "你的匹配",
@@ -662,7 +729,10 @@
       "cancel": "取消",
       "matchedToday": "今天匹配",
       "matchedDaysAgo": "{{days}}天前匹配",
-      "cosmicMatch": "宇宙匹配"
+      "cosmicMatch": "宇宙匹配",
+      "upgradeToSeeAll": "升级以查看您所有的匹配",
+      "moreMatchesWaiting": "{{count}} 更多宇宙连接在等待您",
+      "upgradeCta": "查看所有匹配"
     },
     "profile": {
       "title": "交友档案",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "气场合成",
+      "yourMatch": "您的匹配",
+      "loading": "正在读取您的能量场...",
+      "matchNotFound": "未找到匹配",
+      "noMyAura": "您需要先进行一次气场镜扫描。前往解读 > 气场镜以扫描您的气场。",
+      "noPartnerAura": "{{name}} 尚未进行气场镜扫描。他们的气场数据将在他们完成后出现在这里。",
+      "loadError": "加载气场数据失败。请再试一次。",
+      "scanAura": "扫描您的气场",
+      "auraChemistry": "气场化学",
+      "harmoniousLabel": "自然和谐",
+      "warmLabel": "温暖连接",
+      "growthLabel": "成长潜力",
+      "differentLabel": "不同频率",
+      "harmonyBreakdown": "和谐分析",
+      "emotionalSafety": "情感安全",
+      "attractionHeat": "吸引热度",
+      "communication": "沟通",
+      "conflictWeather": "冲突天气",
+      "clearSkies": "晴空万里",
+      "someStorms": "有些风暴",
+      "turbulent": "动荡不安"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "创建你的第一条帖子"
     },
     "loadMore": "加载更多",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "shareReading": {
+      "title": "分享你的宇宙体验",
+      "subtitle": "让社区知道星星在告诉你什么",
+      "templates": {
+        "aura": "刚刚得到了我的气场解读！我的外部气场在发光",
+        "transit": "我的过境解读今天感觉不同……有人能感同身受吗？",
+        "moon": "月亮检查：今晚感受到{{moonPhase}}的能量",
+        "zodiac": "其他{{sign}}上升的人有感觉到这种变化吗？",
+        "tarot": "今天抽了一些牌，信息清晰明了"
+      },
+      "quickPost": "快速发布",
+      "viewReadings": "查看解读",
+      "viewCommunities": "浏览社区"
+    },
+    "trending": {
+      "title": "热门",
+      "clearFilter": "清除筛选",
+      "noResults": "未找到与{{tag}}相关的帖子"
+    }
   },
   "friends": {
     "title": "好友与连接",
@@ -1129,25 +1241,25 @@
       "communityGuidelines": "社区准则"
     },
     "languages": {
-      "en": "English",
-      "es": "Español",
-      "fr": "Français",
-      "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "en": "英语",
+      "es": "西班牙语",
+      "fr": "法语",
+      "de": "德语",
+      "it": "意大利语",
+      "pt": "葡萄牙语",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
       "zh": "中文",
       "ar": "العربية",
       "hi": "हिन्दी",
-      "tr": "Türkçe",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "tr": "土耳其语",
+      "pl": "波兰语",
+      "nl": "荷兰语",
+      "sv": "瑞典语",
+      "da": "丹麦语",
+      "fi": "芬兰语",
+      "nb": "挪威语",
       "th": "ไทย"
     },
     "admin": {
@@ -1354,7 +1466,7 @@
       "bestFor": "适合对占星术好奇、想在投入前探索的新手。"
     },
     "light": {
-      "name": "Light",
+      "name": "轻量版",
       "price": "$9",
       "tagline": "清晰从这里开始。",
       "cta": "开始 Light",
@@ -1371,7 +1483,7 @@
       "bestFor": "适合想要日常宇宙指导和基本星盘洞察的休闲探索者。"
     },
     "premium": {
-      "name": "Premium",
+      "name": "高级版",
       "price": "$19",
       "tagline": "深度与清晰兼得。",
       "cta": "获取 Premium — 最超值",
@@ -1392,7 +1504,7 @@
       "bestFor": "适合准备深入了解完整占星蓝图和关系的爱好者。"
     },
     "pro": {
-      "name": "Pro",
+      "name": "专业版",
       "price": "$29",
       "tagline": "全貌呈现。毫无保留。",
       "cta": "解锁 Pro",
@@ -1483,7 +1595,24 @@
     "tapForDiagnostics": "点击此处显示诊断",
     "tapToRetry": "点击重试",
     "termsOfService": "服务条款",
-    "title": "选择您的道路"
+    "title": "选择您的道路",
+    "paymentUnavailable": "我们在联系支付服务提供商时遇到问题。请稍后再试。",
+    "cardDeclined": "您的卡被拒绝。请更新您的支付方式并重试。",
+    "checkoutFailed": "启动订阅时出现问题。请重试。",
+    "starter": {
+      "name": "入门版",
+      "tagline": "开始您的宇宙之旅",
+      "cta": "获取入门版",
+      "bestFor": "任何准备好超越基础，获取完整的本命盘和每日洞察的人。",
+      "features": [
+        "每月10次AI解读",
+        "完整本命盘（所有行星）",
+        "每日个性化过境通知",
+        "灵气镜无限扫描",
+        "宇宙日志无限条目",
+        "灵魂礼物与灵魂记忆访问"
+      ]
+    }
   },
   "courses": {
     "title": "学习占星",
@@ -1605,7 +1734,12 @@
     "loading": "正在加载书签...",
     "empty": "还没有书签",
     "emptyHint": "保存动态中的帖子以便稍后阅读",
-    "postUnavailable": "帖子已不可用"
+    "postUnavailable": "帖子已不可用",
+    "filterAll": "所有",
+    "filterPosts": "帖子",
+    "filterReadings": "解读",
+    "saved": "已保存",
+    "unbookmark": "移除书签"
   },
   "celebrityMatches": {
     "title": "名人匹配",
@@ -1652,7 +1786,33 @@
   },
   "creatorStudio": {
     "title": "创作工作室",
-    "subtitle": "创建和管理你的宇宙内容"
+    "subtitle": "创建和管理你的宇宙内容",
+    "applyTitle": "成为创作者",
+    "applyDescription": "分享你的占星见解，建立粉丝群，并从内容中获利。",
+    "applyButton": "申请成为创作者",
+    "applying": "申请中...",
+    "benefitReadings": "分享解读",
+    "benefitReadingsHint": "发布解读和见解",
+    "benefitCommunity": "建立社区",
+    "benefitCommunityHint": "获得粉丝和影响力",
+    "benefitEarn": "赚取收入",
+    "benefitEarnHint": "将你的专业知识变现",
+    "statPosts": "帖子",
+    "statReactions": "反应",
+    "statViews": "浏览量",
+    "statFollowers": "粉丝",
+    "statEarnings": "收入",
+    "statThisMonth": "本月",
+    "createPost": "创建帖子",
+    "createPostHint": "与社区分享见解",
+    "createPoll": "创建投票",
+    "createPollHint": "参与投票和问题",
+    "myCommunities": "我的社区",
+    "myCommunitiesHint": "管理你的群组",
+    "shareReading": "分享解读",
+    "shareReadingHint": "发布星盘解读",
+    "signInRequired": "请登录以访问创作者工作室",
+    "loading": "加载工作室..."
   },
   "qa": {
     "title": "问答",
@@ -1662,7 +1822,18 @@
   },
   "pricing": {
     "title": "选择套餐",
-    "subtitle": "解锁 Align 的全部功能"
+    "subtitle": "解锁 Align 的全部功能",
+    "monthly": "每月",
+    "annual": "每年",
+    "saveUpTo": "节省高达40%",
+    "bestValue": "最佳价值",
+    "perYear": "/年",
+    "saveMoney": "节省 ${{amount}}",
+    "foreverFree": "永久免费",
+    "billedMonthly": "按月计费",
+    "lessThanCoffee": "每月少于一杯咖啡",
+    "currentPlan": "当前计划",
+    "getPlan": "获取 {{name}}"
   },
   "gallery": {
     "title": "相册",
@@ -1783,7 +1954,11 @@
       "more": "更多",
       "chat": "聊天",
       "yourProfile": "你的档案",
-      "viewProfile": "查看你的档案"
+      "viewProfile": "查看你的档案",
+      "search": "搜索",
+      "bookmarks": "书签",
+      "polls": "投票",
+      "creatorStudio": "创作者工作室"
     },
     "feedCard": {
       "like": "喜欢",
@@ -1968,8 +2143,71 @@
   },
   "tiers": {
     "free": "免费",
-    "light": "Light",
-    "premium": "Premium",
-    "pro": "Pro"
+    "light": "轻量",
+    "premium": "高级",
+    "pro": "专业",
+    "starter": "入门"
+  },
+  "search": {
+    "title": "搜索",
+    "placeholder": "搜索宇宙...",
+    "searching": "正在搜索星星...",
+    "noResults": "未找到宇宙匹配",
+    "noResultsHint": "尝试不同的关键词或检查拼写",
+    "emptyTitle": "搜索用户、帖子和社区",
+    "emptyHint": "发现宇宙中的星际联系",
+    "recentSearches": "最近搜索",
+    "tabAll": "全部",
+    "tabUsers": "用户",
+    "tabPosts": "帖子",
+    "tabCommunities": "社区",
+    "tabReels": "短视频",
+    "badgeUser": "用户",
+    "badgePost": "帖子",
+    "badgeCommunity": "社区",
+    "badgeReel": "短视频"
+  },
+  "whatsNew": {
+    "title": "Align 的新功能",
+    "gotIt": "知道了"
+  },
+  "gettingStarted": {
+    "title": "开始使用",
+    "readHoroscope": "阅读你的每日星座运势",
+    "tryReading": "尝试AI解读",
+    "viewNatal": "查看你的出生图",
+    "shareFeed": "访问宇宙动态",
+    "completeProfile": "完善你的个人资料",
+    "congrats": "一切就绪！欢迎来到宇宙。"
+  },
+  "coachmarks": {
+    "of": "的",
+    "next": "下一步",
+    "skip": "跳过导览",
+    "finish": "完成",
+    "dailyBrief": {
+      "title": "你的每日宇宙简报",
+      "description": "每天从这里开始。获取个性化的宇宙卡片、月相、能量预测和根据你的星盘量身定制的每日指导。"
+    },
+    "quickAccess": {
+      "title": "AI驱动的解读",
+      "description": "快速访问你的出生图、行星过境、塔罗牌、兼容性解读等。点击任意卡片深入了解。"
+    },
+    "natalChart": {
+      "title": "你的出生图",
+      "description": "探索你的完整出生图，包括行星、宫位、相位以及每个位置的详细解读。"
+    },
+    "feed": {
+      "title": "社区动态",
+      "description": "分享宇宙时刻，发布见解，回应他人的帖子，与其他星空观察者联系。"
+    },
+    "aiAstrologer": {
+      "title": "AI占星师",
+      "description": "与个人AI占星师聊天。询问关于你的星盘、行星过境、关系或宇宙时机的任何问题。"
+    },
+    "courses": {
+      "title": "学习占星术",
+      "description": "结构化课程，深入你的占星知识，从初学者基础到高级技巧。"
+    }
   }
 }

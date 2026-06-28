@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Align" },
+  "app": {
+    "name": "Align"
+  },
   "tabs": {
     "home": "홈",
     "discover": "발견",
@@ -122,11 +124,26 @@
       "Pisces": "사람들은 당신을 꿈결 같고, 부드러우며, 이 세상 것이 아닌 사람으로 봅니다. 평범한 현실 바깥에 약간 존재하는 사람 — 오래된 영혼, 예술가, 치유자로 보입니다. 사람들은 이유도 모르고 당신에게 마음을 열어버립니다."
     },
     "elementBalance": {
-      "Fire": { "name": "불", "feel": "당신은 열정, 본능, 그리고 무언가를 이루어내야 한다는 흔들리지 않는 욕구에 의해 움직입니다. 영감으로 달리며 — 영감이 바닥나면 무너집니다." },
-      "Earth": { "name": "흙", "feel": "당신은 현실적이고, 실용적이며, 현실을 위해 만들어졌습니다. 보고 만질 수 있는 것을 신뢰합니다. 당신의 강점은 인내 — 위험은 진화할 때가 왔을 때 변화를 거부하는 것입니다." },
-      "Air": { "name": "공기", "feel": "당신은 마음속에 삽니다. 아이디어, 연결, 대화 — 거기서 가장 살아있음을 느낍니다. 당신의 재능은 관점입니다. 당신의 그림자는 몸과 마음으로부터 단절되는 것입니다." },
-      "Water": { "name": "물", "feel": "당신은 느낌에 의해 움직입니다. 직관, 공감, 감정적 깊이 — 이것들은 소프트 스킬이 아닙니다, 당신의 주된 지성입니다. 도전은 어떤 감정이 당신의 것인지 배우는 것입니다." }
-    }
+      "Fire": {
+        "name": "불",
+        "feel": "당신은 열정, 본능, 그리고 무언가를 이루어내야 한다는 흔들리지 않는 욕구에 의해 움직입니다. 영감으로 달리며 — 영감이 바닥나면 무너집니다."
+      },
+      "Earth": {
+        "name": "흙",
+        "feel": "당신은 현실적이고, 실용적이며, 현실을 위해 만들어졌습니다. 보고 만질 수 있는 것을 신뢰합니다. 당신의 강점은 인내 — 위험은 진화할 때가 왔을 때 변화를 거부하는 것입니다."
+      },
+      "Air": {
+        "name": "공기",
+        "feel": "당신은 마음속에 삽니다. 아이디어, 연결, 대화 — 거기서 가장 살아있음을 느낍니다. 당신의 재능은 관점입니다. 당신의 그림자는 몸과 마음으로부터 단절되는 것입니다."
+      },
+      "Water": {
+        "name": "물",
+        "feel": "당신은 느낌에 의해 움직입니다. 직관, 공감, 감정적 깊이 — 이것들은 소프트 스킬이 아닙니다, 당신의 주된 지성입니다. 도전은 어떤 감정이 당신의 것인지 배우는 것입니다."
+      }
+    },
+    "enterTheCosmos": "우주에 들어가기",
+    "revealLoading": "별을 읽는 중...",
+    "continueToDashboard": "대시보드로 계속하기"
   },
   "home": {
     "greeting": "안녕하세요, {{name}}",
@@ -134,7 +151,10 @@
     "currentTransits": "현재 트랜짓",
     "moonPhase": "달의 위상",
     "planetaryHours": "행성 시간",
-    "quickAccess": "빠른 접근"
+    "quickAccess": "빠른 접근",
+    "worldEchoTitle": "오늘의 우주 역사",
+    "worldEchoSimilar": "오늘 하늘을 반영하는 정렬 아래",
+    "worldEchoSeeMore": "더 많은 메아리 탐색하기"
   },
   "chart": {
     "natal": "출생 차트",
@@ -275,7 +295,12 @@
         "obstacle": "장애물",
         "hiddenFactor": "숨겨진 요소",
         "advice": "조언"
-      }
+      },
+      "listenToReading": "당신의 리딩 듣기",
+      "stopListening": "듣기 중지",
+      "summoningVoice": "그녀의 목소리를 소환 중…",
+      "sheIsReading": "그녀가 당신의 카드를 읽고 있습니다…",
+      "voiceUnavailable": "오디오를 재생할 수 없습니다. 연결을 확인하고 다시 시도하세요."
     },
     "dreamOraclePage": {
       "title": "꿈의 오라클",
@@ -516,7 +541,61 @@
       "recentScans": "최근 스캔",
       "noEntries": "아직 오라 스캔이 없습니다.",
       "firstScan": "첫 스캔을 시작하세요",
-      "needMoreScans": "패턴 분석에는 최소 3회 스캔이 필요합니다"
+      "needMoreScans": "패턴 분석에는 최소 3회 스캔이 필요합니다",
+      "chooseYourScan": "스캔 선택하기",
+      "scanModeHint": "각 모드는 당신의 에너지를 다르게 읽습니다",
+      "pictureScanTitle": "사진 오라 스캔",
+      "pictureScanDesc": "셀카를 찍거나 사진을 업로드하세요",
+      "voiceScanTitle": "음성 오라 스캔",
+      "voiceScanDesc": "지금 느끼는 감정을 Align에 말하세요",
+      "videoScanTitle": "라이브 비디오 스캔",
+      "videoScanDesc": "당신의 에너지 15초 비디오",
+      "deepReadingTitle": "심층 오라 리딩",
+      "deepReadingDesc": "사진 + 음성 + 기분 + 점성술 결합",
+      "quickScan": "빠른 스캔 — 기분 + 점성술만",
+      "photoStepDeep": "1단계: 사진",
+      "photoStepTitle": "사진 찍기",
+      "photoStepDesc": "카메라를 바라보세요. Align이 당신의 표정에서 에너지를 읽게 하세요.",
+      "takeSelfie": "셀카 찍기",
+      "uploadPhoto": "사진 업로드",
+      "skipPhoto": "사진 건너뛰기",
+      "retake": "다시 찍기",
+      "continue": "계속하기",
+      "voiceStepDeep": "2단계: 음성",
+      "voiceStepTitle": "음성 오라 스캔",
+      "voiceStepDesc": "지금 느끼는 감정을 Align에 말해보세요. 자연스럽게 10-60초 동안 이야기하세요.",
+      "analyzingVoice": "음성 분석 중...",
+      "listening": "듣는 중...",
+      "speakNaturally": "느끼는 감정에 대해 자연스럽게 이야기하세요",
+      "stopRecording": "중지",
+      "startRecording": "녹음 시작",
+      "orType": "또는 입력하세요",
+      "typeFeelingPlaceholder": "느끼는 감정을 입력하세요...",
+      "skipVoice": "음성 스캔 건너뛰기",
+      "voiceCaptured": "음성 캡처됨",
+      "detectedTone": "감지된 톤:",
+      "micDenied": "마이크 접근이 불가능합니다",
+      "micDeniedHint": "대신 느끼는 감정을 입력할 수 있습니다",
+      "videoStepTitle2": "실시간 비디오 스캔",
+      "videoStepDesc": "카메라를 바라보세요. 정상적으로 호흡하세요. 15초 녹화하세요.",
+      "recordVideo": "비디오 녹화",
+      "skipVideo": "비디오 스캔 건너뛰기",
+      "stopVideo": "녹음 중지",
+      "videoCaptured": "비디오 캡처됨",
+      "recordAgain": "다시 녹화",
+      "cameraDenied": "카메라 접근이 불가능합니다",
+      "cameraDeniedHint": "비디오 스캔을 사용하려면 브라우저 설정에서 카메라 권한을 활성화하세요",
+      "continueWithoutVideo": "비디오 없이 계속하기",
+      "photoAdded": "사진 추가됨",
+      "voiceAdded": "음성 추가됨",
+      "videoAdded": "비디오 추가됨",
+      "generatingWithScan": "우주 정렬에 따라 스캔 데이터를 분석 중...",
+      "generatingMoodOnly": "현재 우주 날씨와 기분 연결 중...",
+      "chatTitle": "당신의 리딩에 대해 물어보세요",
+      "chatPlaceholder": "당신의 리딩에 대해 물어보세요...",
+      "chatError": "죄송합니다, 질문을 처리할 수 없습니다. 다시 시도해 주세요.",
+      "chatLimitReached": "무료 후속 질문 한도에 도달했습니다. 무제한 질문을 위해 업그레이드하세요.",
+      "chatLimitInfo": "{{remaining}} / {{total}}개의 무료 후속 질문이 남아 있습니다."
     },
     "galacticClockPage": {
       "title": "갤럭틱 클록",
@@ -633,7 +712,9 @@
       "mysteryAdmirer": "비밀 팬",
       "rose": "로즈",
       "likeBack": "좋아요 답하기",
-      "matching": "매칭 중..."
+      "matching": "매칭 중...",
+      "upgradeToSeeAll": "모든 좋아요를 보려면 업그레이드하세요",
+      "upgradeHintMore": "{{count}}명이 더 당신을 좋아했습니다 — 모두 보려면 업그레이드하세요"
     },
     "matches": {
       "title": "당신의 매치",
@@ -648,7 +729,10 @@
       "cancel": "취소",
       "matchedToday": "오늘 매치",
       "matchedDaysAgo": "{{days}}일 전 매치",
-      "cosmicMatch": "코즈믹 매치"
+      "cosmicMatch": "코즈믹 매치",
+      "upgradeToSeeAll": "모든 매치를 보려면 업그레이드하세요",
+      "moreMatchesWaiting": "{{count}}개의 우주적 연결이 당신을 기다리고 있습니다",
+      "upgradeCta": "모든 매치 보기"
     },
     "profile": {
       "title": "데이팅 프로필",
@@ -788,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "오라 시나스트리",
+      "yourMatch": "당신의 매치",
+      "loading": "당신의 에너지 필드를 읽는 중...",
+      "matchNotFound": "매치를 찾을 수 없습니다",
+      "noMyAura": "먼저 하나 이상의 오라 미러 스캔이 필요합니다. 리딩 > 오라 미러로 가서 당신의 오라를 스캔하세요.",
+      "noPartnerAura": "{{name}}는 아직 오라 미러 스캔을 하지 않았습니다. 그들의 오라 데이터는 스캔 후 여기에 나타납니다.",
+      "loadError": "오라 데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.",
+      "scanAura": "당신의 오라 스캔하기",
+      "auraChemistry": "오라 화학",
+      "harmoniousLabel": "자연스럽게 조화로운",
+      "warmLabel": "따뜻한 연결",
+      "growthLabel": "성장 잠재력",
+      "differentLabel": "다른 주파수",
+      "harmonyBreakdown": "조화 붕괴",
+      "emotionalSafety": "감정적 안전",
+      "attractionHeat": "매력 열기",
+      "communication": "소통",
+      "conflictWeather": "갈등 날씨",
+      "clearSkies": "맑은 하늘",
+      "someStorms": "약간의 폭풍",
+      "turbulent": "격렬한"
     }
   },
   "feed": {
@@ -841,7 +948,26 @@
       "createFirst": "첫 게시물 작성"
     },
     "loadMore": "더 불러오기",
-    "loading": "로딩 중..."
+    "loading": "로딩 중...",
+    "shareReading": {
+      "title": "당신의 우주 경험 공유하기",
+      "subtitle": "커뮤니티에 별들이 전하는 메시지를 알려주세요",
+      "templates": {
+        "aura": "방금 내 오라 리딩을 받았어요! 내 외부 오라가 빛나고 있어요",
+        "transit": "오늘 내 전이 리딩이 다르게 느껴져요... 공감하는 사람 있나요?",
+        "moon": "달 체크인: 오늘 밤 {{moonPhase}} 에너지를 느끼고 있어요",
+        "zodiac": "다른 {{sign}} 상승자들도 이 변화 느끼고 있나요?",
+        "tarot": "오늘 카드를 뽑았는데 메시지가 아주 명확했어요"
+      },
+      "quickPost": "빠른 게시물",
+      "viewReadings": "리딩 보기",
+      "viewCommunities": "커뮤니티 탐색"
+    },
+    "trending": {
+      "title": "트렌딩",
+      "clearFilter": "필터 지우기",
+      "noResults": "{{tag}}에 대한 게시물이 없습니다"
+    }
   },
   "friends": {
     "title": "친구 및 연결",
@@ -1062,7 +1188,31 @@
     "houseSystem": "하우스 시스템",
     "darkMode": "다크 모드",
     "about": "Align 소개",
-    "privacy": "개인정보 보호정책",
+    "privacy": {
+      "title": "개인정보 및 데이터",
+      "profileVisibility": "프로필 공개 범위",
+      "visibilityOptions": {
+        "public": "공개",
+        "friendsOnly": "친구만",
+        "private": "비공개"
+      },
+      "hideAge": "나이 숨기기",
+      "hideExactLocation": "정확한 위치 숨기기",
+      "hideLastActive": "마지막 활동 숨기기",
+      "hideFullBirthChart": "전체 출생 차트 숨기기",
+      "incognitoMode": "시크릿 모드",
+      "blockUnverified": "미인증 사용자 차단",
+      "minimumTrustLevel": "최소 신뢰 수준",
+      "trustLevels": {
+        "any": "모두",
+        "low": "낮음",
+        "medium": "중간",
+        "high": "높음"
+      },
+      "analyticsEnabled": "분석",
+      "exportData": "데이터 내보내기",
+      "exportToast": "데이터 내보내기가 요청되었습니다. 이메일로 전달됩니다."
+    },
     "terms": "이용약관",
     "logout": "로그아웃",
     "account": "계정",
@@ -1091,12 +1241,12 @@
       "communityGuidelines": "커뮤니티 가이드라인"
     },
     "languages": {
-      "en": "English",
-      "es": "Español",
-      "fr": "Français",
-      "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "en": "영어",
+      "es": "스페인어",
+      "fr": "프랑스어",
+      "de": "독일어",
+      "it": "이탈리아어",
+      "pt": "한국어",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
@@ -1170,31 +1320,6 @@
       },
       "showAsteroids": "소행성 표시",
       "showFixedStars": "항성 표시"
-    },
-    "privacy": {
-      "title": "개인정보 및 데이터",
-      "profileVisibility": "프로필 공개 범위",
-      "visibilityOptions": {
-        "public": "공개",
-        "friendsOnly": "친구만",
-        "private": "비공개"
-      },
-      "hideAge": "나이 숨기기",
-      "hideExactLocation": "정확한 위치 숨기기",
-      "hideLastActive": "마지막 활동 숨기기",
-      "hideFullBirthChart": "전체 출생 차트 숨기기",
-      "incognitoMode": "시크릿 모드",
-      "blockUnverified": "미인증 사용자 차단",
-      "minimumTrustLevel": "최소 신뢰 수준",
-      "trustLevels": {
-        "any": "모두",
-        "low": "낮음",
-        "medium": "중간",
-        "high": "높음"
-      },
-      "analyticsEnabled": "분석",
-      "exportData": "데이터 내보내기",
-      "exportToast": "데이터 내보내기가 요청되었습니다. 이메일로 전달됩니다."
     },
     "notificationsPage": {
       "title": "알림 설정",
@@ -1467,6 +1592,23 @@
       "noPackages": "스토어에서 구독 플랜을 마무리하고 있습니다. 나중에 다시 시도하세요.",
       "connectionFailed": "구독 서비스에 연결할 수 없습니다. 연결을 확인하고 다시 시도하세요.",
       "stillStarting": "구독 서비스가 아직 시작되고 있습니다. 잠시 기다린 후 다시 시도하세요."
+    },
+    "paymentUnavailable": "결제 제공업체에 연결하는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "cardDeclined": "카드 승인이 거부되었습니다. 결제 방법을 업데이트하고 다시 시도해 주세요.",
+    "checkoutFailed": "구독 시작 중 문제가 발생했습니다. 다시 시도해 주세요.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "우주의 여정을 시작하세요",
+      "cta": "Starter 받기",
+      "bestFor": "전체 출생 차트와 일일 통찰력으로 기본을 넘어설 준비가 된 사람.",
+      "features": [
+        "월 10회 AI 리딩",
+        "전체 출생 차트 (모든 행성)",
+        "일일 맞춤형 전이 알림",
+        "아우라 미러 무제한 스캔",
+        "코스믹 저널 무제한 항목",
+        "영혼의 선물 및 영혼의 기억 접근"
+      ]
     }
   },
   "courses": {
@@ -1589,7 +1731,12 @@
     "loading": "북마크 로딩 중...",
     "empty": "아직 북마크가 없습니다",
     "emptyHint": "피드에서 게시물을 저장하여 나중에 읽으세요",
-    "postUnavailable": "게시물을 더 이상 사용할 수 없습니다"
+    "postUnavailable": "게시물을 더 이상 사용할 수 없습니다",
+    "filterAll": "모두",
+    "filterPosts": "게시물",
+    "filterReadings": "리딩",
+    "saved": "저장됨",
+    "unbookmark": "북마크 제거"
   },
   "celebrityMatches": {
     "title": "유명인 매치",
@@ -1636,17 +1783,54 @@
   },
   "creatorStudio": {
     "title": "크리에이터 스튜디오",
-    "subtitle": "우주적 콘텐츠 작성 및 관리"
+    "subtitle": "우주적 콘텐츠 작성 및 관리",
+    "applyTitle": "크리에이터가 되기",
+    "applyDescription": "당신의 점성술 통찰을 공유하고, 팔로워를 늘리며, 콘텐츠로 수익을 얻으세요.",
+    "applyButton": "크리에이터로 지원하기",
+    "applying": "지원 중...",
+    "benefitReadings": "리딩 공유하기",
+    "benefitReadingsHint": "해석 및 통찰 게시하기",
+    "benefitCommunity": "커뮤니티 구축하기",
+    "benefitCommunityHint": "팔로워 및 영향력 얻기",
+    "benefitEarn": "수익 얻기",
+    "benefitEarnHint": "전문 지식으로 수익화하기",
+    "statPosts": "게시물",
+    "statReactions": "반응",
+    "statViews": "조회수",
+    "statFollowers": "팔로워",
+    "statEarnings": "수익",
+    "statThisMonth": "이번 달",
+    "createPost": "게시물 만들기",
+    "createPostHint": "커뮤니티와 통찰 공유하기",
+    "createPoll": "투표 만들기",
+    "createPollHint": "투표 및 질문 참여하기",
+    "myCommunities": "내 커뮤니티",
+    "myCommunitiesHint": "그룹 관리하기",
+    "shareReading": "리딩 공유하기",
+    "shareReadingHint": "차트 해석 게시하기",
+    "signInRequired": "크리에이터 스튜디오에 접근하려면 로그인하세요",
+    "loading": "스튜디오 로딩 중..."
   },
   "qa": {
-    "title": "Q&A",
+    "title": "질문과 답변",
     "askQuestion": "질문하기",
     "noQuestions": "아직 질문이 없습니다",
     "placeholder": "우주적 질문은?"
   },
   "pricing": {
     "title": "플랜 선택",
-    "subtitle": "Align의 전체 기능을 잠금 해제하세요"
+    "subtitle": "Align의 전체 기능을 잠금 해제하세요",
+    "monthly": "월간",
+    "annual": "연간",
+    "saveUpTo": "최대 40% 절약",
+    "bestValue": "최고의 가치",
+    "perYear": "/년",
+    "saveMoney": "${{amount}} 절약",
+    "foreverFree": "영구 무료",
+    "billedMonthly": "월별 청구",
+    "lessThanCoffee": "한 달에 커피 한 잔도 안 되는 비용",
+    "currentPlan": "현재 요금제",
+    "getPlan": "{{name}} 받기"
   },
   "gallery": {
     "title": "갤러리",
@@ -1767,7 +1951,11 @@
       "more": "더 보기",
       "chat": "채팅",
       "yourProfile": "내 프로필",
-      "viewProfile": "프로필 보기"
+      "viewProfile": "프로필 보기",
+      "search": "검색",
+      "bookmarks": "북마크",
+      "polls": "투표",
+      "creatorStudio": "크리에이터 스튜디오"
     },
     "feedCard": {
       "like": "좋아요",
@@ -1952,8 +2140,71 @@
   },
   "tiers": {
     "free": "무료",
-    "light": "Light",
-    "premium": "Premium",
-    "pro": "Pro"
+    "light": "라이트",
+    "premium": "프리미엄",
+    "pro": "프로",
+    "starter": "시작하기"
+  },
+  "search": {
+    "title": "검색",
+    "placeholder": "우주를 검색하는 중...",
+    "searching": "별을 검색하는 중...",
+    "noResults": "우주적 일치 항목을 찾을 수 없습니다.",
+    "noResultsHint": "다른 키워드를 시도하거나 철자를 확인해 주세요.",
+    "emptyTitle": "사람, 게시물 및 커뮤니티 검색",
+    "emptyHint": "우주에서의 우주적 연결을 발견하세요",
+    "recentSearches": "최근 검색",
+    "tabAll": "모두",
+    "tabUsers": "사용자",
+    "tabPosts": "게시물",
+    "tabCommunities": "커뮤니티",
+    "tabReels": "릴",
+    "badgeUser": "사용자",
+    "badgePost": "게시물",
+    "badgeCommunity": "커뮤니티",
+    "badgeReel": "릴"
+  },
+  "whatsNew": {
+    "title": "Align의 새로운 기능",
+    "gotIt": "알겠습니다"
+  },
+  "gettingStarted": {
+    "title": "시작하기",
+    "readHoroscope": "오늘의 운세를 읽어보세요",
+    "tryReading": "AI 리딩 시도하기",
+    "viewNatal": "출생 차트 보기",
+    "shareFeed": "코스믹 피드 방문하기",
+    "completeProfile": "프로필 완성하기",
+    "congrats": "모든 준비가 완료되었습니다! 우주에 오신 것을 환영합니다."
+  },
+  "coachmarks": {
+    "of": "의",
+    "next": "다음",
+    "skip": "투어 건너뛰기",
+    "finish": "완료",
+    "dailyBrief": {
+      "title": "당신의 일일 코스믹 브리프",
+      "description": "매일 여기서 시작하세요. 개인화된 코스믹 카드, 달의 위상, 에너지 예보 및 차트에 맞춘 일일 가이드를 받아보세요."
+    },
+    "quickAccess": {
+      "title": "AI 기반 리딩",
+      "description": "출생 차트, 천체 이동, 타로, 궁합 리딩 등에 빠르게 접근하세요. 카드를 탭하여 자세히 알아보세요."
+    },
+    "natalChart": {
+      "title": "당신의 출생 차트",
+      "description": "행성, 하우스, 측면 및 각 배치에 대한 자세한 해석이 포함된 전체 출생 차트를 탐색하세요."
+    },
+    "feed": {
+      "title": "커뮤니티 피드",
+      "description": "코스믹 순간을 공유하고, 통찰을 게시하고, 다른 사람의 게시물에 반응하며, 별을 보는 동료들과 연결하세요."
+    },
+    "aiAstrologer": {
+      "title": "AI 점성가",
+      "description": "개인 AI 점성가와 채팅하세요. 차트, 천체 이동, 관계 또는 우주적 타이밍에 대해 무엇이든 물어보세요."
+    },
+    "courses": {
+      "title": "점성학 배우기",
+      "description": "초급 기본부터 고급 기술까지 점성학 지식을 심화할 수 있는 구조화된 과정입니다."
+    }
   }
 }

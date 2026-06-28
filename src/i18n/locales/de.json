@@ -29,7 +29,7 @@
     "signupFailed": "Registrierung fehlgeschlagen.",
     "orContinueWith": "oder fortfahren mit",
     "orSignUpWithEmail": "oder per E-Mail registrieren",
-    "apple": "Apple",
+    "apple": "Apfel",
     "google": "Google",
     "displayName": "Anzeigename",
     "yourName": "Dein Name",
@@ -140,7 +140,10 @@
         "name": "Wasser",
         "feel": "Du wirst vom Fühlen angetrieben. Deine Intuition, deine Empathie, deine emotionale Tiefe — das sind keine weichen Fähigkeiten, sie sind deine primäre Intelligenz. Deine Herausforderung ist zu lernen, welche Gefühle dir gehören."
       }
-    }
+    },
+    "enterTheCosmos": "Betrete den Kosmos",
+    "revealLoading": "Deine Sterne lesen...",
+    "continueToDashboard": "Weiter zum Dashboard"
   },
   "home": {
     "greeting": "Hallo, {{name}}",
@@ -148,7 +151,10 @@
     "currentTransits": "Aktuelle Transite",
     "moonPhase": "Mondphase",
     "planetaryHours": "Planetenstunden",
-    "quickAccess": "Schnellzugriff"
+    "quickAccess": "Schnellzugriff",
+    "worldEchoTitle": "Heute in der kosmischen Geschichte",
+    "worldEchoSimilar": "unter Ausrichtungen, die den heutigen Himmel spiegeln",
+    "worldEchoSeeMore": "Weitere Echos erkunden"
   },
   "chart": {
     "natal": "Geburtshoroskop",
@@ -289,7 +295,12 @@
         "obstacle": "Hindernis",
         "hiddenFactor": "Verborgener Faktor",
         "advice": "Rat"
-      }
+      },
+      "listenToReading": "Höre deine Lesung",
+      "stopListening": "Hören stoppen",
+      "summoningVoice": "Ihre Stimme herbeirufen…",
+      "sheIsReading": "Sie liest deine Karten…",
+      "voiceUnavailable": "Audio konnte nicht abgespielt werden. Bitte überprüfe deine Verbindung und versuche es erneut."
     },
     "dreamOraclePage": {
       "title": "Traumorakel",
@@ -530,7 +541,61 @@
       "recentScans": "Letzte Scans",
       "noEntries": "Noch keine Aura-Scans.",
       "firstScan": "Starte deinen ersten Scan",
-      "needMoreScans": "Mindestens 3 Scans für Muster-Einblicke nötig"
+      "needMoreScans": "Mindestens 3 Scans für Muster-Einblicke nötig",
+      "chooseYourScan": "Wähle deinen Scan",
+      "scanModeHint": "Jeder Modus liest deine Energie auf eine andere Weise",
+      "pictureScanTitle": "Bild Aura Scan",
+      "pictureScanDesc": "Mach ein Selfie oder lade ein Foto hoch",
+      "voiceScanTitle": "Stimmen Aura Scan",
+      "voiceScanDesc": "Sag Align, was du gerade fühlst",
+      "videoScanTitle": "Live-Video-Scan",
+      "videoScanDesc": "15-Sekunden-Video deiner Energie",
+      "deepReadingTitle": "Tiefe Aura-Lesung",
+      "deepReadingDesc": "Foto + Stimme + Stimmung + Astrologie kombiniert",
+      "quickScan": "Schnellscan — Stimmung + Astrologie nur",
+      "photoStepDeep": "Schritt 1: Foto",
+      "photoStepTitle": "Mach dein Foto",
+      "photoStepDesc": "Sieh in die Kamera. Lass Align die Energie in deinem Ausdruck lesen.",
+      "takeSelfie": "Selfie machen",
+      "uploadPhoto": "Foto hochladen",
+      "skipPhoto": "Foto überspringen",
+      "retake": "Erneut aufnehmen",
+      "continue": "Fortfahren",
+      "voiceStepDeep": "Schritt 2: Stimme",
+      "voiceStepTitle": "Stimmen-Aura-Scan",
+      "voiceStepDesc": "Sag Align, was du gerade fühlst. Sprich natürlich für 10-60 Sekunden.",
+      "analyzingVoice": "Analysiere deine Stimme...",
+      "listening": "Höre zu...",
+      "speakNaturally": "Sprich natürlich darüber, wie du dich fühlst",
+      "stopRecording": "Stopp",
+      "startRecording": "Aufnahme starten",
+      "orType": "oder tippe es",
+      "typeFeelingPlaceholder": "Tippe, was du fühlst...",
+      "skipVoice": "Stimmen-Scan überspringen",
+      "voiceCaptured": "Stimme erfasst",
+      "detectedTone": "Erkannte Tonlage:",
+      "micDenied": "Mikrofonzugriff nicht verfügbar",
+      "micDeniedHint": "Du kannst stattdessen tippen, was du fühlst",
+      "videoStepTitle2": "Live-Video-Scan",
+      "videoStepDesc": "Schau in die Kamera. Atme normal. Nimm 15 Sekunden auf.",
+      "recordVideo": "Video aufnehmen",
+      "skipVideo": "Video-Scan überspringen",
+      "stopVideo": "Aufnahme stoppen",
+      "videoCaptured": "Video aufgenommen",
+      "recordAgain": "Erneut aufnehmen",
+      "cameraDenied": "Kamerazugriff nicht verfügbar",
+      "cameraDeniedHint": "Aktiviere die Kameraberechtigungen in deinen Browsereinstellungen, um den Video-Scan zu verwenden",
+      "continueWithoutVideo": "Ohne Video fortfahren",
+      "photoAdded": "Foto hinzugefügt",
+      "voiceAdded": "Sprachaufnahme hinzugefügt",
+      "videoAdded": "Video hinzugefügt",
+      "generatingWithScan": "Analysiere deine Scandaten mit kosmischen Ausrichtungen...",
+      "generatingMoodOnly": "Verbinde deine Stimmung mit dem aktuellen kosmischen Wetter...",
+      "chatTitle": "Frage zu deiner Lesung",
+      "chatPlaceholder": "Frage zu deiner Lesung...",
+      "chatError": "Entschuldigung, ich konnte deine Frage nicht verarbeiten. Bitte versuche es erneut.",
+      "chatLimitReached": "Kostenloses Folge-Limit erreicht. Upgrade für unbegrenzte Fragen.",
+      "chatLimitInfo": "{{remaining}} von {{total}} kostenlosen Folgesfragen verbleibend"
     },
     "galacticClockPage": {
       "title": "Galaktische Uhr",
@@ -602,7 +667,7 @@
       "purpose": "Lebenszweck",
       "spiritual": "Spirituelle Gaben",
       "passion": "Leidenschaft",
-      "reputation": "Reputation"
+      "reputation": "Ruf"
     }
   },
   "dating": {
@@ -616,8 +681,8 @@
     "featureSafety": "Sichere & verifizierte Verbindungen",
     "tabs": {
       "discover": "Entdecken",
-      "likes": "Likes",
-      "matches": "Matches",
+      "likes": "Gefällt mir",
+      "matches": "Übereinstimmungen",
       "myProfile": "Mein Profil"
     },
     "discovery": {
@@ -632,7 +697,7 @@
       "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     },
     "likes": {
-      "title": "Likes",
+      "title": "Gefällt mir",
       "receivedCount": "{{count}} Personen sind interessiert",
       "sentCount": "Du hast {{count}} Personen geliked",
       "received": "Erhalten",
@@ -647,7 +712,9 @@
       "mysteryAdmirer": "Geheimer Bewunderer",
       "rose": "Rose",
       "likeBack": "Zurück-Liken",
-      "matching": "Matche..."
+      "matching": "Matche...",
+      "upgradeToSeeAll": "Upgrade, um alle deine Likes zu sehen",
+      "upgradeHintMore": "{{count}} weitere Personen mochten dich — upgrade, um sie alle zu enthüllen"
     },
     "matches": {
       "title": "Deine Matches",
@@ -662,7 +729,10 @@
       "cancel": "Abbrechen",
       "matchedToday": "Heute gematcht",
       "matchedDaysAgo": "Vor {{days}}T gematcht",
-      "cosmicMatch": "Kosmisches Match"
+      "cosmicMatch": "Kosmisches Match",
+      "upgradeToSeeAll": "Upgrade, um alle deine Übereinstimmungen zu sehen",
+      "moreMatchesWaiting": "{{count}} weitere kosmische Verbindungen warten auf dich",
+      "upgradeCta": "Alle Übereinstimmungen anzeigen"
     },
     "profile": {
       "title": "Dating-Profil",
@@ -802,6 +872,29 @@
       "good": "#FACC15",
       "moderate": "#FB923C",
       "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastrie",
+      "yourMatch": "Deine Übereinstimmung",
+      "loading": "Deine Energiefelder werden gelesen...",
+      "matchNotFound": "Übereinstimmung nicht gefunden",
+      "noMyAura": "Du musst zuerst mindestens einen Aura Mirror Scan durchführen. Gehe zu Readings > Aura Mirror, um deine Aura zu scannen.",
+      "noPartnerAura": "{{name}} hat noch keinen Aura Mirror Scan durchgeführt. Ihre Aura-Daten werden hier angezeigt, sobald sie dies tun.",
+      "loadError": "Laden der Aura-Daten fehlgeschlagen. Bitte versuche es erneut.",
+      "scanAura": "Scanne deine Aura",
+      "auraChemistry": "Aura Chemie",
+      "harmoniousLabel": "Natürlich Harmonisch",
+      "warmLabel": "Warme Verbindung",
+      "growthLabel": "Wachstumspotenzial",
+      "differentLabel": "Verschiedene Frequenzen",
+      "harmonyBreakdown": "Harmoniebruch",
+      "emotionalSafety": "Emotionale Sicherheit",
+      "attractionHeat": "Anziehungswärme",
+      "communication": "Kommunikation",
+      "conflictWeather": "Konfliktwetter",
+      "clearSkies": "Klarer Himmel",
+      "someStorms": "Einige Stürme",
+      "turbulent": "Turbulent"
     }
   },
   "feed": {
@@ -855,7 +948,26 @@
       "createFirst": "Erstelle deinen ersten Beitrag"
     },
     "loadMore": "Mehr laden",
-    "loading": "Wird geladen..."
+    "loading": "Wird geladen...",
+    "shareReading": {
+      "title": "Teile deine kosmische Erfahrung",
+      "subtitle": "Lass die Community wissen, was die Sterne dir sagen",
+      "templates": {
+        "aura": "Habe gerade meine Aura-Lesung bekommen! Meine äußere Aura strahlt",
+        "transit": "Meine Transitlesung ist heute anders... kann sich jemand damit identifizieren?",
+        "moon": "Mond-Check-in: fühle die Energie der {{moonPhase}} heute Nacht",
+        "zodiac": "Fühlen sich andere {{sign}} Risings auch so bei diesem Wandel?",
+        "tarot": "Habe heute ein paar Karten gezogen und die Botschaft war kristallklar"
+      },
+      "quickPost": "Schneller Beitrag",
+      "viewReadings": "Lesungen ansehen",
+      "viewCommunities": "Communities durchsuchen"
+    },
+    "trending": {
+      "title": "Trendend",
+      "clearFilter": "Filter zurücksetzen",
+      "noResults": "Keine Beiträge für {{tag}} gefunden"
+    }
   },
   "friends": {
     "title": "Freunde & Verbindungen",
@@ -1129,25 +1241,25 @@
       "communityGuidelines": "Community-Richtlinien"
     },
     "languages": {
-      "en": "English",
+      "en": "Englisch",
       "es": "Español",
       "fr": "Français",
       "de": "Deutsch",
-      "it": "Italiano",
-      "pt": "Português",
+      "it": "Italienisch",
+      "pt": "Portugiesisch",
       "ru": "Русский",
       "ja": "日本語",
       "ko": "한국어",
       "zh": "中文",
       "ar": "العربية",
       "hi": "हिन्दी",
-      "tr": "Türkçe",
-      "pl": "Polski",
-      "nl": "Nederlands",
-      "sv": "Svenska",
-      "da": "Dansk",
-      "fi": "Suomi",
-      "nb": "Norsk",
+      "tr": "Türkisch",
+      "pl": "Polnisch",
+      "nl": "Niederländisch",
+      "sv": "Schwedisch",
+      "da": "Dänisch",
+      "fi": "Finnisch",
+      "nb": "Norwegisch",
       "th": "ไทย"
     },
     "admin": {
@@ -1480,6 +1592,23 @@
       "noPackages": "Abonnementpläne werden im Store finalisiert. Bitte versuche es später erneut.",
       "connectionFailed": "Der Abonnementdienst konnte nicht erreicht werden. Bitte überprüfe deine Verbindung und versuche es erneut.",
       "stillStarting": "Der Abonnementdienst startet noch. Bitte warte einen Moment und versuche es erneut."
+    },
+    "paymentUnavailable": "Wir hatten Probleme, unseren Zahlungsanbieter zu erreichen. Bitte versuchen Sie es in einem Moment erneut.",
+    "cardDeclined": "Ihre Karte wurde abgelehnt. Bitte aktualisieren Sie Ihre Zahlungsmethode und versuchen Sie es erneut.",
+    "checkoutFailed": "Etwas ist schiefgelaufen beim Start Ihrer Abonnement. Bitte versuchen Sie es erneut.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Starten Sie Ihre kosmische Reise",
+      "cta": "Starter holen",
+      "bestFor": "Jeder, der bereit ist, über die Grundlagen hinauszugehen mit vollständigen Geburtshoroskopen und täglichen Einblicken.",
+      "features": [
+        "10 KI-Lesungen pro Monat",
+        "Vollständiges Geburtshoroskop (alle Planeten)",
+        "Tägliche personalisierte Transitbenachrichtigungen",
+        "Aura Mirror unbegrenzte Scans",
+        "Kosmisches Journal unbegrenzte Einträge",
+        "Zugang zu Seelen-Geschenken & Seelen-Erinnerungen"
+      ]
     }
   },
   "courses": {
@@ -1602,7 +1731,12 @@
     "loading": "Lesezeichen werden geladen...",
     "empty": "Noch keine Lesezeichen",
     "emptyHint": "Speichere Beiträge aus dem Feed zum späteren Lesen",
-    "postUnavailable": "Beitrag nicht mehr verfügbar"
+    "postUnavailable": "Beitrag nicht mehr verfügbar",
+    "filterAll": "Alle",
+    "filterPosts": "Beiträge",
+    "filterReadings": "Lesungen",
+    "saved": "Gespeichert",
+    "unbookmark": "Lesezeichen entfernen"
   },
   "celebrityMatches": {
     "title": "Prominenten-Matches",
@@ -1649,7 +1783,33 @@
   },
   "creatorStudio": {
     "title": "Creator Studio",
-    "subtitle": "Erstelle und verwalte deine kosmischen Inhalte"
+    "subtitle": "Erstelle und verwalte deine kosmischen Inhalte",
+    "applyTitle": "Werde ein Creator",
+    "applyDescription": "Teile deine astrologischen Einblicke, baue eine Anhängerschaft auf und verdiene mit deinen Inhalten.",
+    "applyButton": "Als Creator bewerben",
+    "applying": "Bewerbung läuft...",
+    "benefitReadings": "Lesungen teilen",
+    "benefitReadingsHint": "Interpretationen & Einblicke posten",
+    "benefitCommunity": "Gemeinschaft aufbauen",
+    "benefitCommunityHint": "Follower gewinnen & Einfluss nehmen",
+    "benefitEarn": "Einnahmen erzielen",
+    "benefitEarnHint": "Monetisiere dein Fachwissen",
+    "statPosts": "Beiträge",
+    "statReactions": "Reaktionen",
+    "statViews": "Aufrufe",
+    "statFollowers": "Follower",
+    "statEarnings": "Einnahmen",
+    "statThisMonth": "Diesen Monat",
+    "createPost": "Beitrag erstellen",
+    "createPostHint": "Teile Einblicke mit der Gemeinschaft",
+    "createPoll": "Umfrage erstellen",
+    "createPollHint": "Mit Umfragen & Fragen interagieren",
+    "myCommunities": "Meine Gemeinschaften",
+    "myCommunitiesHint": "Verwalte deine Gruppen",
+    "shareReading": "Eine Lesung teilen",
+    "shareReadingHint": "Diagramminterpretationen posten",
+    "signInRequired": "Bitte melde dich an, um auf das Creator Studio zuzugreifen",
+    "loading": "Studio wird geladen..."
   },
   "qa": {
     "title": "F&A",
@@ -1659,7 +1819,18 @@
   },
   "pricing": {
     "title": "Wähle deinen Plan",
-    "subtitle": "Schalte die volle Kraft von Align frei"
+    "subtitle": "Schalte die volle Kraft von Align frei",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "saveUpTo": "Bis zu 40% sparen",
+    "bestValue": "Bester Wert",
+    "perYear": "/Jahr",
+    "saveMoney": "Spare ${{amount}}",
+    "foreverFree": "Für immer kostenlos",
+    "billedMonthly": "Monatlich abgerechnet",
+    "lessThanCoffee": "Weniger als ein Kaffee pro Monat",
+    "currentPlan": "Aktueller Plan",
+    "getPlan": "Hol dir {{name}}"
   },
   "gallery": {
     "title": "Galerie",
@@ -1749,7 +1920,7 @@
     },
     "datingProfileCard": {
       "compatibilityScore": "{{score}}% kompatibel",
-      "like": "Like",
+      "like": "Gefällt mir",
       "pass": "Weiter",
       "cosmicRose": "Kosmische Rose",
       "likesRemaining": "{{count}} Likes übrig",
@@ -1764,7 +1935,7 @@
       "friends": "Freunde",
       "messages": "Nachrichten",
       "feed": "Feed",
-      "communities": "Communities",
+      "communities": "Gemeinschaften",
       "notifications": "Benachrichtigungen",
       "profile": "Profil",
       "settings": "Einstellungen",
@@ -1780,7 +1951,11 @@
       "videoCreator": "Video-Ersteller",
       "viewProfile": "Profil anzeigen",
       "worldEcho": "Weltecho",
-      "yourProfile": "Dein Profil"
+      "yourProfile": "Dein Profil",
+      "search": "Suche",
+      "bookmarks": "Lesezeichen",
+      "polls": "Umfragen",
+      "creatorStudio": "Creator Studio"
     },
     "feedCard": {
       "like": "Gefällt mir",
@@ -1967,6 +2142,69 @@
     "free": "Kostenlos",
     "light": "Light",
     "premium": "Premium",
-    "pro": "Pro"
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Suche",
+    "placeholder": "Durchsuche den Kosmos...",
+    "searching": "Sterne werden durchsucht...",
+    "noResults": "Keine kosmischen Übereinstimmungen gefunden",
+    "noResultsHint": "Versuche andere Schlüsselwörter oder überprüfe die Schreibweise",
+    "emptyTitle": "Suche nach Personen, Beiträgen und Gemeinschaften",
+    "emptyHint": "Entdecke kosmische Verbindungen im Universum",
+    "recentSearches": "Kürzliche Suchen",
+    "tabAll": "Alle",
+    "tabUsers": "Benutzer",
+    "tabPosts": "Beiträge",
+    "tabCommunities": "Gemeinschaften",
+    "tabReels": "Reels",
+    "badgeUser": "Benutzer",
+    "badgePost": "Beitrag",
+    "badgeCommunity": "Gemeinschaft",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Neuigkeiten in Align",
+    "gotIt": "Verstanden"
+  },
+  "gettingStarted": {
+    "title": "Erste Schritte",
+    "readHoroscope": "Lies dein tägliches Horoskop",
+    "tryReading": "Probiere eine KI-Lesung",
+    "viewNatal": "Sieh dir dein Geburtshoroskop an",
+    "shareFeed": "Besuche den kosmischen Feed",
+    "completeProfile": "Vervollständige dein Profil",
+    "congrats": "Du bist bereit! Willkommen im Kosmos."
+  },
+  "coachmarks": {
+    "of": "von",
+    "next": "Weiter",
+    "skip": "Tour überspringen",
+    "finish": "Fertigstellen",
+    "dailyBrief": {
+      "title": "Dein täglicher kosmischer Bericht",
+      "description": "Beginne jeden Tag hier. Erhalte deine personalisierte kosmische Karte, Mondphase, Energieprognose und tägliche Anleitung, die auf deinem Chart basieren."
+    },
+    "quickAccess": {
+      "title": "KI-gestützte Lesungen",
+      "description": "Schneller Zugriff auf dein Geburtshoroskop, Transite, Tarot, Kompatibilitätslesungen und mehr. Tippe auf eine Karte, um einzutauchen."
+    },
+    "natalChart": {
+      "title": "Dein Geburtshoroskop",
+      "description": "Erkunde dein vollständiges Geburtshoroskop mit Planeten, Häusern, Aspekten und detaillierten Interpretationen jeder Platzierung."
+    },
+    "feed": {
+      "title": "Community-Feed",
+      "description": "Teile kosmische Momente, poste Einblicke, reagiere auf Beiträge anderer und verbinde dich mit anderen Sternenguckern."
+    },
+    "aiAstrologer": {
+      "title": "KI-Astrologe",
+      "description": "Chatte mit deinem persönlichen KI-Astrologen. Frage alles über dein Chart, Transite, Beziehungen oder kosmisches Timing."
+    },
+    "courses": {
+      "title": "Astrologie lernen",
+      "description": "Strukturierte Kurse, um dein astrologisches Wissen zu vertiefen, von den Grundlagen für Anfänger bis hin zu fortgeschrittenen Techniken."
+    }
   }
 }

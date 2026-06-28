@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Align" },
+  "app": {
+    "name": "Align"
+  },
   "tabs": {
     "home": "Hjem",
     "discover": "Utforsk",
@@ -27,7 +29,7 @@
     "signupFailed": "Registrering mislyktes.",
     "orContinueWith": "eller fortsett med",
     "orSignUpWithEmail": "eller registrer deg med e-post",
-    "apple": "Apple",
+    "apple": "Eple",
     "google": "Google",
     "displayName": "Visningsnavn",
     "yourName": "Ditt navn",
@@ -122,11 +124,26 @@
       "Pisces": "Folk ser deg som drømmende, mild og fra en annen verden. Du fremstår som en som eksisterer litt utenfor vanlig virkelighet — en gammel sjel, en kunstner, en helbreder. Folk åpner seg for deg uten å vite hvorfor."
     },
     "elementBalance": {
-      "Fire": { "name": "Ild", "feel": "Du drives av lidenskap, instinkt og et urokkelig behov for å få ting til å skje. Du går på inspirasjon — og du krasjer når den tar slutt." },
-      "Earth": { "name": "Jord", "feel": "Du er jordnær, praktisk og bygget for virkeligheten. Du stoler på det du kan se og ta på. Din styrke er utholdenhet — din risiko er å motstå forandring når det er tid for å utvikle seg." },
-      "Air": { "name": "Luft", "feel": "Du lever i tankene dine. Idéer, sammenhenger, samtaler — det er der du føler deg mest levende. Gaven din er perspektiv. Skyggensiden din er å koble fra kroppen og hjertet ditt." },
-      "Water": { "name": "Vann", "feel": "Du drives av følelser. Din intuisjon, din empati, din emosjonelle dybde — dette er ikke myke ferdigheter, de er din primære intelligens. Din utfordring er å lære hvilke følelser som er dine egne." }
-    }
+      "Fire": {
+        "name": "Ild",
+        "feel": "Du drives av lidenskap, instinkt og et urokkelig behov for å få ting til å skje. Du går på inspirasjon — og du krasjer når den tar slutt."
+      },
+      "Earth": {
+        "name": "Jord",
+        "feel": "Du er jordnær, praktisk og bygget for virkeligheten. Du stoler på det du kan se og ta på. Din styrke er utholdenhet — din risiko er å motstå forandring når det er tid for å utvikle seg."
+      },
+      "Air": {
+        "name": "Luft",
+        "feel": "Du lever i tankene dine. Idéer, sammenhenger, samtaler — det er der du føler deg mest levende. Gaven din er perspektiv. Skyggensiden din er å koble fra kroppen og hjertet ditt."
+      },
+      "Water": {
+        "name": "Vann",
+        "feel": "Du drives av følelser. Din intuisjon, din empati, din emosjonelle dybde — dette er ikke myke ferdigheter, de er din primære intelligens. Din utfordring er å lære hvilke følelser som er dine egne."
+      }
+    },
+    "enterTheCosmos": "Gå inn i Kosmos",
+    "revealLoading": "Leser stjernene dine...",
+    "continueToDashboard": "Fortsett til Dashbord"
   },
   "home": {
     "greeting": "Hei, {{name}}",
@@ -134,7 +151,10 @@
     "currentTransits": "Nåværende transitter",
     "moonPhase": "Månefase",
     "planetaryHours": "Planetære timer",
-    "quickAccess": "Hurtigtilgang"
+    "quickAccess": "Hurtigtilgang",
+    "worldEchoTitle": "I dag i Kosmisk Historie",
+    "worldEchoSimilar": "under justeringer som speiler dagens himmel",
+    "worldEchoSeeMore": "Utforsk flere ekko"
   },
   "chart": {
     "natal": "Fødselshoroskop",
@@ -275,12 +295,22 @@
         "obstacle": "Hindring",
         "hiddenFactor": "Skjult faktor",
         "advice": "Råd"
-      }
+      },
+      "listenToReading": "Lytt til Lesningen din",
+      "stopListening": "Stopp Lytting",
+      "summoningVoice": "Kaller frem stemmen hennes…",
+      "sheIsReading": "Hun leser kortene dine…",
+      "voiceUnavailable": "Kunne ikke spille av lyd. Sjekk tilkoblingen din og prøv igjen."
     },
     "dreamOraclePage": {
       "title": "Drømmeorakel",
       "subtitle": "Dekod drømmene dine gjennom symboler, følelser, astrologi og det skjulte språket i underbevisstheten din.",
-      "tabs": { "record": "Registrer", "journal": "Dagbok", "symbols": "Symboler", "patterns": "Mønstre" },
+      "tabs": {
+        "record": "Registrer",
+        "journal": "Dagbok",
+        "symbols": "Symboler",
+        "patterns": "Mønstre"
+      },
       "record": {
         "dreamTitle": "Drømmetittel (valgfritt)",
         "titlePlaceholder": "Autogenerert hvis tom",
@@ -432,13 +462,25 @@
       "title": "Kosmisk dagbok",
       "subtitle": "Spor din indre verden sammen med kosmos",
       "newEntry": "Ny oppføring",
-      "moodOptions": { "low": "Lav", "meh": "Meh", "neutral": "Nøytral", "good": "Bra", "great": "Strålende" },
+      "moodOptions": {
+        "low": "Lav",
+        "meh": "Meh",
+        "neutral": "Nøytral",
+        "good": "Bra",
+        "great": "Strålende"
+      },
       "noEntries": "Ingen dagbokoppføringer ennå",
       "noEntriesHint": "Begynn å skrive for å spore din indre verden sammen med kosmos."
     },
     "moonPhasesPage": {
       "title": "Månefaser",
-      "tabs": { "today": "I dag", "calendar": "Kalender", "forecast": "Prognose", "eclipses": "Formørkelser", "birthMoon": "Fødselsmåne" },
+      "tabs": {
+        "today": "I dag",
+        "calendar": "Kalender",
+        "forecast": "Prognose",
+        "eclipses": "Formørkelser",
+        "birthMoon": "Fødselsmåne"
+      },
       "failedToLoadChart": "Kunne ikke laste fødselshoroskop"
     },
     "planetaryHoursPage": {
@@ -499,23 +541,122 @@
       "recentScans": "Nylige Skanninger",
       "noEntries": "Ingen aura-skanninger ennå.",
       "firstScan": "Start din første skanning",
-      "needMoreScans": "Minst 3 skanninger kreves for mønsteranalyse"
+      "needMoreScans": "Minst 3 skanninger kreves for mønsteranalyse",
+      "chooseYourScan": "Velg Skanningen din",
+      "scanModeHint": "Hver modus leser energien din på en annen måte",
+      "pictureScanTitle": "Bilde Aura Skann",
+      "pictureScanDesc": "Ta et selfie eller last opp et bilde",
+      "voiceScanTitle": "Stemmeskanning av Aura",
+      "voiceScanDesc": "Fortell Align hva du føler akkurat nå",
+      "videoScanTitle": "Direkte videoscan",
+      "videoScanDesc": "15-sekunders video av energien din",
+      "deepReadingTitle": "Dyp auraavlesning",
+      "deepReadingDesc": "Foto + stemme + humør + astrologi kombinert",
+      "quickScan": "Rask skanning — humør + astrologi kun",
+      "photoStepDeep": "Trinn 1: Foto",
+      "photoStepTitle": "Ta bildet ditt",
+      "photoStepDesc": "Se inn i kameraet. La Align lese energien i uttrykket ditt.",
+      "takeSelfie": "Ta selfie",
+      "uploadPhoto": "Last opp bilde",
+      "skipPhoto": "Hopp over bilde",
+      "retake": "Ta på nytt",
+      "continue": "Fortsett",
+      "voiceStepDeep": "Trinn 2: Stemme",
+      "voiceStepTitle": "Stemme auraavlesning",
+      "voiceStepDesc": "Fortell Align hva du føler akkurat nå. Snakk naturlig i 10-60 sekunder.",
+      "analyzingVoice": "Analyserer stemmen din...",
+      "listening": "Lytter...",
+      "speakNaturally": "Snakk naturlig om hvordan du føler deg",
+      "stopRecording": "Stopp",
+      "startRecording": "Start opptak",
+      "orType": "eller skriv det",
+      "typeFeelingPlaceholder": "Skriv hva du føler...",
+      "skipVoice": "Hopp over stemmeskanning",
+      "voiceCaptured": "Stemme fanget",
+      "detectedTone": "Oppdaget tone:",
+      "micDenied": "Mikrofontilgang ikke tilgjengelig",
+      "micDeniedHint": "Du kan skrive hva du føler i stedet",
+      "videoStepTitle2": "Direkte videoscan",
+      "videoStepDesc": "Se inn i kameraet. Pust normalt. Spill inn i 15 sekunder.",
+      "recordVideo": "Ta opp video",
+      "skipVideo": "Hopp over videoscan",
+      "stopVideo": "Stopp opptak",
+      "videoCaptured": "Video fanget",
+      "recordAgain": "Ta opp igjen",
+      "cameraDenied": "Kamera tilgang ikke tilgjengelig",
+      "cameraDeniedHint": "Aktiver kameratillatelser i nettleserinnstillingene for å bruke videoscan",
+      "continueWithoutVideo": "Fortsett uten video",
+      "photoAdded": "Bilde lagt til",
+      "voiceAdded": "Stemmespor lagt til",
+      "videoAdded": "Video lagt til",
+      "generatingWithScan": "Analyserer skannedataene dine med kosmiske justeringer...",
+      "generatingMoodOnly": "Kobler humøret ditt med nåværende kosmiske forhold...",
+      "chatTitle": "Spør om lesningen din",
+      "chatPlaceholder": "Spør om lesningen din...",
+      "chatError": "Beklager, jeg kunne ikke behandle spørsmålet ditt. Vennligst prøv igjen.",
+      "chatLimitReached": "Gratis oppfølgingsgrense nådd. Oppgrader for ubegrensede spørsmål.",
+      "chatLimitInfo": "{{remaining}} av {{total}} gratis oppfølgninger gjenstår"
     },
-    "galacticClockPage": { "title": "Galaktisk klokke", "subtitle": "Ditt kosmiske tidsgrensesnitt" },
-    "galacticForecastPage": { "title": "Galaktisk prognose", "subtitle": "Dypromsenergier som påvirker horoskopet ditt" },
-    "midpointsPage": { "title": "Midtpunktskalkulator", "subtitle": "Oppdag skjulte forbindelser i horoskopet ditt" },
-    "firdariaPage": { "title": "Firdaria", "subtitle": "Eldgamle persiske planetperioder" },
-    "zodiacalReleasingPage": { "title": "Zodiacal Releasing", "subtitle": "Hellenistisk tidsteknikk" },
-    "acgPage": { "title": "Astrokartografi", "subtitle": "Hvor i verden planetene dine aktiveres" },
-    "fixedStarsPage": { "title": "Fiksstjerner", "subtitle": "Stellære påvirkninger i horoskopet ditt" },
-    "arabicPartsPage": { "title": "Arabiske punkter", "subtitle": "Eldgamle beregnede punkter i horoskopet ditt" },
-    "pathwayPage": { "title": "Veien til suksess", "subtitle": "Din kosmiske karriere- og livsformålsblåkopi" },
-    "rectificationPage": { "title": "Fødselstidsrektifikasjon", "subtitle": "Finjuster fødselstidspunktet for mer nøyaktige horoskoper" },
-    "nameAnalysisPage": { "title": "Navneanalyse", "subtitle": "Numerologien i navnet ditt" },
-    "soulGiftsPage": { "title": "Sjelegaver", "subtitle": "Oppdag de unike gavene kodet i horoskopet ditt" },
-    "soulMemoryPage": { "title": "Sjelehukommelse", "subtitle": "Tidligere livs ekko i fødselshoroskopet ditt" },
-    "soulAscensionPage": { "title": "Sjeleoppstigning", "description": "Spill fødselshoroskopet ditt som et reinkarnasjon-RPG med karma, formålsstier, sjelekontrakter, relikvier og valg fra tidligere liv." },
-    "chartAdjusterPage": { "title": "Horoskopjustering", "subtitle": "Eksperimenter med ulike fødselstidspunkter" }
+    "galacticClockPage": {
+      "title": "Galaktisk klokke",
+      "subtitle": "Ditt kosmiske tidsgrensesnitt"
+    },
+    "galacticForecastPage": {
+      "title": "Galaktisk prognose",
+      "subtitle": "Dypromsenergier som påvirker horoskopet ditt"
+    },
+    "midpointsPage": {
+      "title": "Midtpunktskalkulator",
+      "subtitle": "Oppdag skjulte forbindelser i horoskopet ditt"
+    },
+    "firdariaPage": {
+      "title": "Firdaria",
+      "subtitle": "Eldgamle persiske planetperioder"
+    },
+    "zodiacalReleasingPage": {
+      "title": "Zodiacal Releasing",
+      "subtitle": "Hellenistisk tidsteknikk"
+    },
+    "acgPage": {
+      "title": "Astrokartografi",
+      "subtitle": "Hvor i verden planetene dine aktiveres"
+    },
+    "fixedStarsPage": {
+      "title": "Fiksstjerner",
+      "subtitle": "Stellære påvirkninger i horoskopet ditt"
+    },
+    "arabicPartsPage": {
+      "title": "Arabiske punkter",
+      "subtitle": "Eldgamle beregnede punkter i horoskopet ditt"
+    },
+    "pathwayPage": {
+      "title": "Veien til suksess",
+      "subtitle": "Din kosmiske karriere- og livsformålsblåkopi"
+    },
+    "rectificationPage": {
+      "title": "Fødselstidsrektifikasjon",
+      "subtitle": "Finjuster fødselstidspunktet for mer nøyaktige horoskoper"
+    },
+    "nameAnalysisPage": {
+      "title": "Navneanalyse",
+      "subtitle": "Numerologien i navnet ditt"
+    },
+    "soulGiftsPage": {
+      "title": "Sjelegaver",
+      "subtitle": "Oppdag de unike gavene kodet i horoskopet ditt"
+    },
+    "soulMemoryPage": {
+      "title": "Sjelehukommelse",
+      "subtitle": "Tidligere livs ekko i fødselshoroskopet ditt"
+    },
+    "soulAscensionPage": {
+      "title": "Sjeleoppstigning",
+      "description": "Spill fødselshoroskopet ditt som et reinkarnasjon-RPG med karma, formålsstier, sjelekontrakter, relikvier og valg fra tidligere liv."
+    },
+    "chartAdjusterPage": {
+      "title": "Horoskopjustering",
+      "subtitle": "Eksperimenter med ulike fødselstidspunkter"
+    }
   },
   "interpretation": {
     "aiInterpret": "AI-tolkning",
@@ -538,7 +679,12 @@
     "featurePhotos": "Legg til bilder og stemmepresentasjon",
     "featureCompatibility": "Bli matchet basert på kosmisk kompatibilitet",
     "featureSafety": "Trygge og verifiserte forbindelser",
-    "tabs": { "discover": "Utforsk", "likes": "Liker", "matches": "Matcher", "myProfile": "Min profil" },
+    "tabs": {
+      "discover": "Utforsk",
+      "likes": "Liker",
+      "matches": "Matcher",
+      "myProfile": "Min profil"
+    },
     "discovery": {
       "consulting": "Konsulterer kosmos...",
       "noPicksTitle": "Ingen kosmiske utvalg ennå",
@@ -566,7 +712,9 @@
       "mysteryAdmirer": "Hemmelig beundrer",
       "rose": "Rose",
       "likeBack": "Lik tilbake",
-      "matching": "Matcher..."
+      "matching": "Matcher...",
+      "upgradeToSeeAll": "Oppgrader for å se alle dine liker",
+      "upgradeHintMore": "{{count}} flere personer likte deg — oppgrader for å avsløre dem alle"
     },
     "matches": {
       "title": "Dine matcher",
@@ -581,7 +729,10 @@
       "cancel": "Avbryt",
       "matchedToday": "Matchet i dag",
       "matchedDaysAgo": "Matchet for {{days}}d siden",
-      "cosmicMatch": "Kosmisk match"
+      "cosmicMatch": "Kosmisk match",
+      "upgradeToSeeAll": "Oppgrader for å se alle dine matcher",
+      "moreMatchesWaiting": "{{count}} flere kosmiske forbindelser venter på deg",
+      "upgradeCta": "Se alle matcher"
     },
     "profile": {
       "title": "Datingprofil",
@@ -622,7 +773,11 @@
         "ageRange": "Aldersgruppe",
         "maxDistance": "Maks avstand"
       },
-      "privacyLevels": { "visible": "Synlig", "matchOnly": "Kun match", "hidden": "Skjult" }
+      "privacyLevels": {
+        "visible": "Synlig",
+        "matchOnly": "Kun match",
+        "hidden": "Skjult"
+      }
     },
     "verify": {
       "title": "Bildeverifisering",
@@ -680,7 +835,10 @@
       "title": "Kosmiske arrangementer",
       "subtitle": "Temadatingarrangementer tilpasset kosmos",
       "backToDating": "Tilbake til dating",
-      "tabs": { "upcoming": "Kommende", "myEvents": "Mine arrangementer" },
+      "tabs": {
+        "upcoming": "Kommende",
+        "myEvents": "Mine arrangementer"
+      },
       "noUpcoming": "Ingen kommende arrangementer akkurat nå. Sjekk tilbake snart!",
       "noRegistered": "Du har ikke registrert deg for noen arrangementer ennå.",
       "live": "LIVE",
@@ -709,12 +867,45 @@
       "shuffleIdeas": "Bland idéer",
       "elementEnergy": "{{element}}-energi"
     },
-    "scoreColors": { "excellent": "#4ADE80", "good": "#FACC15", "moderate": "#FB923C", "low": "#F87171" }
+    "scoreColors": {
+      "excellent": "#4ADE80",
+      "good": "#FACC15",
+      "moderate": "#FB923C",
+      "low": "#F87171"
+    },
+    "auraSynastry": {
+      "title": "Aura Synastry",
+      "yourMatch": "Din match",
+      "loading": "Leser energifeltene dine...",
+      "matchNotFound": "Ingen treff",
+      "noMyAura": "Du må ha minst én Aura Mirror-skanning først. Gå til Lesninger > Aura Mirror for å skanne auren din.",
+      "noPartnerAura": "{{name}} har ikke gjort en Aura Mirror-skanning ennå. Deres aura-data vil vises her når de gjør det.",
+      "loadError": "Kunne ikke laste aura-data. Vennligst prøv igjen.",
+      "scanAura": "Skann Auren Din",
+      "auraChemistry": "Aura Kjemi",
+      "harmoniousLabel": "Naturlig Harmonisk",
+      "warmLabel": "Varm Tilknytning",
+      "growthLabel": "Vekstpotensial",
+      "differentLabel": "Ulike Frekvenser",
+      "harmonyBreakdown": "Harmonibrudd",
+      "emotionalSafety": "Emosjonell Sikkerhet",
+      "attractionHeat": "Attraksjonsvarme",
+      "communication": "Kommunikasjon",
+      "conflictWeather": "Konfliktvær",
+      "clearSkies": "Klare himmel",
+      "someStorms": "Noen stormer",
+      "turbulent": "Turbulent"
+    }
   },
   "feed": {
     "title": "Kosmisk feed",
     "createPost": "Opprett innlegg",
-    "postTypes": { "text": "Tekst", "photo": "Bilde", "video": "Video", "poll": "Avstemning" },
+    "postTypes": {
+      "text": "Tekst",
+      "photo": "Bilde",
+      "video": "Video",
+      "poll": "Avstemning"
+    },
     "composer": {
       "placeholder": "Hva tenker du kosmisk?",
       "uploadImage": "Klikk for å laste opp et bilde",
@@ -740,7 +931,14 @@
       "optionPlaceholder": "Alternativ {{number}}",
       "addOption": "Legg til alternativ",
       "duration": "Varighet",
-      "durationOptions": { "1h": "1 time", "6h": "6 timer", "12h": "12 timer", "1d": "1 dag", "3d": "3 dager", "7d": "7 dager" },
+      "durationOptions": {
+        "1h": "1 time",
+        "6h": "6 timer",
+        "12h": "12 timer",
+        "1d": "1 dag",
+        "3d": "3 dager",
+        "7d": "7 dager"
+      },
       "createPoll": "Opprett avstemning",
       "pollNeedsContent": "Avstemningen trenger et spørsmål og minst 2 alternativer"
     },
@@ -750,7 +948,26 @@
       "createFirst": "Opprett ditt første innlegg"
     },
     "loadMore": "Last mer",
-    "loading": "Laster..."
+    "loading": "Laster...",
+    "shareReading": {
+      "title": "Del Din Kosmiske Opplevelse",
+      "subtitle": "La samfunnet vite hva stjernene forteller deg",
+      "templates": {
+        "aura": "Fikk nettopp aura-lesningen min! Min ytre aura lyser",
+        "transit": "Min transittleksering treffer annerledes i dag... kan noen relatere?",
+        "moon": "Månesjekk: føler energien fra {{moonPhase}} i kveld",
+        "zodiac": "Andre {{sign}} Risings som føler dette skiftet?",
+        "tarot": "Trekke noen kort i dag, og budskapet var krystallklart"
+      },
+      "quickPost": "Raskt innlegg",
+      "viewReadings": "Se lesninger",
+      "viewCommunities": "Bla gjennom fellesskap"
+    },
+    "trending": {
+      "title": "Trendy",
+      "clearFilter": "Fjern filter",
+      "noResults": "Ingen innlegg funnet for {{tag}}"
+    }
   },
   "friends": {
     "title": "Venner og forbindelser",
@@ -758,7 +975,11 @@
     "pendingCount": "{{count}} ventende",
     "inviteFriends": "Inviter venner",
     "qrCode": "QR-kode",
-    "tabs": { "friends": "Venner", "requests": "Forespørsler", "search": "Søk" },
+    "tabs": {
+      "friends": "Venner",
+      "requests": "Forespørsler",
+      "search": "Søk"
+    },
     "suggestionsTitle": "Folk du kanskje kjenner",
     "addButton": "+ Legg til",
     "empty": {
@@ -768,7 +989,13 @@
       "noRequests": "Ingen ventende forespørsler",
       "noRequestsHint": "Venneforespørsler du sender eller mottar vises her"
     },
-    "requests": { "wantsToConnect": "Vil koble til", "requestSent": "Forespørsel sendt", "accept": "Godta", "decline": "Avslå", "cancel": "Avbryt" },
+    "requests": {
+      "wantsToConnect": "Vil koble til",
+      "requestSent": "Forespørsel sendt",
+      "accept": "Godta",
+      "decline": "Avslå",
+      "cancel": "Avbryt"
+    },
     "search": {
       "placeholder": "Søk etter navn, brukernavn eller Align-kode...",
       "searching": "Søker...",
@@ -777,7 +1004,10 @@
       "startSearch": "Søk etter folk",
       "minCharsHint": "Skriv minst 2 tegn..."
     },
-    "labels": { "friends": "Venner", "pending": "Ventende" },
+    "labels": {
+      "friends": "Venner",
+      "pending": "Ventende"
+    },
     "actions": {
       "removeFriend": "Fjern venn",
       "blockUser": "Blokker bruker",
@@ -800,15 +1030,41 @@
     "selectConversation": "Velg en samtale",
     "startNewChat": "eller start en ny chat for å koble til",
     "newChat": "Ny chat",
-    "contextMenu": { "reply": "Svar", "react": "Reager", "edit": "Rediger", "delete": "Slett", "forward": "Videresend", "pin": "Fest", "unpin": "Løsne", "copyText": "Kopier tekst", "deleteForMe": "Slett for meg", "deleteForEveryone": "Slett for alle" },
+    "contextMenu": {
+      "reply": "Svar",
+      "react": "Reager",
+      "edit": "Rediger",
+      "delete": "Slett",
+      "forward": "Videresend",
+      "pin": "Fest",
+      "unpin": "Løsne",
+      "copyText": "Kopier tekst",
+      "deleteForMe": "Slett for meg",
+      "deleteForEveryone": "Slett for alle"
+    },
     "pickReaction": "Velg en reaksjon",
-    "messageTypes": { "image": "Bilde", "gif": "GIF", "voiceMessage": "Talemelding", "location": "Sted", "poll": "Avstemning:" },
-    "composer": { "placeholder": "Skriv en melding...", "send": "Send", "attachment": "Vedlegg" }
+    "messageTypes": {
+      "image": "Bilde",
+      "gif": "GIF",
+      "voiceMessage": "Talemelding",
+      "location": "Sted",
+      "poll": "Avstemning:"
+    },
+    "composer": {
+      "placeholder": "Skriv en melding...",
+      "send": "Send",
+      "attachment": "Vedlegg"
+    }
   },
   "notifications": {
     "title": "Varsler",
     "markAllRead": "Merk alle som lest",
-    "filters": { "all": "Alle", "social": "Sosialt", "cosmic": "Kosmisk", "system": "System" },
+    "filters": {
+      "all": "Alle",
+      "social": "Sosialt",
+      "cosmic": "Kosmisk",
+      "system": "System"
+    },
     "empty": {
       "all": "Ingen varsler ennå",
       "allHint": "Dine kosmiske varsler og sosiale oppdateringer vises her.",
@@ -819,23 +1075,39 @@
       "system": "Ingen systemvarsler",
       "systemHint": "Systemoppdateringer og kunngjøringer vises her."
     },
-    "time": { "justNow": "akkurat nå", "minutesAgo": "{{count}}min siden", "hoursAgo": "{{count}}t siden", "daysAgo": "{{count}}d siden" },
+    "time": {
+      "justNow": "akkurat nå",
+      "minutesAgo": "{{count}}min siden",
+      "hoursAgo": "{{count}}t siden",
+      "daysAgo": "{{count}}d siden"
+    },
     "grouped": "{{count}} varsler"
   },
   "communities": {
     "title": "Fellesskap",
     "subtitle": "Finn din kosmiske stamme",
     "create": "Opprett",
-    "tabs": { "discover": "Utforsk", "myCommunities": "Mine fellesskap" },
+    "tabs": {
+      "discover": "Utforsk",
+      "myCommunities": "Mine fellesskap"
+    },
     "searchPlaceholder": "Søk fellesskap...",
     "filterAll": "Alle",
     "loading": "Laster fellesskap...",
-    "empty": { "title": "Ingen fellesskap ennå", "description": "Bli den første til å opprette et kosmisk fellesskap!", "createButton": "Opprett fellesskap" },
+    "empty": {
+      "title": "Ingen fellesskap ennå",
+      "description": "Bli den første til å opprette et kosmisk fellesskap!",
+      "createButton": "Opprett fellesskap"
+    },
     "featured": "Utvalgte",
     "allCommunities": "Alle fellesskap",
     "noResultsSearch": "Ingen fellesskap funnet for \"{{query}}\"",
     "noResultsCategory": "Ingen fellesskap i denne kategorien ennå.",
-    "yourCircle": { "title": "Din kosmiske sirkel venter", "description": "Bli med eller opprett fellesskap for å finne stammen din.", "exploreButton": "Utforsk fellesskap" },
+    "yourCircle": {
+      "title": "Din kosmiske sirkel venter",
+      "description": "Bli med eller opprett fellesskap for å finne stammen din.",
+      "exploreButton": "Utforsk fellesskap"
+    },
     "memberCount_one": "{{count}} medlem",
     "memberCount_other": "{{count}} medlemmer",
     "private": "Privat",
@@ -846,13 +1118,41 @@
     "title": "Profil",
     "editProfile": "Rediger profil",
     "shareBigThree": "Del dine tre store",
-    "stats": { "friends": "Venner", "posts": "Innlegg", "followers": "Følgere", "following": "Følger", "views": "Visninger" },
-    "tabs": { "posts": "Innlegg", "photos": "Bilder", "reels": "Reels", "about": "Om" },
+    "stats": {
+      "friends": "Venner",
+      "posts": "Innlegg",
+      "followers": "Følgere",
+      "following": "Følger",
+      "views": "Visninger"
+    },
+    "tabs": {
+      "posts": "Innlegg",
+      "photos": "Bilder",
+      "reels": "Reels",
+      "about": "Om"
+    },
     "alignCode": "Din Align-kode",
     "alignCodeHint": "Del koden din slik at venner kan finne deg",
-    "quickLinks": { "gallery": "Galleri", "safetyTrust": "Sikkerhet og tillit", "subscription": "Abonnement", "referrals": "Verving", "settings": "Innstillinger" },
-    "about": { "bio": "Biografi", "bigThree": "De tre store", "starseedOrigin": "Starseed-opprinnelse", "humanDesign": "Human Design", "joined": "Ble med", "alignCode": "Align-kode" },
-    "empty": { "noPosts": "Ingen innlegg ennå", "noPhotos": "Ingen bilder ennå", "noReels": "Ingen reels ennå" },
+    "quickLinks": {
+      "gallery": "Galleri",
+      "safetyTrust": "Sikkerhet og tillit",
+      "subscription": "Abonnement",
+      "referrals": "Verving",
+      "settings": "Innstillinger"
+    },
+    "about": {
+      "bio": "Biografi",
+      "bigThree": "De tre store",
+      "starseedOrigin": "Starseed-opprinnelse",
+      "humanDesign": "Human Design",
+      "joined": "Ble med",
+      "alignCode": "Align-kode"
+    },
+    "empty": {
+      "noPosts": "Ingen innlegg ennå",
+      "noPhotos": "Ingen bilder ennå",
+      "noReels": "Ingen reels ennå"
+    },
     "loadingProfile": "Laster profil...",
     "profileViews": "Profilvisninger",
     "noViews": "Ingen profilvisninger ennå",
@@ -871,7 +1171,11 @@
     "saveChanges": "Lagre endringer",
     "saving": "Lagrer...",
     "tapAddCover": "Trykk for å legge til forsidebilde",
-    "errors": { "saveFailed": "Kunne ikke lagre profil", "avatarFailed": "Kunne ikke laste opp avatar", "coverFailed": "Kunne ikke laste opp forsidebilde" }
+    "errors": {
+      "saveFailed": "Kunne ikke lagre profil",
+      "avatarFailed": "Kunne ikke laste opp avatar",
+      "coverFailed": "Kunne ikke laste opp forsidebilde"
+    }
   },
   "settings": {
     "title": "Innstillinger",
@@ -884,7 +1188,31 @@
     "houseSystem": "Hussystem",
     "darkMode": "Mørk modus",
     "about": "Om Align",
-    "privacy": "Personvernregler",
+    "privacy": {
+      "title": "Personvern og data",
+      "profileVisibility": "Profilsynlighet",
+      "visibilityOptions": {
+        "public": "Offentlig",
+        "friendsOnly": "Kun venner",
+        "private": "Privat"
+      },
+      "hideAge": "Skjul alder",
+      "hideExactLocation": "Skjul nøyaktig sted",
+      "hideLastActive": "Skjul sist aktiv",
+      "hideFullBirthChart": "Skjul fullstendig fødselshoroskop",
+      "incognitoMode": "Inkognitomodus",
+      "blockUnverified": "Blokker uverifiserte brukere",
+      "minimumTrustLevel": "Minimum tillitsnivå",
+      "trustLevels": {
+        "any": "Alle",
+        "low": "Lav",
+        "medium": "Middels",
+        "high": "Høy"
+      },
+      "analyticsEnabled": "Analyser",
+      "exportData": "Eksporter mine data",
+      "exportToast": "Dataeksportforespørselen din er sendt. Du mottar den via e-post."
+    },
     "terms": "Tjenestevilkår",
     "logout": "Logg ut",
     "account": "Konto",
@@ -913,81 +1241,206 @@
       "communityGuidelines": "Fellesskapsretningslinjer"
     },
     "languages": {
-      "en": "English", "es": "Español", "fr": "Français", "de": "Deutsch",
-      "it": "Italiano", "pt": "Português", "ru": "Русский", "ja": "日本語",
-      "ko": "한국어", "zh": "中文", "ar": "العربية", "hi": "हिन्दी",
-      "tr": "Türkçe", "pl": "Polski", "nl": "Nederlands", "sv": "Svenska",
-      "da": "Dansk", "fi": "Suomi", "nb": "Norsk", "th": "ไทย"
+      "en": "Engelsk",
+      "es": "Español",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "pt": "Português",
+      "ru": "Русский",
+      "ja": "日本語",
+      "ko": "한국어",
+      "zh": "中文",
+      "ar": "العربية",
+      "hi": "हिन्दी",
+      "tr": "Türkçe",
+      "pl": "Polski",
+      "nl": "Nederlands",
+      "sv": "Svenska",
+      "da": "Dansk",
+      "fi": "Suomi",
+      "nb": "Norsk",
+      "th": "ไทย"
     },
-    "admin": { "title": "Admin", "manageUsers": "Administrer brukerkontoer", "contentModeration": "Innholdsmoderering", "manageCelebrities": "Administrer kjendiser", "payoutQueue": "Utbetalingskø" },
-    "aboutSection": { "version": "Versjon", "poweredBy": "Drevet av", "contact": "Kontakt" },
+    "admin": {
+      "title": "Admin",
+      "manageUsers": "Administrer brukerkontoer",
+      "contentModeration": "Innholdsmoderering",
+      "manageCelebrities": "Administrer kjendiser",
+      "payoutQueue": "Utbetalingskø"
+    },
+    "aboutSection": {
+      "version": "Versjon",
+      "poweredBy": "Drevet av",
+      "contact": "Kontakt"
+    },
     "signOut": "Logg ut",
     "deleteAccount": "Slett konto",
-    "deleteConfirm": { "title": "Slette kontoen?", "message": "Dette vil permanent slette kontoen din og alle tilknyttede data. Denne handlingen kan ikke angres.", "confirm": "Slett kontoen min", "cancel": "Avbryt" },
+    "deleteConfirm": {
+      "title": "Slette kontoen?",
+      "message": "Dette vil permanent slette kontoen din og alle tilknyttede data. Denne handlingen kan ikke angres.",
+      "confirm": "Slett kontoen min",
+      "cancel": "Avbryt"
+    },
     "astrology": {
       "title": "Astrologipreferanser",
       "autoSaveHint": "Endringer lagres automatisk og gjelder for alle horoskopberegninger.",
       "houseSystem": "Hussystem",
       "houseSystemHint": "Bestemmer hvordan horoskophusene dine beregnes",
-      "houseSystems": { "wholeSign": "Hele tegn", "placidus": "Placidus", "koch": "Koch", "campanus": "Campanus", "regiomontanus": "Regiomontanus", "equal": "Likt hus", "porphyry": "Porphyry", "alcabitius": "Alcabitius", "topocentric": "Topocentric", "morinus": "Morinus", "meridian": "Meridian" },
+      "houseSystems": {
+        "wholeSign": "Hele tegn",
+        "placidus": "Placidus",
+        "koch": "Koch",
+        "campanus": "Campanus",
+        "regiomontanus": "Regiomontanus",
+        "equal": "Likt hus",
+        "porphyry": "Porfyrius",
+        "alcabitius": "Alcabitius",
+        "topocentric": "Topocentrisk",
+        "morinus": "Morinus",
+        "meridian": "Meridian"
+      },
       "zodiacSystem": "Dyrekretssystem",
-      "zodiacSystems": { "tropical": "Tropisk (vestlig)", "sidereal": "Siderisk (vedisk)" },
+      "zodiacSystems": {
+        "tropical": "Tropisk (vestlig)",
+        "sidereal": "Siderisk (vedisk)"
+      },
       "languageLevel": "Språknivå",
       "languageLevelHint": "Hvor tekniske skal tolkningene være?",
-      "jargonModes": { "plain": "Enkelt språk", "mixed": "Blandet", "technical": "Teknisk" },
+      "jargonModes": {
+        "plain": "Enkelt språk",
+        "mixed": "Blandet",
+        "technical": "Teknisk"
+      },
       "orbTightness": "Orb-stramhet",
-      "orbOptions": { "tight": "Stram", "standard": "Standard", "wide": "Vid" },
+      "orbOptions": {
+        "tight": "Stram",
+        "standard": "Standard",
+        "wide": "Vid"
+      },
       "showAsteroids": "Vis asteroider",
       "showFixedStars": "Vis fiksstjerner"
-    },
-    "privacy": {
-      "title": "Personvern og data",
-      "profileVisibility": "Profilsynlighet",
-      "visibilityOptions": { "public": "Offentlig", "friendsOnly": "Kun venner", "private": "Privat" },
-      "hideAge": "Skjul alder",
-      "hideExactLocation": "Skjul nøyaktig sted",
-      "hideLastActive": "Skjul sist aktiv",
-      "hideFullBirthChart": "Skjul fullstendig fødselshoroskop",
-      "incognitoMode": "Inkognitomodus",
-      "blockUnverified": "Blokker uverifiserte brukere",
-      "minimumTrustLevel": "Minimum tillitsnivå",
-      "trustLevels": { "any": "Alle", "low": "Lav", "medium": "Middels", "high": "Høy" },
-      "analyticsEnabled": "Analyser",
-      "exportData": "Eksporter mine data",
-      "exportToast": "Dataeksportforespørselen din er sendt. Du mottar den via e-post."
     },
     "notificationsPage": {
       "title": "Varselinnstillinger",
       "pauseAll": "Sett alle varsler på pause",
-      "social": { "title": "Sosiale varsler", "friendRequests": "Venneforespørsler", "messages": "Meldinger", "reactions": "Reaksjoner", "comments": "Kommentarer" },
+      "social": {
+        "title": "Sosiale varsler",
+        "friendRequests": "Venneforespørsler",
+        "messages": "Meldinger",
+        "reactions": "Reaksjoner",
+        "comments": "Kommentarer"
+      },
       "cosmic": {
         "title": "Kosmiske varsler",
         "frequency": "Frekvens",
-        "frequencyOptions": { "essential": "Viktigste", "important": "Viktig", "all": "Alle" },
+        "frequencyOptions": {
+          "essential": "Viktigste",
+          "important": "Viktig",
+          "all": "Alle"
+        },
         "tone": "Tone",
-        "toneOptions": { "gentle": "Mild", "direct": "Direkte", "intense": "Intens" },
-        "categories": { "majorTransits": "Store transitter", "moonPhases": "Månefaser", "mercuryRetrograde": "Merkur retrograd", "loveRelationships": "Kjærlighet og forhold", "moneyValues": "Penger og verdier", "careerAmbition": "Karriere og ambisjon", "healingGrowth": "Helbredelse og vekst" },
-        "aspects": { "title": "Aspekttyper", "conjunctions": "Konjunksjoner", "oppositions": "Opposisjoner", "squares": "Kvadrater", "trines": "Trigoner", "sextiles": "Sekstiler" },
-        "events": { "title": "Kosmiske hendelser", "moonPhases": "Månefaser", "eclipses": "Formørkelser", "retrogrades": "Retrograderer", "ingresses": "Ingresser" },
+        "toneOptions": {
+          "gentle": "Mild",
+          "direct": "Direkte",
+          "intense": "Intens"
+        },
+        "categories": {
+          "majorTransits": "Store transitter",
+          "moonPhases": "Månefaser",
+          "mercuryRetrograde": "Merkur retrograd",
+          "loveRelationships": "Kjærlighet og forhold",
+          "moneyValues": "Penger og verdier",
+          "careerAmbition": "Karriere og ambisjon",
+          "healingGrowth": "Helbredelse og vekst"
+        },
+        "aspects": {
+          "title": "Aspekttyper",
+          "conjunctions": "Konjunksjoner",
+          "oppositions": "Opposisjoner",
+          "squares": "Kvadrater",
+          "trines": "Trigoner",
+          "sextiles": "Sekstiler"
+        },
+        "events": {
+          "title": "Kosmiske hendelser",
+          "moonPhases": "Månefaser",
+          "eclipses": "Formørkelser",
+          "retrogrades": "Retrograderer",
+          "ingresses": "Ingresser"
+        },
         "minIntensity": "Minimumsintensitet",
         "advanceNotice": "Forhåndsvarsel (dager)"
       },
-      "galactic": { "title": "Galaktiske varsler", "planetaryHours": "Planetære timer", "dayRuler": "Dagens hersker", "goldenHour": "Gylden time", "eclipseWatch": "Formørkelsesovervåking", "retrogradeAlerts": "Retrogradvarsel", "minutesBefore": "Minutter før" },
-      "summaries": { "title": "Oppsummeringer", "daily": "Daglig oppsummering", "weekly": "Ukentlig oppsummering" },
-      "quietHours": { "title": "Stille timer", "enabled": "Aktiver stille timer", "start": "Start", "end": "Slutt", "urgentOverride": "Tillat hastevarsler" },
-      "delivery": { "title": "Levering", "sound": "Lyd", "badge": "Merke" },
+      "galactic": {
+        "title": "Galaktiske varsler",
+        "planetaryHours": "Planetære timer",
+        "dayRuler": "Dagens hersker",
+        "goldenHour": "Gylden time",
+        "eclipseWatch": "Formørkelsesovervåking",
+        "retrogradeAlerts": "Retrogradvarsel",
+        "minutesBefore": "Minutter før"
+      },
+      "summaries": {
+        "title": "Oppsummeringer",
+        "daily": "Daglig oppsummering",
+        "weekly": "Ukentlig oppsummering"
+      },
+      "quietHours": {
+        "title": "Stille timer",
+        "enabled": "Aktiver stille timer",
+        "start": "Start",
+        "end": "Slutt",
+        "urgentOverride": "Tillat hastevarsler"
+      },
+      "delivery": {
+        "title": "Levering",
+        "sound": "Lyd",
+        "badge": "Merke"
+      },
       "announcements": "Appkunngjøringer"
     },
-    "referrals": { "title": "Verving", "howItWorks": "Slik fungerer det", "step1": "Del din unike vervelenke med venner", "step2": "Når de registrerer seg med lenken din, får dere begge 5 bonustolkninger", "step3": "Det finnes ingen grense — inviter så mange venner du vil!" },
-    "chatTheme": { "title": "Chattema", "subtitle": "Tilpass utseendet på meldingene dine" },
-    "datingIdentity": { "title": "Datingidentitet", "subtitle": "Hvordan du identifiserer deg i datingrommet" },
-    "relationshipIntent": { "title": "Forholdshensikt", "subtitle": "Hva du ser etter i forbindelser" },
-    "connectionPreferences": { "title": "Tilknytningspreferanser", "subtitle": "Hvem du ønsker å koble til" },
-    "identityPrivacy": { "title": "Identitetspersonvern", "subtitle": "Kontroller hvem som ser identitetsinformasjonen din" },
-    "safety": { "title": "Sikkerhet", "subtitle": "Administrer blokkeringer, rapporter og sikkerhetsinnstillinger" },
-    "friends": { "title": "Venneinnstillinger", "subtitle": "Administrer venneforespørsel- og tilknytningspreferanser" },
-    "termsPage": { "title": "Tjenestevilkår" },
-    "communityGuidelines": { "title": "Fellesskapsretningslinjer" }
+    "referrals": {
+      "title": "Verving",
+      "howItWorks": "Slik fungerer det",
+      "step1": "Del din unike vervelenke med venner",
+      "step2": "Når de registrerer seg med lenken din, får dere begge 5 bonustolkninger",
+      "step3": "Det finnes ingen grense — inviter så mange venner du vil!"
+    },
+    "chatTheme": {
+      "title": "Chattema",
+      "subtitle": "Tilpass utseendet på meldingene dine"
+    },
+    "datingIdentity": {
+      "title": "Datingidentitet",
+      "subtitle": "Hvordan du identifiserer deg i datingrommet"
+    },
+    "relationshipIntent": {
+      "title": "Forholdshensikt",
+      "subtitle": "Hva du ser etter i forbindelser"
+    },
+    "connectionPreferences": {
+      "title": "Tilknytningspreferanser",
+      "subtitle": "Hvem du ønsker å koble til"
+    },
+    "identityPrivacy": {
+      "title": "Identitetspersonvern",
+      "subtitle": "Kontroller hvem som ser identitetsinformasjonen din"
+    },
+    "safety": {
+      "title": "Sikkerhet",
+      "subtitle": "Administrer blokkeringer, rapporter og sikkerhetsinnstillinger"
+    },
+    "friends": {
+      "title": "Venneinnstillinger",
+      "subtitle": "Administrer venneforespørsel- og tilknytningspreferanser"
+    },
+    "termsPage": {
+      "title": "Tjenestevilkår"
+    },
+    "communityGuidelines": {
+      "title": "Fellesskapsretningslinjer"
+    }
   },
   "subscription": {
     "headline": "Presisjonsakstrologi. Personlig din.",
@@ -1017,44 +1470,116 @@
     "restorePurchase": "Gjenopprett kjøp",
     "restoring": "Gjenoppretter...",
     "free": {
-      "name": "Gratis", "price": "$0", "tagline": "Utforsk kosmos uten kostnad", "cta": "Kom i gang gratis",
+      "name": "Gratis",
+      "price": "$0",
+      "tagline": "Utforsk kosmos uten kostnad",
+      "cta": "Kom i gang gratis",
       "bestFor": "Nybegynnere som er nysgjerrige på astrologi og vil utforske før de forplikter seg.",
-      "features": ["Grunnleggende fødselshoroskopoversikt", "Daglige horoskopinnsikter", "3 AI-tolkninger per måned", "Enkeltkort-tarotrekninger", "Planetære timer-kalkulator", "1 lagret profil"]
+      "features": [
+        "Grunnleggende fødselshoroskopoversikt",
+        "Daglige horoskopinnsikter",
+        "3 AI-tolkninger per måned",
+        "Enkeltkort-tarotrekninger",
+        "Planetære timer-kalkulator",
+        "1 lagret profil"
+      ]
     },
     "light": {
-      "name": "Light", "price": "$9", "tagline": "Din daglige kosmiske følgesvenn", "cta": "Begynn med Light",
+      "name": "Lys",
+      "price": "$9",
+      "tagline": "Din daglige kosmiske følgesvenn",
+      "cta": "Begynn med Light",
       "bestFor": "Tilfeldige utforskere som ønsker daglig kosmisk veiledning og grunnleggende horoskopinnsikt.",
-      "features": ["Alt i Gratis", "Fullstendige daglige personlige innsikter", "30 AI-drevne tolkninger per måned", "Transittvarsler i sanntid", "Numerologi livsvei-øyeblikksbilde", "1 lagret fødselsprofil"]
+      "features": [
+        "Alt i Gratis",
+        "Fullstendige daglige personlige innsikter",
+        "30 AI-drevne tolkninger per måned",
+        "Transittvarsler i sanntid",
+        "Numerologi livsvei-øyeblikksbilde",
+        "1 lagret fødselsprofil"
+      ]
     },
     "premium": {
-      "name": "Premium", "price": "$19", "tagline": "Lås opp din fulle kosmiske blåkopi", "badge": "MEST POPULÆR", "cta": "Få Premium — Beste verdi",
+      "name": "Premium",
+      "price": "$19",
+      "tagline": "Lås opp din fulle kosmiske blåkopi",
+      "badge": "MEST POPULÆR",
+      "cta": "Få Premium — Beste verdi",
       "bestFor": "Entusiaster klare til å dykke dypt inn i den fullstendige astrologiske blåkopien og relasjoner.",
-      "features": ["Alt i Light", "Fullstendig horoskop med aspekter og mønstre", "100 AI-tolkninger per måned", "Alle horoskotyper (progressivt, returer, synastri)", "Kompatibilitet og kompositthoroskoper", "Starseed, numerologi, human design", "Tarotoppslag (alle 5 typer)", "Sjargongbryter (enkelt språkmodus)", "5 lagrede profiler", "Alle astrologikurs"]
+      "features": [
+        "Alt i Light",
+        "Fullstendig horoskop med aspekter og mønstre",
+        "100 AI-tolkninger per måned",
+        "Alle horoskotyper (progressivt, returer, synastri)",
+        "Kompatibilitet og kompositthoroskoper",
+        "Starseed, numerologi, human design",
+        "Tarotoppslag (alle 5 typer)",
+        "Sjargongbryter (enkelt språkmodus)",
+        "5 lagrede profiler",
+        "Alle astrologikurs"
+      ]
     },
     "pro": {
-      "name": "Pro", "price": "$29", "tagline": "For den seriøse utøveren", "cta": "Bli Pro",
+      "name": "Pro",
+      "price": "$29",
+      "tagline": "For den seriøse utøveren",
+      "cta": "Bli Pro",
       "bestFor": "Profesjonelle astrologer og dedikerte utøvere som trenger alle tilgjengelige verktøy.",
-      "features": ["Alt i Premium", "300 AI-tolkninger per måned", "Finansiell astrologirapport", "Astrokartografi (ACG)", "Firdaria og zodiacal releasing", "Fiksstjerner og arabiske punkter", "Prioritets-AI-behandling", "Tidlig tilgang til nye funksjoner", "Ubegrensede lagrede profiler", "Eksporter og del rapporter"]
+      "features": [
+        "Alt i Premium",
+        "300 AI-tolkninger per måned",
+        "Finansiell astrologirapport",
+        "Astrokartografi (ACG)",
+        "Firdaria og zodiacal releasing",
+        "Fiksstjerner og arabiske punkter",
+        "Prioritets-AI-behandling",
+        "Tidlig tilgang til nye funksjoner",
+        "Ubegrensede lagrede profiler",
+        "Eksporter og del rapporter"
+      ]
     },
     "faq": {
-      "switch": { "question": "Kan jeg bytte plan når som helst?", "answer": "Ja! Du kan oppgradere eller nedgradere planen din når som helst. Ved oppgradering får du umiddelbar tilgang til nye funksjoner. Ved nedgradering fortsetter fordelene til slutten av faktureringsperioden." },
-      "trial": { "question": "Hva skjer etter den gratis prøveperioden?", "answer": "14-dagers gratis prøveperiode gir deg full tilgang til den valgte planen. Du belastes ikke før prøveperioden slutter, og du kan kansellere når som helst uten forpliktelser." },
-      "rollover": { "question": "Overføres AI-tolkninger?", "answer": "AI-tolkningskreditter tilbakestilles hver faktureringsperiode og overføres ikke. Dette holder AI-infrastrukturen rask og responsiv for alle brukere." },
-      "security": { "question": "Er fødselsdataene mine trygge?", "answer": "Absolutt. Alle personlige og fødselsdata er kryptert i ro og under overføring. Vi selger aldri dataene dine, og du kan slette kontoen din og alle tilknyttede data når som helst." }
+      "switch": {
+        "question": "Kan jeg bytte plan når som helst?",
+        "answer": "Ja! Du kan oppgradere eller nedgradere planen din når som helst. Ved oppgradering får du umiddelbar tilgang til nye funksjoner. Ved nedgradering fortsetter fordelene til slutten av faktureringsperioden."
+      },
+      "trial": {
+        "question": "Hva skjer etter den gratis prøveperioden?",
+        "answer": "14-dagers gratis prøveperiode gir deg full tilgang til den valgte planen. Du belastes ikke før prøveperioden slutter, og du kan kansellere når som helst uten forpliktelser."
+      },
+      "rollover": {
+        "question": "Overføres AI-tolkninger?",
+        "answer": "AI-tolkningskreditter tilbakestilles hver faktureringsperiode og overføres ikke. Dette holder AI-infrastrukturen rask og responsiv for alle brukere."
+      },
+      "security": {
+        "question": "Er fødselsdataene mine trygge?",
+        "answer": "Absolutt. Alle personlige og fødselsdata er kryptert i ro og under overføring. Vi selger aldri dataene dine, og du kan slette kontoen din og alle tilknyttede data når som helst."
+      }
     },
     "alerts": {
-      "unavailableTitle": "Utilgjengelig", "unavailableBody": "Denne planen er ikke tilgjengelig akkurat nå.",
-      "purchaseFailedTitle": "Kjøp mislyktes", "purchaseFailedDefault": "Noe gikk galt.", "purchaseFailedLong": "Noe gikk galt under behandling av kjøpet. Vennligst prøv igjen.",
-      "welcomeTitle": "Velkommen om bord!", "welcomeBody": "Abonnementet ditt er aktivt. Nyt det utvidede kosmiske verktøysettet.",
+      "unavailableTitle": "Utilgjengelig",
+      "unavailableBody": "Denne planen er ikke tilgjengelig akkurat nå.",
+      "purchaseFailedTitle": "Kjøp mislyktes",
+      "purchaseFailedDefault": "Noe gikk galt.",
+      "purchaseFailedLong": "Noe gikk galt under behandling av kjøpet. Vennligst prøv igjen.",
+      "welcomeTitle": "Velkommen om bord!",
+      "welcomeBody": "Abonnementet ditt er aktivt. Nyt det utvidede kosmiske verktøysettet.",
       "ok": "OK",
-      "subscriptionsUnavailableTitle": "Abonnementer utilgjengelige", "subscriptionsUnavailableHint": "Sørg for at du er logget inn på Play Store og prøv igjen.",
-      "retry": "Prøv igjen", "diagnostics": "Diagnostikk",
-      "planNotFoundTitle": "Plan ikke funnet", "planNotFoundBody": "Denne planen er midlertidig utilgjengelig i butikken. Vennligst prøv igjen senere.",
-      "errorTitle": "Feil", "couldNotOpenLink": "Kunne ikke åpne lenke.",
-      "unsupportedTitle": "Ikke støttet", "unsupportedBody": "Abonnementsadministrasjon er kun tilgjengelig på iOS og Android.",
+      "subscriptionsUnavailableTitle": "Abonnementer utilgjengelige",
+      "subscriptionsUnavailableHint": "Sørg for at du er logget inn på Play Store og prøv igjen.",
+      "retry": "Prøv igjen",
+      "diagnostics": "Diagnostikk",
+      "planNotFoundTitle": "Plan ikke funnet",
+      "planNotFoundBody": "Denne planen er midlertidig utilgjengelig i butikken. Vennligst prøv igjen senere.",
+      "errorTitle": "Feil",
+      "couldNotOpenLink": "Kunne ikke åpne lenke.",
+      "unsupportedTitle": "Ikke støttet",
+      "unsupportedBody": "Abonnementsadministrasjon er kun tilgjengelig på iOS og Android.",
       "manageError": "Kunne ikke åpne abonnementsadministrasjon. Vennligst åpne Play Store eller App Store manuelt.",
-      "restoredTitle": "Gjenopprettet!", "restoredBody": "Abonnementet ditt er gjenopprettet.",
-      "noActiveTitle": "Ingen aktivt abonnement", "noActiveBody": "Ingen tidligere abonnement ble funnet for denne kontoen.",
+      "restoredTitle": "Gjenopprettet!",
+      "restoredBody": "Abonnementet ditt er gjenopprettet.",
+      "noActiveTitle": "Ingen aktivt abonnement",
+      "noActiveBody": "Ingen tidligere abonnement ble funnet for denne kontoen.",
       "restoreError": "Kunne ikke gjenopprette kjøp"
     },
     "errors": {
@@ -1067,6 +1592,23 @@
       "noPackages": "Abonnementsplaner ferdigstilles i butikken. Vennligst prøv igjen senere.",
       "connectionFailed": "Kunne ikke nå abonnementstjenesten. Vennligst sjekk forbindelsen og prøv igjen.",
       "stillStarting": "Abonnementstjenesten starter fortsatt. Vennligst vent et øyeblikk og prøv igjen."
+    },
+    "paymentUnavailable": "Vi hadde problemer med å nå betalingsleverandøren vår. Vennligst prøv igjen om et øyeblikk.",
+    "cardDeclined": "Kortet ditt ble avvist. Vennligst oppdater betalingsmetoden din og prøv igjen.",
+    "checkoutFailed": "Noe gikk galt med å starte abonnementet ditt. Vennligst prøv igjen.",
+    "starter": {
+      "name": "Starter",
+      "tagline": "Få din kosmiske reise startet",
+      "cta": "Få Starter",
+      "bestFor": "Alle som er klare til å gå utover det grunnleggende med full fødselshoroskop og daglige innsikter.",
+      "features": [
+        "10 AI-lesninger per måned",
+        "Fullt fødselshoroskop (alle planeter)",
+        "Daglige personlige transittvarsler",
+        "Aura Speil ubegrensede skanninger",
+        "Kosmisk Journal ubegrensede oppføringer",
+        "Sjelgaver & Sjelminne tilgang"
+      ]
     }
   },
   "courses": {
@@ -1082,38 +1624,103 @@
     "title": "Kosmisk vær",
     "subtitle": "Din personlige kosmiske prognose",
     "scanningCosmos": "Skanner kosmos...",
-    "filters": { "all": "Alle", "active": "Aktiv", "upcoming": "Kommende" },
-    "emptyState": { "title": "Ingen store transitter oppdaget", "filterHint": "Ingen {{filter}}-varsler akkurat nå. Prøv å bytte til \"Alle\".", "defaultHint": "Kosmos er stille for horoskopet ditt. Sjekk tilbake når himmelen skifter." },
-    "detail": {
-      "timingWindow": "Tidsvindu", "start": "Start", "peak": "Topp", "end": "Slutt",
-      "fullInterpretation": "Full tolkning", "astrologicalDetails": "Astrologiske detaljer",
-      "transit": "Transitt", "natal": "Fødselshoroskop", "aspect": "Aspekt",
-      "retrograde": "Retrograd", "yes": "Ja", "no": "Nei",
-      "actionAdvice": "Handlingsråd", "viewFullTransits": "Vis fullstendige transitter"
+    "filters": {
+      "all": "Alle",
+      "active": "Aktiv",
+      "upcoming": "Kommende"
     },
-    "importance": { "critical": "Kritisk", "high": "Høy", "moderate": "Moderat", "low": "Lav", "minimal": "Minimal" },
-    "categories": { "general": "Generelt", "love": "Kjærlighet", "career": "Karriere", "growth": "Vekst", "challenge": "Utfordring", "spiritual": "Åndelig", "communication": "Kommunikasjon", "energy": "Energi" },
+    "emptyState": {
+      "title": "Ingen store transitter oppdaget",
+      "filterHint": "Ingen {{filter}}-varsler akkurat nå. Prøv å bytte til \"Alle\".",
+      "defaultHint": "Kosmos er stille for horoskopet ditt. Sjekk tilbake når himmelen skifter."
+    },
+    "detail": {
+      "timingWindow": "Tidsvindu",
+      "start": "Start",
+      "peak": "Topp",
+      "end": "Slutt",
+      "fullInterpretation": "Full tolkning",
+      "astrologicalDetails": "Astrologiske detaljer",
+      "transit": "Transitt",
+      "natal": "Fødselshoroskop",
+      "aspect": "Aspekt",
+      "retrograde": "Retrograd",
+      "yes": "Ja",
+      "no": "Nei",
+      "actionAdvice": "Handlingsråd",
+      "viewFullTransits": "Vis fullstendige transitter"
+    },
+    "importance": {
+      "critical": "Kritisk",
+      "high": "Høy",
+      "moderate": "Moderat",
+      "low": "Lav",
+      "minimal": "Minimal"
+    },
+    "categories": {
+      "general": "Generelt",
+      "love": "Kjærlighet",
+      "career": "Karriere",
+      "growth": "Vekst",
+      "challenge": "Utfordring",
+      "spiritual": "Åndelig",
+      "communication": "Kommunikasjon",
+      "energy": "Energi"
+    },
     "statusActive": "AKTIV"
   },
   "discover": {
     "title": "Utforsk",
     "moonPhases": {
-      "newMoon": "Nymåne", "waxingCrescent": "Voksende månesigd", "firstQuarter": "Første kvarter",
-      "waxingGibbous": "Voksende halvmåne", "fullMoon": "Fullmåne", "waningGibbous": "Minkende halvmåne",
-      "lastQuarter": "Siste kvarter", "waningCrescent": "Minkende månesigd"
+      "newMoon": "Nymåne",
+      "waxingCrescent": "Voksende månesigd",
+      "firstQuarter": "Første kvarter",
+      "waxingGibbous": "Voksende halvmåne",
+      "fullMoon": "Fullmåne",
+      "waningGibbous": "Minkende halvmåne",
+      "lastQuarter": "Siste kvarter",
+      "waningCrescent": "Minkende månesigd"
     }
   },
   "worldEcho": {
     "title": "Verdensekko",
     "subtitle": "Hvordan kosmiske hendelser bølger gjennom menneskets historie",
-    "categories": { "political": "Politisk", "economic": "Økonomisk", "cultural": "Kulturelt", "scientific": "Vitenskapelig", "natural": "Naturlig", "social": "Sosialt", "technological": "Teknologisk", "spiritual": "Åndelig" },
-    "evidenceLabels": { "strong": "Sterk", "moderate": "Moderat", "speculative": "Spekulativ" },
-    "scoreLabels": { "legendary": "Legendarisk", "major": "Stor", "significant": "Betydelig", "notable": "Bemerkelsesverdig", "minor": "Liten" }
+    "categories": {
+      "political": "Politisk",
+      "economic": "Økonomisk",
+      "cultural": "Kulturelt",
+      "scientific": "Vitenskapelig",
+      "natural": "Naturlig",
+      "social": "Sosialt",
+      "technological": "Teknologisk",
+      "spiritual": "Åndelig"
+    },
+    "evidenceLabels": {
+      "strong": "Sterk",
+      "moderate": "Moderat",
+      "speculative": "Spekulativ"
+    },
+    "scoreLabels": {
+      "legendary": "Legendarisk",
+      "major": "Stor",
+      "significant": "Betydelig",
+      "notable": "Bemerkelsesverdig",
+      "minor": "Liten"
+    }
   },
   "polls": {
     "title": "Avstemninger",
-    "filters": { "all": "Alle", "active": "Aktiv", "ended": "Avsluttet", "mine": "Mine" },
-    "duration": { "hours": "{{count}}t igjen", "days": "{{count}}d igjen", "ended": "Avsluttet" },
+    "filters": {
+      "all": "Alle",
+      "active": "Aktiv",
+      "ended": "Avsluttet",
+      "mine": "Mine"
+    },
+    "duration": {
+      "hours": "{{count}}t igjen",
+      "days": "{{count}}d igjen",
+      "ended": "Avsluttet"
+    },
     "createPoll": "Opprett avstemning",
     "votes": "{{count}} stemmer",
     "noPollsYet": "Ingen avstemninger ennå",
@@ -1124,7 +1731,12 @@
     "loading": "Laster bokmerker...",
     "empty": "Ingen bokmerker ennå",
     "emptyHint": "Lagre innlegg fra feeden for å lese senere",
-    "postUnavailable": "Innlegget er ikke lenger tilgjengelig"
+    "postUnavailable": "Innlegget er ikke lenger tilgjengelig",
+    "filterAll": "Alle",
+    "filterPosts": "Innlegg",
+    "filterReadings": "Lesninger",
+    "saved": "Lagret",
+    "unbookmark": "Fjern bokmerke"
   },
   "celebrityMatches": {
     "title": "Kjendismatcher",
@@ -1140,26 +1752,119 @@
     "noCelebrities": "Ingen kjendiser ennå",
     "searchOrCheckBack": "Søk etter noen eller sjekk tilbake snart",
     "noCelebritiesInCategory": "Ingen kjendiser i denne kategorien ennå",
-    "categories": { "overall": "Totalt", "emotional": "Emosjonelt", "passion": "Lidenskap", "marriage": "Ekteskap", "karmic": "Karmisk", "attraction": "Tiltrekning", "stability": "Stabilitet", "mental": "Mentalt" },
-    "matchScore": "{{score}}% match"
+    "categories": {
+      "overall": "Totalt",
+      "emotional": "Emosjonelt",
+      "passion": "Lidenskap",
+      "marriage": "Ekteskap",
+      "karmic": "Karmisk",
+      "attraction": "Tiltrekning",
+      "stability": "Stabilitet",
+      "mental": "Mentalt"
+    },
+    "matchScore": "{{score}}% treff"
   },
   "matches": {
     "title": "Kompatibilitetsmatcher",
-    "categories": { "overall": "Totalt", "emotional": "Emosjonelt", "passion": "Lidenskap", "marriage": "Ekteskap", "karmic": "Karmisk", "attraction": "Tiltrekning", "stability": "Stabilitet", "mental": "Mentalt" }
+    "categories": {
+      "overall": "Totalt",
+      "emotional": "Emosjonelt",
+      "passion": "Lidenskap",
+      "marriage": "Ekteskap",
+      "karmic": "Karmisk",
+      "attraction": "Tiltrekning",
+      "stability": "Stabilitet",
+      "mental": "Mentalt"
+    }
   },
-  "cosmicIndex": { "title": "Kosmisk indeks", "subtitle": "Dagens kosmiske energi med et blikk" },
-  "creatorStudio": { "title": "Kreativt studio", "subtitle": "Opprett og administrer ditt kosmiske innhold" },
-  "qa": { "title": "Spørsmål og svar", "askQuestion": "Still et spørsmål", "noQuestions": "Ingen spørsmål ennå", "placeholder": "Hva er ditt kosmiske spørsmål?" },
-  "pricing": { "title": "Velg din plan", "subtitle": "Lås opp den fulle kraften til Align" },
-  "gallery": { "title": "Galleri", "empty": "Ingen bilder ennå" },
-  "timeline": { "title": "Tidslinje", "empty": "Ingenting å vise ennå" },
-  "reels": { "title": "Kosmiske Reels", "empty": "Ingen reels ennå" },
-  "fragments": { "title": "Kosmiske fragmenter", "subtitle": "Delbare kosmiske visdomskort" },
-  "cosmicVideo": { "title": "Kosmisk video", "subtitle": "Astrologisk innsikt i bevegelse" },
-  "groupSynastry": { "title": "Gruppesynastri", "subtitle": "Se hvordan en gruppes horoskoper samhandler" },
+  "cosmicIndex": {
+    "title": "Kosmisk indeks",
+    "subtitle": "Dagens kosmiske energi med et blikk"
+  },
+  "creatorStudio": {
+    "title": "Kreativt studio",
+    "subtitle": "Opprett og administrer ditt kosmiske innhold",
+    "applyTitle": "Bli en Skaper",
+    "applyDescription": "Del dine astrologiske innsikter, bygg en følgerskare, og tjen penger på innholdet ditt.",
+    "applyButton": "Søk som Skaper",
+    "applying": "Søker...",
+    "benefitReadings": "Del Lesninger",
+    "benefitReadingsHint": "Legg ut tolkninger og innsikter",
+    "benefitCommunity": "Bygg Fellesskap",
+    "benefitCommunityHint": "Få følgere og innflytelse",
+    "benefitEarn": "Tjen Inntekt",
+    "benefitEarnHint": "Monetiser din ekspertise",
+    "statPosts": "Innlegg",
+    "statReactions": "Reaksjoner",
+    "statViews": "Visninger",
+    "statFollowers": "Følgere",
+    "statEarnings": "Inntekter",
+    "statThisMonth": "Denne måneden",
+    "createPost": "Opprett innlegg",
+    "createPostHint": "Del innsikter med fellesskapet",
+    "createPoll": "Opprett avstemning",
+    "createPollHint": "Engasjer deg med avstemninger og spørsmål",
+    "myCommunities": "Mine fellesskap",
+    "myCommunitiesHint": "Administrer gruppene dine",
+    "shareReading": "Del en lesning",
+    "shareReadingHint": "Legg ut horoskoptolkninger",
+    "signInRequired": "Vennligst logg inn for å få tilgang til Creator Studio",
+    "loading": "Laster studio..."
+  },
+  "qa": {
+    "title": "Spørsmål og svar",
+    "askQuestion": "Still et spørsmål",
+    "noQuestions": "Ingen spørsmål ennå",
+    "placeholder": "Hva er ditt kosmiske spørsmål?"
+  },
+  "pricing": {
+    "title": "Velg din plan",
+    "subtitle": "Lås opp den fulle kraften til Align",
+    "monthly": "Månedlig",
+    "annual": "Årlig",
+    "saveUpTo": "Spar opptil 40%",
+    "bestValue": "Best verdi",
+    "perYear": "/år",
+    "saveMoney": "Spar ${{amount}}",
+    "foreverFree": "Gratis for alltid",
+    "billedMonthly": "Faktureres månedlig",
+    "lessThanCoffee": "Mindre enn en kaffe per måned",
+    "currentPlan": "Nåværende plan",
+    "getPlan": "Få {{name}}"
+  },
+  "gallery": {
+    "title": "Galleri",
+    "empty": "Ingen bilder ennå"
+  },
+  "timeline": {
+    "title": "Tidslinje",
+    "empty": "Ingenting å vise ennå"
+  },
+  "reels": {
+    "title": "Kosmiske Reels",
+    "empty": "Ingen reels ennå"
+  },
+  "fragments": {
+    "title": "Kosmiske fragmenter",
+    "subtitle": "Delbare kosmiske visdomskort"
+  },
+  "cosmicVideo": {
+    "title": "Kosmisk video",
+    "subtitle": "Astrologisk innsikt i bevegelse"
+  },
+  "groupSynastry": {
+    "title": "Gruppesynastri",
+    "subtitle": "Se hvordan en gruppes horoskoper samhandler"
+  },
   "components": {
-    "birthDataPrompt": { "title": "Fødselsdata påkrevd", "defaultMessage": "Legg til fødselsdato, tid og sted for å låse opp denne funksjonen.", "completeProfile": "Fullfør profil" },
-    "loadingCosmic": { "defaultLabel": "Laster..." },
+    "birthDataPrompt": {
+      "title": "Fødselsdata påkrevd",
+      "defaultMessage": "Legg til fødselsdato, tid og sted for å låse opp denne funksjonen.",
+      "completeProfile": "Fullfør profil"
+    },
+    "loadingCosmic": {
+      "defaultLabel": "Laster..."
+    },
     "paywallGate": {
       "title": "Lås opp denne tolkningen",
       "description": "Denne funksjonen er tilgjengelig på",
@@ -1172,8 +1877,16 @@
       "aiAstrologer": "AI-astrolog med stemmechat",
       "fullChart": "Fullstendig fødselshoroskop med aspekter og mønstre"
     },
-    "shareButton": { "share": "Del", "copied": "Kopiert!" },
-    "referralCard": { "title": "Inviter venner", "subtitle": "Del vervelenken din, og begge får bonustolkninger", "copyLink": "Kopier lenke", "linkCopied": "Lenke kopiert!" },
+    "shareButton": {
+      "share": "Del",
+      "copied": "Kopiert!"
+    },
+    "referralCard": {
+      "title": "Inviter venner",
+      "subtitle": "Del vervelenken din, og begge får bonustolkninger",
+      "copyLink": "Kopier lenke",
+      "linkCopied": "Lenke kopiert!"
+    },
     "trialBanner": {
       "title": "Premium-prøveperiode: {{count}} dag igjen",
       "title_plural": "Premium-prøveperiode: {{count}} dager igjen",
@@ -1183,69 +1896,219 @@
       "endsTomorrow": "Prøveperioden din avsluttes i morgen! Oppgrader for å beholde Premium-funksjoner.",
       "endsSoon": "Prøveperioden din avsluttes om {{count}} dager! Oppgrader for å beholde Premium-funksjoner."
     },
-    "cookieConsent": { "message": "Vi bruker informasjonskapsler for å forbedre opplevelsen din.", "accept": "Godta", "decline": "Avslå", "learnMore": "Les mer" },
-    "matchCelebration": { "itsAMatch": "Det er en match!", "subtitle": "Kosmos har koblet deg og {{name}} sammen", "sendMessage": "Send en melding", "keepBrowsing": "Fortsett å bla" },
-    "datingFilterDrawer": { "title": "Utforskningsfiltre", "ageRange": "Aldersgruppe", "maxDistance": "Maks avstand", "showOnlyVerified": "Vis kun verifiserte", "compatibilityMin": "Minimumskompatibilitet", "elements": "Elementer", "applyFilters": "Bruk filtre", "resetFilters": "Tilbakestill" },
-    "datingProfileCard": { "compatibilityScore": "{{score}}% kompatibel", "like": "Lik", "pass": "Hopp over", "cosmicRose": "Kosmisk rose", "likesRemaining": "{{count}} liker igjen", "rosesRemaining": "{{count}} roser igjen" },
-    "sidebar": {
-      "home": "Hjem", "discover": "Utforsk", "cosmicFeed": "Kosmisk feed", "worldEcho": "Verdensekko",
-      "chart": "Mitt horoskop", "cosmicWeather": "Kosmisk vær", "readings": "Tolkninger",
-      "videoCreator": "Videoskaper", "dating": "Dating", "friends": "Venner", "messages": "Meldinger",
-      "feed": "Feed", "notifications": "Varsler", "aiAstrologer": "AI-astrolog", "learn": "Lær",
-      "pricing": "Priser", "communities": "Fellesskap", "profile": "Profil", "settings": "Innstillinger",
-      "menu": "Meny", "close": "Lukk", "more": "Mer", "chat": "Chat",
-      "yourProfile": "Din profil", "viewProfile": "Vis profilen din"
+    "cookieConsent": {
+      "message": "Vi bruker informasjonskapsler for å forbedre opplevelsen din.",
+      "accept": "Godta",
+      "decline": "Avslå",
+      "learnMore": "Les mer"
     },
-    "feedCard": { "like": "Lik", "comment": "Kommenter", "share": "Del", "bookmark": "Bokmerk", "report": "Rapporter", "deletePost": "Slett innlegg", "editPost": "Rediger innlegg" },
-    "commentSheet": { "title": "Kommentarer", "placeholder": "Skriv en kommentar...", "send": "Send", "noComments": "Ingen kommentarer ennå", "beFirst": "Bli den første til å kommentere!" }
+    "matchCelebration": {
+      "itsAMatch": "Det er en match!",
+      "subtitle": "Kosmos har koblet deg og {{name}} sammen",
+      "sendMessage": "Send en melding",
+      "keepBrowsing": "Fortsett å bla"
+    },
+    "datingFilterDrawer": {
+      "title": "Utforskningsfiltre",
+      "ageRange": "Aldersgruppe",
+      "maxDistance": "Maks avstand",
+      "showOnlyVerified": "Vis kun verifiserte",
+      "compatibilityMin": "Minimumskompatibilitet",
+      "elements": "Elementer",
+      "applyFilters": "Bruk filtre",
+      "resetFilters": "Tilbakestill"
+    },
+    "datingProfileCard": {
+      "compatibilityScore": "{{score}}% kompatibel",
+      "like": "Lik",
+      "pass": "Hopp over",
+      "cosmicRose": "Kosmisk rose",
+      "likesRemaining": "{{count}} liker igjen",
+      "rosesRemaining": "{{count}} roser igjen"
+    },
+    "sidebar": {
+      "home": "Hjem",
+      "discover": "Utforsk",
+      "cosmicFeed": "Kosmisk feed",
+      "worldEcho": "Verdensekko",
+      "chart": "Mitt horoskop",
+      "cosmicWeather": "Kosmisk vær",
+      "readings": "Tolkninger",
+      "videoCreator": "Videoskaper",
+      "dating": "Dating",
+      "friends": "Venner",
+      "messages": "Meldinger",
+      "feed": "Nyhetsstrøm",
+      "notifications": "Varsler",
+      "aiAstrologer": "AI-astrolog",
+      "learn": "Lær",
+      "pricing": "Priser",
+      "communities": "Fellesskap",
+      "profile": "Profil",
+      "settings": "Innstillinger",
+      "menu": "Meny",
+      "close": "Lukk",
+      "more": "Mer",
+      "chat": "Chat",
+      "yourProfile": "Din profil",
+      "viewProfile": "Vis profilen din",
+      "search": "Søk",
+      "bookmarks": "Bokmerker",
+      "polls": "Avstemninger",
+      "creatorStudio": "Skaperstudio"
+    },
+    "feedCard": {
+      "like": "Lik",
+      "comment": "Kommenter",
+      "share": "Del",
+      "bookmark": "Bokmerk",
+      "report": "Rapporter",
+      "deletePost": "Slett innlegg",
+      "editPost": "Rediger innlegg"
+    },
+    "commentSheet": {
+      "title": "Kommentarer",
+      "placeholder": "Skriv en kommentar...",
+      "send": "Send",
+      "noComments": "Ingen kommentarer ennå",
+      "beFirst": "Bli den første til å kommentere!"
+    }
   },
   "common": {
-    "loading": "Laster...", "error": "Noe gikk galt", "retry": "Prøv igjen",
-    "save": "Lagre", "cancel": "Avbryt", "delete": "Slett", "share": "Del",
-    "premium": "Premium", "free": "Gratis", "close": "Lukk", "confirm": "Bekreft",
-    "ok": "OK", "yes": "Ja", "no": "Nei", "back": "Tilbake", "next": "Neste",
-    "done": "Ferdig", "edit": "Rediger", "copy": "Kopier", "copied": "Kopiert!",
-    "search": "Søk", "settings": "Innstillinger", "seeAll": "Se alle",
-    "showMore": "Vis mer", "showLess": "Vis mindre", "comingSoon": "Kommer snart",
-    "upgrade": "Oppgrader", "signIn": "Logg inn", "signOut": "Logg ut",
-    "today": "I dag", "yesterday": "I går", "tomorrow": "I morgen",
-    "all": "Alle", "none": "Ingen", "public": "Offentlig", "private": "Privat",
-    "apply": "Bruk", "reset": "Tilbakestill", "remove": "Fjern", "add": "Legg til",
-    "create": "Opprett", "submit": "Send inn", "send": "Send", "view": "Vis",
-    "download": "Last ned", "upload": "Last opp", "noResults": "Ingen resultater funnet",
+    "loading": "Laster...",
+    "error": "Noe gikk galt",
+    "retry": "Prøv igjen",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "share": "Del",
+    "premium": "Premium",
+    "free": "Gratis",
+    "close": "Lukk",
+    "confirm": "Bekreft",
+    "ok": "OK",
+    "yes": "Ja",
+    "no": "Nei",
+    "back": "Tilbake",
+    "next": "Neste",
+    "done": "Ferdig",
+    "edit": "Rediger",
+    "copy": "Kopier",
+    "copied": "Kopiert!",
+    "search": "Søk",
+    "settings": "Innstillinger",
+    "seeAll": "Se alle",
+    "showMore": "Vis mer",
+    "showLess": "Vis mindre",
+    "comingSoon": "Kommer snart",
+    "upgrade": "Oppgrader",
+    "signIn": "Logg inn",
+    "signOut": "Logg ut",
+    "today": "I dag",
+    "yesterday": "I går",
+    "tomorrow": "I morgen",
+    "all": "Alle",
+    "none": "Ingen",
+    "public": "Offentlig",
+    "private": "Privat",
+    "apply": "Bruk",
+    "reset": "Tilbakestill",
+    "remove": "Fjern",
+    "add": "Legg til",
+    "create": "Opprett",
+    "submit": "Send inn",
+    "send": "Send",
+    "view": "Vis",
+    "download": "Last ned",
+    "upload": "Last opp",
+    "noResults": "Ingen resultater funnet",
     "tryAgain": "Prøv igjen"
   },
   "zodiac": {
-    "aries": "Væren", "taurus": "Tyren", "gemini": "Tvillingene",
-    "cancer": "Krepsen", "leo": "Løven", "virgo": "Jomfruen",
-    "libra": "Vekten", "scorpio": "Skorpionen", "sagittarius": "Skytten",
-    "capricorn": "Steinbukken", "aquarius": "Vannmannen", "pisces": "Fiskene"
+    "aries": "Væren",
+    "taurus": "Tyren",
+    "gemini": "Tvillingene",
+    "cancer": "Krepsen",
+    "leo": "Løven",
+    "virgo": "Jomfruen",
+    "libra": "Vekten",
+    "scorpio": "Skorpionen",
+    "sagittarius": "Skytten",
+    "capricorn": "Steinbukken",
+    "aquarius": "Vannmannen",
+    "pisces": "Fiskene"
   },
   "planets": {
-    "sun": "Solen", "moon": "Månen", "mercury": "Merkur",
-    "venus": "Venus", "mars": "Mars", "jupiter": "Jupiter",
-    "saturn": "Saturn", "uranus": "Uranus", "neptune": "Neptun",
-    "pluto": "Pluto", "northNode": "Nordnoden", "southNode": "Sørnoden",
-    "chiron": "Chiron", "ascendant": "Ascendanten", "midheaven": "Medium Coeli",
-    "vesta": "Vesta", "juno": "Juno", "ceres": "Ceres", "pallas": "Pallas"
+    "sun": "Solen",
+    "moon": "Månen",
+    "mercury": "Merkur",
+    "venus": "Venus",
+    "mars": "Mars",
+    "jupiter": "Jupiter",
+    "saturn": "Saturn",
+    "uranus": "Uranus",
+    "neptune": "Neptun",
+    "pluto": "Pluto",
+    "northNode": "Nordnoden",
+    "southNode": "Sørnoden",
+    "chiron": "Chiron",
+    "ascendant": "Ascendanten",
+    "midheaven": "Medium Coeli",
+    "vesta": "Vesta",
+    "juno": "Juno",
+    "ceres": "Ceres",
+    "pallas": "Pallas"
   },
   "aspects": {
-    "conjunction": "Konjunksjon", "sextile": "Sekstil", "square": "Kvadrat",
-    "trine": "Trigon", "opposition": "Opposisjon", "quincunx": "Kvinkunks",
-    "semisextile": "Semisekstil", "semisquare": "Semikvadrat", "sesquiquadrate": "Seskvikvadratur",
-    "quintile": "Kvintil", "biquintile": "Bikvintil"
+    "conjunction": "Konjunksjon",
+    "sextile": "Sekstil",
+    "square": "Kvadrat",
+    "trine": "Trigon",
+    "opposition": "Opposisjon",
+    "quincunx": "Kvinkunks",
+    "semisextile": "Semisekstil",
+    "semisquare": "Semikvadrat",
+    "sesquiquadrate": "Seskvikvadratur",
+    "quintile": "Kvintil",
+    "biquintile": "Bikvintil"
   },
-  "elements": { "fire": "Ild", "earth": "Jord", "air": "Luft", "water": "Vann" },
-  "modalities": { "cardinal": "Kardinal", "fixed": "Fast", "mutable": "Foranderlig" },
+  "elements": {
+    "fire": "Ild",
+    "earth": "Jord",
+    "air": "Luft",
+    "water": "Vann"
+  },
+  "modalities": {
+    "cardinal": "Kardinal",
+    "fixed": "Fast",
+    "mutable": "Foranderlig"
+  },
   "houses": {
-    "1": "1. hus", "2": "2. hus", "3": "3. hus", "4": "4. hus",
-    "5": "5. hus", "6": "6. hus", "7": "7. hus", "8": "8. hus",
-    "9": "9. hus", "10": "10. hus", "11": "11. hus", "12": "12. hus",
+    "1": "1. hus",
+    "2": "2. hus",
+    "3": "3. hus",
+    "4": "4. hus",
+    "5": "5. hus",
+    "6": "6. hus",
+    "7": "7. hus",
+    "8": "8. hus",
+    "9": "9. hus",
+    "10": "10. hus",
+    "11": "11. hus",
+    "12": "12. hus",
     "labels": {
-      "1": "Selv og identitet", "2": "Verdier og eiendeler", "3": "Kommunikasjon og læring",
-      "4": "Hjem og familie", "5": "Kreativitet og romantikk", "6": "Helse og tjeneste",
-      "7": "Partnerskap", "8": "Transformasjon og delte ressurser", "9": "Filosofi og reiser",
-      "10": "Karriere og offentlig image", "11": "Fellesskap og ambisjoner", "12": "Åndelighet og underbevissthet"
+      "1": "Selv og identitet",
+      "2": "Verdier og eiendeler",
+      "3": "Kommunikasjon og læring",
+      "4": "Hjem og familie",
+      "5": "Kreativitet og romantikk",
+      "6": "Helse og tjeneste",
+      "7": "Partnerskap",
+      "8": "Transformasjon og delte ressurser",
+      "9": "Filosofi og reiser",
+      "10": "Karriere og offentlig image",
+      "11": "Fellesskap og ambisjoner",
+      "12": "Åndelighet og underbevissthet"
     }
   },
   "errors": {
@@ -1264,9 +2127,84 @@
     "rateLimited": "For mange forespørsler. Vennligst vent litt."
   },
   "time": {
-    "justNow": "akkurat nå", "minutesAgo": "{{count}}min siden", "hoursAgo": "{{count}}t siden",
-    "daysAgo": "{{count}}d siden", "weeksAgo": "{{count}}u siden", "monthsAgo": "{{count}}mnd siden",
-    "yearsAgo": "{{count}}å siden", "inMinutes": "om {{count}}min", "inHours": "om {{count}}t", "inDays": "om {{count}}d"
+    "justNow": "akkurat nå",
+    "minutesAgo": "{{count}}min siden",
+    "hoursAgo": "{{count}}t siden",
+    "daysAgo": "{{count}}d siden",
+    "weeksAgo": "{{count}}u siden",
+    "monthsAgo": "{{count}}mnd siden",
+    "yearsAgo": "{{count}}å siden",
+    "inMinutes": "om {{count}}min",
+    "inHours": "om {{count}}t",
+    "inDays": "om {{count}}d"
   },
-  "tiers": { "free": "Gratis", "light": "Light", "premium": "Premium", "pro": "Pro" }
+  "tiers": {
+    "free": "Gratis",
+    "light": "Light",
+    "premium": "Premium",
+    "pro": "Pro",
+    "starter": "Starter"
+  },
+  "search": {
+    "title": "Søk",
+    "placeholder": "Søk i kosmos...",
+    "searching": "Søker blant stjernene...",
+    "noResults": "Ingen kosmiske treff funnet",
+    "noResultsHint": "Prøv forskjellige søkeord eller sjekk stavemåten",
+    "emptyTitle": "Søk etter personer, innlegg og fellesskap",
+    "emptyHint": "Oppdag kosmiske forbindelser over hele universet",
+    "recentSearches": "Nylige søk",
+    "tabAll": "Alle",
+    "tabUsers": "Brukere",
+    "tabPosts": "Innlegg",
+    "tabCommunities": "Fellesskap",
+    "tabReels": "Reels",
+    "badgeUser": "Bruker",
+    "badgePost": "Innlegg",
+    "badgeCommunity": "Fellesskap",
+    "badgeReel": "Reel"
+  },
+  "whatsNew": {
+    "title": "Hva er nytt i Align",
+    "gotIt": "Fikk det"
+  },
+  "gettingStarted": {
+    "title": "Kom i gang",
+    "readHoroscope": "Les ditt daglige horoskop",
+    "tryReading": "Prøv en AI-lesning",
+    "viewNatal": "Se ditt fødselshoroskop",
+    "shareFeed": "Besøk den kosmiske strømmen",
+    "completeProfile": "Fullfør profilen din",
+    "congrats": "Du er klar! Velkommen til kosmos."
+  },
+  "coachmarks": {
+    "of": "av",
+    "next": "Neste",
+    "skip": "Hopp over omvisning",
+    "finish": "Fullfør",
+    "dailyBrief": {
+      "title": "Din Daglige Kosmiske Brief",
+      "description": "Start hver dag her. Få ditt personlige kosmiske kort, månefase, energiforutsigelse og daglig veiledning tilpasset ditt kart."
+    },
+    "quickAccess": {
+      "title": "AI-Drevne Lesninger",
+      "description": "Rask tilgang til ditt fødelseskart, transitter, tarot, kompatibilitetslesninger og mer. Trykk på hvilket som helst kort for å dykke inn."
+    },
+    "natalChart": {
+      "title": "Ditt Fødelseskart",
+      "description": "Utforsk ditt komplette fødelseskart med planeter, hus, aspekter og detaljerte tolkninger av hver plassering."
+    },
+    "feed": {
+      "title": "Fellesskapsfeed",
+      "description": "Del kosmiske øyeblikk, legg ut innsikter, reager på andres innlegg, og forbind deg med andre stjernekikkere."
+    },
+    "aiAstrologer": {
+      "title": "AI Astrolog",
+      "description": "Chat med din personlige AI astrolog. Spør hva som helst om ditt kart, transitter, relasjoner eller kosmisk timing."
+    },
+    "courses": {
+      "title": "Lær Astrologi",
+      "description": "Strukturerte kurs for å utdype din astrologiske kunnskap, fra nybegynnergrunnlag til avanserte teknikker."
+    }
+  }
 }
