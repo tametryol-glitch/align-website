@@ -25,30 +25,49 @@ function getAdminClient() {
 // so posts cycle through the pool without repeating day-to-day.
 
 const ALIGN_DAILY_POOL: string[] = [
-  'Good morning, stargazers. ☀️ What\'s one small thing you\'re grateful for today?',
-  'Reminder: your chart is a map, not a cage. You\'re always free to choose your next step.',
-  'Affirmation for today: I trust the timing of my life.',
-  'What\'s your rising sign? 👇 Tell us in the comments.',
-  'The energy you protect is the energy you keep. Guard your peace today.',
-  'Quick check-in: how is your heart doing right now, honestly?',
-  'Affirmation: I am allowed to grow at my own pace.',
-  'Your Sun sign is your purpose, your Moon is your needs, your Rising is your first impression. Which feels most \"you\"?',
-  'Pause. Breathe. The stars aren\'t going anywhere, and neither is your potential.',
-  'What intention are you setting for this week? Drop it below. ✨',
-  'Affirmation: I release what no longer aligns with me.',
-  'Small ritual idea: light a candle and name one thing you\'re ready to let go of.',
-  'Which planet rules your day-to-day mood the most? Be honest. 🌙',
-  'You don\'t have to have it all figured out. You just have to take the next aligned step.',
-  'Affirmation: Abundance flows to me with ease.',
-  'Tell us: what first drew you to astrology? We love these stories. 💫',
-  'Your sensitivity is not a weakness. It\'s a kind of intelligence.',
-  'Mid-week reminder: rest is productive too.',
-  'Affirmation: I am exactly where I need to be.',
-  'If your week were a tarot card, which one would it be? 🃏',
-  'Honor your Moon today: do one thing that genuinely comforts you.',
-  'What\'s a lesson the stars (or life) keep teaching you lately?',
-  'Affirmation: My intuition is wise and worth trusting.',
-  'Close your eyes, take three deep breaths, and let today begin gently.',
+  // ── The Big Three ──
+  'Astro 101: your "Big Three" are your Sun (who you are at your core ☀️), Moon (how you feel and what you need 🌙), and Rising (the vibe people meet first ✨). Drop your Big Three below — let\'s see the mix in here.',
+  'Your Rising sign (Ascendant) is the "front door" of your chart — your first impression and how you instinctively approach life. Does yours match how people describe you? 👀',
+  'Your Moon sign rules your emotional world — what soothes you and what you need to feel safe. 🌙 What\'s one thing that always brings you back to center?',
+  // ── Elements ──
+  'Every sign has an element. Fire signs — Aries, Leo, Sagittarius — run on instinct, passion, and momentum. 🔥 Got fire placements? Where are you the one who lights the spark?',
+  'Earth signs — Taurus, Virgo, Capricorn — build, ground, and turn dreams into real things. 🌍 Earth folks: where are you the "steady one" your people rely on?',
+  'Air signs — Gemini, Libra, Aquarius — live in ideas, words, and connection. 💨 Are you more the thinker, the talker, or the connector?',
+  'Water signs — Cancer, Scorpio, Pisces — feel everything and read the room before a word is spoken. 🌊 Water people: is your gut usually right?',
+  'Fire + Air fuel each other (passion meets ideas); Earth + Water nourish each other (stability meets feeling). Which pairing sounds like your closest relationships?',
+  // ── Modalities ──
+  'Beyond elements, signs have a modality. Cardinal signs (Aries, Cancer, Libra, Capricorn) START things — they open each season. Are you a natural initiator? 🚀',
+  'Fixed signs (Taurus, Leo, Scorpio, Aquarius) SUSTAIN — loyal, determined, gloriously stubborn. Fixed folks: what will you simply not budge on? 😏',
+  'Mutable signs (Gemini, Virgo, Sagittarius, Pisces) ADAPT — flexible, curious, always evolving. Mutable people: do you change your mind a lot, or just stay open? 🔀',
+  // ── Planets (by function, not rulership) ──
+  'Your Sun is your purpose and what lights you up. ☀️ It\'s the "why" behind everything you do. What makes you feel most alive?',
+  'Mercury shapes how you think, learn, and communicate. ☿ Fast talker or careful word-chooser? That\'s often Mercury at work.',
+  'Venus shows how you love, what you find beautiful, and what you truly value. 💛 What\'s one thing you absolutely need in a relationship?',
+  'Mars is your drive, your fight, and how you chase what you want. ⚔️ Are you a slow burn or an instant spark?',
+  'Jupiter is growth, luck, and where life keeps saying "yes, expand." 🌌 Where do good things seem to find you easily?',
+  'Saturn is the teacher — discipline, limits, and the lessons that grow you up. 🪐 What\'s a hard lesson that ended up shaping who you are?',
+  // ── Houses (themes; Align uses Whole Sign) ──
+  'Your chart has 12 houses — areas of life. The 1st house is YOU: your body, your style, your approach to the world. What sign sits on your 1st house?',
+  'The 4th house is home, roots, and family — your private inner foundation. 🏡 Everything else in your chart is built on it.',
+  'The 7th house rules close partnerships — committed relationships and your "one-on-ones." 💞 It hints at who you\'re drawn to.',
+  'The 10th house is your career, reputation, and public role — the very top of your chart. ⛰️ What do you most want to be known for?',
+  // ── Aspects ──
+  'Aspects are the angles between planets. A trine (120°) is easy, flowing talent; a square (90°) is friction that forces you to grow. 😅 Which do you think builds more character?',
+  'A conjunction is two planets sitting together, blending their powers; an opposition is a tug-of-war you slowly learn to balance. Both are gifts in disguise.',
+  // ── The Moon & phases ──
+  'The Moon moves through all 12 signs in ~28 days, shifting the collective mood roughly every 2.5 days. 🌙 Ever feel your energy change for no reason? Often that\'s the Moon.',
+  'New Moon 🌑 = fresh start, plant intentions. Full Moon 🌕 = culmination, things come to light. Which phase do you feel the most strongly?',
+  // ── Retrogrades / Nodes / Angles ──
+  'A "retrograde" is when a planet appears to move backward from Earth — an illusion that invites you to slow down and REview that planet\'s themes. 🔁 Mercury retro? Re-read, re-check, re-think.',
+  'Your North Node points to your soul\'s growth edge — the unfamiliar direction you\'re here to grow into. Your South Node is what already comes easy. Growth lives just past your comfort zone. 🧭',
+  'The four angles — Ascendant (self), Descendant (others), Midheaven (public life), IC (private roots) — are the skeleton your whole chart hangs on.',
+  // ── Reflection / engagement (kept light for variety) ──
+  'Your Sun is your purpose, your Moon is your needs, your Rising is your first impression. 🌟 Which of the three feels the most "you"?',
+  'Reminder: your chart is a map, not a cage — it shows your wiring, not your fate. You always choose the next step.',
+  'What first drew you to astrology? We genuinely love these stories. 💫 Tell us below.',
+  'Affirmation: I trust the timing of my life. 🕰️',
+  'Quick check-in: how is your heart actually doing today? 💛',
+  'What intention are you setting for this week? Drop it below and let the community witness it. ✨',
 ];
 
 const COSMIC_WEATHER_POOL: string[] = [
