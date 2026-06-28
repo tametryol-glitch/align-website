@@ -22,7 +22,6 @@ import {
   groupPeaksIntoStorylines,
   type TransitStoryline,
 } from '@/lib/transitStorylines';
-import { PaywallGate } from '@/components/ui/PaywallGate';
 
 // ─── Types ───────────────────────────────────────────────────────────────
 
@@ -401,7 +400,7 @@ export default function TransitsPage() {
   const nowRef = useRef(new Date());
 
   if (!profile?.birth_date || !profile?.latitude) {
-    return <PaywallGate feature="transit_reading"><BirthDataPrompt message={t('readings.birthDataPromptTransits')} /></PaywallGate>;
+    return <BirthDataPrompt message={t('readings.birthDataPromptTransits')} />;
   }
 
   const firstName = (profile.display_name || '').split(' ')[0] || 'Stargazer';
@@ -547,7 +546,6 @@ export default function TransitsPage() {
   }
 
   return (
-    <PaywallGate feature="transit_reading">
     <div className="max-w-3xl mx-auto pb-12">
       <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
         <ArrowLeft className="w-4 h-4" />
@@ -637,6 +635,5 @@ export default function TransitsPage() {
         />
       )}
     </div>
-    </PaywallGate>
   );
 }

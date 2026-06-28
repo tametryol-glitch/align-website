@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import {
   Plus, Save, Trash2, Eye, EyeOff, ArrowLeft, Loader2, FileText,
-  X, ChevronDown, ChevronUp,
+  X, ChevronDown, ChevronUp, Image as ImageIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -18,6 +18,7 @@ interface BlogPost {
   keywords: string[];
   faqs: { question: string; answer: string }[];
   read_time: string;
+  cover_image_url: string | null;
   is_published: boolean;
   published_at: string | null;
   created_at: string;
@@ -82,6 +83,7 @@ export default function AdminBlogPage() {
       keywords: [],
       faqs: [],
       read_time: '5 min read',
+      cover_image_url: null,
       is_published: false,
       published_at: null,
       created_at: '',
@@ -288,10 +290,30 @@ function PostEditor({
 }) {
   const [preview, setPreview] = useState(false);
   const [keywordInput, setKeywordInput] = useState('');
+  const [uploading, setUploading] = useState(false);
   const isNew = !post.id;
 
   function update(field: string, value: any) {
     setPost({ ...post, [field]: value });
+  }
+
+  async function handleCoverUpload(file: File) {
+    setUploading(true);
+    setMessage('');
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/admin/blog/upload', { method: 'POST', body: form });
+      const data = await res.json();
+      if (data.error) {
+        setMessage(`Image upload failed: ${data.error}`);
+      } else {
+        update('cover_image_url', data.url);
+      }
+    } catch (e: any) {
+      setMessage(`Image upload failed: ${e.message}`);
+    }
+    setUploading(false);
   }
 
   function autoSlug() {
@@ -404,6 +426,14 @@ function PostEditor({
           </button>
         </div>
         <article className="bg-bg-card border border-border-primary rounded-2xl p-8 max-w-3xl">
+          {post.cover_image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.cover_image_url}
+              alt={post.title}
+              className="w-full max-h-80 object-cover rounded-xl mb-6 border border-border-primary"
+            />
+          )}
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 rounded-full text-xs font-medium border border-accent-muted text-accent-primary bg-accent-muted/10">
               {post.category}
@@ -437,6 +467,50 @@ function PostEditor({
 
   return (
     <div className="max-w-3xl space-y-6">
+      {/* Cover Image */}
+      <div className="bg-bg-card border border-border-primary rounded-xl p-6">
+        <label className="block text-xs text-text-muted uppercase tracking-wider mb-3">Cover Image</label>
+        {post.cover_image_url ? (
+          <div className="relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.cover_image_url}
+              alt="Cover preview"
+              className="w-full max-h-64 object-cover rounded-lg border border-border-primary"
+            />
+            <button
+              onClick={() => update('cover_image_url', null)}
+              className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-red-500/80 transition-colors"
+              title="Remove image"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center gap-2 py-10 border-2 border-dashed border-border-primary rounded-lg cursor-pointer hover:border-accent-primary/40 transition-colors text-text-muted">
+            {uploading ? (
+              <>
+                <Loader2 size={22} className="animate-spin" />
+                <span className="text-sm">Uploading…</span>
+              </>
+            ) : (
+              <>
+                <ImageIcon size={22} />
+                <span className="text-sm">Click to upload a cover image</span>
+                <span className="text-xs">JPG, PNG, WEBP or GIF · up to 8 MB</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverUpload(f); e.target.value = ''; }}
+            />
+          </label>
+        )}
+      </div>
+
       {/* Title & Slug */}
       <div className="bg-bg-card border border-border-primary rounded-xl p-6 space-y-4">
         <div>

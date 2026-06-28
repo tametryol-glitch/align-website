@@ -1,4 +1,18 @@
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
+
+// Lazily-created public Supabase client for Learn CMS reads (anon key, RLS-safe).
+let _learnSupabase: SupabaseClient | null = null;
+function getLearnSupabase(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  if (!_learnSupabase) {
+    _learnSupabase = createSupabaseClient(url, key, { auth: { persistSession: false } });
+  }
+  return _learnSupabase;
+}
 
 class AlignAPI {
   private token: string | null = null;
@@ -134,16 +148,113 @@ class AlignAPI {
     return this.request('/name-analysis/reading', { method: 'POST', body: JSON.stringify(data) });
   }
 
-  // Courses
+  // Courses — read from Supabase (Learn CMS), falling back to FastAPI if the
+  // tables are empty/unseeded or the query errors so nothing breaks.
   async getCourses() {
+    try {
+      const supabase = getLearnSupabase();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('learn_courses')
+          .select('id, title, description, level, level_order, level_label, is_free, image_emoji, image_url, prerequisite_id, sort_order, learn_lessons(id, title, duration_minutes, sort_order)')
+          .order('level_order', { ascending: true })
+          .order('sort_order', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          return data.map((c: any) => {
+            const lessons = (c.learn_lessons || [])
+              .slice()
+              .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+              .map((l: any) => ({ id: l.id, title: l.title, duration_minutes: l.duration_minutes }));
+            return {
+              id: c.id,
+              title: c.title,
+              description: c.description,
+              level: c.level,
+              level_order: c.level_order,
+              level_label: c.level_label,
+              is_free: c.is_free,
+              image_emoji: c.image_emoji,
+              image_url: c.image_url,
+              prerequisite_id: c.prerequisite_id,
+              lesson_count: lessons.length,
+              lessons,
+            };
+          });
+        }
+      }
+    } catch { /* fall through to FastAPI */ }
     return this.request('/courses/');
   }
 
   async getCourse(courseId: string) {
+    try {
+      const supabase = getLearnSupabase();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('learn_courses')
+          .select('id, title, description, level, level_order, level_label, is_free, image_emoji, image_url, prerequisite_id, sort_order, learn_lessons(id, title, duration_minutes, sort_order)')
+          .eq('id', courseId)
+          .single();
+
+        if (!error && data) {
+          const c: any = data;
+          const lessons = (c.learn_lessons || [])
+            .slice()
+            .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            .map((l: any) => ({ id: l.id, title: l.title, duration_minutes: l.duration_minutes }));
+          return {
+            id: c.id,
+            title: c.title,
+            description: c.description,
+            level: c.level,
+            level_order: c.level_order,
+            level_label: c.level_label,
+            is_free: c.is_free,
+            image_emoji: c.image_emoji,
+            image_url: c.image_url,
+            prerequisite_id: c.prerequisite_id,
+            lesson_count: lessons.length,
+            lessons,
+          };
+        }
+      }
+    } catch { /* fall through to FastAPI */ }
     return this.request(`/courses/${courseId}`);
   }
 
   async getLesson(courseId: string, lessonId: string) {
+    try {
+      const supabase = getLearnSupabase();
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('learn_lessons')
+          .select('id, title, duration_minutes, content, course_id, objectives, key_terms, chart_focus, quiz, image_url, learn_courses(title)')
+          .eq('id', lessonId)
+          .eq('course_id', courseId)
+          .single();
+
+        if (!error && data) {
+          const l: any = data;
+          const courseTitle = Array.isArray(l.learn_courses)
+            ? l.learn_courses[0]?.title
+            : l.learn_courses?.title;
+          return {
+            id: l.id,
+            title: l.title,
+            duration_minutes: l.duration_minutes,
+            content: l.content,
+            course_id: l.course_id,
+            course_title: courseTitle ?? null,
+            objectives: l.objectives || [],
+            key_terms: l.key_terms || [],
+            chart_focus: l.chart_focus,
+            quiz: l.quiz || [],
+            image_url: l.image_url,
+          };
+        }
+      }
+    } catch { /* fall through to FastAPI */ }
     return this.request(`/courses/${courseId}/lessons/${lessonId}`);
   }
 

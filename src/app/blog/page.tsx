@@ -101,8 +101,17 @@ export default async function BlogPage() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="bg-bg-card border border-border-primary rounded-2xl p-6 sm:p-8 hover:border-accent-primary/30 transition-colors group"
+              className="bg-bg-card border border-border-primary rounded-2xl overflow-hidden hover:border-accent-primary/30 transition-colors group"
             >
+              {post.cover_image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.cover_image_url}
+                  alt={post.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div className="p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-3">
                 <span className="px-3 py-1 rounded-full text-xs font-medium border border-accent-muted text-accent-primary bg-accent-muted/10">
                   {post.category}
@@ -118,6 +127,7 @@ export default async function BlogPage() {
               <p className="text-sm text-accent-primary mt-4 font-medium">
                 Read article →
               </p>
+              </div>
             </Link>
           ))}
         </div>

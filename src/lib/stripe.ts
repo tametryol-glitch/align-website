@@ -18,6 +18,11 @@ export function getStripe(): Stripe {
   stripeInstance = new Stripe(key, {
     apiVersion: '2026-04-22.dahlia',
     typescript: true,
+    // Auto-retry transient network failures (StripeConnectionError) before
+    // giving up, and cap how long we wait on Stripe so a hung request fails
+    // fast instead of timing out the whole serverless function.
+    maxNetworkRetries: 3,
+    timeout: 20000,
   });
   return stripeInstance;
 }

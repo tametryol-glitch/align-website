@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { createClient } from '@/lib/supabase';
 
 interface ApiLesson { id: string; title: string; duration_minutes: number }
 interface ApiCourse {
@@ -27,6 +28,7 @@ export default function CoursesPage() {
   const { user } = useAuthStore();
   const [courses, setCourses] = useState<ApiCourse[]>([]);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,6 +39,14 @@ export default function CoursesPage() {
         if (user?.id) {
           const prog = await api.getCourseProgress(user.id).catch(() => null);
           if (prog?.completed_lessons) setCompleted(new Set<string>(prog.completed_lessons));
+          // Founder/admin sees every course unlocked — no prerequisite gating.
+          const supabase = createClient();
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', user.id)
+            .single();
+          if (profile?.is_admin) setIsAdmin(true);
         }
       } catch { /* leave empty */ }
       setLoading(false);
@@ -46,6 +56,7 @@ export default function CoursesPage() {
   const completedCount = (c: ApiCourse) => c.lessons.filter(l => completed.has(l.id)).length;
   const isCourseDone = (c: ApiCourse) => c.lesson_count > 0 && completedCount(c) >= c.lesson_count;
   const isLocked = (c: ApiCourse) => {
+    if (isAdmin) return false;
     if (!c.prerequisite_id) return false;
     const prereq = courses.find(x => x.id === c.prerequisite_id);
     return !!prereq && !isCourseDone(prereq);

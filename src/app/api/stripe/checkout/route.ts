@@ -104,6 +104,53 @@ async function createCheckout(req: NextRequest) {
         .eq('id', user.id);
     }
 
+    // 3b. If the customer already has an active subscription, this is an
+    //     upgrade/downgrade — modify the EXISTING subscription with proration
+    //     instead of creating a second parallel subscription (which would
+    //     double-bill the customer). New subscribers fall through to checkout.
+    const targetPriceId = priceIdForPlan(plan);
+
+    const existing = await stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active',
+      limit: 1,
+    });
+    const currentSub = existing.data[0];
+
+    if (currentSub) {
+      const currentItem = currentSub.items.data[0];
+      const currentPriceId = currentItem?.price?.id;
+
+      // Already on the requested plan — nothing to do.
+      if (currentPriceId === targetPriceId) {
+        return NextResponse.redirect(
+          `${origin()}/settings/subscription?success=true`,
+          303,
+        );
+      }
+
+      // Swap the price on the existing subscription. always_invoice charges
+      // the prorated difference immediately to the card already on file, so
+      // we collect the upgrade revenue now rather than waiting a billing cycle.
+      // Existing subscription metadata (incl. affiliate_id) is preserved.
+      await stripe.subscriptions.update(currentSub.id, {
+        items: [{ id: currentItem.id, price: targetPriceId }],
+        proration_behavior: 'always_invoice',
+        payment_behavior: 'error_if_incomplete',
+        metadata: {
+          ...currentSub.metadata,
+          supabase_user_id: user.id,
+          plan,
+        },
+      });
+
+      // The customer.subscription.updated webhook sets the new tier.
+      return NextResponse.redirect(
+        `${origin()}/settings/subscription?success=true`,
+        303,
+      );
+    }
+
     // 4. Check for affiliate referral — apply 10% off first 2 months
     const affiliateCookie = req.cookies.get('align_aff')?.value;
     let affiliateCouponId: string | null = null;
@@ -116,14 +163,12 @@ async function createCheckout(req: NextRequest) {
       }
     }
 
-    // 5. Create Checkout Session
-    const priceId = priceIdForPlan(plan);
-
+    // 5. Create Checkout Session (brand-new subscriber)
     const sessionParams: any = {
       customer: customerId,
       client_reference_id: user.id,
       mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: targetPriceId, quantity: 1 }],
       success_url: `${origin()}/settings/subscription?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin()}/settings/subscription?canceled=true`,
       subscription_data: {
@@ -151,10 +196,24 @@ async function createCheckout(req: NextRequest) {
 
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
   } catch (err: any) {
-    console.error('[Stripe Checkout]', err?.message || err);
-    return NextResponse.json(
-      { error: err?.message || 'Internal server error' },
-      { status: 500 },
+    console.error('[Stripe Checkout]', err?.type || '', err?.message || err);
+
+    // These routes are hit via full-page navigation, so redirect back to the
+    // subscription page with an error code (the page renders a friendly banner)
+    // rather than dumping raw JSON — and never leak Stripe's internal message.
+    let reason = 'checkout_failed';
+    if (err?.type === 'StripeConnectionError') {
+      // Transient network failure reaching Stripe — not the user's fault and
+      // usually fixed by retrying. (This is the "Request was retried N times" one.)
+      reason = 'payment_unavailable';
+    } else if (err?.type === 'StripeCardError') {
+      // Card declined on an in-place upgrade (error_if_incomplete).
+      reason = 'card_declined';
+    }
+
+    return NextResponse.redirect(
+      `${origin()}/settings/subscription?error=${reason}`,
+      303,
     );
   }
 }

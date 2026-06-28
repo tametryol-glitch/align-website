@@ -284,6 +284,10 @@ export default function SettingsPage() {
             <span className="text-sm text-text-secondary">{t('settings.aboutSection.contact')}</span>
             <a href="mailto:tametryol@gmail.com" className="text-sm text-accent-primary hover:underline">tametryol@gmail.com</a>
           </div>
+          <Link href="/founder" className="flex items-center justify-between py-1 group">
+            <span className="text-sm text-text-secondary">Meet the Founder</span>
+            <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" />
+          </Link>
         </div>
       </div>
 

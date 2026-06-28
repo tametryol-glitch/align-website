@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
       keywords: body.keywords || [],
       faqs: body.faqs || [],
       read_time: body.read_time || '5 min read',
+      cover_image_url: body.cover_image_url || null,
       is_published: body.is_published || false,
       published_at: body.is_published ? new Date().toISOString() : null,
       author_id: user.id,
@@ -111,6 +112,7 @@ export async function PUT(req: NextRequest) {
     if (body.keywords !== undefined) updates.keywords = body.keywords;
     if (body.faqs !== undefined) updates.faqs = body.faqs;
     if (body.read_time !== undefined) updates.read_time = body.read_time;
+    if (body.cover_image_url !== undefined) updates.cover_image_url = body.cover_image_url;
     if (body.is_published !== undefined) {
       updates.is_published = body.is_published;
       if (body.is_published) {

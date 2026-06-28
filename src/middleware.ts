@@ -75,6 +75,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/ref/') ||
     pathname.startsWith('/join/') ||
     pathname.startsWith('/blog') ||
+    pathname.startsWith('/founder') ||
     pathname.startsWith('/zodiac') ||
     pathname.startsWith('/compatibility') ||
     pathname.startsWith('/personality') ||

@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/cosmic-index',
     '/compatibility',
     '/blog',
+    '/founder',
   ];
 
   const readingRoutes = [

@@ -10,6 +10,7 @@ export interface BlogPost {
   keywords: string[];
   faqs: { question: string; answer: string }[];
   read_time: string;
+  cover_image_url: string | null;
   published_at: string | null;
   updated_at: string;
 }
@@ -31,6 +32,7 @@ function staticToPost(s: StaticBlogPost): BlogPost {
     keywords: s.keywords,
     faqs: s.faqs,
     read_time: s.readTime,
+    cover_image_url: null,
     published_at: s.publishedAt,
     updated_at: s.updatedAt,
   };
@@ -43,7 +45,7 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
 
     const { data, error } = await client
       .from('blog_posts')
-      .select('slug, title, description, category, content, keywords, faqs, read_time, published_at, updated_at')
+      .select('slug, title, description, category, content, keywords, faqs, read_time, cover_image_url, published_at, updated_at')
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
@@ -66,7 +68,7 @@ export async function getPublishedPost(slug: string): Promise<BlogPost | null> {
 
     const { data, error } = await client
       .from('blog_posts')
-      .select('slug, title, description, category, content, keywords, faqs, read_time, published_at, updated_at')
+      .select('slug, title, description, category, content, keywords, faqs, read_time, cover_image_url, published_at, updated_at')
       .eq('slug', slug)
       .eq('is_published', true)
       .single();

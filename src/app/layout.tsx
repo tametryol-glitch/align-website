@@ -6,6 +6,7 @@ import I18nProvider from '@/i18n/I18nProvider';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { BadgeEarnedPopup } from '@/components/ui/BadgeEarnedPopup';
+import { FounderIntroModal } from '@/components/FounderIntroModal';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aligncosmic.com'),
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <GlobalCallListener />
             <BadgeEarnedPopup />
+            <FounderIntroModal />
             {children}
           </AuthProvider>
         </I18nProvider>

@@ -132,6 +132,17 @@ export default async function BlogPostPage({ params }: PageProps) {
         </p>
       </header>
 
+      {post.cover_image_url && (
+        <div className="max-w-4xl mx-auto px-6 mb-12">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={post.cover_image_url}
+            alt={post.title}
+            className="w-full max-h-[460px] object-cover rounded-2xl border border-border-primary"
+          />
+        </div>
+      )}
+
       <main className="max-w-3xl mx-auto px-6 pb-16">
         <article className="space-y-6">
           {post.content.map((paragraph, i) => (

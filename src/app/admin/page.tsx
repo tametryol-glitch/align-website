@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
@@ -131,6 +131,12 @@ function AdminPageContent() {
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-bg-card border border-border-primary text-text-secondary hover:text-text-primary hover:border-accent-primary/30 transition-colors"
         >
           <FileText className="w-4 h-4" /> Blog Manager
+        </Link>
+        <Link
+          href="/admin/learn"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-bg-card border border-border-primary text-text-secondary hover:text-text-primary hover:border-accent-primary/30 transition-colors"
+        >
+          <GraduationCap className="w-4 h-4" /> Learn / Courses
         </Link>
       </div>
 

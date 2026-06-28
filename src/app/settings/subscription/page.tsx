@@ -146,7 +146,16 @@ function SubscriptionContent() {
       setBanner({ type: 'info', message: t('subscription.noStripeSubscription') });
       window.history.replaceState({}, '', '/settings/subscription');
     } else if (searchParams.get('error')) {
-      setBanner({ type: 'error', message: t('subscription.portalError') });
+      const code = searchParams.get('error');
+      const message =
+        code === 'payment_unavailable'
+          ? t('subscription.paymentUnavailable', 'We had trouble reaching our payment provider. Please try again in a moment.')
+          : code === 'card_declined'
+            ? t('subscription.cardDeclined', 'Your card was declined. Please update your payment method and try again.')
+            : code === 'checkout_failed'
+              ? t('subscription.checkoutFailed', 'Something went wrong starting your subscription. Please try again.')
+              : t('subscription.portalError');
+      setBanner({ type: 'error', message });
       window.history.replaceState({}, '', '/settings/subscription');
     }
   }, [searchParams, t]);
