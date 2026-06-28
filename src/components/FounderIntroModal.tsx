@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { FounderContent } from '@/components/FounderContent';
+import { AddFounderCard } from '@/components/AddFounderCard';
 
 const STORAGE_KEY = 'align_founder_intro_seen';
 
@@ -52,6 +53,10 @@ export function FounderIntroModal() {
 
           <div className="p-6 sm:p-8">
             <FounderContent />
+
+            <div className="mt-8">
+              <AddFounderCard />
+            </div>
 
             <div className="mt-8 space-y-3">
               <button onClick={close} className="btn-primary w-full py-2.5 text-sm font-semibold">

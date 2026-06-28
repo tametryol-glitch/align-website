@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
 import { FounderContent } from '@/components/FounderContent';
+import { AddFounderCard } from '@/components/AddFounderCard';
 
 export const metadata: Metadata = {
   title: 'Meet the Founder',
@@ -44,6 +45,9 @@ export default function FounderPage() {
         <article className="card">
           <FounderContent />
         </article>
+        <div className="mt-6">
+          <AddFounderCard />
+        </div>
       </main>
     </div>
   );
