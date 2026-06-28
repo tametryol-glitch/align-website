@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const admin = getAdminClient();
     const { data, error } = await admin
       .from('learn_courses')
-      .select('*, learn_lessons(*)')
+      .select('*, learn_lessons(*, slides)')
       .order('level_order', { ascending: true })
       .order('sort_order', { ascending: true });
 
@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
         quiz: body.quiz || [],
         image_url: body.image_url ?? null,
         sort_order: body.sort_order ?? 0,
+        ...(body.slides !== undefined ? { slides: body.slides || [] } : {}),
       };
       const { data, error } = await admin
         .from('learn_lessons')
@@ -161,6 +162,7 @@ export async function PUT(req: NextRequest) {
         image_url: body.image_url ?? null,
         sort_order: body.sort_order ?? 0,
         updated_at: new Date().toISOString(),
+        ...(body.slides !== undefined ? { slides: body.slides || [] } : {}),
       };
       const { data, error } = await admin
         .from('learn_lessons')

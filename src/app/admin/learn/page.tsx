@@ -5,8 +5,33 @@ import { createClient } from '@/lib/supabase';
 import {
   Plus, Save, Trash2, ArrowLeft, Loader2, GraduationCap,
   X, ChevronDown, ChevronUp, Image as ImageIcon, BookOpen,
+  Layers, Wand2,
 } from 'lucide-react';
 import Link from 'next/link';
+
+type SlideVisual =
+  | 'custom'
+  | 'zodiac_wheel'
+  | 'element_grid'
+  | 'planet_row'
+  | 'house_circle'
+  | 'sign_card';
+
+const SLIDE_VISUALS: SlideVisual[] = [
+  'custom',
+  'zodiac_wheel',
+  'element_grid',
+  'planet_row',
+  'house_circle',
+  'sign_card',
+];
+
+interface Slide {
+  title: string;
+  content: string;
+  visual: SlideVisual;
+  markdown?: boolean;
+}
 
 interface Lesson {
   id: string;
@@ -20,6 +45,7 @@ interface Lesson {
   quiz: any[];
   image_url: string | null;
   sort_order: number;
+  slides: Slide[];
 }
 
 interface Course {
@@ -365,6 +391,7 @@ function CourseEditor({
       quiz: [],
       image_url: null,
       sort_order: idx,
+      slides: [],
     };
     update('learn_lessons', [...course.learn_lessons, newLesson]);
   }
@@ -443,6 +470,7 @@ function CourseEditor({
             quiz: l.quiz,
             image_url: l.image_url,
             sort_order: i,
+            slides: l.slides || [],
           }),
         });
         const data = await res.json();
@@ -654,6 +682,183 @@ function StringListField({
   );
 }
 
+/* ── Slides: auto-slice lesson content into slides ───────────── */
+
+function autoSliceContent(content: string): Slide[] {
+  const text = (content || '').trim();
+  if (!text) return [];
+
+  const lines = text.split('\n');
+  const hasHeadings = lines.some((l) => /^#{1,3}\s+/.test(l.trim()));
+
+  if (hasHeadings) {
+    const slides: Slide[] = [];
+    let currentTitle = '';
+    let buffer: string[] = [];
+    const flush = () => {
+      const body = buffer.join('\n').trim();
+      if (currentTitle || body) {
+        slides.push({ title: currentTitle, content: body, visual: 'custom', markdown: true });
+      }
+      buffer = [];
+    };
+    for (const line of lines) {
+      const m = line.trim().match(/^#{1,3}\s+(.*)$/);
+      if (m) {
+        flush();
+        currentTitle = m[1].trim();
+      } else {
+        buffer.push(line);
+      }
+    }
+    flush();
+    return slides.filter((s) => s.title || s.content);
+  }
+
+  // No headings: split into ~600-char chunks on blank-line paragraph boundaries.
+  const paras = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const slides: Slide[] = [];
+  let chunk = '';
+  for (const p of paras) {
+    if (chunk && (chunk.length + p.length + 2) > 600) {
+      slides.push({ title: '', content: chunk.trim(), visual: 'custom', markdown: true });
+      chunk = p;
+    } else {
+      chunk = chunk ? `${chunk}\n\n${p}` : p;
+    }
+  }
+  if (chunk.trim()) slides.push({ title: '', content: chunk.trim(), visual: 'custom', markdown: true });
+  return slides;
+}
+
+function SlidesField({
+  slides,
+  lessonContent,
+  onChange,
+}: {
+  slides: Slide[];
+  lessonContent: string;
+  onChange: (s: Slide[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  function addSlide() {
+    onChange([...slides, { title: '', content: '', visual: 'custom', markdown: true }]);
+  }
+  function updateSlide(i: number, patch: Partial<Slide>) {
+    onChange(slides.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  }
+  function removeSlide(i: number) {
+    onChange(slides.filter((_, idx) => idx !== i));
+  }
+  function moveSlide(i: number, dir: -1 | 1) {
+    const t = i + dir;
+    if (t < 0 || t >= slides.length) return;
+    const next = [...slides];
+    [next[i], next[t]] = [next[t], next[i]];
+    onChange(next);
+  }
+  function autoGenerate() {
+    const generated = autoSliceContent(lessonContent);
+    if (generated.length === 0) {
+      onChange([]);
+      return;
+    }
+    if (slides.length > 0 && !confirm('Replace the current slides with auto-generated ones from the lesson text?')) return;
+    onChange(generated);
+  }
+
+  return (
+    <div className="border border-border-primary rounded-lg bg-bg-primary">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-2.5 text-left"
+      >
+        <span className="text-[11px] text-text-muted uppercase tracking-wider flex items-center gap-2">
+          <Layers size={13} /> Slides {slides.length > 0 && <span className="text-accent-primary normal-case">({slides.length})</span>}
+        </span>
+        {open ? <ChevronUp size={14} className="text-text-muted" /> : <ChevronDown size={14} className="text-text-muted" />}
+      </button>
+
+      {open && (
+        <div className="px-3 pb-3 space-y-3 border-t border-border-primary pt-3">
+          <p className="text-[11px] text-text-muted leading-relaxed">
+            Leave empty to auto-generate slides from the lesson text on the app.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={addSlide}
+              className="text-xs text-accent-primary hover:underline flex items-center gap-1"
+            >
+              <Plus size={13} /> Add slide
+            </button>
+            <button
+              type="button"
+              onClick={autoGenerate}
+              className="text-xs text-text-secondary hover:text-text-primary border border-border-primary rounded-md px-2 py-1 flex items-center gap-1 hover:border-accent-primary/30 transition-colors"
+            >
+              <Wand2 size={13} /> Auto-generate from lesson text
+            </button>
+          </div>
+
+          {slides.length === 0 && (
+            <p className="text-xs text-text-muted">No slides. The app will auto-slice the lesson content.</p>
+          )}
+
+          <div className="space-y-3">
+            {slides.map((slide, i) => (
+              <div key={i} className="bg-bg-secondary border border-border-primary rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-text-muted font-medium">Slide {i + 1}</span>
+                  <div className="ml-auto flex items-center gap-1">
+                    <button type="button" onClick={() => moveSlide(i, -1)} disabled={i === 0} className="text-text-muted hover:text-text-primary disabled:opacity-30">
+                      <ChevronUp size={14} />
+                    </button>
+                    <button type="button" onClick={() => moveSlide(i, 1)} disabled={i === slides.length - 1} className="text-text-muted hover:text-text-primary disabled:opacity-30">
+                      <ChevronDown size={14} />
+                    </button>
+                    <button type="button" onClick={() => removeSlide(i)} className="text-text-muted hover:text-red-400 transition-colors">
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  value={slide.title}
+                  onChange={(e) => updateSlide(i, { title: e.target.value })}
+                  placeholder="Slide title"
+                  className="w-full bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary"
+                />
+                <textarea
+                  value={slide.content}
+                  onChange={(e) => updateSlide(i, { content: e.target.value })}
+                  rows={3}
+                  placeholder="Slide content (markdown allowed)"
+                  className="w-full bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary resize-y"
+                />
+                <div>
+                  <label className="block text-[10px] text-text-muted uppercase tracking-wider mb-1">Visual</label>
+                  <select
+                    value={slide.visual}
+                    onChange={(e) => updateSlide(i, { visual: e.target.value as SlideVisual })}
+                    className="w-full bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-primary"
+                  >
+                    {SLIDE_VISUALS.map((v) => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LessonEditor({
   lesson,
   index,
@@ -765,6 +970,11 @@ function LessonEditor({
               className="w-full bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary"
             />
           </div>
+          <SlidesField
+            slides={lesson.slides || []}
+            lessonContent={lesson.content}
+            onChange={(s) => onChange({ slides: s })}
+          />
         </div>
       )}
     </div>
