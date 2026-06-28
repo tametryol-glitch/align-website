@@ -3,16 +3,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import {
-  ArrowLeft, Loader2, Megaphone, Trash2, Send, X, Image as ImageIcon,
+  ArrowLeft, Loader2, Megaphone, Trash2, Send, X, ImagePlay,
 } from 'lucide-react';
 import Link from 'next/link';
 import { OFFICIAL_ACCOUNTS } from '@/lib/officialAccounts';
+
+const MAX_UPLOAD_BYTES = 200 * 1024 * 1024; // ~200 MB
 
 interface OfficialPost {
   id: string;
   user_id: string;
   content: string;
   image_url: string | null;
+  video_url: string | null;
+  poster_url: string | null;
   created_at: string;
 }
 
@@ -28,7 +32,8 @@ export default function AdminSocialPage() {
   // Composer state
   const [accountId, setAccountId] = useState<string>(OFFICIAL_ACCOUNTS[0].id);
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+  const [mediaKind, setMediaKind] = useState<'image' | 'video' | null>(null);
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState('');
@@ -59,37 +64,64 @@ export default function AdminSocialPage() {
     if (verified) fetchPosts();
   }, [verified, fetchPosts]);
 
-  async function handleImageUpload(file: File) {
+  // Uploads images AND videos directly from the browser to the public
+  // `post-media` Supabase bucket (path `${uid}/${ts}.${ext}`), mirroring the
+  // mobile app — large videos never pass through a serverless function.
+  async function handleMediaUpload(file: File) {
+    const isVideo = file.type.startsWith('video');
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMessage(`That file is too large (${(file.size / 1024 / 1024).toFixed(0)} MB). Max ~200 MB.`);
+      return;
+    }
     setUploading(true);
     setMessage('');
     try {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/admin/blog/upload', { method: 'POST', body: form });
-      const data = await res.json();
-      if (data.error) {
-        setMessage(`Image upload failed: ${data.error}`);
-      } else {
-        setImageUrl(data.url);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setMessage('Upload failed: no active session.');
+        setUploading(false);
+        return;
       }
+      const ext = (file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')).toLowerCase();
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('post-media')
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) {
+        setMessage(`Upload failed: ${upErr.message}`);
+        setUploading(false);
+        return;
+      }
+      const publicUrl = supabase.storage.from('post-media').getPublicUrl(path).data.publicUrl;
+      setMediaUrl(publicUrl);
+      setMediaKind(isVideo ? 'video' : 'image');
     } catch (e: any) {
-      setMessage(`Image upload failed: ${e.message}`);
+      setMessage(`Upload failed: ${e.message}`);
     }
     setUploading(false);
   }
 
+  function removeMedia() {
+    setMediaUrl(null);
+    setMediaKind(null);
+  }
+
   async function publish() {
-    if (!content.trim() && !imageUrl) {
-      setMessage('Add some text or an image to publish.');
+    if (!content.trim() && !mediaUrl) {
+      setMessage('Add some text, an image or a video to publish.');
       return;
     }
     setPublishing(true);
     setMessage('');
     try {
+      const payload: Record<string, unknown> = { accountId, content: content.trim() };
+      if (mediaKind === 'video') payload.videoUrl = mediaUrl;
+      else if (mediaKind === 'image') payload.imageUrl = mediaUrl;
       const res = await fetch('/api/admin/social', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountId, content: content.trim(), imageUrl }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.error) {
@@ -97,7 +129,7 @@ export default function AdminSocialPage() {
       } else {
         setMessage(`Published as ${accountName(accountId)}!`);
         setContent('');
-        setImageUrl(null);
+        removeMedia();
         fetchPosts();
       }
     } catch (e: any) {
@@ -175,21 +207,29 @@ export default function AdminSocialPage() {
             />
           </div>
 
-          {/* Optional image */}
+          {/* Optional image or video */}
           <div>
-            <label className="block text-xs text-text-muted uppercase tracking-wider mb-2">Image (optional)</label>
-            {imageUrl ? (
+            <label className="block text-xs text-text-muted uppercase tracking-wider mb-2">Image or video (optional)</label>
+            {mediaUrl ? (
               <div className="relative inline-block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl}
-                  alt="Post preview"
-                  className="max-h-64 rounded-lg border border-border-primary object-cover"
-                />
+                {mediaKind === 'video' ? (
+                  <video
+                    src={mediaUrl}
+                    controls
+                    className="max-h-64 rounded-lg border border-border-primary"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={mediaUrl}
+                    alt="Post preview"
+                    className="max-h-64 rounded-lg border border-border-primary object-cover"
+                  />
+                )}
                 <button
-                  onClick={() => setImageUrl(null)}
+                  onClick={removeMedia}
                   className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-red-500/80 transition-colors"
-                  title="Remove image"
+                  title="Remove media"
                 >
                   <X size={16} />
                 </button>
@@ -199,21 +239,21 @@ export default function AdminSocialPage() {
                 {uploading ? (
                   <>
                     <Loader2 size={22} className="animate-spin" />
-                    <span className="text-sm">Uploading…</span>
+                    <span className="text-sm">Uploading… (videos can take a moment)</span>
                   </>
                 ) : (
                   <>
-                    <ImageIcon size={22} />
-                    <span className="text-sm">Click to upload an image</span>
-                    <span className="text-xs">JPG, PNG, WEBP or GIF · up to 8 MB</span>
+                    <ImagePlay size={22} />
+                    <span className="text-sm">Click to upload an image or video</span>
+                    <span className="text-xs">JPG, PNG, WEBP, GIF or MP4/MOV · up to ~200 MB</span>
                   </>
                 )}
                 <input
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  accept="image/*,video/*"
                   className="hidden"
                   disabled={uploading}
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ''; }}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleMediaUpload(f); e.target.value = ''; }}
                 />
               </label>
             )}
@@ -222,7 +262,7 @@ export default function AdminSocialPage() {
           <div className="flex justify-end">
             <button
               onClick={publish}
-              disabled={publishing || uploading || (!content.trim() && !imageUrl)}
+              disabled={publishing || uploading || (!content.trim() && !mediaUrl)}
               className="btn-primary text-sm px-5 py-2 flex items-center gap-2 disabled:opacity-50"
             >
               {publishing ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
@@ -263,14 +303,26 @@ export default function AdminSocialPage() {
                     {post.content && (
                       <p className="text-sm text-text-secondary whitespace-pre-wrap break-words">{post.content}</p>
                     )}
-                    {post.image_url && (
+                    {post.video_url ? (
+                      <div className="mt-2 space-y-1">
+                        <span className="inline-flex items-center gap-1 text-[10px] text-text-muted">
+                          🎬 Video
+                        </span>
+                        <video
+                          src={post.video_url}
+                          poster={post.poster_url || undefined}
+                          controls
+                          className="max-h-40 rounded-lg border border-border-primary"
+                        />
+                      </div>
+                    ) : post.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={post.image_url}
                         alt=""
                         className="mt-2 max-h-40 rounded-lg border border-border-primary object-cover"
                       />
-                    )}
+                    ) : null}
                   </div>
                   <button
                     onClick={() => deletePost(post.id)}

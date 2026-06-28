@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     const admin = getAdminClient();
     const { data, error } = await admin
       .from('posts')
-      .select('id, user_id, content, image_url, created_at')
+      .select('id, user_id, content, image_url, video_url, poster_url, created_at')
       .in('user_id', OFFICIAL_IDS)
       .order('created_at', { ascending: false })
       .limit(30);
@@ -76,25 +76,52 @@ export async function POST(req: NextRequest) {
     const accountId: string = body.accountId;
     const content: string = (body.content || '').trim();
     const imageUrl: string | null = body.imageUrl || null;
+    const videoUrl: string | null = body.videoUrl || null;
+    const posterUrl: string | null = body.posterUrl || null;
 
     if (!accountId || !isOfficialAccountId(accountId)) {
       return NextResponse.json({ error: 'Invalid official account' }, { status: 400 });
     }
-    if (!content && !imageUrl) {
-      return NextResponse.json({ error: 'Add some text or an image to publish.' }, { status: 400 });
+    if (!content && !imageUrl && !videoUrl) {
+      return NextResponse.json({ error: 'Add some text, an image or a video to publish.' }, { status: 400 });
+    }
+
+    let insertData: Record<string, unknown>;
+    if (videoUrl) {
+      insertData = {
+        user_id: accountId,
+        type: 'video',
+        content: content || '',
+        video_url: videoUrl,
+        poster_url: posterUrl || null,
+        image_url: null,
+        visibility: 'public',
+        chart_data: {},
+      };
+    } else if (imageUrl) {
+      insertData = {
+        user_id: accountId,
+        type: 'photo',
+        content: content || '',
+        image_url: imageUrl,
+        visibility: 'public',
+        chart_data: {},
+      };
+    } else {
+      insertData = {
+        user_id: accountId,
+        type: 'text',
+        content: content || '',
+        image_url: null,
+        visibility: 'public',
+        chart_data: {},
+      };
     }
 
     const admin = getAdminClient();
     const { data, error } = await admin
       .from('posts')
-      .insert({
-        user_id: accountId,
-        type: imageUrl ? 'photo' : 'text',
-        content: content || '',
-        image_url: imageUrl || null,
-        visibility: 'public',
-        chart_data: {},
-      })
+      .insert(insertData)
       .select()
       .single();
 
