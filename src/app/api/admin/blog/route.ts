@@ -80,11 +80,18 @@ export async function POST(req: NextRequest) {
       author_id: user.id,
     };
 
-    const { data, error } = await admin
+    let { data, error } = await admin
       .from('blog_posts')
       .insert(post)
       .select()
       .single();
+
+    // Graceful fallback if the cover_image_url migration hasn't run yet:
+    // retry without it so saving still works (just without the image).
+    if (error && /cover_image_url/.test(error.message || '')) {
+      const { cover_image_url, ...rest } = post;
+      ({ data, error } = await admin.from('blog_posts').insert(rest).select().single());
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ post: data });
@@ -127,12 +134,18 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    const { data, error } = await admin
+    let { data, error } = await admin
       .from('blog_posts')
       .update(updates)
       .eq('id', body.id)
       .select()
       .single();
+
+    // Graceful fallback if the cover_image_url migration hasn't run yet.
+    if (error && /cover_image_url/.test(error.message || '')) {
+      const { cover_image_url, ...rest } = updates;
+      ({ data, error } = await admin.from('blog_posts').update(rest).eq('id', body.id).select().single());
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ post: data });
