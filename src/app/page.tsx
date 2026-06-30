@@ -61,6 +61,12 @@ export default function LandingPage() {
             I have an account
           </Link>
         </div>
+        <Link
+          href="/hidden-zodiac"
+          className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent-secondary hover:text-accent-primary transition-colors"
+        >
+          ☉ Try the Hidden Zodiac — free, no signup →
+        </Link>
       </section>
 
       {/* Feature Grid */}
