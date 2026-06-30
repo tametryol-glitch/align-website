@@ -30,7 +30,8 @@ export const EARTHLY_PURPOSE_MANDATE = [
   '- Answer three questions head-on, woven into the prose: (1) what is your purpose — what are you here to build, become, and accomplish on this earth; (2) WHY do you operate the way you do; (3) WHY do the same kinds of situations keep finding you.',
   '- Use cause and effect tied to the real areas of their life (the houses), so it reads like their actual biography, not a generic horoscope.',
   '- Be direct and confident. No hedging, no flattery, no "this is a powerful placement", no vague reassurance. Naming an uncomfortable truth is good. Use the ruler signs/houses/conjunctions as the REASONS behind their behaviour, never as definitions.',
-  'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels. End with a punchy synthesis that begins "Frankly," and states plainly, in one breath, what they are here to do and become.',
+  'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels.',
+  'CRITICAL ENDING — the reading MUST finish with its own final paragraph that gives a CLEAR, DESCRIPTIVE statement of their life purpose. Begin that paragraph with "Your purpose:" and then, in 2 to 4 sentences, state plainly and specifically what they are here to do, build, become, and contribute on this earth — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual purpose so the reader finishes knowing exactly what it is.',
 ].join('\n');
 
 export interface EarthlyPurposeContext {

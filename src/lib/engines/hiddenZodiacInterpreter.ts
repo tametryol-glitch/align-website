@@ -36,7 +36,7 @@ export interface HiddenZodiacReading {
   contentVersion: string;
 }
 
-export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v2';
+export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v3';
 
 // ── small helpers ────────────────────────────────────────────────────────────
 
