@@ -122,19 +122,26 @@ function buildThreeHouse(c: Ctx): string {
   return t;
 }
 
-/** Describe one ruler's placement in terms of what it does to the PERSON. */
-function describeRuler(forLabel: string, link: RulerLink): string {
-  const ruler = link.ruler ?? 'its ruler';
-  const sign = link.position?.sign ?? null;
-  const house = link.house ?? null;
+function joinLabels(labels: string[]): string {
+  if (labels.length === 1) return labels[0];
+  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
+  return `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`;
+}
+
+/** Describe a placement that one or more layers' rulers share — once, never twice. */
+function describeRulerGroup(members: { label: string; rulerName: string | null }[], sign: string | null, house: number | null): string {
+  const labelList = members.map((m) => `${m.label} (${m.rulerName ?? 'its ruler'})`);
+  const who = `Your ${joinLabels(labelList)}`;
+  const plural = members.length > 1;
   if (!sign) {
-    return `Your ${forLabel} answers to ${ruler}. To see how that actually plays out in your life, add where ${ruler} sits in your chart — its sign and house change everything about how this lands.`;
+    return `${who} ${plural ? 'point' : 'points'} to ${plural ? 'rulers' : 'a ruler'} whose chart position isn't set — add where they sit to see how this lands.`;
   }
   const th = SIGN_THEMES[sign];
-  let s = `Your ${forLabel} answers to ${ruler}, and in your chart ${ruler} sits in ${sign}`;
-  s += house ? ` in your ${ordinal(house)} (${houseFunction(house)}). ` : `. `;
-  s += `So everything that layer is reaching for ultimately serves a ${sign} drive ${th?.drive ?? 'of its own'}`;
-  s += house ? `, and it gets aimed squarely at ${arena(house)}. ` : `. `;
+  let s = plural
+    ? `${who} all point to ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `
+    : `${who} answers to ${members[0].rulerName ?? 'its ruler'}, sitting in ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `;
+  s += `So ${plural ? 'those layers' : 'that layer'} ultimately serve a ${sign} drive ${th?.drive ?? 'of its own'}`;
+  s += house ? `, aimed squarely at ${arena(house)}. ` : `. `;
   s += `At its best that shows up in you as ${th?.gift ?? 'real strength'}; under strain it tips into ${th?.shadow ?? 'its own excess'}.`;
   return s;
 }
@@ -142,31 +149,25 @@ function describeRuler(forLabel: string, link: RulerLink): string {
 function buildRuler(c: Ctx): string {
   const { p, surfaceSign, duadSign, compSign } = c;
   const rc = p.rulerChain;
-  const m = rc.mainRuler, du = rc.duadRuler, co = rc.compendiumRuler;
-  const placeKey = (l: RulerLink) => `${l.ruler}|${l.position?.sign ?? ''}|${l.house ?? ''}`;
-
-  // Concentrated case: every layer answers to the same ruler in the same spot.
-  if (m.ruler && placeKey(m) === placeKey(du) && placeKey(du) === placeKey(co)) {
-    let t = `All three layers answer to a single ruler — ${m.ruler} — which makes this placement unusually unified: there's no inner committee pulling different ways, just one hand on the wheel. `;
-    t += describeRuler(`whole ${surfaceSign} placement`, m);
-    return t;
-  }
-
-  // Otherwise describe each distinct (ruler + placement), skipping repeats.
-  const layers: [string, RulerLink][] = [
-    [`${surfaceSign} surface`, m],
-    [`${duadSign} Duad`, du],
-    [`${compSign} Compendium`, co],
+  const layers: { label: string; link: RulerLink }[] = [
+    { label: `${surfaceSign} surface`, link: rc.mainRuler },
+    { label: `${duadSign} Duad`, link: rc.duadRuler },
+    { label: `${compSign} Compendium`, link: rc.compendiumRuler },
   ];
-  const seen = new Set<string>();
-  const parts: string[] = [];
-  for (const [label, link] of layers) {
-    const k = placeKey(link);
-    if (seen.has(k)) continue;
-    seen.add(k);
-    parts.push(describeRuler(label, link));
+
+  // Group layers whose rulers share the same sign + house so the same placement
+  // is never described twice (e.g. two rulers both in Sagittarius, 5th house).
+  const groups = new Map<string, { sign: string | null; house: number | null; members: { label: string; rulerName: string | null }[] }>();
+  for (const { label, link } of layers) {
+    const sign = link.position?.sign ?? null;
+    const house = link.house ?? null;
+    // Unplaced rulers stay separate (keyed by ruler) so each prompts individually.
+    const key = sign ? `${sign}|${house ?? 'x'}` : `unplaced|${link.ruler ?? ''}`;
+    if (!groups.has(key)) groups.set(key, { sign, house, members: [] });
+    groups.get(key)!.members.push({ label, rulerName: link.ruler });
   }
-  let t = parts.join(' ');
+
+  let t = Array.from(groups.values()).map((g) => describeRulerGroup(g.members, g.sign, g.house)).join(' ');
   if (rc.mainDispositorChain?.closedCircuit) {
     t += ` These rulers also answer only to one another in a closed loop, which is why this pattern reinforces itself and is hard to argue your way out of.`;
   }

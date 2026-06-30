@@ -13,7 +13,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
-import { deriveEarthlyPurpose, deterministicEarthlyPurpose } from '@/lib/engines/earthlyPurpose';
+import {
+  deriveEarthlyPurpose,
+  deterministicEarthlyPurpose,
+  buildEarthlyPurposeSystemPrompt,
+  buildEarthlyPurposeUserPrompt,
+} from '@/lib/engines/earthlyPurpose';
 
 const TEASER = 260;
 
@@ -44,7 +49,25 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
         });
         const ctx = deriveEarthlyPurpose(raw);
         if (!ctx) { if (!cancelled) setLoading(false); return; }
-        const reading = deterministicEarthlyPurpose(ctx);
+
+        // Try the AI reading (paid users); stream it. Free users 429 → fall back.
+        let reading = '';
+        try {
+          const system = buildEarthlyPurposeSystemPrompt(ctx);
+          const user = buildEarthlyPurposeUserPrompt(ctx);
+          let full = '';
+          await new Promise<void>((resolve, reject) => {
+            api.streamAIInterpretation(
+              { type: 'astrologer_chat', chart_data_text: system, messages: [{ role: 'user', content: user }], language: 'en' },
+              (chunk: string) => { full += chunk; if (!cancelled) setText(full); },
+              () => resolve(),
+            ).catch(reject);
+          });
+          if (full.trim()) reading = full;
+        } catch {
+          /* fall through to deterministic */
+        }
+        if (!reading) reading = deterministicEarthlyPurpose(ctx);
         if (cancelled) return;
         setText(reading);
         try { window.localStorage.setItem(cacheKey, reading); } catch { /* ignore */ }

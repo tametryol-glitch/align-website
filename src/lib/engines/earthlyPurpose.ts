@@ -11,10 +11,27 @@ import {
   calculateHiddenZodiacPlacement,
   longitudeToArcSeconds,
   arcSecondsToFormattedPosition,
+  RULERS,
   type HiddenZodiacPlacement,
 } from './hiddenZodiacEngine';
 import { findSupportedObject } from './hiddenZodiacSupportedObjects';
 import { interpretHiddenZodiac } from './hiddenZodiacInterpreter';
+
+const SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
+
+/** Founder-feedback mandate: make the reader feel SEEN, not lectured. */
+export const EARTHLY_PURPOSE_MANDATE = [
+  'WRITE A READING THAT MAKES THE PERSON FEEL SEEN — not a lecture on astrology. Hard rules:',
+  '- NEVER explain what a Duad, Compendium, sign, house, or ruler "is", and never use those words as labels or headings. The reader does not care how the system works — they want to understand THEMSELVES.',
+  '- Name specific, bold personality traits they will instantly recognise: how they actually behave, decide, love, work, lead, sabotage themselves, and recover. Make several claims sharp enough that they think "that is exactly me."',
+  '- Answer three questions head-on, woven into the prose: (1) what is your purpose — what are you here to build, become, and accomplish on this earth; (2) WHY do you operate the way you do; (3) WHY do the same kinds of situations keep finding you.',
+  '- Use cause and effect tied to the real areas of their life (the houses), so it reads like their actual biography, not a generic horoscope.',
+  '- Be direct and confident. No hedging, no flattery, no "this is a powerful placement", no vague reassurance. Naming an uncomfortable truth is good. Use the ruler signs/houses/conjunctions as the REASONS behind their behaviour, never as definitions.',
+  'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels. End with a punchy synthesis that begins "Frankly," and states plainly, in one breath, what they are here to do and become.',
+].join('\n');
 
 export interface EarthlyPurposeContext {
   placement: HiddenZodiacPlacement;
@@ -115,6 +132,58 @@ export function deterministicEarthlyPurpose(ctx: EarthlyPurposeContext): string 
   return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates]
     .filter(Boolean)
     .join('\n\n');
+}
+
+// ── AI prompt (self-contained; mirrors the app's earthly-purpose prompt) ─────
+
+function rulerFacts(ctx: EarthlyPurposeContext): string {
+  const { placement: p, conjunctions } = ctx;
+  const rc = p.rulerChain;
+  const line = (label: string, link: typeof rc.mainRuler) => {
+    if (!link.ruler) return `${label}: (no ruler)`;
+    const where = link.position?.sign ? ` in ${link.position.sign}${link.house ? ` (your ${ordinal(link.house)})` : ''}` : '';
+    const conj = conjunctions[link.ruler]?.length ? `, conjunct ${conjunctions[link.ruler].join(' and ')}` : '';
+    return `${label}: ${link.ruler}${where}${conj}`;
+  };
+  return [
+    line(`Sign ruler (${p.position.sign})`, rc.mainRuler),
+    line(`Duad ruler (${p.duad.sign})`, rc.duadRuler),
+    line(`Compendium ruler (${p.compendium.sign})`, rc.compendiumRuler),
+  ].join('\n');
+}
+
+export function buildEarthlyPurposeSystemPrompt(ctx: EarthlyPurposeContext): string {
+  const p = ctx.placement;
+  const rc = p.rulerChain;
+  const rulership = SIGNS.map((s) => `- ${s} is ruled by ${RULERS[s]}`).join('\n');
+  let houseMap = 'No Ascendant: do not assign houses.';
+  if (ctx.ascendantSign) {
+    const ai = SIGNS.indexOf(ctx.ascendantSign);
+    if (ai >= 0) houseMap = `WHOLE-SIGN HOUSE MAP (${ctx.ascendantSign} rising):\n` + SIGNS.map((_, k) => `${k + 1}. ${SIGNS[(ai + k) % 12]}`).join('  ');
+  }
+  return [
+    'You are a precise, psychologically literate astrologer writing one EARTHLY PURPOSE reading for Align. Earth is the exact opposite of the Sun — the point of grounding, embodiment, and the practical destiny a person is here to build and accomplish in physical life.',
+    '',
+    'CUSTOM RULERSHIP — use this exactly (never the traditional substitutes):',
+    rulership,
+    '',
+    houseMap,
+    '',
+    'THESE CALCULATED VALUES ARE THE SOURCE OF TRUTH — never recalculate or change them:',
+    `- Earth at ${p.position.text}, primary house ${p.primaryHouse ?? 'unknown'}.`,
+    `- Duad ${p.duad.sign} (house ${p.duad.activatedHouse ?? 'unknown'}); Compendium ${p.compendium.sign} (house ${p.compendium.activatedHouse ?? 'unknown'}).`,
+    `- Rulers: ${p.position.sign}→${rc.mainRuler.ruler}, ${p.duad.sign}→${rc.duadRuler.ruler}, ${p.compendium.sign}→${rc.compendiumRuler.ruler}.`,
+    '',
+    'RULER & CONJUNCTION FACTS (use as REASONS, not definitions):',
+    rulerFacts(ctx),
+    '',
+    EARTHLY_PURPOSE_MANDATE,
+  ].join('\n');
+}
+
+export function buildEarthlyPurposeUserPrompt(ctx: EarthlyPurposeContext): string {
+  const p = ctx.placement;
+  return `Write my earthly purpose reading. Fixed facts: Earth ${p.position.text}, ${p.primaryHouse ? p.primaryHouse + 'th house' : ''}; Duad ${p.duad.sign}; Compendium ${p.compendium.sign}.`;
 }
 
 export { ordinal };
