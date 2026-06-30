@@ -94,6 +94,7 @@ const FEATURE_BANNERS = [
 
 const POPULAR_READINGS = [
   { key: 'aiAstrologer', title: 'AI Astrologer', emoji: '✦', description: 'Chat with your personal AI astrologer', href: '/ai', gradient: 'from-[#6D28D9] to-[#4C1D95]' },
+  { key: 'hiddenZodiac', title: 'The Hidden Zodiac', emoji: '☉', description: 'The Duad & Compendium hidden in every degree', href: '/hidden-zodiac', gradient: 'from-[#7C3AED] to-[#9B6FF6]' },
   { key: 'fullNatal', title: 'Full Natal Reading', emoji: '🌟', description: 'Deep dive into your complete birth chart', href: '/chart', gradient: 'from-[#6D28D9] to-[#4C1D95]' },
   { key: 'transit', title: 'Current Transits', emoji: '🪐', description: 'What the planets are doing to your chart', href: '/readings/transits', gradient: 'from-[#2563EB] to-[#1E40AF]' },
   { key: 'solarReturn', title: 'Solar Return', emoji: '☀️', description: 'Your birthday chart — themes for the year', href: '/chart/solar-return', gradient: 'from-[#D97706] to-[#92400E]' },

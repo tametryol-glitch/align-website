@@ -26,6 +26,9 @@ export default function LandingPage() {
           <Link href="/compatibility" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
             Compatibility
           </Link>
+          <Link href="/hidden-zodiac" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Hidden Zodiac
+          </Link>
           <Link href="/auth/login" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
             Sign In
           </Link>
@@ -196,6 +199,7 @@ export default function LandingPage() {
             <Link href="/events" className="hover:text-text-secondary">Events</Link>
             <Link href="/zodiac" className="hover:text-text-secondary">Zodiac</Link>
             <Link href="/compatibility" className="hover:text-text-secondary">Compatibility</Link>
+            <Link href="/hidden-zodiac" className="hover:text-text-secondary">Hidden Zodiac</Link>
             <Link href="/settings/terms" className="hover:text-text-secondary">Terms</Link>
             <Link href="/settings/privacy" className="hover:text-text-secondary">Privacy</Link>
             <Link href="/settings/community-guidelines" className="hover:text-text-secondary">Guidelines</Link>
