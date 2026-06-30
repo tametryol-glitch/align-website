@@ -66,6 +66,11 @@ export const SUPPORTED_OBJECTS: readonly SupportedObject[] = [
   { name: 'Bacchus', glyph: '⚳', category: 'asteroid' },
   { name: 'DNA', glyph: '𓂀', category: 'asteroid' },
   // Points / Arabic Parts / Lilith
+  // Earth is the exact opposite of the Sun (Sun longitude + 180°). In a saved
+  // chart it is derived from the Sun; in the manual calculator it is entered
+  // directly. It signifies the earthly purpose — what a person is here to
+  // ground and accomplish in physical life.
+  { name: 'Earth', glyph: '⊕', category: 'point', aliases: ['Earth Point', 'Anti-Sun'] },
   { name: 'Dark Moon Lilith', glyph: '⚸', category: 'point', aliases: ['Lilith', 'Black Moon Lilith'] },
   { name: 'Part of Fortune', glyph: '⊗', category: 'point', aliases: ['Fortune', 'Pars Fortunae'] },
   { name: 'Part of Spirit', glyph: '⊙', category: 'point', aliases: ['Spirit', 'Pars Spiritus'] },
@@ -103,7 +108,7 @@ export function glyphForObject(name: string): string {
 
 /** A compact curated set for the calculator picker (the most-used objects). */
 export const CALCULATOR_QUICK_PICK: readonly string[] = [
-  'Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn',
+  'Sun', 'Earth', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn',
   'Uranus', 'Neptune', 'Pluto', 'Vesta', 'Juno', 'Chiron',
   'Ascendant', 'Midheaven', 'North Node',
 ];

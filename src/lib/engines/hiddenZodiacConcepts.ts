@@ -29,6 +29,9 @@ export interface PlanetFunction {
 
 export const PLANET_FUNCTIONS: Record<string, PlanetFunction> = {
   Sun: { fn: 'identity, vitality, and the will to become fully oneself', verb: 'build a self', keywords: ['purpose', 'confidence', 'visibility'], relational: false, vocational: true },
+  // Earth = the exact opposite of the Sun. Where the Sun is who you are at the
+  // centre, Earth is the grounded, practical mission you came here to accomplish.
+  Earth: { fn: 'your earthly purpose — what you came here to ground, build, and accomplish in physical life', verb: 'ground and carry out your purpose', keywords: ['mission', 'grounding', 'practical purpose', 'embodiment'], relational: false, vocational: true },
   Moon: { fn: 'emotional needs, instinct, and the search for security', verb: 'find safety', keywords: ['feeling', 'memory', 'habit', 'belonging'], relational: true, vocational: false },
   Mercury: { fn: 'perception, thought, and the way the mind names the world', verb: 'make sense of things', keywords: ['language', 'learning', 'logic', 'exchange'], relational: false, vocational: true },
   Venus: { fn: 'values, attraction, and the capacity for pleasure and relating', verb: 'draw close to what it loves', keywords: ['taste', 'worth', 'affection', 'harmony'], relational: true, vocational: false },
@@ -256,6 +259,7 @@ export const SIGN_BEHAVIOR: Record<string, SignBehavior> = {
 /** Second-person phrase for what part of a person each planet/point governs. */
 export const PLANET_DOMAIN: Record<string, string> = {
   Sun: "your core self — who you are at the centre and what you're here to become",
+  Earth: "your earthly purpose — the practical, grounded mission you're here to accomplish in physical life, sitting exactly opposite your Sun",
   Moon: "your emotional core — what you need to feel safe and how you self-soothe",
   Mercury: "your mind — how you think, talk, and make sense of things",
   Venus: "what you value and how you love — your taste, your worth, what pulls you in",
