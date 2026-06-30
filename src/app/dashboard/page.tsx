@@ -17,6 +17,7 @@ import { useWhatsNew } from '@/hooks/useWhatsNew';
 import { WhatsNewModal } from '@/components/ui/WhatsNewModal';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { GettingStartedChecklist } from '@/components/ui/GettingStartedChecklist';
+import { EarthlyPurposeCard } from '@/components/EarthlyPurposeCard';
 import { useCoachmarks } from '@/hooks/useCoachmarks';
 import { CoachmarkOverlay } from '@/components/ui/CoachmarkOverlay';
 
@@ -456,6 +457,9 @@ export default function DashboardPage() {
           onMarkComplete={gettingStarted.markComplete}
         />
       )}
+
+      {/* Your Earthly Purpose — Earth (opposite the Sun) read on open */}
+      <EarthlyPurposeCard profile={profile} />
 
       {/* ─── Share Your Chart Card ──────────────────────────── */}
       {profile?.sun_sign && profile?.moon_sign && profile?.rising_sign && (
