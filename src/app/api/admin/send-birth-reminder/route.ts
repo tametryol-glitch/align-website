@@ -44,10 +44,15 @@ export async function POST(req: NextRequest) {
 
   const supabase = getAdminClient();
 
+  // Only remind people who NEVER entered a birth date. Users who entered their
+  // birth info but whose location wasn't geocoded (latitude/longitude/timezone
+  // still null) have "filled it out" from their perspective — emailing them the
+  // "add your birth info" reminder is wrong and generates complaints. That
+  // partial-data cohort is fixed by backfilling coordinates, not by nagging.
   const { data: profiles, error: profileError } = await supabase
     .from('profiles')
     .select('id, display_name, birth_date, birth_time, latitude, longitude, timezone')
-    .or('birth_date.is.null,latitude.is.null,longitude.is.null,timezone.is.null');
+    .is('birth_date', null);
 
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 });

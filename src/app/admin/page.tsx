@@ -274,7 +274,9 @@ function UsersPanel() {
       supabase.from('profiles').select('id', { count: 'exact', head: true }),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).is('birth_date', null),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).not('birth_date', 'is', null).is('birth_time', null),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).or('birth_date.is.null,latitude.is.null,longitude.is.null,timezone.is.null'),
+      // "Missing location" = entered a birth date but never geocoded (lat/lon/tz null).
+      // These users HAVE filled in their info, so they are NOT emailed — they're fixed by backfill.
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).not('birth_date', 'is', null).or('latitude.is.null,longitude.is.null,timezone.is.null'),
     ]);
     setDbCounts({
       total: totalRes.count ?? 0,
@@ -337,7 +339,7 @@ function UsersPanel() {
           </div>
           <div className="bg-bg-secondary rounded-lg p-3 border border-orange-500/20">
             <p className="text-lg font-bold text-orange-400">{dbCounts.incomplete}</p>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider">Incomplete Data</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Missing Location (backfill)</p>
           </div>
         </div>
       )}
@@ -368,14 +370,14 @@ function UsersPanel() {
             disabled={sendingReminders}
             className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
           >
-            {sendingReminders ? 'Sending...' : `Email ${dbCounts?.incomplete ?? '...'} Incomplete Users`}
+            {sendingReminders ? 'Sending...' : `Email ${dbCounts?.noBirthDate ?? '...'} (No Birth Date)`}
           </button>
         </div>
       </div>
 
       {reminderResult && (
         <div className={`text-xs px-3 py-2 rounded-lg ${reminderResult.errors > 0 ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-          Sent {reminderResult.sent} reminder emails ({reminderResult.total} incomplete profiles, {reminderResult.errors} errors)
+          Sent {reminderResult.sent} reminder emails ({reminderResult.total} with no birth date, {reminderResult.errors} errors)
         </div>
       )}
 
