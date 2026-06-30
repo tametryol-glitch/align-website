@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     '/',
     '/birth-chart-calculator',
+    '/hidden-zodiac',
     '/auth/login',
     '/auth/signup',
     '/pricing',
