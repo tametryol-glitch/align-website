@@ -13,6 +13,7 @@ import {
   type PrioritizableNotification,
 } from '@/lib/notificationPriorityEngine';
 import { getUserEngagementPattern, shouldSendNow } from '@/lib/smartNotificationScheduler';
+import { CosmicMatchShareModal } from '@/components/feed/CosmicMatchShareModal';
 
 interface Notification {
   id: string;
@@ -57,6 +58,8 @@ const TYPE_CATEGORIES: Record<string, 'social' | 'cosmic' | 'system'> = {
   retrograde: 'cosmic',
   eclipse: 'cosmic',
   cosmic_match_ready: 'cosmic',
+  cosmic_match_share_invite: 'cosmic',
+  cosmic_match_published: 'cosmic',
   system: 'system',
   announcement: 'system',
   account: 'system',
@@ -81,6 +84,8 @@ const NOTIFICATION_ICONS: Record<string, any> = {
   retrograde: Zap,
   eclipse: Star,
   cosmic_match_ready: Star,
+  cosmic_match_share_invite: Star,
+  cosmic_match_published: Star,
   system: Bell,
   announcement: Megaphone,
   account: Bell,
@@ -239,6 +244,10 @@ function getNotificationLink(n: Notification): string {
       return '/readings';
     case 'cosmic_match_ready':
       return n.data?.match_id ? `/compatibility/${n.data.match_id}` : '/compatibility';
+    case 'cosmic_match_published':
+      return '/feed';
+    case 'cosmic_match_share_invite':
+      return '#'; // intercepted — opens the share modal instead of navigating
     case 'system':
       return '/dashboard';
     case 'announcement':
@@ -258,6 +267,7 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [shareInvite, setShareInvite] = useState<{ matchId: string; partnerName?: string; score?: number } | null>(null);
 
   const loadNotifications = useCallback(async () => {
     if (!user) return;
@@ -490,17 +500,13 @@ export default function NotificationsPage() {
               const isOptimalTime = SMART_SCHEDULING_ENABLED && engagementPattern
                 ? shouldSendNow(engagementPattern, new Date(n.created_at).getHours(), 'medium')
                 : false;
-              return (
-                <Link
-                  key={n.id}
-                  href={link}
-                  onClick={() => !n.is_read && markOneRead(n.id)}
-                  className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${
-                    n.is_read
-                      ? 'bg-bg-card hover:bg-bg-card-hover'
-                      : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
-                  }`}
-                >
+              const wrapperClass = `flex items-start gap-3 p-4 rounded-xl transition-colors w-full text-left ${
+                n.is_read
+                  ? 'bg-bg-card hover:bg-bg-card-hover'
+                  : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
+              }`;
+              const inner = (
+                <>
                   <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
                     {n.actor_profile?.avatar_url ? (
                       <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
@@ -522,6 +528,35 @@ export default function NotificationsPage() {
                   {!n.is_read && (
                     <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />
                   )}
+                </>
+              );
+
+              // The share invite opens a double-opt-in modal instead of navigating.
+              if (n.type === 'cosmic_match_share_invite') {
+                return (
+                  <button
+                    key={n.id}
+                    onClick={() => {
+                      if (!n.is_read) markOneRead(n.id);
+                      if (n.data?.match_id) {
+                        setShareInvite({ matchId: n.data.match_id, partnerName: n.data.other_user_name, score: n.data.score });
+                      }
+                    }}
+                    className={wrapperClass}
+                  >
+                    {inner}
+                  </button>
+                );
+              }
+
+              return (
+                <Link
+                  key={n.id}
+                  href={link}
+                  onClick={() => !n.is_read && markOneRead(n.id)}
+                  className={wrapperClass}
+                >
+                  {inner}
                 </Link>
               );
             }
@@ -597,6 +632,15 @@ export default function NotificationsPage() {
             );
           })}
         </div>
+      )}
+
+      {shareInvite && (
+        <CosmicMatchShareModal
+          matchId={shareInvite.matchId}
+          partnerName={shareInvite.partnerName}
+          score={shareInvite.score}
+          onClose={() => setShareInvite(null)}
+        />
       )}
     </div>
   );

@@ -256,6 +256,40 @@ export async function getCosmicMatch(
 }
 
 /**
+ * Opt in to sharing a rare cosmic match to the public feed (double opt-in).
+ * Flips this user's flag; the public post is only created once BOTH users
+ * have opted in (enforced server-side in opt_in_cosmic_match_share).
+ */
+export interface ShareOptInResult {
+  success: boolean;
+  published: boolean;
+  waitingOnOther?: boolean;
+  postId?: string;
+  error?: string;
+}
+
+export async function optInCosmicMatchShare(matchId: string): Promise<ShareOptInResult> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('opt_in_cosmic_match_share', {
+      p_match_id: matchId,
+    });
+    if (error || !data) {
+      return { success: false, published: false, error: error?.message || 'rpc_failed' };
+    }
+    return {
+      success: !!data.success,
+      published: !!data.published,
+      waitingOnOther: !!data.waiting_on_other,
+      postId: data.post_id || undefined,
+      error: data.error || undefined,
+    };
+  } catch (err: any) {
+    return { success: false, published: false, error: err?.message || 'unknown' };
+  }
+}
+
+/**
  * Trigger a cosmic match calculation for a friend pair.
  *
  * Steps:

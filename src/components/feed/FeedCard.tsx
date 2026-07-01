@@ -76,6 +76,7 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   video: { label: 'Video', color: 'bg-red-500/15 text-red-400' },
   transit_alert: { label: 'Transit', color: 'bg-green-500/15 text-green-400' },
   compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
+  cosmic_match: { label: 'Cosmic Match', color: 'bg-accent-muted text-accent-primary' },
 };
 
 const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:\S*)?/gi;
@@ -178,6 +179,75 @@ export function isGifOrStickerUrl(text: string): boolean {
   return (
     trimmed.startsWith('https://media') && trimmed.includes('giphy.com') ||
     /^https?:\/\/\S+\.gif(\?.*)?$/i.test(trimmed)
+  );
+}
+
+// ── Cosmic Match Body ──────────────────────────────────────────────
+// Renders a shared rare-match card: the two tagged people, the overall
+// score, and top positive dimensions + "why". Positive-only by design.
+
+function CosmicMatchBody({ post }: { post: FeedPost }) {
+  const data: any = post.chartData || {};
+  const tagged = post.taggedUsers || [];
+  const a = tagged[0];
+  const b = tagged[1];
+
+  const dims: Array<{ name: string; score: number }> = Array.isArray(data.dimensions)
+    ? data.dimensions.filter((d: any) => typeof d?.score === 'number')
+    : [];
+  const topDims = [...dims].sort((x, y) => (y.score || 0) - (x.score || 0)).slice(0, 3);
+  const why: string[] = Array.isArray(data.why) ? data.why.filter(Boolean).slice(0, 3) : [];
+  const overall = typeof data.overall === 'number' ? data.overall : null;
+
+  const Person = ({ u }: { u?: { userId: string; userName: string; userAvatar?: string } }) => (
+    <Link href={u ? `/user/${u.userId}` : '#'} className="flex flex-col items-center flex-1 min-w-0">
+      <span className="w-14 h-14 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden">
+        {u?.userAvatar ? (
+          <img src={u.userAvatar} alt="" className="w-14 h-14 rounded-full object-cover" />
+        ) : (
+          <span className="text-lg font-bold text-accent-primary">{u?.userName?.[0]?.toUpperCase() || '?'}</span>
+        )}
+      </span>
+      <span className="mt-1 text-sm font-semibold truncate max-w-[100px] text-center">{u?.userName || 'Someone'}</span>
+    </Link>
+  );
+
+  return (
+    <div className="mx-5 mb-3 p-4 rounded-xl bg-bg-tertiary border border-accent-primary/40">
+      <p className="text-xs font-bold text-accent-primary mb-3">💫 Cosmic Matches</p>
+
+      <div className="flex items-center justify-between">
+        <Person u={a} />
+        <div className="flex flex-col items-center px-3">
+          {overall !== null
+            ? <span className="text-3xl font-extrabold text-accent-primary">{overall}%</span>
+            : <span className="text-2xl">💞</span>}
+          <span className="text-[10px] uppercase tracking-wider text-text-muted">match</span>
+        </div>
+        <Person u={b} />
+      </div>
+
+      {data.band && <p className="text-sm text-text-secondary italic text-center mt-3">{data.band}</p>}
+
+      {topDims.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-1.5 mt-3">
+          {topDims.map((d) => (
+            <span key={d.name} className="flex items-center gap-1 bg-bg-secondary rounded-md py-1 px-2">
+              <span className="text-xs text-text-secondary">{d.name}</span>
+              <span className="text-xs font-bold text-accent-primary">{d.score}%</span>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {why.length > 0 && (
+        <div className="mt-3 space-y-0.5">
+          {why.map((w, i) => (
+            <p key={i} className="text-xs text-text-secondary leading-snug">✨ {w}</p>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -318,8 +388,11 @@ export function FeedCard({
         </p>
       )}
 
+      {/* Cosmic Match card body (rare shared match) */}
+      {post.type === 'cosmic_match' && <CosmicMatchBody post={post} />}
+
       {/* Content */}
-      {post.content && (() => {
+      {post.content && post.type !== 'cosmic_match' && (() => {
         const youtubeUrls = extractYouTubeUrls(post.content);
         const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
         const tiktokMatches = extractAllTikTokMatches(post.content);

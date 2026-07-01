@@ -19,12 +19,19 @@ export interface FeedComment {
   createdAt: string;
 }
 
+/** A user tagged in a post (e.g. the two people in a cosmic_match card). */
+export interface TaggedUser {
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+}
+
 export interface FeedPost {
   id: string;
   userId: string;
   userName: string;
   userAvatar?: string;
-  type: 'chart_share' | 'reading_share' | 'photo' | 'video' | 'text' | 'transit_alert' | 'compatibility_result';
+  type: 'chart_share' | 'reading_share' | 'photo' | 'video' | 'text' | 'transit_alert' | 'compatibility_result' | 'cosmic_match';
   content: string;
   imageUrl?: string;
   mediaKind?: 'photo' | 'sticker' | 'gif';
@@ -42,6 +49,8 @@ export interface FeedPost {
   originalPostId?: string;
   originalUserName?: string;
   style?: { preset?: string; font?: string } | null;
+  // Users tagged in this post — the two matched people for 'cosmic_match'.
+  taggedUsers?: TaggedUser[];
 }
 
 export const REACTION_OPTIONS: { emoji: ReactionEmoji; label: string }[] = [
@@ -130,6 +139,24 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
     if (cProfiles) cProfiles.forEach((p: any) => { commentProfileMap[p.id] = p; });
   }
 
+  // Batch-fetch tagged users for cosmic_match posts.
+  const taggedMap = new Map<string, TaggedUser[]>();
+  const taggablePostIds = rawPosts.filter((p: any) => p.type === 'cosmic_match').map((p: any) => p.id);
+  if (taggablePostIds.length > 0) {
+    const { data: tagRows } = await supabase
+      .from('post_tagged_users')
+      .select('post_id, tagged_user_id, profile:profiles!post_tagged_users_tagged_user_id_fkey(display_name, avatar_url)')
+      .in('post_id', taggablePostIds);
+    for (const t of tagRows || []) {
+      if (!taggedMap.has(t.post_id)) taggedMap.set(t.post_id, []);
+      taggedMap.get(t.post_id)!.push({
+        userId: t.tagged_user_id,
+        userName: (t as any).profile?.display_name || 'User',
+        userAvatar: (t as any).profile?.avatar_url || undefined,
+      });
+    }
+  }
+
   const commentsMap = new Map<string, FeedComment[]>();
   const commentCountMap = new Map<string, number>();
   for (const c of commentsRes.data || []) {
@@ -172,6 +199,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       originalPostId: p.original_post_id || undefined,
       originalUserName: p.original_user_name || undefined,
       style: p.style || null,
+      taggedUsers: taggedMap.get(p.id) || undefined,
     } as FeedPost;
   });
 

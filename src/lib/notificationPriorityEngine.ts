@@ -47,7 +47,9 @@ export interface ScoredNotification extends PrioritizableNotification {
 /** Base score per notification type. Unknown types default to 20. */
 const TYPE_SCORES: Record<string, number> = {
   friend_request: 95,
+  cosmic_match_share_invite: 93,
   cosmic_match_ready: 92,
+  cosmic_match_published: 88,
   new_message: 85,
   mention: 80,
   dating_match: 78,
