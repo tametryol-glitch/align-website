@@ -18,6 +18,7 @@ import { WhatsNewModal } from '@/components/ui/WhatsNewModal';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { GettingStartedChecklist } from '@/components/ui/GettingStartedChecklist';
 import { EarthlyPurposeCard } from '@/components/EarthlyPurposeCard';
+import { SoulPurposeCard } from '@/components/SoulPurposeCard';
 import { useCoachmarks } from '@/hooks/useCoachmarks';
 import { CoachmarkOverlay } from '@/components/ui/CoachmarkOverlay';
 
@@ -460,6 +461,9 @@ export default function DashboardPage() {
 
       {/* Your Earthly Purpose — Earth (opposite the Sun) read on open */}
       <EarthlyPurposeCard profile={profile} />
+
+      {/* Your Soul Purpose — North Node (evolutionary direction) read on open */}
+      <SoulPurposeCard profile={profile} />
 
       {/* ─── Share Your Chart Card ──────────────────────────── */}
       {profile?.sun_sign && profile?.moon_sign && profile?.rising_sign && (
