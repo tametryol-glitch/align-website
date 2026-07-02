@@ -16,6 +16,7 @@ import {
 } from './hiddenZodiacEngine';
 import { findSupportedObject } from './hiddenZodiacSupportedObjects';
 import { interpretHiddenZodiac } from './hiddenZodiacInterpreter';
+import { buildPurposePoints, purposePointsHeader } from './purposePoints';
 
 const SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -31,7 +32,8 @@ export const EARTHLY_PURPOSE_MANDATE = [
   '- Use cause and effect tied to the real areas of their life (the houses), so it reads like their actual biography, not a generic horoscope.',
   '- Be direct and confident. No hedging, no flattery, no "this is a powerful placement", no vague reassurance. Naming an uncomfortable truth is good. Use the ruler signs/houses/conjunctions as the REASONS behind their behaviour, never as definitions.',
   'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels.',
-  'CRITICAL ENDING — the reading MUST finish with its own final paragraph that gives a CLEAR, DESCRIPTIVE statement of their life purpose. Begin that paragraph with "Your purpose:" and then, in 2 to 4 sentences, state plainly and specifically what they are here to do, build, become, and contribute on this earth — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual purpose so the reader finishes knowing exactly what it is.',
+  'The flowing prose reading MUST include a clear final paragraph that gives a CLEAR, DESCRIPTIVE statement of their life purpose. Begin that paragraph with "Your purpose:" and then, in 2 to 4 sentences, state plainly and specifically what they are here to do, build, become, and contribute on this earth — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual purpose.',
+  'THEN, after that purpose paragraph, on a new line add the EXACT header "What this could point to:" followed by EXACTLY 10 numbered items (1. through 10.). Each item is ONE short, concrete, specific thing this Earth placement could point to in their real life — a vocation or line of work, a role they naturally play, a recurring life theme, a talent to build, an environment where they thrive, a kind of contribution, or a challenge that keeps returning. Every item must be specific and distinct (no repeats, no vague virtues like "be yourself"), one per line, with no extra explanation.',
 ].join('\n');
 
 export interface EarthlyPurposeContext {
@@ -130,7 +132,9 @@ export function deriveEarthlyPurpose(rawChart: any): EarthlyPurposeContext | nul
 /** Flowing fallback paragraph assembled from the structured engine reading. */
 export function deterministicEarthlyPurpose(ctx: EarthlyPurposeContext): string {
   const r = interpretHiddenZodiac(ctx.placement);
-  return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates]
+  const points = buildPurposePoints(ctx.placement, 'earthly');
+  const list = [purposePointsHeader('earthly'), ...points.map((t, i) => `${i + 1}. ${t}`)].join('\n');
+  return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates, list]
     .filter(Boolean)
     .join('\n\n');
 }

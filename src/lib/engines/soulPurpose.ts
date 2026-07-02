@@ -16,6 +16,7 @@ import {
 } from './hiddenZodiacEngine';
 import { findSupportedObject } from './hiddenZodiacSupportedObjects';
 import { interpretHiddenZodiac } from './hiddenZodiacInterpreter';
+import { buildPurposePoints, purposePointsHeader } from './purposePoints';
 
 const SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -31,7 +32,8 @@ export const SOUL_PURPOSE_MANDATE = [
   '- Use cause and effect tied to the real areas of their life (the houses), so it reads like their actual soul journey, not a generic horoscope.',
   '- Be direct and confident. No hedging, no flattery, no "this is a powerful placement", no vague reassurance. Naming an uncomfortable truth is good. Use the ruler signs/houses/conjunctions as the REASONS behind their growth path, never as definitions.',
   'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels.',
-  'CRITICAL ENDING — the reading MUST finish with its own final paragraph that gives a CLEAR, DESCRIPTIVE statement of their soul purpose. Begin that paragraph with "Your soul purpose:" and then, in 2 to 4 sentences, state plainly and specifically what their soul is here to grow into, become, and fulfil in this life — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual soul purpose so the reader finishes knowing exactly what it is.',
+  'The flowing prose reading MUST include a clear final paragraph that gives a CLEAR, DESCRIPTIVE statement of their soul purpose. Begin that paragraph with "Your soul purpose:" and then, in 2 to 4 sentences, state plainly and specifically what their soul is here to grow into, become, and fulfil in this life — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual soul purpose.',
+  'THEN, after that soul-purpose paragraph, on a new line add the EXACT header "What your soul is here to grow toward:" followed by EXACTLY 10 numbered items (1. through 10.). Each item is ONE short, concrete, specific thing their soul is here to grow toward, develop, or experience in this life — a quality to build, an arena to step into, a pattern to move beyond, an experience to have, a way of relating, or a contribution. Every item must be specific and distinct (no repeats, no vague virtues), one per line, with no extra explanation.',
 ].join('\n');
 
 export interface SoulPurposeContext {
@@ -138,7 +140,9 @@ export function deriveSoulPurpose(rawChart: any): SoulPurposeContext | null {
 /** Flowing fallback paragraph assembled from the structured engine reading. */
 export function deterministicSoulPurpose(ctx: SoulPurposeContext): string {
   const r = interpretHiddenZodiac(ctx.placement);
-  return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates]
+  const points = buildPurposePoints(ctx.placement, 'soul');
+  const list = [purposePointsHeader('soul'), ...points.map((t, i) => `${i + 1}. ${t}`)].join('\n');
+  return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates, list]
     .filter(Boolean)
     .join('\n\n');
 }

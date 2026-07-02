@@ -31,7 +31,7 @@ export function SoulPurposeCard({ profile }: { profile: any }) {
   useEffect(() => {
     if (!hasBirth) { setLoading(false); return; }
     let cancelled = false;
-    const cacheKey = `hz_sp_web_v1:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
+    const cacheKey = `hz_sp_web_v2:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
 
     (async () => {
       try {

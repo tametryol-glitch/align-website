@@ -32,7 +32,7 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
   useEffect(() => {
     if (!hasBirth) { setLoading(false); return; }
     let cancelled = false;
-    const cacheKey = `hz_ep_web_v2:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
+    const cacheKey = `hz_ep_web_v3:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
 
     (async () => {
       try {
