@@ -12,7 +12,7 @@ import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
   Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
-  Bookmark, BarChart3, Palette,
+  Bookmark, BarChart3, Palette, Orbit,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
   { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
+  { href: '/zodisphere', labelKey: 'The Zodisphere', icon: Orbit },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star, coachmark: 'nav-chart' },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },

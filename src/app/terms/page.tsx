@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://aligncosmic.com/terms' },
 };
 
-const UPDATED = 'June 2026';
+const UPDATED = 'July 2026';
 
 export default function TermsPage() {
   return (
@@ -19,7 +19,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="Eligibility">
-        <p>You must be at least 13 years old to use the Service, and at least 18 years old to use certain social and messaging features. By using the Service you represent that you meet these requirements.</p>
+        <p>You must be at least 18 years old to use the Service. Align is an adults-only service; we verify date of birth at sign-up and do not permit accounts for anyone under 18. By using the Service you represent that you are at least 18 years old.</p>
       </Section>
 
       <Section title="Entertainment and Informational Use Only">
@@ -36,6 +36,8 @@ export default function TermsPage() {
 
       <Section title="User Content">
         <p>You retain ownership of the content you create (posts, photos, videos, messages). By posting, you grant us a limited license to host and display that content as needed to operate the Service. You are responsible for the content you share and must have the rights to share it.</p>
+        <p>You must not post content that is unlawful, hateful, sexually exploitative, threatening, or harassing; that impersonates others; or that exposes another person&apos;s private information — including their physical location, home, workplace, or whereabouts — without their consent. Content on geographic surfaces (such as the Zodisphere) may reference places, never other people&apos;s positions.</p>
+        <p>Align provides in-app tools to report content, report users, block users, and mute users. We review reports, remove violating content, and may restrict or terminate repeat offenders. If you believe a moderation decision was made in error, contact us at the address below to request a review.</p>
       </Section>
 
       <Section title="Subscriptions and Payments">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Plus, File, MapPin, BarChart3 } from 'lucide-react';
+import { Plus, File, BarChart3 } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -15,9 +15,11 @@ interface AttachmentMenuProps {
 
 // ── Menu items config ──────────────────────────────────────────────
 
+// NOTE: 'location' (share current GPS) intentionally removed for privacy — Align does
+// not capture or share a user's exact device location. Dormant LocationPicker/onSelectLocation
+// wiring is now unreachable and can be fully deleted in a later cleanup.
 const MENU_ITEMS = [
   { key: 'file', label: 'File', icon: File, action: 'onSelectFile' as const },
-  { key: 'location', label: 'Location', icon: MapPin, action: 'onSelectLocation' as const },
   { key: 'poll', label: 'Poll', icon: BarChart3, action: 'onSelectPoll' as const },
 ];
 

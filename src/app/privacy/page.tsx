@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://aligncosmic.com/privacy' },
 };
 
-const UPDATED = 'June 2026';
+const UPDATED = 'July 2026';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -25,12 +25,16 @@ export default function PrivacyPolicyPage() {
           <li><strong>Partner / synastry data</strong> — birth details of other people you choose to enter for compatibility and relationship readings.</li>
           <li><strong>Profile and social content</strong> — profile photos, bio, posts, comments, reactions, and messages you create, plus your friends, followers, and following lists.</li>
           <li><strong>Media</strong> — photos, videos, and audio you upload or record (for example, posts, profile pictures, voice/video messages, and videos you edit in the app).</li>
+          <li><strong>Chosen community place (optional)</strong> — if you opt in to the Zodisphere community map, the city, region, or country you manually select to represent you. This is off by default, is never derived from your device, and can be changed or removed at any time in your Zodisphere visibility settings.</li>
         </ul>
+      </Section>
+
+      <Section title="Location">
+        <p>Align does not request device location permissions and does not collect GPS, precise, background, or real-time location. The only geographic information we hold is what you type or select yourself: your place of birth (for chart calculations) and, if you opt in, a coarse community place for the Zodisphere. Your position is never shown to anyone — community activity on the Zodisphere appears only as city- or country-level ranges (for example &quot;25–49 members&quot;), and only where at least 10 members have opted in. Location metadata is removed from photos before they are published to the Zodisphere.</p>
       </Section>
 
       <Section title="Information Collected Automatically">
         <ul>
-          <li><strong>Location</strong> — with your permission, your approximate or precise location to improve birth-chart accuracy and nearby features. You can decline or revoke this in your device settings.</li>
           <li><strong>Device information</strong> — device type, operating system, and app version.</li>
           <li><strong>Usage data</strong> — features used and general interaction patterns, used to improve the Service.</li>
           <li><strong>Push notification tokens</strong> — to deliver transit alerts and other notifications you opt into.</li>
@@ -79,7 +83,8 @@ export default function PrivacyPolicyPage() {
           <li>Export your birth profiles and personal data.</li>
           <li>Opt out of push notifications at any time.</li>
           <li>Update or correct your information.</li>
-          <li>Decline or revoke location and media permissions in your device settings.</li>
+          <li>Change or remove your Zodisphere place and visibility at any time (visibility is off by default); every change is recorded in your consent history.</li>
+          <li>Decline or revoke media permissions in your device settings.</li>
         </ul>
         <p>To exercise any of these rights, contact us using the details below or use the in-app account controls.</p>
       </Section>
@@ -92,8 +97,8 @@ export default function PrivacyPolicyPage() {
         </ul>
       </Section>
 
-      <Section title="Children's Privacy">
-        <p>The Service is not directed to children. We do not knowingly collect personal information from children under 13, and certain social features are intended for users 18 and older. If you believe a child has provided us personal information, contact us and we will delete it.</p>
+      <Section title="Age Requirement">
+        <p>Align is an adults-only service for users 18 and older. We verify date of birth at sign-up and do not permit accounts for anyone under 18, and we do not knowingly collect personal information from minors. If you believe someone under 18 has provided us personal information, contact us and we will delete it.</p>
       </Section>
 
       <Section title="Changes to This Policy">
