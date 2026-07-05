@@ -208,12 +208,13 @@ export function MessageBubble({
               : { backgroundColor: chatTheme.otherBubble, color: chatTheme.otherText }
           ) : undefined}
         >
-          {/* Image message */}
-          {msg.type === 'image' && msg.metadata?.url && (
-            <a href={msg.metadata.url} target="_blank" rel="noopener noreferrer" className="block mb-1">
+          {/* Image message. Mobile stores the URL under metadata.image_url;
+              fall back to it so mobile-sent images render on web too. */}
+          {msg.type === 'image' && (msg.metadata?.url || msg.metadata?.image_url) && (
+            <a href={(msg.metadata.url || msg.metadata.image_url) as string} target="_blank" rel="noopener noreferrer" className="block mb-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={msg.metadata.url}
+                src={(msg.metadata.url || msg.metadata.image_url) as string}
                 alt="Shared image"
                 className="rounded-lg max-w-full max-h-60 object-cover"
               />
@@ -230,10 +231,10 @@ export function MessageBubble({
             </div>
           )}
 
-          {/* Voice note */}
-          {msg.type === 'voice_note' && msg.metadata?.url && (
+          {/* Voice note (mobile uses metadata.audio_url) */}
+          {msg.type === 'voice_note' && (msg.metadata?.url || msg.metadata?.audio_url) && (
             <VoiceMessageBubble
-              metadata={{ url: msg.metadata.url as string, duration: (msg.metadata.duration as number) || 0 }}
+              metadata={{ url: (msg.metadata.url || msg.metadata.audio_url) as string, duration: (msg.metadata.duration as number) || 0 }}
               isMine={isMine}
             />
           )}
@@ -246,10 +247,10 @@ export function MessageBubble({
             />
           )}
 
-          {/* File attachment */}
-          {msg.type === 'file' && msg.metadata?.url && (
+          {/* File attachment (mobile uses metadata.file_url) */}
+          {msg.type === 'file' && (msg.metadata?.url || msg.metadata?.file_url) && (
             <FileBubble
-              metadata={{ url: msg.metadata.url as string, filename: (msg.metadata.filename as string) || 'file', size: msg.metadata.size as number, mime_type: msg.metadata.mime_type as string }}
+              metadata={{ url: (msg.metadata.url || msg.metadata.file_url) as string, filename: (msg.metadata.filename as string) || (msg.metadata.file_name as string) || 'file', size: (msg.metadata.size as number) ?? (msg.metadata.file_size as number), mime_type: (msg.metadata.mime_type as string) || (msg.metadata.file_type as string) }}
               isMine={isMine}
             />
           )}
