@@ -15,13 +15,26 @@
  * GeoJSON. Community counts arrive already banded from the server.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { type AreaStat, bandMidpoint } from '@/lib/zodisphereService';
 import { AMBIENT_CITIES } from './ambientCities';
 
-const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
+// Lazy-load react-globe.gl client-side while ACTUALLY forwarding the ref to
+// it. next/dynamic() does not forward refs, which silently breaks every
+// imperative call (pointOfView, controls/autoRotate, scene lighting) — the
+// globe still renders from props but never flies, rotates, or lights. This
+// wrapper imports the module in state and passes the ref straight through.
+const Globe = forwardRef<any, any>(function GlobeLazy(props, ref) {
+  const [Comp, setComp] = useState<any>(null);
+  useEffect(() => {
+    let alive = true;
+    import('react-globe.gl').then((m) => { if (alive) setComp(() => m.default); });
+    return () => { alive = false; };
+  }, []);
+  if (!Comp) return null;
+  return <Comp ref={ref} {...props} />;
+});
 
 // ── Align cosmic palette ────────────────────────────────────────────
 const SPHERE_COLOR = '#0b1030';
@@ -33,12 +46,16 @@ const GOLD_BRIGHT = '#ffd97a';
 const GOLD_DIM = '#c4b6ff';
 const AMBIENT_CITY = 'rgba(205,215,255,0.9)';
 const SUN = '#ffe9a8';
+const YOU = '#5eead4'; // bright teal — the signed-in user's own place
 
 interface ZodiGlobeProps {
   areas: AreaStat[];
   onAreaClick?: (area: AreaStat) => void;
   autoRotate?: boolean;
   focus?: { lat: number; lng: number } | null;
+  /** The signed-in user's OWN chosen place — shown back to them as a
+   *  personal "you are here" marker regardless of the k-anonymity floor. */
+  myPlace?: { lat: number; lng: number; name: string } | null;
 }
 
 // Approximate subsolar point (ignores equation of time — fine for a glow).
@@ -72,7 +89,7 @@ function terminatorCoords(sub: { lat: number; lng: number }): [number, number][]
   return pts;
 }
 
-export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus }: ZodiGlobeProps) {
+export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlace }: ZodiGlobeProps) {
   const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -133,14 +150,22 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus }: Zodi
         _color: t > 0.55 ? GOLD_BRIGHT : GOLD_DIM,
       };
     });
-    return [sun, ...ambient, ...community];
-  }, [areas, subsolar]);
+    const you = myPlace
+      ? [{
+          kind: 'you', lat: myPlace.lat, lng: myPlace.lng, name: `You · ${myPlace.name}`,
+          _alt: 0.06, _radius: 1.0, _color: YOU,
+        }]
+      : [];
+    return [sun, ...ambient, ...community, ...you];
+  }, [areas, subsolar, myPlace]);
 
-  const rings = useMemo(
-    () => points.filter((p: any) => p.member_band === '500-999' || p.member_band === '1000+')
-      .map((p: any) => ({ lat: p.lat, lng: p.lng })),
-    [points]
-  );
+  const rings = useMemo(() => {
+    const busy = points
+      .filter((p: any) => p.member_band === '500-999' || p.member_band === '1000+')
+      .map((p: any) => ({ lat: p.lat, lng: p.lng, _you: false }));
+    if (myPlace) busy.push({ lat: myPlace.lat, lng: myPlace.lng, _you: true });
+    return busy;
+  }, [points, myPlace]);
 
   // Live day/night terminator line
   const terminator = useMemo(() => [{ coords: terminatorCoords(subsolar) }], [subsolar]);
@@ -171,6 +196,27 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus }: Zodi
       globeRef.current.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: 1.6 }, 1200);
     }
   }, [focus]);
+
+  // Fly to the user's own place once, when it first becomes known, so they
+  // immediately see themselves on the map after opting in.
+  const flewToMe = useRef(false);
+  useEffect(() => {
+    const g = globeRef.current;
+    if (myPlace && g && !flewToMe.current) {
+      flewToMe.current = true;
+      g.pointOfView({ lat: myPlace.lat, lng: myPlace.lng, altitude: 1.9 }, 1400);
+      // Pause the spin so the user clearly sees their own marker, then
+      // resume the living rotation after a few seconds.
+      const controls = g.controls?.();
+      if (controls) {
+        controls.autoRotate = false;
+        setTimeout(() => {
+          const c = globeRef.current?.controls?.();
+          if (c) c.autoRotate = autoRotate;
+        }, 6000);
+      }
+    }
+  }, [myPlace, size.width, autoRotate]);
 
   const handleClick = useCallback((obj: any) => {
     if (obj?.kind === 'community') onAreaClick?.(obj as AreaStat);
@@ -212,9 +258,11 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus }: Zodi
                    <div style="font-weight:600;">${d.display_name}</div>
                    <div style="color:#ffd97a;">${d.member_band ?? '<10'} members</div>
                  </div>`
-              : d.kind === 'sun'
-                ? `<div style="font-family:inherit;color:#ffe9a8;font-size:12px;">☉ ${d.name}</div>`
-                : `<div style="font-family:inherit;color:#cfc8ff;font-size:11px;">${d.name}</div>`
+              : d.kind === 'you'
+                ? `<div style="font-family:inherit;background:rgba(10,14,26,.94);border:1px solid rgba(94,234,212,.6);border-radius:8px;padding:6px 10px;color:#5eead4;font-size:12px;font-weight:600;">📍 ${d.name}</div>`
+                : d.kind === 'sun'
+                  ? `<div style="font-family:inherit;color:#ffe9a8;font-size:12px;">☉ ${d.name}</div>`
+                  : `<div style="font-family:inherit;color:#cfc8ff;font-size:11px;">${d.name}</div>`
           }
           // live day/night terminator
           pathsData={terminator}
@@ -226,10 +274,14 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus }: Zodi
           pathTransitionDuration={0}
           // cosmic pulses on the busiest places
           ringsData={rings}
-          ringColor={() => (t: number) => `rgba(255,217,122,${Math.max(0, 0.5 * (1 - t))})`}
-          ringMaxRadius={4}
+          ringColor={(d: any) => (t: number) =>
+            d?._you
+              ? `rgba(94,234,212,${Math.max(0, 0.6 * (1 - t))})`
+              : `rgba(255,217,122,${Math.max(0, 0.5 * (1 - t))})`
+          }
+          ringMaxRadius={(d: any) => (d?._you ? 5.5 : 4)}
           ringPropagationSpeed={1.3}
-          ringRepeatPeriod={2000}
+          ringRepeatPeriod={1600}
         />
       )}
     </div>

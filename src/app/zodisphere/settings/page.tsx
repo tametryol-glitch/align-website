@@ -73,7 +73,15 @@ export default function ZodisphereSettingsPage() {
       visibilityMode: mode,
     });
     setSaving(false);
-    setMessage(res.success ? 'Saved. Your Zodisphere visibility is updated.' : res.error ?? 'Save failed.');
+    if (!res.success) {
+      setMessage(res.error ?? 'Save failed.');
+    } else if (mode === 'hidden') {
+      setMessage('Saved — you are hidden from the Zodisphere.');
+    } else {
+      setMessage(
+        `You're on the map in ${area?.display_name ?? 'your place'}. Open the Zodisphere and you'll see your own 📍 marker there; a public count appears once 10+ members opt in.`
+      );
+    }
   }, [mode, area]);
 
   const removeAll = useCallback(async () => {

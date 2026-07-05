@@ -99,6 +99,43 @@ export async function getPublicAreaStats(): Promise<AreaStat[]> {
 }
 
 // ===================================================================
+// Discoverable members in an area (opt-in, block/mute-aware server-side)
+// ===================================================================
+
+export interface AreaMember {
+  user_id: string;
+  visibility_mode: VisibilityMode;
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+/** People who opted in to be discoverable in this area. The RPC excludes
+ *  the caller, blocked, and muted users; this only appears when someone
+ *  chose city/region/country/public visibility. */
+export async function getAreaMembers(areaId: string): Promise<AreaMember[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('zodisphere_area_members', { p_area_id: areaId, p_limit: 50 });
+  if (error) {
+    console.error('[zodisphere] area members failed:', error.message);
+    return [];
+  }
+  const rows = (data as { user_id: string; visibility_mode: VisibilityMode }[]) ?? [];
+  if (rows.length === 0) return [];
+  const ids = rows.map((r) => r.user_id);
+  const { data: profs } = await supabase
+    .from('profiles')
+    .select('id, display_name, avatar_url')
+    .in('id', ids);
+  const byId = new Map((profs ?? []).map((p: any) => [p.id, p]));
+  return rows.map((r) => ({
+    user_id: r.user_id,
+    visibility_mode: r.visibility_mode,
+    display_name: byId.get(r.user_id)?.display_name ?? null,
+    avatar_url: byId.get(r.user_id)?.avatar_url ?? null,
+  }));
+}
+
+// ===================================================================
 // Areas (public reference — place centroids, not people)
 // ===================================================================
 

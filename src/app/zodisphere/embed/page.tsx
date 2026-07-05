@@ -40,8 +40,20 @@ function isAreaStatArray(v: unknown): v is AreaStat[] {
   );
 }
 
+type MyPlace = { lat: number; lng: number; name: string };
+
+function isMyPlace(v: unknown): v is MyPlace {
+  return (
+    !!v && typeof v === 'object' &&
+    Number.isFinite((v as MyPlace).lat) &&
+    Number.isFinite((v as MyPlace).lng) &&
+    typeof (v as MyPlace).name === 'string'
+  );
+}
+
 export default function ZodisphereEmbedPage() {
   const [areas, setAreas] = useState<AreaStat[]>([]);
+  const [myPlace, setMyPlace] = useState<MyPlace | null>(null);
 
   useEffect(() => {
     const handle = (event: MessageEvent | Event) => {
@@ -49,8 +61,10 @@ export default function ZodisphereEmbedPage() {
       if (typeof raw !== 'string') return;
       try {
         const msg = JSON.parse(raw);
-        if (msg?.type === 'zodisphere:data' && isAreaStatArray(msg.areas)) {
-          setAreas(msg.areas);
+        if (msg?.type === 'zodisphere:data') {
+          if (isAreaStatArray(msg.areas)) setAreas(msg.areas);
+          if (isMyPlace(msg.myPlace)) setMyPlace(msg.myPlace);
+          else if (msg.myPlace === null) setMyPlace(null);
         }
       } catch {
         // ignore non-JSON messages (e.g. devtools chatter)
@@ -78,7 +92,7 @@ export default function ZodisphereEmbedPage() {
           'radial-gradient(ellipse at 30% 20%, #131a38 0%, #0a0e1a 55%, #06080f 100%)',
       }}
     >
-      <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} />
+      <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} myPlace={myPlace} />
     </div>
   );
 }

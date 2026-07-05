@@ -17,6 +17,9 @@ import {
   getPublicAreaStats,
   getAreaFeed,
   getAreaEvents,
+  getAreaMembers,
+  getMyPrefs,
+  getArea,
   createZodispherePost,
   reportZodispherePost,
   muteUserOnMap,
@@ -25,6 +28,7 @@ import {
   type ZodispherePost,
   type ZodisphereEvent,
   type ZodisphereReportCategory,
+  type AreaMember,
 } from '@/lib/zodisphereService';
 import { getGlobalSky, getSkyOverPlace, signGlyph, type SkyReading } from '@/lib/zodisphereSky';
 
@@ -42,6 +46,9 @@ export default function ZodispherePage() {
   const [postingDraft, setPostingDraft] = useState(false);
   const [draftMsg, setDraftMsg] = useState<string | null>(null);
   const [reportingId, setReportingId] = useState<string | null>(null);
+  const [members, setMembers] = useState<AreaMember[]>([]);
+  // The signed-in user's own chosen, discoverable place (their "you are here").
+  const [myPlace, setMyPlace] = useState<{ lat: number; lng: number; name: string } | null>(null);
 
   // Live sky — global strip (always visible) + per-place reading when an area is open.
   const globalSky = useMemo(() => getGlobalSky(), []);
@@ -57,6 +64,15 @@ export default function ZodispherePage() {
     getPublicAreaStats()
       .then(setAreas)
       .finally(() => setLoading(false));
+
+    // Load the signed-in user's own place so we can show them on the map.
+    (async () => {
+      const prefs = await getMyPrefs();
+      if (prefs?.discoverable_on_map && prefs.area_id && prefs.visibility_mode !== 'hidden') {
+        const area = await getArea(prefs.area_id);
+        if (area) setMyPlace({ lat: area.center_lat, lng: area.center_lng, name: area.display_name });
+      }
+    })();
   }, []);
 
   const dismissIntro = useCallback(() => {
@@ -70,9 +86,14 @@ export default function ZodispherePage() {
     setDraft('');
     setDraftMsg(null);
     try {
-      const [f, e] = await Promise.all([getAreaFeed(area.area_id, 15), getAreaEvents(area.area_id)]);
+      const [f, e, m] = await Promise.all([
+        getAreaFeed(area.area_id, 15),
+        getAreaEvents(area.area_id),
+        getAreaMembers(area.area_id),
+      ]);
       setFeed(f);
       setEvents(e);
+      setMembers(m);
     } finally {
       setPanelLoading(false);
     }
@@ -144,8 +165,18 @@ export default function ZodispherePage() {
 
       {/* ── Globe ── */}
       <div className="absolute inset-0">
-        <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} autoRotate={!selected} />
+        <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} autoRotate={!selected} myPlace={myPlace} />
       </div>
+
+      {/* ── "You're on the map" confirmation (only when opted in) ── */}
+      {myPlace && (
+        <div className="absolute top-24 inset-x-0 z-10 flex justify-center px-4 pointer-events-none">
+          <div className="flex items-center gap-2 bg-teal-400/10 border border-teal-400/40 rounded-full px-4 py-1.5 text-teal-200 text-[13px]">
+            <span>📍</span>
+            You&apos;re on the map in <strong>{myPlace.name}</strong> — others here can find you.
+          </div>
+        </div>
+      )}
 
       {/* ── Live cosmic-weather strip (always valuable, needs no community) ── */}
       <div className="absolute bottom-6 inset-x-0 z-10 flex justify-center px-4 pointer-events-none">
@@ -248,6 +279,32 @@ export default function ZodispherePage() {
                   </div>
                   {draftMsg && <p className="text-[11px] text-accent-primary mt-1.5">{draftMsg}</p>}
                 </section>
+
+                {/* Members discoverable here (opt-in only) */}
+                {members.length > 0 && (
+                  <section>
+                    <h3 className="text-sm font-medium text-text-primary mb-2">
+                      Members here ({members.length})
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {members.map((m) => (
+                        <Link
+                          key={m.user_id}
+                          href={`/user/${m.user_id}`}
+                          className="flex items-center gap-2 bg-bg-secondary rounded-full pl-1 pr-3 py-1 hover:bg-bg-tertiary"
+                        >
+                          <span className="w-6 h-6 rounded-full bg-accent-primary/25 flex items-center justify-center text-[11px] text-accent-primary overflow-hidden">
+                            {m.avatar_url
+                              ? <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
+                              : (m.display_name?.[0]?.toUpperCase() ?? '★')}
+                          </span>
+                          <span className="text-xs text-text-secondary">{m.display_name ?? 'Align member'}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
                 {/* Events */}
                 <section>
                   <h3 className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { FounderContent } from '@/components/FounderContent';
 import { AddFounderCard } from '@/components/AddFounderCard';
@@ -9,8 +10,13 @@ const STORAGE_KEY = 'align_founder_intro_seen';
 
 export function FounderIntroModal() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  // The Zodisphere embed is a chromeless renderer loaded inside the mobile
+  // WebView — no global app modals should appear over the globe there.
+  const suppressed = pathname?.startsWith('/zodisphere/embed') ?? false;
 
   useEffect(() => {
+    if (suppressed) return;
     try {
       if (!localStorage.getItem(STORAGE_KEY)) {
         setOpen(true);
@@ -18,7 +24,7 @@ export function FounderIntroModal() {
     } catch {
       // localStorage unavailable (private mode / SSR) — skip showing the modal
     }
-  }, []);
+  }, [suppressed]);
 
   function close() {
     try {
