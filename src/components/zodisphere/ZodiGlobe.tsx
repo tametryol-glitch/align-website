@@ -187,8 +187,10 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     // small and dim so they read as a "city field" you can zoom into.
     const ambient = cities.length
       ? cities.map(([name, lat, lng]) => ({
+          // Sit ABOVE the country polygons (polygonAltitude 0.006) so the dots
+          // aren't buried under the land fill; big enough to read as a city field.
           kind: 'ambient', lat, lng, name,
-          _alt: 0.004, _radius: 0.13, _color: AMBIENT_CITY,
+          _alt: 0.014, _radius: 0.28, _color: AMBIENT_CITY,
         }))
       : AMBIENT_CITIES.map((c) => ({
           kind: 'ambient', lat: c.lat, lng: c.lng, name: c.name,
