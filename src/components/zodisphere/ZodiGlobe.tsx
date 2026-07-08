@@ -42,6 +42,7 @@ const SPHERE_EMISSIVE = '#10163a';   // night side keeps a faint glow
 const ATMOSPHERE = '#8b7bff';
 const LAND_FILL = 'rgba(120,110,220,0.14)';
 const LAND_EDGE = 'rgba(160,150,255,0.55)';
+const STATE_BORDER = 'rgba(150,140,235,0.34)'; // internal state/province lines — dimmer than country edges
 const GOLD_BRIGHT = '#ffd97a';
 const GOLD_DIM = '#c4b6ff';
 const AMBIENT_CITY = 'rgba(205,215,255,0.9)';
@@ -126,6 +127,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [countries, setCountries] = useState<any[]>([]);
   const [cities, setCities] = useState<Array<[string, number, number]>>([]);
+  const [borders, setBorders] = useState<Array<Array<[number, number]>>>([]);
   const [subsolar, setSubsolar] = useState(() => subsolarPoint(new Date()));
 
   // ── Responsive sizing ──
@@ -157,6 +159,19 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (alive && Array.isArray(data) && data.length) setCities(data);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  // ── Load North America state/province border lines (admin-1) so the US,
+  //    Canada and Mexico show internal state borders, not just coastlines. ──
+  useEffect(() => {
+    let alive = true;
+    fetch('/geo/admin1-na.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && Array.isArray(data) && data.length) setBorders(data);
       })
       .catch(() => {});
     return () => { alive = false; };
@@ -241,6 +256,12 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       return segs;
     };
     const out: Array<{ kind: string; coords: [number, number][]; color: string; label: string }> = [];
+    // State/province borders sit UNDER the astro lines (drawn first, dim).
+    for (const line of borders) {
+      for (const seg of splitSeam(line)) {
+        out.push({ kind: 'border', coords: seg, color: STATE_BORDER, label: '' });
+      }
+    }
     for (const seg of splitSeam(terminatorCoords(subsolar))) {
       out.push({ kind: 'terminator', coords: seg, color: '', label: '' });
     }
@@ -256,7 +277,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       }
     }
     return out;
-  }, [subsolar, acgLines, midpointLines]);
+  }, [subsolar, acgLines, midpointLines, borders]);
 
   // One glyph label per ACG line (e.g. "☉ MC"), placed at a latitude that
   // varies by planet so labels on nearby lines don't stack on top of each other.
@@ -389,12 +410,12 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           pathPointLat={(p: any) => p[0]}
           pathPointLng={(p: any) => p[1]}
           pathColor={(d: any) =>
-            d.kind === 'acg' || d.kind === 'midpoint'
+            d.kind === 'acg' || d.kind === 'midpoint' || d.kind === 'border'
               ? d.color
               : ['rgba(255,180,90,0.0)', 'rgba(255,190,110,0.55)', 'rgba(255,180,90,0.0)']
           }
           pathResolution={1}
-          pathStroke={(d: any) => (d.kind === 'midpoint' ? 1.2 : d.kind === 'acg' ? 1.5 : 1.4)}
+          pathStroke={(d: any) => (d.kind === 'border' ? 0.5 : d.kind === 'midpoint' ? 1.2 : d.kind === 'acg' ? 1.5 : 1.4)}
           pathDashLength={(d: any) => (d.kind === 'midpoint' ? 0.4 : 0)}
           pathDashGap={(d: any) => (d.kind === 'midpoint' ? 0.25 : 0)}
           pathDashAnimateTime={0}
