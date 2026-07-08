@@ -10,11 +10,13 @@
 
 import { api, buildBirthData } from '@/lib/api';
 import {
-  generateAcgLinesCompat,
+  gmstAtMoment,
   ACG_BODIES,
+  ACG_BODY_COLORS,
   type ACGLineType,
   type ACGLinePoint,
 } from '@/lib/engines/derivedAcgLines';
+import { projectWide } from '@/lib/zodisphereMidpoints';
 
 export interface AcgGlobeLine {
   planet: string;
@@ -47,7 +49,17 @@ export async function getMyAcgLines(profile: any): Promise<AcgGlobeLine[]> {
     const utH = (h || 12) + (min || 0) / 60 - tzOff;
     const date = new Date(Date.UTC(yr, mo - 1, dy, Math.floor(utH), Math.round((utH % 1) * 60)));
 
-    return generateAcgLinesCompat(planets, date) as AcgGlobeLine[];
+    // Full-globe lines (widened latitude range) using the validated transform.
+    const gmst = gmstAtMoment(date);
+    const lines: AcgGlobeLine[] = [];
+    for (const p of planets) {
+      if (!Number.isFinite(p.longitude)) continue;
+      const color = ACG_BODY_COLORS[p.name] || '#FFFFFF';
+      for (const raw of projectWide(p.longitude, gmst)) {
+        lines.push({ planet: p.name, lineType: raw.lineType, color, points: raw.points });
+      }
+    }
+    return lines;
   } catch (e: any) {
     console.error('[zodisphere] ACG lines failed:', e?.message);
     return [];

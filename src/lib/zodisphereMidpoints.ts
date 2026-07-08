@@ -15,12 +15,52 @@
 
 import { api, buildBirthData } from '@/lib/api';
 import {
-  projectLongitudeToLines,
   gmstAtMoment,
   ACG_BODY_COLORS,
   type ACGLineType,
   type ACGLinePoint,
 } from '@/lib/engines/derivedAcgLines';
+import { eclipticToEquatorial, ACG_OBLIQUITY_DEG } from '@/lib/engines/derivedAstroMath';
+
+const DEG_RAD = Math.PI / 180;
+
+/**
+ * Full-globe projection of one ecliptic longitude to ACG lines. This is a
+ * VERBATIM copy of the engine's projectLongitudeToLines (same validated
+ * eclipticToEquatorial transform, same MC/ASC/DSC formulas), with ONLY the
+ * latitude sampling widened (±88° instead of the engine's ±70/±66) so the
+ * lines span the globe instead of stopping mid-latitude. ASC/DSC still clip
+ * naturally at no-rise latitudes (cos H out of range) — that gap is real.
+ */
+export function projectWide(longitudeDeg: number, gmst: number): Array<{ lineType: ACGLineType; points: ACGLinePoint[] }> {
+  const { rightAscension: raAdj, declination: dec } = eclipticToEquatorial(longitudeDeg, ACG_OBLIQUITY_DEG);
+  const out: Array<{ lineType: ACGLineType; points: ACGLinePoint[] }> = [];
+
+  const mcLon = ((raAdj - gmst) % 360 + 360 + 180) % 360 - 180;
+  const mc: ACGLinePoint[] = [];
+  for (let lat = -88; lat <= 88; lat += 2) mc.push({ lat, lon: mcLon });
+  out.push({ lineType: 'MC', points: mc });
+
+  const icLon = mcLon > 0 ? mcLon - 180 : mcLon + 180;
+  const ic: ACGLinePoint[] = [];
+  for (let lat = -88; lat <= 88; lat += 2) ic.push({ lat, lon: icLon });
+  out.push({ lineType: 'IC', points: ic });
+
+  const decRad = dec * DEG_RAD;
+  const asc: ACGLinePoint[] = [];
+  const dsc: ACGLinePoint[] = [];
+  for (let lat = -88; lat <= 88; lat += 2) {
+    const cosH = -Math.tan(lat * DEG_RAD) * Math.tan(decRad);
+    if (cosH < -1 || cosH > 1) continue; // real no-rise / no-set gap
+    const H = Math.acos(cosH) / DEG_RAD;
+    asc.push({ lat, lon: ((raAdj + H - gmst) % 360 + 360 + 180) % 360 - 180 });
+    dsc.push({ lat, lon: ((raAdj - H - gmst) % 360 + 360 + 180) % 360 - 180 });
+  }
+  if (asc.length) out.push({ lineType: 'ASC', points: asc });
+  if (dsc.length) out.push({ lineType: 'DSC', points: dsc });
+
+  return out;
+}
 
 // ── Body essences (planets + asteroids + points). Aliases cover the chart
 //    API's naming variants. Any body present in the chart AND here is
@@ -152,7 +192,7 @@ export function buildMidpointLines(
   const gmst = gmstAtMoment(birthDate);
   const color = blendColors(BODY_INFO[bodyA]?.color ?? '#ccc', BODY_INFO[bodyB]?.color ?? '#ccc');
   const key = pairKey(bodyA, bodyB);
-  return projectLongitudeToLines(mid, gmst).map((raw) => ({
+  return projectWide(mid, gmst).map((raw) => ({
     key, bodyA, bodyB, lineType: raw.lineType, color, points: raw.points,
   }));
 }
