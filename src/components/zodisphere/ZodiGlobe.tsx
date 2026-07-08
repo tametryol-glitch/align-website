@@ -50,6 +50,25 @@ const YOU = '#5eead4'; // bright teal — the signed-in user's own place
 
 const ACG_ORDER = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
+// Some planet colors (notably Pluto #991B1B) are too dark to read as label
+// text on the dark globe. Lighten only the dark ones toward white; bright
+// colors pass through unchanged so lines and labels still match.
+function readableLabelColor(hex: string): string {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex);
+  if (!m) return hex;
+  let r = parseInt(m[1].slice(0, 2), 16);
+  let g = parseInt(m[1].slice(2, 4), 16);
+  let b = parseInt(m[1].slice(4, 6), 16);
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  if (lum < 90) {
+    const t = 0.55;
+    r = Math.round(r + (255 - r) * t);
+    g = Math.round(g + (255 - g) * t);
+    b = Math.round(b + (255 - b) * t);
+  }
+  return `rgb(${r},${g},${b})`;
+}
+
 interface ZodiGlobeProps {
   areas: AreaStat[];
   onAreaClick?: (area: AreaStat) => void;
@@ -199,7 +218,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       // Planet NAME + angle (not the Unicode glyph): the globe's 3D text
       // layer's canvas font renders astro glyphs as tofu/"?", and names are
       // clearer to non-astrologers anyway.
-      return { lat: best.lat, lng: best.lon, text: `${l.planet} ${l.lineType}`, color: l.color };
+      return { lat: best.lat, lng: best.lon, text: `${l.planet} ${l.lineType}`, color: readableLabelColor(l.color) };
     }),
     [acgLines]
   );
