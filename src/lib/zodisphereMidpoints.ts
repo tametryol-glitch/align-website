@@ -38,18 +38,18 @@ export function projectWide(longitudeDeg: number, gmst: number): Array<{ lineTyp
 
   const mcLon = ((raAdj - gmst) % 360 + 360 + 180) % 360 - 180;
   const mc: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 2) mc.push({ lat, lon: mcLon });
+  for (let lat = -88; lat <= 88; lat += 1) mc.push({ lat, lon: mcLon });
   out.push({ lineType: 'MC', points: mc });
 
   const icLon = mcLon > 0 ? mcLon - 180 : mcLon + 180;
   const ic: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 2) ic.push({ lat, lon: icLon });
+  for (let lat = -88; lat <= 88; lat += 1) ic.push({ lat, lon: icLon });
   out.push({ lineType: 'IC', points: ic });
 
   const decRad = dec * DEG_RAD;
   const asc: ACGLinePoint[] = [];
   const dsc: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 2) {
+  for (let lat = -88; lat <= 88; lat += 1) {
     const cosH = -Math.tan(lat * DEG_RAD) * Math.tan(decRad);
     if (cosH < -1 || cosH > 1) continue; // real no-rise / no-set gap
     const H = Math.acos(cosH) / DEG_RAD;

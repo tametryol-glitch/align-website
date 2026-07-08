@@ -408,6 +408,7 @@ export default function ZodispherePage() {
           areas={areas}
           onAreaClick={handleAreaClick}
           autoRotate={!selected && !probePoint}
+          focus={selected && !showMidpoints ? { lat: selected.center_lat, lng: selected.center_lng } : null}
           myPlace={myPlace}
           acgLines={showAcg && !showMidpoints ? acgLines : []}
           midpointLines={showMidpoints ? midpointLines : []}

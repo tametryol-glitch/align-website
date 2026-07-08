@@ -199,22 +199,39 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     return busy;
   }, [points, myPlace, probePoint]);
 
-  // Paths layer: the live day/night terminator + the user's ACG lines.
+  // Paths layer: the live day/night terminator + ACG + midpoint lines.
+  // Each line is split into segments at any ±180° longitude seam so globe.gl
+  // never draws a stray connector straight across the globe (the "break").
   const paths = useMemo(() => {
-    const term = { kind: 'terminator' as const, coords: terminatorCoords(subsolar), color: '', label: '' };
-    const acg = acgLines.map((l) => ({
-      kind: 'acg' as const,
-      coords: l.points.map((p) => [p.lat, p.lon] as [number, number]),
-      color: l.color,
-      label: `${l.planet} ${l.lineType}`,
-    }));
-    const mids = midpointLines.map((l) => ({
-      kind: 'midpoint' as const,
-      coords: l.points.map((p) => [p.lat, p.lon] as [number, number]),
-      color: l.color,
-      label: '',
-    }));
-    return [term, ...acg, ...mids];
+    const splitSeam = (coords: [number, number][]): [number, number][][] => {
+      const segs: [number, number][][] = [];
+      let cur: [number, number][] = [];
+      for (let i = 0; i < coords.length; i++) {
+        if (i > 0 && Math.abs(coords[i][1] - coords[i - 1][1]) > 180) {
+          if (cur.length > 1) segs.push(cur);
+          cur = [];
+        }
+        cur.push(coords[i]);
+      }
+      if (cur.length > 1) segs.push(cur);
+      return segs;
+    };
+    const out: Array<{ kind: string; coords: [number, number][]; color: string; label: string }> = [];
+    for (const seg of splitSeam(terminatorCoords(subsolar))) {
+      out.push({ kind: 'terminator', coords: seg, color: '', label: '' });
+    }
+    for (const l of acgLines) {
+      const label = `${l.planet} ${l.lineType}`;
+      for (const seg of splitSeam(l.points.map((p) => [p.lat, p.lon] as [number, number]))) {
+        out.push({ kind: 'acg', coords: seg, color: l.color, label });
+      }
+    }
+    for (const l of midpointLines) {
+      for (const seg of splitSeam(l.points.map((p) => [p.lat, p.lon] as [number, number]))) {
+        out.push({ kind: 'midpoint', coords: seg, color: l.color, label: '' });
+      }
+    }
+    return out;
   }, [subsolar, acgLines, midpointLines]);
 
   // One glyph label per ACG line (e.g. "☉ MC"), placed at a latitude that
@@ -247,6 +264,11 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       controls.autoRotate = autoRotate;
       controls.autoRotateSpeed = 0.35;
       controls.enableDamping = true;
+      // Let the user zoom right down to city level (globe radius = 100).
+      controls.enableZoom = true;
+      controls.minDistance = 108;
+      controls.maxDistance = 500;
+      controls.zoomSpeed = 1.1;
     }
     const scene = g.scene?.();
     if (scene && typeof g.getCoords === 'function') {
@@ -342,6 +364,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
               ? d.color
               : ['rgba(255,180,90,0.0)', 'rgba(255,190,110,0.55)', 'rgba(255,180,90,0.0)']
           }
+          pathResolution={1}
           pathStroke={(d: any) => (d.kind === 'midpoint' ? 1.2 : d.kind === 'acg' ? 1.5 : 1.4)}
           pathDashLength={(d: any) => (d.kind === 'midpoint' ? 0.4 : 0)}
           pathDashGap={(d: any) => (d.kind === 'midpoint' ? 0.25 : 0)}
