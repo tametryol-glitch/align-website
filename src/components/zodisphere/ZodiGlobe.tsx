@@ -48,6 +48,8 @@ const AMBIENT_CITY = 'rgba(205,215,255,0.9)';
 const SUN = '#ffe9a8';
 const YOU = '#5eead4'; // bright teal — the signed-in user's own place
 
+const ACG_ORDER = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+
 interface ZodiGlobeProps {
   areas: AreaStat[];
   onAreaClick?: (area: AreaStat) => void;
@@ -182,6 +184,26 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     return [term, ...acg];
   }, [subsolar, acgLines]);
 
+  // One glyph label per ACG line (e.g. "☉ MC"), placed at a latitude that
+  // varies by planet so labels on nearby lines don't stack on top of each other.
+  const acgLabels = useMemo(
+    () => acgLines.map((l) => {
+      const idx = Math.max(0, ACG_ORDER.indexOf(l.planet));
+      const targetLat = 58 - idx * 9;
+      let best = l.points[0] ?? { lat: 0, lon: 0 };
+      let bestDist = Infinity;
+      for (const p of l.points) {
+        const d = Math.abs(p.lat - targetLat);
+        if (d < bestDist) { bestDist = d; best = p; }
+      }
+      // Planet NAME + angle (not the Unicode glyph): the globe's 3D text
+      // layer's canvas font renders astro glyphs as tofu/"?", and names are
+      // clearer to non-astrologers anyway.
+      return { lat: best.lat, lng: best.lon, text: `${l.planet} ${l.lineType}`, color: l.color };
+    }),
+    [acgLines]
+  );
+
   // ── Camera + day/night lighting (reposition the globe's own light to
   //    the Sun so the lit hemisphere tracks real time) ──
   useEffect(() => {
@@ -293,6 +315,16 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
               : ''
           }
           pathTransitionDuration={0}
+          // astrocartography line glyph labels (☉ MC, ♂ ASC, …)
+          labelsData={acgLabels}
+          labelLat={(d: any) => d.lat}
+          labelLng={(d: any) => d.lng}
+          labelText={(d: any) => d.text}
+          labelColor={(d: any) => d.color}
+          labelSize={1.7}
+          labelDotRadius={0.28}
+          labelResolution={2}
+          labelIncludeDot
           // cosmic pulses on the busiest places
           ringsData={rings}
           ringColor={(d: any) => (t: number) =>
