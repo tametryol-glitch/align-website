@@ -17,7 +17,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { getMyAcgLines, type AcgGlobeLine } from '@/lib/zodisphereAcg';
 import {
-  getMyChartBodies, buildMidpointLines, probeMidpoints, BODY_INFO,
+  getMyChartBodies, buildMidpointLines, probeMidpoints,
+  ASTEROID_CATALOG_NAMES, bodyInfoOf,
   type ChartData, type MidpointLine, type ProbeHit,
 } from '@/lib/zodisphereMidpoints';
 
@@ -89,6 +90,8 @@ export default function ZodispherePage() {
   const [activePairs, setActivePairs] = useState<Array<{ a: string; b: string }>>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickA, setPickA] = useState<string>('');
+  const [loadedExtras, setLoadedExtras] = useState<string[]>([]);
+  const [loadingBody, setLoadingBody] = useState(false);
   const [probePoint, setProbePoint] = useState<{ lat: number; lng: number } | null>(null);
   const [probeHits, setProbeHits] = useState<ProbeHit[]>([]);
 
@@ -128,6 +131,33 @@ export default function ZodispherePage() {
     });
     setPickA(''); setPickerOpen(false);
   }, []);
+
+  // Ensure a body's position is loaded (lazily fetching a searched catalog
+  // asteroid); returns false if the backend couldn't compute it.
+  const ensureLoaded = useCallback(async (name: string): Promise<boolean> => {
+    if (chart?.bodies.some((b) => b.name === name)) return true;
+    setLoadingBody(true);
+    try {
+      const next = Array.from(new Set([...loadedExtras, name]));
+      const fresh = await getMyChartBodies(profile, next);
+      if (fresh && fresh.bodies.some((b) => b.name === name)) {
+        setChart(fresh);
+        setLoadedExtras(next);
+        return true;
+      }
+      return false;
+    } finally {
+      setLoadingBody(false);
+    }
+  }, [chart, loadedExtras, profile]);
+
+  const pickFirst = useCallback(async (name: string) => {
+    if (await ensureLoaded(name)) setPickA(name);
+  }, [ensureLoaded]);
+
+  const pickSecond = useCallback(async (name: string) => {
+    if (await ensureLoaded(name)) addPair(pickA, name);
+  }, [ensureLoaded, addPair, pickA]);
 
   const handleProbe = useCallback((lat: number, lng: number) => {
     if (!showMidpoints) return;
@@ -351,9 +381,20 @@ export default function ZodispherePage() {
                 pickerOpen ? (
                   <div className="space-y-1.5">
                     {!pickA ? (
-                      <BodyGrid bodies={chart.bodies.map((b) => b.name)} onPick={setPickA} label="First placement" />
+                      <BodyGrid
+                        loaded={chart.bodies.map((b) => b.name)}
+                        onPick={pickFirst}
+                        label="First placement"
+                        loading={loadingBody}
+                      />
                     ) : (
-                      <BodyGrid bodies={chart.bodies.map((b) => b.name).filter((n) => n !== pickA)} onPick={(b) => addPair(pickA, b)} label={`${pickA} / …  choose second`} />
+                      <BodyGrid
+                        loaded={chart.bodies.map((b) => b.name).filter((n) => n !== pickA)}
+                        onPick={pickSecond}
+                        label={`${pickA} / … choose second`}
+                        loading={loadingBody}
+                        exclude={pickA}
+                      />
                     )}
                     <button onClick={() => { setPickerOpen(false); setPickA(''); }} className="text-[11px] text-white/50 hover:text-white">Cancel</button>
                   </div>
@@ -677,23 +718,67 @@ export default function ZodispherePage() {
   );
 }
 
-// ── Body picker grid (grouped-ish, color-dotted) ──────────────────────────
-function BodyGrid({ bodies, onPick, label }: { bodies: string[]; onPick: (b: string) => void; label: string }) {
+// ── Body picker grid: loaded bodies + searchable full asteroid catalog ─────
+function BodyGrid({
+  loaded, onPick, label, loading, exclude,
+}: {
+  loaded: string[];
+  onPick: (b: string) => void;
+  label: string;
+  loading?: boolean;
+  exclude?: string;
+}) {
+  const [q, setQ] = useState('');
+  const query = q.trim().toLowerCase();
+
+  const loadedSet = new Set(loaded);
+  // Catalog asteroids not already loaded — the "other ones" you can search for.
+  const catalogExtra = ASTEROID_CATALOG_NAMES.filter(
+    (n) => !loadedSet.has(n) && n !== exclude,
+  );
+
+  const match = (n: string) => !query || n.toLowerCase().includes(query);
+  const shownLoaded = loaded.filter(match);
+  const shownCatalog = catalogExtra.filter(match).slice(0, query ? 40 : 12);
+
   return (
     <div>
       <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">{label}</p>
-      <div className="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
-        {bodies.map((name) => (
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search a planet, asteroid, or point…"
+        className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white placeholder:text-white/40 outline-none mb-1.5"
+      />
+      <div className="flex flex-wrap gap-1 max-h-44 overflow-y-auto">
+        {shownLoaded.map((name) => (
           <button
             key={name}
+            disabled={loading}
             onClick={() => onPick(name)}
-            className="flex items-center gap-1 text-[11px] text-white/85 bg-white/5 border border-white/10 rounded-lg px-2 py-1 hover:bg-white/15"
+            className="flex items-center gap-1 text-[11px] text-white/85 bg-white/5 border border-white/10 rounded-lg px-2 py-1 hover:bg-white/15 disabled:opacity-40"
           >
-            <span className="w-2 h-2 rounded-full" style={{ background: BODY_INFO[name]?.color ?? '#ccc' }} />
+            <span className="w-2 h-2 rounded-full" style={{ background: bodyInfoOf(name).color }} />
             {name}
           </button>
         ))}
+        {shownCatalog.map((name) => (
+          <button
+            key={name}
+            disabled={loading}
+            onClick={() => onPick(name)}
+            title="Load this asteroid"
+            className="flex items-center gap-1 text-[11px] text-white/50 bg-transparent border border-dashed border-white/15 rounded-lg px-2 py-1 hover:bg-white/10 hover:text-white/80 disabled:opacity-40"
+          >
+            <Plus className="w-2.5 h-2.5" />
+            {name}
+          </button>
+        ))}
+        {shownLoaded.length === 0 && shownCatalog.length === 0 && (
+          <span className="text-[11px] text-white/40">No match.</span>
+        )}
       </div>
+      {loading && <p className="text-[10px] text-fuchsia-200/70 mt-1">Loading position…</p>}
     </div>
   );
 }

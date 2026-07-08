@@ -78,12 +78,25 @@ export const BODY_INFO: Record<string, BodyInfo> = {
   Uranus:  { essence: 'awakening and disruption', keywords: 'freedom, shock, breakthrough', color: ACG_BODY_COLORS.Uranus },
   Neptune: { essence: 'dream, dissolution and longing', keywords: 'imagination, illusion, spirit', color: ACG_BODY_COLORS.Neptune },
   Pluto:   { essence: 'power and transformation', keywords: 'depth, obsession, rebirth', color: ACG_BODY_COLORS.Pluto },
-  // Asteroids
+  // Asteroids — curated essences (more available via search)
   Chiron:  { essence: 'the wound that becomes wisdom', keywords: 'healing, teaching, the tender place', color: '#84CC16' },
   Ceres:   { essence: 'nurture and the cycle of return', keywords: 'sustenance, loss, mothering', color: '#34D399' },
   Pallas:  { essence: 'strategy and pattern-sight', keywords: 'cleverness, craft, justice', color: '#FBBF24' },
   Juno:    { essence: 'the sacred contract of union', keywords: 'commitment, loyalty, partnership', color: '#A78BFA' },
   Vesta:   { essence: 'devotion and the tended flame', keywords: 'focus, sacredness, service', color: '#FB923C' },
+  Eros:    { essence: 'erotic passion and what you crave', keywords: 'desire, magnetism, wanting', color: '#FB7185' },
+  Psyche:  { essence: 'the soul’s deep sensitivity', keywords: 'soul, wounding, deep knowing', color: '#C4B5FD' },
+  Hygiea:  { essence: 'health, purity and wholeness', keywords: 'well-being, cleansing, healing', color: '#6EE7B7' },
+  Sappho:  { essence: 'artistic and romantic devotion', keywords: 'art, longing, the muse', color: '#F0ABFC' },
+  Amor:    { essence: 'unconditional, tender love', keywords: 'compassion, care, acceptance', color: '#FDA4AF' },
+  Astraea: { essence: 'justice, innocence and discernment', keywords: 'fairness, purity, judgment', color: '#93C5FD' },
+  Fortuna: { essence: 'fortune and fate’s turning wheel', keywords: 'luck, chance, destiny', color: '#FDE047' },
+  Pholus:  { essence: 'a small cause with vast effect', keywords: 'catalyst, floodgates, release', color: '#F59E0B' },
+  Nessus:  { essence: 'the reckoning of harm and boundary', keywords: 'accountability, karma, cycles', color: '#B91C1C' },
+  Hecate:  { essence: 'the crossroads and the liminal', keywords: 'thresholds, magic, choice', color: '#A78BFA' },
+  Cupido:  { essence: 'charm, family and attraction', keywords: 'allure, art, kinship', color: '#F472B6' },
+  Eris:    { essence: 'the disruptor of false peace', keywords: 'discord, exclusion, reckoning', color: '#E879F9' },
+  Sedna:   { essence: 'endurance through the abyss', keywords: 'exile, survival, the deep', color: '#38BDF8' },
   // Points
   'North Node': { essence: 'your soul’s growth edge', keywords: 'destiny, the unfamiliar, becoming', color: '#E5E7EB' },
   'South Node': { essence: 'the familiar gift to release', keywords: 'the past, comfort, letting go', color: '#94A3B8' },
@@ -107,20 +120,72 @@ export function canonicalBody(name: string): string {
   return BODY_ALIASES[name] ?? name;
 }
 
+// Full asteroid catalog (mirrors align-api-v2 charts.py ASTEROID_CATALOG).
+// The backend computes any of these on request via extra_asteroids and
+// returns each with its catalog_number, which we match on (name-agnostic).
+// 'Lilith' is intentionally omitted here — it collides with the Black-Moon
+// Lilith point already in BODY_INFO.
+export const ASTEROID_CATALOG: Record<string, number> = {
+  Ceres: 1, Pallas: 2, Juno: 3, Vesta: 4, Astraea: 5,
+  Hygiea: 10, Psyche: 16, Fortuna: 19, Isis: 42, Sappho: 80,
+  Hecate: 100, Nemesis: 128, Nike: 307, Eros: 433,
+  Amor: 1221, Valentine: 1585, Union: 1691, Apollo: 1862,
+  Osiris: 1923, Horus: 1924, Karma: 3811, Child: 4580, Pholus: 5145,
+  Nessus: 7066, Chariklo: 10199, Angel: 11911, DNA: 55555,
+  Eris: 136199, Sedna: 90377, Haumea: 136108, Makemake: 136472,
+  Narcissus: 37117, Echo: 60, Pandora: 55, Icarus: 1566,
+  Daedalus: 1864, Orpheus: 3361, Eurydike: 75, Persephone: 399,
+  Diana: 78, Minerva: 93, Bacchus: 2063, Circe: 34,
+  Medea: 212, Kassandra: 114, Achilles: 588, Sphinx: 896,
+  Atlantis: 1198, Tantalus: 2102, Sisyphus: 1866, Damocles: 5335,
+  Lucifer: 1930, Magdalena: 318, Cupido: 763, Destinn: 6583,
+  Abundantia: 151, Industria: 389, Proserpina: 26,
+};
+
+const CATALOG_BY_NUM: Record<number, string> = Object.fromEntries(
+  Object.entries(ASTEROID_CATALOG).map(([n, num]) => [num, n]),
+);
+
+/** Sorted catalog names for the search UI. */
+export const ASTEROID_CATALOG_NAMES = Object.keys(ASTEROID_CATALOG).sort();
+
+/** Popular asteroids preloaded into every chart fetch (curated essences).
+ *  Uncomputable ones are silently skipped by the backend — never an error. */
+const DEFAULT_EXTRA_ASTEROIDS = [
+  'Ceres', 'Pallas', 'Juno', 'Vesta', 'Eros', 'Psyche', 'Hygiea', 'Sappho',
+  'Amor', 'Astraea', 'Fortuna', 'Pholus', 'Nessus', 'Hecate', 'Cupido', 'Eris', 'Sedna',
+];
+
+/** Essence for any body, with a graceful fallback for uncurated catalog
+ *  asteroids so every midpoint still produces a readable meaning. */
+export function bodyInfoOf(name: string): BodyInfo {
+  return BODY_INFO[name] ?? { essence: `the ${name} archetype`, keywords: `${name}'s themes`, color: '#B0B7D0' };
+}
+
 // ── Chart fetch: the bodies we can offer (present in chart AND known here) ──
 export interface ChartBody { name: string; longitude: number; }
 export interface ChartData { bodies: ChartBody[]; birthDate: Date; }
 
-export async function getMyChartBodies(profile: any): Promise<ChartData | null> {
+export async function getMyChartBodies(profile: any, extraAsteroids: string[] = []): Promise<ChartData | null> {
   if (!profile?.birth_date || profile?.latitude == null) return null;
   try {
-    const chart = await api.getNatalChart(buildBirthData(profile));
-    const raw = (chart?.planets || chart?.positions || []) as Array<{ name: string; longitude: number }>;
+    // Ask the backend to also compute the popular + any searched asteroids.
+    // Only catalog-known names are sent; unknown/uncomputable ones are
+    // skipped server-side (per-asteroid try/except) — never an error.
+    const extra = Array.from(new Set([...DEFAULT_EXTRA_ASTEROIDS, ...extraAsteroids]))
+      .filter((n) => n in ASTEROID_CATALOG);
+    const chart = await api.getNatalChart({ ...buildBirthData(profile), extra_asteroids: extra });
+    const raw = (chart?.planets || chart?.positions || []) as Array<{ name: string; longitude: number; catalog_number?: number }>;
     const bodies: ChartBody[] = [];
     const seen = new Set<string>();
     for (const r of raw) {
-      const name = canonicalBody(r.name);
-      if (!BODY_INFO[name] || seen.has(name) || !Number.isFinite(r.longitude)) continue;
+      // Extra asteroids carry a catalog_number → match by number (name-agnostic);
+      // everything else matches by (aliased) name.
+      const name = (r.catalog_number != null && CATALOG_BY_NUM[r.catalog_number])
+        ? CATALOG_BY_NUM[r.catalog_number]
+        : canonicalBody(r.name);
+      const known = !!BODY_INFO[name] || name in ASTEROID_CATALOG;
+      if (!known || seen.has(name) || !Number.isFinite(r.longitude)) continue;
       seen.add(name);
       bodies.push({ name, longitude: r.longitude });
     }
@@ -190,7 +255,7 @@ export function buildMidpointLines(
 ): MidpointLine[] {
   const mid = directMidpoint(lonA, lonB);
   const gmst = gmstAtMoment(birthDate);
-  const color = blendColors(BODY_INFO[bodyA]?.color ?? '#ccc', BODY_INFO[bodyB]?.color ?? '#ccc');
+  const color = blendColors(bodyInfoOf(bodyA).color, bodyInfoOf(bodyB).color);
   const key = pairKey(bodyA, bodyB);
   return projectWide(mid, gmst).map((raw) => ({
     key, bodyA, bodyB, lineType: raw.lineType, color, points: raw.points,
@@ -218,10 +283,10 @@ export function midpointMeaning(bodyA: string, bodyB: string, angle: ACGLineType
   const k = `${[bodyA, bodyB].sort().join('|')}|${angle}`;
   if (MIDPOINT_OVERRIDES[k]) return MIDPOINT_OVERRIDES[k];
 
-  const A = BODY_INFO[bodyA];
-  const B = BODY_INFO[bodyB];
+  const A = bodyInfoOf(bodyA);
+  const B = bodyInfoOf(bodyB);
   const dom = ANGLE_DOMAIN[angle];
-  if (!A || !B || !dom) return '';
+  if (!dom) return '';
 
   return `Here your **${A.essence}** and your **${B.essence}** fuse into one charged point — and ${dom.label}, it moves through ${dom.phrase}. Standing on or near this line tends to activate ${A.keywords} meeting ${B.keywords}. It's an **action point**: things happen here that combine both energies, for better and for more.`;
 }
