@@ -25,39 +25,53 @@ import { eclipticToEquatorial, ACG_OBLIQUITY_DEG } from '@/lib/engines/derivedAs
 const DEG_RAD = Math.PI / 180;
 
 /**
- * Full-globe projection of one ecliptic longitude to ACG lines. This is a
- * VERBATIM copy of the engine's projectLongitudeToLines (same validated
- * eclipticToEquatorial transform, same MC/ASC/DSC formulas), with ONLY the
- * latitude sampling widened (±88° instead of the engine's ±70/±66) so the
- * lines span the globe instead of stopping mid-latitude. ASC/DSC still clip
- * naturally at no-rise latitudes (cos H out of range) — that gap is real.
+ * Full-globe projection of one ecliptic longitude to ACG lines. Uses the SAME
+ * validated eclipticToEquatorial transform and the SAME MC/ASC/DSC geometry as
+ * the engine's projectLongitudeToLines — no new astro math. The difference is
+ * PARAMETRIZATION, chosen so every line closes with no gap:
+ *
+ *  • MC/IC are meridians of constant longitude → swept pole to pole (±90) so
+ *    each reaches the poles; MC and IC share the poles → together a seamless
+ *    great circle.
+ *  • ASC/DSC together form ONE horizon great circle (locus where the body is on
+ *    the horizon at the birth instant). The engine solves it per-latitude via
+ *    cosH = −tan(lat)·tan(dec), which hits |cosH|=1 and STOPS short of the
+ *    junction latitudes → the visible gap between the ASC and DSC arcs. Here we
+ *    instead sweep the hour angle H = 0…360°, with the identical relations
+ *      lat(H) = atan(−cos H / tan dec),  lon(H) = raAdj + H − gmst,
+ *    which is the exact same circle fully traced: the ASC half (H 0→180) and
+ *    the DSC half (H 180→360) meet at their shared junction points, so the loop
+ *    closes with no gap. Point positions are unchanged where both forms overlap.
  */
 export function projectWide(longitudeDeg: number, gmst: number): Array<{ lineType: ACGLineType; points: ACGLinePoint[] }> {
   const { rightAscension: raAdj, declination: dec } = eclipticToEquatorial(longitudeDeg, ACG_OBLIQUITY_DEG);
   const out: Array<{ lineType: ACGLineType; points: ACGLinePoint[] }> = [];
+  const wrap180 = (x: number) => ((x % 360) + 360 + 180) % 360 - 180;
 
-  const mcLon = ((raAdj - gmst) % 360 + 360 + 180) % 360 - 180;
+  // MC / IC — full meridian great circle, pole to pole (±90 closes the gap).
+  const mcLon = wrap180(raAdj - gmst);
   const mc: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 1) mc.push({ lat, lon: mcLon });
+  for (let lat = -90; lat <= 90; lat += 1) mc.push({ lat, lon: mcLon });
   out.push({ lineType: 'MC', points: mc });
 
   const icLon = mcLon > 0 ? mcLon - 180 : mcLon + 180;
   const ic: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 1) ic.push({ lat, lon: icLon });
+  for (let lat = -90; lat <= 90; lat += 1) ic.push({ lat, lon: icLon });
   out.push({ lineType: 'IC', points: ic });
 
-  const decRad = dec * DEG_RAD;
-  const asc: ACGLinePoint[] = [];
-  const dsc: ACGLinePoint[] = [];
-  for (let lat = -88; lat <= 88; lat += 1) {
-    const cosH = -Math.tan(lat * DEG_RAD) * Math.tan(decRad);
-    if (cosH < -1 || cosH > 1) continue; // real no-rise / no-set gap
-    const H = Math.acos(cosH) / DEG_RAD;
-    asc.push({ lat, lon: ((raAdj + H - gmst) % 360 + 360 + 180) % 360 - 180 });
-    dsc.push({ lat, lon: ((raAdj - H - gmst) % 360 + 360 + 180) % 360 - 180 });
-  }
-  if (asc.length) out.push({ lineType: 'ASC', points: asc });
-  if (dsc.length) out.push({ lineType: 'DSC', points: dsc });
+  // ASC / DSC — two halves of the horizon circle, swept by hour angle so each
+  // half is continuous and reaches the shared junctions where they connect.
+  const tanDec = Math.tan(dec * DEG_RAD) || 1e-9; // guard the dec≈0 singularity
+  const arc = (h0: number, h1: number): ACGLinePoint[] => {
+    const pts: ACGLinePoint[] = [];
+    for (let h = h0; h <= h1; h += 1) {
+      const lat = Math.atan(-Math.cos(h * DEG_RAD) / tanDec) / DEG_RAD;
+      pts.push({ lat, lon: wrap180(raAdj + h - gmst) });
+    }
+    return pts;
+  };
+  out.push({ lineType: 'ASC', points: arc(0, 180) });
+  out.push({ lineType: 'DSC', points: arc(180, 360) });
 
   return out;
 }
