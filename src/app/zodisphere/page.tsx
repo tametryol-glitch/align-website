@@ -11,11 +11,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock } from 'lucide-react';
+import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus } from 'lucide-react';
 import ZodiGlobe from '@/components/zodisphere/ZodiGlobe';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { getMyAcgLines, type AcgGlobeLine } from '@/lib/zodisphereAcg';
+import {
+  getMyChartBodies, buildMidpointLines, probeMidpoints, BODY_INFO,
+  type ChartData, type MidpointLine, type ProbeHit,
+} from '@/lib/zodisphereMidpoints';
+
+const MAX_MIDPOINTS = 8;
 import {
   getPublicAreaStats,
   getAreaFeed,
@@ -74,6 +80,60 @@ export default function ZodispherePage() {
       }
     }
   }, [acgUnlocked, showAcg, acgLines.length, profile]);
+
+  // ── Midpoints (premium): tappable midpoint astrocartography ──
+  const midpointsUnlocked = hasAccess('midpoints');
+  const [showMidpoints, setShowMidpoints] = useState(false);
+  const [chart, setChart] = useState<ChartData | null>(null);
+  const [chartTried, setChartTried] = useState(false);
+  const [activePairs, setActivePairs] = useState<Array<{ a: string; b: string }>>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickA, setPickA] = useState<string>('');
+  const [probePoint, setProbePoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [probeHits, setProbeHits] = useState<ProbeHit[]>([]);
+
+  const toggleMidpoints = useCallback(async () => {
+    if (!midpointsUnlocked) return;
+    if (showMidpoints) { setShowMidpoints(false); setProbeHits([]); setProbePoint(null); return; }
+    setShowMidpoints(true);
+    if (!chart && !chartTried) {
+      setChartTried(true);
+      setChart(await getMyChartBodies(profile));
+    }
+  }, [midpointsUnlocked, showMidpoints, chart, chartTried, profile]);
+
+  const lonOf = useCallback(
+    (name: string) => chart?.bodies.find((b) => b.name === name)?.longitude,
+    [chart]
+  );
+
+  // All lines for the active pairs (flattened).
+  const midpointLines = useMemo<MidpointLine[]>(() => {
+    if (!chart) return [];
+    const out: MidpointLine[] = [];
+    for (const pair of activePairs) {
+      const la = lonOf(pair.a); const lb = lonOf(pair.b);
+      if (la == null || lb == null) continue;
+      out.push(...buildMidpointLines(pair.a, pair.b, la, lb, chart.birthDate));
+    }
+    return out;
+  }, [chart, activePairs, lonOf]);
+
+  const addPair = useCallback((a: string, b: string) => {
+    if (a === b) return;
+    setActivePairs((prev) => {
+      if (prev.length >= MAX_MIDPOINTS) return prev;
+      if (prev.some((p) => (p.a === a && p.b === b) || (p.a === b && p.b === a))) return prev;
+      return [...prev, { a, b }];
+    });
+    setPickA(''); setPickerOpen(false);
+  }, []);
+
+  const handleProbe = useCallback((lat: number, lng: number) => {
+    if (!showMidpoints) return;
+    setProbePoint({ lat, lng });
+    setProbeHits(probeMidpoints(lat, lng, midpointLines));
+  }, [showMidpoints, midpointLines]);
 
   // Live sky — global strip (always visible) + per-place reading when an area is open.
   const globalSky = useMemo(() => getGlobalSky(), []);
@@ -204,6 +264,30 @@ export default function ZodispherePage() {
               Astro lines
             </Link>
           )}
+          {/* Midpoints toggle (premium) */}
+          {midpointsUnlocked ? (
+            <button
+              onClick={toggleMidpoints}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-colors ${
+                showMidpoints
+                  ? 'bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-200'
+                  : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+              }`}
+              title="Tappable midpoint astrocartography"
+            >
+              <GitMerge className="w-4 h-4" />
+              Midpoints
+            </button>
+          ) : (
+            <Link
+              href="/pricing"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              title="Midpoints is a premium feature"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Midpoints
+            </Link>
+          )}
           <Link
             href="/zodisphere/settings"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
@@ -233,14 +317,102 @@ export default function ZodispherePage() {
         </div>
       )}
 
+      {/* ── Midpoint control panel ── */}
+      {showMidpoints && (
+        <div className="absolute top-20 left-5 z-20 w-[260px] max-w-[calc(100vw-40px)] bg-black/55 backdrop-blur border border-fuchsia-400/25 rounded-2xl p-3">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <GitMerge className="w-4 h-4 text-fuchsia-300" />
+            <h2 className="text-sm font-semibold text-white">Midpoints</h2>
+          </div>
+          {chart && chart.bodies.length === 0 && (
+            <p className="text-[11px] text-white/60">Add your birth date, time, and place in your profile to use midpoints.</p>
+          )}
+          {chart && chart.bodies.length > 0 && (
+            <>
+              <p className="text-[11px] text-white/60 mb-2">
+                Pick two placements. Then <strong className="text-white">tap the globe</strong> to read the midpoint lines you&apos;re near.
+              </p>
+
+              {/* Active pairs */}
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {activePairs.map((p) => (
+                  <span key={`${p.a}|${p.b}`} className="flex items-center gap-1 text-[11px] bg-fuchsia-500/15 border border-fuchsia-400/30 text-fuchsia-100 rounded-full pl-2 pr-1 py-0.5">
+                    {p.a}/{p.b}
+                    <button onClick={() => setActivePairs((prev) => prev.filter((q) => !(q.a === p.a && q.b === p.b)))} className="hover:text-white">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                {activePairs.length === 0 && <span className="text-[11px] text-white/40">No midpoints yet.</span>}
+              </div>
+
+              {/* Picker */}
+              {activePairs.length < MAX_MIDPOINTS && (
+                pickerOpen ? (
+                  <div className="space-y-1.5">
+                    {!pickA ? (
+                      <BodyGrid bodies={chart.bodies.map((b) => b.name)} onPick={setPickA} label="First placement" />
+                    ) : (
+                      <BodyGrid bodies={chart.bodies.map((b) => b.name).filter((n) => n !== pickA)} onPick={(b) => addPair(pickA, b)} label={`${pickA} / …  choose second`} />
+                    )}
+                    <button onClick={() => { setPickerOpen(false); setPickA(''); }} className="text-[11px] text-white/50 hover:text-white">Cancel</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1 text-[12px] text-fuchsia-200 bg-fuchsia-500/10 border border-fuchsia-400/25 rounded-lg px-2.5 py-1.5 hover:bg-fuchsia-500/20">
+                    <Plus className="w-3.5 h-3.5" /> Add a midpoint
+                  </button>
+                )
+              )}
+              {activePairs.length >= MAX_MIDPOINTS && <p className="text-[10px] text-white/40">Max {MAX_MIDPOINTS} lines. Remove one to add another.</p>}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Tap-probe result card ── */}
+      {showMidpoints && probePoint && (
+        <div className="absolute bottom-24 inset-x-0 z-20 flex justify-center px-4">
+          <div className="w-full max-w-md bg-bg-card/95 backdrop-blur border border-fuchsia-400/30 rounded-2xl p-4 max-h-[45vh] overflow-y-auto">
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="text-sm font-semibold text-fuchsia-200">
+                {probeHits.length ? 'Midpoint lines here' : 'No midpoint lines within range'}
+              </h3>
+              <button onClick={() => { setProbePoint(null); setProbeHits([]); }} className="text-text-muted hover:text-text-primary">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {probeHits.length === 0 ? (
+              <p className="text-xs text-text-muted">Tap closer to a dashed line, or add more midpoints to explore.</p>
+            ) : (
+              <ul className="space-y-3">
+                {probeHits.map((h) => (
+                  <li key={`${h.line.key}-${h.line.lineType}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full" style={{ background: h.line.color }} />
+                      <span className="text-sm font-medium text-text-primary">{h.line.bodyA}/{h.line.bodyB} {h.line.lineType}</span>
+                      <span className="text-[10px] text-text-muted">{h.distanceDeg.toFixed(1)}° off</span>
+                    </div>
+                    <p className="text-[12px] text-text-secondary leading-relaxed mt-1"
+                      dangerouslySetInnerHTML={{ __html: h.meaning.replace(/\*\*(.+?)\*\*/g, '<strong class="text-text-primary">$1</strong>') }} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── Globe ── */}
       <div className="absolute inset-0">
         <ZodiGlobe
           areas={areas}
           onAreaClick={handleAreaClick}
-          autoRotate={!selected}
+          autoRotate={!selected && !probePoint}
           myPlace={myPlace}
-          acgLines={showAcg ? acgLines : []}
+          acgLines={showAcg && !showMidpoints ? acgLines : []}
+          midpointLines={showMidpoints ? midpointLines : []}
+          onProbe={handleProbe}
+          probePoint={showMidpoints ? probePoint : null}
         />
       </div>
 
@@ -500,6 +672,27 @@ export default function ZodispherePage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Body picker grid (grouped-ish, color-dotted) ──────────────────────────
+function BodyGrid({ bodies, onPick, label }: { bodies: string[]; onPick: (b: string) => void; label: string }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">{label}</p>
+      <div className="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
+        {bodies.map((name) => (
+          <button
+            key={name}
+            onClick={() => onPick(name)}
+            className="flex items-center gap-1 text-[11px] text-white/85 bg-white/5 border border-white/10 rounded-lg px-2 py-1 hover:bg-white/15"
+          >
+            <span className="w-2 h-2 rounded-full" style={{ background: BODY_INFO[name]?.color ?? '#ccc' }} />
+            {name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

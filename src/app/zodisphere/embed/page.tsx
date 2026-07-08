@@ -52,11 +52,13 @@ function isMyPlace(v: unknown): v is MyPlace {
 }
 
 type AcgLine = { planet: string; lineType: string; color: string; points: { lat: number; lon: number }[] };
+type MidLine = { key: string; color: string; points: { lat: number; lon: number }[] };
 
 export default function ZodisphereEmbedPage() {
   const [areas, setAreas] = useState<AreaStat[]>([]);
   const [myPlace, setMyPlace] = useState<MyPlace | null>(null);
   const [acgLines, setAcgLines] = useState<AcgLine[]>([]);
+  const [midpointLines, setMidpointLines] = useState<MidLine[]>([]);
 
   useEffect(() => {
     const handle = (event: MessageEvent | Event) => {
@@ -69,6 +71,7 @@ export default function ZodisphereEmbedPage() {
           if (isMyPlace(msg.myPlace)) setMyPlace(msg.myPlace);
           else if (msg.myPlace === null) setMyPlace(null);
           if (Array.isArray(msg.acgLines)) setAcgLines(msg.acgLines as AcgLine[]);
+          if (Array.isArray(msg.midpointLines)) setMidpointLines(msg.midpointLines as MidLine[]);
         }
       } catch {
         // ignore non-JSON messages (e.g. devtools chatter)
@@ -88,6 +91,12 @@ export default function ZodisphereEmbedPage() {
     window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'zodisphere:areaClick', area }));
   }, []);
 
+  const handleProbe = useCallback((lat: number, lng: number) => {
+    // Forward the tapped surface point to the host app (mobile computes the
+    // nearby midpoint meanings with the user's chart).
+    window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'zodisphere:probe', lat, lng }));
+  }, []);
+
   return (
     <div
       className="fixed inset-0 overflow-hidden"
@@ -96,7 +105,14 @@ export default function ZodisphereEmbedPage() {
           'radial-gradient(ellipse at 30% 20%, #131a38 0%, #0a0e1a 55%, #06080f 100%)',
       }}
     >
-      <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} myPlace={myPlace} acgLines={acgLines} />
+      <ZodiGlobe
+        areas={areas}
+        onAreaClick={handleAreaClick}
+        myPlace={myPlace}
+        acgLines={acgLines}
+        midpointLines={midpointLines}
+        onProbe={handleProbe}
+      />
     </div>
   );
 }

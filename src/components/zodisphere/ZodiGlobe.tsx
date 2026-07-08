@@ -80,6 +80,13 @@ interface ZodiGlobeProps {
   /** The user's natal astrocartography lines (premium). Each line is a
    *  planet × angle (ASC/DSC/MC/IC) drawn across the Earth. */
   acgLines?: { planet: string; lineType: string; color: string; points: { lat: number; lon: number }[] }[];
+  /** Midpoint astrocartography lines (dashed, blended color, unlabeled;
+   *  identity comes from tapping). */
+  midpointLines?: { key: string; color: string; points: { lat: number; lon: number }[] }[];
+  /** Fired when the user taps/clicks the globe surface — the midpoint probe. */
+  onProbe?: (lat: number, lng: number) => void;
+  /** A transient marker at the last probed point. */
+  probePoint?: { lat: number; lng: number } | null;
 }
 
 // Approximate subsolar point (ignores equation of time — fine for a glow).
@@ -113,7 +120,7 @@ function terminatorCoords(sub: { lat: number; lng: number }): [number, number][]
   return pts;
 }
 
-export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlace, acgLines = [] }: ZodiGlobeProps) {
+export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlace, acgLines = [], midpointLines = [], onProbe, probePoint }: ZodiGlobeProps) {
   const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -187,9 +194,10 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     const busy = points
       .filter((p: any) => p.member_band === '500-999' || p.member_band === '1000+')
       .map((p: any) => ({ lat: p.lat, lng: p.lng, _you: false }));
-    if (myPlace) busy.push({ lat: myPlace.lat, lng: myPlace.lng, _you: true });
+    if (myPlace) busy.push({ lat: myPlace.lat, lng: myPlace.lng, _you: true, _probe: false } as any);
+    if (probePoint) busy.push({ lat: probePoint.lat, lng: probePoint.lng, _you: false, _probe: true } as any);
     return busy;
-  }, [points, myPlace]);
+  }, [points, myPlace, probePoint]);
 
   // Paths layer: the live day/night terminator + the user's ACG lines.
   const paths = useMemo(() => {
@@ -200,8 +208,14 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       color: l.color,
       label: `${l.planet} ${l.lineType}`,
     }));
-    return [term, ...acg];
-  }, [subsolar, acgLines]);
+    const mids = midpointLines.map((l) => ({
+      kind: 'midpoint' as const,
+      coords: l.points.map((p) => [p.lat, p.lon] as [number, number]),
+      color: l.color,
+      label: '',
+    }));
+    return [term, ...acg, ...mids];
+  }, [subsolar, acgLines, midpointLines]);
 
   // One glyph label per ACG line (e.g. "☉ MC"), placed at a latitude that
   // varies by planet so labels on nearby lines don't stack on top of each other.
@@ -296,6 +310,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           polygonAltitude={0.006}
           polygonCapCurvatureResolution={3}
           polygonLabel={(d: any) => `<div style="font-family:inherit;color:#cfc8ff;font-size:11px;">${d?.properties?.NAME ?? ''}</div>`}
+          onPolygonClick={(_poly: any, _ev: any, coords: any) => { if (coords) onProbe?.(coords.lat, coords.lng); }}
           // points: sun + cities + community
           pointsData={points}
           pointLat="lat"
@@ -323,17 +338,21 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           pathPointLat={(p: any) => p[0]}
           pathPointLng={(p: any) => p[1]}
           pathColor={(d: any) =>
-            d.kind === 'acg'
+            d.kind === 'acg' || d.kind === 'midpoint'
               ? d.color
               : ['rgba(255,180,90,0.0)', 'rgba(255,190,110,0.55)', 'rgba(255,180,90,0.0)']
           }
-          pathStroke={(d: any) => (d.kind === 'acg' ? 1.5 : 1.4)}
+          pathStroke={(d: any) => (d.kind === 'midpoint' ? 1.2 : d.kind === 'acg' ? 1.5 : 1.4)}
+          pathDashLength={(d: any) => (d.kind === 'midpoint' ? 0.4 : 0)}
+          pathDashGap={(d: any) => (d.kind === 'midpoint' ? 0.25 : 0)}
+          pathDashAnimateTime={0}
           pathLabel={(d: any) =>
             d.kind === 'acg'
               ? `<div style="font-family:inherit;background:rgba(10,14,26,.94);border:1px solid ${d.color};border-radius:6px;padding:3px 7px;color:${d.color};font-size:11px;font-weight:600;">${d.label}</div>`
               : ''
           }
           pathTransitionDuration={0}
+          onGlobeClick={(coords: any) => { if (coords) onProbe?.(coords.lat, coords.lng); }}
           // astrocartography line glyph labels (☉ MC, ♂ ASC, …)
           labelsData={acgLabels}
           labelLat={(d: any) => d.lat}
@@ -347,13 +366,15 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           // cosmic pulses on the busiest places
           ringsData={rings}
           ringColor={(d: any) => (t: number) =>
-            d?._you
-              ? `rgba(94,234,212,${Math.max(0, 0.6 * (1 - t))})`
-              : `rgba(255,217,122,${Math.max(0, 0.5 * (1 - t))})`
+            d?._probe
+              ? `rgba(255,255,255,${Math.max(0, 0.7 * (1 - t))})`
+              : d?._you
+                ? `rgba(94,234,212,${Math.max(0, 0.6 * (1 - t))})`
+                : `rgba(255,217,122,${Math.max(0, 0.5 * (1 - t))})`
           }
-          ringMaxRadius={(d: any) => (d?._you ? 5.5 : 4)}
-          ringPropagationSpeed={1.3}
-          ringRepeatPeriod={1600}
+          ringMaxRadius={(d: any) => (d?._probe ? 3 : d?._you ? 5.5 : 4)}
+          ringPropagationSpeed={(d: any) => (d?._probe ? 2 : 1.3)}
+          ringRepeatPeriod={(d: any) => (d?._probe ? 900 : 1600)}
         />
       )}
     </div>
