@@ -125,6 +125,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [countries, setCountries] = useState<any[]>([]);
+  const [cities, setCities] = useState<Array<[string, number, number]>>([]);
   const [subsolar, setSubsolar] = useState(() => subsolarPoint(new Date()));
 
   // ── Responsive sizing ──
@@ -144,6 +145,19 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     fetch('/geo/world-countries-110m.json')
       .then((r) => (r.ok ? r.json() : null))
       .then((geo) => { if (alive && geo?.features) setCountries(geo.features); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  // ── Load bundled cities (9k+ real cities, same-origin) so the globe shows
+  //    real places everywhere — US and worldwide — for Google-Earth-style zoom.
+  useEffect(() => {
+    let alive = true;
+    fetch('/geo/cities.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && Array.isArray(data) && data.length) setCities(data);
+      })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -168,10 +182,18 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       kind: 'sun', lat: subsolar.lat, lng: subsolar.lng, name: 'Sun overhead now',
       _alt: 0.02, _radius: 1.15, _color: SUN,
     };
-    const ambient = AMBIENT_CITIES.map((c) => ({
-      kind: 'ambient', lat: c.lat, lng: c.lng, name: c.name,
-      _alt: 0.01, _radius: 0.32, _color: AMBIENT_CITY,
-    }));
+    // Prefer the bundled 9k-city dataset; fall back to the hand-picked metros
+    // until it loads (or if the fetch failed). Many dense dots → keep them
+    // small and dim so they read as a "city field" you can zoom into.
+    const ambient = cities.length
+      ? cities.map(([name, lat, lng]) => ({
+          kind: 'ambient', lat, lng, name,
+          _alt: 0.004, _radius: 0.13, _color: AMBIENT_CITY,
+        }))
+      : AMBIENT_CITIES.map((c) => ({
+          kind: 'ambient', lat: c.lat, lng: c.lng, name: c.name,
+          _alt: 0.01, _radius: 0.32, _color: AMBIENT_CITY,
+        }));
     const community = areas.map((a) => {
       const mid = bandMidpoint(a.member_band);
       const t = mid > 0 ? Math.min(1, Math.log10(mid) / 3.1) : 0;
@@ -188,7 +210,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
         }]
       : [];
     return [sun, ...ambient, ...community, ...you];
-  }, [areas, subsolar, myPlace]);
+  }, [areas, subsolar, myPlace, cities]);
 
   const rings = useMemo(() => {
     const busy = points
@@ -265,10 +287,15 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       controls.autoRotateSpeed = 0.35;
       controls.enableDamping = true;
       // Let the user zoom right down to city level (globe radius = 100).
+      // Google-Earth feel: zoom toward the cursor, allow deep zoom near the
+      // surface, and slow the rotate/damping as you get close so it settles.
       controls.enableZoom = true;
-      controls.minDistance = 108;
+      controls.zoomToCursor = true;
+      controls.minDistance = 101.5;
       controls.maxDistance = 500;
       controls.zoomSpeed = 1.1;
+      controls.rotateSpeed = 0.9;
+      controls.dampingFactor = 0.12;
     }
     const scene = g.scene?.();
     if (scene && typeof g.getCoords === 'function') {
@@ -340,7 +367,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           pointAltitude="_alt"
           pointRadius="_radius"
           pointColor="_color"
-          pointResolution={12}
+          pointResolution={6}
           onPointClick={handleClick}
           pointLabel={(d: any) =>
             d.kind === 'community'
