@@ -11,8 +11,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles } from 'lucide-react';
+import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock } from 'lucide-react';
 import ZodiGlobe from '@/components/zodisphere/ZodiGlobe';
+import { useAuthStore } from '@/stores/authStore';
+import { useSubscriptionStore } from '@/stores/subscriptionStore';
+import { getMyAcgLines, type AcgGlobeLine } from '@/lib/zodisphereAcg';
 import {
   getPublicAreaStats,
   getAreaFeed,
@@ -49,6 +52,28 @@ export default function ZodispherePage() {
   const [members, setMembers] = useState<AreaMember[]>([]);
   // The signed-in user's own chosen, discoverable place (their "you are here").
   const [myPlace, setMyPlace] = useState<{ lat: number; lng: number; name: string } | null>(null);
+
+  // ── Astrocartography (premium): the user's natal planetary lines on the globe ──
+  const { profile } = useAuthStore();
+  const { hasAccess } = useSubscriptionStore();
+  const acgUnlocked = hasAccess('acg');
+  const [showAcg, setShowAcg] = useState(false);
+  const [acgLines, setAcgLines] = useState<AcgGlobeLine[]>([]);
+  const [acgLoading, setAcgLoading] = useState(false);
+
+  const toggleAcg = useCallback(async () => {
+    if (!acgUnlocked) return;
+    if (showAcg) { setShowAcg(false); return; }
+    setShowAcg(true);
+    if (acgLines.length === 0) {
+      setAcgLoading(true);
+      try {
+        setAcgLines(await getMyAcgLines(profile));
+      } finally {
+        setAcgLoading(false);
+      }
+    }
+  }, [acgUnlocked, showAcg, acgLines.length, profile]);
 
   // Live sky — global strip (always visible) + per-place reading when an area is open.
   const globalSky = useMemo(() => getGlobalSky(), []);
@@ -154,18 +179,69 @@ export default function ZodispherePage() {
             </p>
           </div>
         </div>
-        <Link
-          href="/zodisphere/settings"
-          className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-        >
-          <Settings className="w-4 h-4" />
-          My visibility
-        </Link>
+        <div className="flex items-center gap-2">
+          {/* Astrocartography toggle (premium) */}
+          {acgUnlocked ? (
+            <button
+              onClick={toggleAcg}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-colors ${
+                showAcg
+                  ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
+                  : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+              }`}
+              title="Show your natal astrocartography lines"
+            >
+              <Orbit className="w-4 h-4" />
+              {acgLoading ? 'Charting…' : 'My astro lines'}
+            </button>
+          ) : (
+            <Link
+              href="/pricing"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              title="Astrocartography is a premium feature"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Astro lines
+            </Link>
+          )}
+          <Link
+            href="/zodisphere/settings"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">My visibility</span>
+          </Link>
+        </div>
       </header>
+
+      {/* ── Astrocartography: needs birth data ── */}
+      {showAcg && !acgLoading && acgLines.length === 0 && (
+        <div className="absolute top-20 right-5 z-10 max-w-[220px] bg-black/50 backdrop-blur border border-white/10 rounded-xl p-3">
+          <p className="text-[11px] text-white/70">
+            Add your birth date, time, and place in your profile to see your astrocartography lines.
+          </p>
+        </div>
+      )}
+
+      {/* ── Astrocartography legend ── */}
+      {showAcg && acgLines.length > 0 && (
+        <div className="absolute top-20 right-5 z-10 max-w-[220px] bg-black/50 backdrop-blur border border-white/10 rounded-xl p-3 pointer-events-none">
+          <p className="text-[11px] text-white/70 leading-relaxed">
+            <Orbit className="w-3.5 h-3.5 inline mr-1 text-accent-primary" />
+            Your <strong className="text-white">astrocartography</strong> — where each planet was rising (ASC), setting (DSC), or overhead (MC/IC) at your birth. Standing on a line amplifies that planet in your life.
+          </p>
+        </div>
+      )}
 
       {/* ── Globe ── */}
       <div className="absolute inset-0">
-        <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} autoRotate={!selected} myPlace={myPlace} />
+        <ZodiGlobe
+          areas={areas}
+          onAreaClick={handleAreaClick}
+          autoRotate={!selected}
+          myPlace={myPlace}
+          acgLines={showAcg ? acgLines : []}
+        />
       </div>
 
       {/* ── "You're on the map" confirmation (only when opted in) ── */}

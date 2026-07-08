@@ -51,9 +51,12 @@ function isMyPlace(v: unknown): v is MyPlace {
   );
 }
 
+type AcgLine = { planet: string; lineType: string; color: string; points: { lat: number; lon: number }[] };
+
 export default function ZodisphereEmbedPage() {
   const [areas, setAreas] = useState<AreaStat[]>([]);
   const [myPlace, setMyPlace] = useState<MyPlace | null>(null);
+  const [acgLines, setAcgLines] = useState<AcgLine[]>([]);
 
   useEffect(() => {
     const handle = (event: MessageEvent | Event) => {
@@ -65,6 +68,7 @@ export default function ZodisphereEmbedPage() {
           if (isAreaStatArray(msg.areas)) setAreas(msg.areas);
           if (isMyPlace(msg.myPlace)) setMyPlace(msg.myPlace);
           else if (msg.myPlace === null) setMyPlace(null);
+          if (Array.isArray(msg.acgLines)) setAcgLines(msg.acgLines as AcgLine[]);
         }
       } catch {
         // ignore non-JSON messages (e.g. devtools chatter)
@@ -92,7 +96,7 @@ export default function ZodisphereEmbedPage() {
           'radial-gradient(ellipse at 30% 20%, #131a38 0%, #0a0e1a 55%, #06080f 100%)',
       }}
     >
-      <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} myPlace={myPlace} />
+      <ZodiGlobe areas={areas} onAreaClick={handleAreaClick} myPlace={myPlace} acgLines={acgLines} />
     </div>
   );
 }

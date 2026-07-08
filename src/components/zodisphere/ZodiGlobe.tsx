@@ -56,6 +56,9 @@ interface ZodiGlobeProps {
   /** The signed-in user's OWN chosen place — shown back to them as a
    *  personal "you are here" marker regardless of the k-anonymity floor. */
   myPlace?: { lat: number; lng: number; name: string } | null;
+  /** The user's natal astrocartography lines (premium). Each line is a
+   *  planet × angle (ASC/DSC/MC/IC) drawn across the Earth. */
+  acgLines?: { planet: string; lineType: string; color: string; points: { lat: number; lon: number }[] }[];
 }
 
 // Approximate subsolar point (ignores equation of time — fine for a glow).
@@ -89,7 +92,7 @@ function terminatorCoords(sub: { lat: number; lng: number }): [number, number][]
   return pts;
 }
 
-export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlace }: ZodiGlobeProps) {
+export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlace, acgLines = [] }: ZodiGlobeProps) {
   const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -167,8 +170,17 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     return busy;
   }, [points, myPlace]);
 
-  // Live day/night terminator line
-  const terminator = useMemo(() => [{ coords: terminatorCoords(subsolar) }], [subsolar]);
+  // Paths layer: the live day/night terminator + the user's ACG lines.
+  const paths = useMemo(() => {
+    const term = { kind: 'terminator' as const, coords: terminatorCoords(subsolar), color: '', label: '' };
+    const acg = acgLines.map((l) => ({
+      kind: 'acg' as const,
+      coords: l.points.map((p) => [p.lat, p.lon] as [number, number]),
+      color: l.color,
+      label: `${l.planet} ${l.lineType}`,
+    }));
+    return [term, ...acg];
+  }, [subsolar, acgLines]);
 
   // ── Camera + day/night lighting (reposition the globe's own light to
   //    the Sun so the lit hemisphere tracks real time) ──
@@ -264,13 +276,22 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
                   ? `<div style="font-family:inherit;color:#ffe9a8;font-size:12px;">☉ ${d.name}</div>`
                   : `<div style="font-family:inherit;color:#cfc8ff;font-size:11px;">${d.name}</div>`
           }
-          // live day/night terminator
-          pathsData={terminator}
+          // day/night terminator + astrocartography lines
+          pathsData={paths}
           pathPoints={(d: any) => d.coords}
           pathPointLat={(p: any) => p[0]}
           pathPointLng={(p: any) => p[1]}
-          pathColor={() => ['rgba(255,180,90,0.0)', 'rgba(255,190,110,0.55)', 'rgba(255,180,90,0.0)']}
-          pathStroke={1.4}
+          pathColor={(d: any) =>
+            d.kind === 'acg'
+              ? d.color
+              : ['rgba(255,180,90,0.0)', 'rgba(255,190,110,0.55)', 'rgba(255,180,90,0.0)']
+          }
+          pathStroke={(d: any) => (d.kind === 'acg' ? 1.5 : 1.4)}
+          pathLabel={(d: any) =>
+            d.kind === 'acg'
+              ? `<div style="font-family:inherit;background:rgba(10,14,26,.94);border:1px solid ${d.color};border-radius:6px;padding:3px 7px;color:${d.color};font-size:11px;font-weight:600;">${d.label}</div>`
+              : ''
+          }
           pathTransitionDuration={0}
           // cosmic pulses on the busiest places
           ringsData={rings}
