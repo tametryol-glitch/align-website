@@ -1,5 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  webpack: (config) => {
+    // CesiumJS's KmlDataSource/exportKml import a @zip.js/zip.js subpath
+    // ("./lib/zip-no-worker.js") that the installed zip.js version neither
+    // ships nor exports. Zodisphere never loads KML, so stub that single import
+    // to an empty module. Scoped to this exact path — no other package's
+    // resolution is affected. Lets the Cesium chunk build cleanly.
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@zip.js/zip.js/lib/zip-no-worker.js': false,
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'wxzwdvlbcsmnkhjmkgkx.supabase.co' },
@@ -36,7 +49,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co",
               "font-src 'self' data:",
-              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com",
+              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com",
               "frame-src 'self' blob: https://www.youtube.com https://js.stripe.com",
               "worker-src 'self' blob:",
               "object-src 'none'",

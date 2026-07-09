@@ -24,6 +24,18 @@ export const featureFlags = {
   /** Phase 4 dev preview: restrict derived ACG to the developer allowlist.
    *  Flip to false to begin closed beta for all Pro users. */
   derived_acg_dev_only: true,
+
+  // ── Zodisphere 3D (Cesium) globe upgrade ──
+
+  /** Master switch for the Cesium 3D Earth. DEFAULT OFF: production keeps the
+   *  current react-globe.gl experience until the 3D globe passes all tests.
+   *  Can be forced on/off at runtime via NEXT_PUBLIC_ZODISPHERE_3D=on|off
+   *  (no code change / redeploy needed to disable in an emergency). */
+  zodisphere_3d_enabled: false,
+
+  /** Restrict the 3D globe to the developer allowlist during the prototype
+   *  phase. Flip to false to open an internal/closed beta. */
+  zodisphere_3d_dev_only: true,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {
@@ -55,4 +67,30 @@ export function getDerivedAcgAccess(userEmail?: string | null): DerivedAcgAccess
   const duad = featureFlags.duad_astrocartography_enabled;
   const compendium = featureFlags.compendium_astrocartography_enabled;
   return { anyEnabled: duad || compendium, duad, compendium };
+}
+
+// ── Zodisphere 3D (Cesium) access ───────────────────────────────────────────
+
+export const ZODISPHERE_3D_DEV_ALLOWLIST = new Set<string>(['tametryol@gmail.com']);
+
+/**
+ * Resolve whether the Cesium 3D globe should be shown for a user. Fail-safe by
+ * design — with the master flag off (or env kill-switch set), the current
+ * react-globe.gl globe is served unchanged.
+ *
+ * Precedence: NEXT_PUBLIC_ZODISPHERE_3D env ('on'/'off') overrides the static
+ * flag, so the 3D globe can be enabled or killed without a code change. When
+ * the env is unset, the static `zodisphere_3d_enabled` flag applies, gated by
+ * the dev allowlist while `zodisphere_3d_dev_only` is true.
+ */
+export function isZodisphere3dEnabled(userEmail?: string | null): boolean {
+  const env = (process.env.NEXT_PUBLIC_ZODISPHERE_3D || '').toLowerCase();
+  if (env === 'off') return false;
+  const masterOn = env === 'on' || featureFlags.zodisphere_3d_enabled;
+  if (!masterOn) return false;
+  if (featureFlags.zodisphere_3d_dev_only) {
+    const email = (userEmail || '').toLowerCase();
+    if (!email || !ZODISPHERE_3D_DEV_ALLOWLIST.has(email)) return false;
+  }
+  return true;
 }
