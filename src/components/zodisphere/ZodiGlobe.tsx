@@ -45,7 +45,6 @@ const LAND_EDGE = 'rgba(160,150,255,0.55)';
 const STATE_BORDER = 'rgba(150,140,235,0.34)'; // internal state/province lines — dimmer than country edges
 const GOLD_BRIGHT = '#ffd97a';
 const GOLD_DIM = '#c4b6ff';
-const AMBIENT_CITY = 'rgba(205,215,255,0.9)';
 const SUN = '#ffe9a8';
 const YOU = '#5eead4'; // bright teal — the signed-in user's own place
 
@@ -128,6 +127,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
   const [countries, setCountries] = useState<any[]>([]);
   const [cities, setCities] = useState<Array<[string, number, number]>>([]);
   const [borders, setBorders] = useState<Array<Array<[number, number]>>>([]);
+  const [globeReady, setGlobeReady] = useState(false);
   const [subsolar, setSubsolar] = useState(() => subsolarPoint(new Date()));
 
   // ── Responsive sizing ──
@@ -191,26 +191,70 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     []
   );
 
-  // ── Points: Sun + ambient cities + community activity ──
+  // ── Soft radial sprite for city lights (built once) ──
+  const cityGlowTexture = useMemo(() => {
+    const s = 64;
+    const c = document.createElement('canvas');
+    c.width = c.height = s;
+    const ctx = c.getContext('2d')!;
+    const grd = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    grd.addColorStop(0, 'rgba(255,255,255,1)');
+    grd.addColorStop(0.35, 'rgba(255,236,196,0.85)');
+    grd.addColorStop(1, 'rgba(255,220,150,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, s, s);
+    return new THREE.CanvasTexture(c);
+  }, []);
+
+  // ── City lights: a single unlit, additive point cloud so cities read as
+  //    glowing lights-from-space (dense metros stack brighter for free),
+  //    instead of grey lit spheres that go dark on the night side. ──
+  useEffect(() => {
+    const g = globeRef.current;
+    if (!globeReady || !g || typeof g.getCoords !== 'function' || typeof g.scene !== 'function') return;
+    const scene = g.scene();
+    if (!scene) return;
+
+    const src = cities.length
+      ? cities
+      : AMBIENT_CITIES.map((c) => [c.name, c.lat, c.lng] as [string, number, number]);
+    if (!src.length) return;
+
+    const positions = new Float32Array(src.length * 3);
+    for (let i = 0; i < src.length; i++) {
+      const p = g.getCoords(src[i][1], src[i][2], 0.008); // just above the land polygons
+      positions[i * 3] = p.x; positions[i * 3 + 1] = p.y; positions[i * 3 + 2] = p.z;
+    }
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({
+      size: 1.7,
+      map: cityGlowTexture,
+      color: new THREE.Color('#ffe1a6'),
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+      opacity: 0.95,
+    });
+    const cloud = new THREE.Points(geom, mat);
+    cloud.name = 'zodi-city-lights';
+    cloud.renderOrder = 2;
+    scene.add(cloud);
+
+    return () => {
+      scene.remove(cloud);
+      geom.dispose();
+      mat.dispose();
+    };
+  }, [cities, cityGlowTexture, globeReady]);
+
+  // ── Points: Sun + community activity (cities are their own glow layer) ──
   const points = useMemo(() => {
     const sun = {
       kind: 'sun', lat: subsolar.lat, lng: subsolar.lng, name: 'Sun overhead now',
       _alt: 0.02, _radius: 1.15, _color: SUN,
     };
-    // Prefer the bundled 9k-city dataset; fall back to the hand-picked metros
-    // until it loads (or if the fetch failed). Many dense dots → keep them
-    // small and dim so they read as a "city field" you can zoom into.
-    const ambient = cities.length
-      ? cities.map(([name, lat, lng]) => ({
-          // Sit ABOVE the country polygons (polygonAltitude 0.006) so the dots
-          // aren't buried under the land fill; big enough to read as a city field.
-          kind: 'ambient', lat, lng, name,
-          _alt: 0.014, _radius: 0.28, _color: AMBIENT_CITY,
-        }))
-      : AMBIENT_CITIES.map((c) => ({
-          kind: 'ambient', lat: c.lat, lng: c.lng, name: c.name,
-          _alt: 0.01, _radius: 0.32, _color: AMBIENT_CITY,
-        }));
     const community = areas.map((a) => {
       const mid = bandMidpoint(a.member_band);
       const t = mid > 0 ? Math.min(1, Math.log10(mid) / 3.1) : 0;
@@ -226,8 +270,8 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           _alt: 0.06, _radius: 1.0, _color: YOU,
         }]
       : [];
-    return [sun, ...ambient, ...community, ...you];
-  }, [areas, subsolar, myPlace, cities]);
+    return [sun, ...community, ...you];
+  }, [areas, subsolar, myPlace]);
 
   const rings = useMemo(() => {
     const busy = points
@@ -370,6 +414,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
           height={size.height}
           backgroundColor="rgba(0,0,0,0)"
           globeMaterial={globeMaterial}
+          onGlobeReady={() => setGlobeReady(true)}
           showAtmosphere
           atmosphereColor={ATMOSPHERE}
           atmosphereAltitude={0.18}
