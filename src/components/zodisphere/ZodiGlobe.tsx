@@ -191,24 +191,11 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     []
   );
 
-  // ── Soft radial sprite for city lights (built once) ──
-  const cityGlowTexture = useMemo(() => {
-    const s = 64;
-    const c = document.createElement('canvas');
-    c.width = c.height = s;
-    const ctx = c.getContext('2d')!;
-    const grd = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-    grd.addColorStop(0, 'rgba(255,255,255,1)');
-    grd.addColorStop(0.35, 'rgba(255,236,196,0.85)');
-    grd.addColorStop(1, 'rgba(255,220,150,0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, s, s);
-    return new THREE.CanvasTexture(c);
-  }, []);
-
   // ── City lights: a single unlit, additive point cloud so cities read as
   //    glowing lights-from-space (dense metros stack brighter for free),
-  //    instead of grey lit spheres that go dark on the night side. ──
+  //    instead of grey lit spheres that go dark on the night side. The glow
+  //    sprite is built inside the effect (client only) — doing it in render
+  //    would touch `document` during Next's server prerender and break build. ──
   useEffect(() => {
     const g = globeRef.current;
     if (!globeReady || !g || typeof g.getCoords !== 'function' || typeof g.scene !== 'function') return;
@@ -220,6 +207,19 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       : AMBIENT_CITIES.map((c) => [c.name, c.lat, c.lng] as [string, number, number]);
     if (!src.length) return;
 
+    // Soft radial glow sprite.
+    const s = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = s;
+    const ctx = canvas.getContext('2d')!;
+    const grd = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    grd.addColorStop(0, 'rgba(255,255,255,1)');
+    grd.addColorStop(0.35, 'rgba(255,236,196,0.85)');
+    grd.addColorStop(1, 'rgba(255,220,150,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, s, s);
+    const texture = new THREE.CanvasTexture(canvas);
+
     const positions = new Float32Array(src.length * 3);
     for (let i = 0; i < src.length; i++) {
       const p = g.getCoords(src[i][1], src[i][2], 0.008); // just above the land polygons
@@ -229,7 +229,7 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
     geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const mat = new THREE.PointsMaterial({
       size: 1.7,
-      map: cityGlowTexture,
+      map: texture,
       color: new THREE.Color('#ffe1a6'),
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -246,8 +246,9 @@ export function ZodiGlobe({ areas, onAreaClick, autoRotate = true, focus, myPlac
       scene.remove(cloud);
       geom.dispose();
       mat.dispose();
+      texture.dispose();
     };
-  }, [cities, cityGlowTexture, globeReady]);
+  }, [cities, globeReady]);
 
   // ── Points: Sun + community activity (cities are their own glow layer) ──
   const points = useMemo(() => {
