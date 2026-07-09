@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus } from 'lucide-react';
+import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus, Pause, Play } from 'lucide-react';
 import ZodiGlobe from '@/components/zodisphere/ZodiGlobe';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
@@ -47,6 +47,7 @@ const INTRO_SEEN_KEY = 'zodisphere_intro_seen_v1';
 export default function ZodispherePage() {
   const [areas, setAreas] = useState<AreaStat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [spinPaused, setSpinPaused] = useState(false); // user can stop the globe spinning
   const [showIntro, setShowIntro] = useState(false);
   const [selected, setSelected] = useState<AreaStat | null>(null);
   const [feed, setFeed] = useState<ZodispherePost[]>([]);
@@ -270,6 +271,20 @@ export default function ZodispherePage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Pause / resume the globe spin (free, always available) */}
+          <button
+            onClick={() => setSpinPaused((v) => !v)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-colors ${
+              spinPaused
+                ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
+                : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+            }`}
+            title={spinPaused ? 'Resume the globe spinning' : 'Stop the globe spinning'}
+            aria-pressed={spinPaused}
+          >
+            {spinPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+            <span className="hidden sm:inline">{spinPaused ? 'Spin' : 'Pause'}</span>
+          </button>
           {/* Astrocartography toggle (premium) */}
           {acgUnlocked ? (
             <button
@@ -448,7 +463,7 @@ export default function ZodispherePage() {
         <ZodiGlobe
           areas={areas}
           onAreaClick={handleAreaClick}
-          autoRotate={!selected && !probePoint}
+          autoRotate={!selected && !probePoint && !spinPaused}
           focus={selected && !showMidpoints ? { lat: selected.center_lat, lng: selected.center_lng } : null}
           myPlace={myPlace}
           acgLines={showAcg && !showMidpoints ? acgLines : []}
