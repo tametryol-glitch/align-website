@@ -66,6 +66,19 @@ export default function ZodisphereGlobeCesium({
     let contextLostHandler: ((e: Event) => void) | null = null;
     let statusTimer: ReturnType<typeof setInterval> | null = null;
 
+    // DIAGNOSTIC: capture the first CSP violation and JS error so the status
+    // overlay can name the real blocker (e.g. a worker blocked by worker-src).
+    let cspErr = '';
+    let jsErr = '';
+    const cspHandler = (e: SecurityPolicyViolationEvent) => {
+      if (!cspErr) cspErr = `CSP:${e.violatedDirective}:${(e.blockedURI || '').slice(-32)}`;
+    };
+    const errHandler = (e: ErrorEvent) => {
+      if (!jsErr && e?.message) jsErr = `err:${e.message.slice(0, 48)}`;
+    };
+    document.addEventListener('securitypolicyviolation', cspHandler);
+    window.addEventListener('error', errHandler);
+
     (async () => {
       try {
         // Self-hosted assets (copied to /public/cesium by scripts/copy-cesium.mjs).
@@ -122,14 +135,13 @@ export default function ZodisphereGlobeCesium({
         if (cancelled) { viewer.destroy(); return; }
         viewerRef.current = viewer;
 
-        // Streamed world terrain only when we have an ion token.
-        if (hasIon) {
-          try {
-            viewer.terrainProvider = await Cesium.createWorldTerrainAsync();
-          } catch {
-            /* fall back silently to the default ellipsoid terrain */
-          }
-        }
+        // DIAGNOSTIC: world terrain temporarily DISABLED to shrink the failure
+        // surface — the default ellipsoid terrain needs no ion terrain fetch, so
+        // if the globe still won't render, terrain streaming is not the cause.
+        // Re-enabled once base rendering is confirmed.
+        // if (hasIon) {
+        //   try { viewer.terrainProvider = await Cesium.createWorldTerrainAsync(); } catch {}
+        // }
 
         // Lighting OFF so the whole globe is evenly lit (no dark night side that
         // reads as "no globe"). A day/night terminator can return in a later
@@ -173,7 +185,7 @@ export default function ZodisphereGlobeCesium({
             const camKm = Math.round(viewer.camera.positionCartographic.height / 1000);
             onStatus(
               `ion:${hasIon ? 'yes' : 'no'} imagery:${viewer.imageryLayers.length} ` +
-              `tilesLoaded:${g.tilesLoaded} camKm:${camKm} ${imageryErr}`,
+              `tiles:${g.tilesLoaded} camKm:${camKm} ${imageryErr} ${cspErr} ${jsErr}`.trim(),
             );
           }, 700);
         }
@@ -204,6 +216,8 @@ export default function ZodisphereGlobeCesium({
     return () => {
       cancelled = true;
       if (statusTimer) clearInterval(statusTimer);
+      document.removeEventListener('securitypolicyviolation', cspHandler);
+      window.removeEventListener('error', errHandler);
       const viewer = viewerRef.current;
       if (viewer && !viewer.isDestroyed()) {
         try {
