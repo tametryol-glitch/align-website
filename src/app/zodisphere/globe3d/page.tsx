@@ -20,13 +20,16 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle,
+  getBodyAcgLines, getMidpointLines3D, probeMidpoints,
+  ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
-import { Plus, Minus, Home, Tag, X, Search } from 'lucide-react';
+import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit } from 'lucide-react';
 
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
+const ALL_BODIES = [...ACG_PLANETS, ...ACG_POINTS, ...ACG_ASTEROIDS];
+const MAX_PAIRS = 8;
 
 // Code-split Cesium into its own client chunk — the rest of Align never pays
 // its bundle cost, and it can only load in the browser.
@@ -154,6 +157,57 @@ export default function Zodisphere3dPrototypePage() {
     const n = new Set(s); n.has(a) ? n.delete(a) : n.add(a); return n;
   });
 
+  // ── Midpoints mode ──
+  const [mode, setMode] = useState<'lines' | 'midpoints'>('lines');
+  const [pairs, setPairs] = useState<MidpointPair[]>([]);
+  const [midLines, setMidLines] = useState<AcgLine3D[]>([]);
+  const [midRaw, setMidRaw] = useState<MidpointLine[]>([]);
+  const [pickA, setPickA] = useState('');
+  const [pickB, setPickB] = useState('');
+  const [picking, setPicking] = useState<'A' | 'B' | null>(null);
+  const [pickSearch, setPickSearch] = useState('');
+  const [probeHits, setProbeHits] = useState<ProbeHit[]>([]);
+  const [probeOpen, setProbeOpen] = useState(false);
+
+  // Build midpoint lines whenever the active pairs change.
+  useEffect(() => {
+    if (!enabled || !profile || mode !== 'midpoints') return;
+    let alive = true;
+    (async () => {
+      if (pairs.length === 0) { if (alive) { setMidLines([]); setMidRaw([]); } return; }
+      const { render, mid } = await getMidpointLines3D(profile, pairs);
+      if (!alive) return;
+      setMidLines(render);
+      setMidRaw(mid);
+    })();
+    return () => { alive = false; };
+  }, [enabled, profile, mode, pairs]);
+
+  // Tap-to-read: in midpoints mode, a globe tap lists the nearby midpoint lines.
+  const handleTap = useCallback((lat: number, lng: number) => {
+    if (mode !== 'midpoints') return;
+    const hits = probeMidpoints(lat, lng, midRaw);
+    setProbeHits(hits);
+    setProbeOpen(hits.length > 0);
+  }, [mode, midRaw]);
+
+  const pickList = useMemo(() => {
+    const q = pickSearch.trim().toLowerCase();
+    const pool = q ? ALL_BODIES.filter((b) => b.toLowerCase().includes(q)) : ALL_BODIES;
+    return pool.slice(0, 40);
+  }, [pickSearch]);
+
+  const addPair = () => {
+    if (!pickA || !pickB || pickA === pickB) return;
+    setPairs((prev) => {
+      if (prev.length >= MAX_PAIRS) return prev;
+      if (prev.some((p) => (p.a === pickA && p.b === pickB) || (p.a === pickB && p.b === pickA))) return prev;
+      return [...prev, { a: pickA, b: pickB }];
+    });
+    setPickA(''); setPickB(''); setPicking(null); setPickSearch('');
+  };
+  const removePair = (i: number) => setPairs((prev) => prev.filter((_, idx) => idx !== i));
+
   return (
     <div
       className="relative min-h-screen overflow-hidden"
@@ -165,16 +219,34 @@ export default function Zodisphere3dPrototypePage() {
           <h1 className="text-lg font-semibold text-white leading-tight">The Zodisphere · 3D</h1>
           <p className="text-[11px] text-white/50">Prototype — Cesium Earth (isolated preview)</p>
         </div>
-        <Link
-          href="/zodisphere"
-          className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-        >
-          Classic globe
-        </Link>
+        <div className="flex items-center gap-2">
+          {mounted && enabled && webglOk && !error && (
+            <div className="flex items-center rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+              <button
+                onClick={() => setMode('lines')}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[13px] ${mode === 'lines' ? 'bg-white/15 text-white' : 'text-white/60 hover:bg-white/10'}`}
+              >
+                <Orbit className="w-4 h-4" /> Lines
+              </button>
+              <button
+                onClick={() => setMode('midpoints')}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[13px] ${mode === 'midpoints' ? 'bg-fuchsia-500/25 text-fuchsia-100' : 'text-white/60 hover:bg-white/10'}`}
+              >
+                <GitMerge className="w-4 h-4" /> Midpoints
+              </button>
+            </div>
+          )}
+          <Link
+            href="/zodisphere"
+            className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            Classic globe
+          </Link>
+        </div>
       </header>
 
       {/* Info readout. */}
-      {mounted && enabled && webglOk && !error && note && (
+      {mounted && enabled && webglOk && !error && note && mode === 'lines' && (
         <div className="absolute top-20 left-5 z-20 max-w-[320px] rounded-lg bg-black/55 backdrop-blur border border-white/10 px-3 py-2 text-[12px] text-white/80">
           {note}
         </div>
@@ -182,7 +254,7 @@ export default function Zodisphere3dPrototypePage() {
 
       {/* Layer control: body list (planets/points/asteroids) + asteroid search
           + angle filters + labels toggle. */}
-      {mounted && enabled && webglOk && !error && (
+      {mounted && enabled && webglOk && !error && mode === 'lines' && (
         <div className="absolute top-36 left-5 z-20 w-[220px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
           <button
             onClick={() => setPanelOpen((v) => !v)}
@@ -272,6 +344,107 @@ export default function Zodisphere3dPrototypePage() {
         </div>
       )}
 
+      {/* Midpoints panel — pair builder (with asteroid/point search) + active pairs. */}
+      {mounted && enabled && webglOk && !error && mode === 'midpoints' && (
+        <div className="absolute top-36 left-5 z-20 w-[240px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
+          <div className="px-3 py-2 text-[12px] font-semibold border-b border-white/10">
+            Midpoints · {pairs.length}/{MAX_PAIRS}
+          </div>
+          <div className="px-3 py-3 space-y-2">
+            <p className="text-[11px] text-white/50">Pick two placements — their midpoint&apos;s lines are drawn dashed. Tap a line on the globe to read it.</p>
+            {/* Two slots */}
+            <div className="flex items-center gap-1.5">
+              {(['A', 'B'] as const).map((slot) => {
+                const val = slot === 'A' ? pickA : pickB;
+                return (
+                  <button
+                    key={slot}
+                    onClick={() => { setPicking(slot); setPickSearch(''); }}
+                    className={`flex-1 px-2 py-1.5 rounded-lg text-[12px] border truncate ${picking === slot ? 'border-fuchsia-400 bg-fuchsia-500/15' : 'border-white/15 bg-white/5'}`}
+                  >
+                    {val || (slot === 'A' ? 'Body A' : 'Body B')}
+                  </button>
+                );
+              })}
+              <button
+                onClick={addPair}
+                disabled={!pickA || !pickB || pickA === pickB || pairs.length >= MAX_PAIRS}
+                className="px-2 py-1.5 rounded-lg text-[12px] bg-fuchsia-500/25 border border-fuchsia-400/50 text-fuchsia-100 disabled:opacity-30"
+              >
+                Add
+              </button>
+            </div>
+            {/* Search list when picking a slot */}
+            {picking && (
+              <div>
+                <div className="flex items-center gap-1.5 rounded-lg bg-white/5 border border-white/10 px-2 py-1">
+                  <Search className="w-3 h-3 text-white/40 shrink-0" />
+                  <input
+                    autoFocus
+                    value={pickSearch}
+                    onChange={(e) => setPickSearch(e.target.value)}
+                    placeholder={`Search for body ${picking}…`}
+                    className="bg-transparent outline-none text-[12px] w-full placeholder:text-white/30"
+                  />
+                </div>
+                <div className="mt-1 max-h-[180px] overflow-y-auto rounded-lg border border-white/10 bg-black/40">
+                  {pickList.map((b) => (
+                    <button
+                      key={b}
+                      onClick={() => {
+                        if (picking === 'A') setPickA(b); else setPickB(b);
+                        setPicking(null); setPickSearch('');
+                      }}
+                      className="w-full flex items-center gap-2 px-2 py-1 text-[12px] text-left hover:bg-white/10"
+                    >
+                      <span className="truncate">{b}</span>
+                      {ACG_ASTEROIDS.includes(b) && <span className="ml-auto text-[10px] text-white/30">asteroid</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Active pairs */}
+            {pairs.length > 0 && (
+              <div className="pt-2 border-t border-white/10 space-y-1">
+                {pairs.map((p, i) => (
+                  <div key={`${p.a}|${p.b}`} className="flex items-center gap-2 text-[12px]">
+                    <GitMerge className="w-3 h-3 text-fuchsia-300 shrink-0" />
+                    <span className="flex-1 truncate">{p.a} / {p.b}</span>
+                    <button onClick={() => removePair(i)} aria-label="Remove pair" className="text-white/30 hover:text-white/80">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tap-to-read card (midpoints). */}
+      {mounted && enabled && webglOk && !error && mode === 'midpoints' && probeOpen && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-[min(92vw,460px)] max-h-[42vh] overflow-y-auto rounded-2xl bg-black/80 backdrop-blur border border-fuchsia-400/30 text-white p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-fuchsia-100">Midpoint lines here</h3>
+            <button onClick={() => setProbeOpen(false)} aria-label="Close"><X className="w-4 h-4 text-white/50 hover:text-white" /></button>
+          </div>
+          <div className="space-y-3">
+            {probeHits.map((h, i) => (
+              <div key={i} className="border-t border-white/10 pt-2 first:border-0 first:pt-0">
+                <div className="flex items-center gap-2 text-[13px] font-semibold">
+                  <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: h.line.color }} />
+                  {h.line.bodyA} / {h.line.bodyB} · {h.line.lineType}
+                  <span className="ml-auto text-[11px] text-white/40">{h.distanceDeg.toFixed(1)}° away</span>
+                </div>
+                <p className="text-[12px] text-white/75 mt-1 leading-relaxed"
+                   dangerouslySetInnerHTML={{ __html: h.meaning.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {!mounted ? null : !enabled ? (
         <ZodisphereFallbackView
           message="The 3D globe preview isn’t enabled for your account yet."
@@ -291,8 +464,10 @@ export default function Zodisphere3dPrototypePage() {
               key={retryKey}
               onError={setError}
               onReady={setController}
-              astroLines={visibleLines}
-              astroLabels={showLabels}
+              astroLines={mode === 'midpoints' ? midLines : visibleLines}
+              astroLabels={mode === 'lines' && showLabels}
+              astroDashed={mode === 'midpoints'}
+              onTap={handleTap}
               myPlace={
                 profile?.latitude != null && profile?.longitude != null
                   ? { lat: profile.latitude, lng: profile.longitude, label: profile.birth_location || 'Your birthplace' }

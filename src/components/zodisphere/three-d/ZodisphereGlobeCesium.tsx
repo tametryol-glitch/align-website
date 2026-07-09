@@ -39,6 +39,10 @@ export interface ZodisphereGlobeCesiumProps {
   astroLines?: AcgLine3D[];
   /** Draw a text label (planet + angle) on each line. */
   astroLabels?: boolean;
+  /** Draw the lines dashed (used for midpoint lines). */
+  astroDashed?: boolean;
+  /** Fired when the user taps/clicks a point on the globe (lat/lng in degrees). */
+  onTap?: (lat: number, lng: number) => void;
   /** The user's own birthplace, shown as an orientation marker. */
   myPlace?: { lat: number; lng: number; label: string } | null;
   /** Diagnostic status string (prototype only) for an on-screen readout. */
@@ -62,6 +66,8 @@ export default function ZodisphereGlobeCesium({
   onStatus,
   astroLines,
   astroLabels,
+  astroDashed,
+  onTap,
   myPlace,
   initialHeightMeters = DEFAULT_HEIGHT,
 }: ZodisphereGlobeCesiumProps) {
@@ -70,6 +76,8 @@ export default function ZodisphereGlobeCesium({
   const cesiumRef = useRef<typeof CesiumNS | null>(null);
   const rendererRef = useRef<AstrocartographyLineRenderer | null>(null);
   const myPlaceEntityRef = useRef<CesiumNS.Entity | null>(null);
+  const onTapRef = useRef(onTap);
+  onTapRef.current = onTap; // always current, without recreating the viewer
   const createdRef = useRef(false); // guard against StrictMode double-create
   const [viewerReady, setViewerReady] = useState(false);
 
@@ -202,6 +210,23 @@ export default function ZodisphereGlobeCesium({
           });
         }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
+        // Single click → report the tapped lat/lng (used for midpoint
+        // tap-to-read). Reads onTap from a ref so it's always current.
+        sseh.setInputAction((movement: any) => {
+          if (viewer.isDestroyed() || !onTapRef.current) return;
+          const ellipsoid = viewer.scene.globe.ellipsoid;
+          let cartesian = viewer.scene.pickPosition(movement.position);
+          if (!Cesium.defined(cartesian)) {
+            cartesian = viewer.camera.pickEllipsoid(movement.position, ellipsoid) as any;
+          }
+          if (!Cesium.defined(cartesian)) return;
+          const carto = Cesium.Cartographic.fromCartesian(cartesian);
+          onTapRef.current(
+            Cesium.Math.toDegrees(carto.latitude),
+            Cesium.Math.toDegrees(carto.longitude),
+          );
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
         // Frame the whole Earth reliably (Cesium's default home rectangle).
         viewer.camera.flyHome(0);
         onStatus?.('ready');
@@ -275,8 +300,8 @@ export default function ZodisphereGlobeCesium({
   // is ready). The renderer diff-replaces entities; unchanged calls are cheap.
   useEffect(() => {
     if (!viewerReady || !rendererRef.current) return;
-    rendererRef.current.render(astroLines ?? [], !!astroLabels);
-  }, [astroLines, astroLabels, viewerReady]);
+    rendererRef.current.render(astroLines ?? [], !!astroLabels, !!astroDashed);
+  }, [astroLines, astroLabels, astroDashed, viewerReady]);
 
   // Birthplace orientation marker (a teal pin + label), so the user can see
   // where they are relative to the astro lines.

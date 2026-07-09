@@ -14,11 +14,18 @@ import { getMyAcgLines } from '@/lib/zodisphereAcg';
 import {
   getMyChartBodies,
   projectWide,
+  buildMidpointLines,
+  probeMidpoints,
   bodyInfoOf,
   ASTEROID_CATALOG,
   ASTEROID_CATALOG_NAMES,
+  type MidpointLine,
+  type ProbeHit,
 } from '@/lib/zodisphereMidpoints';
 import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
+
+export type { MidpointLine, ProbeHit };
+export { probeMidpoints };
 
 export type AcgAngle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
@@ -136,6 +143,50 @@ export async function getBodyAcgLines(
     }
   }
   return { lines, unavailable };
+}
+
+// ── Midpoints ───────────────────────────────────────────────────────────────
+
+export interface MidpointPair { a: string; b: string; }
+
+/**
+ * Build midpoint ACG lines for a set of body PAIRS. Reuses the validated
+ * midpoint engine (getMyChartBodies for real longitudes incl. asteroids, then
+ * buildMidpointLines = directMidpoint + projectWide). Returns both a render set
+ * (AcgLine3D for the globe) and the raw MidpointLine[] (for tap-to-read
+ * probing), plus any pairs that couldn't be built.
+ */
+export async function getMidpointLines3D(
+  profile: any,
+  pairs: MidpointPair[],
+): Promise<{ render: AcgLine3D[]; mid: MidpointLine[]; unavailable: MidpointPair[] }> {
+  if (!pairs.length) return { render: [], mid: [], unavailable: [] };
+  const names = pairs.flatMap((p) => [p.a, p.b]);
+  const extras = names.filter((n) => n in ASTEROID_CATALOG);
+  const chart = await getMyChartBodies(profile, extras);
+  if (!chart) return { render: [], mid: [], unavailable: pairs };
+
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  const mid: MidpointLine[] = [];
+  const unavailable: MidpointPair[] = [];
+  for (const { a, b } of pairs) {
+    const lonA = byName.get(a);
+    const lonB = byName.get(b);
+    if (lonA == null || lonB == null || !Number.isFinite(lonA) || !Number.isFinite(lonB)) {
+      unavailable.push({ a, b });
+      continue;
+    }
+    mid.push(...buildMidpointLines(a, b, lonA, lonB, chart.birthDate));
+  }
+
+  const render: AcgLine3D[] = mid.map((l, i) => ({
+    id: `mid-${l.key}:${l.lineType}:${i}`,
+    planet: `${l.bodyA}/${l.bodyB}`,
+    angle: l.lineType as AcgAngle,
+    color: l.color,
+    points: l.points.map((p) => ({ lat: p.lat, lon: p.lon })),
+  }));
+  return { render, mid, unavailable };
 }
 
 /**

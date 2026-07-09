@@ -49,8 +49,9 @@ export class AstrocartographyLineRenderer {
     private readonly viewer: CesiumNS.Viewer,
   ) {}
 
-  /** Replace all drawn lines with the given set. */
-  render(lines: AcgLine3D[], showLabels = false): void {
+  /** Replace all drawn lines with the given set. `dashed` distinguishes
+   *  midpoint lines from solid natal ACG lines. */
+  render(lines: AcgLine3D[], showLabels = false, dashed = false): void {
     this.clear();
     const { Cesium } = this;
     for (const line of lines) {
@@ -65,18 +66,16 @@ export class AstrocartographyLineRenderer {
           id: `acg-${line.id}-${si}`,
           polyline: {
             positions,
-            width: 4,
+            width: dashed ? 3 : 4,
             // NOT clampToGround: ground-clamped polylines only support a narrow
             // material set and were rendering invisibly. A regular geodesic
             // polyline sits on the ellipsoid and, since Cesium doesn't
             // depth-test against terrain by default, draws cleanly on top of
-            // the globe at every zoom — with full glow-material support.
+            // the globe at every zoom.
             arcType: Cesium.ArcType.GEODESIC,
-            material: new Cesium.PolylineGlowMaterialProperty({
-              color,
-              glowPower: 0.2,
-              taperPower: 1.0,
-            }),
+            material: dashed
+              ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
+              : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
           },
         });
         this.entities.push(entity);
