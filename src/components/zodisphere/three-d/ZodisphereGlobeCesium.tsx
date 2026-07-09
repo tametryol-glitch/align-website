@@ -33,6 +33,8 @@ export interface ZodisphereGlobeCesiumProps {
   onError?: (message: string) => void;
   /** Initial camera height in metres above the surface. */
   initialHeightMeters?: number;
+  /** Diagnostic status string (prototype only) for an on-screen readout. */
+  onStatus?: (status: string) => void;
 }
 
 /** Minimal imperative handle other modules use to drive the camera. */
@@ -47,6 +49,7 @@ const DEFAULT_HEIGHT = 20_000_000; // ~full-Earth view, not max-detail city tile
 export default function ZodisphereGlobeCesium({
   onReady,
   onError,
+  onStatus,
   initialHeightMeters = DEFAULT_HEIGHT,
 }: ZodisphereGlobeCesiumProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,6 +64,7 @@ export default function ZodisphereGlobeCesium({
     let cancelled = false;
     let styleLink: HTMLLinkElement | null = null;
     let contextLostHandler: ((e: Event) => void) | null = null;
+    let statusTimer: ReturnType<typeof setInterval> | null = null;
 
     (async () => {
       try {
@@ -127,13 +131,26 @@ export default function ZodisphereGlobeCesium({
           }
         }
 
-        // Cosmetic + privacy: no default Bing logo watermark abuse; keep the
-        // credit container (required attribution) visible but out of the way.
         // Lighting OFF so the whole globe is evenly lit (no dark night side that
         // reads as "no globe"). A day/night terminator can return in a later
         // phase once the base experience is confirmed.
         viewer.scene.globe.enableLighting = false;
         viewer.scene.skyAtmosphere.show = true;
+        // DIAGNOSTIC (prototype): force the globe visible with a bright base
+        // colour so its geometry is unmistakable even before/without imagery.
+        // If we see a blue sphere → geometry works, problem is imagery. If we
+        // still see only stars → it's camera/geometry. Removed once confirmed.
+        viewer.scene.globe.show = true;
+        viewer.scene.globe.baseColor = Cesium.Color.DODGERBLUE;
+
+        // Capture imagery load errors so they surface on-screen, not silently.
+        let imageryErr = '';
+        try {
+          const base = viewer.imageryLayers.get(0);
+          base?.imageryProvider?.errorEvent?.addEventListener?.((e: any) => {
+            imageryErr = `imgErr:${e?.error?.message || e?.message || 'load-failed'}`.slice(0, 60);
+          });
+        } catch { /* provider may still be resolving */ }
 
         // Recover-or-report on WebGL context loss instead of freezing.
         const canvas = viewer.scene.canvas as HTMLCanvasElement;
@@ -143,10 +160,23 @@ export default function ZodisphereGlobeCesium({
         };
         canvas.addEventListener('webglcontextlost', contextLostHandler, false);
 
-        // Open at a sensible altitude (full globe), not max city detail.
-        viewer.camera.setView({
-          destination: Cesium.Cartesian3.fromDegrees(0, 20, initialHeightMeters),
-        });
+        // Frame the whole Earth reliably (Cesium's default home rectangle).
+        viewer.camera.flyHome(0);
+
+        // On-screen diagnostic readout (prototype only): confirms token, imagery
+        // layers, tile loading and camera height so a screenshot pinpoints any
+        // failure without a console.
+        if (onStatus) {
+          statusTimer = setInterval(() => {
+            if (viewer.isDestroyed()) return;
+            const g = viewer.scene.globe;
+            const camKm = Math.round(viewer.camera.positionCartographic.height / 1000);
+            onStatus(
+              `ion:${hasIon ? 'yes' : 'no'} imagery:${viewer.imageryLayers.length} ` +
+              `tilesLoaded:${g.tilesLoaded} camKm:${camKm} ${imageryErr}`,
+            );
+          }, 700);
+        }
 
         const controller: ZodisphereGlobeController = {
           flyTo: (lat, lng, heightMeters = 1_500_000) => {
@@ -173,6 +203,7 @@ export default function ZodisphereGlobeCesium({
 
     return () => {
       cancelled = true;
+      if (statusTimer) clearInterval(statusTimer);
       const viewer = viewerRef.current;
       if (viewer && !viewer.isDestroyed()) {
         try {
@@ -191,7 +222,7 @@ export default function ZodisphereGlobeCesium({
       // Allow a fresh viewer if this component remounts later.
       createdRef.current = false;
     };
-  }, [initialHeightMeters, onReady, onError]);
+  }, [initialHeightMeters, onReady, onError, onStatus]);
 
   return <div ref={containerRef} className="absolute inset-0 h-full w-full" />;
 }
