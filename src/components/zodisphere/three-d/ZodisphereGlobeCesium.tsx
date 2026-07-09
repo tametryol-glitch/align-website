@@ -23,8 +23,10 @@
  * the location inspector are added by separate modules in later phases.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type * as CesiumNS from 'cesium';
+import type { AcgLine3D } from './AstrocartographyDataAdapter';
+import { AstrocartographyLineRenderer } from './AstrocartographyLineRenderer';
 
 export interface ZodisphereGlobeCesiumProps {
   /** Called once the globe is interactive. */
@@ -33,6 +35,8 @@ export interface ZodisphereGlobeCesiumProps {
   onError?: (message: string) => void;
   /** Initial camera height in metres above the surface. */
   initialHeightMeters?: number;
+  /** Astrocartography lines to draw on the globe (already engine-projected). */
+  astroLines?: AcgLine3D[];
   /** Diagnostic status string (prototype only) for an on-screen readout. */
   onStatus?: (status: string) => void;
 }
@@ -52,11 +56,15 @@ export default function ZodisphereGlobeCesium({
   onReady,
   onError,
   onStatus,
+  astroLines,
   initialHeightMeters = DEFAULT_HEIGHT,
 }: ZodisphereGlobeCesiumProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<CesiumNS.Viewer | null>(null);
+  const cesiumRef = useRef<typeof CesiumNS | null>(null);
+  const rendererRef = useRef<AstrocartographyLineRenderer | null>(null);
   const createdRef = useRef(false); // guard against StrictMode double-create
+  const [viewerReady, setViewerReady] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -191,6 +199,12 @@ export default function ZodisphereGlobeCesium({
           zoomOut: () => zoomBy(-0.55),
           isDestroyed: () => viewer.isDestroyed(),
         };
+
+        // Wire the astrocartography line renderer to this viewer.
+        cesiumRef.current = Cesium;
+        rendererRef.current = new AstrocartographyLineRenderer(Cesium, viewer);
+        setViewerReady(true);
+
         onReady?.(controller);
       } catch (err: any) {
         if (!cancelled) onError?.(err?.message || 'The 3D globe failed to initialize.');
@@ -212,12 +226,23 @@ export default function ZodisphereGlobeCesium({
           /* already torn down */
         }
       }
+      rendererRef.current?.clear();
+      rendererRef.current = null;
+      cesiumRef.current = null;
       viewerRef.current = null;
+      setViewerReady(false);
       if (styleLink && styleLink.parentNode) styleLink.parentNode.removeChild(styleLink);
       // Allow a fresh viewer if this component remounts later.
       createdRef.current = false;
     };
   }, [initialHeightMeters, onReady, onError, onStatus]);
+
+  // Draw / update astrocartography lines whenever they change (once the viewer
+  // is ready). The renderer diff-replaces entities; unchanged calls are cheap.
+  useEffect(() => {
+    if (!viewerReady || !rendererRef.current) return;
+    rendererRef.current.render(astroLines ?? []);
+  }, [astroLines, viewerReady]);
 
   return <div ref={containerRef} className="absolute inset-0 h-full w-full" style={{ touchAction: 'none' }} />;
 }

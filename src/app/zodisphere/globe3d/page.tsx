@@ -19,6 +19,7 @@ import { isZodisphere3dEnabled } from '@/config/featureFlags';
 import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereErrorBoundary';
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
+import { getAstrocartographyLines, type AcgLine3D } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { Plus, Minus, Home } from 'lucide-react';
 
 // Code-split Cesium into its own client chunk — the rest of Align never pays
@@ -55,6 +56,8 @@ export default function Zodisphere3dPrototypePage() {
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const [controller, setController] = useState<ZodisphereGlobeController | null>(null);
+  const [lines, setLines] = useState<AcgLine3D[]>([]);
+  const [lineNote, setLineNote] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -63,6 +66,44 @@ export default function Zodisphere3dPrototypePage() {
 
   const enabled = isZodisphere3dEnabled(profile?.email);
   const retry = useCallback(() => { setError(null); setRetryKey((k) => k + 1); }, []);
+
+  // Phase 3: fetch ONE verified line (Sun · MC) via the adapter and verify it.
+  useEffect(() => {
+    if (!enabled || !profile) return;
+    let alive = true;
+    (async () => {
+      if (!profile.birth_date || profile.latitude == null) {
+        if (alive) setLineNote('Add your birth date, time and place in your profile to see astro lines.');
+        return;
+      }
+      const result = await getAstrocartographyLines(profile, { planets: ['Sun'], angles: ['MC'] });
+      if (!alive) return;
+      setLines(result);
+      // Verification: an MC line must be a constant-longitude meridian.
+      const sunMc = result.find((l) => l.id === 'Sun:MC');
+      if (sunMc && sunMc.points.length > 1) {
+        const lons = sunMc.points.map((p) => p.lon);
+        const spread = Math.max(...lons) - Math.min(...lons);
+        const meridianLon = lons[Math.floor(lons.length / 2)];
+        setLineNote(
+          `Sun · MC — ${sunMc.points.length} pts, meridian ${meridianLon.toFixed(2)}° ` +
+          `(lon spread ${spread.toFixed(3)}° → ${spread < 0.01 ? 'verified meridian ✓' : 'NOT constant ✗'})`,
+        );
+      } else {
+        setLineNote('Sun · MC line unavailable for this chart.');
+      }
+    })();
+    return () => { alive = false; };
+  }, [enabled, profile]);
+
+  // When the line and camera are both ready, fly to the meridian so it's in view.
+  useEffect(() => {
+    const sunMc = lines.find((l) => l.id === 'Sun:MC');
+    if (controller && sunMc && sunMc.points.length) {
+      const mid = sunMc.points[Math.floor(sunMc.points.length / 2)];
+      controller.flyTo(0, mid.lon, 14_000_000);
+    }
+  }, [controller, lines]);
 
   return (
     <div
@@ -83,6 +124,13 @@ export default function Zodisphere3dPrototypePage() {
         </Link>
       </header>
 
+      {/* Phase 3 verification readout — confirms the rendered line's geometry. */}
+      {mounted && enabled && webglOk && !error && lineNote && (
+        <div className="absolute top-20 left-5 z-20 max-w-[340px] rounded-lg bg-black/55 backdrop-blur border border-white/10 px-3 py-2 text-[12px] text-amber-200">
+          {lineNote}
+        </div>
+      )}
+
       {!mounted ? null : !enabled ? (
         <ZodisphereFallbackView
           message="The 3D globe preview isn’t enabled for your account yet."
@@ -98,7 +146,7 @@ export default function Zodisphere3dPrototypePage() {
       ) : (
         <>
           <ZodisphereErrorBoundary classicHref="/zodisphere">
-            <ZodisphereGlobeCesium key={retryKey} onError={setError} onReady={setController} />
+            <ZodisphereGlobeCesium key={retryKey} onError={setError} onReady={setController} astroLines={lines} />
           </ZodisphereErrorBoundary>
           {/* Camera controls — always give the user an explicit way to zoom,
               in addition to scroll/pinch. */}
