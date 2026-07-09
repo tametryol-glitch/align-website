@@ -37,6 +37,8 @@ export interface ZodisphereGlobeCesiumProps {
   initialHeightMeters?: number;
   /** Astrocartography lines to draw on the globe (already engine-projected). */
   astroLines?: AcgLine3D[];
+  /** Draw a text label (planet + angle) on each line. */
+  astroLabels?: boolean;
   /** The user's own birthplace, shown as an orientation marker. */
   myPlace?: { lat: number; lng: number; label: string } | null;
   /** Diagnostic status string (prototype only) for an on-screen readout. */
@@ -59,6 +61,7 @@ export default function ZodisphereGlobeCesium({
   onError,
   onStatus,
   astroLines,
+  astroLabels,
   myPlace,
   initialHeightMeters = DEFAULT_HEIGHT,
 }: ZodisphereGlobeCesiumProps) {
@@ -245,8 +248,8 @@ export default function ZodisphereGlobeCesium({
   // is ready). The renderer diff-replaces entities; unchanged calls are cheap.
   useEffect(() => {
     if (!viewerReady || !rendererRef.current) return;
-    rendererRef.current.render(astroLines ?? []);
-  }, [astroLines, viewerReady]);
+    rendererRef.current.render(astroLines ?? [], !!astroLabels);
+  }, [astroLines, astroLabels, viewerReady]);
 
   // Birthplace orientation marker (a teal pin + label), so the user can see
   // where they are relative to the astro lines.

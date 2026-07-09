@@ -12,15 +12,18 @@
  */
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { isZodisphere3dEnabled } from '@/config/featureFlags';
 import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereErrorBoundary';
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
-import { getAstrocartographyLines, type AcgLine3D } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
-import { Plus, Minus, Home } from 'lucide-react';
+import { getAstrocartographyLines, type AcgLine3D, type AcgAngle } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
+import { Plus, Minus, Home, Tag } from 'lucide-react';
+
+const PLANET_ORDER = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
 
 // Code-split Cesium into its own client chunk — the rest of Align never pays
 // its bundle cost, and it can only load in the browser.
@@ -56,8 +59,13 @@ export default function Zodisphere3dPrototypePage() {
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const [controller, setController] = useState<ZodisphereGlobeController | null>(null);
-  const [lines, setLines] = useState<AcgLine3D[]>([]);
-  const [lineNote, setLineNote] = useState('');
+  const [allLines, setAllLines] = useState<AcgLine3D[]>([]);
+  const [note, setNote] = useState('');
+  const [hiddenPlanets, setHiddenPlanets] = useState<Set<string>>(new Set());
+  const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
+  const [showLabels, setShowLabels] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(true);
+  const [flewToHome, setFlewToHome] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -67,45 +75,55 @@ export default function Zodisphere3dPrototypePage() {
   const enabled = isZodisphere3dEnabled(profile?.email);
   const retry = useCallback(() => { setError(null); setRetryKey((k) => k + 1); }, []);
 
-  // Phase 3: fetch ONE verified line (Sun · MC) via the adapter and verify it.
+  // Phase 4: fetch ALL planet lines (Sun…Pluto × ASC/DSC/MC/IC) via the adapter.
   useEffect(() => {
     if (!enabled || !profile) return;
     let alive = true;
     (async () => {
       if (!profile.birth_date || profile.latitude == null) {
-        if (alive) setLineNote('Add your birth date, time and place in your profile to see astro lines.');
+        if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      const result = await getAstrocartographyLines(profile, { planets: ['Sun'], angles: ['MC'] });
+      const result = await getAstrocartographyLines(profile); // all planets, all angles
       if (!alive) return;
-      setLines(result);
-      // Verification: an MC line must be a constant-longitude meridian.
-      const sunMc = result.find((l) => l.id === 'Sun:MC');
-      if (sunMc && sunMc.points.length > 1) {
-        const lons = sunMc.points.map((p) => p.lon);
-        const spread = Math.max(...lons) - Math.min(...lons);
-        const meridianLon = lons[Math.floor(lons.length / 2)];
-        setLineNote(
-          `Sun · MC meridian ${meridianLon.toFixed(2)}° — ${sunMc.points.length} pts, ` +
-          `${spread < 0.01 ? 'verified straight meridian ✓' : 'NOT constant ✗'}. ` +
-          `This is where the Sun sits on the Midheaven across Earth — not your birthplace (◉ marks that). ` +
-          `Phase 4 adds all planet lines.`,
-        );
-      } else {
-        setLineNote('Sun · MC line unavailable for this chart.');
-      }
+      setAllLines(result);
+      const planets = new Set(result.map((l) => l.planet)).size;
+      setNote(result.length
+        ? `${result.length} lines · ${planets} planets × ASC/DSC/MC/IC. Tap a planet below to toggle it.`
+        : 'No lines available for this chart.');
     })();
     return () => { alive = false; };
   }, [enabled, profile]);
 
-  // When the line and camera are both ready, fly to the meridian so it's in view.
+  // Visible subset after the planet/angle filters.
+  const visibleLines = useMemo(
+    () => allLines.filter((l) => !hiddenPlanets.has(l.planet) && !hiddenAngles.has(l.angle)),
+    [allLines, hiddenPlanets, hiddenAngles],
+  );
+
+  // Planets present, in canonical order, each with its colour (from the engine).
+  const planetLegend = useMemo(() => {
+    const byPlanet = new Map<string, string>();
+    for (const l of allLines) if (!byPlanet.has(l.planet)) byPlanet.set(l.planet, l.color);
+    return PLANET_ORDER.filter((p) => byPlanet.has(p)).map((p) => ({ planet: p, color: byPlanet.get(p)! }));
+  }, [allLines]);
+
+  // Once lines + camera are ready, fly to the birthplace so the user sees the
+  // lines around home (falls back to a full-globe framing if no birthplace).
   useEffect(() => {
-    const sunMc = lines.find((l) => l.id === 'Sun:MC');
-    if (controller && sunMc && sunMc.points.length) {
-      const mid = sunMc.points[Math.floor(sunMc.points.length / 2)];
-      controller.flyTo(0, mid.lon, 14_000_000);
+    if (flewToHome || !controller || allLines.length === 0) return;
+    if (profile?.latitude != null && profile?.longitude != null) {
+      controller.flyTo(profile.latitude, profile.longitude, 9_000_000);
+      setFlewToHome(true);
     }
-  }, [controller, lines]);
+  }, [controller, allLines, profile, flewToHome]);
+
+  const togglePlanet = (p: string) => setHiddenPlanets((s) => {
+    const n = new Set(s); n.has(p) ? n.delete(p) : n.add(p); return n;
+  });
+  const toggleAngle = (a: AcgAngle) => setHiddenAngles((s) => {
+    const n = new Set(s); n.has(a) ? n.delete(a) : n.add(a); return n;
+  });
 
   return (
     <div
@@ -126,10 +144,63 @@ export default function Zodisphere3dPrototypePage() {
         </Link>
       </header>
 
-      {/* Phase 3 verification readout — confirms the rendered line's geometry. */}
-      {mounted && enabled && webglOk && !error && lineNote && (
-        <div className="absolute top-20 left-5 z-20 max-w-[340px] rounded-lg bg-black/55 backdrop-blur border border-white/10 px-3 py-2 text-[12px] text-amber-200">
-          {lineNote}
+      {/* Info readout. */}
+      {mounted && enabled && webglOk && !error && note && (
+        <div className="absolute top-20 left-5 z-20 max-w-[320px] rounded-lg bg-black/55 backdrop-blur border border-white/10 px-3 py-2 text-[12px] text-white/80">
+          {note}
+        </div>
+      )}
+
+      {/* Layer control: planet + angle filters and labels toggle. */}
+      {mounted && enabled && webglOk && !error && planetLegend.length > 0 && (
+        <div className="absolute top-36 left-5 z-20 w-[190px] rounded-xl bg-black/55 backdrop-blur border border-white/10 text-white overflow-hidden">
+          <button
+            onClick={() => setPanelOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold hover:bg-white/5"
+          >
+            <span>Layers</span>
+            <span className="text-white/50">{panelOpen ? '▾' : '▸'}</span>
+          </button>
+          {panelOpen && (
+            <div className="px-3 pb-3 space-y-2">
+              <div className="space-y-1">
+                {planetLegend.map(({ planet, color }) => {
+                  const on = !hiddenPlanets.has(planet);
+                  return (
+                    <button
+                      key={planet}
+                      onClick={() => togglePlanet(planet)}
+                      className={`w-full flex items-center gap-2 text-[12px] px-1 py-0.5 rounded ${on ? '' : 'opacity-40'} hover:bg-white/5`}
+                    >
+                      <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: color }} />
+                      <span className="flex-1 text-left">{planet}</span>
+                      <span className="text-white/40">{on ? '✓' : ''}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="pt-2 border-t border-white/10 flex flex-wrap gap-1">
+                {ALL_ANGLES.map((a) => {
+                  const on = !hiddenAngles.has(a);
+                  return (
+                    <button
+                      key={a}
+                      onClick={() => toggleAngle(a)}
+                      className={`px-2 py-0.5 rounded text-[11px] border ${on ? 'bg-white/15 border-white/30' : 'bg-transparent border-white/10 text-white/40'}`}
+                    >
+                      {a}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => setShowLabels((v) => !v)}
+                className={`w-full flex items-center justify-center gap-1.5 px-2 py-1 rounded-lg text-[11px] border ${showLabels ? 'bg-white/15 border-white/30' : 'bg-transparent border-white/10 text-white/50'}`}
+              >
+                <Tag className="w-3 h-3" /> Labels {showLabels ? 'on' : 'off'}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -152,7 +223,8 @@ export default function Zodisphere3dPrototypePage() {
               key={retryKey}
               onError={setError}
               onReady={setController}
-              astroLines={lines}
+              astroLines={visibleLines}
+              astroLabels={showLabels}
               myPlace={
                 profile?.latitude != null && profile?.longitude != null
                   ? { lat: profile.latitude, lng: profile.longitude, label: profile.birth_location || 'Your birthplace' }

@@ -29,6 +29,18 @@ function splitAtSeam(points: GeoPoint[]): GeoPoint[][] {
   return segments;
 }
 
+/** Choose a readable anchor for a line's label — the point nearest ~40°N, a
+ *  generally land-rich, camera-facing latitude, falling back to the midpoint. */
+function pickLabelPoint(points: GeoPoint[]): GeoPoint {
+  let best = points[Math.floor(points.length / 2)];
+  let bestDist = Infinity;
+  for (const p of points) {
+    const d = Math.abs(p.lat - 40);
+    if (d < bestDist) { bestDist = d; best = p; }
+  }
+  return best;
+}
+
 export class AstrocartographyLineRenderer {
   private entities: CesiumNS.Entity[] = [];
 
@@ -38,18 +50,19 @@ export class AstrocartographyLineRenderer {
   ) {}
 
   /** Replace all drawn lines with the given set. */
-  render(lines: AcgLine3D[]): void {
+  render(lines: AcgLine3D[], showLabels = false): void {
     this.clear();
     const { Cesium } = this;
     for (const line of lines) {
       const color = Cesium.Color.fromCssColorString(line.color || '#FFFFFF');
-      for (const seg of splitAtSeam(line.points)) {
-        if (seg.length < 2) continue;
+      const segments = splitAtSeam(line.points);
+      segments.forEach((seg, si) => {
+        if (seg.length < 2) return;
         const positions = Cesium.Cartesian3.fromDegreesArray(
           seg.flatMap((p) => [p.lon, p.lat]),
         );
         const entity = this.viewer.entities.add({
-          id: `acg-${line.id}-${this.entities.length}`,
+          id: `acg-${line.id}-${si}`,
           polyline: {
             positions,
             width: 4,
@@ -66,6 +79,28 @@ export class AstrocartographyLineRenderer {
           },
         });
         this.entities.push(entity);
+      });
+
+      // A single text label per line (planet + angle) — NOT colour-only, so it
+      // stays identifiable for colour-vision-limited users. Placed near a
+      // readable mid-northern latitude on the line.
+      if (showLabels && line.points.length) {
+        const anchor = pickLabelPoint(line.points);
+        this.entities.push(this.viewer.entities.add({
+          id: `acg-label-${line.id}`,
+          position: Cesium.Cartesian3.fromDegrees(anchor.lon, anchor.lat),
+          label: {
+            text: `${line.planet} ${line.angle}`,
+            font: '600 12px sans-serif',
+            fillColor: color,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 3,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            disableDepthTestDistance: 0,
+            scaleByDistance: new Cesium.NearFarScalar(1.5e6, 1.0, 4.0e7, 0.5),
+          },
+        }));
       }
     }
     this.viewer.scene.requestRender();
