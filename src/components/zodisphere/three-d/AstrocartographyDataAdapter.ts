@@ -11,6 +11,14 @@
  */
 
 import { getMyAcgLines } from '@/lib/zodisphereAcg';
+import {
+  getMyChartBodies,
+  projectWide,
+  bodyInfoOf,
+  ASTEROID_CATALOG,
+  ASTEROID_CATALOG_NAMES,
+} from '@/lib/zodisphereMidpoints';
+import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
 
 export type AcgAngle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
@@ -67,6 +75,67 @@ export async function getAstrocartographyLines(
     });
   }
   return out;
+}
+
+// ── Full body catalog (planets + points + asteroids) ────────────────────────
+
+/** The classic planets, always available for ACG lines. */
+export const ACG_PLANETS = [
+  'Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto',
+];
+
+/** Extra chart points that are meaningful to project (NOT the angles Asc/MC
+ *  themselves). Availability depends on the chart; unavailable ones simply
+ *  produce no line rather than a wrong one. */
+export const ACG_POINTS = ['Chiron', 'North Node', 'South Node', 'Lilith', 'Vertex'];
+
+/** Every asteroid the backend can compute on request (name → catalog number). */
+export const ACG_ASTEROIDS = ASTEROID_CATALOG_NAMES;
+
+/** Points/angles we must never try to project as a body. */
+const NON_PROJECTABLE = new Set(['Ascendant', 'Midheaven', 'Descendant', 'IC']);
+
+/**
+ * Project ACG lines for an ARBITRARY set of bodies — planets, points and/or
+ * asteroids — reusing the SAME validated pipeline: getMyChartBodies fetches the
+ * real longitudes (asteroids via the backend's extra_asteroids), and projectWide
+ * (unit-tested) turns each into ASC/DSC/MC/IC lines. No new astronomy. Bodies
+ * the chart can't produce are silently skipped (never faked).
+ *
+ * Returns the lines plus the list of requested bodies that were unavailable, so
+ * the UI can honestly mark them rather than imply they rendered.
+ */
+export async function getBodyAcgLines(
+  profile: any,
+  bodyNames: string[],
+): Promise<{ lines: AcgLine3D[]; unavailable: string[] }> {
+  if (!bodyNames.length) return { lines: [], unavailable: [] };
+  // Ask the backend to also compute any requested asteroids.
+  const extras = bodyNames.filter((n) => n in ASTEROID_CATALOG);
+  const chart = await getMyChartBodies(profile, extras);
+  if (!chart) return { lines: [], unavailable: bodyNames };
+
+  const gmst = gmstAtMoment(chart.birthDate);
+  const wanted = bodyNames.filter((n) => !NON_PROJECTABLE.has(n));
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+
+  const lines: AcgLine3D[] = [];
+  const unavailable: string[] = [];
+  for (const name of wanted) {
+    const lon = byName.get(name);
+    if (lon == null || !Number.isFinite(lon)) { unavailable.push(name); continue; }
+    const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
+    for (const raw of projectWide(lon, gmst)) {
+      lines.push({
+        id: `${name}:${raw.lineType}`,
+        planet: name,
+        angle: raw.lineType as AcgAngle,
+        color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
+      });
+    }
+  }
+  return { lines, unavailable };
 }
 
 /**

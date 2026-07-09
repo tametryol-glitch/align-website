@@ -175,6 +175,33 @@ export default function ZodisphereGlobeCesium({
         cc.minimumZoomDistance = 50;
         cc.maximumZoomDistance = 40_000_000;
 
+        // Double-tap / double-click: STEP the zoom in toward the exact tapped
+        // point (not a one-shot zoom-all-the-way). Each double-tap roughly
+        // halves the altitude and re-centres on where the user tapped. We
+        // replace Cesium's default double-click (which tracks entities).
+        const sseh = viewer.screenSpaceEventHandler;
+        sseh.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        sseh.setInputAction((movement: any) => {
+          if (viewer.isDestroyed()) return;
+          const ellipsoid = viewer.scene.globe.ellipsoid;
+          // Prefer the true terrain/surface point under the cursor; fall back
+          // to the ellipsoid intersection.
+          let cartesian = viewer.scene.pickPosition(movement.position);
+          if (!Cesium.defined(cartesian)) {
+            cartesian = viewer.camera.pickEllipsoid(movement.position, ellipsoid) as any;
+          }
+          if (!Cesium.defined(cartesian)) return;
+          const carto = Cesium.Cartographic.fromCartesian(cartesian);
+          const lng = Cesium.Math.toDegrees(carto.longitude);
+          const lat = Cesium.Math.toDegrees(carto.latitude);
+          const h = viewer.camera.positionCartographic.height;
+          const newH = Math.max(h * 0.5, 250); // one stepped level in, floor 250 m
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(lng, lat, newH),
+            duration: 0.5,
+          });
+        }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
         // Frame the whole Earth reliably (Cesium's default home rectangle).
         viewer.camera.flyHome(0);
         onStatus?.('ready');

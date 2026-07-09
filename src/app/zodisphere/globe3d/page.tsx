@@ -19,10 +19,13 @@ import { isZodisphere3dEnabled } from '@/config/featureFlags';
 import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereErrorBoundary';
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
-import { getAstrocartographyLines, type AcgLine3D, type AcgAngle } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
-import { Plus, Minus, Home, Tag } from 'lucide-react';
+import {
+  getBodyAcgLines, ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
+  type AcgLine3D, type AcgAngle,
+} from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
+import { Plus, Minus, Home, Tag, X, Search } from 'lucide-react';
 
-const PLANET_ORDER = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
 
 // Code-split Cesium into its own client chunk — the rest of Align never pays
@@ -61,11 +64,14 @@ export default function Zodisphere3dPrototypePage() {
   const [controller, setController] = useState<ZodisphereGlobeController | null>(null);
   const [allLines, setAllLines] = useState<AcgLine3D[]>([]);
   const [note, setNote] = useState('');
-  const [hiddenPlanets, setHiddenPlanets] = useState<Set<string>>(new Set());
+  // Bodies whose lines are fetched + shown (planets by default; add points/asteroids).
+  const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
   const [flewToHome, setFlewToHome] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -75,7 +81,7 @@ export default function Zodisphere3dPrototypePage() {
   const enabled = isZodisphere3dEnabled(profile?.email);
   const retry = useCallback(() => { setError(null); setRetryKey((k) => k + 1); }, []);
 
-  // Phase 4: fetch ALL planet lines (Sun…Pluto × ASC/DSC/MC/IC) via the adapter.
+  // Fetch ACG lines for the active bodies (planets + any added points/asteroids).
   useEffect(() => {
     if (!enabled || !profile) return;
     let alive = true;
@@ -84,29 +90,44 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      const result = await getAstrocartographyLines(profile); // all planets, all angles
+      const { lines, unavailable } = await getBodyAcgLines(profile, bodies);
       if (!alive) return;
-      setAllLines(result);
-      const planets = new Set(result.map((l) => l.planet)).size;
-      setNote(result.length
-        ? `${result.length} lines · ${planets} planets × ASC/DSC/MC/IC. Tap a planet below to toggle it.`
-        : 'No lines available for this chart.');
+      setAllLines(lines);
+      const shown = new Set(lines.map((l) => l.planet)).size;
+      setNote(
+        `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC.` +
+        (unavailable.length ? ` Unavailable for this chart: ${unavailable.join(', ')}.` : ''),
+      );
     })();
     return () => { alive = false; };
-  }, [enabled, profile]);
+  }, [enabled, profile, bodies]);
 
-  // Visible subset after the planet/angle filters.
+  // Visible subset after the body/angle filters.
   const visibleLines = useMemo(
-    () => allLines.filter((l) => !hiddenPlanets.has(l.planet) && !hiddenAngles.has(l.angle)),
-    [allLines, hiddenPlanets, hiddenAngles],
+    () => allLines.filter((l) => !hidden.has(l.planet) && !hiddenAngles.has(l.angle)),
+    [allLines, hidden, hiddenAngles],
   );
 
-  // Planets present, in canonical order, each with its colour (from the engine).
-  const planetLegend = useMemo(() => {
-    const byPlanet = new Map<string, string>();
-    for (const l of allLines) if (!byPlanet.has(l.planet)) byPlanet.set(l.planet, l.color);
-    return PLANET_ORDER.filter((p) => byPlanet.has(p)).map((p) => ({ planet: p, color: byPlanet.get(p)! }));
+  // Active bodies present in the result, each with its engine colour.
+  const bodyLegend = useMemo(() => {
+    const byBody = new Map<string, string>();
+    for (const l of allLines) if (!byBody.has(l.planet)) byBody.set(l.planet, l.color);
+    // planets first (canonical order), then anything else (points/asteroids).
+    const ordered = [
+      ...PLANET_ORDER.filter((p) => byBody.has(p)),
+      ...Array.from(byBody.keys()).filter((b) => !PLANET_ORDER.includes(b)).sort(),
+    ];
+    return ordered.map((b) => ({ body: b, color: byBody.get(b)! }));
   }, [allLines]);
+
+  // Bodies the user can ADD (points + asteroids not already active), filtered by search.
+  const addableBodies = useMemo(() => {
+    const active = new Set(bodies);
+    const pool = [...ACG_POINTS, ...ACG_ASTEROIDS].filter((b) => !active.has(b));
+    const q = search.trim().toLowerCase();
+    const list = q ? pool.filter((b) => b.toLowerCase().includes(q)) : pool;
+    return list.slice(0, 40);
+  }, [bodies, search]);
 
   // Once lines + camera are ready, fly to the birthplace so the user sees the
   // lines around home (falls back to a full-globe framing if no birthplace).
@@ -118,9 +139,17 @@ export default function Zodisphere3dPrototypePage() {
     }
   }, [controller, allLines, profile, flewToHome]);
 
-  const togglePlanet = (p: string) => setHiddenPlanets((s) => {
-    const n = new Set(s); n.has(p) ? n.delete(p) : n.add(p); return n;
+  const toggleBody = (b: string) => setHidden((s) => {
+    const n = new Set(s); n.has(b) ? n.delete(b) : n.add(b); return n;
   });
+  const removeBody = (b: string) => {
+    setBodies((prev) => prev.filter((x) => x !== b));
+    setHidden((s) => { const n = new Set(s); n.delete(b); return n; });
+  };
+  const addBody = (b: string) => {
+    setBodies((prev) => (prev.includes(b) ? prev : [...prev, b]));
+    setSearch('');
+  };
   const toggleAngle = (a: AcgAngle) => setHiddenAngles((s) => {
     const n = new Set(s); n.has(a) ? n.delete(a) : n.add(a); return n;
   });
@@ -151,34 +180,73 @@ export default function Zodisphere3dPrototypePage() {
         </div>
       )}
 
-      {/* Layer control: planet + angle filters and labels toggle. */}
-      {mounted && enabled && webglOk && !error && planetLegend.length > 0 && (
-        <div className="absolute top-36 left-5 z-20 w-[190px] rounded-xl bg-black/55 backdrop-blur border border-white/10 text-white overflow-hidden">
+      {/* Layer control: body list (planets/points/asteroids) + asteroid search
+          + angle filters + labels toggle. */}
+      {mounted && enabled && webglOk && !error && (
+        <div className="absolute top-36 left-5 z-20 w-[220px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
           <button
             onClick={() => setPanelOpen((v) => !v)}
             className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold hover:bg-white/5"
           >
-            <span>Layers</span>
+            <span>Layers · {bodyLegend.length}</span>
             <span className="text-white/50">{panelOpen ? '▾' : '▸'}</span>
           </button>
           {panelOpen && (
             <div className="px-3 pb-3 space-y-2">
-              <div className="space-y-1">
-                {planetLegend.map(({ planet, color }) => {
-                  const on = !hiddenPlanets.has(planet);
+              {/* Active bodies */}
+              <div className="space-y-0.5 max-h-[240px] overflow-y-auto pr-1">
+                {bodyLegend.map(({ body, color }) => {
+                  const on = !hidden.has(body);
+                  const isPlanet = PLANET_ORDER.includes(body);
                   return (
-                    <button
-                      key={planet}
-                      onClick={() => togglePlanet(planet)}
-                      className={`w-full flex items-center gap-2 text-[12px] px-1 py-0.5 rounded ${on ? '' : 'opacity-40'} hover:bg-white/5`}
-                    >
-                      <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: color }} />
-                      <span className="flex-1 text-left">{planet}</span>
-                      <span className="text-white/40">{on ? '✓' : ''}</span>
-                    </button>
+                    <div key={body} className={`group flex items-center gap-2 text-[12px] px-1 py-0.5 rounded hover:bg-white/5 ${on ? '' : 'opacity-40'}`}>
+                      <button onClick={() => toggleBody(body)} className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: color }} />
+                        <span className="flex-1 text-left truncate">{body}</span>
+                        <span className="text-white/40 shrink-0">{on ? '✓' : ''}</span>
+                      </button>
+                      {!isPlanet && (
+                        <button onClick={() => removeBody(body)} aria-label={`Remove ${body}`} className="text-white/30 hover:text-white/80 shrink-0">
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   );
                 })}
               </div>
+
+              {/* Add points / asteroids via search */}
+              <div className="pt-2 border-t border-white/10">
+                <div className="flex items-center gap-1.5 rounded-lg bg-white/5 border border-white/10 px-2 py-1">
+                  <Search className="w-3 h-3 text-white/40 shrink-0" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Add asteroid / point…"
+                    className="bg-transparent outline-none text-[12px] w-full placeholder:text-white/30"
+                  />
+                </div>
+                {search.trim() && (
+                  <div className="mt-1 max-h-[160px] overflow-y-auto rounded-lg border border-white/10 bg-black/40">
+                    {addableBodies.length === 0 && (
+                      <div className="px-2 py-1.5 text-[11px] text-white/40">No matches.</div>
+                    )}
+                    {addableBodies.map((b) => (
+                      <button
+                        key={b}
+                        onClick={() => addBody(b)}
+                        className="w-full flex items-center gap-2 px-2 py-1 text-[12px] text-left hover:bg-white/10"
+                      >
+                        <Plus className="w-3 h-3 text-white/40" />
+                        <span className="truncate">{b}</span>
+                        {ACG_ASTEROIDS.includes(b) && <span className="ml-auto text-[10px] text-white/30">asteroid</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Angle filters */}
               <div className="pt-2 border-t border-white/10 flex flex-wrap gap-1">
                 {ALL_ANGLES.map((a) => {
                   const on = !hiddenAngles.has(a);
