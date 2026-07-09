@@ -66,14 +66,15 @@ export class AstrocartographyLineRenderer {
           polyline: {
             positions,
             width: 4,
-            clampToGround: true,
+            // NOT clampToGround: ground-clamped polylines only support a narrow
+            // material set and were rendering invisibly. A regular geodesic
+            // polyline sits on the ellipsoid and, since Cesium doesn't
+            // depth-test against terrain by default, draws cleanly on top of
+            // the globe at every zoom — with full glow-material support.
             arcType: Cesium.ArcType.GEODESIC,
-            // Glow is one of the few materials Cesium supports on GROUND
-            // polylines (PolylineOutline is not) — it also keeps the line
-            // legible over both bright and dark terrain.
             material: new Cesium.PolylineGlowMaterialProperty({
               color,
-              glowPower: 0.25,
+              glowPower: 0.2,
               taperPower: 1.0,
             }),
           },
