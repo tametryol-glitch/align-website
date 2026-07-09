@@ -86,8 +86,10 @@ export default function Zodisphere3dPrototypePage() {
         const spread = Math.max(...lons) - Math.min(...lons);
         const meridianLon = lons[Math.floor(lons.length / 2)];
         setLineNote(
-          `Sun · MC — ${sunMc.points.length} pts, meridian ${meridianLon.toFixed(2)}° ` +
-          `(lon spread ${spread.toFixed(3)}° → ${spread < 0.01 ? 'verified meridian ✓' : 'NOT constant ✗'})`,
+          `Sun · MC meridian ${meridianLon.toFixed(2)}° — ${sunMc.points.length} pts, ` +
+          `${spread < 0.01 ? 'verified straight meridian ✓' : 'NOT constant ✗'}. ` +
+          `This is where the Sun sits on the Midheaven across Earth — not your birthplace (◉ marks that). ` +
+          `Phase 4 adds all planet lines.`,
         );
       } else {
         setLineNote('Sun · MC line unavailable for this chart.');
@@ -146,7 +148,17 @@ export default function Zodisphere3dPrototypePage() {
       ) : (
         <>
           <ZodisphereErrorBoundary classicHref="/zodisphere">
-            <ZodisphereGlobeCesium key={retryKey} onError={setError} onReady={setController} astroLines={lines} />
+            <ZodisphereGlobeCesium
+              key={retryKey}
+              onError={setError}
+              onReady={setController}
+              astroLines={lines}
+              myPlace={
+                profile?.latitude != null && profile?.longitude != null
+                  ? { lat: profile.latitude, lng: profile.longitude, label: profile.birth_location || 'Your birthplace' }
+                  : null
+              }
+            />
           </ZodisphereErrorBoundary>
           {/* Camera controls — always give the user an explicit way to zoom,
               in addition to scroll/pinch. */}

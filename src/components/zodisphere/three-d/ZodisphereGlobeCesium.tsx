@@ -37,6 +37,8 @@ export interface ZodisphereGlobeCesiumProps {
   initialHeightMeters?: number;
   /** Astrocartography lines to draw on the globe (already engine-projected). */
   astroLines?: AcgLine3D[];
+  /** The user's own birthplace, shown as an orientation marker. */
+  myPlace?: { lat: number; lng: number; label: string } | null;
   /** Diagnostic status string (prototype only) for an on-screen readout. */
   onStatus?: (status: string) => void;
 }
@@ -57,12 +59,14 @@ export default function ZodisphereGlobeCesium({
   onError,
   onStatus,
   astroLines,
+  myPlace,
   initialHeightMeters = DEFAULT_HEIGHT,
 }: ZodisphereGlobeCesiumProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<CesiumNS.Viewer | null>(null);
   const cesiumRef = useRef<typeof CesiumNS | null>(null);
   const rendererRef = useRef<AstrocartographyLineRenderer | null>(null);
+  const myPlaceEntityRef = useRef<CesiumNS.Entity | null>(null);
   const createdRef = useRef(false); // guard against StrictMode double-create
   const [viewerReady, setViewerReady] = useState(false);
 
@@ -243,6 +247,41 @@ export default function ZodisphereGlobeCesium({
     if (!viewerReady || !rendererRef.current) return;
     rendererRef.current.render(astroLines ?? []);
   }, [astroLines, viewerReady]);
+
+  // Birthplace orientation marker (a teal pin + label), so the user can see
+  // where they are relative to the astro lines.
+  useEffect(() => {
+    const Cesium = cesiumRef.current;
+    const viewer = viewerRef.current;
+    if (!viewerReady || !Cesium || !viewer || viewer.isDestroyed()) return;
+    if (myPlaceEntityRef.current) {
+      viewer.entities.remove(myPlaceEntityRef.current);
+      myPlaceEntityRef.current = null;
+    }
+    if (myPlace) {
+      myPlaceEntityRef.current = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(myPlace.lng, myPlace.lat),
+        point: {
+          pixelSize: 11,
+          color: Cesium.Color.fromCssColorString('#5eead4'),
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        },
+        label: {
+          text: myPlace.label,
+          font: '600 13px sans-serif',
+          fillColor: Cesium.Color.WHITE,
+          showBackground: true,
+          backgroundColor: Cesium.Color.fromCssColorString('#0a0e1a').withAlpha(0.75),
+          pixelOffset: new Cesium.Cartesian2(0, -20),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        },
+      });
+      viewer.scene.requestRender();
+    }
+  }, [myPlace, viewerReady]);
 
   return <div ref={containerRef} className="absolute inset-0 h-full w-full" style={{ touchAction: 'none' }} />;
 }
