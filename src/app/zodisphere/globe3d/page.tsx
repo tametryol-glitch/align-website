@@ -52,7 +52,6 @@ export default function Zodisphere3dPrototypePage() {
   const [webglOk, setWebglOk] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
-  const [status, setStatus] = useState('starting…');
 
   useEffect(() => {
     setMounted(true);
@@ -95,15 +94,8 @@ export default function Zodisphere3dPrototypePage() {
         <ZodisphereFallbackView message={error} onRetry={retry} classicHref="/zodisphere" />
       ) : (
         <ZodisphereErrorBoundary classicHref="/zodisphere">
-          <ZodisphereGlobeCesium key={retryKey} onError={setError} onStatus={setStatus} />
+          <ZodisphereGlobeCesium key={retryKey} onError={setError} />
         </ZodisphereErrorBoundary>
-      )}
-
-      {/* Prototype diagnostic readout — removed once the globe is confirmed. */}
-      {mounted && enabled && webglOk && !error && (
-        <div className="absolute bottom-2 left-2 z-30 rounded-md bg-black/70 px-2 py-1 font-mono text-[10px] text-lime-300 pointer-events-none">
-          {status}
-        </div>
       )}
     </div>
   );

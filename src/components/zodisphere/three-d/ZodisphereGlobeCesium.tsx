@@ -64,21 +64,6 @@ export default function ZodisphereGlobeCesium({
     let cancelled = false;
     let styleLink: HTMLLinkElement | null = null;
     let contextLostHandler: ((e: Event) => void) | null = null;
-    let statusTimer: ReturnType<typeof setInterval> | null = null;
-
-    // DIAGNOSTIC: capture the first CSP violation and JS error so the status
-    // overlay can name the real blocker (e.g. a worker blocked by worker-src).
-    let cspErr = '';
-    let jsErr = '';
-    const cspHandler = (e: SecurityPolicyViolationEvent) => {
-      if (!cspErr) cspErr = `CSP:${e.violatedDirective}:${(e.blockedURI || '').slice(-32)}`;
-    };
-    const errHandler = (e: ErrorEvent) => {
-      if (!jsErr && e?.message) jsErr = `err:${e.message.slice(0, 48)}`;
-    };
-    document.addEventListener('securitypolicyviolation', cspHandler);
-    window.addEventListener('error', errHandler);
-
     (async () => {
       try {
         // Self-hosted assets (copied to /public/cesium by scripts/copy-cesium.mjs).
@@ -135,34 +120,22 @@ export default function ZodisphereGlobeCesium({
         if (cancelled) { viewer.destroy(); return; }
         viewerRef.current = viewer;
 
-        // DIAGNOSTIC: world terrain temporarily DISABLED to shrink the failure
-        // surface — the default ellipsoid terrain needs no ion terrain fetch, so
-        // if the globe still won't render, terrain streaming is not the cause.
-        // Re-enabled once base rendering is confirmed.
-        // if (hasIon) {
-        //   try { viewer.terrainProvider = await Cesium.createWorldTerrainAsync(); } catch {}
-        // }
+        // Streamed 3D world terrain (relief/mountains) when we have an ion token.
+        if (hasIon) {
+          try {
+            viewer.terrainProvider = await Cesium.createWorldTerrainAsync();
+          } catch {
+            /* fall back silently to the smooth ellipsoid terrain */
+          }
+        }
 
-        // Lighting OFF so the whole globe is evenly lit (no dark night side that
-        // reads as "no globe"). A day/night terminator can return in a later
-        // phase once the base experience is confirmed.
+        // Lighting OFF so the whole globe is evenly lit (no dark night side). A
+        // day/night terminator can return in a later phase.
         viewer.scene.globe.enableLighting = false;
         viewer.scene.skyAtmosphere.show = true;
-        // DIAGNOSTIC (prototype): force the globe visible with a bright base
-        // colour so its geometry is unmistakable even before/without imagery.
-        // If we see a blue sphere → geometry works, problem is imagery. If we
-        // still see only stars → it's camera/geometry. Removed once confirmed.
-        viewer.scene.globe.show = true;
-        viewer.scene.globe.baseColor = Cesium.Color.DODGERBLUE;
-
-        // Capture imagery load errors so they surface on-screen, not silently.
-        let imageryErr = '';
-        try {
-          const base = viewer.imageryLayers.get(0);
-          base?.imageryProvider?.errorEvent?.addEventListener?.((e: any) => {
-            imageryErr = `imgErr:${e?.error?.message || e?.message || 'load-failed'}`.slice(0, 60);
-          });
-        } catch { /* provider may still be resolving */ }
+        // Deep-ocean base colour shows through only where imagery is still
+        // streaming, so gaps read as sea rather than a jarring flat fill.
+        viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#0a1b2e');
 
         // Recover-or-report on WebGL context loss instead of freezing.
         const canvas = viewer.scene.canvas as HTMLCanvasElement;
@@ -174,21 +147,7 @@ export default function ZodisphereGlobeCesium({
 
         // Frame the whole Earth reliably (Cesium's default home rectangle).
         viewer.camera.flyHome(0);
-
-        // On-screen diagnostic readout (prototype only): confirms token, imagery
-        // layers, tile loading and camera height so a screenshot pinpoints any
-        // failure without a console.
-        if (onStatus) {
-          statusTimer = setInterval(() => {
-            if (viewer.isDestroyed()) return;
-            const g = viewer.scene.globe;
-            const camKm = Math.round(viewer.camera.positionCartographic.height / 1000);
-            onStatus(
-              `ion:${hasIon ? 'yes' : 'no'} imagery:${viewer.imageryLayers.length} ` +
-              `tiles:${g.tilesLoaded} camKm:${camKm} ${imageryErr} ${cspErr} ${jsErr}`.trim(),
-            );
-          }, 700);
-        }
+        onStatus?.('ready');
 
         const controller: ZodisphereGlobeController = {
           flyTo: (lat, lng, heightMeters = 1_500_000) => {
@@ -215,9 +174,6 @@ export default function ZodisphereGlobeCesium({
 
     return () => {
       cancelled = true;
-      if (statusTimer) clearInterval(statusTimer);
-      document.removeEventListener('securitypolicyviolation', cspHandler);
-      window.removeEventListener('error', errHandler);
       const viewer = viewerRef.current;
       if (viewer && !viewer.isDestroyed()) {
         try {
