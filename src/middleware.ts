@@ -72,6 +72,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/terms') ||
     pathname.startsWith('/zodisphere/embed') || // chromeless globe renderer for the mobile WebView — holds no data or tokens; the app injects aggregates via postMessage
     pathname.startsWith('/geo/') ||             // public map assets (country GeoJSON) — must load unauthenticated for the embed globe
+    pathname.startsWith('/cesium/') ||          // self-hosted CesiumJS engine assets (Workers/Assets/Widgets) — must load unauthenticated or the 3D globe can't initialize
     pathname.startsWith('/rush-nation') ||
     pathname.startsWith('/affiliates') ||
     pathname.startsWith('/ref/') ||
