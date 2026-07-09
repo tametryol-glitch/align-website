@@ -84,12 +84,15 @@ export default function ZodisphereGlobeCesium({
         const hasIon = !!token;
         if (hasIon) Cesium.Ion.defaultAccessToken = token as string;
 
-        // Imagery: ion world imagery when tokened, else open OSM tiles.
-        const imageryProvider = hasIon
-          ? undefined // let the Viewer use the ion default base layer
-          : new Cesium.OpenStreetMapImageryProvider({
-              url: 'https://tile.openstreetmap.org/',
-            });
+        // EXPLICIT base imagery so the globe always has a texture (never relies
+        // on the Viewer's implicit default): ion world (satellite) when tokened,
+        // else open OSM tiles.
+        const baseLayer = hasIon
+          ? Cesium.ImageryLayer.fromWorldImagery({})
+          : Cesium.ImageryLayer.fromProviderAsync(
+              Promise.resolve(new Cesium.OpenStreetMapImageryProvider({ url: 'https://tile.openstreetmap.org/' })),
+              {},
+            );
 
         const viewer = new Cesium.Viewer(containerRef.current, {
           // Strip default chrome — Zodisphere provides its own controls.
@@ -103,11 +106,13 @@ export default function ZodisphereGlobeCesium({
           fullscreenButton: false,
           infoBox: false,
           selectionIndicator: false,
-          // Perf: render on demand, not a continuous loop.
-          requestRenderMode: true,
-          maximumRenderTimeChange: Infinity,
-          // Keyless path uses a flat ellipsoid; ion path gets streamed terrain.
-          ...(hasIon ? {} : { baseLayer: Cesium.ImageryLayer.fromProviderAsync(Promise.resolve(imageryProvider!), {}) }),
+          baseLayer,
+          // NOTE: requestRenderMode (render-on-demand) is intentionally OFF for
+          // the prototype — with it on, the globe can deadlock loading its first
+          // tiles (no render → no tile load → no render), showing only the star
+          // field. Phase 6 re-enables it properly with explicit requestRender()
+          // hooks on camera/data changes.
+          requestRenderMode: false,
         });
 
         if (cancelled) { viewer.destroy(); return; }
@@ -124,7 +129,10 @@ export default function ZodisphereGlobeCesium({
 
         // Cosmetic + privacy: no default Bing logo watermark abuse; keep the
         // credit container (required attribution) visible but out of the way.
-        viewer.scene.globe.enableLighting = true;
+        // Lighting OFF so the whole globe is evenly lit (no dark night side that
+        // reads as "no globe"). A day/night terminator can return in a later
+        // phase once the base experience is confirmed.
+        viewer.scene.globe.enableLighting = false;
         viewer.scene.skyAtmosphere.show = true;
 
         // Recover-or-report on WebGL context loss instead of freezing.
