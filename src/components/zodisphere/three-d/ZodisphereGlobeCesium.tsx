@@ -41,6 +41,8 @@ export interface ZodisphereGlobeCesiumProps {
 export interface ZodisphereGlobeController {
   flyTo: (lat: number, lng: number, heightMeters?: number) => void;
   home: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
   isDestroyed: () => boolean;
 }
 
@@ -145,9 +147,30 @@ export default function ZodisphereGlobeCesium({
         };
         canvas.addEventListener('webglcontextlost', contextLostHandler, false);
 
+        // Camera controls — explicitly enable rotate/zoom/tilt and set sane
+        // zoom limits (down to ~50 m, out to deep space) so pinch/wheel zoom
+        // works reliably across devices.
+        const cc = viewer.scene.screenSpaceCameraController;
+        cc.enableInputs = true;
+        cc.enableRotate = true;
+        cc.enableZoom = true;
+        cc.enableTilt = true;
+        cc.enableTranslate = true;
+        cc.enableLook = true;
+        cc.minimumZoomDistance = 50;
+        cc.maximumZoomDistance = 40_000_000;
+
         // Frame the whole Earth reliably (Cesium's default home rectangle).
         viewer.camera.flyHome(0);
         onStatus?.('ready');
+
+        // Zoom by a fraction of the current altitude so it feels consistent at
+        // every scale (small steps up close, big steps far out).
+        const zoomBy = (factor: number) => {
+          if (viewer.isDestroyed()) return;
+          const h = viewer.camera.positionCartographic.height;
+          viewer.camera.zoomIn(h * factor);
+        };
 
         const controller: ZodisphereGlobeController = {
           flyTo: (lat, lng, heightMeters = 1_500_000) => {
@@ -164,6 +187,8 @@ export default function ZodisphereGlobeCesium({
               duration: 1.4,
             });
           },
+          zoomIn: () => zoomBy(0.35),
+          zoomOut: () => zoomBy(-0.55),
           isDestroyed: () => viewer.isDestroyed(),
         };
         onReady?.(controller);
@@ -194,5 +219,5 @@ export default function ZodisphereGlobeCesium({
     };
   }, [initialHeightMeters, onReady, onError, onStatus]);
 
-  return <div ref={containerRef} className="absolute inset-0 h-full w-full" />;
+  return <div ref={containerRef} className="absolute inset-0 h-full w-full" style={{ touchAction: 'none' }} />;
 }
