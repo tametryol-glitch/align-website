@@ -158,9 +158,27 @@ export default function ZodisphereGlobeCesium({
         // day/night terminator can return in a later phase.
         viewer.scene.globe.enableLighting = false;
         viewer.scene.skyAtmosphere.show = true;
+        // The GROUND-atmosphere shader renders the globe BLACK on many mobile
+        // GPUs (while vector lines still draw) — the exact "dark Earth on phone,
+        // vivid on desktop" symptom. Turn it off; it's just a subtle tint on
+        // desktop, so imagery stays vivid everywhere. Fog off for the same
+        // reason (it can over-darken at grazing angles on mobile).
+        viewer.scene.globe.showGroundAtmosphere = false;
+        viewer.scene.fog.enabled = false;
         // Deep-ocean base colour shows through only where imagery is still
         // streaming, so gaps read as sea rather than a jarring flat fill.
         viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#0a1b2e');
+
+        // Phones: cut GPU/memory pressure so imagery tiles aren't starved
+        // (another cause of a dark globe). Coarser tiles + smaller cache + no
+        // super-sampling; the astro maths is unaffected.
+        const isMobile = typeof navigator !== 'undefined'
+          && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+        if (isMobile) {
+          viewer.resolutionScale = 1.0;
+          viewer.scene.globe.maximumScreenSpaceError = 3;
+          viewer.scene.globe.tileCacheSize = 100;
+        }
 
         // Recover-or-report on WebGL context loss instead of freezing.
         const canvas = viewer.scene.canvas as HTMLCanvasElement;
