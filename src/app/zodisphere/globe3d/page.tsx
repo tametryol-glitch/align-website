@@ -65,6 +65,8 @@ function hasWebGL(): boolean {
 
 export default function Zodisphere3dPrototypePage() {
   const profile = useAuthStore((s) => s.profile);
+  const authUser = useAuthStore((s) => s.user);
+  const authLoading = useAuthStore((s) => s.isLoading);
   const [mounted, setMounted] = useState(false);
   const [webglOk, setWebglOk] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +98,9 @@ export default function Zodisphere3dPrototypePage() {
     setWebglOk(hasWebGL());
   }, []);
 
-  const enabled = isZodisphere3dEnabled(profile?.email);
+  // Gate on the reliable Supabase auth email (profile.email can be null on
+  // mobile even when logged in), and fall back to profile.email as a backup.
+  const enabled = isZodisphere3dEnabled(authUser?.email || profile?.email);
   const retry = useCallback(() => { setError(null); setRetryKey((k) => k + 1); }, []);
 
   // Fetch ACG lines for the active bodies (planets + any added points/asteroids).
@@ -837,7 +841,11 @@ export default function Zodisphere3dPrototypePage() {
         );
       })()}
 
-      {!mounted ? null : !enabled ? (
+      {!mounted || authLoading ? (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-white/60 text-sm animate-pulse">Loading…</div>
+        </div>
+      ) : !enabled ? (
         <ZodisphereFallbackView
           message="The 3D globe preview isn’t enabled for your account yet."
           classicHref="/zodisphere"
