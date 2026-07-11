@@ -242,8 +242,15 @@ export default function Zodisphere3dPrototypePage() {
     return () => { alive = false; };
   }, [enabled, profile, mode, pairs]);
 
-  // Tap-to-read: midpoints mode → nearby midpoint lines; lines mode → nearby
-  // natal lines with the full detail panel.
+  // Open the Location Inspector at a point (used by taps and by search).
+  const inspectAt = useCallback((lat: number, lng: number) => {
+    setLineHits(probeAcgLines(lat, lng, visibleLines));
+    setLocReport(computeLocationReport(lat, lng, visibleLines));
+    setTapPoint({ lat, lng });
+    setLineDetailOpen(true);
+  }, [visibleLines]);
+
+  // Tap-to-read: midpoints mode → nearby midpoint lines; lines mode → inspector.
   const handleTap = useCallback((lat: number, lng: number) => {
     if (mode === 'midpoints') {
       const hits = probeMidpoints(lat, lng, midRaw);
@@ -251,11 +258,46 @@ export default function Zodisphere3dPrototypePage() {
       setProbeOpen(hits.length > 0);
       return;
     }
-    setLineHits(probeAcgLines(lat, lng, visibleLines));
-    setLocReport(computeLocationReport(lat, lng, visibleLines));
-    setTapPoint({ lat, lng });
-    setLineDetailOpen(true); // always open the inspector (even with no lines nearby)
-  }, [mode, midRaw, visibleLines]);
+    inspectAt(lat, lng);
+  }, [mode, midRaw, inspectAt]);
+
+  // ── Place search (offline: bundled cities + countries; no geocoding vendor) ──
+  const [geoQuery, setGeoQuery] = useState('');
+  const [geoResults, setGeoResults] = useState<Array<{ name: string; sub: string; lat: number; lng: number }>>([]);
+
+  useEffect(() => {
+    const q = geoQuery.trim().toLowerCase();
+    if (q.length < 2) { setGeoResults([]); return; }
+    const t = setTimeout(() => {  // debounce — don't recompute on every keystroke
+      const cityHits = cityData
+        .filter(([n]) => n.toLowerCase().includes(q))
+        .sort((a, b) => (a[0].toLowerCase().startsWith(q) ? 0 : 1) - (b[0].toLowerCase().startsWith(q) ? 0 : 1))
+        .slice(0, 8)
+        .map(([name, lat, lng]) => ({ name, sub: countryAt(lat, lng, countryFeatures) || 'City', lat, lng }));
+      // Country matches (rough centroid of the largest ring).
+      const countryHits = countryFeatures
+        .filter((f) => (f.properties?.NAME || f.properties?.name || '').toLowerCase().includes(q))
+        .slice(0, 4)
+        .map((f) => {
+          const g = f.geometry;
+          const polys = g?.type === 'MultiPolygon' ? g.coordinates : g?.type === 'Polygon' ? [g.coordinates] : [];
+          const ring = polys.map((p: any) => p[0]).sort((a: any, b: any) => b.length - a.length)[0] || [];
+          const c = ring.reduce((acc: number[], [lng, lat]: number[]) => [acc[0] + lng, acc[1] + lat], [0, 0]);
+          const n = ring.length || 1;
+          return { name: f.properties?.NAME || f.properties?.name, sub: 'Country', lat: c[1] / n, lng: c[0] / n };
+        })
+        .filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.lng));
+      setGeoResults([...countryHits, ...cityHits].slice(0, 10));
+    }, 220);
+    return () => clearTimeout(t);
+  }, [geoQuery, cityData, countryFeatures]);
+
+  const selectPlace = (r: { name: string; lat: number; lng: number }) => {
+    setGeoQuery(''); setGeoResults([]);
+    setMode('lines');
+    controller?.flyTo(r.lat, r.lng, 1_200_000);
+    inspectAt(r.lat, r.lng);
+  };
 
   const pickList = useMemo(() => {
     const q = pickSearch.trim().toLowerCase();
@@ -317,6 +359,36 @@ export default function Zodisphere3dPrototypePage() {
           >
             <GitMerge className="w-4 h-4" /> Midpoints
           </button>
+        </div>
+      )}
+
+      {/* Place search (offline cities + countries) → fly-to + inspector. */}
+      {mounted && enabled && webglOk && !error && (
+        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 w-[min(90vw,360px)]">
+          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/60 backdrop-blur px-3 py-2 shadow-lg">
+            <Search className="w-4 h-4 text-white/40 shrink-0" />
+            <input
+              value={geoQuery}
+              onChange={(e) => setGeoQuery(e.target.value)}
+              placeholder="Search a city or country…"
+              className="bg-transparent outline-none text-[13px] text-white w-full placeholder:text-white/35"
+            />
+            {geoQuery && <button onClick={() => { setGeoQuery(''); setGeoResults([]); }} aria-label="Clear"><X className="w-4 h-4 text-white/40 hover:text-white" /></button>}
+          </div>
+          {geoResults.length > 0 && (
+            <div className="mt-1 rounded-xl border border-white/10 bg-black/80 backdrop-blur overflow-hidden max-h-[46vh] overflow-y-auto">
+              {geoResults.map((r, i) => (
+                <button
+                  key={`${r.name}-${i}`}
+                  onClick={() => selectPlace(r)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-white/10"
+                >
+                  <span className="text-[13px] text-white truncate">{r.name}</span>
+                  <span className="ml-auto text-[11px] text-white/40 shrink-0">{r.sub}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
