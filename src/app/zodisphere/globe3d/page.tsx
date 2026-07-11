@@ -93,10 +93,21 @@ export default function Zodisphere3dPrototypePage() {
     typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '') ? 'performance' : 'high',
   );
 
+  const [authSettled, setAuthSettled] = useState(false);
+
   useEffect(() => {
     setMounted(true);
     setWebglOk(hasWebGL());
   }, []);
+
+  // Settle auth as soon as it resolves, OR after a short timeout — AuthProvider
+  // can leave isLoading stuck true if getSession() hangs/rejects on mobile, so
+  // we never block the globe on it indefinitely.
+  useEffect(() => {
+    if (!authLoading) { setAuthSettled(true); return; }
+    const t = setTimeout(() => setAuthSettled(true), 2500);
+    return () => clearTimeout(t);
+  }, [authLoading]);
 
   // Gate on the reliable Supabase auth email (profile.email can be null on
   // mobile even when logged in), and fall back to profile.email as a backup.
@@ -868,7 +879,7 @@ export default function Zodisphere3dPrototypePage() {
         );
       })()}
 
-      {!mounted || authLoading ? (
+      {!mounted || !authSettled ? (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-white/60 text-sm animate-pulse">Loading…</div>
         </div>
