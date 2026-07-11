@@ -145,6 +145,47 @@ export async function getBodyAcgLines(
   return { lines, unavailable };
 }
 
+// ── Tap-to-read probe for natal ACG lines ───────────────────────────────────
+
+const D2R = Math.PI / 180;
+
+/** Great-circle angular distance (degrees) between two lat/lng points. */
+export function angularDistanceDeg(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const s = Math.sin((lat2 - lat1) * D2R / 2) ** 2 +
+    Math.cos(lat1 * D2R) * Math.cos(lat2 * D2R) * Math.sin((lon2 - lon1) * D2R / 2) ** 2;
+  return (2 * Math.asin(Math.min(1, Math.sqrt(s)))) / D2R;
+}
+
+export interface AcgProbeHit {
+  line: AcgLine3D;
+  distanceDeg: number;
+  distanceKm: number;
+}
+
+/**
+ * Nearest natal ACG lines to a tapped point, closest first, within `orbDeg`.
+ * The orb is a generous touch target (mobile taps are imprecise) — it does NOT
+ * move the exact mathematical line, only decides what's "near enough" to read.
+ */
+export function probeAcgLines(
+  lat: number,
+  lng: number,
+  lines: AcgLine3D[],
+  orbDeg = 2,
+  max = 4,
+): AcgProbeHit[] {
+  const hits: AcgProbeHit[] = [];
+  for (const line of lines) {
+    let best = Infinity;
+    for (const p of line.points) {
+      const d = angularDistanceDeg(lat, lng, p.lat, p.lon);
+      if (d < best) best = d;
+    }
+    if (best <= orbDeg) hits.push({ line, distanceDeg: best, distanceKm: best * 111.195 });
+  }
+  return hits.sort((a, b) => a.distanceDeg - b.distanceDeg).slice(0, max);
+}
+
 // ── Midpoints ───────────────────────────────────────────────────────────────
 
 export interface MidpointPair { a: string; b: string; }

@@ -20,10 +20,11 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getMidpointLines3D, probeMidpoints,
+  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
+import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame } from 'lucide-react';
 
 const PLANET_ORDER = ACG_PLANETS;
@@ -170,6 +171,30 @@ export default function Zodisphere3dPrototypePage() {
   const [pickSearch, setPickSearch] = useState('');
   const [probeHits, setProbeHits] = useState<ProbeHit[]>([]);
   const [probeOpen, setProbeOpen] = useState(false);
+  // Natal line tap-to-read
+  const [lineHits, setLineHits] = useState<AcgProbeHit[]>([]);
+  const [lineDetailOpen, setLineDetailOpen] = useState(false);
+  const [tapPoint, setTapPoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [cityData, setCityData] = useState<Array<[string, number, number]>>([]);
+
+  // Load the city list once for "nearest cities" in the line detail panel.
+  useEffect(() => {
+    let alive = true;
+    fetch('/geo/cities.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive && Array.isArray(d)) setCityData(d); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  const nearestCities = useCallback((lat: number, lng: number, n = 3): string[] => {
+    if (!cityData.length) return [];
+    return cityData
+      .map(([name, clat, clng]) => ({ name, d: angularDistanceDeg(lat, lng, clat, clng) }))
+      .sort((a, b) => a.d - b.d)
+      .slice(0, n)
+      .map((c) => c.name);
+  }, [cityData]);
 
   // Build midpoint lines whenever the active pairs change.
   useEffect(() => {
@@ -185,13 +210,20 @@ export default function Zodisphere3dPrototypePage() {
     return () => { alive = false; };
   }, [enabled, profile, mode, pairs]);
 
-  // Tap-to-read: in midpoints mode, a globe tap lists the nearby midpoint lines.
+  // Tap-to-read: midpoints mode → nearby midpoint lines; lines mode → nearby
+  // natal lines with the full detail panel.
   const handleTap = useCallback((lat: number, lng: number) => {
-    if (mode !== 'midpoints') return;
-    const hits = probeMidpoints(lat, lng, midRaw);
-    setProbeHits(hits);
-    setProbeOpen(hits.length > 0);
-  }, [mode, midRaw]);
+    if (mode === 'midpoints') {
+      const hits = probeMidpoints(lat, lng, midRaw);
+      setProbeHits(hits);
+      setProbeOpen(hits.length > 0);
+      return;
+    }
+    const hits = probeAcgLines(lat, lng, visibleLines);
+    setLineHits(hits);
+    setTapPoint({ lat, lng });
+    setLineDetailOpen(hits.length > 0);
+  }, [mode, midRaw, visibleLines]);
 
   const pickList = useMemo(() => {
     const q = pickSearch.trim().toLowerCase();
@@ -453,6 +485,50 @@ export default function Zodisphere3dPrototypePage() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Natal Line Detail Panel — tap a line in Lines mode. */}
+      {mounted && enabled && webglOk && !error && mode === 'lines' && lineDetailOpen && tapPoint && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-[min(94vw,480px)] max-h-[52vh] overflow-y-auto rounded-2xl bg-black/85 backdrop-blur border border-white/15 text-white p-4">
+          <div className="flex items-start justify-between mb-1">
+            <div>
+              <h3 className="text-sm font-semibold">Lines near this point</h3>
+              <p className="text-[11px] text-white/40">
+                {tapPoint.lat.toFixed(2)}°, {tapPoint.lng.toFixed(2)}°
+                {nearestCities(tapPoint.lat, tapPoint.lng).length > 0 && (
+                  <> · near {nearestCities(tapPoint.lat, tapPoint.lng).join(', ')}</>
+                )}
+              </p>
+            </div>
+            <button onClick={() => setLineDetailOpen(false)} aria-label="Close"><X className="w-4 h-4 text-white/50 hover:text-white" /></button>
+          </div>
+          {lineHits.length === 0 ? (
+            <p className="text-[12px] text-white/50 mt-2">No lines within range. Tap closer to a line.</p>
+          ) : (
+            <div className="space-y-3 mt-1">
+              {lineHits.map((h, i) => {
+                const r = natalLineMeaning(h.line.planet, h.line.angle);
+                return (
+                  <div key={i} className="border-t border-white/10 pt-2.5 first:border-0 first:pt-0">
+                    <div className="flex items-center gap-2 text-[13px] font-semibold">
+                      <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: h.line.color }} />
+                      {h.line.planet} {h.line.angle}
+                      <span className="text-[11px] font-normal text-white/45">· {r.area}</span>
+                      <span className="ml-auto text-[11px] text-white/40 shrink-0">{Math.round(h.distanceKm)} km</span>
+                    </div>
+                    <p className="text-[12px] text-white/80 mt-1 leading-relaxed"
+                       dangerouslySetInnerHTML={{ __html: r.meaning.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+                    {r.watch && (
+                      <p className="text-[11px] text-amber-200/80 mt-1 leading-relaxed">
+                        <span className="font-semibold">Watch for:</span> {r.watch}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
