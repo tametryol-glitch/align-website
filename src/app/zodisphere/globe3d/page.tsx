@@ -272,6 +272,21 @@ export default function Zodisphere3dPrototypePage() {
       .map((c) => c.name);
   }, [cityData]);
 
+  // Birth-time precision → line-position confidence. GMST shifts lines 15°/hour
+  // (0.25°/min), so a minute of birth-time uncertainty moves every line
+  // east–west by ~0.25° of longitude. km/min depends on latitude.
+  const birthConfidence = useMemo(() => {
+    const t = profile?.birth_time ? String(profile.birth_time) : '';
+    if (!t) return { level: 'missing' as const, time: '' };
+    const mm = Number(t.split(':')[1]);
+    // Heuristic: a whole-5-minute value is often an estimate/rounding.
+    const level = Number.isFinite(mm) && mm % 5 === 0 ? ('rounded' as const) : ('precise' as const);
+    return { level, time: t.slice(0, 5) };
+  }, [profile]);
+
+  /** Longitude km shifted per minute of birth-time uncertainty at a latitude. */
+  const kmPerMinuteAt = (lat: number) => 0.25 * 111.32 * Math.cos((lat * Math.PI) / 180);
+
   // Build midpoint lines whenever the active pairs change.
   useEffect(() => {
     if (!enabled || !profile || mode !== 'midpoints') return;
@@ -443,6 +458,9 @@ export default function Zodisphere3dPrototypePage() {
       {mounted && enabled && webglOk && !error && note && mode === 'lines' && (
         <div className="absolute top-20 left-5 z-20 max-w-[320px] rounded-lg bg-black/55 backdrop-blur border border-white/10 px-3 py-2 text-[12px] text-white/80">
           {note}
+          {birthConfidence.level === 'missing' && (
+            <div className="mt-1 text-[11px] text-amber-300">⚠ No birth time on file — add an exact time; astrocartography can’t be accurate without it.</div>
+          )}
         </div>
       )}
 
@@ -721,6 +739,15 @@ export default function Zodisphere3dPrototypePage() {
                   {tapPoint.lat.toFixed(2)}°, {tapPoint.lng.toFixed(2)}°
                   {cities.length > 1 && <> · near {cities.slice(1).join(', ')}</>}
                 </p>
+                {/* Position confidence from birth-time precision. */}
+                {birthConfidence.level === 'missing' ? (
+                  <p className="text-[10px] text-amber-300 mt-0.5">⚠ No birth time on file — line positions can’t be trusted. Add an exact birth time for accuracy.</p>
+                ) : (
+                  <p className="text-[10px] text-white/40 mt-0.5">
+                    Confidence ±{Math.round(kmPerMinuteAt(tapPoint.lat))} km per minute of birth-time error (time {birthConfidence.time}
+                    {birthConfidence.level === 'rounded' ? ', may be rounded' : ''}).
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
