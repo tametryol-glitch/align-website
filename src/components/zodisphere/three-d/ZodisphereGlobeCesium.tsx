@@ -55,6 +55,7 @@ export interface ZodisphereGlobeController {
   home: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  setPlaceLabels: (show: boolean) => void;
   isDestroyed: () => boolean;
 }
 
@@ -76,6 +77,7 @@ export default function ZodisphereGlobeCesium({
   const cesiumRef = useRef<typeof CesiumNS | null>(null);
   const rendererRef = useRef<AstrocartographyLineRenderer | null>(null);
   const myPlaceEntityRef = useRef<CesiumNS.Entity | null>(null);
+  const labelsLayerRef = useRef<CesiumNS.ImageryLayer | null>(null);
   const onTapRef = useRef(onTap);
   onTapRef.current = onTap; // always current, without recreating the viewer
   const createdRef = useRef(false); // guard against StrictMode double-create
@@ -152,6 +154,23 @@ export default function ZodisphereGlobeCesium({
           } catch {
             /* fall back silently to the smooth ellipsoid terrain */
           }
+        }
+
+        // Zoom-dependent PLACE LABELS (Google-Earth style): a transparent labels
+        // tile layer over the satellite. Its tiles naturally reveal countries
+        // when zoomed out, then states, cities and streets as you zoom in — the
+        // LOD is handled by the tile pyramid, no custom logic. Free CARTO tiles
+        // (OpenStreetMap data), light labels with dark halos for legibility.
+        try {
+          const labels = new Cesium.UrlTemplateImageryProvider({
+            url: 'https://basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png',
+            credit: '© OpenStreetMap contributors, © CARTO',
+            maximumLevel: 19,
+          });
+          const layer = viewer.imageryLayers.addImageryProvider(labels);
+          labelsLayerRef.current = layer;
+        } catch {
+          /* labels are optional; imagery still shows without them */
         }
 
         // Lighting OFF so the whole globe is evenly lit (no dark night side). A
@@ -278,6 +297,12 @@ export default function ZodisphereGlobeCesium({
           },
           zoomIn: () => zoomBy(0.35),
           zoomOut: () => zoomBy(-0.55),
+          setPlaceLabels: (show: boolean) => {
+            if (labelsLayerRef.current) {
+              labelsLayerRef.current.show = show;
+              viewer.scene.requestRender();
+            }
+          },
           isDestroyed: () => viewer.isDestroyed(),
         };
 
@@ -309,6 +334,7 @@ export default function ZodisphereGlobeCesium({
       }
       rendererRef.current?.clear();
       rendererRef.current = null;
+      labelsLayerRef.current = null;
       cesiumRef.current = null;
       viewerRef.current = null;
       setViewerReady(false);

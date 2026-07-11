@@ -49,7 +49,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co",
               "font-src 'self' data:",
-              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com https://dev.virtualearth.net https://*.virtualearth.net",
+              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com https://dev.virtualearth.net https://*.virtualearth.net https://basemaps.cartocdn.com https://*.cartocdn.com",
               "frame-src 'self' blob: https://www.youtube.com https://js.stripe.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
