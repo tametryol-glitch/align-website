@@ -24,7 +24,7 @@ import {
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
   type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
-import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type } from 'lucide-react';
+import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame } from 'lucide-react';
 
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
@@ -76,6 +76,7 @@ export default function Zodisphere3dPrototypePage() {
   const [flewToHome, setFlewToHome] = useState(false);
   const [search, setSearch] = useState('');
   const [showPlaceNames, setShowPlaceNames] = useState(true);
+  const [showBorders, setShowBorders] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -209,10 +210,13 @@ export default function Zodisphere3dPrototypePage() {
   };
   const removePair = (i: number) => setPairs((prev) => prev.filter((_, idx) => idx !== i));
 
-  // Apply the place-names toggle whenever it changes / the globe becomes ready.
+  // Apply the place-names + borders toggles whenever they change / globe ready.
   useEffect(() => {
     controller?.setPlaceLabels(showPlaceNames);
   }, [controller, showPlaceNames]);
+  useEffect(() => {
+    controller?.setBorders(showBorders);
+  }, [controller, showBorders]);
 
   return (
     <div
@@ -493,6 +497,14 @@ export default function Zodisphere3dPrototypePage() {
                 className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showPlaceNames ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
               >
                 <Type className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowBorders((v) => !v)}
+                aria-label="Toggle borders"
+                title="Country & state/province borders"
+                className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showBorders ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
+              >
+                <Frame className="w-5 h-5" />
               </button>
               <button
                 onClick={() => controller.zoomIn()}

@@ -56,6 +56,7 @@ export interface ZodisphereGlobeController {
   zoomIn: () => void;
   zoomOut: () => void;
   setPlaceLabels: (show: boolean) => void;
+  setBorders: (show: boolean) => void;
   isDestroyed: () => boolean;
 }
 
@@ -78,6 +79,8 @@ export default function ZodisphereGlobeCesium({
   const rendererRef = useRef<AstrocartographyLineRenderer | null>(null);
   const myPlaceEntityRef = useRef<CesiumNS.Entity | null>(null);
   const labelsLayerRef = useRef<CesiumNS.ImageryLayer | null>(null);
+  const bordersRef = useRef<CesiumNS.Entity[]>([]);
+  const bordersVisibleRef = useRef(true);
   const onTapRef = useRef(onTap);
   onTapRef.current = onTap; // always current, without recreating the viewer
   const createdRef = useRef(false); // guard against StrictMode double-create
@@ -172,6 +175,35 @@ export default function ZodisphereGlobeCesium({
         } catch {
           /* labels are optional; imagery still shows without them */
         }
+
+        // Political BORDER lines (self-hosted Natural Earth vectors, no vendor):
+        // country borders + global state/province borders as thin neutral lines.
+        // Loaded async so they don't block first paint; togglable.
+        (async () => {
+          try {
+            const [countries, states] = await Promise.all([
+              fetch('/geo/country-borders.json').then((r) => (r.ok ? r.json() : [])),
+              fetch('/geo/admin1-world.json').then((r) => (r.ok ? r.json() : [])),
+            ]);
+            if (viewer.isDestroyed()) return;
+            const addSet = (lines: [number, number][][], css: string, alpha: number, width: number) => {
+              const material = Cesium.Color.fromCssColorString(css).withAlpha(alpha);
+              for (const ln of lines) {
+                if (!Array.isArray(ln) || ln.length < 2) continue;
+                const positions = Cesium.Cartesian3.fromDegreesArray(ln.flatMap(([lat, lng]) => [lng, lat]));
+                const e = viewer.entities.add({
+                  show: bordersVisibleRef.current,
+                  polyline: { positions, width, arcType: Cesium.ArcType.GEODESIC, material },
+                });
+                bordersRef.current.push(e);
+              }
+            };
+            // states first, countries on top (bolder) so they layer correctly.
+            addSet(states, '#a9b7d6', 0.42, 1.0);
+            addSet(countries, '#ffffff', 0.7, 1.6);
+            viewer.scene.requestRender();
+          } catch { /* borders optional */ }
+        })();
 
         // Lighting OFF so the whole globe is evenly lit (no dark night side). A
         // day/night terminator can return in a later phase.
@@ -303,6 +335,11 @@ export default function ZodisphereGlobeCesium({
               viewer.scene.requestRender();
             }
           },
+          setBorders: (show: boolean) => {
+            bordersVisibleRef.current = show;
+            for (const e of bordersRef.current) e.show = show;
+            if (!viewer.isDestroyed()) viewer.scene.requestRender();
+          },
           isDestroyed: () => viewer.isDestroyed(),
         };
 
@@ -335,6 +372,7 @@ export default function ZodisphereGlobeCesium({
       rendererRef.current?.clear();
       rendererRef.current = null;
       labelsLayerRef.current = null;
+      bordersRef.current = [];
       cesiumRef.current = null;
       viewerRef.current = null;
       setViewerReady(false);
