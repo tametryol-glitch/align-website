@@ -50,8 +50,9 @@ export class AstrocartographyLineRenderer {
   ) {}
 
   /** Replace all drawn lines with the given set. `dashed` distinguishes
-   *  midpoint lines from solid natal ACG lines. */
-  render(lines: AcgLine3D[], showLabels = false, dashed = false): void {
+   *  midpoint lines from solid natal ACG lines; `corridor` draws a soft
+   *  translucent influence band under each line (centre line stays on top). */
+  render(lines: AcgLine3D[], showLabels = false, dashed = false, corridor = false): void {
     this.clear();
     const { Cesium } = this;
     for (const line of lines) {
@@ -62,6 +63,19 @@ export class AstrocartographyLineRenderer {
         const positions = Cesium.Cartesian3.fromDegreesArray(
           seg.flatMap((p) => [p.lon, p.lat]),
         );
+        // Influence corridor: a wide, faint band beneath the exact line so the
+        // line's zone of influence reads visually without hiding the centre.
+        if (corridor) {
+          this.entities.push(this.viewer.entities.add({
+            id: `acg-corr-${line.id}-${si}`,
+            polyline: {
+              positions,
+              width: 16,
+              arcType: Cesium.ArcType.GEODESIC,
+              material: color.withAlpha(0.12),
+            },
+          }));
+        }
         const entity = this.viewer.entities.add({
           id: `acg-${line.id}-${si}`,
           polyline: {

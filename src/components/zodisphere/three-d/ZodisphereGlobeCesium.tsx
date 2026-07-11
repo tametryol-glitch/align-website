@@ -41,6 +41,8 @@ export interface ZodisphereGlobeCesiumProps {
   astroLabels?: boolean;
   /** Draw the lines dashed (used for midpoint lines). */
   astroDashed?: boolean;
+  /** Draw a soft influence corridor band under each line. */
+  astroCorridors?: boolean;
   /** Fired when the user taps/clicks a point on the globe (lat/lng in degrees). */
   onTap?: (lat: number, lng: number) => void;
   /** The user's own birthplace, shown as an orientation marker. */
@@ -69,6 +71,7 @@ export default function ZodisphereGlobeCesium({
   astroLines,
   astroLabels,
   astroDashed,
+  astroCorridors,
   onTap,
   myPlace,
   initialHeightMeters = DEFAULT_HEIGHT,
@@ -386,8 +389,8 @@ export default function ZodisphereGlobeCesium({
   // is ready). The renderer diff-replaces entities; unchanged calls are cheap.
   useEffect(() => {
     if (!viewerReady || !rendererRef.current) return;
-    rendererRef.current.render(astroLines ?? [], !!astroLabels, !!astroDashed);
-  }, [astroLines, astroLabels, astroDashed, viewerReady]);
+    rendererRef.current.render(astroLines ?? [], !!astroLabels, !!astroDashed, !!astroCorridors);
+  }, [astroLines, astroLabels, astroDashed, astroCorridors, viewerReady]);
 
   // Birthplace orientation marker (a teal pin + label), so the user can see
   // where they are relative to the astro lines.

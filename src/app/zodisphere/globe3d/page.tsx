@@ -26,7 +26,7 @@ import {
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
-import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark } from 'lucide-react';
+import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves } from 'lucide-react';
 
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
@@ -79,6 +79,7 @@ export default function Zodisphere3dPrototypePage() {
   const [search, setSearch] = useState('');
   const [showPlaceNames, setShowPlaceNames] = useState(true);
   const [showBorders, setShowBorders] = useState(true);
+  const [showCorridors, setShowCorridors] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -669,6 +670,17 @@ export default function Zodisphere3dPrototypePage() {
               </p>
             )}
 
+            {/* Crossing / activation zone: 2+ lines converging tightly here. */}
+            {(() => {
+              const crossers = lineHits.filter((h) => h.distanceDeg < 1.5);
+              if (crossers.length < 2) return null;
+              return (
+                <div className="mb-2 rounded-lg bg-amber-400/10 border border-amber-400/30 px-2.5 py-1.5 text-[11px] text-amber-100">
+                  <span className="font-semibold">⚡ Crossing zone</span> — {crossers.map((h) => `${h.line.planet} ${h.line.angle}`).join(' × ')} activate together here. Where lines cross, both energies fire at once — a high-intensity spot.
+                </div>
+              );
+            })()}
+
             {/* Nearby lines with interpretation */}
             {lineHits.length === 0 ? (
               <p className="text-[12px] text-white/50 border-t border-white/10 pt-2">No lines run close to this exact spot — the scores above reflect the wider field.</p>
@@ -722,6 +734,7 @@ export default function Zodisphere3dPrototypePage() {
               astroLines={mode === 'midpoints' ? midLines : visibleLines}
               astroLabels={mode === 'lines' && showLabels}
               astroDashed={mode === 'midpoints'}
+              astroCorridors={showCorridors}
               onTap={handleTap}
               myPlace={
                 profile?.latitude != null && profile?.longitude != null
@@ -749,6 +762,14 @@ export default function Zodisphere3dPrototypePage() {
                 className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showBorders ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
               >
                 <Frame className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowCorridors((v) => !v)}
+                aria-label="Toggle influence corridors"
+                title="Influence corridors (soft band around each line)"
+                className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showCorridors ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
+              >
+                <Waves className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setSavedOpen((v) => !v)}
