@@ -30,7 +30,7 @@ export { probeMidpoints };
 
 import { calculateParanLines, type ParanLine } from './parans';
 export type { ParanLine };
-export { getDuadGrid, derivedLatitude, type LatMapping, type DuadGrid, type DuadGridEntry } from './duadGrid';
+export { getDuadGrid, type LatMapping, type DuadGrid, type DuadGridEntry } from './duadGrid';
 
 /** Compute the chart's paran latitudes (reuses Align's production algorithm). */
 export async function getParans3D(profile: any): Promise<ParanLine[]> {

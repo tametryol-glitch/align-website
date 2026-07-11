@@ -469,9 +469,9 @@ export default function Zodisphere3dPrototypePage() {
                 </div>
                 {chartMode === 'grid' && (
                   <div className="mt-1.5">
-                    <div className="text-[10px] text-white/45 mb-1">Duad latitudes · horizontal lines cross the planet lines. Compendium reveals on zoom-in.</div>
+                    <div className="text-[10px] text-white/45 mb-1">Anchored to your rising point. Gold band = your Ascendant at your birth latitude. Compendium reveals on zoom-in.</div>
                     <div className="grid grid-cols-2 gap-1">
-                      {([['spread', 'Global spread'], ['declination', 'Declination']] as [LatMapping, string][]).map(([m, label]) => (
+                      {([['spread', 'Global spread'], ['tight', 'Near birthplace']] as [LatMapping, string][]).map(([m, label]) => (
                         <button
                           key={m}
                           onClick={() => setLatMapping(m)}
