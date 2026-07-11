@@ -83,6 +83,9 @@ export default function Zodisphere3dPrototypePage() {
   const [showPlaceNames, setShowPlaceNames] = useState(true);
   const [showBorders, setShowBorders] = useState(true);
   const [showCorridors, setShowCorridors] = useState(false);
+  const [quality, setQuality] = useState<'high' | 'balanced' | 'performance'>(
+    typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '') ? 'performance' : 'high',
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -337,6 +340,9 @@ export default function Zodisphere3dPrototypePage() {
   useEffect(() => {
     controller?.setBorders(showBorders);
   }, [controller, showBorders]);
+  useEffect(() => {
+    controller?.setQuality(quality);
+  }, [controller, quality]);
 
   return (
     <div
@@ -818,6 +824,14 @@ export default function Zodisphere3dPrototypePage() {
                 className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showBorders ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
               >
                 <Frame className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setQuality((q) => (q === 'high' ? 'balanced' : q === 'balanced' ? 'performance' : 'high'))}
+                aria-label="Graphics quality"
+                title={`Graphics quality: ${quality} (tap to cycle). Astro accuracy is never affected.`}
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/50 backdrop-blur border border-white/15 text-white/80 hover:bg-white/10 transition-colors text-[13px] font-semibold"
+              >
+                {quality === 'high' ? 'HQ' : quality === 'balanced' ? 'BAL' : 'PERF'}
               </button>
               <button
                 onClick={() => setShowCorridors((v) => !v)}

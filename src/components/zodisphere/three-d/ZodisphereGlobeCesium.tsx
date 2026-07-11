@@ -59,6 +59,7 @@ export interface ZodisphereGlobeController {
   zoomOut: () => void;
   setPlaceLabels: (show: boolean) => void;
   setBorders: (show: boolean) => void;
+  setQuality: (tier: 'high' | 'balanced' | 'performance') => void;
   isDestroyed: () => boolean;
 }
 
@@ -142,16 +143,22 @@ export default function ZodisphereGlobeCesium({
           infoBox: false,
           selectionIndicator: false,
           baseLayer,
-          // NOTE: requestRenderMode (render-on-demand) is intentionally OFF for
-          // the prototype — with it on, the globe can deadlock loading its first
-          // tiles (no render → no tile load → no render), showing only the star
-          // field. Phase 6 re-enables it properly with explicit requestRender()
-          // hooks on camera/data changes.
-          requestRenderMode: false,
+          // Render on demand (battery/heat friendly — no permanent high-FPS
+          // loop). The earlier "only stars" deadlock came from setting
+          // maximumRenderTimeChange to Infinity; here we DON'T, and we also
+          // pump a render whenever tiles are streaming in (below), so the globe
+          // reliably fills in. Camera interaction auto-requests renders.
+          requestRenderMode: true,
         });
 
         if (cancelled) { viewer.destroy(); return; }
         viewerRef.current = viewer;
+
+        // Keep rendering while imagery/terrain tiles are still arriving, then
+        // idle — the safe render-on-demand pattern.
+        viewer.scene.globe.tileLoadProgressEvent.addEventListener((remaining: number) => {
+          if (!viewer.isDestroyed() && remaining > 0) viewer.scene.requestRender();
+        });
 
         // Streamed 3D world terrain (relief/mountains) when we have an ion token.
         if (hasIon) {
@@ -223,16 +230,33 @@ export default function ZodisphereGlobeCesium({
         // streaming, so gaps read as sea rather than a jarring flat fill.
         viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#0a1b2e');
 
-        // Phones: cut GPU/memory pressure so imagery tiles aren't starved
-        // (another cause of a dark globe). Coarser tiles + smaller cache + no
-        // super-sampling; the astro maths is unaffected.
+        // Quality tiers — trade GPU/memory for detail. Astro maths is NEVER
+        // affected by quality (only imagery/terrain fidelity). Default is auto:
+        // Performance on phones (avoids starved tiles / heat), High on desktop.
         const isMobile = typeof navigator !== 'undefined'
           && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-        if (isMobile) {
-          viewer.resolutionScale = 1.0;
-          viewer.scene.globe.maximumScreenSpaceError = 3;
-          viewer.scene.globe.tileCacheSize = 100;
-        }
+        const applyQuality = (tier: 'high' | 'balanced' | 'performance') => {
+          if (viewer.isDestroyed()) return;
+          const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+          if (tier === 'high') {
+            viewer.resolutionScale = Math.min(dpr, 2);
+            viewer.scene.globe.maximumScreenSpaceError = 2;
+            viewer.scene.globe.tileCacheSize = 300;
+            viewer.scene.postProcessStages.fxaa.enabled = true;
+          } else if (tier === 'balanced') {
+            viewer.resolutionScale = 1;
+            viewer.scene.globe.maximumScreenSpaceError = 3;
+            viewer.scene.globe.tileCacheSize = 150;
+            viewer.scene.postProcessStages.fxaa.enabled = true;
+          } else { // performance
+            viewer.resolutionScale = 1;
+            viewer.scene.globe.maximumScreenSpaceError = 4;
+            viewer.scene.globe.tileCacheSize = 100;
+            viewer.scene.postProcessStages.fxaa.enabled = false;
+          }
+          viewer.scene.requestRender();
+        };
+        applyQuality(isMobile ? 'performance' : 'high');
 
         // Recover-or-report on WebGL context loss instead of freezing.
         const canvas = viewer.scene.canvas as HTMLCanvasElement;
@@ -343,6 +367,7 @@ export default function ZodisphereGlobeCesium({
             for (const e of bordersRef.current) e.show = show;
             if (!viewer.isDestroyed()) viewer.scene.requestRender();
           },
+          setQuality: (tier) => applyQuality(tier),
           isDestroyed: () => viewer.isDestroyed(),
         };
 
