@@ -20,7 +20,7 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D, getDuadGrid,
+  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D, getDuadGrid, bandAtLatitude,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
   type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
   type LatMapping, type DuadGrid,
@@ -164,7 +164,9 @@ export default function Zodisphere3dPrototypePage() {
   // In Duad Grid mode, overlay the horizontal duad + compendium lines.
   const linesForGlobe = useMemo(() => {
     if (chartMode === 'grid' && grid) {
-      return [...visibleLines, ...grid.duadLines, ...grid.compendiumLines];
+      // faint ladder + finer compendium rungs, then the planet-colored duad
+      // highlights, then the vertical planet lines on top.
+      return [...grid.gridLines, ...grid.compendiumLines, ...grid.planetLines, ...visibleLines];
     }
     return visibleLines;
   }, [chartMode, grid, visibleLines]);
@@ -820,30 +822,31 @@ export default function Zodisphere3dPrototypePage() {
               );
             })()}
 
-            {/* Duad Grid crossings — a horizontal duad band near this latitude
-                meeting a vertical planet line = a fused hidden-layer point. */}
+            {/* Duad Grid crossing — the even ladder tells you which duad/
+                compendium band this latitude sits in; the nearest vertical
+                planet line says which planet activates it here. */}
             {chartMode === 'grid' && grid && (() => {
-              const nearDuads = grid.entries
-                .filter((e) => Math.abs(e.duadLat - tapPoint.lat) <= 3)
-                .sort((a, b) => Math.abs(a.duadLat - tapPoint.lat) - Math.abs(b.duadLat - tapPoint.lat))
-                .slice(0, 2);
-              if (nearDuads.length === 0) return null;
+              const band = bandAtLatitude(tapPoint.lat, grid);
               const crossPlanet = lineHits[0];
+              // Is a planet's OWN duad rung right here too? (its hidden layer)
+              const ownDuad = grid.entries.find((e) => Math.abs(e.duadLat - tapPoint.lat) <= grid.step / 2 && !e.isAnchor);
               return (
                 <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                  <div className="font-semibold text-indigo-100 mb-1">🔷 Duad grid crossing</div>
-                  {nearDuads.map((d, i) => (
-                    <div key={i} className="mb-1.5 last:mb-0">
-                      <div className="text-white/85 font-medium">
-                        {crossPlanet ? `${crossPlanet.line.planet} ${crossPlanet.line.angle} line × ` : ''}{d.planet} duad ({d.duadSign})
-                      </div>
-                      <p className="text-white/70 leading-relaxed">
-                        {crossPlanet
-                          ? <>Where your <strong>{crossPlanet.line.planet}</strong> line crosses your <strong>{d.planet}</strong> hidden band, its surface energy meets a concealed current: <em>{d.hiddenTheme}</em>.</>
-                          : <>Your <strong>{d.planet}</strong> hidden band runs through here: <em>{d.hiddenTheme}</em>. Move to where a planet line crosses it for the fused reading.</>}
-                      </p>
-                    </div>
-                  ))}
+                  <div className="font-semibold text-indigo-100 mb-1">🔷 Duad grid · {band.duadSign} duad / {band.compendiumSign} compendium</div>
+                  <p className="text-white/75 leading-relaxed">
+                    This latitude sits in the <strong>{band.duadSign}</strong> duad — <em>{band.hiddenTheme}</em>.
+                    Zoomed in, the compendium here is <strong>{band.compendiumSign}</strong> — <em>{band.deepestTheme}</em>.
+                  </p>
+                  {crossPlanet && (
+                    <p className="text-white/70 leading-relaxed mt-1.5">
+                      Your <strong>{crossPlanet.line.planet} {crossPlanet.line.angle}</strong> line crosses here — so that planet fires in this {band.duadSign} flavour at this spot.
+                    </p>
+                  )}
+                  {ownDuad && (
+                    <p className="text-white/60 leading-relaxed mt-1.5">
+                      This is also <strong>{ownDuad.planet}</strong>&apos;s own duad rung.
+                    </p>
+                  )}
                 </div>
               );
             })()}

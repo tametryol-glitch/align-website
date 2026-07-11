@@ -59,6 +59,7 @@ export class AstrocartographyLineRenderer {
       const color = Cesium.Color.fromCssColorString(line.color || '#FFFFFF');
       const isDuad = line.style === 'duad';
       const isComp = line.style === 'compendium';
+      const isGrid = line.style === 'gridline';
       const segments = splitAtSeam(line.points);
       segments.forEach((seg, si) => {
         if (seg.length < 2) return;
@@ -79,22 +80,29 @@ export class AstrocartographyLineRenderer {
           }));
         }
         // Duad-Grid horizontal lines are dashed; compendium only shows zoomed in.
+        const horizontal = isDuad || isComp || isGrid;
         const polyline: any = {
           positions,
-          arcType: Cesium.ArcType.GEODESIC,
+          // Horizontal grid lines follow a constant latitude → RHUMB; ACG lines
+          // follow great circles → GEODESIC.
+          arcType: horizontal ? Cesium.ArcType.RHUMB : Cesium.ArcType.GEODESIC,
           // NOT clampToGround: ground-clamped polylines only support a narrow
           // material set and rendered invisibly. Regular geodesic polylines draw
           // on top of the globe at every zoom.
-          width: isComp ? 3 : isDuad ? 4 : dashed ? 3 : 4,
-          material: (isDuad || isComp)
-            ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.95 : 1.0), dashLength: isComp ? 10 : 22 })
-            : dashed
-              ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
-              : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
+          width: isGrid ? 1 : isComp ? 2 : isDuad ? 4 : dashed ? 3 : 4,
+          material: isGrid
+            ? color.withAlpha(0.28) // faint even ladder rung (solid, thin)
+            : (isDuad || isComp)
+              ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.9 : 1.0), dashLength: isComp ? 10 : 22 })
+              : dashed
+                ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
+                : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
         };
-        // Compendium lines reveal as you zoom in (camera within ~2,800 km),
-        // getting bolder near street level so a fine reading stays legible.
+        // The finer rungs (compendium sub-lines + the faint even ladder) only
+        // draw when the camera is zoomed in, so the world view stays clean and
+        // they sharpen toward street level.
         if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 2_800_000);
+        else if (isGrid) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 6_000_000);
         const entity = this.viewer.entities.add({ id: `acg-${line.id}-${si}`, polyline });
         this.entities.push(entity);
       });
@@ -102,7 +110,7 @@ export class AstrocartographyLineRenderer {
       // A single text label per line (planet + angle) — NOT colour-only, so it
       // stays identifiable for colour-vision-limited users. Placed near a
       // readable mid-northern latitude on the line.
-      if (showLabels && line.points.length && !isDuad && !isComp) {
+      if (showLabels && line.points.length && !isDuad && !isComp && !isGrid) {
         const anchor = pickLabelPoint(line.points);
         this.entities.push(this.viewer.entities.add({
           id: `acg-label-${line.id}`,
