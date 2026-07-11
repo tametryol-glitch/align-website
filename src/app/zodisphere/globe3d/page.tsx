@@ -25,7 +25,8 @@ import {
   type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
-import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame } from 'lucide-react';
+import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
+import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark } from 'lucide-react';
 
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
@@ -176,6 +177,37 @@ export default function Zodisphere3dPrototypePage() {
   const [lineDetailOpen, setLineDetailOpen] = useState(false);
   const [tapPoint, setTapPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [cityData, setCityData] = useState<Array<[string, number, number]>>([]);
+  const [countryFeatures, setCountryFeatures] = useState<any[]>([]);
+  const [locReport, setLocReport] = useState<LocationReport | null>(null);
+  const [savedLocations, setSavedLocations] = useState<Array<{ name: string; lat: number; lng: number }>>([]);
+  const [savedOpen, setSavedOpen] = useState(false);
+
+  // Load country polygons (offline reverse-geocode) + saved locations.
+  useEffect(() => {
+    let alive = true;
+    fetch('/geo/world-countries-110m.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((geo) => { if (alive && geo?.features) setCountryFeatures(geo.features); })
+      .catch(() => {});
+    try {
+      const raw = localStorage.getItem('zodi3d_saved_locations');
+      if (raw) setSavedLocations(JSON.parse(raw));
+    } catch { /* ignore */ }
+    return () => { alive = false; };
+  }, []);
+
+  const saveLocation = (name: string, lat: number, lng: number) => {
+    setSavedLocations((prev) => {
+      const next = [{ name, lat, lng }, ...prev.filter((p) => !(p.lat === lat && p.lng === lng))].slice(0, 30);
+      try { localStorage.setItem('zodi3d_saved_locations', JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  };
+  const removeSaved = (i: number) => setSavedLocations((prev) => {
+    const next = prev.filter((_, idx) => idx !== i);
+    try { localStorage.setItem('zodi3d_saved_locations', JSON.stringify(next)); } catch { /* ignore */ }
+    return next;
+  });
 
   // Load the city list once for "nearest cities" in the line detail panel.
   useEffect(() => {
@@ -219,10 +251,10 @@ export default function Zodisphere3dPrototypePage() {
       setProbeOpen(hits.length > 0);
       return;
     }
-    const hits = probeAcgLines(lat, lng, visibleLines);
-    setLineHits(hits);
+    setLineHits(probeAcgLines(lat, lng, visibleLines));
+    setLocReport(computeLocationReport(lat, lng, visibleLines));
     setTapPoint({ lat, lng });
-    setLineDetailOpen(hits.length > 0);
+    setLineDetailOpen(true); // always open the inspector (even with no lines nearby)
   }, [mode, midRaw, visibleLines]);
 
   const pickList = useMemo(() => {
@@ -488,49 +520,113 @@ export default function Zodisphere3dPrototypePage() {
         </div>
       )}
 
-      {/* Natal Line Detail Panel — tap a line in Lines mode. */}
-      {mounted && enabled && webglOk && !error && mode === 'lines' && lineDetailOpen && tapPoint && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-[min(94vw,480px)] max-h-[52vh] overflow-y-auto rounded-2xl bg-black/85 backdrop-blur border border-white/15 text-white p-4">
-          <div className="flex items-start justify-between mb-1">
-            <div>
-              <h3 className="text-sm font-semibold">Lines near this point</h3>
-              <p className="text-[11px] text-white/40">
-                {tapPoint.lat.toFixed(2)}°, {tapPoint.lng.toFixed(2)}°
-                {nearestCities(tapPoint.lat, tapPoint.lng).length > 0 && (
-                  <> · near {nearestCities(tapPoint.lat, tapPoint.lng).join(', ')}</>
-                )}
-              </p>
-            </div>
-            <button onClick={() => setLineDetailOpen(false)} aria-label="Close"><X className="w-4 h-4 text-white/50 hover:text-white" /></button>
+      {/* Saved locations panel. */}
+      {mounted && enabled && webglOk && !error && savedOpen && (
+        <div className="absolute bottom-6 right-16 z-30 w-[220px] max-h-[50vh] overflow-y-auto rounded-xl bg-black/70 backdrop-blur border border-white/15 text-white p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[12px] font-semibold">Saved places</span>
+            <button onClick={() => setSavedOpen(false)} aria-label="Close"><X className="w-3.5 h-3.5 text-white/50 hover:text-white" /></button>
           </div>
-          {lineHits.length === 0 ? (
-            <p className="text-[12px] text-white/50 mt-2">No lines within range. Tap closer to a line.</p>
+          {savedLocations.length === 0 ? (
+            <p className="text-[11px] text-white/40">Tap a place, then “Save” to bookmark it.</p>
           ) : (
-            <div className="space-y-3 mt-1">
-              {lineHits.map((h, i) => {
-                const r = natalLineMeaning(h.line.planet, h.line.angle);
-                return (
-                  <div key={i} className="border-t border-white/10 pt-2.5 first:border-0 first:pt-0">
-                    <div className="flex items-center gap-2 text-[13px] font-semibold">
-                      <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: h.line.color }} />
-                      {h.line.planet} {h.line.angle}
-                      <span className="text-[11px] font-normal text-white/45">· {r.area}</span>
-                      <span className="ml-auto text-[11px] text-white/40 shrink-0">{Math.round(h.distanceKm)} km</span>
-                    </div>
-                    <p className="text-[12px] text-white/80 mt-1 leading-relaxed"
-                       dangerouslySetInnerHTML={{ __html: r.meaning.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
-                    {r.watch && (
-                      <p className="text-[11px] text-amber-200/80 mt-1 leading-relaxed">
-                        <span className="font-semibold">Watch for:</span> {r.watch}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
+            <div className="space-y-1">
+              {savedLocations.map((s, i) => (
+                <div key={i} className="flex items-center gap-2 text-[12px]">
+                  <button
+                    onClick={() => { controller?.flyTo(s.lat, s.lng, 2_500_000); setSavedOpen(false); }}
+                    className="flex-1 text-left truncate hover:text-white"
+                    title={`${s.lat.toFixed(2)}°, ${s.lng.toFixed(2)}°`}
+                  >
+                    <Bookmark className="w-3 h-3 inline mr-1 text-fuchsia-300" />{s.name}
+                  </button>
+                  <button onClick={() => removeSaved(i)} aria-label="Remove" className="text-white/30 hover:text-white/80"><X className="w-3 h-3" /></button>
+                </div>
+              ))}
             </div>
           )}
         </div>
       )}
+
+      {/* Location Inspector — tap any place in Lines mode. */}
+      {mounted && enabled && webglOk && !error && mode === 'lines' && lineDetailOpen && tapPoint && (() => {
+        const cities = nearestCities(tapPoint.lat, tapPoint.lng);
+        const country = countryAt(tapPoint.lat, tapPoint.lng, countryFeatures);
+        const placeName = cities[0] || country || `${tapPoint.lat.toFixed(1)}°, ${tapPoint.lng.toFixed(1)}°`;
+        return (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-[min(94vw,500px)] max-h-[62vh] overflow-y-auto rounded-2xl bg-black/85 backdrop-blur border border-white/15 text-white p-4">
+            <div className="flex items-start justify-between mb-2">
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold truncate">
+                  {cities[0] ? `${cities[0]}${country ? `, ${country}` : ''}` : country || 'This location'}
+                </h3>
+                <p className="text-[11px] text-white/40">
+                  {tapPoint.lat.toFixed(2)}°, {tapPoint.lng.toFixed(2)}°
+                  {cities.length > 1 && <> · near {cities.slice(1).join(', ')}</>}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => saveLocation(placeName, tapPoint.lat, tapPoint.lng)}
+                  className="text-[11px] px-2 py-1 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20"
+                >Save</button>
+                <button onClick={() => setLineDetailOpen(false)} aria-label="Close"><X className="w-4 h-4 text-white/50 hover:text-white" /></button>
+              </div>
+            </div>
+
+            {/* Interpretive life-area scores */}
+            {locReport && (
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3">
+                {locReport.scores.map((s) => (
+                  <div key={s.domain} title={s.drivers.length ? `From: ${s.drivers.join(', ')}` : 'No strong lines here'}>
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-white/70">{s.domain}</span>
+                      <span className="text-white/50">{s.score}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${s.score}%`, background: s.score >= 60 ? '#7dd3a8' : s.score >= 45 ? '#c9b6ff' : '#f0a3a3' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {locReport && (
+              <p className="text-[10px] text-white/35 mb-2">
+                Interpretive astrological scores (not scientific). 50 = neutral; higher = supportive lines, lower = challenging.
+                {locReport.dominantPlanets.length > 0 && <> Dominant here: <span className="text-white/55">{locReport.dominantPlanets.join(', ')}</span>.</>}
+              </p>
+            )}
+
+            {/* Nearby lines with interpretation */}
+            {lineHits.length === 0 ? (
+              <p className="text-[12px] text-white/50 border-t border-white/10 pt-2">No lines run close to this exact spot — the scores above reflect the wider field.</p>
+            ) : (
+              <div className="space-y-2.5 border-t border-white/10 pt-2">
+                {lineHits.map((h, i) => {
+                  const r = natalLineMeaning(h.line.planet, h.line.angle);
+                  return (
+                    <div key={i}>
+                      <div className="flex items-center gap-2 text-[13px] font-semibold">
+                        <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: h.line.color }} />
+                        {h.line.planet} {h.line.angle}
+                        <span className="text-[11px] font-normal text-white/45">· {r.area}</span>
+                        <span className="ml-auto text-[11px] text-white/40 shrink-0">{Math.round(h.distanceKm)} km</span>
+                      </div>
+                      <p className="text-[12px] text-white/80 mt-1 leading-relaxed"
+                         dangerouslySetInnerHTML={{ __html: r.meaning.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+                      {r.watch && (
+                        <p className="text-[11px] text-amber-200/80 mt-1 leading-relaxed">
+                          <span className="font-semibold">Watch for:</span> {r.watch}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {!mounted ? null : !enabled ? (
         <ZodisphereFallbackView
@@ -581,6 +677,14 @@ export default function Zodisphere3dPrototypePage() {
                 className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${showBorders ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
               >
                 <Frame className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setSavedOpen((v) => !v)}
+                aria-label="Saved locations"
+                title="Saved locations"
+                className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur border transition-colors ${savedOpen ? 'bg-white/20 border-white/40 text-white' : 'bg-black/50 border-white/15 text-white/50 hover:bg-white/10'}`}
+              >
+                <Bookmark className="w-5 h-5" />
               </button>
               <button
                 onClick={() => controller.zoomIn()}
