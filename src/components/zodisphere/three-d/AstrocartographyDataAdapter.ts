@@ -27,6 +27,16 @@ import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
 export type { MidpointLine, ProbeHit };
 export { probeMidpoints };
 
+import { calculateParanLines, type ParanLine } from './parans';
+export type { ParanLine };
+
+/** Compute the chart's paran latitudes (reuses Align's production algorithm). */
+export async function getParans3D(profile: any): Promise<ParanLine[]> {
+  const chart = await getMyChartBodies(profile, []);
+  if (!chart) return [];
+  return calculateParanLines(chart.bodies, chart.birthDate);
+}
+
 export type AcgAngle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
 export interface GeoPoint {

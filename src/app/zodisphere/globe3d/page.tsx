@@ -20,10 +20,11 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg,
+  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
+import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
 import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves } from 'lucide-react';
@@ -110,6 +111,14 @@ export default function Zodisphere3dPrototypePage() {
     return () => { alive = false; };
   }, [enabled, profile, bodies]);
 
+  // Compute parans once (reuses Align's production paran algorithm).
+  useEffect(() => {
+    if (!enabled || !profile?.birth_date || profile?.latitude == null) return;
+    let alive = true;
+    getParans3D(profile).then((p) => { if (alive) setParans(p); }).catch(() => {});
+    return () => { alive = false; };
+  }, [enabled, profile]);
+
   // Visible subset after the body/angle filters.
   const visibleLines = useMemo(
     () => allLines.filter((l) => !hidden.has(l.planet) && !hiddenAngles.has(l.angle)),
@@ -179,6 +188,7 @@ export default function Zodisphere3dPrototypePage() {
   const [tapPoint, setTapPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [cityData, setCityData] = useState<Array<[string, number, number]>>([]);
   const [countryFeatures, setCountryFeatures] = useState<any[]>([]);
+  const [parans, setParans] = useState<ParanLine[]>([]);
   const [locReport, setLocReport] = useState<LocationReport | null>(null);
   const [savedLocations, setSavedLocations] = useState<Array<{ name: string; lat: number; lng: number }>>([]);
   const [savedOpen, setSavedOpen] = useState(false);
@@ -677,6 +687,23 @@ export default function Zodisphere3dPrototypePage() {
               return (
                 <div className="mb-2 rounded-lg bg-amber-400/10 border border-amber-400/30 px-2.5 py-1.5 text-[11px] text-amber-100">
                   <span className="font-semibold">⚡ Crossing zone</span> — {crossers.map((h) => `${h.line.planet} ${h.line.angle}`).join(' × ')} activate together here. Where lines cross, both energies fire at once — a high-intensity spot.
+                </div>
+              );
+            })()}
+
+            {/* Parans at this latitude (reuses Align's production paran calc). */}
+            {(() => {
+              const near = paransNearLatitude(parans, tapPoint.lat);
+              if (near.length === 0) return null;
+              return (
+                <div className="mb-2 rounded-lg bg-fuchsia-400/10 border border-fuchsia-400/25 px-2.5 py-2 text-[11px]">
+                  <div className="font-semibold text-fuchsia-100 mb-1">Paran lines at ~{Math.round(tapPoint.lat)}° latitude</div>
+                  <div className="space-y-1.5">
+                    {near.map((p, i) => (
+                      <p key={i} className="text-white/75 leading-relaxed"
+                         dangerouslySetInnerHTML={{ __html: p.interpretation.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+                    ))}
+                  </div>
                 </div>
               );
             })()}
