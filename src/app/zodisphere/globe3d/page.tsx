@@ -20,15 +20,17 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
+  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D, getDuadGrid,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type ChartLayer,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
+  type LatMapping, type DuadGrid,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
 import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves } from 'lucide-react';
 
+type ChartMode = 'natal' | 'grid' | 'draconic';
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
 const ALL_BODIES = [...ACG_PLANETS, ...ACG_POINTS, ...ACG_ASTEROIDS];
@@ -72,7 +74,9 @@ export default function Zodisphere3dPrototypePage() {
   const [note, setNote] = useState('');
   // Bodies whose lines are fetched + shown (planets by default; add points/asteroids).
   const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
-  const [chartLayer, setChartLayer] = useState<ChartLayer>('natal');
+  const [chartMode, setChartMode] = useState<ChartMode>('natal');
+  const [latMapping, setLatMapping] = useState<LatMapping>('spread');
+  const [grid, setGrid] = useState<DuadGrid | null>(null);
   const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
@@ -104,18 +108,29 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      const { lines, unavailable } = await getBodyAcgLines(profile, bodies, chartLayer);
+      const { lines, unavailable } = await getBodyAcgLines(profile, bodies, chartMode === 'draconic' ? 'draconic' : 'natal');
       if (!alive) return;
       setAllLines(lines);
       const shown = new Set(lines.map((l) => l.planet)).size;
-      const layerName = chartLayer === 'natal' ? '' : ` · ${chartLayer[0].toUpperCase()}${chartLayer.slice(1)} layer`;
+      const layerName = chartMode === 'draconic' ? ' · Draconic' : chartMode === 'grid' ? ' · Duad Grid' : '';
       setNote(
         `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
         (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
       );
     })();
     return () => { alive = false; };
-  }, [enabled, profile, bodies, chartLayer]);
+  }, [enabled, profile, bodies, chartMode]);
+
+  // Duad Grid: horizontal duad + compendium latitude lines for the crossing system.
+  useEffect(() => {
+    if (chartMode !== 'grid' || !enabled || !profile?.birth_date || profile?.latitude == null) {
+      setGrid(null);
+      return;
+    }
+    let alive = true;
+    getDuadGrid(profile, latMapping).then((g) => { if (alive) setGrid(g); }).catch(() => {});
+    return () => { alive = false; };
+  }, [chartMode, latMapping, enabled, profile]);
 
   // Compute parans once (reuses Align's production paran algorithm).
   useEffect(() => {
@@ -130,6 +145,14 @@ export default function Zodisphere3dPrototypePage() {
     () => allLines.filter((l) => !hidden.has(l.planet) && !hiddenAngles.has(l.angle)),
     [allLines, hidden, hiddenAngles],
   );
+
+  // In Duad Grid mode, overlay the horizontal duad + compendium lines.
+  const linesForGlobe = useMemo(() => {
+    if (chartMode === 'grid' && grid) {
+      return [...visibleLines, ...grid.duadLines, ...grid.compendiumLines];
+    }
+    return visibleLines;
+  }, [chartMode, grid, visibleLines]);
 
   // Active bodies present in the result, each with its engine colour.
   const bodyLegend = useMemo(() => {
@@ -432,18 +455,32 @@ export default function Zodisphere3dPrototypePage() {
           </button>
           {panelOpen && (
             <div className="px-3 pb-3 space-y-2">
-              {/* Chart mode / layer selector — always visible */}
+              {/* Chart mode selector — always visible */}
               <div className="pb-2 border-b border-white/10">
                 <div className="text-[11px] font-semibold text-white/80 mb-1.5">Chart mode</div>
-                <div className="grid grid-cols-2 gap-1">
-                  {(['natal', 'duad', 'compendium', 'draconic'] as ChartLayer[]).map((m) => (
+                <div className="grid grid-cols-3 gap-1">
+                  {([['natal', 'Natal'], ['grid', 'Duad Grid'], ['draconic', 'Draconic']] as [ChartMode, string][]).map(([m, label]) => (
                     <button
                       key={m}
-                      onClick={() => setChartLayer(m)}
-                      className={`px-2 py-1.5 rounded text-[11px] border capitalize ${chartLayer === m ? 'bg-accent-primary/25 border-accent-primary text-accent-primary font-medium' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
-                    >{m}</button>
+                      onClick={() => setChartMode(m)}
+                      className={`px-1.5 py-1.5 rounded text-[11px] border ${chartMode === m ? 'bg-accent-primary/25 border-accent-primary text-accent-primary font-medium' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
+                    >{label}</button>
                   ))}
                 </div>
+                {chartMode === 'grid' && (
+                  <div className="mt-1.5">
+                    <div className="text-[10px] text-white/45 mb-1">Duad latitudes · horizontal lines cross the planet lines. Compendium reveals on zoom-in.</div>
+                    <div className="grid grid-cols-2 gap-1">
+                      {([['spread', 'Global spread'], ['declination', 'Declination']] as [LatMapping, string][]).map(([m, label]) => (
+                        <button
+                          key={m}
+                          onClick={() => setLatMapping(m)}
+                          className={`px-1.5 py-1 rounded text-[10px] border ${latMapping === m ? 'bg-fuchsia-500/25 border-fuchsia-400/60 text-fuchsia-100' : 'bg-white/5 border-white/10 text-white/60'}`}
+                        >{label}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <button
                   onClick={() => setModesOpen((v) => !v)}
                   className="mt-1.5 text-[10px] text-white/40 hover:text-white/70"
@@ -741,6 +778,34 @@ export default function Zodisphere3dPrototypePage() {
               );
             })()}
 
+            {/* Duad Grid crossings — a horizontal duad band near this latitude
+                meeting a vertical planet line = a fused hidden-layer point. */}
+            {chartMode === 'grid' && grid && (() => {
+              const nearDuads = grid.entries
+                .filter((e) => Math.abs(e.duadLat - tapPoint.lat) <= 3)
+                .sort((a, b) => Math.abs(a.duadLat - tapPoint.lat) - Math.abs(b.duadLat - tapPoint.lat))
+                .slice(0, 2);
+              if (nearDuads.length === 0) return null;
+              const crossPlanet = lineHits[0];
+              return (
+                <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
+                  <div className="font-semibold text-indigo-100 mb-1">🔷 Duad grid crossing</div>
+                  {nearDuads.map((d, i) => (
+                    <div key={i} className="mb-1.5 last:mb-0">
+                      <div className="text-white/85 font-medium">
+                        {crossPlanet ? `${crossPlanet.line.planet} ${crossPlanet.line.angle} line × ` : ''}{d.planet} duad ({d.duadSign})
+                      </div>
+                      <p className="text-white/70 leading-relaxed">
+                        {crossPlanet
+                          ? <>Where your <strong>{crossPlanet.line.planet}</strong> line crosses your <strong>{d.planet}</strong> hidden band, its surface energy meets a concealed current: <em>{d.hiddenTheme}</em>.</>
+                          : <>Your <strong>{d.planet}</strong> hidden band runs through here: <em>{d.hiddenTheme}</em>. Move to where a planet line crosses it for the fused reading.</>}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
             {/* Nearby lines with interpretation */}
             {lineHits.length === 0 ? (
               <p className="text-[12px] text-white/50 border-t border-white/10 pt-2">No lines run close to this exact spot — the scores above reflect the wider field.</p>
@@ -791,7 +856,7 @@ export default function Zodisphere3dPrototypePage() {
               key={retryKey}
               onError={setError}
               onReady={setController}
-              astroLines={mode === 'midpoints' ? midLines : visibleLines}
+              astroLines={mode === 'midpoints' ? midLines : linesForGlobe}
               astroLabels={mode === 'lines' && showLabels}
               astroDashed={mode === 'midpoints'}
               astroCorridors={showCorridors}

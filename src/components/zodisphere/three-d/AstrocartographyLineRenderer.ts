@@ -57,6 +57,8 @@ export class AstrocartographyLineRenderer {
     const { Cesium } = this;
     for (const line of lines) {
       const color = Cesium.Color.fromCssColorString(line.color || '#FFFFFF');
+      const isDuad = line.style === 'duad';
+      const isComp = line.style === 'compendium';
       const segments = splitAtSeam(line.points);
       segments.forEach((seg, si) => {
         if (seg.length < 2) return;
@@ -76,29 +78,30 @@ export class AstrocartographyLineRenderer {
             },
           }));
         }
-        const entity = this.viewer.entities.add({
-          id: `acg-${line.id}-${si}`,
-          polyline: {
-            positions,
-            width: dashed ? 3 : 4,
-            // NOT clampToGround: ground-clamped polylines only support a narrow
-            // material set and were rendering invisibly. A regular geodesic
-            // polyline sits on the ellipsoid and, since Cesium doesn't
-            // depth-test against terrain by default, draws cleanly on top of
-            // the globe at every zoom.
-            arcType: Cesium.ArcType.GEODESIC,
-            material: dashed
+        // Duad-Grid horizontal lines are dashed; compendium only shows zoomed in.
+        const polyline: any = {
+          positions,
+          arcType: Cesium.ArcType.GEODESIC,
+          // NOT clampToGround: ground-clamped polylines only support a narrow
+          // material set and rendered invisibly. Regular geodesic polylines draw
+          // on top of the globe at every zoom.
+          width: isComp ? 2 : isDuad ? 3 : dashed ? 3 : 4,
+          material: (isDuad || isComp)
+            ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.85 : 0.95), dashLength: isComp ? 12 : 22 })
+            : dashed
               ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
               : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
-          },
-        });
+        };
+        // Compendium lines reveal only when the camera is within ~1,500 km.
+        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 1_500_000);
+        const entity = this.viewer.entities.add({ id: `acg-${line.id}-${si}`, polyline });
         this.entities.push(entity);
       });
 
       // A single text label per line (planet + angle) — NOT colour-only, so it
       // stays identifiable for colour-vision-limited users. Placed near a
       // readable mid-northern latitude on the line.
-      if (showLabels && line.points.length) {
+      if (showLabels && line.points.length && !isDuad && !isComp) {
         const anchor = pickLabelPoint(line.points);
         this.entities.push(this.viewer.entities.add({
           id: `acg-label-${line.id}`,

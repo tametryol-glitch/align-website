@@ -30,6 +30,7 @@ export { probeMidpoints };
 
 import { calculateParanLines, type ParanLine } from './parans';
 export type { ParanLine };
+export { getDuadGrid, derivedLatitude, type LatMapping, type DuadGrid, type DuadGridEntry } from './duadGrid';
 
 /** Compute the chart's paran latitudes (reuses Align's production algorithm). */
 export async function getParans3D(profile: any): Promise<ParanLine[]> {
@@ -56,6 +57,9 @@ export interface AcgLine3D {
   color: string;
   /** Ordered WGS84 points along the line (already engine-projected). */
   points: GeoPoint[];
+  /** Render style: default vertical ACG line, or a horizontal Duad-Grid line
+   *  ('duad' shown always, 'compendium' revealed on zoom-in). */
+  style?: 'natal' | 'duad' | 'compendium';
 }
 
 export interface AdapterOptions {
