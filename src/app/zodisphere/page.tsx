@@ -11,10 +11,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus, Pause, Play } from 'lucide-react';
+import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus, Pause, Play, Box } from 'lucide-react';
 import ZodiGlobe from '@/components/zodisphere/ZodiGlobe';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
+import { isZodisphere3dEnabled } from '@/config/featureFlags';
 import { getMyAcgLines, type AcgGlobeLine } from '@/lib/zodisphereAcg';
 import {
   getMyChartBodies, buildMidpointLines, probeMidpoints,
@@ -271,6 +272,17 @@ export default function ZodispherePage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Switch to the 3D Cesium globe (only for accounts with 3D access). */}
+          {isZodisphere3dEnabled(profile?.email) && (
+            <Link
+              href="/zodisphere/globe3d"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm border bg-fuchsia-500/15 border-fuchsia-400/40 text-fuchsia-100 hover:bg-fuchsia-500/25 transition-colors"
+              title="Switch to the 3D Earth"
+            >
+              <Box className="w-4 h-4" />
+              <span className="hidden sm:inline">3D globe</span>
+            </Link>
+          )}
           {/* Pause / resume the globe spin (free, always available) */}
           <button
             onClick={() => setSpinPaused((v) => !v)}
