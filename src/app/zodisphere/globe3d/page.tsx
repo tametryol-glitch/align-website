@@ -422,7 +422,7 @@ export default function Zodisphere3dPrototypePage() {
       {/* Layer control: body list (planets/points/asteroids) + asteroid search
           + angle filters + labels toggle. */}
       {mounted && enabled && webglOk && !error && mode === 'lines' && (
-        <div className="absolute top-36 left-5 z-20 w-[220px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
+        <div className="absolute top-44 left-5 z-20 w-[220px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
           <button
             onClick={() => setPanelOpen((v) => !v)}
             className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold hover:bg-white/5"
@@ -537,7 +537,7 @@ export default function Zodisphere3dPrototypePage() {
 
       {/* Midpoints panel — pair builder (with asteroid/point search) + active pairs. */}
       {mounted && enabled && webglOk && !error && mode === 'midpoints' && (
-        <div className="absolute top-36 left-5 z-20 w-[240px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
+        <div className="absolute top-44 left-5 z-20 w-[240px] rounded-xl bg-black/60 backdrop-blur border border-white/10 text-white overflow-hidden">
           <div className="px-3 py-2 text-[12px] font-semibold border-b border-white/10">
             Midpoints · {pairs.length}/{MAX_PAIRS}
           </div>
