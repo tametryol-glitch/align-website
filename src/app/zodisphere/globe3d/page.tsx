@@ -219,31 +219,32 @@ export default function Zodisphere3dPrototypePage() {
           <h1 className="text-lg font-semibold text-white leading-tight">The Zodisphere · 3D</h1>
           <p className="text-[11px] text-white/50">Prototype — Cesium Earth (isolated preview)</p>
         </div>
-        <div className="flex items-center gap-2">
-          {mounted && enabled && webglOk && !error && (
-            <div className="flex items-center rounded-xl border border-white/10 bg-white/5 overflow-hidden">
-              <button
-                onClick={() => setMode('lines')}
-                className={`flex items-center gap-1.5 px-3 py-2 text-[13px] ${mode === 'lines' ? 'bg-white/15 text-white' : 'text-white/60 hover:bg-white/10'}`}
-              >
-                <Orbit className="w-4 h-4" /> Lines
-              </button>
-              <button
-                onClick={() => setMode('midpoints')}
-                className={`flex items-center gap-1.5 px-3 py-2 text-[13px] ${mode === 'midpoints' ? 'bg-fuchsia-500/25 text-fuchsia-100' : 'text-white/60 hover:bg-white/10'}`}
-              >
-                <GitMerge className="w-4 h-4" /> Midpoints
-              </button>
-            </div>
-          )}
-          <Link
-            href="/zodisphere"
-            className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-          >
-            Classic globe
-          </Link>
-        </div>
+        <Link
+          href="/zodisphere"
+          className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors shrink-0"
+        >
+          Classic
+        </Link>
       </header>
+
+      {/* Lines / Midpoints mode toggle — floating + always visible (was cramped
+          off-screen in the header on phones). */}
+      {mounted && enabled && webglOk && !error && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 flex items-center rounded-full border border-white/15 bg-black/60 backdrop-blur overflow-hidden shadow-lg">
+          <button
+            onClick={() => setMode('lines')}
+            className={`flex items-center gap-1.5 px-4 py-2 text-[13px] ${mode === 'lines' ? 'bg-white/20 text-white' : 'text-white/60'}`}
+          >
+            <Orbit className="w-4 h-4" /> Lines
+          </button>
+          <button
+            onClick={() => setMode('midpoints')}
+            className={`flex items-center gap-1.5 px-4 py-2 text-[13px] ${mode === 'midpoints' ? 'bg-fuchsia-500/30 text-fuchsia-100' : 'text-white/60'}`}
+          >
+            <GitMerge className="w-4 h-4" /> Midpoints
+          </button>
+        </div>
+      )}
 
       {/* Info readout. */}
       {mounted && enabled && webglOk && !error && note && mode === 'lines' && (

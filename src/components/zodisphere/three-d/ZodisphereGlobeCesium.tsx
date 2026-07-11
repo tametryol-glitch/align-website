@@ -182,6 +182,10 @@ export default function ZodisphereGlobeCesium({
 
         // Recover-or-report on WebGL context loss instead of freezing.
         const canvas = viewer.scene.canvas as HTMLCanvasElement;
+        // Ensure the browser doesn't hijack pinch/drag — put touch-action:none
+        // on the CANVAS itself (the element that receives the touches), so
+        // one-finger drag pans/rotates and two-finger pinch zooms reliably.
+        canvas.style.touchAction = 'none';
         contextLostHandler = (e: Event) => {
           e.preventDefault();
           onError?.('The 3D graphics context was lost. Tap retry to reload the globe.');
