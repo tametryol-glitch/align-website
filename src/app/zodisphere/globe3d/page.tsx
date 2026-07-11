@@ -22,7 +22,7 @@ import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/
 import {
   getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type ChartLayer,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
@@ -72,6 +72,8 @@ export default function Zodisphere3dPrototypePage() {
   const [note, setNote] = useState('');
   // Bodies whose lines are fetched + shown (planets by default; add points/asteroids).
   const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
+  const [chartLayer, setChartLayer] = useState<ChartLayer>('natal');
+  const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
@@ -99,17 +101,18 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      const { lines, unavailable } = await getBodyAcgLines(profile, bodies);
+      const { lines, unavailable } = await getBodyAcgLines(profile, bodies, chartLayer);
       if (!alive) return;
       setAllLines(lines);
       const shown = new Set(lines.map((l) => l.planet)).size;
+      const layerName = chartLayer === 'natal' ? '' : ` · ${chartLayer[0].toUpperCase()}${chartLayer.slice(1)} layer`;
       setNote(
-        `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC.` +
-        (unavailable.length ? ` Unavailable for this chart: ${unavailable.join(', ')}.` : ''),
+        `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
+        (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
       );
     })();
     return () => { alive = false; };
-  }, [enabled, profile, bodies]);
+  }, [enabled, profile, bodies, chartLayer]);
 
   // Compute parans once (reuses Align's production paran algorithm).
   useEffect(() => {
@@ -423,6 +426,32 @@ export default function Zodisphere3dPrototypePage() {
           </button>
           {panelOpen && (
             <div className="px-3 pb-3 space-y-2">
+              {/* Chart mode / layer selector */}
+              <div>
+                <button
+                  onClick={() => setModesOpen((v) => !v)}
+                  className="w-full flex items-center justify-between text-[11px] text-white/60 mb-1"
+                >
+                  <span>Chart mode: <span className="text-white/90 font-medium capitalize">{chartLayer}</span></span>
+                  <span>{modesOpen ? '▾' : '▸'}</span>
+                </button>
+                {modesOpen && (
+                  <div className="space-y-1 mb-1">
+                    <div className="grid grid-cols-2 gap-1">
+                      {(['natal', 'duad', 'compendium', 'draconic'] as ChartLayer[]).map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => setChartLayer(m)}
+                          className={`px-2 py-1 rounded text-[11px] border capitalize ${chartLayer === m ? 'bg-accent-primary/25 border-accent-primary text-accent-primary' : 'bg-white/5 border-white/10 text-white/70'}`}
+                        >{m}</button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-white/35 leading-snug">
+                      Transits, progressed, solar-arc/return, synastry, composite &amp; relocated — coming soon (need extra chart data).
+                    </p>
+                  </div>
+                )}
+              </div>
               {/* Active bodies */}
               <div className="space-y-0.5 max-h-[240px] overflow-y-auto pr-1">
                 {bodyLegend.map(({ body, color }) => {

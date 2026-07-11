@@ -23,6 +23,7 @@ import {
   type ProbeHit,
 } from '@/lib/zodisphereMidpoints';
 import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
+import { duadPosition, compendiumPosition, normalizeLongitude360 } from '@/lib/engines/derivedAstroMath';
 
 export type { MidpointLine, ProbeHit };
 export { probeMidpoints };
@@ -122,9 +123,25 @@ const NON_PROJECTABLE = new Set(['Ascendant', 'Midheaven', 'Descendant', 'IC']);
  * Returns the lines plus the list of requested bodies that were unavailable, so
  * the UI can honestly mark them rather than imply they rendered.
  */
+/** Chart layers that are pure client-side transforms of the natal longitudes
+ *  (no new fetch, no fabrication): the natal chart, Align's Duad and Compendium
+ *  derived layers, and the node-relative Draconic chart. */
+export type ChartLayer = 'natal' | 'duad' | 'compendium' | 'draconic';
+
+/** Transform a natal ecliptic longitude into the chosen layer's longitude. */
+function transformLongitude(lon: number, layer: ChartLayer, nodeLon: number | null): number | null {
+  switch (layer) {
+    case 'natal': return lon;
+    case 'duad': return duadPosition(lon).longitude;
+    case 'compendium': return compendiumPosition(lon).longitude;
+    case 'draconic': return nodeLon == null ? null : normalizeLongitude360(lon - nodeLon);
+  }
+}
+
 export async function getBodyAcgLines(
   profile: any,
   bodyNames: string[],
+  layer: ChartLayer = 'natal',
 ): Promise<{ lines: AcgLine3D[]; unavailable: string[] }> {
   if (!bodyNames.length) return { lines: [], unavailable: [] };
   // Ask the backend to also compute any requested asteroids.
@@ -135,11 +152,15 @@ export async function getBodyAcgLines(
   const gmst = gmstAtMoment(chart.birthDate);
   const wanted = bodyNames.filter((n) => !NON_PROJECTABLE.has(n));
   const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  // Draconic rotates the whole chart so the North Node sits at 0° Aries.
+  const nodeLon = byName.get('North Node') ?? null;
 
   const lines: AcgLine3D[] = [];
   const unavailable: string[] = [];
   for (const name of wanted) {
-    const lon = byName.get(name);
+    const natalLon = byName.get(name);
+    if (natalLon == null || !Number.isFinite(natalLon)) { unavailable.push(name); continue; }
+    const lon = transformLongitude(natalLon, layer, nodeLon);
     if (lon == null || !Number.isFinite(lon)) { unavailable.push(name); continue; }
     const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
     for (const raw of projectWide(lon, gmst)) {
