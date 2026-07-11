@@ -204,14 +204,23 @@ export async function getMyChartBodies(profile: any, extraAsteroids: string[] = 
       bodies.push({ name, longitude: r.longitude });
     }
 
-    // Birth moment in UTC — identical to app/readings/acg/page.tsx.
+    // Birth moment in UTC. ACCURACY: GMST (Earth's rotation at birth) is
+    // extremely time-sensitive — ~15°/hour of line-longitude shift — so we use
+    // the REAL historical timezone/DST offset (resolveTimezoneOffset), not a
+    // crude longitude/15 estimate. This is the same offset the backend chart
+    // uses, keeping the client line projection consistent and accurate.
     const parts = String(profile.birth_date).split('-').map(Number);
     let yr: number, mo: number, dy: number;
     if (parts[0] > 31) { [yr, mo, dy] = parts; } else { [dy, mo, yr] = parts; }
     const [h, min] = String(profile.birth_time || '12:00').split(':').map(Number);
-    const tzOff = Math.round((profile.longitude || 0) / 15);
-    const utH = (h || 12) + (min || 0) / 60 - tzOff;
-    const birthDate = new Date(Date.UTC(yr, mo - 1, dy, Math.floor(utH), Math.round((utH % 1) * 60)));
+    let tzOff = Math.round((profile.longitude || 0) / 15); // fallback
+    try {
+      const { resolveTimezoneOffset } = require('@/lib/timezoneOffset');
+      const r = resolveTimezoneOffset(profile.timezone, profile.longitude, profile.birth_date, profile.birth_time, profile.latitude);
+      if (r && Number.isFinite(r.offset)) tzOff = r.offset;
+    } catch { /* keep the longitude-based fallback */ }
+    const utMinutes = Math.round(((h || 12) + (min || 0) / 60 - tzOff) * 60);
+    const birthDate = new Date(Date.UTC(yr, mo - 1, dy, 0, utMinutes));
 
     return { bodies, birthDate };
   } catch (e: any) {

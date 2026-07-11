@@ -85,15 +85,16 @@ export class AstrocartographyLineRenderer {
           // NOT clampToGround: ground-clamped polylines only support a narrow
           // material set and rendered invisibly. Regular geodesic polylines draw
           // on top of the globe at every zoom.
-          width: isComp ? 2 : isDuad ? 3 : dashed ? 3 : 4,
+          width: isComp ? 3 : isDuad ? 4 : dashed ? 3 : 4,
           material: (isDuad || isComp)
-            ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.85 : 0.95), dashLength: isComp ? 12 : 22 })
+            ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.95 : 1.0), dashLength: isComp ? 10 : 22 })
             : dashed
               ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
               : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
         };
-        // Compendium lines reveal only when the camera is within ~1,500 km.
-        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 1_500_000);
+        // Compendium lines reveal as you zoom in (camera within ~2,800 km),
+        // getting bolder near street level so a fine reading stays legible.
+        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 2_800_000);
         const entity = this.viewer.entities.add({ id: `acg-${line.id}-${si}`, polyline });
         this.entities.push(entity);
       });
