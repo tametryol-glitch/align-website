@@ -497,9 +497,11 @@ export default function Zodisphere3dPrototypePage() {
                 </div>
                 {chartMode === 'grid' && (
                   <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
-                    Each planet drawn three ways at its <em>real</em> location: solid = the planet,
-                    dashed = its <strong>duad</strong>, fine dashed = its <strong>compendium</strong> (sharpens as you zoom to street level).
-                    Where a solid line crosses a dashed one is a true geographic point — tap it to read the duad/compendium theme.
+                    <strong>Vertical</strong> solid lines = your planets. <strong>Horizontal</strong> dashed
+                    lines = each planet&apos;s <strong>duad</strong>, drawn at its true declination (the real latitude where it&apos;s overhead);
+                    the fine dashed <strong>compendium</strong> parallel sharpens as you zoom to street level.
+                    A vertical planet line passing through a horizontal duad line is a true geographic point — tap it to read the theme.
+                    Duad/compendium parallels sit within the tropics (±23.4°) — that&apos;s astronomy, not a limit we chose.
                   </div>
                 )}
                 <button

@@ -79,11 +79,10 @@ export class AstrocartographyLineRenderer {
             },
           }));
         }
-        // Only the (legacy) faint ladder rungs follow a constant latitude.
-        // Duad + compendium are now REAL ACG lines (great circles) at the actual
-        // places their derived point is angular, drawn dashed to distinguish them
-        // from the solid natal glow lines.
-        const horizontal = isGrid;
+        // Duad + compendium are horizontal parallels at the derived point's true
+        // DECLINATION (a real latitude), so they follow a constant latitude →
+        // RHUMB; the vertical natal ACG lines follow great circles → GEODESIC.
+        const horizontal = isDuad || isComp || isGrid;
         const polyline: any = {
           positions,
           // Horizontal grid lines follow a constant latitude → RHUMB; ACG lines

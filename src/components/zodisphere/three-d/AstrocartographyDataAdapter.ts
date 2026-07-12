@@ -23,7 +23,7 @@ import {
   type ProbeHit,
 } from '@/lib/zodisphereMidpoints';
 import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
-import { duadPosition, compendiumPosition, normalizeLongitude360 } from '@/lib/engines/derivedAstroMath';
+import { duadPosition, compendiumPosition, normalizeLongitude360, eclipticToEquatorial, ACG_OBLIQUITY_DEG } from '@/lib/engines/derivedAstroMath';
 import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
 
 export type { MidpointLine, ProbeHit };
@@ -192,17 +192,39 @@ export async function getBodyAcgLines(
 
 const GEO_DUAD_PLANETS = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
+/** Declination (real latitude where the point is overhead) of an ecliptic
+ *  longitude — the horizontal parallel a duad/compendium lives on. Bounded to
+ *  ±23.44° because that's the obliquity: ecliptic points cannot go beyond it. */
+function declinationOf(lonEcliptic: number): number {
+  return eclipticToEquatorial(lonEcliptic, ACG_OBLIQUITY_DEG).declination;
+}
+
+/** A horizontal parallel at a constant latitude, densely sampled so tap-to-read
+ *  can detect a nearby tap anywhere along it (not just at sparse vertices). */
+function declinationParallel(
+  id: string, planet: string, color: string, lat: number,
+  style: 'duad' | 'compendium', derivedSign: string, theme: string,
+  label?: string, labelLon?: number,
+): AcgLine3D {
+  const points: GeoPoint[] = [];
+  for (let lon = -180; lon <= 180; lon += 3) points.push({ lat, lon });
+  return { id, planet, angle: 'MC', color, points, style, derivedSign, theme, label, labelLon };
+}
+
 /**
- * The Duad system as REAL astrocartography — not a symbolic ladder. For each
- * planet we project THREE line sets from the SAME validated pipeline
- * (gmstAtMoment + projectWide), so every line lands at the genuine place on
- * Earth where that point is angular:
- *   • natal      — the planet itself (solid glow),
- *   • duad       — the planet's DUAD longitude (2.5° subdivision) as ACG lines,
- *   • compendium — its COMPENDIUM longitude (0°12′30″), zoom-gated to street level.
- * A natal line crossing a duad line is therefore a true geographic point. The
- * duad/compendium lines carry their derived sign + hidden theme for tap-to-read.
- * No new astronomy, no fabricated coordinates.
+ * The Duad system the way it's meant to read: HORIZONTAL duad/compendium lines
+ * with the VERTICAL planet lines passing through them. Everything is real — no
+ * symbolic ladder:
+ *   • natal      — the planet's own ACG lines (vertical great circles, solid glow),
+ *   • duad       — a HORIZONTAL parallel at the DUAD's true declination (dashed),
+ *   • compendium — a finer HORIZONTAL parallel at the COMPENDIUM's declination,
+ *                  zoom-gated to street level.
+ * A vertical planet line meeting a horizontal duad parallel is a genuine
+ * geographic point (that longitude, at the latitude where the duad is overhead).
+ * The parallels carry their derived sign + hidden theme for tap-to-read.
+ *
+ * Note: because ecliptic points never exceed ±23.44° declination, every duad /
+ * compendium parallel lies within the tropics band — that's astronomy, not a bug.
  */
 export async function getGeographicDuadLines(
   profile: any,
@@ -212,6 +234,7 @@ export async function getGeographicDuadLines(
   if (!chart) return [];
   const gmst = gmstAtMoment(chart.birthDate);
   const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  const anchorLon = typeof profile?.longitude === 'number' ? profile.longitude : 0;
 
   const out: AcgLine3D[] = [];
   for (const name of bodyNames) {
@@ -220,29 +243,25 @@ export async function getGeographicDuadLines(
     if (natalLon == null || !Number.isFinite(natalLon)) continue;
     const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
     const full = getFullDuadCompendium(natalLon);
-    const duadLon = duadPosition(natalLon).longitude;
-    const compLon = compendiumPosition(natalLon).longitude;
 
+    // Vertical: the planet's own ACG lines.
     for (const raw of projectWide(natalLon, gmst)) {
       out.push({
         id: `${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
         points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'natal',
       });
     }
-    for (const raw of projectWide(duadLon, gmst)) {
-      out.push({
-        id: `${name}:duad:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
-        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'duad',
-        derivedSign: full.duadSign, theme: full.hiddenTheme,
-      });
-    }
-    for (const raw of projectWide(compLon, gmst)) {
-      out.push({
-        id: `${name}:comp:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
-        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'compendium',
-        derivedSign: full.compendiumSign, theme: full.deepestTheme,
-      });
-    }
+    // Horizontal: the duad's declination parallel.
+    const duadDec = declinationOf(duadPosition(natalLon).longitude);
+    out.push(declinationParallel(
+      `${name}:duad`, name, color, duadDec, 'duad', full.duadSign, full.hiddenTheme,
+      `${name} duad · ${full.duadSign}`, anchorLon,
+    ));
+    // Horizontal: the compendium's finer declination parallel (zoom-gated).
+    const compDec = declinationOf(compendiumPosition(natalLon).longitude);
+    out.push(declinationParallel(
+      `${name}:comp`, name, color, compDec, 'compendium', full.compendiumSign, full.deepestTheme,
+    ));
   }
   return out;
 }
