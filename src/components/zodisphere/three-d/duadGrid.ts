@@ -32,6 +32,7 @@ const ASC_COLOR = '#FDE047';
 const GRID_COLOR = '#8aa0c8';
 const DUAD_STEP = { spread: 1.4, tight: 0.7 }; // degrees of latitude per duad
 const LAT_LIMIT = 85;
+const LADDER_HALF = 26; // rungs each side of the anchor — a band, not to the poles
 
 /** Global duad index 0..143 (sign*12 + duad-within-sign) for an ecliptic lon. */
 function globalDuadIndex(lon: number): number {
@@ -131,7 +132,7 @@ export async function getDuadGrid(profile: any, mapping: LatMapping): Promise<Du
   // Even ladder: 144 duad rungs stepping out from the anchor (Asc duad = birthLat).
   const gridLines: AcgLine3D[] = [];
   const compendiumLines: AcgLine3D[] = [];
-  for (let k = -72; k <= 72; k++) {
+  for (let k = -LADDER_HALF; k <= LADDER_HALF; k++) {
     const lat = birthLat + k * step;
     if (lat < -LAT_LIMIT || lat > LAT_LIMIT) continue;
     const duadIdx = ((ascDuadIdx + k) % 144 + 144) % 144;
@@ -156,9 +157,11 @@ export async function getDuadGrid(profile: any, mapping: LatMapping): Promise<Du
     if (lon == null || !Number.isFinite(lon)) continue;
     const isAnchor = name === 'Ascendant';
     const idx = globalDuadIndex(lon);
-    // shortest signed step from the anchor duad (handles the 144-wrap).
+    // shortest signed step from the anchor duad (handles the 144-wrap), kept
+    // inside the visible ladder band.
     let k = idx - ascDuadIdx;
     if (k > 72) k -= 144; else if (k < -72) k += 144;
+    k = Math.max(-LADDER_HALF, Math.min(LADDER_HALF, k));
     const lat = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, birthLat + k * step));
     const color = isAnchor ? ASC_COLOR : (ACG_BODY_COLORS[name] || '#FFFFFF');
     const full = getFullDuadCompendium(lon);
