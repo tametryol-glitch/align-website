@@ -24,6 +24,7 @@ import {
 } from '@/lib/zodisphereMidpoints';
 import { gmstAtMoment, ACG_BODY_COLORS } from '@/lib/engines/derivedAcgLines';
 import { duadPosition, compendiumPosition, normalizeLongitude360 } from '@/lib/engines/derivedAstroMath';
+import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
 
 export type { MidpointLine, ProbeHit };
 export { probeMidpoints };
@@ -64,6 +65,9 @@ export interface AcgLine3D {
   /** Optional text label for a horizontal grid line, placed at `labelLon`. */
   label?: string;
   labelLon?: number;
+  /** For duad/compendium lines: the derived sign + its hidden/deepest theme. */
+  derivedSign?: string;
+  theme?: string;
 }
 
 export interface AdapterOptions {
@@ -182,6 +186,65 @@ export async function getBodyAcgLines(
     }
   }
   return { lines, unavailable };
+}
+
+// ── Geographically-accurate Duad / Compendium lines ─────────────────────────
+
+const GEO_DUAD_PLANETS = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+
+/**
+ * The Duad system as REAL astrocartography — not a symbolic ladder. For each
+ * planet we project THREE line sets from the SAME validated pipeline
+ * (gmstAtMoment + projectWide), so every line lands at the genuine place on
+ * Earth where that point is angular:
+ *   • natal      — the planet itself (solid glow),
+ *   • duad       — the planet's DUAD longitude (2.5° subdivision) as ACG lines,
+ *   • compendium — its COMPENDIUM longitude (0°12′30″), zoom-gated to street level.
+ * A natal line crossing a duad line is therefore a true geographic point. The
+ * duad/compendium lines carry their derived sign + hidden theme for tap-to-read.
+ * No new astronomy, no fabricated coordinates.
+ */
+export async function getGeographicDuadLines(
+  profile: any,
+  bodyNames: string[] = GEO_DUAD_PLANETS,
+): Promise<AcgLine3D[]> {
+  const chart = await getMyChartBodies(profile, []);
+  if (!chart) return [];
+  const gmst = gmstAtMoment(chart.birthDate);
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+
+  const out: AcgLine3D[] = [];
+  for (const name of bodyNames) {
+    if (NON_PROJECTABLE.has(name)) continue;
+    const natalLon = byName.get(name);
+    if (natalLon == null || !Number.isFinite(natalLon)) continue;
+    const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
+    const full = getFullDuadCompendium(natalLon);
+    const duadLon = duadPosition(natalLon).longitude;
+    const compLon = compendiumPosition(natalLon).longitude;
+
+    for (const raw of projectWide(natalLon, gmst)) {
+      out.push({
+        id: `${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'natal',
+      });
+    }
+    for (const raw of projectWide(duadLon, gmst)) {
+      out.push({
+        id: `${name}:duad:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'duad',
+        derivedSign: full.duadSign, theme: full.hiddenTheme,
+      });
+    }
+    for (const raw of projectWide(compLon, gmst)) {
+      out.push({
+        id: `${name}:comp:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })), style: 'compendium',
+        derivedSign: full.compendiumSign, theme: full.deepestTheme,
+      });
+    }
+  }
+  return out;
 }
 
 // ── Tap-to-read probe for natal ACG lines ───────────────────────────────────

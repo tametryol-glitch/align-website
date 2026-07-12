@@ -20,10 +20,9 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D, getDuadGrid, bandAtLatitude,
+  getBodyAcgLines, getGeographicDuadLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
   type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
-  type LatMapping, type DuadGrid,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
@@ -77,8 +76,6 @@ export default function Zodisphere3dPrototypePage() {
   // Bodies whose lines are fetched + shown (planets by default; add points/asteroids).
   const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
   const [chartMode, setChartMode] = useState<ChartMode>('natal');
-  const [latMapping, setLatMapping] = useState<LatMapping>('spread');
-  const [grid, setGrid] = useState<DuadGrid | null>(null);
   const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
@@ -123,11 +120,24 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
+      // Duad Grid mode = the same planets projected THREE ways (natal + duad +
+      // compendium) as real ACG lines. Everything else is a single-layer set.
+      if (chartMode === 'grid') {
+        const lines = await getGeographicDuadLines(profile, bodies);
+        if (!alive) return;
+        setAllLines(lines);
+        const shown = new Set(lines.map((l) => l.planet)).size;
+        setNote(
+          `${lines.length} lines · ${shown} placements × natal + duad + compendium (ASC/DSC/MC/IC each). ` +
+          `Duads & compendiums are dashed; compendium sharpens as you zoom to street level.`,
+        );
+        return;
+      }
       const { lines, unavailable } = await getBodyAcgLines(profile, bodies, chartMode === 'draconic' ? 'draconic' : 'natal');
       if (!alive) return;
       setAllLines(lines);
       const shown = new Set(lines.map((l) => l.planet)).size;
-      const layerName = chartMode === 'draconic' ? ' · Draconic' : chartMode === 'grid' ? ' · Duad Grid' : '';
+      const layerName = chartMode === 'draconic' ? ' · Draconic' : '';
       setNote(
         `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
         (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
@@ -135,17 +145,6 @@ export default function Zodisphere3dPrototypePage() {
     })();
     return () => { alive = false; };
   }, [enabled, profile, bodies, chartMode]);
-
-  // Duad Grid: horizontal duad + compendium latitude lines for the crossing system.
-  useEffect(() => {
-    if (chartMode !== 'grid' || !enabled || !profile?.birth_date || profile?.latitude == null) {
-      setGrid(null);
-      return;
-    }
-    let alive = true;
-    getDuadGrid(profile, latMapping).then((g) => { if (alive) setGrid(g); }).catch(() => {});
-    return () => { alive = false; };
-  }, [chartMode, latMapping, enabled, profile]);
 
   // Compute parans once (reuses Align's production paran algorithm).
   useEffect(() => {
@@ -161,15 +160,9 @@ export default function Zodisphere3dPrototypePage() {
     [allLines, hidden, hiddenAngles],
   );
 
-  // In Duad Grid mode, overlay the horizontal duad + compendium lines.
-  const linesForGlobe = useMemo(() => {
-    if (chartMode === 'grid' && grid) {
-      // faint ladder + finer compendium rungs, then the planet-colored duad
-      // highlights, then the vertical planet lines on top.
-      return [...grid.gridLines, ...grid.compendiumLines, ...grid.planetLines, ...visibleLines];
-    }
-    return visibleLines;
-  }, [chartMode, grid, visibleLines]);
+  // allLines already carries the natal + duad + compendium sets in grid mode,
+  // so the body/angle filters (visibleLines) are all we draw.
+  const linesForGlobe = visibleLines;
 
   // Active bodies present in the result, each with its engine colour.
   const bodyLegend = useMemo(() => {
@@ -503,17 +496,10 @@ export default function Zodisphere3dPrototypePage() {
                   ))}
                 </div>
                 {chartMode === 'grid' && (
-                  <div className="mt-1.5">
-                    <div className="text-[10px] text-white/45 mb-1">Anchored to your rising point. Gold band = your Ascendant at your birth latitude. Compendium reveals on zoom-in.</div>
-                    <div className="grid grid-cols-2 gap-1">
-                      {([['spread', 'Global spread'], ['tight', 'Near birthplace']] as [LatMapping, string][]).map(([m, label]) => (
-                        <button
-                          key={m}
-                          onClick={() => setLatMapping(m)}
-                          className={`px-1.5 py-1 rounded text-[10px] border ${latMapping === m ? 'bg-fuchsia-500/25 border-fuchsia-400/60 text-fuchsia-100' : 'bg-white/5 border-white/10 text-white/60'}`}
-                        >{label}</button>
-                      ))}
-                    </div>
+                  <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
+                    Each planet drawn three ways at its <em>real</em> location: solid = the planet,
+                    dashed = its <strong>duad</strong>, fine dashed = its <strong>compendium</strong> (sharpens as you zoom to street level).
+                    Where a solid line crosses a dashed one is a true geographic point — tap it to read the duad/compendium theme.
                   </div>
                 )}
                 <button
@@ -822,31 +808,25 @@ export default function Zodisphere3dPrototypePage() {
               );
             })()}
 
-            {/* Duad Grid crossing — the even ladder tells you which duad/
-                compendium band this latitude sits in; the nearest vertical
-                planet line says which planet activates it here. */}
-            {chartMode === 'grid' && grid && (() => {
-              const band = bandAtLatitude(tapPoint.lat, grid);
-              const crossPlanet = lineHits[0];
-              // Is a planet's OWN duad rung right here too? (its hidden layer)
-              const ownDuad = grid.entries.find((e) => Math.abs(e.duadLat - tapPoint.lat) <= grid.step / 2 && !e.isAnchor);
+            {/* Duad Grid geographic crossing — a natal (solid) line meeting a
+                duad/compendium (dashed) line near this exact spot is a real
+                interpretable point: the planet activated in its duad flavour. */}
+            {chartMode === 'grid' && (() => {
+              const natalHit = lineHits.find((h) => h.line.style === 'natal');
+              const derivedHit = lineHits.find((h) => h.line.style === 'duad' || h.line.style === 'compendium');
+              if (!natalHit || !derivedHit) return null;
+              const isComp = derivedHit.line.style === 'compendium';
               return (
                 <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                  <div className="font-semibold text-indigo-100 mb-1">🔷 Duad grid · {band.duadSign} duad / {band.compendiumSign} compendium</div>
+                  <div className="font-semibold text-indigo-100 mb-1">
+                    🔷 {natalHit.line.planet} × {derivedHit.line.planet} {isComp ? 'compendium' : 'duad'} · {derivedHit.line.derivedSign}
+                  </div>
                   <p className="text-white/75 leading-relaxed">
-                    This latitude sits in the <strong>{band.duadSign}</strong> duad — <em>{band.hiddenTheme}</em>.
-                    Zoomed in, the compendium here is <strong>{band.compendiumSign}</strong> — <em>{band.deepestTheme}</em>.
+                    Your <strong>{natalHit.line.planet} {natalHit.line.angle}</strong> line crosses{' '}
+                    {natalHit.line.planet === derivedHit.line.planet ? 'its own' : <><strong>{derivedHit.line.planet}</strong>&apos;s</>}{' '}
+                    {isComp ? 'compendium' : 'duad'} line here — the <strong>{derivedHit.line.derivedSign}</strong> {isComp ? 'compendium' : 'duad'}:{' '}
+                    <em>{derivedHit.line.theme}</em>. A real geographic point where that energy lands in this flavour.
                   </p>
-                  {crossPlanet && (
-                    <p className="text-white/70 leading-relaxed mt-1.5">
-                      Your <strong>{crossPlanet.line.planet} {crossPlanet.line.angle}</strong> line crosses here — so that planet fires in this {band.duadSign} flavour at this spot.
-                    </p>
-                  )}
-                  {ownDuad && (
-                    <p className="text-white/60 leading-relaxed mt-1.5">
-                      This is also <strong>{ownDuad.planet}</strong>&apos;s own duad rung.
-                    </p>
-                  )}
                 </div>
               );
             })()}
@@ -857,6 +837,25 @@ export default function Zodisphere3dPrototypePage() {
             ) : (
               <div className="space-y-2.5 border-t border-white/10 pt-2">
                 {lineHits.map((h, i) => {
+                  // Duad & compendium lines read from their derived sign + theme,
+                  // not the natal line meaning (that would mislabel the point).
+                  const derived = h.line.style === 'duad' || h.line.style === 'compendium';
+                  if (derived) {
+                    const isComp = h.line.style === 'compendium';
+                    return (
+                      <div key={i}>
+                        <div className="flex items-center gap-2 text-[13px] font-semibold">
+                          <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: h.line.color }} />
+                          {h.line.planet} {h.line.angle}
+                          <span className="text-[11px] font-normal text-indigo-200/70">· {h.line.derivedSign} {isComp ? 'compendium' : 'duad'}</span>
+                          <span className="ml-auto text-[11px] text-white/40 shrink-0">{Math.round(h.distanceKm)} km</span>
+                        </div>
+                        <p className="text-[12px] text-white/80 mt-1 leading-relaxed">
+                          The hidden <strong>{h.line.derivedSign}</strong> {isComp ? 'compendium' : 'duad'} layer of your {h.line.planet} {h.line.angle} line — <em>{h.line.theme}</em>.
+                        </p>
+                      </div>
+                    );
+                  }
                   const r = natalLineMeaning(h.line.planet, h.line.angle);
                   return (
                     <div key={i}>

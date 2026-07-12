@@ -79,8 +79,11 @@ export class AstrocartographyLineRenderer {
             },
           }));
         }
-        // Duad-Grid horizontal lines are dashed; compendium only shows zoomed in.
-        const horizontal = isDuad || isComp || isGrid;
+        // Only the (legacy) faint ladder rungs follow a constant latitude.
+        // Duad + compendium are now REAL ACG lines (great circles) at the actual
+        // places their derived point is angular, drawn dashed to distinguish them
+        // from the solid natal glow lines.
+        const horizontal = isGrid;
         const polyline: any = {
           positions,
           // Horizontal grid lines follow a constant latitude → RHUMB; ACG lines
