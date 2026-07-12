@@ -20,9 +20,9 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getGeographicDuadLines, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
+  getBodyAcgLines, getDuadGrid, bandAtLatitude, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type DuadGrid,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
@@ -76,6 +76,7 @@ export default function Zodisphere3dPrototypePage() {
   // Bodies whose lines are fetched + shown (planets by default; add points/asteroids).
   const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
   const [chartMode, setChartMode] = useState<ChartMode>('natal');
+  const [grid, setGrid] = useState<DuadGrid | null>(null);
   const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
@@ -120,24 +121,13 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      // Duad Grid mode = the same planets projected THREE ways (natal + duad +
-      // compendium) as real ACG lines. Everything else is a single-layer set.
-      if (chartMode === 'grid') {
-        const lines = await getGeographicDuadLines(profile, bodies);
-        if (!alive) return;
-        setAllLines(lines);
-        const shown = new Set(lines.map((l) => l.planet)).size;
-        setNote(
-          `${lines.length} lines · ${shown} placements × natal + duad + compendium (ASC/DSC/MC/IC each). ` +
-          `Duads & compendiums are dashed; compendium sharpens as you zoom to street level.`,
-        );
-        return;
-      }
+      // Vertical planet lines are the same in every mode; in Duad Grid mode the
+      // horizontal 144-duad / 1,728-compendium ladder is added on top (below).
       const { lines, unavailable } = await getBodyAcgLines(profile, bodies, chartMode === 'draconic' ? 'draconic' : 'natal');
       if (!alive) return;
       setAllLines(lines);
       const shown = new Set(lines.map((l) => l.planet)).size;
-      const layerName = chartMode === 'draconic' ? ' · Draconic' : '';
+      const layerName = chartMode === 'draconic' ? ' · Draconic' : chartMode === 'grid' ? ' · Duad Grid' : '';
       setNote(
         `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
         (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
@@ -145,6 +135,18 @@ export default function Zodisphere3dPrototypePage() {
     })();
     return () => { alive = false; };
   }, [enabled, profile, bodies, chartMode]);
+
+  // Duad Grid: the 144-duad / 1,728-compendium even ladder, anchored to the
+  // rising point and wrapping the globe pole-to-pole.
+  useEffect(() => {
+    if (chartMode !== 'grid' || !enabled || !profile?.birth_date || profile?.latitude == null) {
+      setGrid(null);
+      return;
+    }
+    let alive = true;
+    getDuadGrid(profile).then((g) => { if (alive) setGrid(g); }).catch(() => {});
+    return () => { alive = false; };
+  }, [chartMode, enabled, profile]);
 
   // Compute parans once (reuses Align's production paran algorithm).
   useEffect(() => {
@@ -160,9 +162,14 @@ export default function Zodisphere3dPrototypePage() {
     [allLines, hidden, hiddenAngles],
   );
 
-  // allLines already carries the natal + duad + compendium sets in grid mode,
-  // so the body/angle filters (visibleLines) are all we draw.
-  const linesForGlobe = visibleLines;
+  // In Duad Grid mode, draw the horizontal ladder (compendiums first, then the
+  // duad lines and gold anchor) with the vertical planet lines on top.
+  const linesForGlobe = useMemo(() => {
+    if (chartMode === 'grid' && grid) {
+      return [...grid.compendiumLines, ...grid.duadLines, ...visibleLines];
+    }
+    return visibleLines;
+  }, [chartMode, grid, visibleLines]);
 
   // Active bodies present in the result, each with its engine colour.
   const bodyLegend = useMemo(() => {
@@ -497,11 +504,11 @@ export default function Zodisphere3dPrototypePage() {
                 </div>
                 {chartMode === 'grid' && (
                   <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
-                    <strong>Vertical</strong> solid lines = your planets. <strong>Horizontal</strong> dashed
-                    lines = each planet&apos;s <strong>duad</strong>, drawn at its true declination (the real latitude where it&apos;s overhead);
-                    the fine dashed <strong>compendium</strong> parallel sharpens as you zoom to street level.
-                    A vertical planet line passing through a horizontal duad line is a true geographic point — tap it to read the theme.
-                    Duad/compendium parallels sit within the tropics (±23.4°) — that&apos;s astronomy, not a limit we chose.
+                    An even horizontal ladder wrapping the globe: <strong>144 duads</strong> (faint lines) and
+                    <strong> 1,728 compendiums</strong> (appear as you zoom to street level), evenly spaced pole-to-pole.
+                    The <span className="text-amber-200">gold rung</span> at your birth latitude is your <strong>Ascendant&apos;s compendium</strong> —
+                    the whole grid is anchored there (north → earlier signs, south → later). Your vertical planet lines pass through it;
+                    tap anywhere to read the duad/compendium band + which planet crosses there.
                   </div>
                 )}
                 <button
@@ -810,25 +817,24 @@ export default function Zodisphere3dPrototypePage() {
               );
             })()}
 
-            {/* Duad Grid geographic crossing — a natal (solid) line meeting a
-                duad/compendium (dashed) line near this exact spot is a real
-                interpretable point: the planet activated in its duad flavour. */}
-            {chartMode === 'grid' && (() => {
-              const natalHit = lineHits.find((h) => h.line.style === 'natal');
-              const derivedHit = lineHits.find((h) => h.line.style === 'duad' || h.line.style === 'compendium');
-              if (!natalHit || !derivedHit) return null;
-              const isComp = derivedHit.line.style === 'compendium';
+            {/* Duad Grid band — which duad + compendium this latitude falls in
+                (anchored to the rising point), and which vertical planet line
+                passes through here. */}
+            {chartMode === 'grid' && grid && (() => {
+              const band = bandAtLatitude(tapPoint.lat, grid);
+              const crossPlanet = lineHits.find((h) => h.line.style === 'natal');
               return (
                 <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                  <div className="font-semibold text-indigo-100 mb-1">
-                    🔷 {natalHit.line.planet} × {derivedHit.line.planet} {isComp ? 'compendium' : 'duad'} · {derivedHit.line.derivedSign}
-                  </div>
+                  <div className="font-semibold text-indigo-100 mb-1">🔷 {band.duadSign} duad · {band.compendiumSign} compendium</div>
                   <p className="text-white/75 leading-relaxed">
-                    Your <strong>{natalHit.line.planet} {natalHit.line.angle}</strong> line crosses{' '}
-                    {natalHit.line.planet === derivedHit.line.planet ? 'its own' : <><strong>{derivedHit.line.planet}</strong>&apos;s</>}{' '}
-                    {isComp ? 'compendium' : 'duad'} line here — the <strong>{derivedHit.line.derivedSign}</strong> {isComp ? 'compendium' : 'duad'}:{' '}
-                    <em>{derivedHit.line.theme}</em>. A real geographic point where that energy lands in this flavour.
+                    This latitude sits in the <strong>{band.duadSign}</strong> duad — <em>{band.hiddenTheme}</em>.
+                    Zoomed to street level the compendium here is <strong>{band.compendiumSign}</strong> — <em>{band.deepestTheme}</em>.
                   </p>
+                  {crossPlanet && (
+                    <p className="text-white/70 leading-relaxed mt-1.5">
+                      Your <strong>{crossPlanet.line.planet} {crossPlanet.line.angle}</strong> line passes through here — that planet fires in this {band.duadSign} flavour at this spot.
+                    </p>
+                  )}
                 </div>
               );
             })()}

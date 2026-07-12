@@ -100,11 +100,10 @@ export class AstrocartographyLineRenderer {
                 ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
                 : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
         };
-        // The finer rungs (compendium sub-lines + the faint even ladder) only
-        // draw when the camera is zoomed in, so the world view stays clean and
-        // they sharpen toward street level.
-        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 2_800_000);
-        else if (isGrid) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 6_000_000);
+        // The 1,728 compendium rungs only draw at street-level zoom (there are
+        // far too many to show at world view); the 144 duad lines stay visible
+        // around the whole globe as the always-on grid.
+        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 700_000);
         const entity = this.viewer.entities.add({ id: `acg-${line.id}-${si}`, polyline });
         this.entities.push(entity);
       });
@@ -135,7 +134,9 @@ export class AstrocartographyLineRenderer {
       // like a ruler. Planet rungs are bold/coloured; faint ladder rungs are
       // small/dim. They share the line's zoom visibility.
       if ((isDuad || isGrid) && line.label && line.labelLon != null && line.points.length) {
-        const ddc = isGrid ? new Cesium.DistanceDisplayCondition(0.0, 6_000_000) : undefined;
+        // 144 duad labels would swamp the world view — only show them once the
+        // camera is zoomed to a region. The gold Ascendant rung (isDuad) is always labelled.
+        const ddc = isGrid ? new Cesium.DistanceDisplayCondition(0.0, 3_000_000) : undefined;
         this.entities.push(this.viewer.entities.add({
           id: `acg-glabel-${line.id}`,
           position: Cesium.Cartesian3.fromDegrees(line.labelLon, line.points[0].lat),
