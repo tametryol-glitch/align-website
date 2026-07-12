@@ -32,9 +32,15 @@ export interface DuadCompendiumResult {
   compendiumSign: string;
   compendiumHouse: number | null;
   compendiumRuler: string;
+  /** 4th level: each Compendium ÷ 12 = 12 Matrices of 0°01′02.5″ each. */
+  matrixSign: string;
+  matrixHouse: number | null;
+  matrixRuler: string;
   surfaceTheme: string;
   hiddenTheme: string;
   deepestTheme: string;
+  /** The Matrix layer's theme — the finest psychological wiring. */
+  matrixTheme: string;
 }
 
 // ─── Sign Themes (surface / hidden / deepest) ─────────────────────────────
@@ -195,6 +201,20 @@ export function calculateCompendium(duadSign: string, degreeInSign: number): str
 }
 
 /**
+ * Calculate the Matrix sign — the 4th level. Each 12′30″ compendium is divided
+ * into 12 micro-segments of 0°01′02.5″ (62.5″), cycling the signs forward from
+ * the compendium sign. Same method as duad → compendium, one level deeper.
+ */
+export function calculateMatrix(compSign: string, degreeInSign: number): string {
+  const deg = Math.max(0, Math.min(29.999, degreeInSign));
+  const withinComp = (deg % 2.5) % (2.5 / 12);
+  const matrixSize = 2.5 / 144; // (2.5/12)/12 = 0°01′02.5″
+  const idx = Math.min(11, Math.floor(withinComp / matrixSize));
+  const signIdx = (SIGNS.indexOf(compSign) + idx) % 12;
+  return SIGNS[signIdx];
+}
+
+/**
  * Get the whole-sign duad house for a given duad sign, relative to the ASC sign.
  */
 export function getDuadHouse(duadSign: string, ascSign: string): number {
@@ -232,16 +252,20 @@ export function getFullDuadCompendium(
 
   const duadSign = calculateDuad(sign, degreeInSign);
   const compSign = calculateCompendium(duadSign, degreeInSign);
+  const matrixSign = calculateMatrix(compSign, degreeInSign);
 
   const duadRuler = RULERS[duadSign] || duadSign;
   const compRuler = RULERS[compSign] || compSign;
+  const matrixRuler = RULERS[matrixSign] || matrixSign;
 
   const duadHouse = ascSign ? getDuadHouse(duadSign, ascSign) : null;
   const compHouse = ascSign ? getCompendiumHouse(compSign, ascSign) : null;
+  const matrixHouse = ascSign ? getDuadHouse(matrixSign, ascSign) : null;
 
   const surfaceTheme = SIGN_THEMES[sign]?.surface || '';
   const hiddenTheme = SIGN_THEMES[duadSign]?.hidden || '';
   const deepestTheme = SIGN_THEMES[compSign]?.deepest || '';
+  const matrixTheme = SIGN_THEMES[matrixSign]?.psych || '';
 
   return {
     sign,
@@ -252,9 +276,13 @@ export function getFullDuadCompendium(
     compendiumSign: compSign,
     compendiumHouse: compHouse,
     compendiumRuler: compRuler,
+    matrixSign,
+    matrixHouse,
+    matrixRuler,
     surfaceTheme,
     hiddenTheme,
     deepestTheme,
+    matrixTheme,
   };
 }
 

@@ -59,8 +59,9 @@ export interface AcgLine3D {
   points: GeoPoint[];
   /** Render style: default vertical ACG line, or a horizontal Duad-Grid line:
    *  'gridline' = faint even ladder rung, 'duad' = a planet's highlighted duad,
-   *  'compendium' = finer sub-line revealed on zoom-in. */
-  style?: 'natal' | 'duad' | 'compendium' | 'gridline';
+   *  'compendium' = finer sub-line revealed on zoom-in, 'matrix' = the finest
+   *  4th-level rung revealed only at the deepest (building-level) zoom. */
+  style?: 'natal' | 'duad' | 'compendium' | 'gridline' | 'matrix';
   /** Optional text label for a horizontal grid line, placed at `labelLon`. */
   label?: string;
   labelLon?: number;
@@ -222,7 +223,7 @@ export function probeAcgLines(
     // Horizontal parallels (duad/compendium/gridline) span every longitude with
     // only sparse vertices — the true distance to a full parallel is the pure
     // latitude gap, so probe that rather than the nearest vertex.
-    const horizontal = line.style === 'duad' || line.style === 'compendium' || line.style === 'gridline';
+    const horizontal = line.style === 'duad' || line.style === 'compendium' || line.style === 'gridline' || line.style === 'matrix';
     if (horizontal) {
       best = Math.abs(lat - line.points[0].lat);
     } else {

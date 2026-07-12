@@ -166,7 +166,7 @@ export default function Zodisphere3dPrototypePage() {
   // duad lines and gold anchor) with the vertical planet lines on top.
   const linesForGlobe = useMemo(() => {
     if (chartMode === 'grid' && grid) {
-      return [...grid.compendiumLines, ...grid.duadLines, ...visibleLines];
+      return [...grid.matrixLines, ...grid.compendiumLines, ...grid.duadLines, ...visibleLines];
     }
     return visibleLines;
   }, [chartMode, grid, visibleLines]);
@@ -504,11 +504,12 @@ export default function Zodisphere3dPrototypePage() {
                 </div>
                 {chartMode === 'grid' && (
                   <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
-                    An even horizontal ladder wrapping the globe: <strong>144 duads</strong> (faint lines) and
-                    <strong> 1,728 compendiums</strong> (appear as you zoom to street level), evenly spaced pole-to-pole.
+                    An even horizontal ladder wrapping the globe: <strong>144 duads</strong> (faint lines),
+                    <strong> 1,728 compendiums</strong> (at street-level zoom), and <strong>20,736 matrices</strong> (the finest 4th
+                    level, at the deepest building-level zoom — built in a band around your latitude), evenly spaced pole-to-pole.
                     The <span className="text-amber-200">gold rung</span> at your birth latitude is your <strong>Ascendant&apos;s compendium</strong> —
                     the whole grid is anchored there (north → earlier signs, south → later). Your vertical planet lines pass through it;
-                    tap anywhere to read the duad/compendium band + which planet crosses there.
+                    tap anywhere to read the duad / compendium / matrix band + which planet crosses there.
                   </div>
                 )}
                 <button
@@ -825,10 +826,13 @@ export default function Zodisphere3dPrototypePage() {
               const crossPlanet = lineHits.find((h) => h.line.style === 'natal');
               return (
                 <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                  <div className="font-semibold text-indigo-100 mb-1">🔷 {band.duadSign} duad · {band.compendiumSign} compendium</div>
+                  <div className="font-semibold text-indigo-100 mb-1">🔷 {band.duadSign} duad · {band.compendiumSign} compendium · {band.matrixSign} matrix</div>
                   <p className="text-white/75 leading-relaxed">
                     This latitude sits in the <strong>{band.duadSign}</strong> duad — <em>{band.hiddenTheme}</em>.
                     Zoomed to street level the compendium here is <strong>{band.compendiumSign}</strong> — <em>{band.deepestTheme}</em>.
+                  </p>
+                  <p className="text-white/60 leading-relaxed mt-1">
+                    Deepest zoom — the <strong>{band.matrixSign}</strong> matrix: <em>{band.matrixTheme}</em>.
                   </p>
                   {crossPlanet && (
                     <p className="text-white/70 leading-relaxed mt-1.5">

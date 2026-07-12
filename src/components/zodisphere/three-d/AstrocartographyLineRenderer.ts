@@ -60,6 +60,7 @@ export class AstrocartographyLineRenderer {
       const isDuad = line.style === 'duad';
       const isComp = line.style === 'compendium';
       const isGrid = line.style === 'gridline';
+      const isMatrix = line.style === 'matrix';
       const segments = splitAtSeam(line.points);
       segments.forEach((seg, si) => {
         if (seg.length < 2) return;
@@ -82,7 +83,7 @@ export class AstrocartographyLineRenderer {
         // Duad + compendium are horizontal parallels at the derived point's true
         // DECLINATION (a real latitude), so they follow a constant latitude →
         // RHUMB; the vertical natal ACG lines follow great circles → GEODESIC.
-        const horizontal = isDuad || isComp || isGrid;
+        const horizontal = isDuad || isComp || isGrid || isMatrix;
         const polyline: any = {
           positions,
           // Horizontal grid lines follow a constant latitude → RHUMB; ACG lines
@@ -91,19 +92,22 @@ export class AstrocartographyLineRenderer {
           // NOT clampToGround: ground-clamped polylines only support a narrow
           // material set and rendered invisibly. Regular geodesic polylines draw
           // on top of the globe at every zoom.
-          width: isGrid ? 1 : isComp ? 2 : isDuad ? 4 : dashed ? 3 : 4,
-          material: isGrid
-            ? color.withAlpha(0.28) // faint even ladder rung (solid, thin)
-            : (isDuad || isComp)
-              ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.9 : 1.0), dashLength: isComp ? 10 : 22 })
-              : dashed
-                ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
-                : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
+          width: isMatrix ? 1 : isGrid ? 1 : isComp ? 2 : isDuad ? 4 : dashed ? 3 : 4,
+          material: isMatrix
+            ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(0.85), dashLength: 6 })
+            : isGrid
+              ? color.withAlpha(0.28) // faint even ladder rung (solid, thin)
+              : (isDuad || isComp)
+                ? new Cesium.PolylineDashMaterialProperty({ color: color.withAlpha(isComp ? 0.9 : 1.0), dashLength: isComp ? 10 : 22 })
+                : dashed
+                  ? new Cesium.PolylineDashMaterialProperty({ color, dashLength: 16 })
+                  : new Cesium.PolylineGlowMaterialProperty({ color, glowPower: 0.2, taperPower: 1.0 }),
         };
-        // The 1,728 compendium rungs only draw at street-level zoom (there are
-        // far too many to show at world view); the 144 duad lines stay visible
-        // around the whole globe as the always-on grid.
-        if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 700_000);
+        // The 1,728 compendium rungs only draw at street-level zoom; the 20,736
+        // matrix rungs draw only at the deepest (building-level) zoom. The 144
+        // duad lines stay visible around the whole globe as the always-on grid.
+        if (isMatrix) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 120_000);
+        else if (isComp) polyline.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(0.0, 700_000);
         const entity = this.viewer.entities.add({ id: `acg-${line.id}-${si}`, polyline });
         this.entities.push(entity);
       });
