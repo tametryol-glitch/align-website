@@ -21,8 +21,9 @@ import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFa
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
   getBodyAcgLines, getDuadGrid, bandAtLatitude, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
+  getNatalContext, interpretLocation,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
-  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type DuadGrid,
+  type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type DuadGrid, type NatalContext,
 } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
@@ -48,6 +49,11 @@ const ZodisphereGlobeCesium = dynamic(
     ),
   },
 );
+
+function ordinalLabel(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+  return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`;
+}
 
 function hasWebGL(): boolean {
   if (typeof document === 'undefined') return false;
@@ -77,6 +83,7 @@ export default function Zodisphere3dPrototypePage() {
   const [bodies, setBodies] = useState<string[]>(ACG_PLANETS);
   const [chartMode, setChartMode] = useState<ChartMode>('natal');
   const [grid, setGrid] = useState<DuadGrid | null>(null);
+  const [natalCtx, setNatalCtx] = useState<NatalContext | null>(null);
   const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
@@ -153,6 +160,14 @@ export default function Zodisphere3dPrototypePage() {
     if (!enabled || !profile?.birth_date || profile?.latitude == null) return;
     let alive = true;
     getParans3D(profile).then((p) => { if (alive) setParans(p); }).catch(() => {});
+    return () => { alive = false; };
+  }, [enabled, profile]);
+
+  // Build the synthesis engine's natal context once (rulers, houses, aspects).
+  useEffect(() => {
+    if (!enabled || !profile?.birth_date || profile?.latitude == null) { setNatalCtx(null); return; }
+    let alive = true;
+    getNatalContext(profile).then((c) => { if (alive) setNatalCtx(c); }).catch(() => {});
     return () => { alive = false; };
   }, [enabled, profile]);
 
@@ -824,6 +839,36 @@ export default function Zodisphere3dPrototypePage() {
             {chartMode === 'grid' && grid && (() => {
               const band = bandAtLatitude(tapPoint.lat, grid);
               const crossPlanet = lineHits.find((h) => h.line.style === 'natal');
+              // Full synthesis when a planet line is active here AND the natal
+              // context is loaded; otherwise the band-only readout.
+              const interp = (crossPlanet && natalCtx)
+                ? interpretLocation(natalCtx, crossPlanet.line.planet, {
+                    duadSign: band.duadSign, compendiumSign: band.compendiumSign, matrixSign: band.matrixSign,
+                  })
+                : null;
+              if (interp) {
+                return (
+                  <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
+                    <div className="font-semibold text-indigo-100 mb-1.5">
+                      🔷 Location synthesis · {interp.planet} in {interp.natalSign} · {ordinalLabel(interp.natalHouse)} house
+                    </div>
+                    {interp.narrative.split('\n\n').map((para, i) => (
+                      <p key={i} className="text-white/80 leading-relaxed mb-1.5"
+                         dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+                    ))}
+                    <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-white/10 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {band.duadSign} · {ordinalLabel(interp.duadHouse)}h</span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {band.compendiumSign} · {ordinalLabel(interp.compHouse)}h</span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Matrix {band.matrixSign} · {ordinalLabel(interp.matrixHouse)}h</span>
+                      <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{interp.elements.dominant}</span>
+                      <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{interp.modalities.dominant}</span>
+                      {interp.rulers.dominant?.available && (
+                        <span className="px-1.5 py-0.5 rounded bg-fuchsia-400/15 text-fuchsia-100">Ruler {interp.rulers.dominant.planet}{interp.rulers.dominant.count >= 2 ? ` ×${interp.rulers.dominant.count}` : ''}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
                   <div className="font-semibold text-indigo-100 mb-1">🔷 {band.duadSign} duad · {band.compendiumSign} compendium · {band.matrixSign} matrix</div>
@@ -834,11 +879,7 @@ export default function Zodisphere3dPrototypePage() {
                   <p className="text-white/60 leading-relaxed mt-1">
                     Deepest zoom — the <strong>{band.matrixSign}</strong> matrix: <em>{band.matrixTheme}</em>.
                   </p>
-                  {crossPlanet && (
-                    <p className="text-white/70 leading-relaxed mt-1.5">
-                      Your <strong>{crossPlanet.line.planet} {crossPlanet.line.angle}</strong> line passes through here — that planet fires in this {band.duadSign} flavour at this spot.
-                    </p>
-                  )}
+                  <p className="text-white/50 leading-relaxed mt-1.5 italic">Tap on or near a planet line to get the full location synthesis.</p>
                 </div>
               );
             })()}

@@ -32,6 +32,16 @@ import { calculateParanLines, type ParanLine } from './parans';
 export type { ParanLine };
 export { getDuadGrid, bandAtLatitude, type DuadGrid, type BandAt } from './duadGrid';
 
+import { buildNatalContext, type NatalContext } from './zodisphereInterpretation';
+export { interpretLocation, DEFAULT_WEIGHTS, type NatalContext, type LocationInterpretation, type LocationBand, type InterpretationWeights } from './zodisphereInterpretation';
+
+/** Build the synthesis engine's natal context once (reuses the validated chart
+ *  fetch, incl. Vesta/Juno for custom rulers). Null if no birth data. */
+export async function getNatalContext(profile: any): Promise<NatalContext | null> {
+  const chart = await getMyChartBodies(profile, []);
+  return chart ? buildNatalContext(chart) : null;
+}
+
 /** Compute the chart's paran latitudes (reuses Align's production algorithm). */
 export async function getParans3D(profile: any): Promise<ParanLine[]> {
   const chart = await getMyChartBodies(profile, []);
