@@ -108,7 +108,9 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   if (before) query = query.lt('created_at', before);
 
   const { data: rawPosts, error } = await query;
-  if (error || !rawPosts?.length) return [];
+  // Surface real query/RLS errors instead of silently returning an empty feed.
+  if (error) { console.error('[getFeed] query failed:', error.code, error.message, error.details); throw new Error(error.message || 'Feed query failed'); }
+  if (!rawPosts?.length) return [];
 
   const postIds = rawPosts.map((p: any) => p.id);
 

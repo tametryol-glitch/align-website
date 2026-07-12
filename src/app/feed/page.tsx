@@ -640,6 +640,7 @@ export default function FeedPage() {
   const userAvatar = profile?.avatar_url || null;
 
   const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [feedError, setFeedError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -656,6 +657,7 @@ export default function FeedPage() {
   const loadFeed = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+    setFeedError(null);
     try {
       const [data, bookmarks] = await Promise.all([
         getFeed(userId),
@@ -668,7 +670,10 @@ export default function FeedPage() {
       // Index hashtags from loaded posts & load trending
       data.forEach(p => { if (p.content) indexPostHashtags(p.id, p.content); });
       setTrendingHashtags(getTrendingHashtags(8));
-    } catch { /* ignore */ }
+    } catch (e: any) {
+      console.error('[loadFeed] failed:', e?.message, e);
+      setFeedError(e?.message || 'Could not load the feed.');
+    }
     setLoading(false);
   }, [userId]);
 
@@ -924,6 +929,15 @@ export default function FeedPage() {
       )}
 
       <div className="space-y-4">
+        {feedError && (
+          <div className="card border border-red-400/40 bg-red-500/10 text-center py-6 px-4">
+            <p className="text-sm text-red-200 mb-1">The feed couldn’t load.</p>
+            <p className="text-xs text-text-muted break-words mb-3">{feedError}</p>
+            <button onClick={() => loadFeed()} className="text-xs px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20">
+              Try again
+            </button>
+          </div>
+        )}
         {(() => {
           const filteredPosts = activeHashtagFilter
             ? (() => {
