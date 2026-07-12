@@ -128,6 +128,29 @@ export class AstrocartographyLineRenderer {
           },
         }));
       }
+
+      // Duad-Grid labels: a text tag near the birth longitude so the rungs read
+      // like a ruler. Planet rungs are bold/coloured; faint ladder rungs are
+      // small/dim. They share the line's zoom visibility.
+      if ((isDuad || isGrid) && line.label && line.labelLon != null && line.points.length) {
+        const ddc = isGrid ? new Cesium.DistanceDisplayCondition(0.0, 6_000_000) : undefined;
+        this.entities.push(this.viewer.entities.add({
+          id: `acg-glabel-${line.id}`,
+          position: Cesium.Cartesian3.fromDegrees(line.labelLon, line.points[0].lat),
+          label: {
+            text: line.label,
+            font: isGrid ? '500 10px sans-serif' : '600 12px sans-serif',
+            fillColor: isGrid ? color.withAlpha(0.7) : color,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 3,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            scaleByDistance: new Cesium.NearFarScalar(1.5e6, 1.0, 3.0e7, 0.4),
+            ...(ddc ? { distanceDisplayCondition: ddc } : {}),
+          },
+        }));
+      }
     }
     this.viewer.scene.requestRender();
   }

@@ -61,6 +61,9 @@ export interface AcgLine3D {
    *  'gridline' = faint even ladder rung, 'duad' = a planet's highlighted duad,
    *  'compendium' = finer sub-line revealed on zoom-in. */
   style?: 'natal' | 'duad' | 'compendium' | 'gridline';
+  /** Optional text label for a horizontal grid line, placed at `labelLon`. */
+  label?: string;
+  labelLon?: number;
 }
 
 export interface AdapterOptions {

@@ -80,10 +80,14 @@ export interface DuadGrid {
 
 // A constant-latitude line is rendered as a RHUMB line (see the renderer), so a
 // handful of points trace the parallel exactly — cheap enough for a dense grid.
-function hLine(id: string, planet: string, color: string, lat: number, style: 'duad' | 'compendium' | 'gridline'): AcgLine3D {
+function hLine(
+  id: string, planet: string, color: string, lat: number,
+  style: 'duad' | 'compendium' | 'gridline',
+  label?: string, labelLon?: number,
+): AcgLine3D {
   const points: { lat: number; lon: number }[] = [];
   for (let lon = -180; lon <= 180; lon += 30) points.push({ lat, lon });
-  return { id, planet, angle: 'MC', color, points, style } as AcgLine3D;
+  return { id, planet, angle: 'MC', color, points, style, label, labelLon } as AcgLine3D;
 }
 
 const COMP_WINDOW = 16; // only build compendium rungs within ±16° of birth lat
@@ -119,6 +123,10 @@ export async function getDuadGrid(profile: any, mapping: LatMapping): Promise<Du
   const ascDuadIdx = globalDuadIndex(ascLon);
   const step = DUAD_STEP[mapping];
   const compStep = step / 12;
+  // Labels are placed near the birth longitude so they read like a ruler where
+  // the user's anchor is.
+  const anchorLon = typeof profile?.longitude === 'number' ? profile.longitude : 0;
+  const gridLabelLon = anchorLon - 16;
 
   // Even ladder: 144 duad rungs stepping out from the anchor (Asc duad = birthLat).
   const gridLines: AcgLine3D[] = [];
@@ -127,7 +135,8 @@ export async function getDuadGrid(profile: any, mapping: LatMapping): Promise<Du
     const lat = birthLat + k * step;
     if (lat < -LAT_LIMIT || lat > LAT_LIMIT) continue;
     const duadIdx = ((ascDuadIdx + k) % 144 + 144) % 144;
-    gridLines.push(hLine(`grid-${duadIdx}-${k}`, 'grid', GRID_COLOR, lat, 'gridline'));
+    const duadSign = getFullDuadCompendium(centreLongitude(duadIdx)).duadSign;
+    gridLines.push(hLine(`grid-${duadIdx}-${k}`, 'grid', GRID_COLOR, lat, 'gridline', `${duadSign} duad`, gridLabelLon));
     // 12 finer compendium rungs inside this duad (revealed on zoom). Only
     // within a window of the birth latitude to keep the entity count sane.
     if (Math.abs(lat - birthLat) <= COMP_WINDOW) {
@@ -153,7 +162,7 @@ export async function getDuadGrid(profile: any, mapping: LatMapping): Promise<Du
     const lat = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, birthLat + k * step));
     const color = isAnchor ? ASC_COLOR : (ACG_BODY_COLORS[name] || '#FFFFFF');
     const full = getFullDuadCompendium(lon);
-    planetLines.push(hLine(`${name}:duad`, name, color, lat, 'duad'));
+    planetLines.push(hLine(`${name}:duad`, name, color, lat, 'duad', `${name} · ${full.duadSign}`, anchorLon));
     entries.push({ planet: name, color, duadLat: lat, duadSign: full.duadSign, hiddenTheme: full.hiddenTheme, isAnchor });
   }
 
