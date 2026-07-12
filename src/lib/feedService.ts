@@ -379,6 +379,9 @@ export async function createPost(post: {
       media_kind: post.mediaKind || null,
       video_url: post.videoUrl || null,
       style: styleToSave,
+      // Set explicitly — the feed filters `.eq('is_deleted', false)`, so a
+      // null default here would make new posts invisible.
+      is_deleted: false,
     })
     .select('*, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
     .single();
