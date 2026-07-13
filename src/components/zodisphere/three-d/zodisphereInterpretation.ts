@@ -83,35 +83,145 @@ function planetEnergy(p: string): string {
   return PLANET_ENERGY[p] || `the ${p} force in you`;
 }
 
-/** The life ARENA a line's angle activates at this location — this, not the
- *  natal house, is what the *place* switches on (IC = home, MC = career, etc.). */
+/** The plain-language life ARENA a line's angle activates (no jargon). */
 const ANGLE_AREA: Record<string, string> = {
-  MC: 'your career, your status, and how the world sees you',
-  IC: 'your home, your family, and your deepest roots',
-  ASC: 'your identity, your body, and how you show up in the world',
-  DSC: 'your closest relationships and the partners you draw in',
+  MC: 'your work and your place in the world',
+  IC: 'your home and your family',
+  ASC: 'who you are and how you come across',
+  DSC: 'your love life and closest relationships',
 };
-/** What the planet DOES to that arena (transitive, present tense). */
-const PLANET_VERB: Record<string, string> = {
-  Sun: 'throws a spotlight on', Moon: 'makes you emotionally raw around',
-  Mercury: 'floods with talk, ideas, and restless motion', Venus: 'sweetens and draws love and ease into',
-  Mars: 'heats up and picks fights in', Jupiter: 'expands and opens doors in',
-  Saturn: 'tests and demands you mature in', Uranus: 'disrupts and cracks open',
-  Neptune: 'blurs and romanticizes', Pluto: 'intensifies and forces transformation in',
+
+/** The HEADLINE prediction for each planet × angle — vivid, emotional, a little
+ *  risky, but grounded in the real meaning of that planet in that arena. Format:
+ *  a punchy hook sentence, then a concrete "what could happen" follow. */
+const PREDICTIONS: Record<string, Record<string, string>> = {
+  Sun: {
+    MC: 'This is a place you get noticed. Your work could step into the spotlight — recognition, a title, a big public win — but everyone will be watching, so there\'s nowhere to hide.',
+    IC: 'You could finally feel at home in your own skin here. Family warms up, or you become the heart the whole household orbits — just don\'t let it go to your head.',
+    ASC: 'You shine here. People see the real you and doors open on charisma alone — the only trap is the ego that rides in with all that attention.',
+    DSC: 'People are drawn to your light here. A relationship could put you center-stage — or you fall hard for someone who needs to be the star.',
+  },
+  Moon: {
+    MC: 'Your work here runs on feeling. You could build something caring for or moving people — or ride an emotional rollercoaster in public you can\'t quite hide.',
+    IC: 'This is a place that pulls at your heart. You\'ll want to nest, to belong, to be held — but old family wounds can rise right back up too.',
+    ASC: 'You wear your heart on your face here. People feel close to you fast, and you\'re softer, moodier, and more exposed than usual — for better and worse.',
+    DSC: 'You bond fast and deep here. Love turns tender and protective — comfort and clinginess in the same breath, so watch how much you give away.',
+  },
+  Mercury: {
+    MC: 'Your mind is your money here. Writing, speaking, teaching, deals — the right words open doors, but you\'ll be busy to the edge of scattered.',
+    IC: 'Home fills with talk, ideas, and constant coming-and-going here. It\'s alive and stimulating — and restless if part of you is craving quiet.',
+    ASC: 'You come across sharp and quick here. You\'ll talk, connect, and think nonstop — and struggle to ever switch your head off.',
+    DSC: 'You fall for a mind here. Relationships get witty and stimulating, built on conversation — just keep an eye out for someone who won\'t stay put.',
+  },
+  Venus: {
+    MC: 'Your charm opens doors here. Money, beauty, and the right relationships can lift your reputation — just don\'t coast on being liked.',
+    IC: 'Home gets beautiful and sweet here — comfort, love, maybe a place you never want to leave. The only risk is going soft and getting stuck.',
+    ASC: 'You\'re magnetic here. You\'ll feel and look more attractive and draw admirers and opportunities to you — vanity is the one thing to watch.',
+    DSC: 'This is a love-magnet of a place. Romance, a fated partner, maybe marriage — or you fall for the wrong beautiful thing. Either way your heart is in it.',
+  },
+  Mars: {
+    MC: 'You\'ll fight for what you want here. Bold career moves, competition, maybe clashes with the people in charge — great for drive, dangerous for burnout.',
+    IC: 'Home runs hot here. You\'ll get a lot done — or slam into tension and slammed doors with the people you live with. The fire needs somewhere to go.',
+    ASC: 'You\'re a force here — bold, energized, up for anything. Just watch the short fuse and the accidents that come from moving too fast.',
+    DSC: 'Passion runs high here. Intense attraction, hot-and-cold love, maybe a partner you clash with as hard as you want them — this place turns up the heat.',
+  },
+  Jupiter: {
+    MC: 'This is a lucky place for your career. Growth, opportunity, a promotion, travel for work — the only real danger is overpromising.',
+    IC: 'Your home and family expand here — more room, more abundance, maybe literally a bigger place. Just watch the tendency to overdo everything.',
+    ASC: 'Good fortune seems to follow you here. You feel optimistic, generous, larger than life — don\'t let it tip into overconfidence.',
+    DSC: 'Relationships bring luck and growth here — a generous partner, a wedding, someone who cracks your world wide open. Just don\'t bite off more than you can hold.',
+  },
+  Saturn: {
+    MC: 'You\'ll build something real here, brick by brick. Mastery, authority, and respect are on offer — but earned the hard way, through pressure and delay.',
+    IC: 'Home feels heavier here — real responsibility, maybe caring for family, or a lonely stretch that ends up making you stand on your own two feet.',
+    ASC: 'This place ages you, in the best and hardest sense. You\'re taken seriously here, but it can feel cold or restrictive — you grow up here, ready or not.',
+    DSC: 'Relationships get serious here — commitment, duty, maybe an older or steadier partner — or a loneliness that finally teaches you what you actually need.',
+  },
+  Uranus: {
+    MC: 'Your career could take a hard left here. Sudden changes, unconventional work, walking away from the safe path — you\'ll choose freedom over security.',
+    IC: 'You could uproot your whole home life here — a sudden move, an unconventional living setup, or finally walking away from a place that felt like a cage.',
+    ASC: 'You reinvent yourself here. Expect the unexpected — a new look, a new identity, a jolt that wakes you up. Comfort was never the point.',
+    DSC: 'Love goes electric and unpredictable here — sudden sparks, unconventional arrangements, on-again-off-again. It\'s exciting, but freedom matters more than safety.',
+  },
+  Neptune: {
+    MC: 'Your work turns dreamy here — art, film, healing, and spirituality thrive, but so can confusion and people who aren\'t what they seem. Trust slowly.',
+    IC: 'Home feels magical or a little unreal here — a sanctuary, or a place where the edges blur and you quietly lose the plot. Keep one foot on the ground.',
+    ASC: 'You become a kind of mirror here — inspired, intuitive, and a little lost. People project their dreams onto you, so be careful who you dissolve into.',
+    DSC: 'This is where you fall in love with a dream. Soulmate highs are real here — and so is illusion, so make sure you\'re loving the person, not the fantasy.',
+  },
+  Pluto: {
+    MC: 'Power moves here. Your career can transform completely — a rise, a fall, and a comeback — with power struggles you won\'t be able to sidestep.',
+    IC: 'This place digs into your roots. Deep family history surfaces and you rebuild home life from the ground up — sometimes through a crisis that changes everything.',
+    ASC: 'You\'re intense here — magnetic, powerful, impossible to ignore. Expect a kind of death-and-rebirth of who you thought you were.',
+    DSC: 'Love goes all the way here — obsession, deep merging, jealousy, transformation. This is a partner who remakes you, or nearly wrecks you. Rarely in between.',
+  },
 };
-/** The lived, second-person consequence of that planet here. */
-const PLANET_CONSEQUENCE: Record<string, string> = {
-  Sun: "you get seen and you stand out — but pride and ego flare just as easily",
-  Moon: 'your feelings run right at the surface and you reach hard for comfort and belonging',
-  Mercury: 'your mind speeds up — conversation, learning, and connections multiply, and switching off gets hard',
-  Venus: 'love, beauty, money, and ease arrive more readily, though you can get too comfortable to move',
-  Mars: 'your drive spikes — you move fast, push hard, and conflict ignites over nothing',
-  Jupiter: 'opportunity and confidence swell, with a real risk of overreaching',
-  Saturn: 'you meet genuine tests and slow, earned mastery — it feels heavy long before it pays off',
-  Uranus: 'you crave freedom, break your own routines, and the ground shifts the moment you settle',
-  Neptune: 'boundaries dissolve — inspiration and confusion arrive together and reality turns slippery',
-  Pluto: "everything intensifies — power, obsession, and transformation you can't fully control",
+
+/** A plain personality read of the natal sign — why the place lands on YOU
+ *  differently (used lightly, no sign names in the prose). */
+const SIGN_TRAIT: Record<string, string> = {
+  Aries: 'someone who charges first and asks questions later',
+  Taurus: 'someone who craves stability, comfort, and things that last',
+  Gemini: 'someone whose mind never stops moving',
+  Cancer: 'someone who feels everything deeply and protects what they love',
+  Leo: 'someone who needs to be seen and to shine',
+  Virgo: 'someone who notices every detail and wants to make things right',
+  Libra: 'someone who craves harmony, beauty, and connection',
+  Scorpio: 'someone who feels everything intensely and trusts slowly',
+  Sagittarius: 'someone who needs freedom, adventure, and meaning',
+  Capricorn: 'someone built to endure, achieve, and be respected',
+  Aquarius: 'someone who thinks for themselves and refuses to be boxed in',
+  Pisces: 'someone who dreams, absorbs, and feels what others miss',
 };
+
+/** Plain-language life domain for each house (no numbers in the prose). */
+const HOUSE_LIFE: Record<number, string> = {
+  1: 'who you are and how you carry yourself',
+  2: 'your money and your sense of self-worth',
+  3: 'your everyday world — words, ideas, and the people right around you',
+  4: 'your home and your family',
+  5: 'romance, creativity, and joy',
+  6: 'your daily work, health, and routines',
+  7: 'your closest relationships',
+  8: 'intimacy, shared money, and deep change',
+  9: 'travel, big questions, and the search for meaning',
+  10: 'your career and reputation',
+  11: 'your friendships and the future you\'re building',
+  12: 'your inner world and what you need to let go of',
+};
+
+/** Plain, emotional mini-prediction for each house (what could happen). */
+const HOUSE_PREDICT: Record<number, string> = {
+  1: 'you could walk away from here a genuinely different person',
+  2: 'your money and your sense of what you\'re worth could swing hard',
+  3: 'the people around you and the way you think could shift',
+  4: 'your home and family life could get stirred right up',
+  5: 'a romance or a creative fire could catch when you least expect it',
+  6: 'your work, health, and daily rhythm could get overhauled',
+  7: 'a close relationship could hit a real turning point',
+  8: 'something could end so something else can be reborn',
+  9: 'you could be pulled toward travel, study, or a whole new outlook',
+  10: 'your career or reputation could take a real turn',
+  11: 'your friendships and your vision of the future could reshape you',
+  12: 'buried feelings could surface, and you may have to let something go',
+};
+
+/** The plain undercurrent each ruling planet threads through the place. */
+const RULER_THEME: Record<string, string> = {
+  Sun: 'pull toward being seen and living boldly',
+  Moon: 'need for comfort, care, and belonging',
+  Mercury: 'restless, curious, talkative energy',
+  Venus: 'pull toward love, beauty, and pleasure',
+  Mars: 'drive to push, fight, and chase what you want',
+  Jupiter: 'hunger for more — growth, adventure, and luck',
+  Saturn: 'pressure to get serious and build something that lasts',
+  Uranus: 'urge to break free and do it your own way',
+  Neptune: 'longing to escape, dream, and dissolve',
+  Pluto: 'pull toward intensity, power, and deep change',
+  Vesta: 'devotion to a single focused purpose',
+  Juno: 'focus on commitment and partnership',
+};
+
 type Angle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
 const ELEMENT_ATMOSPHERE: Record<Element, string> = {
@@ -320,10 +430,17 @@ export function interpretLocation(
   };
 }
 
-// ── Narrative composer — ONE cohesive, weighted, second-person reading ───────
-// Rules: lead with the verdict (planet ON its angle = the life arena the PLACE
-// switches on), speak to *you*, never say "duad/compendium/matrix", tie to real
-// behaviour, and collapse repetition instead of restating it.
+// ── Narrative composer — plain-language, emotional, PREDICTIVE ───────────────
+// Rules: no house numbers, no sign names, no aspect/dignity jargon in the prose.
+// Lead with what could HAPPEN to you here. Speak to *you*. Be a little bold, but
+// stay true to the real meaning of the planet/sign/house keywords underneath.
+function cap(s: string): string { return s ? s[0].toUpperCase() + s.slice(1) : s; }
+function joinList(items: string[]): string {
+  if (items.length <= 1) return items[0] || '';
+  if (items.length === 2) return `${items[0]}, and ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+}
+
 function compose(x: {
   planet: string; angle: Angle; natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number; compSign: string; compHouse: number;
@@ -335,91 +452,80 @@ function compose(x: {
   weights: InterpretationWeights;
 }): string {
   const P = x.planet;
-  const arena = ANGLE_AREA[x.angle] || houseTheme(x.natalHouse);
-  const verb = PLANET_VERB[P] || 'switches on';
-  const conseq = PLANET_CONSEQUENCE[P] || 'this whole part of your life comes sharply alive';
+  const arena = ANGLE_AREA[x.angle] || HOUSE_LIFE[x.natalHouse];
   const parts: string[] = [];
 
-  // 1. THE VERDICT (Planet + angle = what the PLACE does to you). Leads, bold.
-  parts.push(`**This is a ${P}-on-the-${x.angle} place — it ${verb} ${arena}.** Here, ${conseq}.`);
-
-  // 2. HOW it plays out — your natal sign + house colour it (25% + part of 45%).
-  const drive = SIGN_THEMES[x.natalSign]?.drive || `its ${x.natalSign} nature`;
-  parts.push(
-    `You don't meet that raw, though — you meet it as *you*. Your **${x.natalSign} ${P}** wants ${drive}, ` +
-    `and it lives in your ${ordinal(x.natalHouse)} house of ${houseTheme(x.natalHouse)}, so that's the flavour every experience here takes on.`,
-  );
-
-  // 3. The deeper layers → the houses they pull in, DEDUPED (no jargon, no repeat).
-  const derived = [
-    { sign: x.duadSign, house: x.duadHouse },
-    { sign: x.compSign, house: x.compHouse },
-    { sign: x.matrixSign, house: x.matrixHouse },
-  ];
-  const seenHouses = new Set<number>([x.natalHouse]);
-  const extraHouses = derived.filter((d) => { if (seenHouses.has(d.house)) return false; seenHouses.add(d.house); return true; });
-  const allLayersAgree = x.duadSign === x.compSign && x.compSign === x.matrixSign;
-  if (allLayersAgree) {
-    parts.push(
-      `And every hidden layer under this exact spot says the same thing — ${x.duadSign}, straight down. ` +
-      `When it lines up like that, the theme isn't a whisper here; it's insistent, and you'll feel it the longer you stay.`,
-    );
-  } else if (extraHouses.length) {
-    const list = extraHouses.map((d) => `your ${ordinal(d.house)} house (${houseTheme(d.house)})`).join(', then ');
-    parts.push(
-      `Go finer and this spot keeps quietly pulling in ${list} — widening the reach of the place from the one obvious arena into the corners of your life you don't expect it to touch.`,
-    );
+  // 1. THE HEADLINE PREDICTION (planet × angle) — bold hook, then what happens.
+  const pred = PREDICTIONS[P]?.[x.angle];
+  if (pred) {
+    const i = pred.indexOf('. ');
+    parts.push(i > 0 ? `**${pred.slice(0, i + 1)}** ${pred.slice(i + 2)}` : `**${pred}**`);
   } else {
-    parts.push(
-      `Go finer and the deeper layers keep circling back to the same ground — ${houseTheme(x.natalHouse)} — reinforcing rather than scattering the focus.`,
-    );
+    parts.push(`**This is a place that stirs up ${arena}.** Something in you comes alive here, and it won't let you stay the same.`);
   }
 
-  // 4. House relationships — the strongest single link, in plain second person.
+  // 2. Why it lands on YOU differently — plain trait + your tender spot.
+  parts.push(
+    `It won't hit you the way it hits anyone else, though. You're ${SIGN_TRAIT[x.natalSign] || 'wired your own way'}, ` +
+    `so this place reaches you right where you feel things most: ${HOUSE_LIFE[x.natalHouse]}.`,
+  );
+
+  // 3. What else it could touch — the finer layers as plain predictions, deduped.
+  //    Exclude the natal house AND any repeated house (covered in para 4) so
+  //    nothing echoes across paragraphs.
+  const seenHouses = new Set<number>([x.natalHouse, ...x.repeatedHouses.map(([h]) => h)]);
+  const spill = [x.duadHouse, x.compHouse, x.matrixHouse].filter((h) => { if (seenHouses.has(h)) return false; seenHouses.add(h); return true; });
+  const allLayersAgree = x.duadSign === x.compSign && x.compSign === x.matrixSign;
+  if (allLayersAgree && !spill.length) {
+    parts.push(`And everything here keeps pointing at the same thing — there's no dodging it while you're in this place. It'll keep coming up until you deal with it.`);
+  } else if (spill.length) {
+    const preds = spill.map((h) => HOUSE_PREDICT[h]).filter(Boolean);
+    parts.push(`And it won't stay in one lane. While you're here, ${joinList(preds)}.`);
+  } else {
+    parts.push(`Everything here keeps circling back to the same corner of your life, so there's no half-measure — this place asks for all of you.`);
+  }
+
+  // 4. The push-and-pull between the areas — plain, emotional.
   const priority: HouseRelation['kind'][] = ['reinforcing', 'opposing', 'tension', 'supporting', 'complementary'];
   const strongest = x.relations.filter((r) => r.kind !== 'minor')
     .sort((a, b) => priority.indexOf(a.kind) - priority.indexOf(b.kind))[0];
   if (x.repeatedHouses.length) {
-    const [h, c] = x.repeatedHouses[0];
-    parts.push(`${c} of the layers here stack onto your ${ordinal(h)} house — so ${houseTheme(h)} isn't a side-effect at this location, it's the whole point, turned up until you can't look away.`);
-  } else if (strongest) {
+    const [h] = x.repeatedHouses[0];
+    parts.push(`So much of this place points at ${HOUSE_LIFE[h]} that it becomes the whole story — you won't be able to look away from it.`);
+  } else if (strongest && strongest.a !== strongest.b) {
+    const A = HOUSE_LIFE[strongest.a], B = HOUSE_LIFE[strongest.b];
     const phrase: Record<string, string> = {
-      reinforcing: `two of the life-areas this place touches point the same way, so it hits one nerve twice as hard`,
-      supporting: `the areas it touches feed each other — progress in one quietly eases the other`,
-      complementary: `the areas it touches open doors for each other the moment you act`,
-      opposing: `it pulls two opposite parts of your life into a tug-of-war — you'll be asked to balance things that want the opposite of each other`,
-      tension: `two of the areas it touches grind against each other — the friction is uncomfortable, and it's exactly what makes you grow here`,
+      reinforcing: `two sides of this place push the very same button, so it hits you twice as hard`,
+      supporting: `${A} and ${B} feed each other here — a win in one lifts the other`,
+      complementary: `${A} and ${B} keep opening doors for each other the moment you move`,
+      opposing: `you'll feel torn between ${A} and ${B} — this place makes you choose, or learn to hold both at once`,
+      tension: `${A} and ${B} rub against each other here, and that friction is exactly what forces you to grow`,
     };
-    parts.push(`This place doesn't touch one thing in isolation: ${phrase[strongest.kind]}.`);
+    parts.push(cap(phrase[strongest.kind]) + '.');
   }
 
-  // 5. Atmosphere — elements + modality, second person.
-  parts.push(
-    `The overall feel is **${x.domElement.toLowerCase()}** and **${x.domModality.toLowerCase()}**: ${ELEMENT_ATMOSPHERE[x.domElement]}, and it ${MODALITY_EFFECT[x.domModality]}.`,
-  );
+  // 5. The emotional weather (element + modality) — no labels.
+  parts.push(`${cap(ELEMENT_ATMOSPHERE[x.domElement])}, and it ${MODALITY_EFFECT[x.domModality]}.`);
 
-  // 6. Rulers — the dominant thread + its natal condition (why it's YOURS).
-  if (x.dominant?.available) {
-    const d = x.dominant;
-    const dignityPhrase: Record<string, string> = {
-      domicile: 'is strong and sure of itself in your chart',
-      exaltation: 'is at its confident best in your chart',
-      detriment: 'works against the grain in your chart, so this takes conscious effort from you',
-      fall: 'sits quiet and easily undervalued in your chart unless you deliberately lean into it',
-      peregrine: 'is a bit of a free agent in your chart, taking its cue from whatever it touches',
-    };
-    const aspText = d.aspects && d.aspects.length
-      ? ` It's wired to your ${d.aspects.slice(0, 2).map((a) => a.other).join(' and ')}, so those get dragged in too.`
-      : '';
-    parts.push(
-      `${d.count >= 2 ? `One planet quietly runs this whole place for you — **${d.planet}** — showing up in ${d.count} of its layers.` : `The through-line here is **${d.planet}**.`} ` +
-      `And ${d.planet} ${dignityPhrase[d.dignity!]}, sitting in ${d.sign} in your ${ordinal(d.house!)} house.${aspText} That's the reason this exact place will never mean to you what it means to anyone else.`,
-    );
+  // 6. The undercurrent (dominant ruler) — plain theme + light personalization.
+  if (x.dominant) {
+    const theme = RULER_THEME[x.dominant.planet];
+    if (theme) {
+      const tail = x.dominant.available
+        ? (x.dominant.strengthLabel === 'strong'
+            ? ' — and that comes so naturally to you it can take over fast'
+            : x.dominant.strengthLabel === 'challenged'
+              ? " — and it's something you've always had to wrestle with, which is exactly the nerve this place presses on"
+              : '')
+        : '';
+      parts.push(`Underneath all of it runs one steady current: a ${theme}. It keeps showing up here${tail}.`);
+    }
   }
 
-  // 7. Close — restate the verdict as a direction, not a summary of parts.
+  // 7. Close — a forward-looking, emotional prediction (a little risky).
   parts.push(
-    `Bottom line: come here to work on ${arena}, and ${P} will keep handing you the exact people, chances, and pressures that force the issue — the rewards and the hard lessons both.`,
+    `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
+    `Some people find exactly what they were missing in a place like this. Others get shaken loose from what they thought they wanted. Rarely does anyone leave unchanged.`,
   );
 
   return parts.join('\n\n');
