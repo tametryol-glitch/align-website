@@ -229,6 +229,77 @@ export async function getMyChartBodies(profile: any, extraAsteroids: string[] = 
   }
 }
 
+/** Parse the API's planet list into typed {name, longitude} bodies (shared). */
+function parseChartBodies(chart: any): ChartBody[] {
+  const raw = (chart?.planets || chart?.positions || []) as Array<{ name: string; longitude: number; catalog_number?: number }>;
+  const bodies: ChartBody[] = [];
+  const seen = new Set<string>();
+  for (const r of raw) {
+    const name = (r.catalog_number != null && CATALOG_BY_NUM[r.catalog_number])
+      ? CATALOG_BY_NUM[r.catalog_number]
+      : canonicalBody(r.name);
+    const known = !!BODY_INFO[name] || name in ASTEROID_CATALOG;
+    if (!known || seen.has(name) || !Number.isFinite(r.longitude)) continue;
+    seen.add(name);
+    bodies.push({ name, longitude: r.longitude });
+  }
+  return bodies;
+}
+
+/** Birth moment in UTC from a profile (real historical tz/DST). */
+function birthMomentUT(profile: any): { ut: Date; tzOff: number } | null {
+  if (!profile?.birth_date) return null;
+  const parts = String(profile.birth_date).split('-').map(Number);
+  let yr: number, mo: number, dy: number;
+  if (parts[0] > 31) { [yr, mo, dy] = parts; } else { [dy, mo, yr] = parts; }
+  const [h, min] = String(profile.birth_time || '12:00').split(':').map(Number);
+  let tzOff = Math.round((profile.longitude || 0) / 15);
+  try {
+    const { resolveTimezoneOffset } = require('@/lib/timezoneOffset');
+    const r = resolveTimezoneOffset(profile.timezone, profile.longitude, profile.birth_date, profile.birth_time, profile.latitude);
+    if (r && Number.isFinite(r.offset)) tzOff = r.offset;
+  } catch { /* fallback */ }
+  const utMinutes = Math.round(((h || 12) + (min || 0) / 60 - tzOff) * 60);
+  return { ut: new Date(Date.UTC(yr, mo - 1, dy, 0, utMinutes)), tzOff };
+}
+
+const DAY_MS = 86_400_000;
+const TROPICAL_YEAR_DAYS = 365.242190;
+
+/**
+ * SECONDARY-PROGRESSED chart bodies ("a day for a year"). The progressed chart
+ * is the natal chart advanced one ephemeris DAY for every YEAR of life, so at
+ * age A the planets are cast for (birth moment + A days). We fetch that chart
+ * from the same validated ephemeris (getNatalChart on the progressed date) and
+ * return the progressed longitudes plus the progressed MOMENT (used as the ACG
+ * rotation reference). Updates live: the age is measured to `now`.
+ */
+export async function getMyProgressedChartBodies(profile: any): Promise<ChartData | null> {
+  if (!profile?.birth_date || profile?.latitude == null) return null;
+  try {
+    const bm = birthMomentUT(profile);
+    if (!bm) return null;
+    const ageYears = (Date.now() - bm.ut.getTime()) / (TROPICAL_YEAR_DAYS * DAY_MS);
+    if (!Number.isFinite(ageYears) || ageYears < 0) return null;
+    // Progressed moment = birth moment + ageYears ephemeris days.
+    const progUT = new Date(bm.ut.getTime() + ageYears * DAY_MS);
+    // Express it in the natal local frame so the ephemeris call reproduces progUT.
+    const progLocal = new Date(progUT.getTime() + bm.tzOff * 3_600_000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const progDate = `${progLocal.getUTCFullYear()}-${pad(progLocal.getUTCMonth() + 1)}-${pad(progLocal.getUTCDate())}`;
+    const progTime = `${pad(progLocal.getUTCHours())}:${pad(progLocal.getUTCMinutes())}`;
+    const progProfile = { ...profile, birth_date: progDate, birth_time: progTime };
+
+    const chart = await api.getNatalChart({ ...buildBirthData(progProfile) });
+    const bodies = parseChartBodies(chart);
+    if (!bodies.length) return null;
+    return { bodies, birthDate: progUT };
+  } catch (e: any) {
+    console.error('[zodisphere] progressed chart fetch failed:', e?.message);
+    return null;
+  }
+}
+
 // ── Angle life-domains ─────────────────────────────────────────────────────
 const ANGLE_DOMAIN: Record<ACGLineType, { label: string; phrase: string }> = {
   MC: { label: 'at its peak', phrase: 'career, reputation, and public life — where the world sees it' },

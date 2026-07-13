@@ -488,7 +488,7 @@ function houseRelation(a: number, b: number): HouseRelation['kind'] {
 // ── The synthesized result ──────────────────────────────────────────────────
 export interface LocationInterpretation {
   planet: string; angle: Angle;
-  mode: 'present' | 'draconic';
+  mode: 'present' | 'draconic' | 'progressed';
   karmicHotspot: boolean;
   natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number;
@@ -513,8 +513,9 @@ export interface InterpretOptions {
    *  planet's own (relocated-soul) longitude instead. */
   band?: LocationBand;
   angle?: Angle;
-  /** 'present' = natal/grid predictive reading; 'draconic' = past-life reading. */
-  mode?: 'present' | 'draconic';
+  /** 'present' = natal/grid predictive reading; 'draconic' = past-life reading;
+   *  'progressed' = same predictive reading, framed as active RIGHT NOW. */
+  mode?: 'present' | 'draconic' | 'progressed';
   /** Draconic only: the SAME planet's natal line also runs through here → the
    *  past-life theme is active in this life (a karmic hotspot). */
   karmicHotspot?: boolean;
@@ -594,14 +595,15 @@ export function interpretLocation(
   const repeatedRulers = Array.from(rulerCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
 
   const karmicHotspot = !!opts.karmicHotspot;
-  // Concrete predicted events (present mode only) — the full range, good & hard.
-  const events = mode === 'present' ? (EVENTS[planet]?.[angle] || []) : [];
+  // Concrete predicted events (present & progressed) — the full range, good & hard.
+  const events = mode === 'draconic' ? [] : (EVENTS[planet]?.[angle] || []);
   const narrative = mode === 'draconic'
     ? composeDraconic({ planet, angle, soulSign: planetSign, domElement, domModality, karmicHotspot })
     : compose({
         planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
         matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
         modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
+        timing: mode === 'progressed',
       });
 
   return {
@@ -637,10 +639,16 @@ function compose(x: {
   dominant?: RulerCondition;
   repeatedHouses: [number, number][]; repeatedSigns: [string, number][]; repeatedRulers: [string, number][];
   weights: InterpretationWeights;
+  timing?: boolean; // progressed mode — frame it as active NOW
 }): string {
   const P = x.planet;
   const arena = ANGLE_AREA[x.angle] || HOUSE_LIFE[x.natalHouse];
   const parts: string[] = [];
+
+  // 0. Timing intro (progressed only) — this is switching on right now.
+  if (x.timing) {
+    parts.push(`**This one is live for you right now.** Your chart has progressed a planet onto this exact spot — so the theme below isn't a lifelong backdrop, it's switching on during *this* chapter of your life.`);
+  }
 
   // 1. THE HEADLINE PREDICTION (planet × angle) — bold hook, then what happens.
   const pred = PREDICTIONS[P]?.[x.angle];
@@ -710,10 +718,17 @@ function compose(x: {
   }
 
   // 7. Close — a forward-looking, emotional prediction (a little risky).
-  parts.push(
-    `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
-    `Some people find exactly what they were missing in a place like this. Others get shaken loose from what they thought they wanted. Rarely does anyone leave unchanged.`,
-  );
+  if (x.timing) {
+    parts.push(
+      `This is timely, not permanent — the pull is strongest in this chapter and eases as your chart moves on. ` +
+      `If a place like this is calling you now, that's not random. Go toward ${arena}, because it's ripe right now.`,
+    );
+  } else {
+    parts.push(
+      `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
+      `Some people find exactly what they were missing in a place like this. Others get shaken loose from what they thought they wanted. Rarely does anyone leave unchanged.`,
+    );
+  }
 
   return parts.join('\n\n');
 }

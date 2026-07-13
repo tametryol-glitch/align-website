@@ -13,6 +13,7 @@
 import { getMyAcgLines } from '@/lib/zodisphereAcg';
 import {
   getMyChartBodies,
+  getMyProgressedChartBodies,
   projectWide,
   buildMidpointLines,
   probeMidpoints,
@@ -191,6 +192,41 @@ export async function getBodyAcgLines(
         planet: name,
         angle: raw.lineType as AcgAngle,
         color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
+      });
+    }
+  }
+  return { lines, unavailable };
+}
+
+/**
+ * SECONDARY-PROGRESSED ACG lines — where your progressed planets (the natal
+ * chart advanced "a day for a year" to today) are angular on Earth. Same
+ * validated projection (projectWide), but the longitudes and the rotation
+ * reference both come from the progressed moment. These lines show what's
+ * being activated in your life RIGHT NOW, and shift slowly over the years.
+ */
+export async function getProgressedAcgLines(
+  profile: any,
+  bodyNames: string[],
+): Promise<{ lines: AcgLine3D[]; unavailable: string[] }> {
+  if (!bodyNames.length) return { lines: [], unavailable: [] };
+  const chart = await getMyProgressedChartBodies(profile);
+  if (!chart) return { lines: [], unavailable: bodyNames };
+
+  const gmst = gmstAtMoment(chart.birthDate); // progressed moment's rotation
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  const wanted = bodyNames.filter((n) => !NON_PROJECTABLE.has(n));
+
+  const lines: AcgLine3D[] = [];
+  const unavailable: string[] = [];
+  for (const name of wanted) {
+    const lon = byName.get(name);
+    if (lon == null || !Number.isFinite(lon)) { unavailable.push(name); continue; }
+    const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
+    for (const raw of projectWide(lon, gmst)) {
+      lines.push({
+        id: `prog-${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
         points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
       });
     }
