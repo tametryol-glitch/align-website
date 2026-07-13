@@ -901,7 +901,6 @@ export default function Zodisphere3dPrototypePage() {
                         </li>
                       ))}
                     </ul>
-                    <p className="text-[9px] text-white/35 mt-1.5">Possibilities this placement can carry — not certainties. What actually happens is shaped by you and your choices.</p>
                   </div>
                 )}
                 <div className="flex flex-wrap gap-1.5 mt-1 pt-2 border-t border-white/10 text-[10px]">
