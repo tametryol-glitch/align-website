@@ -254,6 +254,27 @@ export default function Zodisphere3dPrototypePage() {
   const [savedLocations, setSavedLocations] = useState<Array<{ name: string; lat: number; lng: number }>>([]);
   const [savedOpen, setSavedOpen] = useState(false);
 
+  // Duad-Grid readouts for the tapped point: the raw band (always) and the full
+  // location synthesis (when a planet line is in range + the natal context loaded).
+  const gridBand = useMemo(
+    () => (chartMode === 'grid' && grid && tapPoint) ? bandAtLatitude(tapPoint.lat, grid) : null,
+    [chartMode, grid, tapPoint],
+  );
+  const gridInterp = useMemo(() => {
+    if (!gridBand || !natalCtx || !tapPoint) return null;
+    // In grid mode only planet lines are probed, but guard against grid styles anyway.
+    const hit = lineHits.find((h) => {
+      const s = h.line.style;
+      return s !== 'duad' && s !== 'compendium' && s !== 'gridline' && s !== 'matrix';
+    });
+    if (!hit) return null;
+    return interpretLocation(
+      natalCtx, hit.line.planet,
+      { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign },
+      hit.line.angle,
+    );
+  }, [gridBand, natalCtx, lineHits, tapPoint]);
+
   // Load country polygons (offline reverse-geocode) + saved locations.
   useEffect(() => {
     let alive = true;
@@ -836,56 +857,44 @@ export default function Zodisphere3dPrototypePage() {
             {/* Duad Grid band — which duad + compendium this latitude falls in
                 (anchored to the rising point), and which vertical planet line
                 passes through here. */}
-            {chartMode === 'grid' && grid && (() => {
-              const band = bandAtLatitude(tapPoint.lat, grid);
-              const crossPlanet = lineHits.find((h) => h.line.style === 'natal');
-              // Full synthesis when a planet line is active here AND the natal
-              // context is loaded; otherwise the band-only readout.
-              const interp = (crossPlanet && natalCtx)
-                ? interpretLocation(natalCtx, crossPlanet.line.planet, {
-                    duadSign: band.duadSign, compendiumSign: band.compendiumSign, matrixSign: band.matrixSign,
-                  })
-                : null;
-              if (interp) {
-                return (
-                  <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                    <div className="font-semibold text-indigo-100 mb-1.5">
-                      🔷 Location synthesis · {interp.planet} in {interp.natalSign} · {ordinalLabel(interp.natalHouse)} house
-                    </div>
-                    {interp.narrative.split('\n\n').map((para, i) => (
-                      <p key={i} className="text-white/80 leading-relaxed mb-1.5"
-                         dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
-                    ))}
-                    <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-white/10 text-[10px]">
-                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {band.duadSign} · {ordinalLabel(interp.duadHouse)}h</span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {band.compendiumSign} · {ordinalLabel(interp.compHouse)}h</span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Matrix {band.matrixSign} · {ordinalLabel(interp.matrixHouse)}h</span>
-                      <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{interp.elements.dominant}</span>
-                      <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{interp.modalities.dominant}</span>
-                      {interp.rulers.dominant?.available && (
-                        <span className="px-1.5 py-0.5 rounded bg-fuchsia-400/15 text-fuchsia-100">Ruler {interp.rulers.dominant.planet}{interp.rulers.dominant.count >= 2 ? ` ×${interp.rulers.dominant.count}` : ''}</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              }
-              return (
-                <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
-                  <div className="font-semibold text-indigo-100 mb-1">🔷 {band.duadSign} duad · {band.compendiumSign} compendium · {band.matrixSign} matrix</div>
-                  <p className="text-white/75 leading-relaxed">
-                    This latitude sits in the <strong>{band.duadSign}</strong> duad — <em>{band.hiddenTheme}</em>.
-                    Zoomed to street level the compendium here is <strong>{band.compendiumSign}</strong> — <em>{band.deepestTheme}</em>.
-                  </p>
-                  <p className="text-white/60 leading-relaxed mt-1">
-                    Deepest zoom — the <strong>{band.matrixSign}</strong> matrix: <em>{band.matrixTheme}</em>.
-                  </p>
-                  <p className="text-white/50 leading-relaxed mt-1.5 italic">Tap on or near a planet line to get the full location synthesis.</p>
+            {chartMode === 'grid' && gridBand && gridInterp && (
+              <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2.5 text-[11px]">
+                <div className="font-semibold text-indigo-100 mb-1.5">
+                  🔷 {gridInterp.planet} {gridInterp.angle} · {gridInterp.natalSign} in your {ordinalLabel(gridInterp.natalHouse)} house
                 </div>
-              );
-            })()}
+                {gridInterp.narrative.split('\n\n').map((para, i) => (
+                  <p key={i} className="text-white/85 leading-relaxed mb-2"
+                     dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
+                ))}
+                <div className="flex flex-wrap gap-1.5 mt-1 pt-2 border-t border-white/10 text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {gridBand.duadSign} · {ordinalLabel(gridInterp.duadHouse)}h</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {gridBand.compendiumSign} · {ordinalLabel(gridInterp.compHouse)}h</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Matrix {gridBand.matrixSign} · {ordinalLabel(gridInterp.matrixHouse)}h</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{gridInterp.elements.dominant}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{gridInterp.modalities.dominant}</span>
+                  {gridInterp.rulers.dominant?.available && (
+                    <span className="px-1.5 py-0.5 rounded bg-fuchsia-400/15 text-fuchsia-100">Ruler {gridInterp.rulers.dominant.planet}{gridInterp.rulers.dominant.count >= 2 ? ` ×${gridInterp.rulers.dominant.count}` : ''}</span>
+                  )}
+                </div>
+              </div>
+            )}
+            {chartMode === 'grid' && gridBand && !gridInterp && (
+              <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
+                <div className="font-semibold text-indigo-100 mb-1">🔷 {gridBand.duadSign} duad · {gridBand.compendiumSign} compendium · {gridBand.matrixSign} matrix</div>
+                <p className="text-white/75 leading-relaxed">
+                  This latitude sits in the <strong>{gridBand.duadSign}</strong> duad — <em>{gridBand.hiddenTheme}</em>.
+                  Zoomed to street level the compendium here is <strong>{gridBand.compendiumSign}</strong> — <em>{gridBand.deepestTheme}</em>.
+                </p>
+                <p className="text-white/60 leading-relaxed mt-1">
+                  Deepest zoom — the <strong>{gridBand.matrixSign}</strong> matrix: <em>{gridBand.matrixTheme}</em>.
+                </p>
+                <p className="text-white/50 leading-relaxed mt-1.5 italic">Tap on or near one of your planet lines for the full location reading.</p>
+              </div>
+            )}
 
-            {/* Nearby lines with interpretation */}
-            {lineHits.length === 0 ? (
+            {/* Nearby lines with interpretation — suppressed when the full grid
+                synthesis is showing (it already speaks to the active line). */}
+            {gridInterp ? null : lineHits.length === 0 ? (
               <p className="text-[12px] text-white/50 border-t border-white/10 pt-2">No lines run close to this exact spot — the scores above reflect the wider field.</p>
             ) : (
               <div className="space-y-2.5 border-t border-white/10 pt-2">

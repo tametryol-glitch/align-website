@@ -83,6 +83,37 @@ function planetEnergy(p: string): string {
   return PLANET_ENERGY[p] || `the ${p} force in you`;
 }
 
+/** The life ARENA a line's angle activates at this location — this, not the
+ *  natal house, is what the *place* switches on (IC = home, MC = career, etc.). */
+const ANGLE_AREA: Record<string, string> = {
+  MC: 'your career, your status, and how the world sees you',
+  IC: 'your home, your family, and your deepest roots',
+  ASC: 'your identity, your body, and how you show up in the world',
+  DSC: 'your closest relationships and the partners you draw in',
+};
+/** What the planet DOES to that arena (transitive, present tense). */
+const PLANET_VERB: Record<string, string> = {
+  Sun: 'throws a spotlight on', Moon: 'makes you emotionally raw around',
+  Mercury: 'floods with talk, ideas, and restless motion', Venus: 'sweetens and draws love and ease into',
+  Mars: 'heats up and picks fights in', Jupiter: 'expands and opens doors in',
+  Saturn: 'tests and demands you mature in', Uranus: 'disrupts and cracks open',
+  Neptune: 'blurs and romanticizes', Pluto: 'intensifies and forces transformation in',
+};
+/** The lived, second-person consequence of that planet here. */
+const PLANET_CONSEQUENCE: Record<string, string> = {
+  Sun: "you get seen and you stand out — but pride and ego flare just as easily",
+  Moon: 'your feelings run right at the surface and you reach hard for comfort and belonging',
+  Mercury: 'your mind speeds up — conversation, learning, and connections multiply, and switching off gets hard',
+  Venus: 'love, beauty, money, and ease arrive more readily, though you can get too comfortable to move',
+  Mars: 'your drive spikes — you move fast, push hard, and conflict ignites over nothing',
+  Jupiter: 'opportunity and confidence swell, with a real risk of overreaching',
+  Saturn: 'you meet genuine tests and slow, earned mastery — it feels heavy long before it pays off',
+  Uranus: 'you crave freedom, break your own routines, and the ground shifts the moment you settle',
+  Neptune: 'boundaries dissolve — inspiration and confusion arrive together and reality turns slippery',
+  Pluto: "everything intensifies — power, obsession, and transformation you can't fully control",
+};
+type Angle = 'MC' | 'IC' | 'ASC' | 'DSC';
+
 const ELEMENT_ATMOSPHERE: Record<Element, string> = {
   Fire: 'charged and driven — here you act on instinct and ignite before you overthink',
   Earth: 'grounded and tangible — progress here is slow, physical, and built to last',
@@ -200,7 +231,7 @@ function houseRelation(a: number, b: number): HouseRelation['kind'] {
 
 // ── The synthesized result ──────────────────────────────────────────────────
 export interface LocationInterpretation {
-  planet: string;
+  planet: string; angle: Angle;
   natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number;
   compSign: string; compHouse: number;
@@ -225,6 +256,7 @@ export function interpretLocation(
   ctx: NatalContext,
   planet: string,
   band: LocationBand,
+  angle: Angle = 'MC',
   weights: InterpretationWeights = DEFAULT_WEIGHTS,
 ): LocationInterpretation | null {
   const planetLon = ctx.bodies.get(planet);
@@ -272,13 +304,13 @@ export function interpretLocation(
   const repeatedRulers = Array.from(rulerCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
 
   const narrative = compose({
-    planet, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
+    planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
     matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
     modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
   });
 
   return {
-    planet, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse, matrixSign, matrixHouse,
+    planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse, matrixSign, matrixHouse,
     houses, relations,
     elements: { counts: elemCounts, dominant: domElement },
     modalities: { counts: modeCounts, dominant: domModality },
@@ -289,8 +321,11 @@ export function interpretLocation(
 }
 
 // ── Narrative composer — ONE cohesive, weighted, second-person reading ───────
+// Rules: lead with the verdict (planet ON its angle = the life arena the PLACE
+// switches on), speak to *you*, never say "duad/compendium/matrix", tie to real
+// behaviour, and collapse repetition instead of restating it.
 function compose(x: {
-  planet: string; natalSign: string; natalHouse: number;
+  planet: string; angle: Angle; natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number; compSign: string; compHouse: number;
   matrixSign: string; matrixHouse: number; relations: HouseRelation[];
   domElement: Element; elemCounts: Record<Element, number>;
@@ -299,85 +334,92 @@ function compose(x: {
   repeatedHouses: [number, number][]; repeatedSigns: [string, number][]; repeatedRulers: [string, number][];
   weights: InterpretationWeights;
 }): string {
+  const P = x.planet;
+  const arena = ANGLE_AREA[x.angle] || houseTheme(x.natalHouse);
+  const verb = PLANET_VERB[P] || 'switches on';
+  const conseq = PLANET_CONSEQUENCE[P] || 'this whole part of your life comes sharply alive';
   const parts: string[] = [];
-  const signManner = (s: string) => SIGN_THEMES[s]?.surface?.toLowerCase() || `${s} energy`;
 
-  // 1. Lead — Planet + Natal house (45%) then Natal sign (25%): the foundation.
+  // 1. THE VERDICT (Planet + angle = what the PLACE does to you). Leads, bold.
+  parts.push(`**This is a ${P}-on-the-${x.angle} place — it ${verb} ${arena}.** Here, ${conseq}.`);
+
+  // 2. HOW it plays out — your natal sign + house colour it (25% + part of 45%).
+  const drive = SIGN_THEMES[x.natalSign]?.drive || `its ${x.natalSign} nature`;
   parts.push(
-    `**Here, ${planetEnergy(x.planet)} is switched on.** It runs through your ` +
-    `**${x.natalSign} ${x.planet}** — ${signManner(x.natalSign)} — and lands squarely in your ` +
-    `**${ordinal(x.natalHouse)} house**, so this place lights up **${houseTheme(x.natalHouse)}** more than anywhere else.`,
+    `You don't meet that raw, though — you meet it as *you*. Your **${x.natalSign} ${P}** wants ${drive}, ` +
+    `and it lives in your ${ordinal(x.natalHouse)} house of ${houseTheme(x.natalHouse)}, so that's the flavour every experience here takes on.`,
   );
 
-  // 2. Duad / Compendium / Matrix — the deepening layers into their houses.
-  parts.push(
-    `Beneath that surface, the location threads three finer layers into your chart: its **duad** pulls in your ` +
-    `**${ordinal(x.duadHouse)} house** (${houseTheme(x.duadHouse)}), its **compendium** your ` +
-    `**${ordinal(x.compHouse)} house** (${houseTheme(x.compHouse)}), and at the very finest grain its **matrix** your ` +
-    `**${ordinal(x.matrixHouse)} house** (${houseTheme(x.matrixHouse)}). These aren't separate readings — they're the same current, felt at deeper and deeper resolution.`,
-  );
+  // 3. The deeper layers → the houses they pull in, DEDUPED (no jargon, no repeat).
+  const derived = [
+    { sign: x.duadSign, house: x.duadHouse },
+    { sign: x.compSign, house: x.compHouse },
+    { sign: x.matrixSign, house: x.matrixHouse },
+  ];
+  const seenHouses = new Set<number>([x.natalHouse]);
+  const extraHouses = derived.filter((d) => { if (seenHouses.has(d.house)) return false; seenHouses.add(d.house); return true; });
+  const allLayersAgree = x.duadSign === x.compSign && x.compSign === x.matrixSign;
+  if (allLayersAgree) {
+    parts.push(
+      `And every hidden layer under this exact spot says the same thing — ${x.duadSign}, straight down. ` +
+      `When it lines up like that, the theme isn't a whisper here; it's insistent, and you'll feel it the longer you stay.`,
+    );
+  } else if (extraHouses.length) {
+    const list = extraHouses.map((d) => `your ${ordinal(d.house)} house (${houseTheme(d.house)})`).join(', then ');
+    parts.push(
+      `Go finer and this spot keeps quietly pulling in ${list} — widening the reach of the place from the one obvious arena into the corners of your life you don't expect it to touch.`,
+    );
+  } else {
+    parts.push(
+      `Go finer and the deeper layers keep circling back to the same ground — ${houseTheme(x.natalHouse)} — reinforcing rather than scattering the focus.`,
+    );
+  }
 
-  // 3. House relationships — synthesize the strongest link.
+  // 4. House relationships — the strongest single link, in plain second person.
   const priority: HouseRelation['kind'][] = ['reinforcing', 'opposing', 'tension', 'supporting', 'complementary'];
-  const strongest = x.relations
-    .filter((r) => r.kind !== 'minor')
+  const strongest = x.relations.filter((r) => r.kind !== 'minor')
     .sort((a, b) => priority.indexOf(a.kind) - priority.indexOf(b.kind))[0];
   if (x.repeatedHouses.length) {
     const [h, c] = x.repeatedHouses[0];
-    parts.push(
-      `**${c} of these layers land on your ${ordinal(h)} house** — that's the loudest signal here. ` +
-      `Matters of ${houseTheme(h)} aren't a side-effect at this location; they're the whole point, amplified until you can't ignore them.`,
-    );
+    parts.push(`${c} of the layers here stack onto your ${ordinal(h)} house — so ${houseTheme(h)} isn't a side-effect at this location, it's the whole point, turned up until you can't look away.`);
   } else if (strongest) {
     const phrase: Record<string, string> = {
-      reinforcing: `your ${ordinal(strongest.a)} and ${ordinal(strongest.b)} houses reinforce each other, doubling down on a single theme`,
-      supporting: `your ${ordinal(strongest.a)} and ${ordinal(strongest.b)} houses flow together — one naturally supports and eases the other`,
-      complementary: `your ${ordinal(strongest.a)} and ${ordinal(strongest.b)} houses open opportunities for each other when you act on them`,
-      opposing: `your ${ordinal(strongest.a)} and ${ordinal(strongest.b)} houses sit in direct polarity — this place asks you to balance two pulls that want opposite things`,
-      tension: `your ${ordinal(strongest.a)} and ${ordinal(strongest.b)} houses grind against each other — friction here is the engine of growth, not a malfunction`,
+      reinforcing: `two of the life-areas this place touches point the same way, so it hits one nerve twice as hard`,
+      supporting: `the areas it touches feed each other — progress in one quietly eases the other`,
+      complementary: `the areas it touches open doors for each other the moment you act`,
+      opposing: `it pulls two opposite parts of your life into a tug-of-war — you'll be asked to balance things that want the opposite of each other`,
+      tension: `two of the areas it touches grind against each other — the friction is uncomfortable, and it's exactly what makes you grow here`,
     };
-    parts.push(`The areas of life this location activates don't sit in isolation: ${phrase[strongest.kind]}.`);
+    parts.push(`This place doesn't touch one thing in isolation: ${phrase[strongest.kind]}.`);
   }
 
-  // 4. Elemental + modality atmosphere.
-  const elemStr = (['Fire', 'Earth', 'Air', 'Water'] as Element[]).filter((e) => x.elemCounts[e]).map((e) => `${x.elemCounts[e]} ${e}`).join(', ');
+  // 5. Atmosphere — elements + modality, second person.
   parts.push(
-    `The elemental weather leans **${x.domElement}** (${elemStr}) — ${ELEMENT_ATMOSPHERE[x.domElement]}. ` +
-    `In tempo it's **${x.domModality}**, which ${MODALITY_EFFECT[x.domModality]}.`,
+    `The overall feel is **${x.domElement.toLowerCase()}** and **${x.domModality.toLowerCase()}**: ${ELEMENT_ATMOSPHERE[x.domElement]}, and it ${MODALITY_EFFECT[x.domModality]}.`,
   );
 
-  // 5. Rulers — repeated-ruler dominant theme + natal condition modifier.
+  // 6. Rulers — the dominant thread + its natal condition (why it's YOURS).
   if (x.dominant?.available) {
     const d = x.dominant;
-    const repeated = d.count >= 2;
     const dignityPhrase: Record<string, string> = {
-      domicile: 'sits in its own sign, strong and unmistakably itself',
-      exaltation: 'is exalted — operating at its confident best',
-      detriment: 'is in detriment, working against the grain and asking for conscious effort',
-      fall: 'is in fall, quieter and easily undervalued unless you deliberately honor it',
-      peregrine: 'is peregrine — unanchored, taking its tone from whatever it touches',
+      domicile: 'is strong and sure of itself in your chart',
+      exaltation: 'is at its confident best in your chart',
+      detriment: 'works against the grain in your chart, so this takes conscious effort from you',
+      fall: 'sits quiet and easily undervalued in your chart unless you deliberately lean into it',
+      peregrine: 'is a bit of a free agent in your chart, taking its cue from whatever it touches',
     };
     const aspText = d.aspects && d.aspects.length
-      ? ` It's tied by ${d.aspects.slice(0, 2).map((a) => `${a.type} to ${a.other}`).join(' and ')}, so those energies bleed into everything you feel here.`
+      ? ` It's wired to your ${d.aspects.slice(0, 2).map((a) => a.other).join(' and ')}, so those get dragged in too.`
       : '';
     parts.push(
-      `${repeated ? `**One planet quietly runs this location: ${d.planet}**, ruling ${d.count} of its layers` : `The ruling thread is **${d.planet}**`} — ` +
-      `and in your chart ${d.planet} ${dignityPhrase[d.dignity!]}, placed in **${d.sign}** in your **${ordinal(d.house!)} house** (${d.strengthLabel}).${aspText} ` +
-      `That personal condition is why this exact place will never mean the same thing to you as it would to anyone else.`,
+      `${d.count >= 2 ? `One planet quietly runs this whole place for you — **${d.planet}** — showing up in ${d.count} of its layers.` : `The through-line here is **${d.planet}**.`} ` +
+      `And ${d.planet} ${dignityPhrase[d.dignity!]}, sitting in ${d.sign} in your ${ordinal(d.house!)} house.${aspText} That's the reason this exact place will never mean to you what it means to anyone else.`,
     );
   }
 
-  // 6. Repeated sign/ruler emphasis (extra pattern weight).
-  if (x.repeatedSigns.length) {
-    const [s, c] = x.repeatedSigns[0];
-    parts.push(`**${s} repeats across ${c} layers** — its signature (${SIGN_THEMES[s]?.drive || 'its drive'}) is stamped through everything you'll live out here.`);
-  }
-
-  // 7. Closing — weighted life-direction synthesis.
+  // 7. Close — restate the verdict as a direction, not a summary of parts.
   parts.push(
-    `Put it together and this location is, above all, a **${x.natalSign} ${x.planet} / ${ordinal(x.natalHouse)}-house** place for you — ` +
-    `${houseTheme(x.natalHouse)} carried on ${planetEnergy(x.planet).replace(/^your /, '')}, colored underneath by the ${x.duadHouse === x.natalHouse ? 'same' : `${ordinal(x.duadHouse)}-house`} duad and refined down to a ${x.matrixSign} matrix. ` +
-    `Come here to work on that, and the place will keep handing you the exact experiences, people, and choices that push it forward.`,
+    `Bottom line: come here to work on ${arena}, and ${P} will keep handing you the exact people, chances, and pressures that force the issue — the rewards and the hard lessons both.`,
   );
 
   return parts.join('\n\n');
