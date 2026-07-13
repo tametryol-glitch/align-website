@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { NatalWheel } from '@/components/charts/NatalWheel';
 
 /**
@@ -35,17 +36,27 @@ const SAMPLE_ASPECTS = [
 ];
 
 export function HeroChartPreview() {
+  // Render the wheel only after mount: NatalWheel's trig produces values that
+  // differ from the server render in the last float digits, which React flags
+  // as a hydration mismatch. The SSR HTML carries a same-size placeholder.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <div className="flex flex-col items-center">
       <div className="bg-bg-card border border-border-primary rounded-3xl p-4 sm:p-6 shadow-2xl shadow-purple-500/10">
-        <NatalWheel
-          planets={SAMPLE_PLANETS}
-          aspects={SAMPLE_ASPECTS}
-          houseCusps={HOUSE_CUSPS}
-          ascendantDegree={ASC_DEGREE}
-          midheavenDegree={MC_DEGREE}
-          size={380}
-        />
+        {mounted ? (
+          <NatalWheel
+            planets={SAMPLE_PLANETS}
+            aspects={SAMPLE_ASPECTS}
+            houseCusps={HOUSE_CUSPS}
+            ascendantDegree={ASC_DEGREE}
+            midheavenDegree={MC_DEGREE}
+            size={380}
+          />
+        ) : (
+          <div style={{ width: 380, height: 380 }} aria-hidden />
+        )}
       </div>
       <p className="text-xs text-text-muted mt-3">
         An Align natal wheel — the same chart engine you get, rendered live. Yours is built from your birth details.

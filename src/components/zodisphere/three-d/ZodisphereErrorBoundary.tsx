@@ -12,7 +12,7 @@ import ZodisphereFallbackView from './ZodisphereFallbackView';
 
 interface Props {
   children: ReactNode;
-  classicHref?: string;
+  classicHref?: string | null;
   onError?: (error: Error) => void;
 }
 interface State {

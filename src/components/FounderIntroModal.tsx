@@ -11,9 +11,10 @@ const STORAGE_KEY = 'align_founder_intro_seen';
 export function FounderIntroModal() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  // The Zodisphere embed is a chromeless renderer loaded inside the mobile
-  // WebView — no global app modals should appear over the globe there.
-  const suppressed = pathname?.startsWith('/zodisphere/embed') ?? false;
+  // The Zodisphere embeds are chromeless renderers loaded inside the mobile
+  // WebView — no global app modals should appear over the globes there.
+  const suppressed =
+    (pathname?.startsWith('/zodisphere/embed') || pathname?.startsWith('/zodisphere/globe3d/embed')) ?? false;
 
   useEffect(() => {
     if (suppressed) return;

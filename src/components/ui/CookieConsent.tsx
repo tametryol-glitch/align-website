@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 export function CookieConsent() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  // Chromeless mobile-WebView embeds: the banner would cover the globe, and
+  // consent is handled by the host app, not the token-free renderer.
+  const suppressed =
+    (pathname?.startsWith('/zodisphere/embed') || pathname?.startsWith('/zodisphere/globe3d/embed')) ?? false;
 
   useEffect(() => {
+    if (suppressed) return;
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setVisible(true);
     }
-  }, []);
+  }, [suppressed]);
 
   const handleAccept = () => {
     localStorage.setItem('cookie-consent', 'accepted');

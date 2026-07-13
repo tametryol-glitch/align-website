@@ -100,10 +100,14 @@ export default function Zodisphere3dPrototypePage() {
   );
 
   const [authSettled, setAuthSettled] = useState(false);
+  // Inside the mobile app's WebView (the /zodisphere/globe3d/embed wrapper) the
+  // host app owns navigation — hide every link that would load the web app.
+  const [embedded, setEmbedded] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     setWebglOk(hasWebGL());
+    setEmbedded(!!(window as any).ReactNativeWebView);
   }, []);
 
   // Settle auth as soon as it resolves, OR after a short timeout — AuthProvider
@@ -476,12 +480,14 @@ export default function Zodisphere3dPrototypePage() {
           <h1 className="text-lg font-semibold text-white leading-tight">The Zodisphere · 3D</h1>
           <p className="text-[11px] text-white/50">Prototype — Cesium Earth (isolated preview)</p>
         </div>
-        <Link
-          href="/zodisphere"
-          className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors shrink-0"
-        >
-          Classic
-        </Link>
+        {!embedded && (
+          <Link
+            href="/zodisphere"
+            className="px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors shrink-0"
+          >
+            Classic
+          </Link>
+        )}
       </header>
 
       {/* Lines / Midpoints mode toggle — floating + always visible (was cramped
@@ -1012,18 +1018,18 @@ export default function Zodisphere3dPrototypePage() {
       ) : !enabled ? (
         <ZodisphereFallbackView
           message="The 3D globe preview isn’t enabled for your account yet."
-          classicHref="/zodisphere"
+          classicHref={embedded ? null : '/zodisphere'}
         />
       ) : !webglOk ? (
         <ZodisphereFallbackView
           message="Your device or browser doesn’t support the 3D graphics this globe needs."
-          classicHref="/zodisphere"
+          classicHref={embedded ? null : '/zodisphere'}
         />
       ) : error ? (
-        <ZodisphereFallbackView message={error} onRetry={retry} classicHref="/zodisphere" />
+        <ZodisphereFallbackView message={error} onRetry={retry} classicHref={embedded ? null : '/zodisphere'} />
       ) : (
         <>
-          <ZodisphereErrorBoundary classicHref="/zodisphere">
+          <ZodisphereErrorBoundary classicHref={embedded ? null : '/zodisphere'}>
             <ZodisphereGlobeCesium
               key={retryKey}
               onError={setError}

@@ -13,8 +13,10 @@ import Link from 'next/link';
 export interface ZodisphereFallbackViewProps {
   message?: string;
   onRetry?: () => void;
-  /** Where "Use the classic globe" should send the user. */
-  classicHref?: string;
+  /** Where "Use the classic globe" should send the user.
+   *  Pass null to hide the link entirely (mobile WebView embed — the host
+   *  app provides its own way back, and web navigation would trap the user). */
+  classicHref?: string | null;
 }
 
 export default function ZodisphereFallbackView({
@@ -37,12 +39,14 @@ export default function ZodisphereFallbackView({
               Try again
             </button>
           )}
-          <Link
-            href={classicHref}
-            className="w-full px-4 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-          >
-            Use the classic globe
-          </Link>
+          {classicHref !== null && (
+            <Link
+              href={classicHref}
+              className="w-full px-4 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+            >
+              Use the classic globe
+            </Link>
+          )}
         </div>
       </div>
     </div>
