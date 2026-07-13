@@ -14,6 +14,7 @@ import { getMyAcgLines } from '@/lib/zodisphereAcg';
 import {
   getMyChartBodies,
   getMyProgressedChartBodies,
+  getMyTransitChartBodies,
   projectWide,
   buildMidpointLines,
   probeMidpoints,
@@ -227,6 +228,39 @@ export async function getProgressedAcgLines(
     for (const raw of projectWide(lon, gmst)) {
       lines.push({
         id: `prog-${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
+      });
+    }
+  }
+  return { lines, unavailable };
+}
+
+/**
+ * TRANSIT ACG lines — where the planets are angular on Earth RIGHT NOW (today's
+ * live sky). Same validated projection; longitudes + rotation come from the
+ * current moment. These shift continuously as the Earth turns and the planets move.
+ */
+export async function getTransitAcgLines(
+  profile: any,
+  bodyNames: string[],
+): Promise<{ lines: AcgLine3D[]; unavailable: string[] }> {
+  if (!bodyNames.length) return { lines: [], unavailable: [] };
+  const chart = await getMyTransitChartBodies(profile);
+  if (!chart) return { lines: [], unavailable: bodyNames };
+
+  const gmst = gmstAtMoment(chart.birthDate); // the current moment's rotation
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  const wanted = bodyNames.filter((n) => !NON_PROJECTABLE.has(n));
+
+  const lines: AcgLine3D[] = [];
+  const unavailable: string[] = [];
+  for (const name of wanted) {
+    const lon = byName.get(name);
+    if (lon == null || !Number.isFinite(lon)) { unavailable.push(name); continue; }
+    const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
+    for (const raw of projectWide(lon, gmst)) {
+      lines.push({
+        id: `trans-${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
         points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
       });
     }

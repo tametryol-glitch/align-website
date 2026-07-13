@@ -266,13 +266,35 @@ function birthMomentUT(profile: any): { ut: Date; tzOff: number } | null {
 const DAY_MS = 86_400_000;
 const TROPICAL_YEAR_DAYS = 365.242190;
 
+/** Fetch the sky's positions at an arbitrary UT moment, reusing the validated
+ *  ephemeris (getNatalChart). Planetary longitudes are location-independent, but
+ *  the API takes local date/time + tz, so we express the moment in the birthplace
+ *  tz frame (resolved for that date so DST is right) and it round-trips to UT. */
+async function chartBodiesAtMoment(profile: any, momentUT: Date): Promise<ChartData | null> {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  let tzOff = Math.round((profile.longitude || 0) / 15);
+  const approx = new Date(momentUT.getTime() + tzOff * 3_600_000);
+  const approxDate = `${approx.getUTCFullYear()}-${pad(approx.getUTCMonth() + 1)}-${pad(approx.getUTCDate())}`;
+  try {
+    const { resolveTimezoneOffset } = require('@/lib/timezoneOffset');
+    const r = resolveTimezoneOffset(profile.timezone, profile.longitude, approxDate, '12:00', profile.latitude);
+    if (r && Number.isFinite(r.offset)) tzOff = r.offset;
+  } catch { /* fallback */ }
+  const local = new Date(momentUT.getTime() + tzOff * 3_600_000);
+  const date = `${local.getUTCFullYear()}-${pad(local.getUTCMonth() + 1)}-${pad(local.getUTCDate())}`;
+  const time = `${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`;
+  const prof = { ...profile, birth_date: date, birth_time: time };
+  const chart = await api.getNatalChart({ ...buildBirthData(prof) });
+  const bodies = parseChartBodies(chart);
+  if (!bodies.length) return null;
+  return { bodies, birthDate: momentUT };
+}
+
 /**
- * SECONDARY-PROGRESSED chart bodies ("a day for a year"). The progressed chart
- * is the natal chart advanced one ephemeris DAY for every YEAR of life, so at
- * age A the planets are cast for (birth moment + A days). We fetch that chart
- * from the same validated ephemeris (getNatalChart on the progressed date) and
- * return the progressed longitudes plus the progressed MOMENT (used as the ACG
- * rotation reference). Updates live: the age is measured to `now`.
+ * SECONDARY-PROGRESSED chart bodies ("a day for a year"): the natal chart
+ * advanced one ephemeris DAY per YEAR of life, cast for (birth moment + age
+ * days). Returns the progressed longitudes + the progressed MOMENT (the ACG
+ * rotation reference). Updates live — age is measured to now.
  */
 export async function getMyProgressedChartBodies(profile: any): Promise<ChartData | null> {
   if (!profile?.birth_date || profile?.latitude == null) return null;
@@ -281,21 +303,23 @@ export async function getMyProgressedChartBodies(profile: any): Promise<ChartDat
     if (!bm) return null;
     const ageYears = (Date.now() - bm.ut.getTime()) / (TROPICAL_YEAR_DAYS * DAY_MS);
     if (!Number.isFinite(ageYears) || ageYears < 0) return null;
-    // Progressed moment = birth moment + ageYears ephemeris days.
-    const progUT = new Date(bm.ut.getTime() + ageYears * DAY_MS);
-    // Express it in the natal local frame so the ephemeris call reproduces progUT.
-    const progLocal = new Date(progUT.getTime() + bm.tzOff * 3_600_000);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const progDate = `${progLocal.getUTCFullYear()}-${pad(progLocal.getUTCMonth() + 1)}-${pad(progLocal.getUTCDate())}`;
-    const progTime = `${pad(progLocal.getUTCHours())}:${pad(progLocal.getUTCMinutes())}`;
-    const progProfile = { ...profile, birth_date: progDate, birth_time: progTime };
-
-    const chart = await api.getNatalChart({ ...buildBirthData(progProfile) });
-    const bodies = parseChartBodies(chart);
-    if (!bodies.length) return null;
-    return { bodies, birthDate: progUT };
+    return await chartBodiesAtMoment(profile, new Date(bm.ut.getTime() + ageYears * DAY_MS));
   } catch (e: any) {
     console.error('[zodisphere] progressed chart fetch failed:', e?.message);
+    return null;
+  }
+}
+
+/**
+ * TRANSITING chart bodies — where the planets ACTUALLY are in the sky right now.
+ * The ACG lines from these show today's live "sky weather" over the Earth.
+ */
+export async function getMyTransitChartBodies(profile: any): Promise<ChartData | null> {
+  if (profile?.latitude == null) return null;
+  try {
+    return await chartBodiesAtMoment(profile, new Date());
+  } catch (e: any) {
+    console.error('[zodisphere] transit chart fetch failed:', e?.message);
     return null;
   }
 }

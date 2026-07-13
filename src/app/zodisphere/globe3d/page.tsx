@@ -20,7 +20,7 @@ import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereE
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
 import {
-  getBodyAcgLines, getProgressedAcgLines, getDuadGrid, bandAtLatitude, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
+  getBodyAcgLines, getProgressedAcgLines, getTransitAcgLines, getDuadGrid, bandAtLatitude, getMidpointLines3D, probeMidpoints, probeAcgLines, angularDistanceDeg, getParans3D,
   getNatalContext, interpretLocation,
   ACG_PLANETS, ACG_POINTS, ACG_ASTEROIDS,
   type AcgLine3D, type AcgAngle, type MidpointPair, type MidpointLine, type ProbeHit, type AcgProbeHit, type ParanLine, type DuadGrid, type NatalContext,
@@ -30,7 +30,7 @@ import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeani
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
 import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves } from 'lucide-react';
 
-type ChartMode = 'natal' | 'grid' | 'draconic' | 'progressed';
+type ChartMode = 'natal' | 'grid' | 'draconic' | 'progressed' | 'transit';
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
 const ALL_BODIES = [...ACG_PLANETS, ...ACG_POINTS, ...ACG_ASTEROIDS];
@@ -129,15 +129,21 @@ export default function Zodisphere3dPrototypePage() {
         if (alive) setNote('Add your birth date, time and place in your profile to see your astro lines.');
         return;
       }
-      // Progressed mode fetches a different (secondary-progressed) chart; every
-      // other mode is a transform of the natal longitudes.
+      // Progressed & Transit fetch a live moment-chart; every other mode is a
+      // transform of the natal longitudes.
       const { lines, unavailable } = chartMode === 'progressed'
         ? await getProgressedAcgLines(profile, bodies)
-        : await getBodyAcgLines(profile, bodies, chartMode === 'draconic' ? 'draconic' : 'natal');
+        : chartMode === 'transit'
+          ? await getTransitAcgLines(profile, bodies)
+          : await getBodyAcgLines(profile, bodies, chartMode === 'draconic' ? 'draconic' : 'natal');
       if (!alive) return;
       setAllLines(lines);
       const shown = new Set(lines.map((l) => l.planet)).size;
-      const layerName = chartMode === 'draconic' ? ' · Draconic' : chartMode === 'progressed' ? ' · Progressed (now)' : chartMode === 'grid' ? ' · Duad Grid' : '';
+      const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      const layerName = chartMode === 'draconic' ? ' · Draconic'
+        : chartMode === 'progressed' ? ` · Progressed as of ${today}`
+        : chartMode === 'transit' ? ` · Transits as of ${today}`
+        : chartMode === 'grid' ? ' · Duad Grid' : '';
       setNote(
         `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
         (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
@@ -294,7 +300,7 @@ export default function Zodisphere3dPrototypePage() {
         ? { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign }
         : undefined,
       angle: tappedLine.line.angle,
-      mode: chartMode === 'draconic' ? 'draconic' : chartMode === 'progressed' ? 'progressed' : 'present',
+      mode: chartMode === 'draconic' ? 'draconic' : chartMode === 'progressed' ? 'progressed' : chartMode === 'transit' ? 'transit' : 'present',
       karmicHotspot,
     });
   }, [tappedLine, natalCtx, tapPoint, chartMode, gridBand, karmicHotspot]);
@@ -554,7 +560,7 @@ export default function Zodisphere3dPrototypePage() {
               <div className="pb-2 border-b border-white/10">
                 <div className="text-[11px] font-semibold text-white/80 mb-1.5">Chart mode</div>
                 <div className="grid grid-cols-2 gap-1">
-                  {([['natal', 'Natal'], ['grid', 'Duad Grid'], ['draconic', 'Draconic'], ['progressed', 'Progressed']] as [ChartMode, string][]).map(([m, label]) => (
+                  {([['natal', 'Natal'], ['grid', 'Duad Grid'], ['draconic', 'Draconic'], ['progressed', 'Progressed'], ['transit', 'Transits']] as [ChartMode, string][]).map(([m, label]) => (
                     <button
                       key={m}
                       onClick={() => setChartMode(m)}
@@ -567,6 +573,12 @@ export default function Zodisphere3dPrototypePage() {
                     Your <strong>secondary-progressed</strong> chart — the sky advanced &ldquo;a day for a year&rdquo; to today.
                     These lines show what&apos;s <span className="text-emerald-200">activating in your life right now</span>, and they
                     drift slowly as you age. Tap a line for the timely reading.
+                  </div>
+                )}
+                {chartMode === 'transit' && (
+                  <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
+                    <strong>Live transits</strong> — where the planets actually are in the sky <span className="text-sky-200">right now</span>.
+                    This is today&apos;s fast-moving weather over the Earth; the lines shift daily. Tap a line for what&apos;s in the air this week.
                   </div>
                 )}
                 {chartMode === 'grid' && (
@@ -890,13 +902,15 @@ export default function Zodisphere3dPrototypePage() {
             {/* The full location reading — Natal / Duad Grid (predictive),
                 Progressed (active now), or Draconic (past-life). */}
             {locInterp && (
-              <div className={`mb-2 rounded-lg border px-2.5 py-2.5 text-[11px] ${locInterp.mode === 'draconic' ? 'bg-violet-500/10 border-violet-400/30' : locInterp.mode === 'progressed' ? 'bg-emerald-500/10 border-emerald-400/30' : 'bg-indigo-400/10 border-indigo-400/30'}`}>
-                <div className={`font-semibold mb-1.5 ${locInterp.mode === 'draconic' ? 'text-violet-100' : locInterp.mode === 'progressed' ? 'text-emerald-100' : 'text-indigo-100'}`}>
+              <div className={`mb-2 rounded-lg border px-2.5 py-2.5 text-[11px] ${locInterp.mode === 'draconic' ? 'bg-violet-500/10 border-violet-400/30' : locInterp.mode === 'progressed' ? 'bg-emerald-500/10 border-emerald-400/30' : locInterp.mode === 'transit' ? 'bg-sky-500/10 border-sky-400/30' : 'bg-indigo-400/10 border-indigo-400/30'}`}>
+                <div className={`font-semibold mb-1.5 ${locInterp.mode === 'draconic' ? 'text-violet-100' : locInterp.mode === 'progressed' ? 'text-emerald-100' : locInterp.mode === 'transit' ? 'text-sky-100' : 'text-indigo-100'}`}>
                   {locInterp.mode === 'draconic'
                     ? <>🌙 Past-life echo · {locInterp.planet} {locInterp.angle}{locInterp.karmicHotspot ? ' · active now' : ''}</>
                     : locInterp.mode === 'progressed'
                       ? <>⏳ Active now · progressed {locInterp.planet} {locInterp.angle}</>
-                      : <>🔷 {locInterp.planet} {locInterp.angle} · {locInterp.natalSign} in your {ordinalLabel(locInterp.natalHouse)} house</>}
+                      : locInterp.mode === 'transit'
+                        ? <>☀️ Right now · transiting {locInterp.planet} {locInterp.angle}</>
+                        : <>🔷 {locInterp.planet} {locInterp.angle} · {locInterp.natalSign} in your {ordinalLabel(locInterp.natalHouse)} house</>}
                 </div>
                 {locInterp.narrative.split('\n\n').map((para, i) => (
                   <p key={i} className="text-white/85 leading-relaxed mb-2"
@@ -904,7 +918,7 @@ export default function Zodisphere3dPrototypePage() {
                 ))}
                 {locInterp.mode !== 'draconic' && locInterp.events.length > 0 && (
                   <div className="mt-1 mb-2 rounded-lg bg-black/30 border border-white/10 px-2.5 py-2">
-                    <div className="text-[11px] font-semibold text-white/85 mb-1.5">{locInterp.mode === 'progressed' ? 'What could unfold now — the good and the hard' : 'What could unfold here — the good and the hard'}</div>
+                    <div className="text-[11px] font-semibold text-white/85 mb-1.5">{locInterp.mode === 'progressed' || locInterp.mode === 'transit' ? 'What could unfold now — the good and the hard' : 'What could unfold here — the good and the hard'}</div>
                     <ul className="space-y-1">
                       {locInterp.events.map((e, i) => (
                         <li key={i} className="flex gap-1.5 text-[11px] text-white/80 leading-snug">

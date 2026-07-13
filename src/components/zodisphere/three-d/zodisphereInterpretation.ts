@@ -488,7 +488,7 @@ function houseRelation(a: number, b: number): HouseRelation['kind'] {
 // ── The synthesized result ──────────────────────────────────────────────────
 export interface LocationInterpretation {
   planet: string; angle: Angle;
-  mode: 'present' | 'draconic' | 'progressed';
+  mode: 'present' | 'draconic' | 'progressed' | 'transit';
   karmicHotspot: boolean;
   natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number;
@@ -514,8 +514,8 @@ export interface InterpretOptions {
   band?: LocationBand;
   angle?: Angle;
   /** 'present' = natal/grid predictive reading; 'draconic' = past-life reading;
-   *  'progressed' = same predictive reading, framed as active RIGHT NOW. */
-  mode?: 'present' | 'draconic' | 'progressed';
+   *  'progressed' = active this chapter; 'transit' = live today's-sky weather. */
+  mode?: 'present' | 'draconic' | 'progressed' | 'transit';
   /** Draconic only: the SAME planet's natal line also runs through here → the
    *  past-life theme is active in this life (a karmic hotspot). */
   karmicHotspot?: boolean;
@@ -603,7 +603,8 @@ export function interpretLocation(
         planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
         matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
         modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
-        timing: mode === 'progressed',
+        timing: mode === 'progressed' || mode === 'transit',
+        timingKind: mode === 'transit' ? 'transit' : 'progressed',
       });
 
   return {
@@ -639,15 +640,19 @@ function compose(x: {
   dominant?: RulerCondition;
   repeatedHouses: [number, number][]; repeatedSigns: [string, number][]; repeatedRulers: [string, number][];
   weights: InterpretationWeights;
-  timing?: boolean; // progressed mode — frame it as active NOW
+  timing?: boolean; // progressed/transit — frame it as active NOW
+  timingKind?: 'progressed' | 'transit';
 }): string {
   const P = x.planet;
   const arena = ANGLE_AREA[x.angle] || HOUSE_LIFE[x.natalHouse];
   const parts: string[] = [];
+  const isTransit = x.timingKind === 'transit';
 
-  // 0. Timing intro (progressed only) — this is switching on right now.
+  // 0. Timing intro (progressed/transit) — this is switching on right now.
   if (x.timing) {
-    parts.push(`**This one is live for you right now.** Your chart has progressed a planet onto this exact spot — so the theme below isn't a lifelong backdrop, it's switching on during *this* chapter of your life.`);
+    parts.push(isTransit
+      ? `**This is lit up right now — today.** A planet is transiting onto this exact spot, so the theme below is live in the air these days and weeks, then it passes on.`
+      : `**This one is live for you right now.** Your chart has progressed a planet onto this exact spot — so the theme below isn't a lifelong backdrop, it's switching on during *this* chapter of your life.`);
   }
 
   // 1. THE HEADLINE PREDICTION (planet × angle) — bold hook, then what happens.
@@ -719,10 +724,9 @@ function compose(x: {
 
   // 7. Close — a forward-looking, emotional prediction (a little risky).
   if (x.timing) {
-    parts.push(
-      `This is timely, not permanent — the pull is strongest in this chapter and eases as your chart moves on. ` +
-      `If a place like this is calling you now, that's not random. Go toward ${arena}, because it's ripe right now.`,
-    );
+    parts.push(isTransit
+      ? `This is fast weather, not a season — it's live now and moves on within days or weeks. If there's something here to act on, act soon, because the window is open now.`
+      : `This is timely, not permanent — the pull is strongest in this chapter and eases as your chart moves on. If a place like this is calling you now, that's not random. Go toward ${arena}, because it's ripe right now.`);
   } else {
     parts.push(
       `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
