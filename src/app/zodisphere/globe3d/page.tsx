@@ -891,6 +891,19 @@ export default function Zodisphere3dPrototypePage() {
                   <p key={i} className="text-white/85 leading-relaxed mb-2"
                      dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
                 ))}
+                {locInterp.mode === 'present' && locInterp.events.length > 0 && (
+                  <div className="mt-1 mb-2 rounded-lg bg-black/30 border border-white/10 px-2.5 py-2">
+                    <div className="text-[11px] font-semibold text-white/85 mb-1.5">What could unfold here — the good and the hard</div>
+                    <ul className="space-y-1">
+                      {locInterp.events.map((e, i) => (
+                        <li key={i} className="flex gap-1.5 text-[11px] text-white/80 leading-snug">
+                          <span className="text-indigo-300 shrink-0">•</span><span>{e}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-[9px] text-white/35 mt-1.5">Possibilities this placement can carry — not certainties. What actually happens is shaped by you and your choices.</p>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-1.5 mt-1 pt-2 border-t border-white/10 text-[10px]">
                   <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {locInterp.duadSign}{locInterp.mode === 'present' ? ` · ${ordinalLabel(locInterp.duadHouse)}h` : ''}</span>
                   <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {locInterp.compSign}{locInterp.mode === 'present' ? ` · ${ordinalLabel(locInterp.compHouse)}h` : ''}</span>

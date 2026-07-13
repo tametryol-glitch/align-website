@@ -301,6 +301,73 @@ const KARMIC_CARRY: Record<string, string> = {
   Pluto: 'the power to be reborn — and lessons about control and trust you\'re still working through',
 };
 
+/** Concrete PREDICTED EVENTS for planet × angle — specific, not generic, and
+ *  the FULL range: fortune and success, but also loss, conflict, abuse, betrayal,
+ *  or crisis where the planet genuinely indicates it. Shown as a scannable list.
+ *  These are possibilities, never fate — the UI frames them honestly. */
+const EVENTS: Record<string, Record<string, string[]>> = {
+  Sun: {
+    MC: ['A promotion, title, or public recognition that raises your standing', 'Becoming known — visibility, fame, or leadership in your field', 'A powerful mentor or father figure opening a major door', 'A clash with a boss or authority who won’t share the spotlight', 'Burnout or a heart/health scare from overexposure', 'Pride or ego costing you an important ally', 'A signature project or venture that makes your name'],
+    IC: ['Buying or building a home that becomes the center of your life', 'Reconnecting with your father, roots, or family legacy', 'Becoming the head or heart of your household', 'A move that finally makes you feel you belong', 'Ego battles or a domineering figure ruling the home', 'A father wound or family-pride conflict resurfacing', 'Returning here later in life as your home base'],
+    ASC: ['A surge of confidence that reinvents how you show up', 'Becoming recognized, admired, or locally known', 'A vitality boost — or strain on the heart from overdoing it', 'Attracting attention that opens doors (and envy)', 'Ego inflation that pushes people away', 'A defining personal achievement people tie to your name', 'Stepping into a spotlight role you didn’t plan for'],
+    DSC: ['Meeting a charismatic, prominent partner', 'A marriage or partnership that raises your profile', 'Falling for someone who needs to be the center of attention', 'A power imbalance where one of you outshines the other', 'A partnership with a strong, dominant figure', 'Pride or competition straining a close bond', 'A partner who helps you step into your own light'],
+  },
+  Moon: {
+    MC: ['A career built on caring, hospitality, or the public’s trust', 'Your emotions exposed publicly — reputation rising and falling with your moods', 'Success in food, real estate, care, or women’s markets', 'A female boss or the public mothering (or judging) you', 'Work instability that unsettles your security', 'Public recognition that finally makes you feel seen', 'A career move driven by a gut feeling'],
+    IC: ['A deep sense of home and belonging — putting down roots', 'Pregnancy, motherhood, or a growing family here', 'Emotional healing around your mother or childhood', 'Buying a home that feels like it was always yours', 'Old family wounds and mother issues resurfacing', 'Family drama, moodiness, or emotional smothering at home', 'A house full of memories you can’t fully leave'],
+    ASC: ['Becoming softer, more intuitive, more emotionally open', 'People instinctively trusting you with their feelings', 'Mood swings others can read on your face', 'A pregnancy or a shift in how you care for yourself', 'Feeling raw, exposed, and easily overwhelmed', 'Attracting needy people who drain you', 'A strong gut-instinct decision that changes your path'],
+    DSC: ['A tender, deeply bonded relationship or marriage', 'A partner who feels like family from day one', 'Emotional dependency or clinginess taking over', 'Attracting someone moody, needy, or smothering', 'A relationship that reopens childhood wounds', 'Building a family or home with someone', 'A bond so close the boundaries blur'],
+  },
+  Mercury: {
+    MC: ['A breakthrough in writing, speaking, teaching, or media', 'A deal, contract, or idea that makes your name', 'Being known as the sharp, articulate one', 'A leak, misstatement, or gossip that damages your reputation', 'Nervous overload from juggling too much', 'A sibling or peer tied to your success', 'A course, book, or platform that launches here'],
+    IC: ['A home full of books, talk, and constant coming-and-going', 'Buying/selling property or frequent local moves', 'Siblings or relatives closely woven into home life', 'Miscommunication or tension with family', 'Restlessness — never quite settling in one place', 'A home-based business or study space', 'News about family that changes everything'],
+    ASC: ['Becoming known as clever, quick, and articulate', 'A learning boom — new skills, ideas, connections', 'Anxiety or an overactive, sleepless mind', 'Meeting influential people through conversation', 'Being misunderstood or talked about', 'A short trip or local move that redirects you', 'Finding your voice — writing or speaking that defines you'],
+    DSC: ['Meeting a partner through words, work, or a shared idea', 'A relationship built on mental spark and banter', 'A business or writing partnership', 'Miscommunication or lies straining a relationship', 'Attraction to someone younger, clever, or restless', 'Contracts, negotiations, or a legal matter with a partner', 'A partner who never stays still'],
+  },
+  Venus: {
+    MC: ['Money and success through charm, art, or beauty', 'Public popularity and a well-liked reputation', 'A relationship that boosts your career or status', 'Coasting on being liked instead of doing the work', 'A love affair or scandal touching your public life', 'Recognition for creative or aesthetic talent', 'Money arriving through connections and goodwill'],
+    IC: ['A beautiful, comfortable home you love deeply', 'Love, warmth, and harmony in family life', 'Turning a home into a sanctuary', 'Getting too comfortable — stuck and unwilling to leave', 'A family bond healed through affection', 'Overspending on comfort and luxury', 'A place you always long to return to'],
+    ASC: ['Becoming more attractive, magnetic, and admired', 'Falling in love or drawing admirers easily', 'Money, gifts, or good fortune flowing in', 'Vanity, indulgence, or laziness setting in', 'A glow-up or makeover that changes your life', 'Being desired by someone unexpected', 'Popularity that opens social doors'],
+    DSC: ['Meeting a significant love — possibly marriage', 'A fated, magnetic romance', 'An affair or a love you can’t walk away from', 'Jealousy, a love triangle, or betrayal', 'A partnership over money, art, or business', 'Attraction to the wrong beautiful person', 'A relationship that spoils you, for better or worse'],
+  },
+  Mars: {
+    MC: ['A bold career move, launch, or hard-won promotion', 'Fierce competition — winning, or making enemies', 'Open conflict with bosses or authority', 'Reputation damaged by anger or aggression', 'Overwork leading to injury or burnout', 'Seizing leadership in a fight and taking charge', 'A rival who pushes you to your limit'],
+    IC: ['Domestic conflict — arguments, volatility, slammed doors', 'A real risk of domestic violence or an aggressive household figure', 'A home accident, injury, or fire', 'A forceful renovation, build, or sudden move', 'Cutting off a toxic family tie by force', 'A fight over property or family territory', 'Drive and energy centered fiercely on home'],
+    ASC: ['A surge of energy, courage, and boldness', 'Physical risk — accidents, injury, or surgery', 'Becoming assertive, combative, or quick-tempered', 'Standing up for yourself in a way that changes you', 'Attracting confrontation or aggression from others', 'An athletic or physical achievement', 'Acting rashly and paying for it'],
+    DSC: ['A passionate but volatile relationship', 'A partner who is aggressive, controlling, or abusive', 'Open conflict, a legal battle, or a declared enemy', 'Sexual chemistry that overrides your judgment', 'Competition or a fight over a lover', 'A relationship that becomes a power struggle', 'Meeting someone through sport, conflict, or high stakes'],
+  },
+  Jupiter: {
+    MC: ['A lucky career break, promotion, or windfall', 'Fast expansion of your business, influence, or reputation', 'Travel, teaching, or publishing raising your profile', 'Overpromising or overreaching and getting exposed', 'A powerful mentor or benefactor', 'Legal or ethical trouble from cutting corners', 'Public honor, award, or wide recognition'],
+    IC: ['A larger home, property, or growing family', 'Abundance, generosity, and open doors at home', 'A move that expands your whole life', 'Overindulgence or living beyond your means', 'A foreign or faith connection in family life', 'Inheritance or family wealth', 'A home that becomes a gathering place'],
+    ASC: ['A run of luck, optimism, and opportunity', 'Meaningful travel or study that changes you', 'Growing confidence, faith, and generosity', 'Overconfidence, excess, or weight gain', 'Meeting mentors and benefactors', 'A lucky break that redefines you', 'Taking on far too much at once'],
+    DSC: ['A generous, expansive partner — possibly marriage', 'A relationship that opens your world', 'A partner from a different culture or background', 'Overpromising in love or biting off too much', 'A business partnership that pays off big', 'A wedding or major commitment', 'A lucky, life-changing introduction'],
+  },
+  Saturn: {
+    MC: ['Slow, hard-earned career mastery and authority', 'A serious promotion into pressure and responsibility', 'Delays, obstacles, or a career setback to overcome', 'Public failure or loss of status to rebuild from', 'A demanding boss or heavy professional duty', 'Recognition that comes only after years of grind', 'Reaching the top and feeling its full weight'],
+    IC: ['Heavy family responsibility — caring for a parent', 'Loss of, or distance from, a parent or elder', 'A stretch of loneliness or hardship at home', 'Property that ties you down for years', 'A cold, strict, or burdened household', 'Building lasting security slowly and painfully', 'Facing old family fears and finally outgrowing them'],
+    ASC: ['A sobering, maturing chapter — you grow up here', 'Being given authority, weight, and responsibility', 'Depression, restriction, or feeling boxed in', 'Health issues — bones, teeth, or chronic strain', 'Loneliness that teaches hard self-reliance', 'A reputation for discipline and reliability', 'Bearing a burden that reshapes your character'],
+    DSC: ['A serious, committed, possibly older partner', 'Marriage built on duty and endurance', 'A relationship marked by delay, distance, or coldness', 'Divorce, separation, or the loss of a partner', 'A partner who tests or restricts you', 'A hard lesson about what you truly need', 'A long, difficult bond that ultimately steadies you'],
+  },
+  Uranus: {
+    MC: ['A sudden career change or dramatic pivot', 'Quitting or being pushed out of a stable job', 'Unconventional or tech-driven work taking off', 'Fame or notoriety arriving out of nowhere', 'Instability and unpredictability in public life', 'Rebelling against authority and going your own way', 'A breakthrough that upends your whole path'],
+    IC: ['A sudden move or upheaval in your living situation', 'An unconventional home or living arrangement', 'Family estrangement, shocks, or abrupt change', 'Freedom from a household that felt like a cage', 'Restlessness — unable to settle for long', 'A shocking family revelation', 'Rebuilding home life on your own radical terms'],
+    ASC: ['A dramatic reinvention of your identity or look', 'A sudden awakening — new beliefs, new direction', 'Accidents or shocks to the body', 'Standing out as the odd one, for better or worse', 'Breaking free of who you were told to be', 'Wild, exciting swings while you’re here', 'A jolt that wakes you up for good'],
+    DSC: ['A sudden, electric attraction or whirlwind romance', 'An abrupt breakup, divorce, or separation', 'An unconventional or open relationship', 'On-again, off-again instability with a partner', 'Someone who upends your whole idea of love', 'Freedom-vs-commitment tension pulling you apart', 'A partner who comes and goes like lightning'],
+  },
+  Neptune: {
+    MC: ['A career in art, film, healing, or spirituality taking off', 'A public image built on glamour or illusion', 'Being deceived, scandalized, or scapegoated at work', 'Confusion or drift about your direction', 'Inspiration and vision guiding your work', 'A reputation that’s more myth than reality', 'Sacrificing career for an ideal — or being let down by one'],
+    IC: ['A dreamy, spiritual, or artistic home', 'Secrets, confusion, or deception within the family', 'Addiction or illness affecting the household', 'A parent who is absent, idealized, or lost', 'A home near water or of spiritual meaning', 'Losing a home or being misled about property', 'A haunting sense of longing tied to this place'],
+    ASC: ['A spiritual or creative awakening', 'Becoming a screen others project their fantasies onto', 'Confusion about who you are — losing yourself', 'Vulnerability to deception, drugs, or escapism', 'Heightened intuition, empathy, or psychic sensitivity', 'An illness that’s hard to name or diagnose', 'Dissolving into a role, a cause, or a person'],
+    DSC: ['A soulmate connection or fated romance', 'Being deceived, catfished, or betrayed by a partner', 'Falling in love with a fantasy, not the real person', 'A relationship blurred by addiction or codependency', 'A spiritual or artistic union', 'Sacrificing yourself for a partner', 'A love that feels magical but slips away'],
+  },
+  Pluto: {
+    MC: ['A complete career transformation — rise, fall, rebirth', 'Gaining real power or influence (and its dangers)', 'A ruthless power struggle at work', 'Public downfall, scandal, or exposure', 'Obsessive ambition that consumes you', 'Rebuilding your standing from the ashes', 'Control battles with those above you'],
+    IC: ['Deep family transformation, often through crisis', 'Buried family secrets, trauma, or abuse surfacing', 'A death, loss, or inheritance reshaping the home', 'Power and control struggles within the household', 'Tearing down and rebuilding your foundations', 'Confronting generational patterns', 'A home tied to intense endings and beginnings'],
+    ASC: ['A profound personal transformation — a new you', 'Intense magnetism and presence, and its shadow', 'A brush with death, danger, or deep crisis', 'Obsessions or compulsions surfacing', 'Reclaiming power after being powerless', 'Being feared, envied, or targeted', 'A rebirth after hitting rock bottom'],
+    DSC: ['An all-consuming, obsessive relationship', 'A partnership involving control, jealousy, or abuse', 'Betrayal, manipulation, or a bitter power struggle', 'Deep sexual and emotional merging with someone', 'A relationship that ends and remakes you', 'Attracting intense, powerful, or dangerous partners', 'Shared money, debt, or inheritance binding you together'],
+  },
+};
+
 type Angle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
 const ELEMENT_ATMOSPHERE: Record<Element, string> = {
@@ -433,6 +500,8 @@ export interface LocationInterpretation {
   modalities: { counts: Record<Modality, number>; dominant: Modality };
   rulers: { conditions: RulerCondition[]; dominant?: RulerCondition };
   patterns: { repeatedHouses: [number, number][]; repeatedSigns: [string, number][]; repeatedRulers: [string, number][] };
+  /** Concrete predicted events for this spot — the full range, good and hard. */
+  events: string[];
   weights: InterpretationWeights;
   narrative: string;
 }
@@ -525,6 +594,8 @@ export function interpretLocation(
   const repeatedRulers = Array.from(rulerCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
 
   const karmicHotspot = !!opts.karmicHotspot;
+  // Concrete predicted events (present mode only) — the full range, good & hard.
+  const events = mode === 'present' ? (EVENTS[planet]?.[angle] || []) : [];
   const narrative = mode === 'draconic'
     ? composeDraconic({ planet, angle, soulSign: planetSign, domElement, domModality, karmicHotspot })
     : compose({
@@ -541,6 +612,7 @@ export function interpretLocation(
     modalities: { counts: modeCounts, dominant: domModality },
     rulers: { conditions, dominant },
     patterns: { repeatedHouses, repeatedSigns, repeatedRulers },
+    events,
     weights, narrative,
   };
 }
