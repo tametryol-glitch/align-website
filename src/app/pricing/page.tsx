@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import { getRevenueCatInstance, PLANS } from '@/lib/revenuecat';
+import { useAuthStore } from '@/stores/authStore';
+import { getRevenueCatInstance } from '@/lib/revenuecat';
+import { PLANS } from '@/lib/plans';
 import { Check, Sparkles, Star, Zap, Crown, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +22,7 @@ const PLAN_META = [
 export default function PricingPage() {
   const { t } = useTranslation();
   const { tier } = useSubscriptionStore();
+  const { isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState<string | null>(null);
   const [offerings, setOfferings] = useState<any>(null);
   const [error, setError] = useState('');
@@ -40,6 +43,13 @@ export default function PricingPage() {
   }, []);
 
   async function handleSubscribe(planKey: string) {
+    // Logged-out visitors: create the free account first, remembering plan intent
+    if (!isAuthenticated) {
+      window.location.href = planKey === 'free'
+        ? '/auth/signup'
+        : `/auth/signup?plan=${planKey}&billing=${billing}`;
+      return;
+    }
     if (planKey === 'free' || planKey === tier) return;
 
     // Affiliate-referred users go through Stripe Checkout to get their 10% discount
@@ -163,7 +173,7 @@ export default function PricingPage() {
         {PLAN_META.map((meta) => {
           const plan = PLANS[meta.key as keyof typeof PLANS];
           const Icon = meta.icon;
-          const isCurrent = meta.key === tier;
+          const isCurrent = isAuthenticated && meta.key === tier;
           const isHighlighted = 'highlighted' in meta && meta.highlighted;
           const hasAnnual = 'annualPrice' in plan;
           const isAnnual = billing === 'annual' && hasAnnual;

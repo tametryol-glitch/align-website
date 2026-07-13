@@ -8,9 +8,16 @@
  * Compendium, activated Whole-Sign houses, ruler chain, and a structured
  * reading. All astrology comes from the shared engine in @/lib/engines —
  * the page reproduces no formula.
+ *
+ * Two input modes: "birth" computes the exact position from birth details via
+ * the natal-chart API (and pre-fills the ruler placements from the same
+ * chart), "manual" takes an exact degree/minute/second directly.
  */
 
 import { useMemo, useState } from 'react';
+import { api } from '@/lib/api';
+import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
+import { CitySearch } from '@/components/ui/CitySearch';
 import {
   SIGNS,
   calculateHiddenZodiacPlacement,
@@ -38,6 +45,7 @@ function ordinal(n: number | null): string {
 }
 
 export function HiddenZodiacClient() {
+  const [mode, setMode] = useState<'birth' | 'manual'>('birth');
   const [object, setObject] = useState('Sun');
   const [sign, setSign] = useState('Scorpio');
   const [asc, setAsc] = useState('Leo');
@@ -50,6 +58,17 @@ export function HiddenZodiacClient() {
   // Whole-Sign house and lets the reading speak to the ruler's real placement.
   const [rulerSigns, setRulerSigns] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+
+  // Birth-details mode
+  const [birthDate, setBirthDate] = useState('');
+  const [birthTime, setBirthTime] = useState('12:00');
+  const [unknownTime, setUnknownTime] = useState(false);
+  const [birthLocation, setBirthLocation] = useState('');
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [timezone, setTimezone] = useState('UTC');
+  const [chartLoading, setChartLoading] = useState(false);
+  const [foundText, setFoundText] = useState<string | null>(null);
 
   const num = (v: string) => (v.trim() === '' ? NaN : Number(v));
   const d = num(degree), m = num(minute), s = secondsKnown ? num(second) : 0;
@@ -77,52 +96,208 @@ export function HiddenZodiacClient() {
 
   function reveal() {
     setError(null);
+    setFoundText(null);
     if (!valid) { setError('Please correct the highlighted fields.'); return; }
     setSubmitted(true);
+  }
+
+  function handleCitySelect(location: string, lat: number, lon: number, tz: string) {
+    setBirthLocation(location);
+    setLatitude(lat);
+    setLongitude(lon);
+    setTimezone(tz);
+  }
+
+  /** Split a within-sign degree (e.g. 27.2783) into whole °/′/″ with carry. */
+  function toDms(signDegree: number): { d: number; m: number; s: number } {
+    let d = Math.floor(signDegree);
+    const minFloat = (signDegree - d) * 60;
+    let m = Math.floor(minFloat);
+    let s = Math.round((minFloat - m) * 60);
+    if (s >= 60) { s = 0; m += 1; }
+    if (m >= 60) { m = 0; d += 1; }
+    if (d >= 30) { d = 29; m = 59; s = 59; }
+    return { d, m, s };
+  }
+
+  async function revealFromBirth() {
+    setError(null);
+    setFoundText(null);
+    if (!birthDate) { setError('Please enter your birth date.'); return; }
+    if (latitude == null || longitude == null) { setError('Please select a birth location from the suggestions.'); return; }
+
+    setChartLoading(true);
+    try {
+      const time = unknownTime ? '12:00' : birthTime;
+      const { offset, label } = resolveTimezoneOffset(timezone, longitude, birthDate, time, latitude);
+      const chart = await api.getNatalChart({
+        name: '',
+        date: birthDate,
+        time,
+        latitude,
+        longitude,
+        timezone: label,
+        tz_offset: offset,
+        location: birthLocation,
+        house_system: 'Whole Sign',
+      });
+      const positions: any[] = chart.positions || [];
+
+      // The chart engine calls the Midheaven "MC"; Earth is derived (anti-Sun).
+      const targetName = object === 'Midheaven' ? 'MC' : object;
+      let lon: number | null = null;
+      const pos = positions.find((p) => p.name === targetName);
+      if (pos) {
+        lon = pos.longitude;
+      } else if (object === 'Earth') {
+        const sun = positions.find((p) => p.name === 'Sun');
+        if (sun) lon = (sun.longitude + 180) % 360;
+      }
+      if (lon == null) {
+        setError(`${object} isn't available from the birth-chart engine — switch to "I know the exact degrees" to enter it manually.`);
+        return;
+      }
+
+      const posSign = SIGNS[Math.floor(lon / 30) % 12];
+      const { d, m, s } = toDms(lon % 30);
+
+      const ascPos = positions.find((p) => p.name === 'Ascendant');
+      const ascSign = ascPos?.sign
+        || (chart.house_cusps?.[0] != null ? SIGNS[Math.floor(chart.house_cusps[0] / 30) % 12] : asc);
+
+      // Pre-fill every ruler's real sign from the same chart, so the ruler
+      // chain and reading are personalised without extra input.
+      const signsByName: Record<string, string> = {};
+      for (const p of positions) {
+        if (p?.name && p?.sign) signsByName[p.name] = p.sign;
+      }
+
+      setObject(object);
+      setSign(posSign);
+      setDegree(String(d));
+      setMinute(String(m));
+      setSecond(String(s));
+      setSecondsKnown(true);
+      setAsc(ascSign);
+      setRulerSigns(signsByName);
+      setFoundText(
+        `Your ${object} sits at ${d}°${String(m).padStart(2, '0')}′${String(s).padStart(2, '0')}″ ${posSign}` +
+        (unknownTime ? ' (birth time unknown — houses are approximate, calculated for 12:00 noon)' : '')
+      );
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err?.message || 'Could not calculate your chart. Please try again.');
+    } finally {
+      setChartLoading(false);
+    }
   }
 
   return (
     <div>
       {/* ── Input card ── */}
       <div className="bg-bg-card border border-border-primary rounded-2xl p-6 space-y-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Planet or point">
-            <select className="hz-input" value={object} onChange={(e) => setObject(e.target.value)}>
-              {CALCULATOR_QUICK_PICK.map((p) => (
-                <option key={p} value={p}>{glyphForObject(p)}  {p}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Zodiac sign">
-            <select className="hz-input" value={sign} onChange={(e) => setSign(e.target.value)}>
-              {SIGNS.map((sg) => <option key={sg} value={sg}>{SIGN_GLYPHS[sg]}  {sg}</option>)}
-            </select>
-          </Field>
+        {/* Mode toggle */}
+        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl" style={{ background: '#1A2035' }}>
+          <button
+            type="button"
+            onClick={() => { setMode('birth'); setError(null); }}
+            className={`py-2 rounded-lg text-sm font-medium transition-colors ${mode === 'birth' ? 'bg-accent-primary text-white' : 'text-text-tertiary hover:text-text-primary'}`}
+          >
+            From my birth details
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMode('manual'); setError(null); }}
+            className={`py-2 rounded-lg text-sm font-medium transition-colors ${mode === 'manual' ? 'bg-accent-primary text-white' : 'text-text-tertiary hover:text-text-primary'}`}
+          >
+            I know the exact degrees
+          </button>
         </div>
 
-        <div>
-          <p className="text-xs font-semibold tracking-wide uppercase text-text-tertiary mb-2">Exact position within the sign</p>
-          <div className="grid grid-cols-3 gap-3">
-            <Dms label="Degree" suffix="°" value={degree} onChange={setDegree} err={errs.degree} max={29} />
-            <Dms label="Minute" suffix="′" value={minute} onChange={setMinute} err={errs.minute} max={59} />
-            <Dms label="Second" suffix="″" value={secondsKnown ? second : '00'} onChange={setSecond} err={errs.second} max={59} disabled={!secondsKnown} />
-          </div>
-          <label className="flex items-center gap-2 mt-3 text-sm text-text-tertiary cursor-pointer">
-            <input type="checkbox" checked={!secondsKnown} onChange={(e) => setSecondsKnown(!e.target.checked)} className="accent-accent-primary" />
-            Seconds unknown — calculate with 00″ (results near a boundary may change once exact seconds are known)
-          </label>
-        </div>
+        {mode === 'birth' ? (
+          <>
+            <Field label="Planet or point to reveal">
+              <select className="hz-input" value={object} onChange={(e) => setObject(e.target.value)}>
+                {CALCULATOR_QUICK_PICK.map((p) => (
+                  <option key={p} value={p}>{glyphForObject(p)}  {p}</option>
+                ))}
+              </select>
+            </Field>
 
-        <Field label="Ascendant sign (needed for the activated houses)">
-          <select className="hz-input" value={asc} onChange={(e) => setAsc(e.target.value)}>
-            {SIGNS.map((sg) => <option key={sg} value={sg}>{SIGN_GLYPHS[sg]}  {sg}</option>)}
-          </select>
-        </Field>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Birth date">
+                <input type="date" className="hz-input" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+              </Field>
+              <div>
+                <Field label="Birth time">
+                  <input type="time" className="hz-input" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} disabled={unknownTime} />
+                </Field>
+                <label className="flex items-center gap-2 mt-2 text-xs text-text-muted cursor-pointer">
+                  <input type="checkbox" checked={unknownTime} onChange={(e) => setUnknownTime(e.target.checked)} className="accent-accent-primary" />
+                  I don&apos;t know my birth time
+                </label>
+              </div>
+            </div>
 
-        <button onClick={reveal} disabled={!valid} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
-          Reveal My Hidden Zodiac
-        </button>
+            <Field label="Birth place">
+              <CitySearch
+                value={birthLocation}
+                onChange={handleCitySelect}
+                placeholder="Search city, state, or country..."
+              />
+            </Field>
+
+            <button onClick={revealFromBirth} disabled={chartLoading} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              {chartLoading ? 'Finding your exact degrees...' : 'Reveal My Hidden Zodiac — Free'}
+            </button>
+            <p className="text-xs text-text-muted text-center">
+              No signup required. Your exact degree, minute, and second are calculated for you.
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Planet or point">
+                <select className="hz-input" value={object} onChange={(e) => setObject(e.target.value)}>
+                  {CALCULATOR_QUICK_PICK.map((p) => (
+                    <option key={p} value={p}>{glyphForObject(p)}  {p}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Zodiac sign">
+                <select className="hz-input" value={sign} onChange={(e) => setSign(e.target.value)}>
+                  {SIGNS.map((sg) => <option key={sg} value={sg}>{SIGN_GLYPHS[sg]}  {sg}</option>)}
+                </select>
+              </Field>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold tracking-wide uppercase text-text-tertiary mb-2">Exact position within the sign</p>
+              <div className="grid grid-cols-3 gap-3">
+                <Dms label="Degree" suffix="°" value={degree} onChange={setDegree} err={errs.degree} max={29} />
+                <Dms label="Minute" suffix="′" value={minute} onChange={setMinute} err={errs.minute} max={59} />
+                <Dms label="Second" suffix="″" value={secondsKnown ? second : '00'} onChange={setSecond} err={errs.second} max={59} disabled={!secondsKnown} />
+              </div>
+              <label className="flex items-center gap-2 mt-3 text-sm text-text-tertiary cursor-pointer">
+                <input type="checkbox" checked={!secondsKnown} onChange={(e) => setSecondsKnown(!e.target.checked)} className="accent-accent-primary" />
+                Seconds unknown — calculate with 00″ (results near a boundary may change once exact seconds are known)
+              </label>
+            </div>
+
+            <Field label="Ascendant sign (needed for the activated houses)">
+              <select className="hz-input" value={asc} onChange={(e) => setAsc(e.target.value)}>
+                {SIGNS.map((sg) => <option key={sg} value={sg}>{SIGN_GLYPHS[sg]}  {sg}</option>)}
+              </select>
+            </Field>
+
+            <button onClick={reveal} disabled={!valid} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              Reveal My Hidden Zodiac
+            </button>
+          </>
+        )}
+
         {error && <p className="text-sm text-red-400">{error}</p>}
+        {foundText && <p className="text-sm text-accent-secondary">{foundText}</p>}
       </div>
 
       {result && <Result placement={result} rulerSigns={rulerSigns} setRulerSigns={setRulerSigns} />}

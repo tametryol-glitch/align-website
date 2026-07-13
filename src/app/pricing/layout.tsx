@@ -1,5 +1,5 @@
-import { AppShell } from '@/components/layout/AppShell';
+import { PublicOrAppShell } from '@/components/layout/PublicOrAppShell';
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return <PublicOrAppShell>{children}</PublicOrAppShell>;
 }

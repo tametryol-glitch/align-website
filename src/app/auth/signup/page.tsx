@@ -6,8 +6,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { Sparkles, Gift, CheckCircle } from 'lucide-react';
+import { Sparkles, Gift, CheckCircle, Check } from 'lucide-react';
 import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie } from '@/lib/affiliateService';
+import { PLANS } from '@/lib/plans';
+
+const FREE_PERKS = [
+  'Natal chart overview (Sun, Moon, Rising)',
+  '3 AI-powered readings every month',
+  'Daily horoscope & tarot card draw',
+  'Planetary hours calculator',
+];
 
 export default function SignupPage() {
   return (
@@ -43,6 +51,11 @@ function SignupPageInner() {
   const referralCode = searchParams.get('ref');
   const sourceParam = searchParams.get('source');
   const hasAffiliateLink = referralCode && sourceParam === 'affiliate';
+  // Plan intent carried over from the pricing page ("Get Premium" while logged out)
+  const planParam = searchParams.get('plan');
+  const intendedPlan = planParam && planParam !== 'free' && planParam in PLANS
+    ? PLANS[planParam as keyof typeof PLANS]
+    : null;
 
   // Manual affiliate code entry state
   const [showAffiliateInput, setShowAffiliateInput] = useState(false);
@@ -184,6 +197,30 @@ function SignupPageInner() {
         </div>
 
         <div className="card">
+          {intendedPlan && (
+            <div className="flex items-center gap-2 bg-accent-muted border border-accent-primary/30 rounded-lg px-3 py-2.5 mb-4">
+              <Sparkles className="w-4 h-4 text-accent-primary shrink-0" />
+              <p className="text-xs text-text-secondary">
+                Create your free account first — then unlock <span className="font-semibold text-text-primary">{intendedPlan.name}</span> (${intendedPlan.price}/mo) from the Plans page.
+              </p>
+            </div>
+          )}
+
+          <div className="mb-5">
+            <p className="text-xs font-semibold tracking-wide uppercase text-text-tertiary mb-2">
+              Your free account includes
+            </p>
+            <ul className="space-y-1.5">
+              {FREE_PERKS.map((perk) => (
+                <li key={perk} className="flex items-start gap-2 text-xs text-text-secondary">
+                  <Check className="w-3.5 h-3.5 text-green-400 mt-px shrink-0" />
+                  {perk}
+                </li>
+              ))}
+            </ul>
+            <p className="text-[11px] text-text-muted mt-2">Free forever. No credit card required.</p>
+          </div>
+
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.displayName')}</label>

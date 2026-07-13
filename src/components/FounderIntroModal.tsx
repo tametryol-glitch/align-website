@@ -18,12 +18,32 @@ export function FounderIntroModal() {
   useEffect(() => {
     if (suppressed) return;
     try {
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        setOpen(true);
-      }
+      if (localStorage.getItem(STORAGE_KEY)) return;
     } catch {
       // localStorage unavailable (private mode / SSR) — skip showing the modal
+      return;
     }
+
+    // Don't interrupt a first-time visitor's first look at the page: open the
+    // intro only after they've settled in (45s) or shown intent by scrolling
+    // ~40% of the viewport height — whichever comes first. Fires at most once.
+    let fired = false;
+    const fire = () => {
+      if (fired) return;
+      fired = true;
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+      setOpen(true);
+    };
+    const timer = setTimeout(fire, 45_000);
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.4) fire();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [suppressed]);
 
   function close() {

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { HiddenZodiacClient } from './HiddenZodiacClient';
 
 export const metadata: Metadata = {
-  title: 'The Hidden Zodiac — Duad & Compendium Calculator | Align',
+  title: 'The Hidden Zodiac — Duad & Compendium Calculator',
   description:
-    'Reveal the Duad and Compendium hidden inside any planetary degree. Enter an exact degree, minute, and second to see the deeper signs, the Whole-Sign houses they activate, and the full ruler chain.',
+    'Reveal the Duad and Compendium hidden inside any planetary degree. Enter your birth details — or an exact degree, minute, and second — to see the deeper signs, the Whole-Sign houses they activate, and the full ruler chain.',
   keywords: [
     'hidden zodiac', 'duad calculator', 'compendium astrology', 'dwad',
     'whole sign houses', 'ruler chain', 'astrology degree calculator',
