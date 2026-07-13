@@ -84,6 +84,7 @@ export default function Zodisphere3dPrototypePage() {
   const [chartMode, setChartMode] = useState<ChartMode>('natal');
   const [grid, setGrid] = useState<DuadGrid | null>(null);
   const [natalCtx, setNatalCtx] = useState<NatalContext | null>(null);
+  const [natalRefLines, setNatalRefLines] = useState<AcgLine3D[]>([]);
   const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
@@ -171,6 +172,15 @@ export default function Zodisphere3dPrototypePage() {
     return () => { alive = false; };
   }, [enabled, profile]);
 
+  // In Draconic mode, keep the NATAL lines on hand (reference only, not drawn) so
+  // we can flag karmic hotspots where a natal line meets its draconic twin.
+  useEffect(() => {
+    if (chartMode !== 'draconic' || !enabled || !profile?.birth_date || profile?.latitude == null) { setNatalRefLines([]); return; }
+    let alive = true;
+    getBodyAcgLines(profile, bodies, 'natal').then((r) => { if (alive) setNatalRefLines(r.lines); }).catch(() => {});
+    return () => { alive = false; };
+  }, [chartMode, enabled, profile, bodies]);
+
   // Visible subset after the body/angle filters.
   const visibleLines = useMemo(
     () => allLines.filter((l) => !hidden.has(l.planet) && !hiddenAngles.has(l.angle)),
@@ -254,26 +264,38 @@ export default function Zodisphere3dPrototypePage() {
   const [savedLocations, setSavedLocations] = useState<Array<{ name: string; lat: number; lng: number }>>([]);
   const [savedOpen, setSavedOpen] = useState(false);
 
-  // Duad-Grid readouts for the tapped point: the raw band (always) and the full
-  // location synthesis (when a planet line is in range + the natal context loaded).
+  // The tapped planet line (nearest hit that isn't a horizontal grid rung).
+  const tappedLine = useMemo(
+    () => lineHits.find((h) => {
+      const s = h.line.style;
+      return s !== 'duad' && s !== 'compendium' && s !== 'gridline' && s !== 'matrix';
+    }) || null,
+    [lineHits],
+  );
+  // Grid band (used for the grid-mode band-only fallback readout).
   const gridBand = useMemo(
     () => (chartMode === 'grid' && grid && tapPoint) ? bandAtLatitude(tapPoint.lat, grid) : null,
     [chartMode, grid, tapPoint],
   );
-  const gridInterp = useMemo(() => {
-    if (!gridBand || !natalCtx || !tapPoint) return null;
-    // In grid mode only planet lines are probed, but guard against grid styles anyway.
-    const hit = lineHits.find((h) => {
-      const s = h.line.style;
-      return s !== 'duad' && s !== 'compendium' && s !== 'gridline' && s !== 'matrix';
+  // Karmic hotspot: in Draconic mode, does the SAME planet's NATAL line also run
+  // near this spot? If so, the past-life theme is active in this life.
+  const karmicHotspot = useMemo(() => {
+    if (chartMode !== 'draconic' || !tappedLine || !tapPoint || !natalRefLines.length) return false;
+    const near = probeAcgLines(tapPoint.lat, tapPoint.lng, natalRefLines, 2.5);
+    return near.some((h) => h.line.planet === tappedLine.line.planet);
+  }, [chartMode, tappedLine, tapPoint, natalRefLines]);
+  // The full location reading — Natal & Grid (present) or Draconic (past-life).
+  const locInterp = useMemo(() => {
+    if (!tappedLine || !natalCtx || !tapPoint) return null;
+    return interpretLocation(natalCtx, tappedLine.line.planet, {
+      band: (chartMode === 'grid' && gridBand)
+        ? { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign }
+        : undefined,
+      angle: tappedLine.line.angle,
+      mode: chartMode === 'draconic' ? 'draconic' : 'present',
+      karmicHotspot,
     });
-    if (!hit) return null;
-    return interpretLocation(
-      natalCtx, hit.line.planet,
-      { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign },
-      hit.line.angle,
-    );
-  }, [gridBand, natalCtx, lineHits, tapPoint]);
+  }, [tappedLine, natalCtx, tapPoint, chartMode, gridBand, karmicHotspot]);
 
   // Load country polygons (offline reverse-geocode) + saved locations.
   useEffect(() => {
@@ -856,31 +878,32 @@ export default function Zodisphere3dPrototypePage() {
               );
             })()}
 
-            {/* Duad Grid band — which duad + compendium this latitude falls in
-                (anchored to the rising point), and which vertical planet line
-                passes through here. */}
-            {chartMode === 'grid' && gridBand && gridInterp && (
-              <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2.5 text-[11px]">
-                <div className="font-semibold text-indigo-100 mb-1.5">
-                  🔷 {gridInterp.planet} {gridInterp.angle} · {gridInterp.natalSign} in your {ordinalLabel(gridInterp.natalHouse)} house
+            {/* The full location reading — Natal & Duad Grid (present-tense
+                predictive) or Draconic (past-life). */}
+            {locInterp && (
+              <div className={`mb-2 rounded-lg border px-2.5 py-2.5 text-[11px] ${locInterp.mode === 'draconic' ? 'bg-violet-500/10 border-violet-400/30' : 'bg-indigo-400/10 border-indigo-400/30'}`}>
+                <div className={`font-semibold mb-1.5 ${locInterp.mode === 'draconic' ? 'text-violet-100' : 'text-indigo-100'}`}>
+                  {locInterp.mode === 'draconic'
+                    ? <>🌙 Past-life echo · {locInterp.planet} {locInterp.angle}{locInterp.karmicHotspot ? ' · active now' : ''}</>
+                    : <>🔷 {locInterp.planet} {locInterp.angle} · {locInterp.natalSign} in your {ordinalLabel(locInterp.natalHouse)} house</>}
                 </div>
-                {gridInterp.narrative.split('\n\n').map((para, i) => (
+                {locInterp.narrative.split('\n\n').map((para, i) => (
                   <p key={i} className="text-white/85 leading-relaxed mb-2"
                      dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
                 ))}
                 <div className="flex flex-wrap gap-1.5 mt-1 pt-2 border-t border-white/10 text-[10px]">
-                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {gridBand.duadSign} · {ordinalLabel(gridInterp.duadHouse)}h</span>
-                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {gridBand.compendiumSign} · {ordinalLabel(gridInterp.compHouse)}h</span>
-                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Matrix {gridBand.matrixSign} · {ordinalLabel(gridInterp.matrixHouse)}h</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{gridInterp.elements.dominant}</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{gridInterp.modalities.dominant}</span>
-                  {gridInterp.rulers.dominant?.available && (
-                    <span className="px-1.5 py-0.5 rounded bg-fuchsia-400/15 text-fuchsia-100">Ruler {gridInterp.rulers.dominant.planet}{gridInterp.rulers.dominant.count >= 2 ? ` ×${gridInterp.rulers.dominant.count}` : ''}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Duad {locInterp.duadSign}{locInterp.mode === 'present' ? ` · ${ordinalLabel(locInterp.duadHouse)}h` : ''}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Comp {locInterp.compSign}{locInterp.mode === 'present' ? ` · ${ordinalLabel(locInterp.compHouse)}h` : ''}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">Matrix {locInterp.matrixSign}{locInterp.mode === 'present' ? ` · ${ordinalLabel(locInterp.matrixHouse)}h` : ''}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{locInterp.elements.dominant}</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-100">{locInterp.modalities.dominant}</span>
+                  {locInterp.mode === 'present' && locInterp.rulers.dominant?.available && (
+                    <span className="px-1.5 py-0.5 rounded bg-fuchsia-400/15 text-fuchsia-100">Ruler {locInterp.rulers.dominant.planet}{locInterp.rulers.dominant.count >= 2 ? ` ×${locInterp.rulers.dominant.count}` : ''}</span>
                   )}
                 </div>
               </div>
             )}
-            {chartMode === 'grid' && gridBand && !gridInterp && (
+            {chartMode === 'grid' && gridBand && !locInterp && (
               <div className="mb-2 rounded-lg bg-indigo-400/10 border border-indigo-400/30 px-2.5 py-2 text-[11px]">
                 <div className="font-semibold text-indigo-100 mb-1">🔷 {gridBand.duadSign} duad · {gridBand.compendiumSign} compendium · {gridBand.matrixSign} matrix</div>
                 <p className="text-white/75 leading-relaxed">
@@ -894,9 +917,9 @@ export default function Zodisphere3dPrototypePage() {
               </div>
             )}
 
-            {/* Nearby lines with interpretation — suppressed when the full grid
+            {/* Nearby lines with interpretation — suppressed when the full
                 synthesis is showing (it already speaks to the active line). */}
-            {gridInterp ? null : lineHits.length === 0 ? (
+            {locInterp ? null : lineHits.length === 0 ? (
               <p className="text-[12px] text-white/50 border-t border-white/10 pt-2">No lines run close to this exact spot — the scores above reflect the wider field.</p>
             ) : (
               <div className="space-y-2.5 border-t border-white/10 pt-2">

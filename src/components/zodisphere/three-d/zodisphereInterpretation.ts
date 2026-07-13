@@ -22,7 +22,7 @@
  */
 
 import {
-  SIGNS, RULERS, SIGN_THEMES, HOUSE_THEMES, getHouseForSign,
+  SIGNS, RULERS, SIGN_THEMES, HOUSE_THEMES, getHouseForSign, getFullDuadCompendium,
 } from '@/lib/engines/duadCompendium';
 import type { ChartData } from '@/lib/zodisphereMidpoints';
 
@@ -222,6 +222,85 @@ const RULER_THEME: Record<string, string> = {
   Juno: 'focus on commitment and partnership',
 };
 
+/** DRACONIC (soul chart) past-life scenes for planet × angle. Past tense,
+ *  evocative, framed as soul-memory — never a literal claim. */
+const PAST_LIFE: Record<string, Record<string, string>> = {
+  Sun: {
+    MC: 'In a past life you may have been someone of rank here — a leader, a ruler, a public figure whose name people knew. Power and pride were yours, and so was the weight of being watched.',
+    IC: 'A past life may have rooted you deep in this land — the head of a household, the heart of a family line that belonged here. You were someone\'s sun.',
+    ASC: 'You may have walked this ground as someone impossible to overlook — bright, proud, born to be seen. People remembered your face long after you passed.',
+    DSC: 'In a past life your light may have drawn a powerful partner here — a marriage of status, or a bond where one of you always stood in the other\'s shadow.',
+  },
+  Moon: {
+    MC: 'You may have been known here for caring for others — feeding, nursing, mothering a whole community that leaned on you. Your work was tenderness.',
+    IC: 'This may have been home in a past life — truly home. You belonged to a family and a hearth here, and some part of you never fully left.',
+    ASC: 'You may have moved through this place as someone soft and deeply feeling — a face people trusted with their sorrows.',
+    DSC: 'A past life may have bound you here to someone you loved like family — a tie of deep need and comfort, and maybe of never quite letting go.',
+  },
+  Mercury: {
+    MC: 'You may have made your name here with words — a scribe, a trader, a teacher, a messenger. Your quick mind was your living.',
+    IC: 'A past life may have filled a home here with letters, books, and endless talk — a household that lived by learning and news.',
+    ASC: 'You may have been known here as clever and quick — the one who carried the message, struck the deal, or told the story everyone repeated.',
+    DSC: 'A past life may have joined you here to a kindred mind — a partnership of words and ideas, and maybe of secrets shared.',
+  },
+  Venus: {
+    MC: 'You may have been loved here for your beauty or your art — someone whose charm or craft made them known. Pleasure, though, had its price.',
+    IC: 'A past life may have made this a place of love and comfort — a beautiful home, a family built on affection and ease.',
+    ASC: 'You may have walked here as someone others found lovely — admired, desired, and perhaps a little vain about it.',
+    DSC: 'This may have been where you loved and married in a past life — a great romance, or a bond you couldn\'t quit even when you should have.',
+  },
+  Mars: {
+    MC: 'You may have fought here in a past life — a soldier, a commander, someone who won or lost by the blade. This ground may have known your battles.',
+    IC: 'A past life here may have been marked by struggle at home — a household defended, or torn apart, by conflict and sheer will.',
+    ASC: 'You may have been known here as a fighter — bold, fierce, quick to act. People feared you or followed you.',
+    DSC: 'A past life may have tied you here to someone you both loved and warred with — passion and conflict in the very same breath.',
+  },
+  Jupiter: {
+    MC: 'You may have held a place of honor here — a teacher, a priest, a noble, someone people looked to for wisdom or blessing.',
+    IC: 'A past life may have given you abundance here — a large home, a prosperous family, a place of plenty and open doors.',
+    ASC: 'You may have moved through this land as someone larger than life — generous, faithful, always reaching for the next horizon.',
+    DSC: 'A past life may have brought you a fortunate union here — a partner who widened your world, or a marriage that lifted your whole standing.',
+  },
+  Saturn: {
+    MC: 'You may have carried real authority here in a past life — a builder, an elder, a ruler bound by duty. Respect was earned the hard way.',
+    IC: 'A past life here may have been heavy — responsibility for family or land, a home held together by nothing but endurance.',
+    ASC: 'You may have been known here as serious and self-controlled — someone who bore burdens young and grew old in spirit before their time.',
+    DSC: 'A past life may have bound you here in a union of duty — a lasting, difficult commitment, or a love shaped by loss and long years.',
+  },
+  Uranus: {
+    MC: 'You may have been an outsider here — a rebel, an inventor, someone ahead of their time who upended the order and didn\'t try to fit.',
+    IC: 'A past life here may have refused to settle — an unconventional home, a family that broke the rules, or roots you tore up and walked away from.',
+    ASC: 'You may have walked this ground as someone strange and electric — a disruptor people could never quite place.',
+    DSC: 'A past life may have joined you here to someone unconventional — a bond that broke every rule, or a love that came and went like lightning.',
+  },
+  Neptune: {
+    MC: 'You may have been a mystic or a healer here — a dreamer, an artist, a soul who worked in the unseen. The line between vision and illusion was thin.',
+    IC: 'A past life here may have felt like a dream — a home touched by faith or fantasy, or one you lost in a fog you could never quite lift.',
+    ASC: 'You may have drifted through this place as someone otherworldly — a face people poured their longing into.',
+    DSC: 'A past life may have tied you here to a soulmate or a phantom — a love that felt utterly fated, or one that was never quite real.',
+  },
+  Pluto: {
+    MC: 'You may have held dangerous power here — a ruler, a shaman, someone who dealt in life, death, and control. You rose, and you fell hard.',
+    IC: 'A past life here may have been marked by upheaval at the root — a family transformed by loss, secrets, or a buried crisis.',
+    ASC: 'You may have moved through this land as someone intense and unforgettable — feared, magnetic, marked by survival.',
+    DSC: 'A past life may have bound you here in a bond that consumed you — obsession, power, betrayal, or a love that remade you both.',
+  },
+};
+
+/** What the soul carried FORWARD out of that life into this one. */
+const KARMIC_CARRY: Record<string, string> = {
+  Sun: 'a need to be seen — and the lesson of shining without needing the crowd',
+  Moon: 'a deep well of care — and old wounds about belonging that still ask to be soothed',
+  Mercury: 'a gift with words and ideas — and a restlessness you\'re still learning to quiet',
+  Venus: 'a great capacity for love and beauty — and unfinished lessons about what you\'re truly worth',
+  Mars: 'courage and fight — and an anger you may still be learning to aim well',
+  Jupiter: 'faith and generosity — and a hunger for more you\'re still learning to fill from within',
+  Saturn: 'endurance and mastery — and a heaviness you\'re still learning to set down',
+  Uranus: 'a free, original spirit — and a difficulty belonging you\'re still making peace with',
+  Neptune: 'compassion and vision — and a tendency to lose yourself you\'re still learning to hold',
+  Pluto: 'the power to be reborn — and lessons about control and trust you\'re still working through',
+};
+
 type Angle = 'MC' | 'IC' | 'ASC' | 'DSC';
 
 const ELEMENT_ATMOSPHERE: Record<Element, string> = {
@@ -342,6 +421,8 @@ function houseRelation(a: number, b: number): HouseRelation['kind'] {
 // ── The synthesized result ──────────────────────────────────────────────────
 export interface LocationInterpretation {
   planet: string; angle: Angle;
+  mode: 'present' | 'draconic';
+  karmicHotspot: boolean;
   natalSign: string; natalHouse: number;
   duadSign: string; duadHouse: number;
   compSign: string; compHouse: number;
@@ -358,23 +439,53 @@ export interface LocationInterpretation {
 
 export interface LocationBand { duadSign: string; compendiumSign: string; matrixSign: string; }
 
+export interface InterpretOptions {
+  /** Grid mode supplies the anchored band; natal/draconic compute it from the
+   *  planet's own (relocated-soul) longitude instead. */
+  band?: LocationBand;
+  angle?: Angle;
+  /** 'present' = natal/grid predictive reading; 'draconic' = past-life reading. */
+  mode?: 'present' | 'draconic';
+  /** Draconic only: the SAME planet's natal line also runs through here → the
+   *  past-life theme is active in this life (a karmic hotspot). */
+  karmicHotspot?: boolean;
+  weights?: InterpretationWeights;
+}
+
 /**
- * Synthesize the full location reading. `planet` = the activated line; `band` =
- * the duad/compendium/matrix signs at the tapped point (from bandAtLatitude).
+ * Synthesize the full location reading for the tapped planet line. In grid mode
+ * the caller passes the anchored `band`; in natal/draconic mode the band is the
+ * planet's OWN duad/compendium/matrix (draconic mode uses the soul-rotated
+ * longitude and a past-life voice).
  */
 export function interpretLocation(
   ctx: NatalContext,
   planet: string,
-  band: LocationBand,
-  angle: Angle = 'MC',
-  weights: InterpretationWeights = DEFAULT_WEIGHTS,
+  opts: InterpretOptions = {},
 ): LocationInterpretation | null {
-  const planetLon = ctx.bodies.get(planet);
-  if (planetLon == null || !Number.isFinite(planetLon)) return null;
+  const natalLon = ctx.bodies.get(planet);
+  if (natalLon == null || !Number.isFinite(natalLon)) return null;
 
-  const natalSign = signOfLon(planetLon);
+  const mode = opts.mode || 'present';
+  const angle: Angle = opts.angle || 'MC';
+  const weights = opts.weights || DEFAULT_WEIGHTS;
+
+  // The longitude whose duad/comp/matrix we read, and the sign we analyse.
+  let bandLon = natalLon;
+  if (mode === 'draconic') {
+    const nodeLon = ctx.bodies.get('North Node');
+    if (nodeLon == null || !Number.isFinite(nodeLon)) return null;
+    bandLon = (((natalLon - nodeLon) % 360) + 360) % 360; // North Node → 0° Aries
+  }
+  const planetSign = signOfLon(bandLon); // natal sign (present) or soul sign (draconic)
+
+  const f = opts.band && mode === 'present'
+    ? { duadSign: opts.band.duadSign, compendiumSign: opts.band.compendiumSign, matrixSign: opts.band.matrixSign }
+    : (() => { const d = getFullDuadCompendium(bandLon); return { duadSign: d.duadSign, compendiumSign: d.compendiumSign, matrixSign: d.matrixSign }; })();
+  const duadSign = f.duadSign, compSign = f.compendiumSign, matrixSign = f.matrixSign;
+
+  const natalSign = planetSign;
   const natalHouse = getHouseForSign(natalSign, ctx.ascSign);
-  const { duadSign, compendiumSign: compSign, matrixSign } = band;
   const duadHouse = getHouseForSign(duadSign, ctx.ascSign);
   const compHouse = getHouseForSign(compSign, ctx.ascSign);
   const matrixHouse = getHouseForSign(matrixSign, ctx.ascSign);
@@ -413,14 +524,18 @@ export function interpretLocation(
   const repeatedSigns = Array.from(signCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
   const repeatedRulers = Array.from(rulerCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
 
-  const narrative = compose({
-    planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
-    matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
-    modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
-  });
+  const karmicHotspot = !!opts.karmicHotspot;
+  const narrative = mode === 'draconic'
+    ? composeDraconic({ planet, angle, soulSign: planetSign, domElement, domModality, karmicHotspot })
+    : compose({
+        planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
+        matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
+        modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
+      });
 
   return {
-    planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse, matrixSign, matrixHouse,
+    planet, angle, mode, karmicHotspot,
+    natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse, matrixSign, matrixHouse,
     houses, relations,
     elements: { counts: elemCounts, dominant: domElement },
     modalities: { counts: modeCounts, dominant: domModality },
@@ -527,6 +642,45 @@ function compose(x: {
     `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
     `Some people find exactly what they were missing in a place like this. Others get shaken loose from what they thought they wanted. Rarely does anyone leave unchanged.`,
   );
+
+  return parts.join('\n\n');
+}
+
+// ── Draconic composer — the PAST-LIFE reading (soul chart) ───────────────────
+// Evocative, past-tense, spiritual/reflective — never a literal claim. The
+// draconic line = where your soul's imprint falls on Earth.
+function composeDraconic(x: {
+  planet: string; angle: Angle; soulSign: string;
+  domElement: Element; domModality: Modality; karmicHotspot: boolean;
+}): string {
+  const P = x.planet;
+  const parts: string[] = [];
+
+  // 1. The past-life scene (planet × angle), bold hook + detail.
+  const scene = PAST_LIFE[P]?.[x.angle];
+  if (scene) {
+    const i = scene.indexOf('. ');
+    parts.push(i > 0 ? `**${scene.slice(0, i + 1)}** ${scene.slice(i + 2)}` : `**${scene}**`);
+  } else {
+    parts.push(`**Your soul may have known this place in another life.** Something here reaches back further than this lifetime.`);
+  }
+
+  // 2. Who the soul was (draconic sign, plain).
+  parts.push(`The soul that walked here was ${SIGN_TRAIT[x.soulSign] || 'wired its own way'} — and that same thread still runs quietly through you today.`);
+
+  // 3. Why it may feel familiar (mood).
+  parts.push(`If this place ever tugs at you for no reason you can name, this could be why: ${ELEMENT_ATMOSPHERE[x.domElement]}. That old feeling never fully faded.`);
+
+  // 4. What carried forward (karmic).
+  parts.push(`What you seem to have carried out of that life and into this one: ${KARMIC_CARRY[P] || 'a lesson your soul is still working through'}.`);
+
+  // 5. Karmic hotspot — the past-life theme is active in THIS life.
+  if (x.karmicHotspot) {
+    parts.push(`**And this is no faint echo.** Your ${P} line from *this* life runs right through here too — the same theme, then and now. Your soul didn't just pass through here; it carried the unfinished business forward, and you're living it out again.`);
+  }
+
+  // 6. Close — reflective, a little haunting.
+  parts.push(`Stand here — or even just picture yourself here — and notice what stirs. Some places aren't new to us at all. They're returns.`);
 
   return parts.join('\n\n');
 }
