@@ -774,9 +774,9 @@ export default function Zodisphere3dPrototypePage() {
         const country = countryAt(tapPoint.lat, tapPoint.lng, countryFeatures);
         const placeName = cities[0] || country || `${tapPoint.lat.toFixed(1)}°, ${tapPoint.lng.toFixed(1)}°`;
         return (
-          // Docked to the bottom-LEFT (not centred) so the map centre stays
-          // clear — the user can double-tap-to-zoom the spot they tapped.
-          <div className="absolute bottom-4 left-4 z-30 w-[min(88vw,400px)] max-h-[56vh] overflow-y-auto rounded-2xl bg-black/85 backdrop-blur border border-white/15 text-white p-4">
+          // Docked to the bottom-RIGHT, but offset in (right-20) so it clears
+          // the right-4 button column — keeps the map centre free for double-tap.
+          <div className="absolute bottom-4 right-20 z-30 w-[min(88vw,400px)] max-h-[56vh] overflow-y-auto rounded-2xl bg-black/85 backdrop-blur border border-white/15 text-white p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="min-w-0">
                 <h3 className="text-sm font-semibold truncate">
