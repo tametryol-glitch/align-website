@@ -2,6 +2,12 @@ import { create } from 'zustand';
 
 export type TierLevel = 'free' | 'starter' | 'light' | 'premium' | 'pro';
 
+/** Free looks at the Zodisphere 3D globe before the paywall. ANY paying
+ *  subscriber (starter and up) is unlimited — see FEATURE_TIER.zodisphere_3d.
+ *  Counted on the profile row, not device storage, so clearing cache or
+ *  switching device doesn't reset it. */
+export const FREE_ZODISPHERE_3D_VIEWS = 3;
+
 export const AI_LIMITS: Record<TierLevel, number> = {
   free: 3,
   starter: 10,
@@ -17,7 +23,8 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   planetary_hours: 'free',
   transits_basic: 'free',
   galactic_clock: 'free',
-  // Starter
+  // Starter — i.e. ANY paying subscriber (rank >= starter) gets these
+  zodisphere_3d: 'starter', // 3D globe: unlimited on any paid plan; free tier is capped at FREE_ZODISPHERE_3D_VIEWS
   natal_full: 'starter',
   cosmic_journal: 'starter',
   soul_gifts: 'starter',

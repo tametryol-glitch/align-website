@@ -12,9 +12,11 @@
  */
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
+import { useSubscriptionStore, FREE_ZODISPHERE_3D_VIEWS } from '@/stores/subscriptionStore';
+import { createClient } from '@/lib/supabase';
 import { isZodisphere3dEnabled } from '@/config/featureFlags';
 import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereErrorBoundary';
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
@@ -28,7 +30,7 @@ import {
 import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
-import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves } from 'lucide-react';
+import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves, Lock, Sparkles } from 'lucide-react';
 
 type ChartMode = 'natal' | 'grid' | 'draconic' | 'progressed' | 'transit';
 const PLANET_ORDER = ACG_PLANETS;
@@ -100,6 +102,12 @@ export default function Zodisphere3dPrototypePage() {
   );
 
   const [authSettled, setAuthSettled] = useState(false);
+  // Free-look metering: premium+ is unlimited; free users get
+  // FREE_ZODISPHERE_3D_VIEWS opens, counted on their profile row.
+  const subLoading = useSubscriptionStore((s) => s.loading);
+  const hasAccess = useSubscriptionStore((s) => s.hasAccess);
+  const [access, setAccess] = useState<'checking' | 'allowed' | 'paywalled'>('checking');
+  const accessRanRef = useRef(false);
   // Inside the mobile app's WebView (the /zodisphere/globe3d/embed wrapper) the
   // host app owns navigation — hide every link that would load the web app.
   const [embedded, setEmbedded] = useState(false);
@@ -122,6 +130,38 @@ export default function Zodisphere3dPrototypePage() {
   // Gate on the reliable Supabase auth email (profile.email can be null on
   // mobile even when logged in), and fall back to profile.email as a backup.
   const enabled = isZodisphere3dEnabled(authUser?.email || profile?.email);
+
+  // Free-look metering. ANY paying subscriber → unlimited. Free tier → first
+  // FREE_ZODISPHERE_3D_VIEWS opens, counted on their profile row, then paywall.
+  // FAILS OPEN by design: a query error, a missing session, or a column that
+  // hasn't been migrated yet must never lock a user out of the globe.
+  useEffect(() => {
+    if (!enabled || !authSettled || subLoading || accessRanRef.current) return;
+    accessRanRef.current = true;
+    if (hasAccess('zodisphere_3d')) { setAccess('allowed'); return; }
+    const uid = authUser?.id;
+    if (!uid) { setAccess('allowed'); return; }
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('profiles').select('zodisphere_3d_views').eq('id', uid).single();
+        if (error) { setAccess('allowed'); return; } // e.g. column not migrated yet
+        const used = Number(data?.zodisphere_3d_views ?? 0);
+        if (used >= FREE_ZODISPHERE_3D_VIEWS) { setAccess('paywalled'); return; }
+        setAccess('allowed');
+        await supabase.from('profiles').update({ zodisphere_3d_views: used + 1 }).eq('id', uid);
+      } catch {
+        setAccess('allowed');
+      }
+    })();
+  }, [enabled, authSettled, subLoading, hasAccess, authUser]);
+
+  // If the subscription state never settles, don't hang on "checking" — fail open.
+  useEffect(() => {
+    const t = setTimeout(() => { if (!accessRanRef.current) setAccess('allowed'); }, 3000);
+    return () => clearTimeout(t);
+  }, []);
   const retry = useCallback(() => { setError(null); setRetryKey((k) => k + 1); }, []);
 
   // Fetch ACG lines for the active bodies (planets + any added points/asteroids).
@@ -1022,6 +1062,37 @@ export default function Zodisphere3dPrototypePage() {
           message="The 3D globe preview isn’t enabled for your account yet."
           classicHref={embedded ? null : '/zodisphere'}
         />
+      ) : access === 'checking' ? (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-white/60 text-sm animate-pulse">Loading…</div>
+        </div>
+      ) : access === 'paywalled' ? (
+        <div className="absolute inset-0 flex items-center justify-center p-6">
+          <div className="max-w-sm w-full text-center rounded-2xl bg-black/75 backdrop-blur border border-amber-400/30 p-6">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-amber-200" />
+            </div>
+            <h2 className="text-white text-lg font-semibold mb-2">
+              You’ve used your {FREE_ZODISPHERE_3D_VIEWS} free looks
+            </h2>
+            <p className="text-white/60 text-[13px] leading-relaxed mb-5">
+              The Zodisphere 3D Earth — your natal, progressed, transit, draconic past-life and Duad-Grid maps — is included with any Align subscription.
+            </p>
+            {!embedded && (
+              <>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-100 text-sm font-medium hover:bg-amber-400/30 transition-colors"
+                >
+                  <Sparkles className="w-4 h-4" /> Unlock the 3D globe
+                </Link>
+                <Link href="/zodisphere" className="block mt-3 text-[12px] text-white/45 hover:text-white/70">
+                  Back to the classic globe
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
       ) : !webglOk ? (
         <ZodisphereFallbackView
           message="Your device or browser doesn’t support the 3D graphics this globe needs."

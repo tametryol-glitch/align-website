@@ -122,6 +122,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/feed', request.url));
   }
 
+  // Feed-first: logged-in users hitting the marketing landing page go
+  // straight to the feed (logged-out visitors still see the landing page)
+  if (user && pathname === '/') {
+    return NextResponse.redirect(new URL('/feed', request.url));
+  }
+
   // Force onboarding for authenticated users without birth data
   if (user && isProtected && pathname !== '/onboarding' && !pathname.startsWith('/api')) {
     const { data: profile } = await supabase

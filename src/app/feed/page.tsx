@@ -633,8 +633,10 @@ function CreatePostModal({
 export default function FeedPage() {
   const { t } = useTranslation();
   const { user, profile } = useAuthStore();
+  // Getting Started "share on feed" completes when the user actually
+  // posts (was on-visit, which self-completed for everyone once the feed
+  // became the default landing page).
   const { markComplete } = useGettingStarted();
-  useEffect(() => { markComplete('share_feed'); }, [markComplete]);
   const userId = user?.id || '';
   const userName = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
   const userAvatar = profile?.avatar_url || null;
@@ -747,6 +749,7 @@ export default function FeedPage() {
   }
 
   function handlePostCreated(rawPost: any) {
+    markComplete('share_feed');
     const profile = rawPost.profile || {};
     const newPost: FeedPost = {
       id: rawPost.id,
