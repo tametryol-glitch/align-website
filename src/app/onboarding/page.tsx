@@ -190,7 +190,7 @@ export default function OnboardingPage() {
       }
     }
 
-    router.push('/dashboard');
+    router.push('/feed');
   }
 
   async function handleRectification() {
@@ -665,13 +665,13 @@ export default function OnboardingPage() {
               </div>
 
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/feed')}
                 className="btn-primary w-full mb-2"
               >
-                Continue to Dashboard
+                Continue to Your Feed
               </button>
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/feed')}
                 className="btn-ghost w-full text-sm text-text-muted"
               >
                 Skip

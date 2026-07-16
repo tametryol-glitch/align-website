@@ -33,9 +33,11 @@ export const featureFlags = {
    *  (no code change / redeploy needed to disable in an emergency). */
   zodisphere_3d_enabled: false,
 
-  /** Restrict the 3D globe to the developer allowlist during the prototype
-   *  phase. Flip to false to open an internal/closed beta. */
-  zodisphere_3d_dev_only: true,
+  /** Restrict the 3D globe to the developer allowlist. NOW OPEN: every signed-in
+   *  user gets the 3D globe (the NEXT_PUBLIC_ZODISPHERE_3D=on master env still
+   *  gates it, and remains the emergency kill switch). Flip back to true to
+   *  re-restrict to ZODISPHERE_3D_DEV_ALLOWLIST. */
+  zodisphere_3d_dev_only: false,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {

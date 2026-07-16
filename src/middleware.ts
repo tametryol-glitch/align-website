@@ -67,6 +67,8 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
   const isPublicPage = pathname === '/' ||
+    pathname === '/robots.txt' ||    // crawlers must read these unauthenticated
+    pathname === '/sitemap.xml' ||
     pathname.startsWith('/auth') ||
     pathname.startsWith('/privacy') ||
     pathname.startsWith('/terms') ||
@@ -117,7 +119,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (user && request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.includes('callback')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/feed', request.url));
   }
 
   // Force onboarding for authenticated users without birth data

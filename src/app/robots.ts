@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/dashboard', '/settings', '/messages', '/admin', '/api/', '/auth/callback'],
+        disallow: ['/dashboard', '/feed', '/settings', '/messages', '/admin', '/api/', '/auth/callback'],
       },
     ],
     sitemap: 'https://aligncosmic.com/sitemap.xml',

@@ -63,7 +63,7 @@ export default function ZodispherePage() {
   const [myPlace, setMyPlace] = useState<{ lat: number; lng: number; name: string } | null>(null);
 
   // ── Astrocartography (premium): the user's natal planetary lines on the globe ──
-  const { profile } = useAuthStore();
+  const { profile, user: authUser } = useAuthStore();
   const { hasAccess } = useSubscriptionStore();
   const acgUnlocked = hasAccess('acg');
   const [showAcg, setShowAcg] = useState(false);
@@ -272,8 +272,10 @@ export default function ZodispherePage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Switch to the 3D Cesium globe (only for accounts with 3D access). */}
-          {isZodisphere3dEnabled(profile?.email) && (
+          {/* Switch to the 3D Cesium globe. Gate on the reliable auth email —
+              profile.email can be null/slow to hydrate even when signed in, which
+              silently hid this link on some machines. */}
+          {isZodisphere3dEnabled(authUser?.email || profile?.email) && (
             <Link
               href="/zodisphere/globe3d"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm border bg-fuchsia-500/15 border-fuchsia-400/40 text-fuchsia-100 hover:bg-fuchsia-500/25 transition-colors"

@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 
 const TABS = [
-  { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/feed', labelKey: 'components.sidebar.feed', icon: Newspaper },
+  { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Sun },
   { href: '/messages', labelKey: 'components.sidebar.chat', icon: MessageCircle },
   { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },

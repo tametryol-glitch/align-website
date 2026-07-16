@@ -16,10 +16,10 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
+  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
   { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
-  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
   { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
   { href: '/zodisphere', labelKey: 'The Zodisphere', icon: Orbit },
