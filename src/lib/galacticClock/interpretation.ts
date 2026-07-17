@@ -9,96 +9,96 @@ export const RULER_FULL_MEANINGS: Record<RulerName, RulerMeaning> = {
   Mars: {
     keywords: ['action', 'force', 'courage', 'initiation', 'drive'],
     expression: 'move, act, push forward',
-    use: 'Good for decisive action, starting projects, physical exertion, and confronting obstacles head-on',
-    caution: 'Avoid impulsiveness, aggression, and reckless decisions',
+    use: 'make the decisive call, start what you\'ve been circling, push your body, and face the obstacle head-on',
+    caution: 'Don\'t let impulse make your decisions — no rage moves, no torched bridges',
     color: '#EF4444',
     glyph: '♂',
   },
   Venus: {
     keywords: ['attraction', 'beauty', 'love', 'harmony', 'value'],
     expression: 'attract, create, beautify',
-    use: 'Good for relationships, creative pursuits, financial decisions, and cultivating pleasure',
-    caution: 'Avoid overindulgence, vanity, and passive complacency',
+    use: 'make the romantic move, create something beautiful, settle the money question, and enjoy what you\'ve built',
+    caution: 'Don\'t overindulge or coast on charm — pleasure that dodges real life costs you double',
     color: '#F472B6',
     glyph: '♀',
   },
   Mercury: {
     keywords: ['thought', 'language', 'trade', 'analysis', 'communication'],
     expression: 'think, speak, analyze',
-    use: 'Good for writing, learning, negotiations, and data-driven tasks',
-    caution: 'Avoid overthinking, gossip, and scattered attention',
+    use: 'write the thing, learn the thing, negotiate the deal, and let the data decide',
+    caution: 'Don\'t overthink or scatter — pick one thread and follow it all the way',
     color: '#6EE7B7',
     glyph: '☿',
   },
   Moon: {
     keywords: ['emotion', 'instinct', 'memory', 'receptivity', 'care'],
     expression: 'feel, nurture, remember',
-    use: 'Good for self-care, emotional processing, family matters, and intuitive decisions',
-    caution: 'Avoid emotional reactivity, clinginess, and avoidance of logic',
+    use: 'take care of yourself, process the feeling, call your people, and trust your gut read',
+    caution: 'Don\'t let the mood drive — react to what\'s real, not to the wave carrying you',
     color: '#C4B5FD',
     glyph: '☽',
   },
   Sun: {
     keywords: ['vitality', 'identity', 'visibility', 'leadership', 'creative force'],
     expression: 'shine, lead, express',
-    use: 'Good for public appearances, leadership tasks, creative expression, and confidence-building',
-    caution: 'Avoid ego inflation, arrogance, and dominating others',
+    use: 'step into the spotlight, take the lead, make your creative move, and back yourself out loud',
+    caution: 'Don\'t let the spotlight go to your head — dominating the room dims your own light',
     color: '#F59E0B',
     glyph: '☉',
   },
   Vesta: {
     keywords: ['devotion', 'focus', 'purification', 'sacred work', 'discipline'],
     expression: 'dedicate, purify, focus',
-    use: 'Good for deep work, rituals, cleaning, and single-pointed concentration',
-    caution: 'Avoid workaholism, rigidity, and isolation from others',
+    use: 'go deep on the one task, run your ritual, clear your space, and hold single-pointed focus',
+    caution: 'Don\'t disappear into the work — rigidity and isolation undo the devotion',
     color: '#FB923C',
     glyph: '\u26B6',
   },
   Juno: {
     keywords: ['union', 'commitment', 'partnership', 'balance', 'contracts'],
     expression: 'bond, commit, balance',
-    use: 'Good for partnerships, contracts, relationship talks, and collaborative work',
-    caution: 'Avoid codependency, jealousy, and power struggles in relationships',
+    use: 'have the partnership talk, review the contract, balance the ledger between you, and build together',
+    caution: 'Don\'t slide into codependency or scorekeeping — jealousy poisons the bond you\'re building',
     color: '#A78BFA',
     glyph: '⚵',
   },
   Pluto: {
     keywords: ['power', 'transformation', 'depth', 'hidden force', 'rebirth'],
     expression: 'transform, uncover, regenerate',
-    use: 'Good for shadow work, therapy, strategic planning, and ending what no longer serves',
-    caution: 'Avoid manipulation, obsession, and destructive power games',
+    use: 'face your shadow, book the hard conversation, plan the strategy, and end what no longer serves you',
+    caution: 'Don\'t manipulate or obsess — power games cost more than whatever they win you',
     color: '#991B1B',
     glyph: '♇',
   },
   Jupiter: {
     keywords: ['growth', 'wisdom', 'expansion', 'opportunity', 'blessing'],
     expression: 'expand, bless, teach',
-    use: 'Good for big-picture planning, teaching, travel, and generous gestures',
-    caution: 'Avoid overextension, blind optimism, and excess',
+    use: 'plan the big picture, teach what you know, book the trip, and make the generous gesture',
+    caution: 'Don\'t overextend on optimism — a blessing taken to excess becomes a debt',
     color: '#818CF8',
     glyph: '♃',
   },
   Saturn: {
     keywords: ['structure', 'maturity', 'discipline', 'responsibility', 'time'],
     expression: 'build, endure, master',
-    use: 'Good for long-term planning, setting boundaries, and disciplined effort',
-    caution: 'Avoid rigidity, pessimism, and fear-based restriction',
+    use: 'plan the long game, set the boundary, and do the disciplined work you committed to',
+    caution: 'Don\'t let discipline harden into fear — rigidity and pessimism waste this hour\'s strength',
     color: '#9CA3AF',
     glyph: '♄',
   },
   Uranus: {
     keywords: ['innovation', 'awakening', 'disruption', 'freedom', 'rebellion'],
     expression: 'liberate, innovate, disrupt',
-    use: 'Good for brainstorming, breaking patterns, tech work, and unconventional approaches',
-    caution: 'Avoid reckless rebellion, instability, and detachment from reality',
+    use: 'brainstorm wild, break the stale pattern, push the tech work, and try the unconventional route',
+    caution: 'Don\'t rebel just to rebel — instability without direction detaches you from what\'s real',
     color: '#38BDF8',
     glyph: '♅',
   },
   Neptune: {
     keywords: ['spirit', 'dreams', 'transcendence', 'intuition', 'dissolution'],
     expression: 'dream, dissolve, transcend',
-    use: 'Good for meditation, prayer, creative inspiration, and compassionate service',
-    caution: 'Avoid escapism, delusion, and blurred boundaries',
+    use: 'meditate, pray, chase the creative vision, and serve someone with compassion',
+    caution: 'Don\'t escape into the fog — blurred boundaries and pretty delusions cost you real ground',
     color: '#2DD4BF',
     glyph: '♆',
   },
@@ -176,10 +176,10 @@ export function getSignatureInterpretation(signature: GalacticSignature): Interp
   const signatureLine = `${signature.cycleDay} / ${signature.hourLord} Hour / ${signature.minuteLord} Minute / ${signature.pulseLord} Pulse`;
 
   // Summary: synthesize all four lords
-  const dayAtmosphere = `The day vibrates with ${dayMeaning.keywords.slice(0, 2).join(' and ')} energy`;
-  const hourForce = `This hour channels the force to ${hourMeaning.expression}`;
-  const minuteMethod = `The current approach favors ${minuteMeaning.use.replace(/^Good for /, '').split(',').slice(0, 2).join(' and').trim()}`;
-  const pulseSpark = `The pulse sparks ${pulseMeaning.keywords.slice(0, 2).join(' and ')}`;
+  const dayAtmosphere = `Your whole day is running on ${dayMeaning.keywords.slice(0, 2).join(' and ')}`;
+  const hourForce = `This hour hands you one job: ${hourMeaning.expression}`;
+  const minuteMethod = `The next few minutes are built for this: ${minuteMeaning.use.replace(/^Good for /, '').split(',').slice(0, 2).join(' and').trim()}`;
+  const pulseSpark = `The pulse is firing ${pulseMeaning.keywords.slice(0, 2).join(' and ')} through you right now`;
 
   const summary = `${dayAtmosphere}. ${hourForce}. ${minuteMethod}. ${pulseSpark}.`;
 

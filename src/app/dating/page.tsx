@@ -297,6 +297,8 @@ export default function DatingDiscoveryPage() {
           sunSign={profile.sun_sign}
           moonSign={profile.moon_sign}
           risingSign={profile.rising_sign}
+          birthDate={profile.birth_date}
+          birthTime={profile.birth_time}
         />
       )}
 

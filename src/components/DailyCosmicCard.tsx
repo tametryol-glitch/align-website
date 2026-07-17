@@ -7,16 +7,22 @@ interface DailyCosmicCardProps {
   sunSign: string;
   moonSign?: string | null;
   risingSign?: string | null;
+  /** YYYY-MM-DD — enables the exact-degree personalization layer */
+  birthDate?: string | null;
+  /** HH:MM */
+  birthTime?: string | null;
 }
 
-export function DailyCosmicCard({ sunSign, moonSign, risingSign }: DailyCosmicCardProps) {
+export function DailyCosmicCard({ sunSign, moonSign, risingSign, birthDate, birthTime }: DailyCosmicCardProps) {
   const card: CosmicCard | null = useMemo(() => {
     return generateDailyCard(new Date(), {
       sun_sign: sunSign,
       moon_sign: moonSign ?? undefined,
       rising_sign: risingSign ?? undefined,
+      birth_date: birthDate ?? undefined,
+      birth_time: birthTime ?? undefined,
     });
-  }, [sunSign, moonSign, risingSign]);
+  }, [sunSign, moonSign, risingSign, birthDate, birthTime]);
 
   if (!card) return null;
 

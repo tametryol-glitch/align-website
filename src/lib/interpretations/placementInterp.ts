@@ -10,6 +10,7 @@ import {
   DUAD_TEXTURE, DUAD_PURE, COMPENDIUM_STYLE, MATRIX_SIGNATURE, PLANET_LEADS,
 } from './hiddenLayers';
 import { calculateDuad, calculateCompendium, calculateMatrix } from '@/lib/engines/duadCompendium';
+import { EXTRA_PAIR_INSIGHTS } from './aspectPairInsightsExtra';
 
 export const PLANET_MEANINGS: Record<string, string> = {
   Sun: 'This is the part of you that refuses to be anyone else. Your Sun is the fire that burns even when no one is watching — the version of you that emerges when you stop performing for the world and finally let yourself just BE. When you feel lost, it\'s because you\'ve wandered too far from this energy. When you feel alive, it\'s because you\'re standing right in the center of it. Everything else in your chart orbits this.',
@@ -462,7 +463,8 @@ function findPairInsight(planet1: string, planet2: string, aspectType: string): 
   const key1 = `${planet1}/${planet2}`;
   const key2 = `${planet2}/${planet1}`;
   const aspect = aspectType.toLowerCase();
-  const entry = PLANET_PAIR_INSIGHTS[key1] || PLANET_PAIR_INSIGHTS[key2];
+  const entry = PLANET_PAIR_INSIGHTS[key1] || PLANET_PAIR_INSIGHTS[key2]
+    || EXTRA_PAIR_INSIGHTS[key1] || EXTRA_PAIR_INSIGHTS[key2];
   if (entry && entry[aspect]) return entry[aspect];
   return null;
 }
@@ -477,37 +479,42 @@ export function getAspectInterpretation(planet1: string, planet2: string, type: 
     return `**${planet1} ${info.label.toLowerCase()} ${planet2}** *(${info.nature})*\n\n${pairInsight}`;
   }
 
-  // Fallback: rich generic interpretation
-  const p1Meaning = PLANET_MEANINGS[planet1];
-  const p2Meaning = PLANET_MEANINGS[planet2];
+  // Fallback: name each force cleanly, then describe the wiring — no sentence
+  // stitching (the old lowercase-splice produced broken grammar).
+  const p1Lead = PLANET_LEADS[planet1] || firstSentence(PLANET_MEANINGS[planet1] || '');
+  const p2Lead = PLANET_LEADS[planet2] || firstSentence(PLANET_MEANINGS[planet2] || '');
 
   let interp = `**${planet1} ${info.label.toLowerCase()} ${planet2}** *(${info.nature})*\n\n`;
   interp += `${info.description}\n\n`;
 
-  if (p1Meaning && p2Meaning) {
-    interp += `In your chart, the part of you that is ${firstSentence(p1Meaning).toLowerCase().replace(/^your /, '').replace(/\.$/, '')} is ${info.nature.toLowerCase()}-linked to the part of you that is ${firstSentence(p2Meaning).toLowerCase().replace(/^your /, '').replace(/\.$/, '')}. These two forces shape each other constantly — you cannot express one without the other showing up uninvited.`;
-  } else if (p1Meaning) {
-    interp += `${firstSentence(p1Meaning)} This energy is ${info.nature.toLowerCase()}-linked to ${planet2}, coloring how both express through you.`;
-  } else if (p2Meaning) {
-    interp += `${firstSentence(p2Meaning)} This energy is ${info.nature.toLowerCase()}-linked to ${planet1}, coloring how both express through you.`;
+  if (p1Lead && p2Lead) {
+    interp += `The two forces wired together here:\n\n**${planet1}:** ${p1Lead}\n\n**${planet2}:** ${p2Lead}\n\nEvery time one of these activates, the other wakes up with it — you cannot use one cleanly without the other's fingerprints on the result.`;
+  } else if (p1Lead || p2Lead) {
+    interp += `${p1Lead || p2Lead} In you, that force never operates alone — ${p1Lead ? planet2 : planet1} is wired into it, coloring everything it produces.`;
   }
 
   return interp;
 }
 
-export function getHouseInterpretation(houseNum: number, sign: string): string {
+export function getHouseInterpretation(houseNum: number, sign: string, cuspDegree?: number): string {
   const houseMeaning = HOUSE_IN_CHART[houseNum];
   if (!houseMeaning) return '';
 
+  const sections: string[] = [houseMeaning];
+
   const signMeaning = SIGN_IN_CHART[sign];
-
-  let interp = `Your ${ordinal(houseNum)} house is where ${houseMeaning.charAt(0).toLowerCase()}${houseMeaning.slice(1)}\n\n`;
-
   if (signMeaning) {
-    interp += `With ${sign} ruling this area of your life, ${signMeaning}`;
+    sections.push(`With ${sign} coloring this whole territory, ${signMeaning}`);
   }
 
-  return interp;
+  // The exact cusp degree carries its own hidden texture — different from any
+  // planet inside the house, so this never duplicates a placement reading.
+  if (cuspDegree !== undefined && cuspDegree !== null && isFinite(cuspDegree)) {
+    const layered = buildHiddenLayerSection(sign, cuspDegree);
+    if (layered) sections.push(layered);
+  }
+
+  return sections.join('\n\n');
 }
 
 /**

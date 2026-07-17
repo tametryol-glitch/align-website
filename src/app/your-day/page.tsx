@@ -125,9 +125,11 @@ export default function YourDayPage() {
       sun_sign: sunSign,
       moon_sign: profile?.moon_sign || undefined,
       rising_sign: profile?.rising_sign || undefined,
+      birth_date: profile?.birth_date || undefined,
+      birth_time: profile?.birth_time || undefined,
     };
     return generateDailyCard(now, cosmicProfile);
-  }, [sunSign, profile?.moon_sign, profile?.rising_sign, now]);
+  }, [sunSign, profile?.moon_sign, profile?.rising_sign, profile?.birth_date, profile?.birth_time, now]);
 
   // Moon data
   const moonData = useMemo(() => getMoonData(now), [now]);

@@ -10,8 +10,16 @@
  * Cards are deterministic for a given date + birth data combination,
  * so the same user gets the same card all day (no random flicker).
  *
+ * The message is personalized past sun-sign level: when birth data (or an
+ * explicit sun degree) is available, the exact natal Sun longitude is computed
+ * locally (Meeus low-precision solar theory, ~0.01°) and the hidden sub-sign
+ * layers at that degree are woven into the card — never named in the text.
+ *
  * PURE function module -- no store imports, no supabase, no side effects.
  */
+
+import { calculateDuad, calculateCompendium } from '@/lib/engines/duadCompendium';
+import { DUAD_TEXTURE, COMPENDIUM_STYLE } from '@/lib/interpretations/hiddenLayers';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -70,6 +78,10 @@ export interface UserCosmicProfile {
   sun_degree?: number;
   /** 0-359 */
   moon_degree?: number;
+  /** YYYY-MM-DD — used to compute the exact natal Sun degree when sun_degree is absent */
+  birth_date?: string;
+  /** HH:MM — sharpens the computed Sun degree */
+  birth_time?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -166,35 +178,35 @@ const POWER_HOURS: Record<string, string[]> = {
   water: ['4pm-6pm', '9pm-11pm'],
 };
 
-/** Message templates per element (5+ each) */
+/** Message templates per element (5 each) — bold, behavioral, second person. */
 const MESSAGE_TEMPLATES: Record<string, string[]> = {
   fire: [
-    'As a {sunSign}, today\'s {archetypeTitle} energy amplifies your natural {keyword1}. The cosmos invites you to lean into {keyword2} and let your inner fire guide the way.',
-    'The {archetypeTitle} ignites your {sunSign} spirit with waves of {keyword1}. Channel this cosmic spark toward bold {keyword2} -- the universe is backing your boldest moves.',
-    'Your {sunSign} flame meets the {archetypeTitle}\'s call for {keyword1} today. Trust the heat of your convictions and let {keyword3} carry you forward with purpose.',
-    'Cosmic currents stoke your {sunSign} fires through {archetypeTitle} energy. Embrace {keyword1} without hesitation and watch {keyword2} unfold like wildfire.',
-    'The {archetypeTitle} speaks directly to your {sunSign} courage today. A moment of pure {keyword1} awaits -- step toward {keyword3} with confidence and passion.',
+    'Today is a {keyword1} day, and you don\'t do slow burns — you do ignition. The thing you\'ve been circling all week is ready; touch it and it moves. Your only real risk today is waiting long enough to talk yourself out of it.',
+    'There\'s a {keyword2} charge in today that most people will spend carefully. You\'re not most people. Say the direct thing, make the first move, send it before noon — momentum is your birthright, {sunSign}, and today pays it double.',
+    'You\'ve been performing patience lately, and it doesn\'t fit you. Today\'s {keyword1} current hands you an exit: one bold, slightly-too-honest move gets you further than a month of being reasonable.',
+    'The {archetypeTitle} is a fast card, and it landed on the right person. Your temper and your brilliance sit closer together than usual today — the same heat drives both. Point it at {keyword2}, not at bystanders.',
+    'Today rewards the version of you that decides in the doorway, not the one who rehearses in the car. {keyword1} is the theme; speed is the method. Leave one bridge unburned — you\'ll want it next week.',
   ],
   earth: [
-    'As a {sunSign}, the {archetypeTitle} grounds you in {keyword1}. This steady cosmic rhythm invites practical {keyword2} -- plant seeds that will bear fruit for seasons to come.',
-    'Your {sunSign} nature finds deep resonance with today\'s {archetypeTitle}. Focus on {keyword1} and allow {keyword3} to emerge from patient, deliberate action.',
-    'The {archetypeTitle} anchors your {sunSign} energy in {keyword2} today. Build on solid foundations and let {keyword1} guide your hands to meaningful work.',
-    'Cosmic soil is rich for your {sunSign} roots today as the {archetypeTitle} nurtures {keyword1}. Cultivate {keyword3} with the care and patience only you can bring.',
-    'The {archetypeTitle} aligns with your {sunSign} steadfastness, amplifying {keyword1}. Today\'s cosmic geometry favors {keyword2} and tangible progress.',
+    'Today is a {keyword1} day, which means it belongs to you — the one who actually finishes things. While everyone else brainstorms, lay one real brick: the account opened, the appointment booked, the first hundred words.',
+    'You\'ve been carrying more than you\'ve told anyone, {sunSign}, and today\'s steady {keyword2} current is your chance to set one load down. Pick the obligation that only exists because you never said no to it.',
+    'The {archetypeTitle} favors the long game today. One unglamorous decision — the budget line, the boundary, the maintenance you\'ve been deferring — quietly outperforms every exciting option on the table.',
+    'Today your body is the oracle: the tight shoulders, the appetite, the 3pm fade are all data about {keyword1}. Fix the physical thing first and watch the "emotional" problem shrink to half its size.',
+    '{keyword3} builds slowly and then all at once — and you\'re closer to the "all at once" than you think. Resist the urge to renovate the plan today. Execute the boring next step of the existing one.',
   ],
   air: [
-    'As a {sunSign}, today\'s {archetypeTitle} fills your mind with currents of {keyword1}. Let your thoughts dance toward {keyword2} -- brilliant ideas are on the wind.',
-    'The {archetypeTitle} electrifies your {sunSign} intellect with {keyword1}. Communication flows freely; share your vision of {keyword3} with those who matter.',
-    'Your {sunSign} curiosity meets the {archetypeTitle}\'s gift of {keyword2}. Follow the threads of {keyword1} wherever they lead -- cosmic insights await at every turn.',
-    'Breezes of {keyword1} sweep through your {sunSign} world as the {archetypeTitle} opens new channels of {keyword3}. Let your ideas take flight without reservation.',
-    'The {archetypeTitle} sharpens your {sunSign} perception today. Waves of {keyword1} bring clarity to questions about {keyword2} -- trust the cosmic dialogue.',
+    'Today\'s {keyword1} current runs straight through your favorite territory: the unsaid thing. You already know the conversation you\'ve been drafting in your head for days. Have it out loud before sunset — your edit was finished on Tuesday.',
+    'Your mind will run three tabs ahead of the room today, {sunSign}. Spend it on {keyword2} instead of escape: the pattern you spot by noon is the one everyone else discovers next month.',
+    'The {archetypeTitle} deals in connections, and today one sentence — said, sent, or overheard — reroutes something. Talk to the person outside your usual loop; that\'s where the {keyword3} is hiding.',
+    'You collect perspectives the way other people collect keys, and today {keyword1} asks you to actually open a door with one. Take the idea you\'ve already explained to three people and do the first irreversible thing about it.',
+    'Curiosity is your engine, but today it\'s also your tell: notice which question you keep circling back to. That question isn\'t idle — it\'s {keyword2} announcing itself. Follow it one step past comfortable.',
   ],
   water: [
-    'As a {sunSign}, the {archetypeTitle} deepens your natural {keyword1}. Dive into the emotional currents of {keyword2} -- hidden treasures surface for those who look within.',
-    'The {archetypeTitle} stirs the waters of your {sunSign} soul with {keyword1}. Let {keyword3} flow through you like a healing tide, washing away what no longer serves.',
-    'Your {sunSign} intuition is amplified by today\'s {archetypeTitle} energy. Sense the undercurrents of {keyword1} and allow {keyword2} to guide your heart\'s navigation.',
-    'Cosmic tides carry your {sunSign} spirit toward {keyword1} today. The {archetypeTitle} invites you to float in the mystery of {keyword3} and trust the depths.',
-    'The {archetypeTitle} opens portals of {keyword2} within your {sunSign} depths. Embrace {keyword1} with open arms -- emotional alchemy is your superpower today.',
+    'Today\'s {keyword1} tide runs high, and you\'ll feel the room before you enter it. Trust the first read — the one you get in the opening three seconds — and stop retroactively talking yourself out of it by lunchtime.',
+    'Half of what you feel today won\'t be yours, {sunSign}. Before you spiral on someone else\'s weather, ask the only question that matters: was I feeling this before they walked in? Then act on {keyword2} — yours, not theirs.',
+    'The {archetypeTitle} pulls from underneath today. The dream fragment, the song you can\'t shake, the name that keeps surfacing — that\'s {keyword3} speaking your native language. Write it down before it dissolves.',
+    'You\'ve been holding a feeling at arm\'s length because naming it makes it real. Today\'s {keyword1} current is strong enough to carry it: say the true sentence to one safe person and feel the weight redistribute.',
+    'Your softness is load-bearing, not decorative — people rebuild themselves in the space you hold. Today, {keyword2} asks you to take a turn: let one person all the way in on the thing you\'ve been managing alone.',
   ],
 };
 
@@ -341,6 +353,83 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
+const ZODIAC_ORDER = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
+
+/**
+ * Compute the natal Sun's ecliptic longitude from birth date/time using the
+ * Meeus low-precision solar theory (~0.01° accuracy — far finer than the 2.5°
+ * layer resolution this feeds). Birth time sharpens the result; without it,
+ * noon is assumed (worst case ±0.5°). Returns null when no date is available.
+ */
+function natalSunLongitude(birthDate?: string, birthTime?: string): number | null {
+  if (!birthDate) return null;
+  const parts = birthDate.split('-').map(Number);
+  if (parts.length < 3 || parts.some((n) => !isFinite(n))) return null;
+  const [y, m, d] = parts;
+
+  let hours = 12;
+  if (birthTime) {
+    const [hh, mm] = birthTime.split(':').map(Number);
+    if (isFinite(hh)) hours = hh + (isFinite(mm) ? mm / 60 : 0);
+  }
+
+  const ms = Date.UTC(y, m - 1, d) + hours * 3600000;
+  const jd = ms / 86400000 + 2440587.5;
+  const T = (jd - 2451545.0) / 36525;
+
+  const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+  const M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * (Math.PI / 180);
+  const C =
+    (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M) +
+    (0.019993 - 0.000101 * T) * Math.sin(2 * M) +
+    0.000289 * Math.sin(3 * M);
+
+  return (((L0 + C) % 360) + 360) % 360;
+}
+
+/** First sentence of a text (used to keep the daily layer line card-sized). */
+function firstSentenceOf(text: string): string {
+  const idx = text.indexOf('.');
+  return idx === -1 ? text : text.slice(0, idx + 1);
+}
+
+/**
+ * Build the hidden-layer line for the card from the exact natal Sun degree.
+ * Alternates day by day between the undercurrent beneath the sun sign and the
+ * observable daily style, so the card reads fresh without losing determinism.
+ */
+function buildDailyLayerLine(
+  sunLon: number,
+  sunSignDisplay: string,
+  dateStr: string,
+): string {
+  const lon = ((sunLon % 360) + 360) % 360;
+  const lonSign = ZODIAC_ORDER[Math.floor(lon / 30) % 12];
+  const degInSign = lon % 30;
+
+  const duadSign = calculateDuad(lonSign, degInSign);
+  const compSign = calculateCompendium(duadSign, degInSign);
+
+  const dayNumber = deterministicHash(dateStr);
+  const useUndercurrent = dayNumber % 2 === 0 && duadSign !== lonSign;
+
+  if (useUndercurrent) {
+    const texture = DUAD_TEXTURE[duadSign];
+    if (texture) {
+      return `Today leans on the part of you most people miss: underneath the ${sunSignDisplay} everyone recognizes, ${firstSentenceOf(texture)} Run today on that channel — deliberately.`;
+    }
+  }
+
+  const style = COMPENDIUM_STYLE[compSign];
+  if (style) {
+    return `And watch how it shows up in the small things today: ${style}`;
+  }
+  return '';
+}
+
 // ---------------------------------------------------------------------------
 // Core Engine
 // ---------------------------------------------------------------------------
@@ -382,12 +471,20 @@ export function generateDailyCard(
   const templateSeed = deterministicHash(seedStr + ':msg');
   const template = pickFromSeed(templates, templateSeed);
   const sunSignDisplay = capitalize(normalizeSign(profile.sun_sign));
-  const message = template
+  let message = template
     .replace(/\{sunSign\}/g, sunSignDisplay)
     .replace(/\{archetypeTitle\}/g, archetype.title)
     .replace(/\{keyword1\}/g, archetype.keywords[0])
     .replace(/\{keyword2\}/g, archetype.keywords[1])
     .replace(/\{keyword3\}/g, archetype.keywords[2]);
+
+  // 3b. Weave the hidden sub-sign layer from the exact natal Sun degree —
+  // this is what makes the card about THIS person, not every {sunSign}.
+  const sunLon = profile.sun_degree ?? natalSunLongitude(profile.birth_date, profile.birth_time);
+  if (sunLon !== null && sunLon !== undefined && isFinite(sunLon)) {
+    const layerLine = buildDailyLayerLine(sunLon, sunSignDisplay, dateStr);
+    if (layerLine) message += `\n\n${layerLine}`;
+  }
 
   // 4. Challenge
   const challengeSeed = deterministicHash(seedStr + ':challenge');

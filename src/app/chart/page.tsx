@@ -384,7 +384,7 @@ export default function ChartPage() {
                     </div>
                     {expandedHouses.has(house.number) && (
                       <div className="mt-2 pt-2 border-t border-border-primary text-xs text-text-secondary leading-relaxed whitespace-pre-line">
-                        <MarkdownText text={getHouseInterpretation(house.number, house.sign)} />
+                        <MarkdownText text={getHouseInterpretation(house.number, house.sign, house.degree)} />
                       </div>
                     )}
                   </div>
