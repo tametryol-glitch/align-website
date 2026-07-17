@@ -1,5 +1,15 @@
 // Quick placement interpretations — what each planet means in astrology,
 // and what it means in each sign and house for the person
+//
+// The composed reading (getPlacementInterpretation) speaks directly to the
+// person: a short planet lead, a fused sign×house portrait, then the hidden
+// sub-sign layers (duad/compendium/matrix — never named in user-facing text).
+
+import { SIGN_HOUSE_FUSION } from './signHouseFusion';
+import {
+  DUAD_TEXTURE, DUAD_PURE, COMPENDIUM_STYLE, MATRIX_SIGNATURE, PLANET_LEADS,
+} from './hiddenLayers';
+import { calculateDuad, calculateCompendium, calculateMatrix } from '@/lib/engines/duadCompendium';
 
 export const PLANET_MEANINGS: Record<string, string> = {
   Sun: 'This is the part of you that refuses to be anyone else. Your Sun is the fire that burns even when no one is watching — the version of you that emerges when you stop performing for the world and finally let yourself just BE. When you feel lost, it\'s because you\'ve wandered too far from this energy. When you feel alive, it\'s because you\'re standing right in the center of it. Everything else in your chart orbits this.',
@@ -500,22 +510,67 @@ export function getHouseInterpretation(houseNum: number, sign: string): string {
   return interp;
 }
 
-export function getPlacementInterpretation(planetName: string, sign: string, house: number): string {
-  const planetMeaning = PLANET_MEANINGS[planetName];
-  const signMeaning = SIGN_IN_CHART[sign];
-  const houseMeaning = HOUSE_IN_CHART[house];
+/**
+ * Compose the hidden sub-sign layer prose for an exact degree. The engine's
+ * three levels each get a distinct narrative role: the undercurrent beneath
+ * the visible sign, the observable daily style, and the finest micro-tell.
+ * The systems themselves are never named in the output.
+ */
+export function buildHiddenLayerSection(sign: string, degreeInSign: number): string {
+  try {
+    const duadSign = calculateDuad(sign, degreeInSign);
+    const compSign = calculateCompendium(duadSign, degreeInSign);
+    const matrixSign = calculateMatrix(compSign, degreeInSign);
+    const parts: string[] = [];
 
-  if (!planetMeaning) return '';
+    if (duadSign === sign) {
+      const pure = DUAD_PURE[sign];
+      if (pure) parts.push(`And this runs deeper in you than any surface description suggests. ${pure}`);
+    } else {
+      const texture = DUAD_TEXTURE[duadSign];
+      if (texture) parts.push(`But there's a finer grain to you than anyone guessing from the outside would ever see. Underneath, ${texture}`);
+    }
 
-  let interp = `${planetName} is ${planetMeaning.charAt(0).toLowerCase()}${planetMeaning.slice(1)}\n\n`;
+    const style = COMPENDIUM_STYLE[compSign];
+    if (style) parts.push(`Day to day it shows up in the small, watchable things: ${style}`);
 
-  if (signMeaning) {
-    interp += `With your ${planetName} in ${sign}, ${signMeaning}\n\n`;
+    const signature = MATRIX_SIGNATURE[matrixSign];
+    if (signature) parts.push(`And at the very finest level of your wiring — ${signature}`);
+
+    return parts.join('\n\n');
+  } catch {
+    return '';
+  }
+}
+
+export function getPlacementInterpretation(
+  planetName: string,
+  sign: string,
+  house: number,
+  degreeInSign?: number,
+): string {
+  const lead = PLANET_LEADS[planetName] || PLANET_MEANINGS[planetName];
+  if (!lead && !SIGN_IN_CHART[sign]) return '';
+
+  const sections: string[] = [];
+  if (lead) sections.push(lead);
+
+  const fusion = SIGN_HOUSE_FUSION[sign]?.[house];
+  if (fusion) {
+    sections.push(fusion);
+  } else {
+    // Fallback for missing fusion content: sign and house blocks, no stitched
+    // prefixes (the old prefixing produced "Sun is this is…" grammar bugs).
+    const signMeaning = SIGN_IN_CHART[sign];
+    const houseMeaning = HOUSE_IN_CHART[house];
+    if (signMeaning) sections.push(`Here, ${signMeaning}`);
+    if (houseMeaning) sections.push(houseMeaning);
   }
 
-  if (houseMeaning) {
-    interp += `Placed in your ${ordinal(house)} house, this energy ${houseMeaning.charAt(0).toLowerCase()}${houseMeaning.slice(1)}`;
+  if (degreeInSign !== undefined && degreeInSign !== null && isFinite(degreeInSign)) {
+    const layered = buildHiddenLayerSection(sign, degreeInSign);
+    if (layered) sections.push(layered);
   }
 
-  return interp;
+  return sections.join('\n\n');
 }

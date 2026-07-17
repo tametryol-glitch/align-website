@@ -280,7 +280,8 @@ export default function ProgressedChartPage() {
                           planet.sign,
                           planet.house,
                           planet.natal_sign,
-                          planet.sign !== planet.natal_sign && !!planet.natal_sign
+                          planet.sign !== planet.natal_sign && !!planet.natal_sign,
+                          planet.sign_degree ?? planet.degree
                         )} />
                       </div>
                     )}

@@ -241,7 +241,7 @@ export function CalculatorClient() {
             <h3 className="text-lg font-display font-semibold text-text-primary mb-4">Planetary Positions</h3>
             <div className="divide-y divide-border-primary">
               {planetPositions.map((p: any) => {
-                const interp = getPlacementInterpretation(p.name, p.sign, p.house);
+                const interp = getPlacementInterpretation(p.name, p.sign, p.house, p.sign_degree ?? (p.longitude % 30));
                 const isOpen = expanded.has(p.name);
                 return (
                   <div key={p.name} className="py-3">

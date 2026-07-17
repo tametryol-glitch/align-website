@@ -321,7 +321,7 @@ export default function ChartPage() {
                     </div>
                     {expandedPositions.has(planet.name) && (
                       <div className="px-4 pb-4 pt-1 text-sm text-text-secondary leading-relaxed whitespace-pre-line border-l-2 border-accent-primary/20 ml-4">
-                        <MarkdownText text={getPlacementInterpretation(planet.name, planet.sign, planet.house)} />
+                        <MarkdownText text={getPlacementInterpretation(planet.name, planet.sign, planet.house, planet.sign_degree)} />
                       </div>
                     )}
                   </div>
