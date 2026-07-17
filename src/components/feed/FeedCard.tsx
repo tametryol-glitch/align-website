@@ -581,13 +581,13 @@ export function FeedCard({
         <div className="px-5 py-3 border-t border-border-primary space-y-2">
           {post.comments.map((c) => (
             <div key={c.id} className="flex items-start gap-2 text-sm">
-              <div className="w-5 h-5 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+              <Link href={`/user/${c.userId}`} className="w-5 h-5 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden cursor-pointer">
                 {c.userAvatar ? (
                   <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
                 ) : (
                   <span className="text-[9px] font-bold text-accent-primary">{c.userName[0]?.toUpperCase()}</span>
                 )}
-              </div>
+              </Link>
               <div className="flex-1 min-w-0">
                 <Link href={`/user/${c.userId}`} className="font-semibold text-text-primary mr-1.5 hover:underline">{c.userName}</Link>
                 {isGifOrStickerUrl(c.text) ? (

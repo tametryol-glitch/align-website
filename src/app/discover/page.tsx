@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -129,6 +130,7 @@ const POST_TYPE_LABELS: Record<string, { emoji: string; label: string }> = {
 
 export default function DiscoverPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { user, profile } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -471,7 +473,10 @@ export default function DiscoverPage() {
               return (
                 <Link key={post.id} href="/feed" className="card block hover:border-accent-primary/30 transition-colors">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div
+                      className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${post.user_id}`); }}
+                    >
                       {p?.avatar_url ? (
                         <Image src={p.avatar_url} alt="User avatar" width={36} height={36} className="w-full h-full rounded-full object-cover" unoptimized />
                       ) : (

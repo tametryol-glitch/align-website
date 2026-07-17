@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
   Question, Answer,
@@ -76,11 +77,13 @@ function AnswerItem({
 
       {/* Author row */}
       <div className="flex items-center gap-2 mb-3">
-        <UserAvatar
-          displayName={answer.authorName}
-          avatarUrl={answer.authorAvatar}
-          size="xs"
-        />
+        <Link href={`/user/${answer.authorId}`} className="cursor-pointer">
+          <UserAvatar
+            displayName={answer.authorName}
+            avatarUrl={answer.authorAvatar}
+            size="xs"
+          />
+        </Link>
         <span className="text-[13px] font-semibold text-text-primary">{answer.authorName}</span>
         <span className="text-text-muted text-[10px]">*</span>
         <span className="text-[11px] text-text-muted">{timeAgo(answer.createdAt)}</span>
@@ -312,11 +315,13 @@ export default function QuestionDetailPage() {
         {/* Author meta */}
         <div className="flex items-center gap-2 mb-4">
           {!question.isAnonymous && (
-            <UserAvatar
-              displayName={question.authorName}
-              avatarUrl={question.authorAvatar}
-              size="xs"
-            />
+            <Link href={`/user/${question.authorId}`} className="cursor-pointer">
+              <UserAvatar
+                displayName={question.authorName}
+                avatarUrl={question.authorAvatar}
+                size="xs"
+              />
+            </Link>
           )}
           <span className="text-xs text-text-secondary">
             {question.isAnonymous ? 'Anonymous' : question.authorName}

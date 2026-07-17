@@ -390,11 +390,13 @@ export default function FriendsPage() {
                       border: '1px solid #3D4760',
                     }}
                   >
-                    <UserAvatar
-                      avatarUrl={s.avatar_url}
-                      displayName={s.display_name}
-                      size="md"
-                    />
+                    <Link href={`/user/${s.id}`} className="cursor-pointer">
+                      <UserAvatar
+                        avatarUrl={s.avatar_url}
+                        displayName={s.display_name}
+                        size="md"
+                      />
+                    </Link>
                     <p className="text-xs font-semibold text-text-primary mt-2 text-center truncate w-full">
                       {s.display_name}
                     </p>
@@ -625,11 +627,16 @@ export default function FriendsPage() {
                       onClick={() => openPreview(result)}
                       className="card w-full flex items-center gap-3 hover:border-accent-primary/30 transition-colors text-left"
                     >
-                      <UserAvatar
-                        avatarUrl={result.avatar_url}
-                        displayName={result.display_name}
-                        size="md"
-                      />
+                      <span
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${result.id}`); }}
+                        className="cursor-pointer"
+                      >
+                        <UserAvatar
+                          avatarUrl={result.avatar_url}
+                          displayName={result.display_name}
+                          size="md"
+                        />
+                      </span>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-text-primary truncate">
                           {result.display_name}
@@ -922,12 +929,14 @@ function ProfilePreviewModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Avatar */}
-        <UserAvatar
-          avatarUrl={user.avatar_url}
-          displayName={user.display_name}
-          size="xl"
-          className="mb-3"
-        />
+        <Link href={`/user/${user.id}`} className="cursor-pointer">
+          <UserAvatar
+            avatarUrl={user.avatar_url}
+            displayName={user.display_name}
+            size="xl"
+            className="mb-3"
+          />
+        </Link>
 
         {/* Name */}
         <h2 className="text-lg font-display font-bold text-text-primary text-center">

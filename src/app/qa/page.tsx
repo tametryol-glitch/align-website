@@ -51,6 +51,7 @@ const FILTERS: { key: QAFilter; label: string }[] = [
 // ═══════════════════════════════════════════════════════════════════
 
 function QuestionCard({ question, onClick }: { question: Question; onClick: () => void }) {
+  const router = useRouter();
   const statusCfg = STATUS_CONFIG[question.status] || STATUS_CONFIG.open;
 
   return (
@@ -89,11 +90,16 @@ function QuestionCard({ question, onClick }: { question: Question; onClick: () =
       <div className="flex items-center justify-between pt-2.5 border-t border-border-primary/50">
         <div className="flex items-center gap-2">
           {!question.isAnonymous && (
-            <UserAvatar
-              displayName={question.authorName}
-              avatarUrl={question.authorAvatar}
-              size="xs"
-            />
+            <span
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${question.authorId}`); }}
+              className="cursor-pointer"
+            >
+              <UserAvatar
+                displayName={question.authorName}
+                avatarUrl={question.authorAvatar}
+                size="xs"
+              />
+            </span>
           )}
           <span className="text-xs text-text-secondary">
             {question.isAnonymous ? 'Anonymous' : question.authorName}

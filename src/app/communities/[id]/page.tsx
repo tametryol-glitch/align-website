@@ -383,13 +383,13 @@ export default function CommunityDetailPage() {
         {members.length > 0 && (
           <div className="flex items-center mt-4 -space-x-2">
             {members.slice(0, 6).map(m => (
-              <div key={m.user_id} className="w-8 h-8 rounded-full border-2 border-bg-card bg-accent-primary/10 flex items-center justify-center overflow-hidden" title={m.display_name}>
+              <Link key={m.user_id} href={`/user/${m.user_id}`} className="w-8 h-8 rounded-full border-2 border-bg-card bg-accent-primary/10 flex items-center justify-center overflow-hidden cursor-pointer" title={m.display_name}>
                 {m.avatar_url ? (
                   <img src={m.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                 ) : (
                   <span className="text-[10px] font-bold text-accent-primary">{m.display_name[0]?.toUpperCase()}</span>
                 )}
-              </div>
+              </Link>
             ))}
             {members.length > 6 && (
               <div className="w-8 h-8 rounded-full border-2 border-bg-card bg-bg-tertiary flex items-center justify-center">

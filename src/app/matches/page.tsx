@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { getFriends, type FriendProfile } from '@/lib/friendService';
@@ -304,6 +305,7 @@ function MatchCard({
   onSelect: () => void;
 }) {
   const { friend, match } = entry;
+  const router = useRouter();
   const score = match.overall_score ?? 0;
   const scoreColor = getScoreColor(score);
 
@@ -327,7 +329,12 @@ function MatchCard({
       <div className="p-4">
         {/* Header: avatar + info + score badge */}
         <div className="flex items-center gap-3 mb-3">
-          <UserAvatar avatarUrl={friend.avatar_url} displayName={friend.display_name} size="lg" />
+          <span
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${friend.friend_id}`); }}
+            className="cursor-pointer"
+          >
+            <UserAvatar avatarUrl={friend.avatar_url} displayName={friend.display_name} size="lg" />
+          </span>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-white text-sm truncate">{friend.display_name}</p>
             {signLine && (
@@ -473,7 +480,9 @@ function DetailModal({
 
           {/* Header: Avatar + Name + Signs */}
           <div className="flex items-center gap-3 mb-6">
-            <UserAvatar avatarUrl={friend.avatar_url} displayName={friend.display_name} size="xl" />
+            <Link href={`/user/${friend.friend_id}`} className="cursor-pointer">
+              <UserAvatar avatarUrl={friend.avatar_url} displayName={friend.display_name} size="xl" />
+            </Link>
             <div>
               <h2 className="text-xl font-bold text-white">{friend.display_name}</h2>
               {signLine && (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -649,6 +649,10 @@ export default function FeedPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [prefillContent, setPrefillContent] = useState('');
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
+  // Comment to scroll to / highlight when the sheet opens via a notification deep-link
+  const [highlightCommentId, setHighlightCommentId] = useState<string | null>(null);
+  // Deep-link params are handled once per page load
+  const deepLinkHandledRef = useRef(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; content: string } | null>(null);
   const [editText, setEditText] = useState('');
@@ -680,6 +684,27 @@ export default function FeedPage() {
   }, [userId]);
 
   useEffect(() => { loadFeed(); }, [loadFeed]);
+
+  // Notification deep-link: /feed?postId=<id>[&commentId=<id>] scrolls to the
+  // post and, for comment notifications, opens its comment sheet on the exact
+  // comment. Read from window.location (not useSearchParams) so the page keeps
+  // building without a Suspense boundary.
+  useEffect(() => {
+    if (deepLinkHandledRef.current || loading) return;
+    const params = new URLSearchParams(window.location.search);
+    const targetPostId = params.get('postId');
+    if (!targetPostId) return;
+    deepLinkHandledRef.current = true;
+    const targetCommentId = params.get('commentId');
+    // Delay so the cards finish rendering before we scroll
+    setTimeout(() => {
+      document.getElementById(`post-${targetPostId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+    if (targetCommentId) {
+      setHighlightCommentId(targetCommentId);
+      setCommentPostId(targetPostId);
+    }
+  }, [loading]);
 
   async function loadMore() {
     if (loadingMore || !hasMore || posts.length === 0) return;
@@ -972,8 +997,8 @@ export default function FeedPage() {
           }
 
           return filteredPosts.map((post) => (
+            <div key={post.id} id={`post-${post.id}`}>
             <FeedCard
-              key={post.id}
               post={post}
               currentUserId={userId}
               onReaction={handleReaction}
@@ -984,6 +1009,7 @@ export default function FeedPage() {
               isBookmarked={bookmarkedIds.has(post.id)}
               onBookmark={handleBookmark}
             />
+            </div>
           ));
         })()}
       </div>
@@ -1017,7 +1043,8 @@ export default function FeedPage() {
             postId={commentPostId}
             postOwnerId={commentPost?.userId || ''}
             userId={userId}
-            onClose={() => setCommentPostId(null)}
+            highlightCommentId={highlightCommentId}
+            onClose={() => { setCommentPostId(null); setHighlightCommentId(null); }}
             onCommentCountChange={(pid, delta) => {
               setPosts(prev => prev.map(p =>
                 p.id === pid ? { ...p, commentCount: Math.max(0, p.commentCount + delta) } : p

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -230,8 +231,15 @@ function getNotificationLink(n: Notification): string {
     case 'like':
     case 'comment':
     case 'mention':
-    case 'story_reaction':
-      return '/feed';
+    case 'story_reaction': {
+      // Deep-link to the exact post (and comment) the notification is about.
+      const postId = n.data?.post_id;
+      if (!postId) return '/feed';
+      const commentId = n.type === 'comment' || n.type === 'mention' ? n.data?.comment_id : undefined;
+      return commentId
+        ? `/feed?postId=${postId}&commentId=${commentId}`
+        : `/feed?postId=${postId}`;
+    }
     case 'message':
     case 'new_message':
       return n.data?.conversation_id ? `/messages/${n.data.conversation_id}` : '/messages';
@@ -262,6 +270,7 @@ function getNotificationLink(n: Notification): string {
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { user } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -334,11 +343,19 @@ export default function NotificationsPage() {
         async (payload) => {
           const newNotification = payload.new as Notification;
 
-          if (newNotification.actor_id) {
+          // Comment/like triggers put the actor in data.user_id rather than
+          // actor_id — resolve either so the avatar renders (and is clickable)
+          // without a reload.
+          const actorId = newNotification.actor_id
+            || newNotification.data?.from_user_id
+            || newNotification.data?.sender_id
+            || newNotification.data?.user_id;
+          if (actorId) {
+            newNotification.actor_id = actorId;
             const { data: profile } = await supabase
               .from('profiles')
               .select('id, display_name, avatar_url')
-              .eq('id', newNotification.actor_id)
+              .eq('id', actorId)
               .single();
             if (profile) {
               newNotification.actor_profile = profile;
@@ -406,7 +423,9 @@ export default function NotificationsPage() {
     );
   }
 
-  const NOTIFICATION_PRIORITY_ENABLED = true;
+  // Priority reordering pinned comment/like notifications below higher-scored
+  // types even when they were the newest — the list must stay newest-first.
+  const NOTIFICATION_PRIORITY_ENABLED = false;
   const SMART_SCHEDULING_ENABLED = true;
   const engagementPattern = SMART_SCHEDULING_ENABLED ? getUserEngagementPattern([]) : null;
 
@@ -507,7 +526,15 @@ export default function NotificationsPage() {
               }`;
               const inner = (
                 <>
-                  <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
+                  <div
+                    className={`w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 ${n.actor_id ? 'cursor-pointer hover:ring-2 hover:ring-accent-primary/50' : ''}`}
+                    onClick={n.actor_id ? (e) => {
+                      // Avatar click goes to the actor's profile, not the notification target.
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(`/user/${n.actor_id}`);
+                    } : undefined}
+                  >
                     {n.actor_profile?.avatar_url ? (
                       <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -575,7 +602,14 @@ export default function NotificationsPage() {
                   }`}
                 >
                   <div className="relative w-10 h-10 flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center">
+                    <div
+                      className={`w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center ${firstNotification.actor_id ? 'cursor-pointer hover:ring-2 hover:ring-accent-primary/50' : ''}`}
+                      onClick={firstNotification.actor_id ? (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/user/${firstNotification.actor_id}`);
+                      } : undefined}
+                    >
                       {firstNotification.actor_profile?.avatar_url ? (
                         <img src={firstNotification.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                       ) : (
@@ -609,7 +643,14 @@ export default function NotificationsPage() {
                           href={link}
                           className="flex items-start gap-3 p-3 rounded-lg transition-colors bg-bg-card hover:bg-bg-card-hover"
                         >
-                          <div className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
+                          <div
+                            className={`w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 ${n.actor_id ? 'cursor-pointer hover:ring-2 hover:ring-accent-primary/50' : ''}`}
+                            onClick={n.actor_id ? (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              router.push(`/user/${n.actor_id}`);
+                            } : undefined}
+                          >
                             {n.actor_profile?.avatar_url ? (
                               <img src={n.actor_profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                             ) : (

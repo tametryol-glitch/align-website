@@ -100,8 +100,18 @@ function UnauthLanding({ post }: { post: any | null }) {
           <div className="bg-bg-secondary border border-border-primary rounded-2xl p-6 text-left space-y-4">
             {/* Author */}
             <div className="flex items-center gap-3">
-              {authorAvatar ? (
+              {authorAvatar && post?.user_id ? (
+                <Link href={`/user/${post.user_id}`} className="cursor-pointer">
+                  <img src={authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                </Link>
+              ) : authorAvatar ? (
                 <img src={authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+              ) : post?.user_id ? (
+                <Link href={`/user/${post.user_id}`} className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center cursor-pointer">
+                  <span className="text-sm font-bold text-accent-primary">
+                    {authorName[0]?.toUpperCase()}
+                  </span>
+                </Link>
               ) : (
                 <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center">
                   <span className="text-sm font-bold text-accent-primary">
@@ -324,7 +334,7 @@ export default function PostDeepLinkPage() {
         const supabase = createClient();
         const { data } = await supabase
           .from('posts')
-          .select('id, content, image_url, video_url, type, visibility, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
+          .select('id, user_id, content, image_url, video_url, type, visibility, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
           .eq('id', postId)
           .eq('is_deleted', false)
           .eq('visibility', 'public')

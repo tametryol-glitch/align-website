@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
@@ -106,11 +107,21 @@ export function MessageThread({
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="relative">
-          <UserAvatar
-            avatarUrl={activeConv.other_user_avatar}
-            displayName={activeConv.other_user_name}
-            size="sm"
-          />
+          {!activeConv.is_group && activeConv.other_user_id ? (
+            <Link href={`/user/${activeConv.other_user_id}`} className="cursor-pointer">
+              <UserAvatar
+                avatarUrl={activeConv.other_user_avatar}
+                displayName={activeConv.other_user_name}
+                size="sm"
+              />
+            </Link>
+          ) : (
+            <UserAvatar
+              avatarUrl={activeConv.other_user_avatar}
+              displayName={activeConv.other_user_name}
+              size="sm"
+            />
+          )}
           {activeConv.other_user_online && (
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-bg-card" />
           )}

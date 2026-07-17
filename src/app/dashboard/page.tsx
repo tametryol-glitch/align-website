@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
 import { api, buildBirthData } from '@/lib/api';
@@ -238,6 +239,7 @@ interface TransitPosition {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { user, profile } = useAuthStore();
   const name = profile?.display_name || user?.user_metadata?.name || 'Stargazer';
   const firstName = name.split(' ')[0];
@@ -617,7 +619,12 @@ export default function DashboardPage() {
                 className="min-w-[240px] max-w-[280px] flex-shrink-0 card rounded-xl p-3 hover:border-accent-primary/30 transition-colors"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <UserAvatar avatarUrl={post.userAvatar} displayName={post.userName} size="xs" />
+                  <span
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${post.userId}`); }}
+                    className="cursor-pointer"
+                  >
+                    <UserAvatar avatarUrl={post.userAvatar} displayName={post.userName} size="xs" />
+                  </span>
                   <span className="text-xs font-medium text-text-primary truncate">{post.userName}</span>
                 </div>
                 {(post.imageUrl || post.videoUrl) && (

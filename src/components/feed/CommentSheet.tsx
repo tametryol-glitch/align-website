@@ -25,12 +25,15 @@ export function CommentSheet({
   postId,
   postOwnerId,
   userId,
+  highlightCommentId,
   onClose,
   onCommentCountChange,
 }: {
   postId: string;
   postOwnerId: string;
   userId: string;
+  /** Scroll to and highlight this comment once loaded (notification deep-link) */
+  highlightCommentId?: string | null;
   onClose: () => void;
   onCommentCountChange?: (postId: string, delta: number) => void;
 }) {
@@ -46,6 +49,15 @@ export function CommentSheet({
   useEffect(() => {
     getComments(postId).then((c) => { setComments(c); setLoading(false); });
   }, [postId]);
+
+  // Deep-link: once comments render, scroll the target comment into view
+  useEffect(() => {
+    if (loading || !highlightCommentId) return;
+    const timer = setTimeout(() => {
+      document.getElementById(`comment-${highlightCommentId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [loading, highlightCommentId]);
 
   async function handleSend() {
     if (!text.trim() || sending) return;
@@ -113,7 +125,14 @@ export function CommentSheet({
             <p className="text-text-muted text-sm text-center py-8">{t('components.commentSheet.beFirst')}</p>
           )}
           {comments.map((c) => (
-            <div key={c.id} className="flex gap-3 group">
+            <div
+              key={c.id}
+              id={`comment-${c.id}`}
+              className={cn(
+                'flex gap-3 group',
+                c.id === highlightCommentId && 'bg-accent-primary/10 border border-accent-primary/30 rounded-xl -mx-2 px-2 py-2'
+              )}
+            >
               <Link href={`/user/${c.userId}`} className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {c.userAvatar ? (
                   <img src={c.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
   ArrowLeft, Check, Clock, Bookmark, BookmarkCheck,
@@ -227,15 +228,17 @@ export default function PollDetailPage() {
         {/* Author info */}
         <div className="flex items-center gap-3 mb-4">
           {!poll.isAnonymous && poll.authorAvatar ? (
-            <img
-              src={poll.authorAvatar}
-              alt={poll.authorName}
-              className="w-10 h-10 rounded-full object-cover border border-border-primary"
-            />
+            <Link href={`/user/${poll.authorId}`} className="cursor-pointer">
+              <img
+                src={poll.authorAvatar}
+                alt={poll.authorName}
+                className="w-10 h-10 rounded-full object-cover border border-border-primary"
+              />
+            </Link>
           ) : !poll.isAnonymous ? (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-sm font-bold text-white">
+            <Link href={`/user/${poll.authorId}`} className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-sm font-bold text-white cursor-pointer">
               {poll.authorName.charAt(0).toUpperCase()}
-            </div>
+            </Link>
           ) : (
             <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center text-lg">
               ?

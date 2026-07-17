@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
   getReelsFeed,
@@ -225,7 +226,7 @@ function ReelItem({
       <div className="absolute bottom-0 left-0 right-[70px] z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-20 pb-4 px-4">
         {/* Creator info */}
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/50 flex-shrink-0">
+          <Link href={`/user/${reel.creator_id}`} className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/50 flex-shrink-0 cursor-pointer">
             {reel.creator_avatar ? (
               <img
                 src={reel.creator_avatar}
@@ -237,7 +238,7 @@ function ReelItem({
                 {(reel.creator_name || 'U').charAt(0).toUpperCase()}
               </div>
             )}
-          </div>
+          </Link>
           <div className="min-w-0">
             <p className="text-white font-semibold text-sm truncate drop-shadow-lg">
               {reel.creator_name}
@@ -485,7 +486,7 @@ function CommentPanel({
           ) : (
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3 group">
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                <Link href={`/user/${comment.user_id}`} className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 cursor-pointer">
                   {comment.user_avatar ? (
                     <img
                       src={comment.user_avatar}
@@ -497,7 +498,7 @@ function CommentPanel({
                       {(comment.user_name || '?').charAt(0).toUpperCase()}
                     </div>
                   )}
-                </div>
+                </Link>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-white font-semibold text-xs">

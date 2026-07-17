@@ -687,13 +687,13 @@ function ResultCard({ result, planet, myPlacements }: {
 
       <div className="flex items-center gap-3 p-4">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-bg-tertiary flex items-center justify-center flex-shrink-0 text-text-muted font-bold text-sm">
+        <Link href={`/user/${result.user_id}`} className="w-12 h-12 rounded-full bg-bg-tertiary flex items-center justify-center flex-shrink-0 text-text-muted font-bold text-sm cursor-pointer">
           {result.avatar_url ? (
             <img src={result.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" />
           ) : (
             result.display_name?.charAt(0)?.toUpperCase() || '?'
           )}
-        </div>
+        </Link>
 
         {/* Info */}
         <div className="flex-1 min-w-0">

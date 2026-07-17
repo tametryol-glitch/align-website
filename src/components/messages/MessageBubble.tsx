@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import {
@@ -169,11 +170,13 @@ export function MessageBubble({
     >
       {/* Other user avatar */}
       {!isMine && (
-        <UserAvatar
-          avatarUrl={msg.sender_avatar}
-          displayName={msg.sender_name}
-          size="xs"
-        />
+        <Link href={`/user/${msg.sender_id}`} className="cursor-pointer">
+          <UserAvatar
+            avatarUrl={msg.sender_avatar}
+            displayName={msg.sender_name}
+            size="xs"
+          />
+        </Link>
       )}
 
       <div className={`max-w-[75%] relative ${isMine ? 'items-end' : 'items-start'}`}>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
@@ -43,6 +44,7 @@ function ConversationItem({
   onLeave: () => void;
 }) {
   const { t } = useTranslation();
+  const router = useRouter();
   const hasUnread = conversation.unread_count > 0;
   const iSentLast = conversation.last_message_sender_id === myId;
   const otherRead = conversation.other_last_read_at && conversation.last_message_at
@@ -58,7 +60,12 @@ function ConversationItem({
         }`}
       >
         {/* Avatar with online dot */}
-        <div className="relative flex-shrink-0">
+        <div
+          className={`relative flex-shrink-0 ${!conversation.is_group && conversation.other_user_id ? 'cursor-pointer' : ''}`}
+          onClick={!conversation.is_group && conversation.other_user_id
+            ? (e) => { e.preventDefault(); e.stopPropagation(); router.push(`/user/${conversation.other_user_id}`); }
+            : undefined}
+        >
           <UserAvatar
             avatarUrl={conversation.other_user_avatar}
             displayName={conversation.other_user_name}

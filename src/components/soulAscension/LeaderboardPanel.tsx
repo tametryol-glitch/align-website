@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -97,7 +98,7 @@ export default function LeaderboardPanel() {
             </div>
 
             {/* Avatar */}
-            <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full">
+            <Link href={`/user/${row.user_id}`} className="h-9 w-9 shrink-0 overflow-hidden rounded-full cursor-pointer">
               {row.avatar_url ? (
                 <img src={row.avatar_url} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -105,7 +106,7 @@ export default function LeaderboardPanel() {
                   {(row.avatar_name || row.display_name || '?').charAt(0).toUpperCase()}
                 </div>
               )}
-            </div>
+            </Link>
 
             {/* Name */}
             <div className="min-w-0 flex-1">

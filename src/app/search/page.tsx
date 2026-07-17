@@ -195,7 +195,7 @@ export default function SearchPage() {
   function getResultLink(item: SearchResult): string {
     switch (item.type) {
       case 'users':
-        return `/profile/${item.id}`;
+        return `/user/${item.id}`;
       case 'posts':
         return `/feed`;
       case 'communities':

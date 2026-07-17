@@ -190,13 +190,13 @@ export default function FriendsPage() {
 
   function renderAvatar(p: FriendProfile) {
     return (
-      <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+      <Link href={`/user/${p.id}`} className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer">
         {p.avatar_url ? (
           <img src={p.avatar_url} alt={p.display_name} className="w-full h-full object-cover" />
         ) : (
           <span className="text-lg text-text-muted">{p.display_name?.[0]?.toUpperCase() || '?'}</span>
         )}
-      </div>
+      </Link>
     );
   }
 

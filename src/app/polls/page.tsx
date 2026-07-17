@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
   BarChart3, Plus, X, Check, Clock, Bookmark, BookmarkCheck,
@@ -149,15 +150,17 @@ function PollCard({
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">
         {!poll.isAnonymous && poll.authorAvatar ? (
-          <img
-            src={poll.authorAvatar}
-            alt={poll.authorName}
-            className="w-8 h-8 rounded-full object-cover border border-border-primary"
-          />
+          <Link href={`/user/${poll.authorId}`} onClick={(e) => e.stopPropagation()} className="cursor-pointer">
+            <img
+              src={poll.authorAvatar}
+              alt={poll.authorName}
+              className="w-8 h-8 rounded-full object-cover border border-border-primary"
+            />
+          </Link>
         ) : !poll.isAnonymous ? (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+          <Link href={`/user/${poll.authorId}`} onClick={(e) => e.stopPropagation()} className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">
             {poll.authorName.charAt(0).toUpperCase()}
-          </div>
+          </Link>
         ) : null}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-text-primary truncate">
