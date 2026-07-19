@@ -87,6 +87,26 @@ export const MATRIX_SIGNATURE: Record<string, string> = {
   Pisces: 'you absorb the feeling in the room before a word is spoken, and you knew how the conversation would end before it began.',
 };
 
+// ─── Transit undercurrent (duad layer of a TRANSITING body) ────────────────
+// What a transit is really smuggling in beneath its surface sign — temporary,
+// window-voiced, behavioral. Written to attach after "expect ": each entry
+// describes what the person will catch themselves doing while it's active.
+
+export const TRANSIT_UNDERCURRENT: Record<string, string> = {
+  Aries: 'your fuse shortening by the day: decisions you\'d normally sleep on getting made in the parking lot, replies sent before you finish deciding to send them, and a rising itch to force the issue anywhere your life has stalled.',
+  Taurus: 'a sudden hunger for solid ground: checking the balance twice, gripping routines and people harder, digging in on positions you privately know are half pride. Whatever you refuse to release during this stretch is naming exactly what you\'re afraid to lose.',
+  Gemini: 'your mind running double shifts: three conversations open at once, the urge to talk about the feeling instead of having it, and a restlessness that keeps mistaking new information for actual movement.',
+  Cancer: 'old emotional weather rolling back in: people and places you thought were archived turning current again, a thinner skin than you\'ll admit to, and choices that look logical but are really about where you feel safe.',
+  Leo: 'your need to be seen turning its volume up: wins you want witnessed, slights you replay twice, and a mood that quietly indexes itself to whether anyone actually noticed you today.',
+  Virgo: 'the inner auditor working overtime: flaws jumping out of things that were fine last month, the urge to fix people who didn\'t ask, and a standard climbing so high that "good enough" starts to feel like failure.',
+  Libra: 'the peacekeeper in you taking over negotiations: harsh truths getting rephrased into softness, twenty-minute decisions, and a growing tab of things you swallowed to keep a room level.',
+  Scorpio: 'the vault doors moving: trust getting quietly re-audited, tests you run on people without telling them they\'re being tested, and an appetite for the real story underneath whatever you\'re being told.',
+  Sagittarius: 'the exits glowing brighter: routines that fit last month feeling like slow suffocation, escapes half-booked before you\'ve told anyone, and blunt truths leaving your mouth with a grin before diplomacy can catch them.',
+  Capricorn: 'the foreman taking over: everything getting audited for cost against value, rest starting to feel like a debt, and the creeping conviction that if it\'s going to be done right, you\'ll have to do it yourself.',
+  Aquarius: 'a step-back coming over you: watching your own life like a system you\'re studying, inherited opinions coming up for review, and a cool altitude entering rooms that used to hold you close.',
+  Pisces: 'your edges thinning: other people\'s moods soaking in before you can decline them, time going soft around the schedule, and the escape hatches — the scrolling, the daydream, one more episode — standing wider open than usual.',
+};
+
 // ─── Progressed voice: what you have EVOLVED into (per sign) ───────────────
 // Present-tense becoming. Must never read like natal text: this is not who
 // they were born as — it's who life has made them, showing in real time.

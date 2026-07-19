@@ -14,6 +14,7 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore, FREE_ZODISPHERE_3D_VIEWS } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
@@ -40,15 +41,20 @@ const MAX_PAIRS = 8;
 
 // Code-split Cesium into its own client chunk — the rest of Align never pays
 // its bundle cost, and it can only load in the browser.
+function GlobeLoadingIndicator() {
+  const { t } = useTranslation();
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="text-white/60 text-sm animate-pulse">{t('zodisphere.globe.loading3d')}</div>
+    </div>
+  );
+}
+
 const ZodisphereGlobeCesium = dynamic(
   () => import('@/components/zodisphere/three-d/ZodisphereGlobeCesium'),
   {
     ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-white/60 text-sm animate-pulse">Loading the 3D Earth…</div>
-      </div>
-    ),
+    loading: () => <GlobeLoadingIndicator />,
   },
 );
 

@@ -9,6 +9,7 @@
  */
 
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export interface ZodisphereFallbackViewProps {
   message?: string;
@@ -20,23 +21,24 @@ export interface ZodisphereFallbackViewProps {
 }
 
 export default function ZodisphereFallbackView({
-  message = 'The 3D globe isn’t available on this device right now.',
+  message,
   onRetry,
   classicHref = '/zodisphere',
 }: ZodisphereFallbackViewProps) {
+  const { t } = useTranslation();
   return (
     <div className="absolute inset-0 flex items-center justify-center p-6">
       <div className="max-w-sm w-full text-center rounded-2xl border border-white/10 bg-black/50 backdrop-blur px-6 py-8">
         <div className="text-3xl mb-3" aria-hidden>🌍</div>
-        <h2 className="text-white text-base font-semibold mb-2">Globe unavailable</h2>
-        <p className="text-white/60 text-[13px] leading-relaxed mb-5">{message}</p>
+        <h2 className="text-white text-base font-semibold mb-2">{t('zodisphere.fallback.title')}</h2>
+        <p className="text-white/60 text-[13px] leading-relaxed mb-5">{message ?? t('zodisphere.fallback.defaultMessage')}</p>
         <div className="flex flex-col gap-2">
           {onRetry && (
             <button
               onClick={onRetry}
               className="w-full px-4 py-2 rounded-xl text-sm font-medium bg-accent-primary/20 border border-accent-primary text-accent-primary hover:bg-accent-primary/30 transition-colors"
             >
-              Try again
+              {t('zodisphere.fallback.tryAgain')}
             </button>
           )}
           {classicHref !== null && (
@@ -44,7 +46,7 @@ export default function ZodisphereFallbackView({
               href={classicHref}
               className="w-full px-4 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
             >
-              Use the classic globe
+              {t('zodisphere.fallback.useClassic')}
             </Link>
           )}
         </div>

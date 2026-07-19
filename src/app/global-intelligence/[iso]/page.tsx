@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Star, Calendar, MapPin, Shield, AlertTriangle, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   getCountry, getPrimaryChart, getDailyIntel, getCountryEvents, listCountries,
   getCategoryMidpoints,
@@ -154,6 +155,7 @@ function severityDot(severity: string): string {
 }
 
 export default function CountryDetailPage() {
+  const { t } = useTranslation();
   const { iso } = useParams<{ iso: string }>();
   const [country, setCountry] = useState<GICountry | null>(null);
   const [chart, setChart] = useState<GICountryChart | null>(null);
@@ -287,7 +289,7 @@ export default function CountryDetailPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border-2 border-accent-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-text-muted text-sm">Loading country data...</p>
+          <p className="text-text-muted text-sm">{t('globalIntelligence.country.loading')}</p>
         </div>
       </div>
     );
@@ -296,9 +298,9 @@ export default function CountryDetailPage() {
   if (!country) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <p className="text-text-muted">Country not found</p>
+        <p className="text-text-muted">{t('globalIntelligence.country.notFound')}</p>
         <Link href="/global-intelligence" className="text-accent-primary hover:underline text-sm">
-          ← Back to countries
+          {t('globalIntelligence.country.backToCountries')}
         </Link>
       </div>
     );
@@ -333,7 +335,7 @@ export default function CountryDetailPage() {
         <div className="lg:col-span-2 card bg-gradient-to-br from-accent-primary/5 to-transparent">
           <h2 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
             <Star className="w-4 h-4 text-accent-primary" />
-            National Chart
+            {t('globalIntelligence.country.nationalChartTitle')}
           </h2>
 
           {chart ? (
@@ -354,39 +356,39 @@ export default function CountryDetailPage() {
 
               <div className="flex gap-2 flex-wrap">
                 <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
-                  {chart.time_confidence === 'verified_exact' ? '⏱ Exact Time' :
-                   chart.time_confidence?.includes('approximate') ? '⏱ ~Approx' :
-                   '⏱ Symbolic'}
+                  {chart.time_confidence === 'verified_exact' ? t('globalIntelligence.country.timeExact') :
+                   chart.time_confidence?.includes('approximate') ? t('globalIntelligence.country.timeApprox') :
+                   t('globalIntelligence.country.timeSymbolic')}
                 </span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
-                  {chart.source_reliability?.includes('verified') ? '✓ Verified' :
-                   chart.source_reliability === 'disputed' ? '⚠ Disputed' : '○ Unrated'}
+                  {chart.source_reliability?.includes('verified') ? t('globalIntelligence.country.sourceVerified') :
+                   chart.source_reliability === 'disputed' ? t('globalIntelligence.country.sourceDisputed') : t('globalIntelligence.country.sourceUnrated')}
                 </span>
               </div>
               {chart.source_name && (
-                <p className="text-text-muted text-[11px] italic">Source: {chart.source_name}</p>
+                <p className="text-text-muted text-[11px] italic">{t('globalIntelligence.country.sourceLabel', { name: chart.source_name })}</p>
               )}
 
               {(sunSign || moonSign || ascSign) && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border-primary">
                   {[
-                    { label: 'Sun', sign: sunSign },
-                    { label: 'Moon', sign: moonSign },
-                    { label: 'Ascendant', sign: ascSign },
-                    { label: 'Midheaven', sign: mcSign },
+                    { label: t('globalIntelligence.country.sun'), sign: sunSign },
+                    { label: t('globalIntelligence.country.moon'), sign: moonSign },
+                    { label: t('globalIntelligence.country.ascendant'), sign: ascSign },
+                    { label: t('globalIntelligence.country.midheaven'), sign: mcSign },
                   ].filter(x => x.sign).map(({ label, sign }) => (
                     <div key={label} className="text-center">
                       <p className="text-2xl">{SIGN_GLYPHS[sign!] || '?'}</p>
                       <p className="text-text-muted text-[10px] mt-1">{label}</p>
                       <p className="text-text-primary text-sm font-medium">{sign}</p>
-                      <p className="text-accent-primary text-[10px]">Ruler: {RULERS[sign!] || '?'}</p>
+                      <p className="text-accent-primary text-[10px]">{t('globalIntelligence.country.rulerLabel', { ruler: RULERS[sign!] || '?' })}</p>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-text-muted text-sm">No chart data available yet.</p>
+            <p className="text-text-muted text-sm">{t('globalIntelligence.country.noChartData')}</p>
           )}
         </div>
 
@@ -394,17 +396,17 @@ export default function CountryDetailPage() {
         <div className="space-y-4">
           {scores && (
             <div className="card bg-gradient-to-br from-emerald-500/5 to-transparent">
-              <h2 className="font-semibold text-text-primary mb-1 text-sm">Latest Intelligence</h2>
-              <p className="text-text-muted text-[10px] mb-3">as of {intel?.scan_date}</p>
+              <h2 className="font-semibold text-text-primary mb-1 text-sm">{t('globalIntelligence.country.latestIntelligence')}</h2>
+              <p className="text-text-muted text-[10px] mb-3">{t('globalIntelligence.country.asOf', { date: intel?.scan_date })}</p>
 
               <div className="space-y-3">
-                <ScoreRow label="Overall Energy" value={scores.overall_energy} tag={scores.labels?.energy} />
-                <ScoreRow label="Economic" value={scores.economic_momentum} tag={scores.labels?.economic} />
-                <ScoreRow label="Political" value={scores.political_stability} tag={scores.labels?.political} />
-                <ScoreRow label="Public Mood" value={scores.public_mood} tag={scores.labels?.mood} />
+                <ScoreRow label={t('globalIntelligence.country.scoreOverallEnergy')} value={scores.overall_energy} tag={scores.labels?.energy} />
+                <ScoreRow label={t('globalIntelligence.country.scoreEconomic')} value={scores.economic_momentum} tag={scores.labels?.economic} />
+                <ScoreRow label={t('globalIntelligence.country.scorePolitical')} value={scores.political_stability} tag={scores.labels?.political} />
+                <ScoreRow label={t('globalIntelligence.country.scorePublicMood')} value={scores.public_mood} tag={scores.labels?.mood} />
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-text-secondary text-xs">Conflict Pressure</span>
+                    <span className="text-text-secondary text-xs">{t('globalIntelligence.country.conflictPressure')}</span>
                     <span className={`text-xs font-bold ${conflictColor(scores.conflict_pressure)}`}>
                       {scores.conflict_pressure}/100 · {scores.labels?.conflict}
                     </span>
@@ -419,8 +421,8 @@ export default function CountryDetailPage() {
 
           {!scores && (
             <div className="card">
-              <h2 className="font-semibold text-text-primary mb-2 text-sm">Daily Intelligence</h2>
-              <p className="text-text-muted text-xs">No intelligence data available yet. Check back after the daily compute runs.</p>
+              <h2 className="font-semibold text-text-primary mb-2 text-sm">{t('globalIntelligence.country.dailyIntelligence')}</h2>
+              <p className="text-text-muted text-xs">{t('globalIntelligence.country.noIntelData')}</p>
             </div>
           )}
         </div>
@@ -431,12 +433,12 @@ export default function CountryDetailPage() {
         <div className="card bg-gradient-to-br from-violet-500/5 to-transparent space-y-4">
           <h2 className="font-semibold text-text-primary flex items-center gap-2">
             <Star className="w-4 h-4 text-violet-400" />
-            National Character
+            {t('globalIntelligence.country.nationalCharacter')}
           </h2>
           <div className="space-y-3">
             {sunSign && (
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[sunSign]} Sun in {sunSign}</p>
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[sunSign]} {t('globalIntelligence.country.sunIn', { sign: sunSign })}</p>
                 <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                   As a {sunSign} Sun nation, {country.name}&apos;s identity is built around {SIGN_NATIONAL_THEMES[sunSign]?.identity || 'its core national values'}.
                 </p>
@@ -444,7 +446,7 @@ export default function CountryDetailPage() {
             )}
             {moonSign && (
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[moonSign]} Moon in {moonSign}</p>
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[moonSign]} {t('globalIntelligence.country.moonIn', { sign: moonSign })}</p>
                 <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                   The {moonSign} Moon gives the people of {country.name} an emotional character rooted in {SIGN_NATIONAL_THEMES[moonSign]?.mood || 'collective sentiment'}.
                 </p>
@@ -452,7 +454,7 @@ export default function CountryDetailPage() {
             )}
             {ascSign && (
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[ascSign]} {ascSign} Rising</p>
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[ascSign]} {t('globalIntelligence.country.rising', { sign: ascSign })}</p>
                 <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                   With {ascSign} Rising, {country.name} projects {SIGN_NATIONAL_THEMES[ascSign]?.projection || 'its national image'} to the world.
                 </p>
@@ -460,7 +462,7 @@ export default function CountryDetailPage() {
             )}
             {mcSign && (
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[mcSign]} Midheaven in {mcSign}</p>
+                <p className="text-text-primary text-sm font-medium">{SIGN_GLYPHS[mcSign]} {t('globalIntelligence.country.midheavenIn', { sign: mcSign })}</p>
                 <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                   A {mcSign} Midheaven means {country.name}&apos;s government and leadership style gravitates toward {SIGN_NATIONAL_THEMES[mcSign]?.governance || 'its governing principles'}.
                 </p>
@@ -470,7 +472,7 @@ export default function CountryDetailPage() {
             {/* Cultural Synthesis */}
             {sunSign && moonSign && (
               <div className="rounded-lg bg-gradient-to-br from-violet-500/10 to-transparent p-3 border border-violet-500/10">
-                <p className="text-violet-400 text-[10px] font-bold uppercase tracking-wider mb-1">Cultural Synthesis</p>
+                <p className="text-violet-400 text-[10px] font-bold uppercase tracking-wider mb-1">{t('globalIntelligence.country.culturalSynthesis')}</p>
                 <p className="text-text-secondary text-xs leading-relaxed">
                   {country.name}&apos;s astrological DNA reveals a nation whose core identity ({sunSign} Sun: {SIGN_NATIONAL_THEMES[sunSign]?.identity || 'core values'}) operates through a populace whose emotional character is shaped by {moonSign} energy ({SIGN_NATIONAL_THEMES[moonSign]?.mood || 'collective sentiment'}).
                   {ascSign && ` The world sees ${country.name} through ${ascSign} Rising — projecting ${SIGN_NATIONAL_THEMES[ascSign]?.projection || 'its national image'}.`}
@@ -495,7 +497,7 @@ export default function CountryDetailPage() {
           <div className="card bg-gradient-to-br from-blue-500/5 to-transparent space-y-4">
             <h2 className="font-semibold text-text-primary flex items-center gap-2">
               <Shield className="w-4 h-4 text-blue-400" />
-              Intelligence Briefing
+              {t('globalIntelligence.country.intelligenceBriefing')}
             </h2>
 
             <p className="text-text-primary text-sm leading-relaxed font-medium">
@@ -504,7 +506,7 @@ export default function CountryDetailPage() {
 
             {isStructured && keyEvents.length > 0 && (
               <div className="space-y-2 border-l-2 border-blue-500/30 pl-4">
-                <p className="text-[11px] uppercase tracking-wider text-blue-400 font-semibold">Key Planetary Events</p>
+                <p className="text-[11px] uppercase tracking-wider text-blue-400 font-semibold">{t('globalIntelligence.country.keyPlanetaryEvents')}</p>
                 {keyEvents.map((evt, i) => (
                   <p key={i} className="text-text-secondary text-sm leading-relaxed">
                     {evt}
@@ -556,36 +558,36 @@ export default function CountryDetailPage() {
         <div className="space-y-3">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCardClickable
-              label="Transits"
+              label={t('globalIntelligence.country.statTransits')}
               value={intel.transits_json?.count || intel.transits_json?.hits?.length || 0}
-              sub="active aspects"
+              sub={t('globalIntelligence.country.statTransitsSub')}
               icon="🔭"
               panelKey="transits"
               expanded={expandedPanel === 'transits'}
               onClick={() => setExpandedPanel(expandedPanel === 'transits' ? null : 'transits')}
             />
             <StatCardClickable
-              label="Midpoints"
+              label={t('globalIntelligence.country.statMidpoints')}
               value={intel.midpoints_json?.top?.length || 0}
-              sub="active pairs"
+              sub={t('globalIntelligence.country.statMidpointsSub')}
               icon="⊕"
               panelKey="midpoints"
               expanded={expandedPanel === 'midpoints'}
               onClick={() => setExpandedPanel(expandedPanel === 'midpoints' ? null : 'midpoints')}
             />
             <StatCardClickable
-              label="Progressions"
+              label={t('globalIntelligence.country.statProgressions')}
               value={intel.progressions_json?.planets?.length || 0}
-              sub="progressed bodies"
+              sub={t('globalIntelligence.country.statProgressionsSub')}
               icon="📊"
               panelKey="progressions"
               expanded={expandedPanel === 'progressions'}
               onClick={() => setExpandedPanel(expandedPanel === 'progressions' ? null : 'progressions')}
             />
             <StatCardClickable
-              label="Events"
+              label={t('globalIntelligence.country.statEvents')}
               value={events.length}
-              sub="tracked"
+              sub={t('globalIntelligence.country.statEventsSub')}
               icon="📰"
               panelKey="events"
               expanded={expandedPanel === 'events'}
@@ -601,7 +603,7 @@ export default function CountryDetailPage() {
             <>
               {catMidpointsLoading && (
                 <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent p-6 text-center">
-                  <div className="animate-pulse text-text-muted text-sm">Loading asteroid midpoint intelligence...</div>
+                  <div className="animate-pulse text-text-muted text-sm">{t('globalIntelligence.country.loadingMidpoints')}</div>
                 </div>
               )}
               {catMidpoints && (
@@ -619,7 +621,7 @@ export default function CountryDetailPage() {
 
           {expandedPanel === 'events' && events.length > 0 && (
             <div className="card bg-gradient-to-br from-yellow-500/5 to-transparent space-y-2">
-              <h3 className="text-sm font-semibold text-text-primary">Recent Events Preview</h3>
+              <h3 className="text-sm font-semibold text-text-primary">{t('globalIntelligence.country.recentEventsPreview')}</h3>
               {events.slice(0, 3).map((evt) => (
                 <div key={evt.id} className="flex items-center gap-2 text-xs">
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${severityDot(evt.severity)}`} />
@@ -627,7 +629,7 @@ export default function CountryDetailPage() {
                   <span className="text-text-muted ml-auto">{evt.event_date}</span>
                 </div>
               ))}
-              <p className="text-text-muted text-[10px] text-center">↓ Full details in Recent Events below</p>
+              <p className="text-text-muted text-[10px] text-center">{t('globalIntelligence.country.fullDetailsBelow')}</p>
             </div>
           )}
         </div>
@@ -637,26 +639,26 @@ export default function CountryDetailPage() {
       <div className="card bg-gradient-to-br from-pink-500/5 to-transparent space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-text-primary flex items-center gap-2">
-            🔗 Country Synastry
+            🔗 {t('globalIntelligence.country.countrySynastry')}
           </h2>
           {partnerCountry && (
             <button
               onClick={() => { setPartnerCountry(null); setPartnerChart(null); setShowSynastryPicker(true); }}
               className="text-accent-primary text-xs hover:underline"
             >
-              Change partner
+              {t('globalIntelligence.country.changePartner')}
             </button>
           )}
         </div>
 
         {!partnerCountry && !showSynastryPicker && (
           <div className="text-center py-4">
-            <p className="text-text-muted text-sm mb-3">Compare {country.name}&apos;s chart against another nation</p>
+            <p className="text-text-muted text-sm mb-3">{t('globalIntelligence.country.compareAgainst', { country: country.name })}</p>
             <button
               onClick={() => setShowSynastryPicker(true)}
               className="px-4 py-2 rounded-lg bg-accent-primary/10 text-accent-primary text-sm font-medium hover:bg-accent-primary/20 transition"
             >
-              Select a country to compare
+              {t('globalIntelligence.country.selectCountry')}
             </button>
           </div>
         )}
@@ -667,7 +669,7 @@ export default function CountryDetailPage() {
               <Search className="w-4 h-4 text-text-muted" />
               <input
                 type="text"
-                placeholder="Search countries..."
+                placeholder={t('globalIntelligence.searchPlaceholder')}
                 value={synastrySearch}
                 onChange={(e) => setSynastrySearch(e.target.value)}
                 className="bg-transparent text-text-primary text-sm flex-1 outline-none placeholder:text-text-muted"
@@ -690,7 +692,7 @@ export default function CountryDetailPage() {
               onClick={() => { setShowSynastryPicker(false); setSynastrySearch(''); }}
               className="text-text-muted text-xs hover:underline"
             >
-              Cancel
+              {t('globalIntelligence.country.cancel')}
             </button>
           </div>
         )}
@@ -698,7 +700,7 @@ export default function CountryDetailPage() {
         {loadingPartner && (
           <div className="flex items-center justify-center py-6 gap-3">
             <div className="w-5 h-5 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-text-muted text-sm">Loading partner chart...</p>
+            <p className="text-text-muted text-sm">{t('globalIntelligence.country.loadingPartnerChart')}</p>
           </div>
         )}
 
@@ -713,7 +715,7 @@ export default function CountryDetailPage() {
 
         {partnerCountry && !loadingPartner && (!partnerChart?.chart_data_json || !chart?.chart_data_json) && (
           <p className="text-text-muted text-sm text-center py-4">
-            Chart data unavailable for comparison. Both countries need computed charts.
+            {t('globalIntelligence.country.chartUnavailable')}
           </p>
         )}
       </div>
@@ -722,10 +724,10 @@ export default function CountryDetailPage() {
       <div className="card bg-gradient-to-br from-blue-500/5 to-transparent">
         <h2 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-yellow-400" />
-          Recent Events
+          {t('globalIntelligence.country.recentEvents')}
         </h2>
         {events.length === 0 ? (
-          <p className="text-text-muted text-sm">No events recorded yet.</p>
+          <p className="text-text-muted text-sm">{t('globalIntelligence.country.noEvents')}</p>
         ) : (
           <div className="space-y-1">
             {events.map((evt) => {
@@ -756,7 +758,7 @@ export default function CountryDetailPage() {
                       )}
                       <div className="flex flex-wrap gap-2">
                         <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
-                          Severity: {evt.severity}
+                          {t('globalIntelligence.country.severityTag', { severity: evt.severity })}
                         </span>
                         {evt.subcategory && (
                           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
@@ -765,7 +767,7 @@ export default function CountryDetailPage() {
                         )}
                         {evt.source_name && (
                           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-text-secondary">
-                            Source: {evt.source_name}
+                            {t('globalIntelligence.country.sourceLabel', { name: evt.source_name })}
                           </span>
                         )}
                       </div>
@@ -1131,15 +1133,16 @@ function transitInterpretation(h: TransitHit): string {
   return `${h.transit_planet} aspects the national ${h.natal_planet} in the ${sector} sector.`;
 }
 
-function severityLabel(severity: string): { text: string; color: string; bg: string } {
+function severityLabel(severity: string): { textKey: string; color: string; bg: string } {
   switch (severity) {
-    case 'major': return { text: 'High Impact', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' };
-    case 'moderate': return { text: 'Moderate', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' };
-    default: return { text: 'Minor', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' };
+    case 'major': return { textKey: 'globalIntelligence.country.severityHigh', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' };
+    case 'moderate': return { textKey: 'globalIntelligence.country.severityModerate', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' };
+    default: return { textKey: 'globalIntelligence.country.severityMinor', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' };
   }
 }
 
 function TransitPanel({ hits }: { hits: TransitHit[] }) {
+  const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
   const DEFAULT_SHOW = 5;
 
@@ -1168,9 +1171,9 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
   return (
     <div className="card bg-gradient-to-br from-purple-500/5 to-transparent space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-text-primary">Active Transits</h3>
+        <h3 className="text-sm font-semibold text-text-primary">{t('globalIntelligence.country.activeTransits')}</h3>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Planetary transits show how current sky positions interact with the national chart
+          {t('globalIntelligence.country.transitsDesc')}
         </p>
       </div>
 
@@ -1182,7 +1185,7 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
             <div key={sevKey}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-[10px] font-bold uppercase tracking-wider ${sev.color}`}>
-                  {sev.text}
+                  {t(sev.textKey)}
                 </span>
                 <span className="text-text-muted text-[10px]">({items.length})</span>
                 <div className="flex-1 h-px bg-border-primary/30" />
@@ -1198,7 +1201,7 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
                             {h.transit_planet} {aspect.verb} {h.natal_planet}
                           </p>
                           <p className="text-text-muted text-[10px] mt-0.5">
-                            {aspect.name} · {Math.abs(h.orb) < 1 ? 'Near-exact' : Math.abs(h.orb) < 3 ? 'Close' : 'Wide'} ({Math.abs(h.orb).toFixed(1)}°) · {h.is_applying ? '⚡ Building' : 'Fading'}
+                            {aspect.name} · {Math.abs(h.orb) < 1 ? t('globalIntelligence.country.orbNearExact') : Math.abs(h.orb) < 3 ? t('globalIntelligence.country.orbClose') : t('globalIntelligence.country.orbWide')} ({Math.abs(h.orb).toFixed(1)}°) · {h.is_applying ? t('globalIntelligence.country.applying') : t('globalIntelligence.country.fading')}
                           </p>
                         </div>
                         <span className="text-[10px] text-text-muted bg-white/5 px-2 py-0.5 rounded flex-shrink-0">
@@ -1222,7 +1225,7 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
           onClick={() => setShowAll(true)}
           className="w-full text-center text-accent-primary text-xs py-2 hover:underline"
         >
-          Show all {sorted.length} transits ({hiddenCount} more)
+          {t('globalIntelligence.country.showAllTransits', { count: sorted.length, more: hiddenCount })}
         </button>
       )}
       {showAll && hiddenCount > 0 && (
@@ -1230,7 +1233,7 @@ function TransitPanel({ hits }: { hits: TransitHit[] }) {
           onClick={() => setShowAll(false)}
           className="w-full text-center text-text-muted text-xs py-2 hover:underline"
         >
-          Show fewer
+          {t('globalIntelligence.country.showFewer')}
         </button>
       )}
     </div>
@@ -1263,6 +1266,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showAllCats, setShowAllCats] = useState(false);
 
@@ -1292,20 +1296,20 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
     <div className="card bg-gradient-to-br from-purple-500/5 to-cyan-500/5 space-y-4">
       <div>
         <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-          Midpoint Intelligence
+          {t('globalIntelligence.country.midpointIntelligence')}
           <span className="text-[10px] font-normal text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
-            {report.activated_count} active
+            {t('globalIntelligence.country.activeCount', { count: report.activated_count })}
           </span>
         </h3>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Category-based midpoints using {report.total_count} pairs across {Object.keys(report.categories).length} intelligence domains with asteroid enhancement
+          {t('globalIntelligence.country.categoryMidpointsDesc', { pairs: report.total_count, domains: Object.keys(report.categories).length })}
         </p>
       </div>
 
       {/* Hot categories (have transit activations today) */}
       {hotCategories.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Active Intelligence</p>
+          <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">{t('globalIntelligence.country.activeIntelligence')}</p>
           <div className="flex flex-wrap gap-1.5">
             {hotCategories.map(cat => (
               <button
@@ -1329,7 +1333,7 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
       {/* All other categories */}
       <div className="space-y-2">
         {hotCategories.length > 0 && (
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">All Domains</p>
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{t('globalIntelligence.country.allDomains')}</p>
         )}
         <div className="flex flex-wrap gap-1.5">
           {visibleCold.map(cat => (
@@ -1352,7 +1356,7 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
               onClick={() => setShowAllCats(true)}
               className="text-[11px] px-2.5 py-1 text-accent-primary hover:underline"
             >
-              +{coldCategories.length - 4} more
+              {t('globalIntelligence.country.moreCategories', { count: coldCategories.length - 4 })}
             </button>
           )}
         </div>
@@ -1366,12 +1370,12 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
               {CATEGORY_ICONS[activeCat.key] || '\u{1F52E}'} {activeCat.label}
             </h4>
             <span className="text-[10px] text-text-muted">
-              {activeCat.activatedCount} activated / {activeCat.totalCount} pairs
+              {t('globalIntelligence.country.activatedOfPairs', { activated: activeCat.activatedCount, total: activeCat.totalCount })}
             </span>
           </div>
           {activeCat.midpoints[0]?.mundane_significance && (
             <p className="text-text-muted text-[10px] italic">
-              Tracks {activeCat.midpoints[0].mundane_significance}
+              {t('globalIntelligence.country.tracks', { value: activeCat.midpoints[0].mundane_significance })}
             </p>
           )}
 
@@ -1381,7 +1385,7 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
             ))}
             {activeCat.totalCount > 20 && (
               <p className="text-text-muted text-[10px] text-center py-1">
-                Showing 20 of {activeCat.totalCount} midpoints
+                {t('globalIntelligence.country.showingMidpoints', { total: activeCat.totalCount })}
               </p>
             )}
           </div>
@@ -1392,7 +1396,9 @@ function CategoryMidpointPanel({ report }: { report: CategoryMidpointReport }) {
       {report.skipped_asteroids.length > 0 && (
         <details className="text-[10px] text-text-muted">
           <summary className="cursor-pointer hover:text-text-secondary">
-            {report.skipped_asteroids.length} asteroid{report.skipped_asteroids.length !== 1 ? 's' : ''} unavailable
+            {report.skipped_asteroids.length !== 1
+              ? t('globalIntelligence.country.asteroidsUnavailable', { count: report.skipped_asteroids.length })
+              : t('globalIntelligence.country.asteroidUnavailable', { count: report.skipped_asteroids.length })}
           </summary>
           <div className="mt-1 space-y-0.5 pl-3">
             {report.skipped_asteroids.map((s, i) => (
@@ -1440,6 +1446,7 @@ function pairHash(a: string, b: string): number {
 }
 
 function CategoryMidpointCard({ mp }: { mp: CategoryMidpointEntry }) {
+  const { t } = useTranslation();
   const pairKey = `${mp.pair[0]}+${mp.pair[1]}`;
   const reversePairKey = `${mp.pair[1]}+${mp.pair[0]}`;
   const pairTheme = MIDPOINT_PAIR_THEMES[pairKey] || MIDPOINT_PAIR_THEMES[reversePairKey];
@@ -1551,7 +1558,7 @@ function CategoryMidpointCard({ mp }: { mp: CategoryMidpointEntry }) {
 
       {mp.is_activated && mp.activating_transit && (
         <p className="text-red-400 text-[10px] mt-1 font-medium">
-          {mp.activation_aspect} from {mp.activating_transit} (orb {mp.activation_orb?.toFixed(1)}°) — ACTIVE TODAY
+          {t('globalIntelligence.country.activeTodayLine', { aspect: mp.activation_aspect, transit: mp.activating_transit, orb: mp.activation_orb?.toFixed(1) })}
         </p>
       )}
 
@@ -1719,6 +1726,7 @@ function midpointInterpretation(m: MidpointEntry): string {
 }
 
 function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
+  const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
   const DEFAULT_SHOW = 5;
 
@@ -1728,9 +1736,9 @@ function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
   return (
     <div className="card bg-gradient-to-br from-cyan-500/5 to-transparent space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-text-primary">Active Midpoints</h3>
+        <h3 className="text-sm font-semibold text-text-primary">{t('globalIntelligence.country.activeMidpoints')}</h3>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Midpoints are sensitive degrees where two planetary energies blend — when transits hit these points, both themes activate simultaneously
+          {t('globalIntelligence.country.midpointsDesc')}
         </p>
       </div>
 
@@ -1760,7 +1768,7 @@ function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
           onClick={() => setShowAll(true)}
           className="w-full text-center text-accent-primary text-xs py-2 hover:underline"
         >
-          Show all {midpoints.length} midpoints ({hiddenCount} more)
+          {t('globalIntelligence.country.showAllMidpoints', { count: midpoints.length, more: hiddenCount })}
         </button>
       )}
       {showAll && hiddenCount > 0 && (
@@ -1768,7 +1776,7 @@ function MidpointPanel({ midpoints }: { midpoints: MidpointEntry[] }) {
           onClick={() => setShowAll(false)}
           className="w-full text-center text-text-muted text-xs py-2 hover:underline"
         >
-          Show fewer
+          {t('globalIntelligence.country.showFewer')}
         </button>
       )}
     </div>
@@ -1797,18 +1805,18 @@ const PROG_RATES: Record<string, number> = {
   Jupiter: 0.08, Saturn: 0.03, Uranus: 0.01, Neptune: 0.005, Pluto: 0.004,
 };
 
-function progTimeContext(planet: string, degree: number): string {
+function progTimeContext(planet: string, degree: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
   const rate = PROG_RATES[planet];
   if (!rate || rate < 0.01) return '';
   const remaining = 30 - degree;
   const yearsLeft = Math.round(remaining / rate);
   if (planet === 'Moon') {
     const monthsLeft = Math.round((remaining / rate) * 12);
-    return monthsLeft > 0 ? ` (~${monthsLeft} months until sign change)` : '';
+    return monthsLeft > 0 ? ` ${t('globalIntelligence.country.monthsUntilSignChange', { count: monthsLeft })}` : '';
   }
-  if (yearsLeft <= 0) return ' (sign change imminent)';
+  if (yearsLeft <= 0) return ` ${t('globalIntelligence.country.signChangeImminent')}`;
   if (yearsLeft > 200) return '';
-  return ` (~${yearsLeft} year${yearsLeft !== 1 ? 's' : ''} until sign change)`;
+  return ` ${t(yearsLeft !== 1 ? 'globalIntelligence.country.yearsUntilSignChange' : 'globalIntelligence.country.yearUntilSignChange', { count: yearsLeft })}`;
 }
 
 const PROGRESSION_TEMPLATES: Record<string, (sign: string, sector: string) => string> = {
@@ -1833,12 +1841,13 @@ function progressionInterpretation(p: ProgPlanet): string {
 }
 
 function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects?: ProgAspect[] }) {
+  const { t } = useTranslation();
   return (
     <div className="card bg-gradient-to-br from-amber-500/5 to-transparent space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-text-primary">Secondary Progressions</h3>
+        <h3 className="text-sm font-semibold text-text-primary">{t('globalIntelligence.country.secondaryProgressions')}</h3>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Progressions track the nation&apos;s slow evolution — each progressed day represents one year of development
+          {t('globalIntelligence.country.progressionsDesc')}
         </p>
       </div>
 
@@ -1853,10 +1862,10 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
               <div className="flex items-center gap-2">
                 <span className="text-accent-primary text-xl">{SIGN_GLYPHS[p.sign] || '?'}</span>
                 <div className="flex-1">
-                  <p className="text-text-primary text-sm font-medium">{p.planet} in {p.sign}</p>
+                  <p className="text-text-primary text-sm font-medium">{t('globalIntelligence.country.planetInSign', { planet: p.planet, sign: p.sign })}</p>
                   <p className="text-text-muted text-[10px]">
                     {p.degree.toFixed(1)}° · {HOUSE_KEYWORDS[p.house] || `House ${p.house}`}
-                    <span className="text-amber-400/70">{progTimeContext(p.planet, p.degree)}</span>
+                    <span className="text-amber-400/70">{progTimeContext(p.planet, p.degree, t)}</span>
                   </p>
                 </div>
               </div>
@@ -1870,7 +1879,7 @@ function ProgressionPanel({ planets, aspects }: { planets: ProgPlanet[]; aspects
 
       {aspects && aspects.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-text-secondary mb-2">Progressed Aspects</h4>
+          <h4 className="text-xs font-semibold text-text-secondary mb-2">{t('globalIntelligence.country.progressedAspects')}</h4>
           <div className="space-y-2">
             {aspects.map((a, i) => {
               const aspect = ASPECT_LABELS[a.aspect] || { name: a.aspect, verb: 'aspects', tone: '' };
@@ -1903,10 +1912,10 @@ interface HouseEvidence {
   total: number;
 }
 
-function convergenceLevel(sourceCount: number): { label: string; color: string; bg: string } {
-  if (sourceCount >= 3) return { label: 'MAJOR', color: 'text-red-400', bg: 'bg-red-500/10' };
-  if (sourceCount >= 2) return { label: 'SIGNIFICANT', color: 'text-yellow-400', bg: 'bg-yellow-500/10' };
-  return { label: 'DEVELOPING', color: 'text-blue-400', bg: 'bg-blue-500/10' };
+function convergenceLevel(sourceCount: number): { labelKey: string; color: string; bg: string } {
+  if (sourceCount >= 3) return { labelKey: 'globalIntelligence.country.levelMajor', color: 'text-red-400', bg: 'bg-red-500/10' };
+  if (sourceCount >= 2) return { labelKey: 'globalIntelligence.country.levelSignificant', color: 'text-yellow-400', bg: 'bg-yellow-500/10' };
+  return { labelKey: 'globalIntelligence.country.levelDeveloping', color: 'text-blue-400', bg: 'bg-blue-500/10' };
 }
 
 function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progressions }: {
@@ -1916,6 +1925,7 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
   midpoints: MidpointEntry[];
   progressions: ProgPlanet[];
 }) {
+  const { t } = useTranslation();
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
 
   return (
@@ -1923,10 +1933,10 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
       <div>
         <h2 className="font-semibold text-text-primary flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-red-400" />
-          Where Pressure Is Building
+          {t('globalIntelligence.country.pressureBuilding')}
         </h2>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Sectors where transits, midpoints, and progressions converge — tap any sector to see the specific indicators
+          {t('globalIntelligence.country.convergenceDesc')}
         </p>
       </div>
 
@@ -1949,10 +1959,10 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-text-primary text-sm font-semibold">{sector}</span>
-                    <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{level.label}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{t(level.labelKey)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-text-muted text-[10px]">{h.total} indicators</span>
+                    <span className="text-text-muted text-[10px]">{t('globalIntelligence.country.indicatorsCount', { count: h.total })}</span>
                     <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                   </div>
                 </div>
@@ -1960,19 +1970,19 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
                   {h.transitCount > 0 && (
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                      <span className="text-text-muted text-[10px]">{h.transitCount} transit{h.transitCount !== 1 ? 's' : ''}</span>
+                      <span className="text-text-muted text-[10px]">{t(h.transitCount !== 1 ? 'globalIntelligence.country.transitCountPlural' : 'globalIntelligence.country.transitCountSingular', { count: h.transitCount })}</span>
                     </div>
                   )}
                   {h.midpointCount > 0 && (
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                      <span className="text-text-muted text-[10px]">{h.midpointCount} midpoint{h.midpointCount !== 1 ? 's' : ''}</span>
+                      <span className="text-text-muted text-[10px]">{t(h.midpointCount !== 1 ? 'globalIntelligence.country.midpointCountPlural' : 'globalIntelligence.country.midpointCountSingular', { count: h.midpointCount })}</span>
                     </div>
                   )}
                   {h.progressionCount > 0 && (
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                      <span className="text-text-muted text-[10px]">{h.progressionCount} progression{h.progressionCount !== 1 ? 's' : ''}</span>
+                      <span className="text-text-muted text-[10px]">{t(h.progressionCount !== 1 ? 'globalIntelligence.country.progressionCountPlural' : 'globalIntelligence.country.progressionCountSingular', { count: h.progressionCount })}</span>
                     </div>
                   )}
                 </div>
@@ -1983,21 +1993,21 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
                   {/* Transits in this house */}
                   {houseTransits.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-purple-400 text-[10px] font-bold uppercase tracking-wider">Transits</p>
-                      {houseTransits.map((t, i) => {
-                        const aspect = ASPECT_LABELS[t.aspect] || { name: t.aspect, verb: 'aspects', tone: '' };
+                      <p className="text-purple-400 text-[10px] font-bold uppercase tracking-wider">{t('globalIntelligence.country.statTransits')}</p>
+                      {houseTransits.map((th, i) => {
+                        const aspect = ASPECT_LABELS[th.aspect] || { name: th.aspect, verb: 'aspects', tone: '' };
                         return (
                           <div key={i} className="rounded bg-purple-500/5 border border-purple-500/10 p-2.5">
                             <div className="flex items-center justify-between">
                               <p className="text-text-primary text-xs font-medium">
-                                {t.transit_planet} {aspect.verb} {t.natal_planet}
+                                {th.transit_planet} {aspect.verb} {th.natal_planet}
                               </p>
                               <span className="text-text-muted text-[10px]">
-                                {Math.abs(t.orb).toFixed(1)}° · {t.is_applying ? '⚡ Building' : 'Fading'}
+                                {Math.abs(th.orb).toFixed(1)}° · {th.is_applying ? t('globalIntelligence.country.applying') : t('globalIntelligence.country.fading')}
                               </span>
                             </div>
                             <p className="text-text-secondary text-xs mt-1 leading-relaxed">
-                              {transitInterpretation(t)}
+                              {transitInterpretation(th)}
                             </p>
                           </div>
                         );
@@ -2008,7 +2018,7 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
                   {/* Midpoints in this house */}
                   {houseMidpoints.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-cyan-400 text-[10px] font-bold uppercase tracking-wider">Midpoints</p>
+                      <p className="text-cyan-400 text-[10px] font-bold uppercase tracking-wider">{t('globalIntelligence.country.statMidpoints')}</p>
                       {houseMidpoints.map((m, i) => (
                         <div key={i} className="rounded bg-cyan-500/5 border border-cyan-500/10 p-2.5">
                           <p className="text-text-primary text-xs font-medium">
@@ -2028,11 +2038,11 @@ function ConvergencePanel({ hotspots, allHouses, transitHits, midpoints, progres
                   {/* Progressions in this house */}
                   {houseProgressions.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-amber-400 text-[10px] font-bold uppercase tracking-wider">Progressions</p>
+                      <p className="text-amber-400 text-[10px] font-bold uppercase tracking-wider">{t('globalIntelligence.country.statProgressions')}</p>
                       {houseProgressions.map((p, i) => (
                         <div key={i} className="rounded bg-amber-500/5 border border-amber-500/10 p-2.5">
                           <p className="text-text-primary text-xs font-medium">
-                            {p.planet} in {p.sign}
+                            {t('globalIntelligence.country.planetInSign', { planet: p.planet, sign: p.sign })}
                           </p>
                           <p className="text-text-muted text-[10px] mt-0.5">
                             {SIGN_GLYPHS[p.sign] || ''} {p.degree.toFixed(1)}°
@@ -2146,6 +2156,7 @@ function PredictionPanel({ hotspots, transitHits, midpoints, progressions, progA
   progAspects: ProgAspect[];
   countryName: string;
 }) {
+  const { t } = useTranslation();
   if (hotspots.length === 0) return null;
 
   return (
@@ -2153,10 +2164,10 @@ function PredictionPanel({ hotspots, transitHits, midpoints, progressions, progA
       <div>
         <h2 className="font-semibold text-text-primary flex items-center gap-2 text-base">
           <span className="text-xl">📡</span>
-          Astrological Forecast
+          {t('globalIntelligence.country.astroForecast')}
         </h2>
         <p className="text-text-muted text-[10px] mt-0.5">
-          Forward-looking predictions synthesized from transits, midpoints, progressions, and convergence patterns
+          {t('globalIntelligence.country.forecastDesc')}
         </p>
       </div>
 
@@ -2170,8 +2181,8 @@ function PredictionPanel({ hotspots, transitHits, midpoints, progressions, progA
             <div key={h.house} className={`rounded-lg border border-white/10 p-4 ${level.bg}`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-text-primary text-sm font-bold">{sector}</span>
-                <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{level.label}</span>
-                <span className="text-text-muted text-[10px] ml-auto">{h.total} indicators from {h.sourceCount} techniques</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${level.color}`}>{t(level.labelKey)}</span>
+                <span className="text-text-muted text-[10px] ml-auto">{t('globalIntelligence.country.indicatorsFromTechniques', { count: h.total, sources: h.sourceCount })}</span>
               </div>
               <p className="text-text-secondary text-xs leading-relaxed">
                 {prediction}
@@ -2385,12 +2396,12 @@ function computeSynastryScore(aspects: SynastryAspect[]): { total: number; harmo
   harmonious = Math.round(harmonious * 10) / 10;
   challenging = Math.round(challenging * 10) / 10;
   const total = Math.round((harmonious - challenging) * 10) / 10;
-  let label = 'Balanced';
-  if (total >= 5) label = 'Strong Harmony';
-  else if (total >= 2) label = 'Mostly Harmonious';
-  else if (total >= 0) label = 'Balanced';
-  else if (total >= -3) label = 'Some Tension';
-  else label = 'Significant Tension';
+  let label = 'globalIntelligence.country.harmonyBalanced';
+  if (total >= 5) label = 'globalIntelligence.country.harmonyStrong';
+  else if (total >= 2) label = 'globalIntelligence.country.harmonyMostly';
+  else if (total >= 0) label = 'globalIntelligence.country.harmonyBalanced';
+  else if (total >= -3) label = 'globalIntelligence.country.harmonySomeTension';
+  else label = 'globalIntelligence.country.harmonySignificantTension';
   return { total, harmonious, challenging, label };
 }
 
@@ -2406,6 +2417,7 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
   aspects: SynastryAspect[];
   score: { total: number; harmonious: number; challenging: number; label: string };
 }) {
+  const { t } = useTranslation();
   const [showAllAspects, setShowAllAspects] = useState(false);
   const DEFAULT_SHOW = 8;
   const visible = showAllAspects ? aspects : aspects.slice(0, DEFAULT_SHOW);
@@ -2429,30 +2441,30 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
       <div className="grid grid-cols-3 gap-3 bg-white/5 rounded-lg p-3">
         <div className="text-center">
           <p className="text-emerald-400 text-lg font-bold">{score.harmonious}</p>
-          <p className="text-text-muted text-[10px]">Harmonious</p>
+          <p className="text-text-muted text-[10px]">{t('globalIntelligence.country.harmonious')}</p>
         </div>
         <div className="text-center">
           <p className={`text-lg font-bold ${score.total >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {score.total > 0 ? '+' : ''}{score.total}
           </p>
-          <p className="text-text-muted text-[10px]">Net Score</p>
+          <p className="text-text-muted text-[10px]">{t('globalIntelligence.country.netScore')}</p>
         </div>
         <div className="text-center">
           <p className="text-red-400 text-lg font-bold">{score.challenging}</p>
-          <p className="text-text-muted text-[10px]">Challenging</p>
+          <p className="text-text-muted text-[10px]">{t('globalIntelligence.country.challenging')}</p>
         </div>
       </div>
       <p className={`text-center text-sm font-medium ${score.total >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-        {score.label}
+        {t(score.label)}
       </p>
       <p className="text-text-muted text-[10px] text-center">
-        Based on {aspects.length} inter-chart aspects. Tighter orbs carry more weight.
+        {t('globalIntelligence.country.basedOnAspects', { count: aspects.length })}
       </p>
 
       {/* Aspect list */}
       {aspects.length > 0 && (
         <div className="space-y-1">
-          <p className="text-text-secondary text-xs font-semibold">Inter-Chart Aspects</p>
+          <p className="text-text-secondary text-xs font-semibold">{t('globalIntelligence.country.interChartAspects')}</p>
           {visible.map((a, i) => (
             <div key={i} className="rounded bg-white/5 border border-white/5 p-2.5">
               <div className="flex items-center gap-2 text-xs">
@@ -2473,7 +2485,7 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
               onClick={() => setShowAllAspects(true)}
               className="w-full text-center text-accent-primary text-xs py-1.5 hover:underline"
             >
-              Show all {aspects.length} aspects ({aspects.length - DEFAULT_SHOW} more)
+              {t('globalIntelligence.country.showAllAspects', { count: aspects.length, more: aspects.length - DEFAULT_SHOW })}
             </button>
           )}
           {showAllAspects && aspects.length > DEFAULT_SHOW && (
@@ -2481,7 +2493,7 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
               onClick={() => setShowAllAspects(false)}
               className="w-full text-center text-text-muted text-xs py-1.5 hover:underline"
             >
-              Show fewer
+              {t('globalIntelligence.country.showFewer')}
             </button>
           )}
         </div>
@@ -2491,15 +2503,15 @@ function SynastryResults({ countryA, countryB, aspects, score }: {
       <div className="flex justify-center gap-4 pt-2 border-t border-white/5">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span className="text-text-muted text-[10px]">Harmonious</span>
+          <span className="text-text-muted text-[10px]">{t('globalIntelligence.country.harmonious')}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-red-400" />
-          <span className="text-text-muted text-[10px]">Challenging</span>
+          <span className="text-text-muted text-[10px]">{t('globalIntelligence.country.challenging')}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-purple-400" />
-          <span className="text-text-muted text-[10px]">Neutral</span>
+          <span className="text-text-muted text-[10px]">{t('globalIntelligence.country.neutral')}</span>
         </div>
       </div>
     </div>

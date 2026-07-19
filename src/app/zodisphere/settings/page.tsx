@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Search, ShieldCheck, Trash2 } from 'lucide-react';
 import {
   getMyPrefs,
@@ -22,16 +23,17 @@ import {
   type VisibilityMode,
 } from '@/lib/zodisphereService';
 
-const MODES: { value: VisibilityMode; label: string; hint: string }[] = [
-  { value: 'hidden',  label: 'Hidden',        hint: 'You appear nowhere on the Zodisphere (default).' },
-  { value: 'country', label: 'Country only',  hint: 'Others can see the country you chose — nothing finer.' },
-  { value: 'region',  label: 'Region only',   hint: 'Visible at state / province / island level.' },
-  { value: 'city',    label: 'City level',    hint: 'Discoverable in your chosen city’s community.' },
-  { value: 'friends', label: 'Friends only',  hint: 'Only accepted friends can see your chosen place.' },
-  { value: 'public',  label: 'Public within Align', hint: 'Any Align member can find you via your chosen place.' },
+const MODES: { value: VisibilityMode; labelKey: string; hintKey: string }[] = [
+  { value: 'hidden',  labelKey: 'zodisphere.settings.modeHidden',  hintKey: 'zodisphere.settings.modeHiddenHint' },
+  { value: 'country', labelKey: 'zodisphere.settings.modeCountry', hintKey: 'zodisphere.settings.modeCountryHint' },
+  { value: 'region',  labelKey: 'zodisphere.settings.modeRegion',  hintKey: 'zodisphere.settings.modeRegionHint' },
+  { value: 'city',    labelKey: 'zodisphere.settings.modeCity',    hintKey: 'zodisphere.settings.modeCityHint' },
+  { value: 'friends', labelKey: 'zodisphere.settings.modeFriends', hintKey: 'zodisphere.settings.modeFriendsHint' },
+  { value: 'public',  labelKey: 'zodisphere.settings.modePublic',  hintKey: 'zodisphere.settings.modePublicHint' },
 ];
 
 export default function ZodisphereSettingsPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<VisibilityMode>('hidden');
@@ -62,7 +64,7 @@ export default function ZodisphereSettingsPage() {
 
   const save = useCallback(async () => {
     if (mode !== 'hidden' && !area) {
-      setMessage('Choose a place first — visibility needs a city, region, or country.');
+      setMessage(t('zodisphere.settings.choosePlaceFirst'));
       return;
     }
     setSaving(true);
@@ -74,15 +76,15 @@ export default function ZodisphereSettingsPage() {
     });
     setSaving(false);
     if (!res.success) {
-      setMessage(res.error ?? 'Save failed.');
+      setMessage(res.error ?? t('zodisphere.settings.saveFailed'));
     } else if (mode === 'hidden') {
-      setMessage('Saved — you are hidden from the Zodisphere.');
+      setMessage(t('zodisphere.settings.savedHidden'));
     } else {
       setMessage(
-        `You're on the map in ${area?.display_name ?? 'your place'}. Open the Zodisphere and you'll see your own 📍 marker there; a public count appears once 10+ members opt in.`
+        t('zodisphere.settings.savedOnMap', { place: area?.display_name ?? t('zodisphere.settings.yourPlace') })
       );
     }
-  }, [mode, area]);
+  }, [mode, area, t]);
 
   const removeAll = useCallback(async () => {
     setSaving(true);
@@ -91,39 +93,38 @@ export default function ZodisphereSettingsPage() {
     if (res.success) {
       setMode('hidden');
       setArea(null);
-      setMessage('Your location association has been removed. You are hidden.');
+      setMessage(t('zodisphere.settings.removedHidden'));
     } else {
-      setMessage(res.error ?? 'Remove failed.');
+      setMessage(res.error ?? t('zodisphere.settings.removeFailed'));
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen bg-bg-primary">
       <div className="max-w-lg mx-auto px-4 py-8">
         <Link href="/zodisphere" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-6">
-          <ArrowLeft className="w-4 h-4" /> Back to the Zodisphere
+          <ArrowLeft className="w-4 h-4" /> {t('zodisphere.settings.back')}
         </Link>
 
-        <h1 className="text-xl font-semibold text-text-primary">My Zodisphere visibility</h1>
+        <h1 className="text-xl font-semibold text-text-primary">{t('zodisphere.settings.title')}</h1>
         <p className="text-sm text-text-muted mt-1">
-          Choose a place to represent you — a city, region, or country you select yourself. Align
-          never uses GPS and never shows your exact location. Your marker is a place, not a position.
+          {t('zodisphere.settings.subtitle')}
         </p>
 
         {loading ? (
-          <p className="text-sm text-text-muted mt-8">Loading…</p>
+          <p className="text-sm text-text-muted mt-8">{t('zodisphere.settings.loading')}</p>
         ) : (
           <div className="mt-6 space-y-6">
             {/* ── Place picker ── */}
             <section className="bg-bg-card border border-border-primary rounded-2xl p-4">
               <h2 className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-3">
-                <MapPin className="w-4 h-4 text-accent-primary" /> My place
+                <MapPin className="w-4 h-4 text-accent-primary" /> {t('zodisphere.settings.myPlace')}
               </h2>
               {area ? (
                 <div className="flex items-center justify-between bg-bg-secondary rounded-xl px-3 py-2.5">
                   <span className="text-sm text-text-primary">{area.display_name}</span>
                   <button onClick={() => setArea(null)} className="text-xs text-text-muted hover:text-text-primary">
-                    Change
+                    {t('zodisphere.settings.change')}
                   </button>
                 </div>
               ) : (
@@ -133,7 +134,7 @@ export default function ZodisphereSettingsPage() {
                     <input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search a city, region, or country…"
+                      placeholder={t('zodisphere.settings.searchPlaceholder')}
                       className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-muted outline-none"
                     />
                   </div>
@@ -155,15 +156,14 @@ export default function ZodisphereSettingsPage() {
                 </div>
               )}
               <p className="text-[11px] text-text-muted mt-3">
-                Your selected place is shown on your profile and the community map <em>only</em> at the
-                visibility level you pick below, and is included in that place’s member count.
+                {t('zodisphere.settings.placeNotePre')} <em>{t('zodisphere.settings.placeNoteEm')}</em> {t('zodisphere.settings.placeNotePost')}
               </p>
             </section>
 
             {/* ── Visibility mode ── */}
             <section className="bg-bg-card border border-border-primary rounded-2xl p-4">
               <h2 className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-3">
-                <ShieldCheck className="w-4 h-4 text-accent-primary" /> Who can see it
+                <ShieldCheck className="w-4 h-4 text-accent-primary" /> {t('zodisphere.settings.whoCanSee')}
               </h2>
               <div className="space-y-1.5">
                 {MODES.map((m) => (
@@ -181,8 +181,8 @@ export default function ZodisphereSettingsPage() {
                       className="mt-0.5 accent-current"
                     />
                     <span>
-                      <span className="block text-sm text-text-primary">{m.label}</span>
-                      <span className="block text-[11px] text-text-muted">{m.hint}</span>
+                      <span className="block text-sm text-text-primary">{t(m.labelKey)}</span>
+                      <span className="block text-[11px] text-text-muted">{t(m.hintKey)}</span>
                     </span>
                   </label>
                 ))}
@@ -192,7 +192,7 @@ export default function ZodisphereSettingsPage() {
             {message && <p className="text-sm text-accent-primary">{message}</p>}
 
             <button onClick={save} disabled={saving} className="w-full btn-primary py-2.5 rounded-xl text-sm font-medium">
-              {saving ? 'Saving…' : 'Save visibility'}
+              {saving ? t('zodisphere.settings.saving') : t('zodisphere.settings.save')}
             </button>
 
             <button
@@ -200,12 +200,11 @@ export default function ZodisphereSettingsPage() {
               disabled={saving}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/15"
             >
-              <Trash2 className="w-4 h-4" /> Remove my location & hide me
+              <Trash2 className="w-4 h-4" /> {t('zodisphere.settings.removeButton')}
             </button>
 
             <p className="text-[11px] text-text-muted">
-              Every change here is recorded in your consent history. Deleting your Align account also
-              deletes your place selection, consent history, Zodisphere posts, and event registrations.
+              {t('zodisphere.settings.consentNote')}
             </p>
           </div>
         )}

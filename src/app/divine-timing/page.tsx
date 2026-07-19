@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
@@ -8,13 +9,13 @@ import { MarkdownText } from '@/components/ui/MarkdownText';
 import { Sparkles, Clock, Eye, ShieldAlert, ArrowRight, Lock } from 'lucide-react';
 
 const CATEGORIES = [
-  { key: 'relationship', label: 'Relationship', house: 7 },
-  { key: 'money', label: 'Money', house: 2 },
-  { key: 'career', label: 'Career', house: 10 },
-  { key: 'move', label: 'Home / Move', house: 4 },
-  { key: 'truth', label: 'Truth', house: 7 },
-  { key: 'lost_object', label: 'Lost Item', house: 2 },
-  { key: 'timing', label: 'Timing', house: 1 },
+  { key: 'relationship', labelKey: 'divineTiming.categories.relationship', house: 7 },
+  { key: 'money', labelKey: 'divineTiming.categories.money', house: 2 },
+  { key: 'career', labelKey: 'divineTiming.categories.career', house: 10 },
+  { key: 'move', labelKey: 'divineTiming.categories.move', house: 4 },
+  { key: 'truth', labelKey: 'divineTiming.categories.truth', house: 7 },
+  { key: 'lost_object', labelKey: 'divineTiming.categories.lostObject', house: 2 },
+  { key: 'timing', labelKey: 'divineTiming.categories.timing', house: 1 },
 ];
 
 const VERDICT_COLOR: Record<string, string> = {
@@ -31,6 +32,7 @@ const VERDICT_COLOR: Record<string, string> = {
 type Phase = 'ask' | 'casting' | 'verdict';
 
 export default function DivineTimingPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [phase, setPhase] = useState<Phase>('ask');
   const [question, setQuestion] = useState('');
@@ -79,7 +81,7 @@ export default function DivineTimingPage() {
       // brief ceremony beat
       setTimeout(() => { setResult(r); setPhase('verdict'); }, 1100);
     } catch (e: any) {
-      setError(e?.message || 'The cast failed. Please try again.');
+      setError(e?.message || t('divineTiming.castFailed'));
       setPhase('ask');
     }
   }
@@ -97,7 +99,7 @@ export default function DivineTimingPage() {
     } catch (e: any) {
       setNarrative('');
       setNarrating(false);
-      setError('Could not load the full reading.');
+      setError(t('divineTiming.narrationFailed'));
     }
   }
 
@@ -113,9 +115,9 @@ export default function DivineTimingPage() {
     <div className="max-w-2xl mx-auto pb-16">
       <div className="text-center mb-6">
         <h1 className="text-3xl font-display font-bold text-text-primary flex items-center justify-center gap-2">
-          <Sparkles className="w-7 h-7 text-accent-primary" /> Divine Timing
+          <Sparkles className="w-7 h-7 text-accent-primary" /> {t('divineTiming.title')}
         </h1>
-        <p className="text-sm text-text-tertiary mt-1">Ask a real question. Cast the moment. Receive the verdict.</p>
+        <p className="text-sm text-text-tertiary mt-1">{t('divineTiming.subtitle')}</p>
       </div>
 
       {/* ── ASK ── */}
@@ -124,31 +126,31 @@ export default function DivineTimingPage() {
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask a specific question — e.g. “Will this relationship work?”, “Should I launch today?”, “Will I get the money?”"
+            placeholder={t('divineTiming.questionPlaceholder')}
             rows={3}
             className="input w-full resize-none"
             maxLength={200}
           />
           <div>
-            <p className="text-[11px] uppercase tracking-widest text-text-muted mb-2">Question type</p>
+            <p className="text-[11px] uppercase tracking-widest text-text-muted mb-2">{t('divineTiming.questionType')}</p>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button
                   key={c.key}
-                  onClick={() => setCategory(c)}
+                  onClick={() => setCategory({ key: c.key, label: t(c.labelKey), house: c.house })}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                     category?.key === c.key
                       ? 'border-accent-primary text-accent-primary bg-accent-primary/10'
                       : 'border-border-primary text-text-secondary hover:border-accent-primary/40'
                   }`}
                 >
-                  {c.label}
+                  {t(c.labelKey)}
                 </button>
               ))}
             </div>
             {category && (
               <p className="text-[11px] text-text-muted mt-2">
-                Reading as <span className="text-text-secondary">{category.label}</span> (house {category.house})
+                {t('divineTiming.readingAs')} <span className="text-text-secondary">{category.label}</span> {t('divineTiming.houseSuffix', { house: category.house })}
               </p>
             )}
           </div>
@@ -157,11 +159,11 @@ export default function DivineTimingPage() {
             disabled={!question.trim()}
             className="btn-primary w-full text-base py-3 flex items-center justify-center gap-2 disabled:opacity-40"
           >
-            <Sparkles className="w-4 h-4" /> Cast the Moment
+            <Sparkles className="w-4 h-4" /> {t('divineTiming.castButton')}
           </button>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <p className="text-[11px] text-text-muted text-center">
-            The chart is cast for this exact moment and your location.
+            {t('divineTiming.castHint')}
           </p>
         </div>
       )}
@@ -172,7 +174,7 @@ export default function DivineTimingPage() {
           <div className="animate-pulse">
             <Sparkles className="w-12 h-12 text-accent-primary mx-auto mb-4" />
           </div>
-          <LoadingCosmic label="Casting the chart for this moment…" />
+          <LoadingCosmic label={t('divineTiming.castingLabel')} />
         </div>
       )}
 
@@ -193,13 +195,13 @@ export default function DivineTimingPage() {
             <>
               {/* Verdict headline */}
               <div className="card text-center bg-gradient-cosmic border-accent-muted">
-                <p className="text-[11px] uppercase tracking-widest text-text-muted mb-1">The Verdict</p>
+                <p className="text-[11px] uppercase tracking-widest text-text-muted mb-1">{t('divineTiming.theVerdict')}</p>
                 <p className={`text-4xl font-display font-bold ${VERDICT_COLOR[result.verdict] || 'text-text-primary'}`}>
                   {result.verdict}
                 </p>
-                <p className="text-sm text-text-tertiary mt-2">Confidence {result.confidence}%</p>
+                <p className="text-sm text-text-tertiary mt-2">{t('divineTiming.confidence', { percent: result.confidence })}</p>
                 {result.timing_window && (
-                  <p className="text-sm text-accent-primary mt-1">Timing: {result.timing_window}</p>
+                  <p className="text-sm text-accent-primary mt-1">{t('divineTiming.timingWindow', { window: result.timing_window })}</p>
                 )}
               </div>
 
@@ -212,22 +214,22 @@ export default function DivineTimingPage() {
               {!locked ? (
                 <>
                   {result.best_time_to_act && (
-                    <InfoRow icon={Clock} title="Best time to act"
+                    <InfoRow icon={Clock} title={t('divineTiming.bestTimeToAct')}
                       body={result.best_time_to_act.label} />
                   )}
                   {result.hidden_motive && (
-                    <InfoRow icon={Eye} title="Hidden motive" body={result.hidden_motive} />
+                    <InfoRow icon={Eye} title={t('divineTiming.hiddenMotive')} body={result.hidden_motive} />
                   )}
                   {result.best_action && (
-                    <InfoRow icon={ArrowRight} title="Best action" body={result.best_action} />
+                    <InfoRow icon={ArrowRight} title={t('divineTiming.bestAction')} body={result.best_action} />
                   )}
                   {result.what_needs_to_change && (
-                    <InfoRow icon={Sparkles} title="What would improve it" body={result.what_needs_to_change} />
+                    <InfoRow icon={Sparkles} title={t('divineTiming.whatWouldImprove')} body={result.what_needs_to_change} />
                   )}
                   {result.warnings?.length > 0 && (
                     <div className="card border-amber-500/30">
                       <p className="text-[11px] uppercase tracking-widest text-amber-400 mb-2 flex items-center gap-1.5">
-                        <ShieldAlert className="w-3.5 h-3.5" /> Warnings
+                        <ShieldAlert className="w-3.5 h-3.5" /> {t('divineTiming.warnings')}
                       </p>
                       <ul className="text-sm text-text-secondary space-y-1 list-disc list-inside">
                         {result.warnings.map((w: string, i: number) => <li key={i}>{w}</li>)}
@@ -238,15 +240,15 @@ export default function DivineTimingPage() {
                   {/* Full AI reading */}
                   {!narrative && !narrating && (
                     <button onClick={revealFull} className="btn-secondary w-full">
-                      Reveal the full reading
+                      {t('divineTiming.revealFull')}
                     </button>
                   )}
                   {(narrating || narrative) && (
                     <div className="card">
-                      <p className="text-[11px] uppercase tracking-widest text-text-muted mb-2">The Reading</p>
+                      <p className="text-[11px] uppercase tracking-widest text-text-muted mb-2">{t('divineTiming.theReading')}</p>
                       {narrative
                         ? <MarkdownText text={narrative} />
-                        : <span className="text-text-muted text-sm">Reading the chart…</span>}
+                        : <span className="text-text-muted text-sm">{t('divineTiming.readingChart')}</span>}
                     </div>
                   )}
                 </>
@@ -254,14 +256,14 @@ export default function DivineTimingPage() {
                 <div className="card bg-gradient-cosmic border-accent-muted text-center">
                   <Lock className="w-6 h-6 text-accent-primary mx-auto mb-2" />
                   <p className="text-sm text-text-secondary mb-3">{result.upgrade_message}</p>
-                  <a href="/pricing" className="btn-primary inline-block px-8">Unlock with Premium</a>
+                  <a href="/pricing" className="btn-primary inline-block px-8">{t('divineTiming.unlockPremium')}</a>
                 </div>
               )}
             </>
           )}
 
           <button onClick={reset} className="text-sm text-text-tertiary hover:text-text-primary w-full py-2">
-            Ask another question
+            {t('divineTiming.askAnother')}
           </button>
         </div>
       )}

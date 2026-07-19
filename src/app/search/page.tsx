@@ -13,6 +13,7 @@ import {
 import { Search, X, Users, FileText, Globe, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -26,17 +27,18 @@ interface RecentSearch {
 
 // ── Tab Config ──────────────────────────────────────────────────────
 
-const TABS: { key: TabFilter; label: string; icon: typeof Search }[] = [
-  { key: 'all', label: 'All', icon: Search },
-  { key: 'users', label: 'Users', icon: Users },
-  { key: 'posts', label: 'Posts', icon: FileText },
-  { key: 'communities', label: 'Communities', icon: Globe },
-  { key: 'reels', label: 'Reels', icon: Film },
+const TABS: { key: TabFilter; labelKey: string; icon: typeof Search }[] = [
+  { key: 'all', labelKey: 'search.tabAll', icon: Search },
+  { key: 'users', labelKey: 'search.tabUsers', icon: Users },
+  { key: 'posts', labelKey: 'search.tabPosts', icon: FileText },
+  { key: 'communities', labelKey: 'search.tabCommunities', icon: Globe },
+  { key: 'reels', labelKey: 'search.tabReels', icon: Film },
 ];
 
 // ── Main Search Page ────────────────────────────────────────────────
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const userId = user?.id || '';
 
@@ -89,7 +91,7 @@ export default function SearchPage() {
             allResults.push({
               id: u.id,
               type: 'users',
-              title: u.display_name || u.username || 'Unknown',
+              title: u.display_name || u.username || t('search.unknown'),
               subtitle: u.username ? `@${u.username}` : u.bio?.slice(0, 50) || '',
               avatar_url: u.avatar_url || undefined,
               score,
@@ -116,7 +118,7 @@ export default function SearchPage() {
             allResults.push({
               id: p.id,
               type: 'posts',
-              title: p.content?.slice(0, 80) || 'Post',
+              title: p.content?.slice(0, 80) || t('search.badgePost'),
               subtitle: new Date(p.created_at).toLocaleDateString(),
               score,
               highlight: extractHighlight(p.content || '', sanitized, 80),
@@ -142,8 +144,8 @@ export default function SearchPage() {
             allResults.push({
               id: c.id,
               type: 'communities',
-              title: c.name || 'Community',
-              subtitle: c.member_count ? `${c.member_count} members` : c.description?.slice(0, 50) || '',
+              title: c.name || t('search.badgeCommunity'),
+              subtitle: c.member_count ? t('search.members', { count: c.member_count }) : c.description?.slice(0, 50) || '',
               avatar_url: c.avatar_url || undefined,
               score,
               highlight: extractHighlight(c.description || '', sanitized, 60),
@@ -160,7 +162,7 @@ export default function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Handle text change with debounce
   const handleQueryChange = useCallback((text: string) => {
@@ -209,15 +211,15 @@ export default function SearchPage() {
   function getTypeBadge(type: SearchEntityType): { label: string; className: string } {
     switch (type) {
       case 'users':
-        return { label: 'User', className: 'bg-blue-500/15 text-blue-400' };
+        return { label: t('search.badgeUser'), className: 'bg-blue-500/15 text-blue-400' };
       case 'posts':
-        return { label: 'Post', className: 'bg-green-500/15 text-green-400' };
+        return { label: t('search.badgePost'), className: 'bg-green-500/15 text-green-400' };
       case 'communities':
-        return { label: 'Community', className: 'bg-purple-500/15 text-purple-400' };
+        return { label: t('search.badgeCommunity'), className: 'bg-purple-500/15 text-purple-400' };
       case 'reels':
-        return { label: 'Reel', className: 'bg-pink-500/15 text-pink-400' };
+        return { label: t('search.badgeReel'), className: 'bg-pink-500/15 text-pink-400' };
       default:
-        return { label: 'Other', className: 'bg-gray-500/15 text-gray-400' };
+        return { label: t('search.badgeOther'), className: 'bg-gray-500/15 text-gray-400' };
     }
   }
 
@@ -225,7 +227,7 @@ export default function SearchPage() {
     <div className="max-w-2xl mx-auto">
       {/* Search Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-display font-bold text-text-primary mb-4">Search</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary mb-4">{t('search.title')}</h1>
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
           <input
@@ -233,7 +235,7 @@ export default function SearchPage() {
             type="text"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
-            placeholder="Search the cosmos..."
+            placeholder={t('search.placeholder')}
             className="w-full bg-bg-card border border-border-primary rounded-full pl-12 pr-10 py-3 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-accent-primary transition-colors"
           />
           {query.length > 0 && (
@@ -263,7 +265,7 @@ export default function SearchPage() {
               )}
             >
               <Icon className="w-3.5 h-3.5" />
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           );
         })}
@@ -273,28 +275,28 @@ export default function SearchPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-8 h-8 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-text-muted mt-4">Searching the stars...</p>
+          <p className="text-sm text-text-muted mt-4">{t('search.searching')}</p>
         </div>
       ) : hasSearched && results.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <span className="text-5xl block mb-4">{'✨'}</span>
-          <h2 className="text-lg font-semibold text-text-primary mb-2">No cosmic matches found</h2>
-          <p className="text-sm text-text-muted">Try different keywords or check the spelling</p>
+          <h2 className="text-lg font-semibold text-text-primary mb-2">{t('search.noResults')}</h2>
+          <p className="text-sm text-text-muted">{t('search.noResultsHint')}</p>
         </div>
       ) : !hasSearched ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <span className="text-6xl block mb-4">{'🔮'}</span>
           <h2 className="text-lg font-semibold text-text-primary mb-2">
-            Search for people, posts, and communities
+            {t('search.emptyTitle')}
           </h2>
           <p className="text-sm text-text-muted mb-8">
-            Discover cosmic connections across the universe
+            {t('search.emptyHint')}
           </p>
 
           {recentSearches.length > 0 && (
             <div className="w-full max-w-sm text-left">
               <h3 className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-3">
-                Recent Searches
+                {t('search.recentSearches')}
               </h3>
               <div className="space-y-1">
                 {recentSearches.map((r) => (

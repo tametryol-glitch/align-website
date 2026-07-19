@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
@@ -48,6 +49,7 @@ function confColor(score: number): string {
 }
 
 export default function StarseedOriginPage() {
+  const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [result, setResult] = useState<OriginResult | null>(null);
   const [activation, setActivation] = useState<Activation | null>(null);
@@ -57,7 +59,7 @@ export default function StarseedOriginPage() {
 
   const load = useCallback(async (recalculate = false) => {
     if (!profile?.birth_date || !profile?.latitude) {
-      setError('Please set up your birth data first (date and location).');
+      setError(t('readings.starseedOrigin.birthDataRequired'));
       setLoading(false);
       return;
     }
@@ -66,7 +68,7 @@ export default function StarseedOriginPage() {
     try {
       const data = (await api.getStarseedOrigin(buildBirthData(profile), recalculate)) as OriginResult;
       if (data?.error || !data?.primary) {
-        setError(data?.error || 'We could not read a clear soul-origin signature from this chart.');
+        setError(data?.error || t('readings.starseedOrigin.noClearSignature'));
       }
       setResult(data);
     } catch (err: any) {
@@ -75,7 +77,7 @@ export default function StarseedOriginPage() {
       setLoading(false);
       setRecalculating(false);
     }
-  }, [profile]);
+  }, [profile, t]);
 
   useEffect(() => { load(false); }, [load]);
 
@@ -97,14 +99,14 @@ export default function StarseedOriginPage() {
     <PaywallGate feature="starseed">
       <div className="max-w-3xl mx-auto">
         <Link href="/readings" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-4">
-          <ArrowLeft className="w-4 h-4" /> Back to Readings
+          <ArrowLeft className="w-4 h-4" /> {t('readings.backToReadings')}
         </Link>
         <div className="flex items-center gap-3 mb-6">
           <Sparkles className="w-8 h-8 text-accent-primary" />
           <div>
-            <h1 className="text-2xl font-display font-bold text-text-primary">Soul Origin</h1>
+            <h1 className="text-2xl font-display font-bold text-text-primary">{t('readings.starseedOrigin.title')}</h1>
             <p className="text-text-tertiary text-sm">
-              Your stable star-lineage fingerprint — consistent unless your birth data changes.
+              {t('readings.starseedOrigin.subtitle')}
             </p>
           </div>
         </div>
@@ -112,14 +114,14 @@ export default function StarseedOriginPage() {
         {loading && (
           <div className="card text-center py-12">
             <span className="text-5xl block mb-4 animate-pulse">✦</span>
-            <p className="text-text-tertiary">Reading your soul-origin fingerprint…</p>
+            <p className="text-text-tertiary">{t('readings.starseedOrigin.loading')}</p>
           </div>
         )}
 
         {!loading && error && !primary && (
           <div className="card text-center py-12">
             <p className="text-red-400 text-sm mb-4">{error}</p>
-            <button onClick={() => load(false)} className="btn-primary">Retry</button>
+            <button onClick={() => load(false)} className="btn-primary">{t('common.retry')}</button>
           </div>
         )}
 
@@ -128,22 +130,23 @@ export default function StarseedOriginPage() {
             {/* Primary Resonance */}
             <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted text-center">
               <p className="text-accent-secondary text-sm font-medium uppercase tracking-wider mb-2">
-                Primary Resonance
+                {t('readings.starseedOrigin.primaryResonance')}
               </p>
               <h2 className="text-3xl font-display font-bold text-text-primary mb-2">
                 {primary.lineage}
               </h2>
               <p className={`text-sm font-medium capitalize ${confColor(conf.score)}`}>
-                {conf.label} resonance · {conf.score}/100
+                {t('readings.starseedOrigin.resonanceLine', { label: conf.label, score: conf.score })}
               </p>
             </div>
 
             {mixed && mixed.length === 2 && (
               <div className="card border-accent-muted bg-accent-muted/10">
                 <p className="text-sm text-text-secondary leading-relaxed">
-                  ⚡ Your top two lineages — <strong>{mixed[0].lineage}</strong> and{' '}
-                  <strong>{mixed[1].lineage}</strong> — scored within the blended-origin margin.
-                  Read yourself as a <strong>mixed lineage</strong>, not a single origin.
+                  ⚡ {t('readings.starseedOrigin.mixedIntro')} <strong>{mixed[0].lineage}</strong>{' '}
+                  {t('readings.starseedOrigin.mixedAnd')} <strong>{mixed[1].lineage}</strong>{' '}
+                  {t('readings.starseedOrigin.mixedOutro')} <strong>{t('readings.starseedOrigin.mixedLineageTerm')}</strong>
+                  {t('readings.starseedOrigin.mixedEnd')}
                 </p>
               </div>
             )}
@@ -153,14 +156,14 @@ export default function StarseedOriginPage() {
 
               {result?.why_won && (
                 <div className="mt-4 pt-4 border-t border-accent-muted/40">
-                  <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-1">Why this won</p>
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-1">{t('readings.starseedOrigin.whyThisWon')}</p>
                   <p className="text-sm text-text-secondary leading-relaxed">{result.why_won}</p>
                 </div>
               )}
 
               {!!result?.supporting_placements?.length && (
                 <div className="mt-4">
-                  <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-2">Supporting placements</p>
+                  <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-2">{t('readings.starseedOrigin.supportingPlacements')}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {result.supporting_placements.slice(0, 8).map((p, i) => (
                       <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-bg-tertiary text-text-tertiary">{p}</span>
@@ -179,15 +182,15 @@ export default function StarseedOriginPage() {
 
               {chars && (
                 <div className="mt-4 pt-4 border-t border-accent-muted/40 space-y-3">
-                  <CharRow label="Gifts & Powers" text={chars.gifts} />
-                  <CharRow label="Earth Challenge" text={chars.earthChallenge} />
-                  <CharRow label="Physical Traits" text={chars.physicalTraits} />
-                  <CharRow label="Relational Style" text={chars.relationalStyle} />
+                  <CharRow label={t('readings.starseedOrigin.giftsPowers')} text={chars.gifts} />
+                  <CharRow label={t('readings.starseedOrigin.earthChallenge')} text={chars.earthChallenge} />
+                  <CharRow label={t('readings.starseedOrigin.physicalTraits')} text={chars.physicalTraits} />
+                  <CharRow label={t('readings.starseedOrigin.relationalStyle')} text={chars.relationalStyle} />
                 </div>
               )}
               {chars?.lore && (
                 <div className="mt-4 pt-4 border-t border-accent-muted/40 space-y-3">
-                  <p className="text-[11px] uppercase tracking-widest text-amber-400 font-semibold">Cosmic Lore</p>
+                  <p className="text-[11px] uppercase tracking-widest text-amber-400 font-semibold">{t('readings.starseedOrigin.cosmicLore')}</p>
                   {LORE_SECTIONS.filter((s) => chars.lore![s.key]).map((s) => (
                     <CharRow key={s.key} label={s.label} text={chars.lore![s.key]!} />
                   ))}
@@ -198,7 +201,7 @@ export default function StarseedOriginPage() {
             {/* Secondary */}
             {secondary && !mixed && (
               <>
-                <h3 className="text-sm font-semibold text-text-primary pt-2">Secondary Lineage</h3>
+                <h3 className="text-sm font-semibold text-text-primary pt-2">{t('readings.starseedOrigin.secondaryLineage')}</h3>
                 <div className="card">
                   <h4 className="font-semibold text-text-primary text-sm mb-1 flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-accent-primary" /> {secondary.lineage}
@@ -211,9 +214,9 @@ export default function StarseedOriginPage() {
             {/* Dormant Star Memory */}
             {!!dormant.length && (
               <>
-                <h3 className="text-sm font-semibold text-text-primary pt-2">Dormant Star Memory</h3>
+                <h3 className="text-sm font-semibold text-text-primary pt-2">{t('readings.starseedOrigin.dormantStarMemory')}</h3>
                 <p className="text-xs text-text-muted -mt-1">
-                  Hidden lineages carried in your 8th/12th houses, asteroids, or midpoints — quiet now, activatable through inner work.
+                  {t('readings.starseedOrigin.dormantDescription')}
                 </p>
                 {dormant.map((d) => (
                   <div key={d.family} className="card opacity-90">
@@ -227,29 +230,29 @@ export default function StarseedOriginPage() {
             {/* Earth Mission */}
             {chars && (
               <div className="card bg-accent-muted/10 border-accent-muted">
-                <p className="text-[10px] uppercase tracking-widest text-accent-secondary font-semibold mb-2">✨ Earth Mission</p>
+                <p className="text-[10px] uppercase tracking-widest text-accent-secondary font-semibold mb-2">✨ {t('readings.starseedOrigin.earthMission')}</p>
                 <p className="text-sm text-text-secondary leading-relaxed">{chars.lifeLesson}</p>
               </div>
             )}
 
             {/* Confidence & Stability */}
             <div className="card">
-              <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-1">Confidence &amp; Stability</p>
+              <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold mb-1">{t('readings.starseedOrigin.confidenceStability')}</p>
               <p className={`text-lg font-display font-bold capitalize ${confColor(conf.score)}`}>{conf.label} · {conf.score}/100</p>
               <p className="text-sm text-text-tertiary leading-relaxed mt-1">
                 {result?.stable
-                  ? 'This is a stable, repeatable reading — computed once and stored. The same birth data always returns the same origin.'
-                  : 'This reading may vary.'}
+                  ? t('readings.starseedOrigin.stableReading')
+                  : t('readings.starseedOrigin.mayVary')}
               </p>
               {result?.birth_time_required_for_full_confidence && (
                 <p className="text-sm text-amber-400 leading-relaxed mt-2">
-                  ⚠ No exact birth time was used, so angle- and house-based evidence is excluded and confidence is capped. Add an exact birth time for a fuller reading.
+                  ⚠ {t('readings.starseedOrigin.noBirthTimeWarning')}
                 </p>
               )}
               {result?.engine_outdated && (
                 <button onClick={() => load(true)} disabled={recalculating} className="btn-secondary mt-3 inline-flex items-center gap-1.5">
                   <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin' : ''}`} />
-                  {recalculating ? 'Recalculating…' : 'Recalculate with the latest engine'}
+                  {recalculating ? t('readings.starseedOrigin.recalculating') : t('readings.starseedOrigin.recalculate')}
                 </button>
               )}
             </div>
@@ -258,21 +261,21 @@ export default function StarseedOriginPage() {
             {!!activation?.activated_families?.length && (
               <>
                 <h3 className="text-sm font-semibold text-text-primary pt-2 flex items-center gap-1.5">
-                  <Sun className="w-4 h-4 text-amber-400" /> Current Star Activation
+                  <Sun className="w-4 h-4 text-amber-400" /> {t('readings.starseedOrigin.currentStarActivation')}
                 </h3>
                 <p className="text-xs text-text-muted -mt-1">
-                  Which star families are lit in the sky right now. A live, daily layer — it does <strong>not</strong> change your permanent origin above.
+                  {t('readings.starseedOrigin.activationDescA')} <strong>{t('readings.starseedOrigin.activationDescNot')}</strong> {t('readings.starseedOrigin.activationDescB')}
                 </p>
                 <div className="card border-sky-500/25">
                   {activation.activated_families.map((a, i) => (
                     <div key={i} className="mb-2 last:mb-0">
                       <span className="text-sm font-medium text-text-secondary">{a.lineage}</span>
                       <span className="text-xs text-text-tertiary ml-2">
-                        transiting {a.transiting_body} on {a.star} ({a.orb.toFixed(1)}°)
+                        {t('readings.starseedOrigin.transitingLine', { body: a.transiting_body, star: a.star, orb: a.orb.toFixed(1) })}
                       </span>
                     </div>
                   ))}
-                  <p className="text-xs text-text-muted italic mt-3">{activation.note || 'Refreshes daily.'}</p>
+                  <p className="text-xs text-text-muted italic mt-3">{activation.note || t('readings.starseedOrigin.refreshesDaily')}</p>
                 </div>
               </>
             )}
@@ -280,7 +283,7 @@ export default function StarseedOriginPage() {
             {/* Other lineages considered */}
             {!!result?.why_others_did_not?.length && (
               <>
-                <h3 className="text-sm font-semibold text-text-primary pt-2">Other lineages considered</h3>
+                <h3 className="text-sm font-semibold text-text-primary pt-2">{t('readings.starseedOrigin.otherLineages')}</h3>
                 {result.why_others_did_not.slice(0, 3).map((o) => (
                   <div key={o.family} className="card py-3">
                     <p className="text-sm font-medium text-text-secondary capitalize">{o.family.replace(/_/g, ' ')}</p>
@@ -291,7 +294,7 @@ export default function StarseedOriginPage() {
             )}
 
             <p className="text-xs text-text-muted italic text-center pt-2 leading-relaxed">
-              Starseed origin is an interpretive, soul-level lens — a mirror for reflection, not a literal claim about where you were born.
+              {t('readings.starseedOrigin.disclaimer')}
             </p>
           </div>
         )}

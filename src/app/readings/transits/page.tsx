@@ -22,6 +22,7 @@ import {
   groupPeaksIntoStorylines,
   type TransitStoryline,
 } from '@/lib/transitStorylines';
+import { buildTransitHiddenLayerSection } from '@/lib/interpretations/placementInterp';
 
 // ─── Types ───────────────────────────────────────────────────────────────
 
@@ -43,6 +44,8 @@ interface TransitEvent {
   is_retrograde?: boolean;
   transit_sign?: string;
   natal_sign?: string;
+  transit_longitude?: number;
+  natal_longitude?: number;
 }
 
 // ─── Category Colors ─────────────────────────────────────────────────────
@@ -75,6 +78,15 @@ function TransitDetail({
   const title = event.title || getTransitCycleTitle(event.transiting_planet, event.natal_planet, event.aspect_type);
   const meaning = event.full_reading || event.preview || getTransitCycleMeaning(event.transiting_planet, event.natal_planet, event.aspect_type, firstName);
   const advice = getTransitNavigationAdvice(event.transiting_planet, event.natal_planet, event.aspect_type, firstName);
+  const hiddenLayer =
+    event.transit_longitude != null && event.natal_longitude != null
+      ? buildTransitHiddenLayerSection(
+          event.transiting_planet,
+          event.transit_longitude,
+          event.natal_planet,
+          event.natal_longitude,
+        )
+      : '';
 
   // Close on Escape key
   useEffect(() => {
@@ -195,6 +207,21 @@ function TransitDetail({
               {meaning}
             </p>
           </div>
+
+          {/* Hidden Layer — only when the backend sent exact longitudes */}
+          {hiddenLayer && (
+            <>
+              <div className="mx-6 my-2 border-t border-white/10" />
+              <div className="px-6 pb-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
+                  {t('readings.transitsPage.hiddenLayer', { defaultValue: 'What This Is Really Touching' })}
+                </h3>
+                <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
+                  {hiddenLayer}
+                </p>
+              </div>
+            </>
+          )}
 
           <div className="mx-6 my-2 border-t border-white/10" />
 

@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import {
   trackAffiliateClick,
   setAffiliateCookie,
@@ -23,6 +24,7 @@ import {
 } from '@/lib/affiliateService';
 
 export default function AffiliateRefPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const code = params.code as string;
@@ -92,7 +94,7 @@ export default function AffiliateRefPage() {
       <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
           <div className="animate-spin w-10 h-10 border-3 border-accent-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-text-muted text-sm">Setting up your referral...</p>
+          <p className="text-text-muted text-sm">{t('affiliates.refLanding.settingUp')}</p>
         </div>
       </div>
     );
@@ -104,13 +106,13 @@ export default function AffiliateRefPage() {
         <div className="text-center max-w-md">
           <div className="text-4xl mb-4">&#x26A0;&#xFE0F;</div>
           <h1 className="text-xl font-bold text-text-primary mb-2">
-            Invalid Referral Link
+            {t('affiliates.refLanding.invalidTitle')}
           </h1>
           <p className="text-text-muted text-sm mb-4">
-            This affiliate link is no longer active. Redirecting you to Align...
+            {t('affiliates.refLanding.invalidDesc')}
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-2">
-            Go to Align
+            {t('affiliates.refLanding.goToAlign')}
           </Link>
         </div>
       </div>
@@ -123,38 +125,37 @@ export default function AffiliateRefPage() {
       <div className="text-center max-w-md">
         <Image
           src="/logo.png"
-          alt="Align logo"
+          alt={t('affiliates.refLanding.logoAlt')}
           width={80}
           height={80}
           className="w-20 h-20 rounded-2xl mx-auto mb-6"
         />
         <h1 className="text-2xl font-display font-bold text-text-primary mb-3">
-          Welcome to Align
+          {t('affiliates.refLanding.welcomeTitle')}
         </h1>
         {affiliateName && (
           <p className="text-accent-primary text-sm mb-2">
-            Referred by {affiliateName}
+            {t('affiliates.refLanding.referredBy', { name: affiliateName })}
           </p>
         )}
         <p className="text-text-tertiary text-sm mb-4">
-          Discover your cosmic blueprint with AI-powered astrology,
-          natal charts, and 26+ readings.
+          {t('affiliates.refLanding.description')}
         </p>
 
         {/* Affiliate discount callout */}
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl px-4 py-3 mb-6">
           <p className="text-sm font-semibold text-white">
-            🎁 10% off your first 2 months
+            {t('affiliates.refLanding.discountTitle')}
           </p>
           <p className="text-xs text-text-muted mt-1">
-            Exclusive discount applied at checkout
+            {t('affiliates.refLanding.discountSub')}
           </p>
         </div>
 
         {/* Redirect indicator */}
         <div className="flex items-center justify-center gap-2 text-text-muted text-xs mb-6">
           <div className="animate-spin w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full" />
-          Taking you to sign up...
+          {t('affiliates.refLanding.redirecting')}
         </div>
 
         {/* Manual link if redirect fails */}
@@ -162,10 +163,10 @@ export default function AffiliateRefPage() {
           href={`/auth/signup?ref=${encodeURIComponent(code)}&source=affiliate`}
           className="btn-primary inline-block w-full py-3 text-base"
         >
-          Sign Up Free
+          {t('affiliates.refLanding.signUpFree')}
         </Link>
         <p className="text-text-muted text-xs mt-3">
-          Free forever. No credit card needed.
+          {t('affiliates.refLanding.freeForever')}
         </p>
       </div>
     </div>

@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Globe2, X, Settings, CalendarDays, MessageCircle, Sparkles, Orbit, Lock, GitMerge, Plus, Pause, Play, Box } from 'lucide-react';
 import ZodiGlobe from '@/components/zodisphere/ZodiGlobe';
 import { useAuthStore } from '@/stores/authStore';
@@ -46,6 +47,7 @@ import { getGlobalSky, getSkyOverPlace, signGlyph, type SkyReading } from '@/lib
 const INTRO_SEEN_KEY = 'zodisphere_intro_seen_v1';
 
 export default function ZodispherePage() {
+  const { t } = useTranslation();
   const [areas, setAreas] = useState<AreaStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [spinPaused, setSpinPaused] = useState(false); // user can stop the globe spinning
@@ -219,16 +221,16 @@ export default function ZodispherePage() {
   const handleReport = useCallback(async (p: ZodispherePost, category: ZodisphereReportCategory) => {
     const res = await reportZodispherePost(p, category);
     setReportingId(null);
-    setDraftMsg(res.success ? 'Report submitted — our team will review it.' : res.error ?? 'Report failed.');
-  }, []);
+    setDraftMsg(res.success ? t('zodisphere.reportSubmitted') : res.error ?? t('zodisphere.reportFailed'));
+  }, [t]);
 
   const handleMute = useCallback(async (p: ZodispherePost) => {
     const res = await muteUserOnMap(p.user_id);
     if (res.success && selected) {
       setFeed(await getAreaFeed(selected.area_id, 15));
-      setDraftMsg('Muted — you will no longer see this member’s posts on the Zodisphere.');
+      setDraftMsg(t('zodisphere.mutedMessage'));
     }
-  }, [selected]);
+  }, [selected, t]);
 
   const submitDraft = useCallback(async () => {
     if (!selected || !draft.trim()) return;
@@ -242,15 +244,15 @@ export default function ZodispherePage() {
       });
       if (res.success) {
         setDraft('');
-        setDraftMsg('Shared to the Zodisphere.');
+        setDraftMsg(t('zodisphere.sharedMessage'));
         setFeed(await getAreaFeed(selected.area_id, 15));
       } else {
-        setDraftMsg(res.error ?? 'Could not post.');
+        setDraftMsg(res.error ?? t('zodisphere.postFailed'));
       }
     } finally {
       setPostingDraft(false);
     }
-  }, [selected, draft]);
+  }, [selected, draft, t]);
 
   return (
     <div
@@ -265,9 +267,9 @@ export default function ZodispherePage() {
         <div className="flex items-center gap-2">
           <Globe2 className="w-6 h-6 text-accent-primary" />
           <div>
-            <h1 className="text-lg font-semibold text-white leading-tight">The Zodisphere</h1>
+            <h1 className="text-lg font-semibold text-white leading-tight">{t('zodisphere.title')}</h1>
             <p className="text-[11px] text-white/50">
-              The Align community across the living Earth — no exact locations, ever.
+              {t('zodisphere.tagline')}
             </p>
           </div>
         </div>
@@ -279,10 +281,10 @@ export default function ZodispherePage() {
             <Link
               href="/zodisphere/globe3d"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm border bg-fuchsia-500/15 border-fuchsia-400/40 text-fuchsia-100 hover:bg-fuchsia-500/25 transition-colors"
-              title="Switch to the 3D Earth"
+              title={t('zodisphere.globe3dTitle')}
             >
               <Box className="w-4 h-4" />
-              <span className="hidden sm:inline">3D globe</span>
+              <span className="hidden sm:inline">{t('zodisphere.globe3dLink')}</span>
             </Link>
           )}
           {/* Pause / resume the globe spin (free, always available) */}
@@ -293,11 +295,11 @@ export default function ZodispherePage() {
                 ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
                 : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
             }`}
-            title={spinPaused ? 'Resume the globe spinning' : 'Stop the globe spinning'}
+            title={spinPaused ? t('zodisphere.spinResumeTitle') : t('zodisphere.spinStopTitle')}
             aria-pressed={spinPaused}
           >
             {spinPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-            <span className="hidden sm:inline">{spinPaused ? 'Spin' : 'Pause'}</span>
+            <span className="hidden sm:inline">{spinPaused ? t('zodisphere.spin') : t('zodisphere.pause')}</span>
           </button>
           {/* Astrocartography toggle (premium) */}
           {acgUnlocked ? (
@@ -308,19 +310,19 @@ export default function ZodispherePage() {
                   ? 'bg-accent-primary/20 border-accent-primary text-accent-primary'
                   : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
               }`}
-              title="Show your natal astrocartography lines"
+              title={t('zodisphere.acgShowTitle')}
             >
               <Orbit className="w-4 h-4" />
-              {acgLoading ? 'Charting…' : 'My astro lines'}
+              {acgLoading ? t('zodisphere.acgCharting') : t('zodisphere.acgMyLines')}
             </button>
           ) : (
             <Link
               href="/pricing"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-              title="Astrocartography is a premium feature"
+              title={t('zodisphere.acgPremiumTitle')}
             >
               <Lock className="w-3.5 h-3.5" />
-              Astro lines
+              {t('zodisphere.acgLocked')}
             </Link>
           )}
           {/* Midpoints toggle (premium) */}
@@ -332,19 +334,19 @@ export default function ZodispherePage() {
                   ? 'bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-200'
                   : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
               }`}
-              title="Tappable midpoint astrocartography"
+              title={t('zodisphere.midpointsToggleTitle')}
             >
               <GitMerge className="w-4 h-4" />
-              Midpoints
+              {t('zodisphere.midpoints.title')}
             </button>
           ) : (
             <Link
               href="/pricing"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-              title="Midpoints is a premium feature"
+              title={t('zodisphere.midpointsPremiumTitle')}
             >
               <Lock className="w-3.5 h-3.5" />
-              Midpoints
+              {t('zodisphere.midpoints.title')}
             </Link>
           )}
           <Link
@@ -352,7 +354,7 @@ export default function ZodispherePage() {
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">My visibility</span>
+            <span className="hidden sm:inline">{t('zodisphere.myVisibility')}</span>
           </Link>
         </div>
       </header>
@@ -361,7 +363,7 @@ export default function ZodispherePage() {
       {showAcg && !acgLoading && acgLines.length === 0 && (
         <div className="absolute top-20 right-5 z-10 max-w-[220px] bg-black/50 backdrop-blur border border-white/10 rounded-xl p-3">
           <p className="text-[11px] text-white/70">
-            Add your birth date, time, and place in your profile to see your astrocartography lines.
+            {t('zodisphere.acgNeedsBirth')}
           </p>
         </div>
       )}
@@ -371,7 +373,7 @@ export default function ZodispherePage() {
         <div className="absolute top-20 right-5 z-10 max-w-[220px] bg-black/50 backdrop-blur border border-white/10 rounded-xl p-3 pointer-events-none">
           <p className="text-[11px] text-white/70 leading-relaxed">
             <Orbit className="w-3.5 h-3.5 inline mr-1 text-accent-primary" />
-            Your <strong className="text-white">astrocartography</strong> — where each planet was rising (ASC), setting (DSC), or overhead (MC/IC) at your birth. Standing on a line amplifies that planet in your life.
+            {t('zodisphere.acgLegendPre')} <strong className="text-white">{t('zodisphere.acgLegendStrong')}</strong> {t('zodisphere.acgLegendPost')}
           </p>
         </div>
       )}
@@ -381,15 +383,15 @@ export default function ZodispherePage() {
         <div className="absolute top-20 left-5 z-20 w-[260px] max-w-[calc(100vw-40px)] bg-black/55 backdrop-blur border border-fuchsia-400/25 rounded-2xl p-3">
           <div className="flex items-center gap-1.5 mb-1.5">
             <GitMerge className="w-4 h-4 text-fuchsia-300" />
-            <h2 className="text-sm font-semibold text-white">Midpoints</h2>
+            <h2 className="text-sm font-semibold text-white">{t('zodisphere.midpoints.title')}</h2>
           </div>
           {chart && chart.bodies.length === 0 && (
-            <p className="text-[11px] text-white/60">Add your birth date, time, and place in your profile to use midpoints.</p>
+            <p className="text-[11px] text-white/60">{t('zodisphere.midpoints.needsBirth')}</p>
           )}
           {chart && chart.bodies.length > 0 && (
             <>
               <p className="text-[11px] text-white/60 mb-2">
-                Pick two placements. Then <strong className="text-white">tap the globe</strong> to read the midpoint lines you&apos;re near.
+                {t('zodisphere.midpoints.pickIntroPre')} <strong className="text-white">{t('zodisphere.midpoints.pickIntroStrong')}</strong> {t('zodisphere.midpoints.pickIntroPost')}
               </p>
 
               {/* Active pairs */}
@@ -402,7 +404,7 @@ export default function ZodispherePage() {
                     </button>
                   </span>
                 ))}
-                {activePairs.length === 0 && <span className="text-[11px] text-white/40">No midpoints yet.</span>}
+                {activePairs.length === 0 && <span className="text-[11px] text-white/40">{t('zodisphere.midpoints.none')}</span>}
               </div>
 
               {/* Picker */}
@@ -413,27 +415,27 @@ export default function ZodispherePage() {
                       <BodyGrid
                         loaded={chart.bodies.map((b) => b.name)}
                         onPick={pickFirst}
-                        label="First placement"
+                        label={t('zodisphere.midpoints.firstPlacement')}
                         loading={loadingBody}
                       />
                     ) : (
                       <BodyGrid
                         loaded={chart.bodies.map((b) => b.name).filter((n) => n !== pickA)}
                         onPick={pickSecond}
-                        label={`${pickA} / … choose second`}
+                        label={t('zodisphere.midpoints.chooseSecond', { first: pickA })}
                         loading={loadingBody}
                         exclude={pickA}
                       />
                     )}
-                    <button onClick={() => { setPickerOpen(false); setPickA(''); }} className="text-[11px] text-white/50 hover:text-white">Cancel</button>
+                    <button onClick={() => { setPickerOpen(false); setPickA(''); }} className="text-[11px] text-white/50 hover:text-white">{t('zodisphere.midpoints.cancel')}</button>
                   </div>
                 ) : (
                   <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1 text-[12px] text-fuchsia-200 bg-fuchsia-500/10 border border-fuchsia-400/25 rounded-lg px-2.5 py-1.5 hover:bg-fuchsia-500/20">
-                    <Plus className="w-3.5 h-3.5" /> Add a midpoint
+                    <Plus className="w-3.5 h-3.5" /> {t('zodisphere.midpoints.add')}
                   </button>
                 )
               )}
-              {activePairs.length >= MAX_MIDPOINTS && <p className="text-[10px] text-white/40">Max {MAX_MIDPOINTS} lines. Remove one to add another.</p>}
+              {activePairs.length >= MAX_MIDPOINTS && <p className="text-[10px] text-white/40">{t('zodisphere.midpoints.maxLines', { count: MAX_MIDPOINTS })}</p>}
             </>
           )}
         </div>
@@ -445,14 +447,14 @@ export default function ZodispherePage() {
           <div className="w-full max-w-md bg-bg-card/95 backdrop-blur border border-fuchsia-400/30 rounded-2xl p-4 max-h-[45vh] overflow-y-auto">
             <div className="flex items-start justify-between mb-2">
               <h3 className="text-sm font-semibold text-fuchsia-200">
-                {probeHits.length ? 'Midpoint lines here' : 'No midpoint lines within range'}
+                {probeHits.length ? t('zodisphere.midpoints.linesHere') : t('zodisphere.midpoints.noneInRange')}
               </h3>
               <button onClick={() => { setProbePoint(null); setProbeHits([]); }} className="text-text-muted hover:text-text-primary">
                 <X className="w-4 h-4" />
               </button>
             </div>
             {probeHits.length === 0 ? (
-              <p className="text-xs text-text-muted">Tap closer to a dashed line, or add more midpoints to explore.</p>
+              <p className="text-xs text-text-muted">{t('zodisphere.midpoints.tapCloser')}</p>
             ) : (
               <ul className="space-y-3">
                 {probeHits.map((h) => (
@@ -460,7 +462,7 @@ export default function ZodispherePage() {
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full" style={{ background: h.line.color }} />
                       <span className="text-sm font-medium text-text-primary">{h.line.bodyA}/{h.line.bodyB} {h.line.lineType}</span>
-                      <span className="text-[10px] text-text-muted">{h.distanceDeg.toFixed(1)}° off</span>
+                      <span className="text-[10px] text-text-muted">{t('zodisphere.midpoints.degreesOff', { degrees: h.distanceDeg.toFixed(1) })}</span>
                     </div>
                     <p className="text-[12px] text-text-secondary leading-relaxed mt-1"
                       dangerouslySetInnerHTML={{ __html: h.meaning.replace(/\*\*(.+?)\*\*/g, '<strong class="text-text-primary">$1</strong>') }} />
@@ -492,7 +494,7 @@ export default function ZodispherePage() {
         <div className="absolute top-24 inset-x-0 z-10 flex justify-center px-4 pointer-events-none">
           <div className="flex items-center gap-2 bg-teal-400/10 border border-teal-400/40 rounded-full px-4 py-1.5 text-teal-200 text-[13px]">
             <span>📍</span>
-            You&apos;re on the map in <strong>{myPlace.name}</strong> — others here can find you.
+            {t('zodisphere.onMapPre')} <strong>{myPlace.name}</strong> {t('zodisphere.onMapPost')}
           </div>
         </div>
       )}
@@ -501,13 +503,13 @@ export default function ZodispherePage() {
       <div className="absolute bottom-6 inset-x-0 z-10 flex justify-center px-4 pointer-events-none">
         <div className="flex items-center gap-4 bg-black/40 backdrop-blur border border-white/10 rounded-full px-5 py-2.5 text-white">
           <span className="text-[13px]">
-            <span className="text-amber-300">{'☉'}</span> Sun in{' '}
+            <span className="text-amber-300">{'☉'}</span> {t('zodisphere.sunIn')}{' '}
             <strong>{signGlyph(globalSky.sun.sign)} {globalSky.sun.sign}</strong>
           </span>
           <span className="w-px h-4 bg-white/15" />
           <span className="text-[13px]">
             <span className="mr-0.5">{globalSky.moon.emoji}</span>{' '}
-            {globalSky.moon.phase} · <strong>{globalSky.moon.illumination}%</strong> lit ·{' '}
+            {globalSky.moon.phase} · <strong>{globalSky.moon.illumination}%</strong> {t('zodisphere.moonLit')} ·{' '}
             {signGlyph(globalSky.moon.sign)} {globalSky.moon.sign}
           </span>
           {!loading && areas.length === 0 && (
@@ -515,7 +517,7 @@ export default function ZodispherePage() {
               <span className="w-px h-4 bg-white/15" />
               <span className="text-[12px] text-white/60">
                 <Sparkles className="w-3.5 h-3.5 inline mr-1 text-accent-primary" />
-                Be the first to light up your city
+                {t('zodisphere.beFirst')}
               </span>
             </>
           )}
@@ -530,9 +532,9 @@ export default function ZodispherePage() {
               <h2 className="text-base font-semibold text-text-primary">{selected.display_name}</h2>
               <p className="text-xs text-accent-primary mt-0.5">{bandLabel(selected.member_band)}</p>
               <div className="flex gap-3 mt-1 text-[11px] text-text-muted">
-                {selected.post_band && <span>{selected.post_band} posts</span>}
-                {selected.event_band && <span>{selected.event_band} events</span>}
-                {selected.creator_band && <span>{selected.creator_band} creators</span>}
+                {selected.post_band && <span>{t('zodisphere.panel.postsBand', { band: selected.post_band })}</span>}
+                {selected.event_band && <span>{t('zodisphere.panel.eventsBand', { band: selected.event_band })}</span>}
+                {selected.creator_band && <span>{t('zodisphere.panel.creatorsBand', { band: selected.creator_band })}</span>}
               </div>
             </div>
             <button
@@ -544,7 +546,7 @@ export default function ZodispherePage() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-5">
-            {panelLoading && <p className="text-sm text-text-muted">Reading the local sky…</p>}
+            {panelLoading && <p className="text-sm text-text-muted">{t('zodisphere.panel.loading')}</p>}
 
             {!panelLoading && (
               <>
@@ -554,7 +556,7 @@ export default function ZodispherePage() {
                   <section className="rounded-xl p-3 border border-white/10"
                     style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.14), rgba(20,22,58,0.4))' }}>
                     <h3 className="text-[11px] uppercase tracking-wider text-text-muted mb-2">
-                      The sky over {selected.display_name.split(',')[0]} right now
+                      {t('zodisphere.panel.skyOver', { place: selected.display_name.split(',')[0] })}
                     </h3>
                     <div className="flex items-center gap-3 text-sm text-text-primary flex-wrap">
                       <span className="text-amber-300">{'☉'} {signGlyph(placeSky.sun.sign)} {placeSky.sun.sign}</span>
@@ -565,7 +567,7 @@ export default function ZodispherePage() {
                       <div className="mt-2 flex items-start gap-2">
                         <span className="text-lg leading-none" style={{ color: placeSky.hour.color }}>{placeSky.hour.glyph}</span>
                         <p className="text-[12px] text-text-secondary">
-                          <span className="text-text-primary font-medium">{placeSky.hour.planet} hour</span> here —
+                          <span className="text-text-primary font-medium">{t('zodisphere.panel.planetHour', { planet: placeSky.hour.planet })}</span> {t('zodisphere.panel.hourHere')}
                           <span className="italic"> {placeSky.hour.essence}</span>.
                           <span className="text-text-muted"> {placeSky.hour.keywords}.</span>
                         </p>
@@ -579,21 +581,21 @@ export default function ZodispherePage() {
                   <textarea
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    placeholder={`What’s happening under the ${selected.display_name.split(',')[0]} sky?`}
+                    placeholder={t('zodisphere.panel.composerPlaceholder', { place: selected.display_name.split(',')[0] })}
                     maxLength={2000}
                     rows={2}
                     className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted outline-none resize-none"
                   />
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-[10px] text-text-muted">
-                      Linked to {selected.display_name} — never to your location.
+                      {t('zodisphere.panel.linkedTo', { place: selected.display_name })}
                     </p>
                     <button
                       onClick={submitDraft}
                       disabled={postingDraft || !draft.trim()}
                       className="btn-primary px-4 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40"
                     >
-                      {postingDraft ? 'Posting…' : 'Post'}
+                      {postingDraft ? t('zodisphere.panel.posting') : t('zodisphere.panel.post')}
                     </button>
                   </div>
                   {draftMsg && <p className="text-[11px] text-accent-primary mt-1.5">{draftMsg}</p>}
@@ -603,7 +605,7 @@ export default function ZodispherePage() {
                 {members.length > 0 && (
                   <section>
                     <h3 className="text-sm font-medium text-text-primary mb-2">
-                      Members here ({members.length})
+                      {t('zodisphere.panel.membersHere', { count: members.length })}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {members.map((m) => (
@@ -617,7 +619,7 @@ export default function ZodispherePage() {
                               ? <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
                               : (m.display_name?.[0]?.toUpperCase() ?? '★')}
                           </span>
-                          <span className="text-xs text-text-secondary">{m.display_name ?? 'Align member'}</span>
+                          <span className="text-xs text-text-secondary">{m.display_name ?? t('zodisphere.panel.alignMember')}</span>
                         </Link>
                       ))}
                     </div>
@@ -627,23 +629,23 @@ export default function ZodispherePage() {
                 {/* Events */}
                 <section>
                   <h3 className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
-                    <CalendarDays className="w-4 h-4 text-accent-primary" /> Events
+                    <CalendarDays className="w-4 h-4 text-accent-primary" /> {t('zodisphere.panel.events')}
                   </h3>
                   {events.length === 0 ? (
-                    <p className="text-xs text-text-muted">No events here yet.</p>
+                    <p className="text-xs text-text-muted">{t('zodisphere.panel.noEvents')}</p>
                   ) : (
                     <ul className="space-y-2">
                       {events.map((e) => (
                         <li key={e.id} className="bg-bg-secondary rounded-xl p-3">
                           <p className="text-sm text-text-primary font-medium">{e.title}</p>
                           <p className="text-[11px] text-text-muted mt-0.5">
-                            {e.event_type} · {e.online_or_physical === 'online' ? 'Online' : 'In person'}
+                            {e.event_type} · {e.online_or_physical === 'online' ? t('zodisphere.panel.online') : t('zodisphere.panel.inPerson')}
                             {e.online_or_physical === 'physical' && !e.has_venue ? '' : ''}
                             {e.start_time ? ` · ${new Date(e.start_time).toLocaleDateString()}` : ''}
                           </p>
                           {e.online_or_physical === 'physical' && (
                             <p className="text-[11px] text-accent-primary mt-1">
-                              Venue revealed after registration
+                              {t('zodisphere.panel.venueRevealed')}
                             </p>
                           )}
                         </li>
@@ -655,10 +657,10 @@ export default function ZodispherePage() {
                 {/* Posts */}
                 <section>
                   <h3 className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
-                    <MessageCircle className="w-4 h-4 text-accent-primary" /> Voices from here
+                    <MessageCircle className="w-4 h-4 text-accent-primary" /> {t('zodisphere.panel.voices')}
                   </h3>
                   {feed.length === 0 ? (
-                    <p className="text-xs text-text-muted">No Zodisphere posts from this area yet.</p>
+                    <p className="text-xs text-text-muted">{t('zodisphere.panel.noPosts')}</p>
                   ) : (
                     <ul className="space-y-2">
                       {feed.map((p) => (
@@ -673,10 +675,10 @@ export default function ZodispherePage() {
                                 onClick={() => setReportingId(reportingId === p.id ? null : p.id)}
                                 className="text-text-muted hover:text-red-400"
                               >
-                                Report
+                                {t('zodisphere.panel.report')}
                               </button>
                               <button onClick={() => handleMute(p)} className="text-text-muted hover:text-text-primary">
-                                Mute
+                                {t('zodisphere.panel.mute')}
                               </button>
                             </div>
                           </div>
@@ -686,19 +688,19 @@ export default function ZodispherePage() {
                                 onClick={() => handleReport(p, 'location_doxxing')}
                                 className="text-[10px] px-2 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20"
                               >
-                                Shares someone’s location
+                                {t('zodisphere.panel.reportDoxxing')}
                               </button>
                               <button
                                 onClick={() => handleReport(p, 'location_harassment')}
                                 className="text-[10px] px-2 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20"
                               >
-                                Stalking / harassment
+                                {t('zodisphere.panel.reportHarassment')}
                               </button>
                               <button
                                 onClick={() => handleReport(p, 'inappropriate_content')}
                                 className="text-[10px] px-2 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20"
                               >
-                                Inappropriate content
+                                {t('zodisphere.panel.reportInappropriate')}
                               </button>
                             </div>
                           )}
@@ -719,26 +721,25 @@ export default function ZodispherePage() {
           <div className="bg-bg-card border border-border-primary rounded-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-2 mb-3">
               <Globe2 className="w-6 h-6 text-accent-primary" />
-              <h2 className="text-lg font-semibold text-text-primary">Welcome to the Zodisphere</h2>
+              <h2 className="text-lg font-semibold text-text-primary">{t('zodisphere.intro.title')}</h2>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed">
-              The Zodisphere lets you explore the global Align community through countries, regions,
-              cities, posts, events, and astrology.
+              {t('zodisphere.intro.body')}
             </p>
             <ul className="text-sm text-text-secondary mt-3 space-y-1.5">
-              <li>• Align <strong className="text-text-primary">never shows your exact location</strong> — lights on the globe are cities, not people.</li>
-              <li>• Community counts appear only as ranges, and only where 10+ members have opted in.</li>
-              <li>• Your geographic visibility is <strong className="text-text-primary">off unless you turn it on</strong>, and you can turn it off or remove it at any time.</li>
+              <li>• {t('zodisphere.intro.bullet1Pre')} <strong className="text-text-primary">{t('zodisphere.intro.bullet1Strong')}</strong> {t('zodisphere.intro.bullet1Post')}</li>
+              <li>• {t('zodisphere.intro.bullet2')}</li>
+              <li>• {t('zodisphere.intro.bullet3Pre')} <strong className="text-text-primary">{t('zodisphere.intro.bullet3Strong')}</strong>{t('zodisphere.intro.bullet3Post')}</li>
             </ul>
             <button onClick={dismissIntro} className="w-full btn-primary py-2.5 rounded-xl text-sm font-medium mt-5">
-              Explore the Zodisphere
+              {t('zodisphere.intro.explore')}
             </button>
             <Link
               href="/zodisphere/settings"
               onClick={dismissIntro}
               className="block text-center text-xs text-accent-primary mt-3 hover:underline"
             >
-              Or put your city on the map →
+              {t('zodisphere.intro.putCityOnMap')}
             </Link>
           </div>
         </div>
@@ -757,6 +758,7 @@ function BodyGrid({
   loading?: boolean;
   exclude?: string;
 }) {
+  const { t } = useTranslation();
   const [q, setQ] = useState('');
   const query = q.trim().toLowerCase();
 
@@ -776,7 +778,7 @@ function BodyGrid({
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search a planet, asteroid, or point…"
+        placeholder={t('zodisphere.midpoints.searchPlaceholder')}
         className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white placeholder:text-white/40 outline-none mb-1.5"
       />
       <div className="flex flex-wrap gap-1 max-h-44 overflow-y-auto">
@@ -796,7 +798,7 @@ function BodyGrid({
             key={name}
             disabled={loading}
             onClick={() => onPick(name)}
-            title="Load this asteroid"
+            title={t('zodisphere.midpoints.loadAsteroidTitle')}
             className="flex items-center gap-1 text-[11px] text-white/50 bg-transparent border border-dashed border-white/15 rounded-lg px-2 py-1 hover:bg-white/10 hover:text-white/80 disabled:opacity-40"
           >
             <Plus className="w-2.5 h-2.5" />
@@ -804,10 +806,10 @@ function BodyGrid({
           </button>
         ))}
         {shownLoaded.length === 0 && shownCatalog.length === 0 && (
-          <span className="text-[11px] text-white/40">No match.</span>
+          <span className="text-[11px] text-white/40">{t('zodisphere.midpoints.noMatch')}</span>
         )}
       </div>
-      {loading && <p className="text-[10px] text-fuchsia-200/70 mt-1">Loading position…</p>}
+      {loading && <p className="text-[10px] text-fuchsia-200/70 mt-1">{t('zodisphere.midpoints.loadingPosition')}</p>}
     </div>
   );
 }

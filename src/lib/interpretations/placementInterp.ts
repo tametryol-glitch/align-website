@@ -8,8 +8,9 @@
 import { SIGN_HOUSE_FUSION } from './signHouseFusion';
 import {
   DUAD_TEXTURE, DUAD_PURE, COMPENDIUM_STYLE, MATRIX_SIGNATURE, PLANET_LEADS,
+  TRANSIT_UNDERCURRENT,
 } from './hiddenLayers';
-import { calculateDuad, calculateCompendium, calculateMatrix } from '@/lib/engines/duadCompendium';
+import { calculateDuad, calculateCompendium, calculateMatrix, getFullDuadCompendium } from '@/lib/engines/duadCompendium';
 import { EXTRA_PAIR_INSIGHTS } from './aspectPairInsightsExtra';
 
 export const PLANET_MEANINGS: Record<string, string> = {
@@ -543,6 +544,59 @@ export function buildHiddenLayerSection(sign: string, degreeInSign: number): str
 
     const signature = MATRIX_SIGNATURE[matrixSign];
     if (signature) parts.push(`And at the very finest level of your wiring — ${signature}`);
+
+    return parts.join('\n\n');
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Compose the hidden sub-sign layer prose for a transit-to-natal contact from
+ * the two exact longitudes. Same rules as buildHiddenLayerSection: the layers
+ * get distinct narrative roles and the systems are never named. Voiced for a
+ * temporary window, not a natal trait.
+ */
+export function buildTransitHiddenLayerSection(
+  transitPlanet: string,
+  transitLongitude: number,
+  natalPlanet: string,
+  natalLongitude: number,
+): string {
+  try {
+    const t = getFullDuadCompendium(transitLongitude);
+    const n = getFullDuadCompendium(natalLongitude);
+    const parts: string[] = [];
+
+    const undercurrent = TRANSIT_UNDERCURRENT[t.duadSign];
+    if (undercurrent) {
+      if (t.duadSign === t.sign) {
+        parts.push(`There's one more thing about this transit, and it's the part no calendar will tell you. This one arrives undiluted — no hidden crosscurrent softening it, so what it promises is exactly what it delivers. Expect ${undercurrent}`);
+      } else {
+        parts.push(`There's one more thing about this transit, and it's the part no calendar will tell you. A second current is riding in beneath the surface, and it's the one you'll actually feel. Expect ${undercurrent}`);
+      }
+    }
+
+    if (n.duadSign === n.sign) {
+      const pure = DUAD_PURE[n.sign];
+      if (pure) parts.push(`And it's aimed at the part of your ${natalPlanet} that runs purest. ${pure} That's the exact nerve this period is pressing on.`);
+    } else {
+      const texture = DUAD_TEXTURE[n.duadSign];
+      if (texture) parts.push(`And it's aimed at a part of your ${natalPlanet} almost nobody knows is there. Underneath, ${texture} That's the exact nerve this period is pressing on.`);
+    }
+
+    if (t.duadSign === n.sign || t.sign === n.duadSign) {
+      parts.push(`If this stretch feels strangely personal — more pointed than anything the dates alone can explain — trust that read. What's arriving and what it's touching in you run on the same private frequency, which is why this one lands like it knew your name.`);
+    }
+    if (t.compendiumSign === n.compendiumSign) {
+      parts.push(`And it isn't skimming the surface of your life. It's plugged into the same deep line your ${natalPlanet} runs on, which is why the small events of these weeks feel heavier than their size.`);
+    }
+
+    const style = COMPENDIUM_STYLE[t.compendiumSign];
+    if (style) parts.push(`You'll catch it in the small, watchable things while this is active — more days where ${style}`);
+
+    const signature = MATRIX_SIGNATURE[t.matrixSign];
+    if (signature) parts.push(`And at the very finest level, this window turns one reflex all the way up: ${signature}`);
 
     return parts.join('\n\n');
   } catch {

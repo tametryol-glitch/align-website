@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
@@ -79,6 +79,90 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
   cosmic_match: { label: 'Cosmic Match', color: 'bg-accent-muted text-accent-primary' },
 };
+
+// ── Read-more folding ─────────────────────────────────────────────
+// Long posts collapse TikTok/Facebook-style so the feed stays scannable.
+// The first fold shows ~3 sentences; very long posts get one more fold
+// before the full text is revealed.
+const FOLD_1_SENTENCES = 3;
+const FOLD_1_CHAR_CAP = 300;
+const FOLD_2_CHAR_CAP = 1100;
+const MIN_HIDDEN_CHARS = 120;
+
+// Index just past the Nth sentence end — punctuation followed by
+// whitespace, or a line break. URLs never contain either, so links are
+// never split mid-URL.
+function sentenceCutIndex(text: string, sentences: number): number {
+  const re = /[.!?…]+["')\]]*\s+|\n+/g;
+  let count = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    count++;
+    if (count >= sentences) return m.index + m[0].length;
+  }
+  return -1;
+}
+
+// Last whitespace at or before `cap` so a cut never lands mid-word.
+function wordCutIndex(text: string, cap: number): number {
+  if (text.length <= cap) return -1;
+  const slice = text.slice(0, cap);
+  const cut = Math.max(slice.lastIndexOf(' '), slice.lastIndexOf('\n'));
+  return cut > cap * 0.5 ? cut : cap;
+}
+
+// Character offsets where each fold ends; empty array = no folding.
+function getFoldCuts(text: string): number[] {
+  let first = sentenceCutIndex(text, FOLD_1_SENTENCES);
+  if (first === -1 || first > FOLD_1_CHAR_CAP) first = wordCutIndex(text, FOLD_1_CHAR_CAP);
+  if (first === -1 || text.length - first < MIN_HIDDEN_CHARS) return [];
+  const cuts = [first];
+  const second = wordCutIndex(text, FOLD_2_CHAR_CAP);
+  if (second !== -1 && second > first && text.length - second >= MIN_HIDDEN_CHARS * 2) {
+    cuts.push(second);
+  }
+  return cuts;
+}
+
+function ExpandablePostText({ text, className, style }: {
+  text: string;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  const [stage, setStage] = useState(0);
+  const cuts = getFoldCuts(text);
+  const folded = stage < cuts.length;
+  const shown = folded ? text.slice(0, cuts[stage]).trimEnd() : text;
+  return (
+    <p className={className} style={style}>
+      {renderTextWithLinks(shown)}
+      {folded && (
+        <>
+          {'… '}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setStage(stage + 1); }}
+            className="font-semibold text-text-muted hover:text-text-primary"
+          >
+            Read more
+          </button>
+        </>
+      )}
+      {!folded && cuts.length > 0 && (
+        <>
+          {' '}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setStage(0); }}
+            className="font-semibold text-text-muted hover:text-text-primary"
+          >
+            Show less
+          </button>
+        </>
+      )}
+    </p>
+  );
+}
 
 const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:\S*)?/gi;
 
@@ -404,12 +488,11 @@ export function FeedCard({
         return (
           <>
             {displayText && (
-              <p
+              <ExpandablePostText
+                text={displayText}
                 className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
                 style={textColor ? { color: textColor } : undefined}
-              >
-                {renderTextWithLinks(displayText)}
-              </p>
+              />
             )}
             {youtubeIds.map((vid, i) => (
               <div key={vid + i} className="px-5 pb-3">

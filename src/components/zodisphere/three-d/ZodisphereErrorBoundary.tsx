@@ -8,7 +8,26 @@
  */
 
 import { Component, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import ZodisphereFallbackView from './ZodisphereFallbackView';
+
+/** Hook-capable wrapper so the class boundary can render a translated message. */
+function TranslatedRenderErrorFallback({
+  onRetry,
+  classicHref,
+}: {
+  onRetry: () => void;
+  classicHref?: string | null;
+}) {
+  const { t } = useTranslation();
+  return (
+    <ZodisphereFallbackView
+      message={t('zodisphere.fallback.renderError')}
+      onRetry={onRetry}
+      classicHref={classicHref}
+    />
+  );
+}
 
 interface Props {
   children: ReactNode;
@@ -38,8 +57,7 @@ export default class ZodisphereErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <ZodisphereFallbackView
-          message="Something went wrong drawing the 3D globe."
+        <TranslatedRenderErrorFallback
           onRetry={this.reset}
           classicHref={this.props.classicHref}
         />

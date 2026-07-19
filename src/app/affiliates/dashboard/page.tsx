@@ -10,6 +10,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import {
   getMyAffiliate,
@@ -69,6 +70,7 @@ interface Payout {
 }
 
 export default function AffiliateDashboardPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [affiliate, setAffiliate] = useState<AffiliateData | null>(null);
@@ -127,7 +129,7 @@ export default function AffiliateDashboardPage() {
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-10 h-10 border-3 border-accent-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-text-muted text-sm">Loading dashboard...</p>
+          <p className="text-text-muted text-sm">{t('affiliates.dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -137,15 +139,15 @@ export default function AffiliateDashboardPage() {
     return (
       <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-text-primary mb-4">Sign in to access your dashboard</h1>
+          <h1 className="text-2xl font-bold text-text-primary mb-4">{t('affiliates.dashboard.signInTitle')}</h1>
           <p className="text-text-muted text-sm mb-6">
-            You need to be logged in with the same account you used to apply.
+            {t('affiliates.dashboard.signInDesc')}
           </p>
           <Link href="/auth/login" className="btn-primary inline-block px-8 py-3">
-            Sign In
+            {t('affiliates.dashboard.signIn')}
           </Link>
           <p className="text-text-muted text-sm mt-4">
-            Not an affiliate yet? <Link href="/affiliates" className="text-accent-primary hover:underline">Apply here</Link>
+            {t('affiliates.dashboard.notAffiliateYet')} <Link href="/affiliates" className="text-accent-primary hover:underline">{t('affiliates.dashboard.applyHere')}</Link>
           </p>
         </div>
       </div>
@@ -156,14 +158,14 @@ export default function AffiliateDashboardPage() {
     return (
       <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-text-primary mb-4">No Affiliate Account Found</h1>
+          <h1 className="text-2xl font-bold text-text-primary mb-4">{t('affiliates.dashboard.noAccountTitle')}</h1>
           <p className="text-text-muted text-sm mb-6">
             {error === 'Not an affiliate'
-              ? 'You don\'t have an affiliate account linked to this login.'
-              : `Error: ${error}`}
+              ? t('affiliates.dashboard.noAccountDesc')
+              : t('affiliates.dashboard.errorPrefix', { error })}
           </p>
           <Link href="/affiliates" className="btn-primary inline-block px-8 py-3">
-            Apply to Affiliate Program
+            {t('affiliates.dashboard.applyCta')}
           </Link>
         </div>
       </div>
@@ -191,7 +193,7 @@ export default function AffiliateDashboardPage() {
             affiliate.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
             'bg-red-500/10 text-red-400'
           }`}>
-            {affiliate.status}
+            {t(`affiliates.dashboard.statuses.${affiliate.status}`, { defaultValue: affiliate.status })}
           </span>
         </div>
       </nav>
@@ -200,17 +202,17 @@ export default function AffiliateDashboardPage() {
         {/* Status banners */}
         {isPending && (
           <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 text-yellow-300 text-sm">
-            Your application is being reviewed. You will receive an email once approved.
+            {t('affiliates.dashboard.pendingBanner')}
           </div>
         )}
         {isRejected && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-red-300 text-sm">
-            Your application was not approved. Please contact support for more info.
+            {t('affiliates.dashboard.rejectedBanner')}
           </div>
         )}
         {isSuspended && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-red-300 text-sm">
-            Your affiliate account has been suspended. Contact support for details.
+            {t('affiliates.dashboard.suspendedBanner')}
           </div>
         )}
 
@@ -218,7 +220,7 @@ export default function AffiliateDashboardPage() {
         {affiliate.status === 'approved' && (
           <div className="bg-gradient-cosmic rounded-2xl p-6 border border-accent-muted mb-8">
             <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-2">
-              Your Referral Link
+              {t('affiliates.dashboard.referralLinkTitle')}
             </h2>
             <div className="flex items-center gap-3">
               <code className="flex-1 text-sm text-accent-primary bg-black/30 rounded-xl px-4 py-3 truncate">
@@ -228,17 +230,17 @@ export default function AffiliateDashboardPage() {
                 onClick={copyLink}
                 className="btn-primary px-5 py-3 text-sm whitespace-nowrap"
               >
-                {copied ? 'Copied!' : 'Copy Link'}
+                {copied ? t('common.copied') : t('affiliates.dashboard.copyLink')}
               </button>
             </div>
             <p className="text-text-muted text-xs mt-2">
-              Share this link anywhere. 30-day cookie attribution.
+              {t('affiliates.dashboard.shareHint')}
             </p>
             {/* Social share buttons */}
             <div className="flex items-center gap-3 mt-4">
-              <span className="text-text-muted text-xs">Share on:</span>
+              <span className="text-text-muted text-xs">{t('affiliates.dashboard.shareOn')}</span>
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out Align — the most beautiful astrology app I\'ve ever used. Get 10% off your first 2 months with my link!')}&url=${encodeURIComponent(affiliate.affiliate_link)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(t('affiliates.dashboard.tweetText'))}&url=${encodeURIComponent(affiliate.affiliate_link)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 bg-black/30 hover:bg-black/50 text-text-secondary hover:text-white px-3 py-1.5 rounded-lg text-xs transition-colors"
@@ -247,7 +249,7 @@ export default function AffiliateDashboardPage() {
                 Twitter / X
               </a>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent('Check out Align — the most beautiful astrology app! Get 10% off your first 2 months: ' + affiliate.affiliate_link)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(t('affiliates.dashboard.whatsappText', { link: affiliate.affiliate_link }))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 bg-black/30 hover:bg-[#25D366]/20 text-text-secondary hover:text-[#25D366] px-3 py-1.5 rounded-lg text-xs transition-colors"
@@ -270,25 +272,25 @@ export default function AffiliateDashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <StatCard label="Total Clicks" value={affiliate.total_clicks.toLocaleString()} />
-          <StatCard label="Signups" value={affiliate.total_signups.toLocaleString()} />
-          <StatCard label="Conversions" value={affiliate.total_conversions.toLocaleString()} />
-          <StatCard label="Conversion Rate" value={`${affiliate.conversion_rate}%`} />
+          <StatCard label={t('affiliates.dashboard.stats.totalClicks')} value={affiliate.total_clicks.toLocaleString()} />
+          <StatCard label={t('affiliates.dashboard.stats.signups')} value={affiliate.total_signups.toLocaleString()} />
+          <StatCard label={t('affiliates.dashboard.stats.conversions')} value={affiliate.total_conversions.toLocaleString()} />
+          <StatCard label={t('affiliates.dashboard.stats.conversionRate')} value={`${affiliate.conversion_rate}%`} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <EarningsCard
-            label="Total Earned"
+            label={t('affiliates.dashboard.earnings.totalEarned')}
             value={centsToUSD(affiliate.total_earnings_cents)}
             color="text-green-400"
           />
           <EarningsCard
-            label="Paid Out"
+            label={t('affiliates.dashboard.earnings.paidOut')}
             value={centsToUSD(affiliate.total_paid_cents)}
             color="text-blue-400"
           />
           <EarningsCard
-            label="Unpaid Balance"
+            label={t('affiliates.dashboard.earnings.unpaidBalance')}
             value={centsToUSD(affiliate.unpaid_cents)}
             color="text-accent-primary"
             highlight
@@ -297,28 +299,28 @@ export default function AffiliateDashboardPage() {
 
         {/* 30-day summary */}
         <div className="bg-bg-card border border-border-primary rounded-xl p-4 mb-8 flex items-center gap-6 text-sm">
-          <span className="text-text-muted">Last 30 days:</span>
+          <span className="text-text-muted">{t('affiliates.dashboard.last30Days')}</span>
           <span className="text-text-primary">
-            <strong>{affiliate.recent_clicks_30d}</strong> clicks
+            <strong>{affiliate.recent_clicks_30d}</strong> {t('affiliates.dashboard.clicksWord')}
           </span>
           <span className="text-text-primary">
-            <strong>{affiliate.recent_conversions_30d}</strong> conversions
+            <strong>{affiliate.recent_conversions_30d}</strong> {t('affiliates.dashboard.conversionsWord')}
           </span>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-bg-card rounded-xl p-1 border border-border-primary overflow-x-auto">
-          {(['overview', 'conversions', 'clicks', 'payouts'] as const).map(t => (
+          {(['overview', 'conversions', 'clicks', 'payouts'] as const).map(tabKey => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={tabKey}
+              onClick={() => setTab(tabKey)}
               className={`flex-1 min-w-0 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                tab === t
+                tab === tabKey
                   ? 'bg-accent-primary/20 text-accent-primary'
                   : 'text-text-muted hover:text-text-secondary'
               }`}
             >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {t(`affiliates.dashboard.tabs.${tabKey}`)}
             </button>
           ))}
         </div>
@@ -326,19 +328,19 @@ export default function AffiliateDashboardPage() {
         {/* Tab content */}
         {tab === 'overview' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Recent Conversions</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('affiliates.dashboard.recentConversions')}</h3>
             {conversions.length === 0 ? (
-              <p className="text-text-muted text-sm py-8 text-center">No conversions yet. Share your link to get started!</p>
+              <p className="text-text-muted text-sm py-8 text-center">{t('affiliates.dashboard.noConversionsShare')}</p>
             ) : (
               <div className="bg-bg-card border border-border-primary rounded-xl overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border-primary text-text-muted">
-                      <th className="text-left px-4 py-3 font-medium">Date</th>
-                      <th className="text-left px-4 py-3 font-medium">Type</th>
-                      <th className="text-right px-4 py-3 font-medium">Revenue</th>
-                      <th className="text-right px-4 py-3 font-medium">Commission</th>
-                      <th className="text-left px-4 py-3 font-medium">Status</th>
+                      <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.date')}</th>
+                      <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.type')}</th>
+                      <th className="text-right px-4 py-3 font-medium">{t('affiliates.dashboard.table.revenue')}</th>
+                      <th className="text-right px-4 py-3 font-medium">{t('affiliates.dashboard.table.commission')}</th>
+                      <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.status')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -353,7 +355,7 @@ export default function AffiliateDashboardPage() {
                             c.conversion_type === 'purchase' ? 'bg-green-500/10 text-green-400' :
                             'bg-purple-500/10 text-purple-400'
                           }`}>
-                            {c.conversion_type}
+                            {t(`affiliates.dashboard.types.${c.conversion_type}`, { defaultValue: c.conversion_type })}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right text-text-primary">
@@ -368,7 +370,7 @@ export default function AffiliateDashboardPage() {
                             c.status === 'paid' ? 'text-blue-400' :
                             'text-yellow-400'
                           }`}>
-                            {c.status}
+                            {t(`affiliates.dashboard.statuses.${c.status}`, { defaultValue: c.status })}
                           </span>
                         </td>
                       </tr>
@@ -382,34 +384,34 @@ export default function AffiliateDashboardPage() {
 
         {tab === 'conversions' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">All Conversions</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('affiliates.dashboard.allConversions')}</h3>
             <div className="bg-bg-card border border-border-primary rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border-primary text-text-muted">
-                    <th className="text-left px-4 py-3 font-medium">Date</th>
-                    <th className="text-left px-4 py-3 font-medium">Type</th>
-                    <th className="text-left px-4 py-3 font-medium">Source</th>
-                    <th className="text-right px-4 py-3 font-medium">Revenue</th>
-                    <th className="text-right px-4 py-3 font-medium">Commission</th>
-                    <th className="text-left px-4 py-3 font-medium">Status</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.date')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.type')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.source')}</th>
+                    <th className="text-right px-4 py-3 font-medium">{t('affiliates.dashboard.table.revenue')}</th>
+                    <th className="text-right px-4 py-3 font-medium">{t('affiliates.dashboard.table.commission')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {conversions.map(c => (
                     <tr key={c.id} className="border-b border-border-primary/50 hover:bg-white/[0.02]">
                       <td className="px-4 py-3 text-text-secondary">{new Date(c.created_at).toLocaleDateString()}</td>
-                      <td className="px-4 py-3 capitalize text-text-primary">{c.conversion_type}</td>
+                      <td className="px-4 py-3 capitalize text-text-primary">{t(`affiliates.dashboard.types.${c.conversion_type}`, { defaultValue: c.conversion_type })}</td>
                       <td className="px-4 py-3 text-text-muted">{c.source}</td>
                       <td className="px-4 py-3 text-right text-text-primary">{c.revenue_cents > 0 ? centsToUSD(c.revenue_cents) : '-'}</td>
                       <td className="px-4 py-3 text-right text-green-400">{c.commission_cents > 0 ? centsToUSD(c.commission_cents) : '-'}</td>
-                      <td className="px-4 py-3 capitalize text-text-muted">{c.status}</td>
+                      <td className="px-4 py-3 capitalize text-text-muted">{t(`affiliates.dashboard.statuses.${c.status}`, { defaultValue: c.status })}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {conversions.length === 0 && (
-                <p className="text-text-muted text-sm py-8 text-center">No conversions yet</p>
+                <p className="text-text-muted text-sm py-8 text-center">{t('affiliates.dashboard.noConversions')}</p>
               )}
             </div>
           </div>
@@ -417,15 +419,15 @@ export default function AffiliateDashboardPage() {
 
         {tab === 'clicks' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Click History</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('affiliates.dashboard.clickHistory')}</h3>
             <div className="bg-bg-card border border-border-primary rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border-primary text-text-muted">
-                    <th className="text-left px-4 py-3 font-medium">Date</th>
-                    <th className="text-left px-4 py-3 font-medium">Country</th>
-                    <th className="text-left px-4 py-3 font-medium">Referrer</th>
-                    <th className="text-left px-4 py-3 font-medium">Converted</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.date')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.country')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.referrer')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.converted')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -433,12 +435,12 @@ export default function AffiliateDashboardPage() {
                     <tr key={c.id} className="border-b border-border-primary/50 hover:bg-white/[0.02]">
                       <td className="px-4 py-3 text-text-secondary">{new Date(c.clicked_at).toLocaleString()}</td>
                       <td className="px-4 py-3 text-text-primary">{c.country || '-'}</td>
-                      <td className="px-4 py-3 text-text-muted text-xs truncate max-w-[200px]">{c.referrer_url || 'Direct'}</td>
+                      <td className="px-4 py-3 text-text-muted text-xs truncate max-w-[200px]">{c.referrer_url || t('affiliates.dashboard.direct')}</td>
                       <td className="px-4 py-3">
                         {c.converted ? (
-                          <span className="text-green-400 text-xs">Yes</span>
+                          <span className="text-green-400 text-xs">{t('common.yes')}</span>
                         ) : (
-                          <span className="text-text-muted text-xs">No</span>
+                          <span className="text-text-muted text-xs">{t('common.no')}</span>
                         )}
                       </td>
                     </tr>
@@ -446,7 +448,7 @@ export default function AffiliateDashboardPage() {
                 </tbody>
               </table>
               {clicks.length === 0 && (
-                <p className="text-text-muted text-sm py-8 text-center">No clicks yet. Share your link to get started!</p>
+                <p className="text-text-muted text-sm py-8 text-center">{t('affiliates.dashboard.noClicks')}</p>
               )}
             </div>
           </div>
@@ -454,16 +456,16 @@ export default function AffiliateDashboardPage() {
 
         {tab === 'payouts' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Payout History</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('affiliates.dashboard.payoutHistory')}</h3>
             <div className="bg-bg-card border border-border-primary rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border-primary text-text-muted">
-                    <th className="text-left px-4 py-3 font-medium">Date</th>
-                    <th className="text-right px-4 py-3 font-medium">Amount</th>
-                    <th className="text-left px-4 py-3 font-medium">Method</th>
-                    <th className="text-left px-4 py-3 font-medium">Period</th>
-                    <th className="text-left px-4 py-3 font-medium">Status</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.date')}</th>
+                    <th className="text-right px-4 py-3 font-medium">{t('affiliates.dashboard.table.amount')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.method')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.period')}</th>
+                    <th className="text-left px-4 py-3 font-medium">{t('affiliates.dashboard.table.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -481,7 +483,7 @@ export default function AffiliateDashboardPage() {
                           p.status === 'processing' ? 'text-yellow-400' :
                           'text-text-muted'
                         }`}>
-                          {p.status}
+                          {t(`affiliates.dashboard.statuses.${p.status}`, { defaultValue: p.status })}
                         </span>
                       </td>
                     </tr>
@@ -489,7 +491,7 @@ export default function AffiliateDashboardPage() {
                 </tbody>
               </table>
               {payouts.length === 0 && (
-                <p className="text-text-muted text-sm py-8 text-center">No payouts yet. Minimum payout threshold is $50.</p>
+                <p className="text-text-muted text-sm py-8 text-center">{t('affiliates.dashboard.noPayouts')}</p>
               )}
             </div>
           </div>

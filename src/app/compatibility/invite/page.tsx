@@ -10,6 +10,7 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import { CompatibilityCard } from '@/components/share';
 import { getCompatSoulLine } from '@/lib/soulLines';
@@ -33,17 +34,19 @@ interface CompatResult {
 }
 
 export default function CompatibilityInviteWrapper() {
+  const { t } = useTranslation();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0618' }}><p className="text-text-muted">Loading...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0618' }}><p className="text-text-muted">{t('common.loading')}</p></div>}>
       <CompatibilityInvitePage />
     </Suspense>
   );
 }
 
 function CompatibilityInvitePage() {
+  const { t } = useTranslation();
   const params = useSearchParams();
   const fromId = params.get('from');
-  const fromName = params.get('name') || 'Your friend';
+  const fromName = params.get('name') || t('compatInvite.yourFriend');
   const fromSign = params.get('sign') || '';
 
   const [birthDate, setBirthDate] = useState('');
@@ -59,7 +62,7 @@ function CompatibilityInvitePage() {
 
   async function handleCheck() {
     if (!birthDate) {
-      setError('Please enter your birth date.');
+      setError(t('compatInvite.errorNoBirthDate'));
       return;
     }
     setLoading(true);
@@ -94,7 +97,7 @@ function CompatibilityInvitePage() {
         toSign: sign,
       });
     } catch (err: any) {
-      setError('Could not calculate compatibility. Please check your birth data.');
+      setError(t('compatInvite.errorCalc'));
     } finally {
       setLoading(false);
     }
@@ -139,7 +142,7 @@ function CompatibilityInvitePage() {
           <CompatibilityCard
             user1Name={result.fromName}
             user1Sign={result.fromSign}
-            user2Name="You"
+            user2Name={t('compatInvite.you')}
             user2Sign={result.toSign}
             percentage={result.overall}
             aspect="story"
@@ -151,19 +154,19 @@ function CompatibilityInvitePage() {
 
           <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Emotional</p>
+              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{t('compatInvite.emotional')}</p>
               <p className="text-lg font-bold text-text-primary">{result.emotional}%</p>
             </div>
             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Passion</p>
+              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{t('compatInvite.passion')}</p>
               <p className="text-lg font-bold text-text-primary">{result.passion}%</p>
             </div>
             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Intellectual</p>
+              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{t('compatInvite.intellectual')}</p>
               <p className="text-lg font-bold text-text-primary">{result.intellectual}%</p>
             </div>
             <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Stability</p>
+              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{t('compatInvite.stability')}</p>
               <p className="text-lg font-bold text-text-primary">{result.stability}%</p>
             </div>
           </div>
@@ -172,10 +175,10 @@ function CompatibilityInvitePage() {
             href="/onboarding"
             className="block w-full py-3.5 rounded-xl bg-accent-primary text-white font-semibold text-center hover:bg-accent-primary/90 transition-colors mb-3"
           >
-            Get Your Full Chart Free
+            {t('compatInvite.getFullChart')}
           </Link>
           <Link href="/auth" className="text-sm text-text-muted hover:text-text-primary transition-colors">
-            I already have an account
+            {t('compatInvite.haveAccount')}
           </Link>
         </div>
       </div>
@@ -191,21 +194,21 @@ function CompatibilityInvitePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <p className="text-xs font-semibold text-accent-primary uppercase tracking-[0.2em] mb-2">✦ ALIGN ✦</p>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">Check Your Compatibility</h1>
+          <h1 className="text-2xl font-bold text-text-primary mb-2">{t('compatInvite.title')}</h1>
           {fromName && fromSign && (
             <p className="text-sm text-text-muted">
-              {fromName} ({ZODIAC_GLYPHS[fromSign] || ''} {fromSign}) wants to see how your stars align
+              {t('compatInvite.inviteWithSign', { name: fromName, glyph: ZODIAC_GLYPHS[fromSign] || '', sign: fromSign })}
             </p>
           )}
           {fromName && !fromSign && (
-            <p className="text-sm text-text-muted">{fromName} wants to see how your stars align</p>
+            <p className="text-sm text-text-muted">{t('compatInvite.inviteNoSign', { name: fromName })}</p>
           )}
         </div>
 
         {/* Birth date input */}
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-1.5">Your Birth Date</label>
+            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-1.5">{t('compatInvite.birthDateLabel')}</label>
             <input
               type="date"
               min="1900-01-01"
@@ -218,7 +221,7 @@ function CompatibilityInvitePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-1.5">Birth Time (optional)</label>
+            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-1.5">{t('compatInvite.birthTimeLabel')}</label>
             <input
               type="time"
               value={birthTime}
@@ -237,12 +240,12 @@ function CompatibilityInvitePage() {
             disabled={loading || !birthDate}
             className="w-full py-3.5 rounded-xl bg-accent-primary text-white font-semibold hover:bg-accent-primary/90 transition-colors disabled:opacity-40"
           >
-            {loading ? 'Calculating...' : 'See Our Compatibility'}
+            {loading ? t('compatInvite.calculating') : t('compatInvite.seeCompatibility')}
           </button>
         </div>
 
         <p className="text-center text-xs text-text-muted mt-6">
-          Powered by real natal chart calculations
+          {t('compatInvite.poweredBy')}
         </p>
       </div>
     </div>

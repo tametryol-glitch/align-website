@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import {
@@ -15,6 +16,7 @@ import type { RewardBalance, RewardEvent, RewardPerk, RewardRedemption } from '@
 import { Sparkles, Star, Heart, Users, Gift, Clock, TrendingUp, Zap } from 'lucide-react';
 
 export default function DatingRewardsPage() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { tier } = useSubscriptionStore();
 
@@ -51,31 +53,31 @@ export default function DatingRewardsPage() {
 
     const tierOrder = ['free', 'light', 'premium', 'pro'];
     if (tierOrder.indexOf(tier) < tierOrder.indexOf(perk.min_tier)) {
-      alert(`This perk requires ${perk.min_tier.charAt(0).toUpperCase() + perk.min_tier.slice(1)} tier or higher.`);
+      alert(t('dating.rewards.tierRequired', { tier: perk.min_tier.charAt(0).toUpperCase() + perk.min_tier.slice(1) }));
       return;
     }
 
     if (!balance || balance.available_points < perk.points_cost) {
-      alert(`You need ${perk.points_cost} points but only have ${balance?.available_points ?? 0}.`);
+      alert(t('dating.rewards.notEnoughPoints', { cost: perk.points_cost, available: balance?.available_points ?? 0 }));
       return;
     }
 
-    if (!confirm(`Spend ${perk.points_cost} points for ${perk.display_name}?`)) return;
+    if (!confirm(t('dating.rewards.confirmSpend', { cost: perk.points_cost, name: perk.display_name }))) return;
 
     setRedeeming(true);
     const result = await redeemPerk(user.id, perk.perk_type);
 
     if (result.success) {
-      alert(`${perk.display_name} is now active!`);
+      alert(t('dating.rewards.perkNowActive', { name: perk.display_name }));
       await loadData();
     } else {
       const messages: Record<string, string> = {
-        insufficient_points: 'Not enough points.',
-        max_active_reached: 'You already have this perk active.',
-        cooldown_active: 'Please wait before redeeming this again.',
-        perk_not_found_or_disabled: 'This perk is currently unavailable.',
+        insufficient_points: t('dating.rewards.errors.insufficientPoints'),
+        max_active_reached: t('dating.rewards.errors.maxActiveReached'),
+        cooldown_active: t('dating.rewards.errors.cooldownActive'),
+        perk_not_found_or_disabled: t('dating.rewards.errors.perkUnavailable'),
       };
-      alert(messages[result.reason || ''] || 'Something went wrong.');
+      alert(messages[result.reason || ''] || t('dating.rewards.errors.generic'));
     }
     setRedeeming(false);
   };
@@ -94,41 +96,41 @@ export default function DatingRewardsPage() {
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         <Link href="/dating" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Star size={14} /> Discover
+          <Star size={14} /> {t('dating.tabs.discover')}
         </Link>
         <Link href="/dating/likes" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Heart size={14} /> Likes
+          <Heart size={14} /> {t('dating.tabs.likes')}
         </Link>
         <Link href="/dating/matches" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-colors"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-          <Users size={14} /> Matches
+          <Users size={14} /> {t('dating.tabs.matches')}
         </Link>
         <Link href="/dating/rewards" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium"
           style={{ backgroundColor: 'rgba(155,111,246,0.15)', color: '#B8A0FA' }}>
-          <Gift size={14} /> Rewards
+          <Gift size={14} /> {t('dating.rewards.title')}
         </Link>
       </div>
 
       {/* Balance Card */}
       <div className="rounded-2xl p-6 mb-6 text-center border"
         style={{ backgroundColor: 'rgba(155,111,246,0.08)', borderColor: 'rgba(155,111,246,0.2)' }}>
-        <p className="text-sm text-gray-400 mb-1">Connection Points</p>
+        <p className="text-sm text-gray-400 mb-1">{t('dating.rewards.connectionPoints')}</p>
         <p className="text-5xl font-extrabold" style={{ color: '#9B6FF6' }}>
           {balance?.available_points ?? 0}
         </p>
         {(balance?.pending_points ?? 0) > 0 && (
-          <p className="text-sm text-yellow-400 mt-1">+{balance?.pending_points} pending</p>
+          <p className="text-sm text-yellow-400 mt-1">{t('dating.rewards.pendingPoints', { points: balance?.pending_points })}</p>
         )}
         <div className="flex justify-center gap-8 mt-4 pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
           <div className="text-center">
             <p className="text-lg font-bold text-white">{balance?.lifetime_points ?? 0}</p>
-            <p className="text-xs text-gray-500">Lifetime</p>
+            <p className="text-xs text-gray-500">{t('dating.rewards.lifetime')}</p>
           </div>
           <div className="w-px bg-white/10" />
           <div className="text-center">
             <p className="text-lg font-bold text-white">{activePerks.length}</p>
-            <p className="text-xs text-gray-500">Active Perks</p>
+            <p className="text-xs text-gray-500">{t('dating.rewards.activePerks')}</p>
           </div>
         </div>
       </div>
@@ -141,7 +143,7 @@ export default function DatingRewardsPage() {
             activeTab === 'perks' ? 'text-purple-400 border-b-2 border-purple-500' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
-          Perks
+          {t('dating.rewards.tabPerks')}
         </button>
         <button
           onClick={() => setActiveTab('active')}
@@ -149,7 +151,7 @@ export default function DatingRewardsPage() {
             activeTab === 'active' ? 'text-purple-400 border-b-2 border-purple-500' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
-          Active ({activePerks.length})
+          {t('dating.rewards.tabActive', { count: activePerks.length })}
         </button>
         <button
           onClick={() => setActiveTab('history')}
@@ -157,7 +159,7 @@ export default function DatingRewardsPage() {
             activeTab === 'history' ? 'text-purple-400 border-b-2 border-purple-500' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
-          History
+          {t('dating.rewards.tabHistory')}
         </button>
       </div>
 
@@ -166,9 +168,9 @@ export default function DatingRewardsPage() {
         perks.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">🎁</p>
-            <p className="text-lg font-semibold text-white mb-2">No Perks Available Yet</p>
+            <p className="text-lg font-semibold text-white mb-2">{t('dating.rewards.noPerksTitle')}</p>
             <p className="text-sm text-gray-500 max-w-xs mx-auto">
-              Keep making genuine connections to earn points. Perks will appear here soon.
+              {t('dating.rewards.noPerksDescription')}
             </p>
           </div>
         ) : (
@@ -196,7 +198,7 @@ export default function DatingRewardsPage() {
                   <p className="text-xs text-gray-400 mt-1 line-clamp-2">{perk.description}</p>
                   <div className="flex items-center gap-2 mt-3">
                     <span className="text-sm font-bold" style={{ color: canAfford ? '#9B6FF6' : '#6B7280' }}>
-                      {perk.points_cost} pts
+                      {t('dating.rewards.pointsCost', { cost: perk.points_cost })}
                     </span>
                     {!tierOk && (
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
@@ -207,10 +209,12 @@ export default function DatingRewardsPage() {
                   </div>
                   <p className="text-[10px] text-gray-500 mt-1">
                     {perk.duration_hours >= 168
-                      ? `${Math.round(perk.duration_hours / 24)} days`
+                      ? t('dating.rewards.durationDays', { count: Math.round(perk.duration_hours / 24) })
                       : perk.duration_hours >= 24
-                        ? `${Math.round(perk.duration_hours / 24)} day${perk.duration_hours >= 48 ? 's' : ''}`
-                        : `${perk.duration_hours}h`}
+                        ? (perk.duration_hours >= 48
+                          ? t('dating.rewards.durationDays', { count: Math.round(perk.duration_hours / 24) })
+                          : t('dating.rewards.durationDay', { count: Math.round(perk.duration_hours / 24) }))
+                        : t('dating.rewards.durationHours', { count: perk.duration_hours })}
                   </p>
                 </button>
               );
@@ -224,9 +228,9 @@ export default function DatingRewardsPage() {
         activePerks.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">✨</p>
-            <p className="text-lg font-semibold text-white mb-2">No Active Perks</p>
+            <p className="text-lg font-semibold text-white mb-2">{t('dating.rewards.noActivePerksTitle')}</p>
             <p className="text-sm text-gray-500 max-w-xs mx-auto">
-              Redeem points for perks and they will appear here with countdown timers.
+              {t('dating.rewards.noActivePerksDescription')}
             </p>
           </div>
         ) : (
@@ -244,15 +248,19 @@ export default function DatingRewardsPage() {
                     <p className="text-sm font-semibold text-white capitalize">
                       {perk.metadata?.display_name || perk.redemption_type.replace(/_/g, ' ')}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">{perk.points_spent} pts spent</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{t('dating.rewards.pointsSpent', { points: perk.points_spent })}</p>
                   </div>
                   <div className="text-right">
                     {hoursLeft !== null ? (
                       <p className={`text-sm font-semibold ${hoursLeft <= 2 ? 'text-red-400' : 'text-green-400'}`}>
-                        {hoursLeft > 24 ? `${Math.round(hoursLeft / 24)}d left` : hoursLeft > 0 ? `${hoursLeft}h left` : 'Expiring'}
+                        {hoursLeft > 24
+                          ? t('dating.rewards.daysLeft', { days: Math.round(hoursLeft / 24) })
+                          : hoursLeft > 0
+                            ? t('dating.rewards.hoursLeft', { hours: hoursLeft })
+                            : t('dating.rewards.expiring')}
                       </p>
                     ) : (
-                      <p className="text-sm font-semibold text-green-400">Permanent</p>
+                      <p className="text-sm font-semibold text-green-400">{t('dating.rewards.permanent')}</p>
                     )}
                   </div>
                 </div>
@@ -267,9 +275,9 @@ export default function DatingRewardsPage() {
         events.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-3">📊</p>
-            <p className="text-lg font-semibold text-white mb-2">No Activity Yet</p>
+            <p className="text-lg font-semibold text-white mb-2">{t('dating.rewards.noActivityTitle')}</p>
             <p className="text-sm text-gray-500 max-w-xs mx-auto">
-              Start matching and connecting — your reward activity will appear here.
+              {t('dating.rewards.noActivityDescription')}
             </p>
           </div>
         ) : (

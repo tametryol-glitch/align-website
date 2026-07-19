@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Globe, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { listCountries, getAllDailyScores, type GICountry, type GIScores } from '@/lib/globalIntelligence';
 
 const REGION_COLORS: Record<string, string> = {
@@ -34,11 +35,11 @@ function scoreColor(val: number): string {
   return 'text-red-400';
 }
 
-function conflictBadge(val: number): { text: string; cls: string } {
-  if (val < 25) return { text: 'Low', cls: 'bg-emerald-500/20 text-emerald-400' };
-  if (val < 50) return { text: 'Moderate', cls: 'bg-yellow-500/20 text-yellow-400' };
-  if (val < 75) return { text: 'High', cls: 'bg-orange-500/20 text-orange-400' };
-  return { text: 'Critical', cls: 'bg-red-500/20 text-red-400' };
+function conflictBadge(val: number): { textKey: string; cls: string } {
+  if (val < 25) return { textKey: 'globalIntelligence.conflictLow', cls: 'bg-emerald-500/20 text-emerald-400' };
+  if (val < 50) return { textKey: 'globalIntelligence.conflictModerate', cls: 'bg-yellow-500/20 text-yellow-400' };
+  if (val < 75) return { textKey: 'globalIntelligence.conflictHigh', cls: 'bg-orange-500/20 text-orange-400' };
+  return { textKey: 'globalIntelligence.conflictCritical', cls: 'bg-red-500/20 text-red-400' };
 }
 
 interface CountryWithIntel extends GICountry {
@@ -46,6 +47,7 @@ interface CountryWithIntel extends GICountry {
 }
 
 export default function GlobalIntelligencePage() {
+  const { t } = useTranslation();
   const [countries, setCountries] = useState<CountryWithIntel[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -115,7 +117,7 @@ export default function GlobalIntelligencePage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border-2 border-accent-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-text-muted text-sm">Loading Global Intelligence...</p>
+          <p className="text-text-muted text-sm">{t('globalIntelligence.loading')}</p>
         </div>
       </div>
     );
@@ -130,8 +132,8 @@ export default function GlobalIntelligencePage() {
             <Globe className="w-5 h-5 text-accent-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold text-text-primary">Global Intelligence</h1>
-            <p className="text-text-muted text-sm">Mundane astrology for {countries.length} nations — daily scores, transits &amp; events</p>
+            <h1 className="text-2xl font-display font-bold text-text-primary">{t('globalIntelligence.title')}</h1>
+            <p className="text-text-muted text-sm">{t('globalIntelligence.subtitle', { count: countries.length })}</p>
           </div>
         </div>
       </div>
@@ -142,7 +144,7 @@ export default function GlobalIntelligencePage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
             type="text"
-            placeholder="Search countries..."
+            placeholder={t('globalIntelligence.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-bg-card border border-border-primary text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary transition"
@@ -155,7 +157,7 @@ export default function GlobalIntelligencePage() {
               !regionFilter ? 'bg-accent-primary text-white' : 'bg-bg-card text-text-muted hover:text-text-primary border border-border-primary'
             }`}
           >
-            All
+            {t('globalIntelligence.filterAll')}
           </button>
           {regions.map((r) => (
             <button
@@ -174,12 +176,12 @@ export default function GlobalIntelligencePage() {
           onChange={(e) => setSortBy(e.target.value)}
           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-bg-card text-text-muted border border-border-primary focus:outline-none focus:border-accent-primary"
         >
-          <option value="name">Sort: A-Z</option>
-          <option value="energy_desc">Energy: High → Low</option>
-          <option value="energy_asc">Energy: Low → High</option>
-          <option value="conflict_desc">Conflict: High → Low</option>
-          <option value="conflict_asc">Conflict: Low → High</option>
-          <option value="economic_desc">Economic: High → Low</option>
+          <option value="name">{t('globalIntelligence.sortName')}</option>
+          <option value="energy_desc">{t('globalIntelligence.sortEnergyDesc')}</option>
+          <option value="energy_asc">{t('globalIntelligence.sortEnergyAsc')}</option>
+          <option value="conflict_desc">{t('globalIntelligence.sortConflictDesc')}</option>
+          <option value="conflict_asc">{t('globalIntelligence.sortConflictAsc')}</option>
+          <option value="economic_desc">{t('globalIntelligence.sortEconomicDesc')}</option>
         </select>
       </div>
 
@@ -195,13 +197,13 @@ export default function GlobalIntelligencePage() {
           : 0;
         return (
           <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-card border border-border-primary text-xs">
-            <span className="text-text-muted">World Pulse:</span>
-            <span className="text-text-primary font-medium">Avg Energy {avgEnergy > 0 ? '+' : ''}{avgEnergy}</span>
-            {favorable > 0 && <span className="text-emerald-400">{favorable} favorable</span>}
-            {stressed > 0 && <span className="text-red-400">{stressed} stressed</span>}
-            {critical > 0 && <span className="text-red-400 font-semibold">{critical} critical conflict</span>}
-            {elevated > 0 && <span className="text-orange-400">{elevated} elevated tension</span>}
-            <span className="text-text-muted ml-auto">{sorted.length} of {countries.length} shown</span>
+            <span className="text-text-muted">{t('globalIntelligence.worldPulse')}</span>
+            <span className="text-text-primary font-medium">{t('globalIntelligence.avgEnergy', { value: `${avgEnergy > 0 ? '+' : ''}${avgEnergy}` })}</span>
+            {favorable > 0 && <span className="text-emerald-400">{t('globalIntelligence.favorableCount', { count: favorable })}</span>}
+            {stressed > 0 && <span className="text-red-400">{t('globalIntelligence.stressedCount', { count: stressed })}</span>}
+            {critical > 0 && <span className="text-red-400 font-semibold">{t('globalIntelligence.criticalConflictCount', { count: critical })}</span>}
+            {elevated > 0 && <span className="text-orange-400">{t('globalIntelligence.elevatedTensionCount', { count: elevated })}</span>}
+            <span className="text-text-muted ml-auto">{t('globalIntelligence.shownCount', { shown: sorted.length, total: countries.length })}</span>
           </div>
         );
       })()}
@@ -242,19 +244,19 @@ export default function GlobalIntelligencePage() {
                       </div>
                       {conflict && (
                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${conflict.cls}`}>
-                          {conflict.text}
+                          {t(conflict.textKey)}
                         </span>
                       )}
                       <span className={`text-[10px] ${scoreColor(country.scores.economic_momentum)}`}>
-                        Econ {country.scores.economic_momentum > 0 ? '+' : ''}{country.scores.economic_momentum}
+                        {t('globalIntelligence.econScore', { value: `${country.scores.economic_momentum > 0 ? '+' : ''}${country.scores.economic_momentum}` })}
                       </span>
                       <span className={`text-[10px] ${scoreColor(country.scores.political_stability)}`}>
-                        Pol {country.scores.political_stability > 0 ? '+' : ''}{country.scores.political_stability}
+                        {t('globalIntelligence.polScore', { value: `${country.scores.political_stability > 0 ? '+' : ''}${country.scores.political_stability}` })}
                       </span>
                     </div>
                   )}
                   {!country.scores && (
-                    <p className="text-text-muted text-[10px] mt-2 italic">Awaiting first scan</p>
+                    <p className="text-text-muted text-[10px] mt-2 italic">{t('globalIntelligence.awaitingFirstScan')}</p>
                   )}
                 </div>
                 <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-accent-primary transition mt-1 flex-shrink-0" />
@@ -267,7 +269,7 @@ export default function GlobalIntelligencePage() {
       {sorted.length === 0 && (
         <div className="text-center py-12 text-text-muted">
           <Globe className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p>No countries match your search.</p>
+          <p>{t('globalIntelligence.noMatches')}</p>
         </div>
       )}
     </div>
