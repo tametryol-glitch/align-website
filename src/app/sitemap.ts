@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/compatibility',
     '/blog',
     '/founder',
+    '/affiliates',
   ];
 
   const readingRoutes = [

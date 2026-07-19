@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { BottomTabBar } from './BottomTabBar';
+import { EarnPromoBanner } from '@/components/ui/EarnPromoBanner';
 import { useEffect } from 'react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -34,6 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <Sidebar />
       <main className="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
+        <EarnPromoBanner />
         {children}
       </main>
       {/* Mobile bottom tab bar */}

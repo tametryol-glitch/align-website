@@ -293,6 +293,46 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Earn with Align */}
+      <section className="max-w-5xl mx-auto px-6 pb-20">
+        <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-3">
+          Earn with Align
+        </h2>
+        <p className="text-sm text-text-tertiary text-center max-w-2xl mx-auto mb-10">
+          Love Align? Get paid to share it. Two ways to turn your cosmic passion into income.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl p-6 border border-border-primary bg-bg-card hover:border-accent-primary/30 transition-colors flex flex-col">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-muted text-accent-primary text-xs font-medium mb-4 self-start">
+              20% Recurring Commission
+            </div>
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Affiliate Program</h3>
+            <p className="text-sm text-text-tertiary mb-5 flex-1">
+              Share your link and earn 20% of every subscription you refer — month after month, for as
+              long as they stay subscribed. 30-day tracking, monthly payouts, and no follower minimum.
+              Anyone can apply.
+            </p>
+            <Link href="/affiliates" className="btn-primary text-sm px-6 py-2.5 self-start">
+              Become an Affiliate →
+            </Link>
+          </div>
+          <div className="rounded-2xl p-6 border border-border-primary bg-bg-card hover:border-accent-primary/30 transition-colors flex flex-col">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-muted text-accent-primary text-xs font-medium mb-4 self-start">
+              For Astro Creators
+            </div>
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Creator Program</h3>
+            <p className="text-sm text-text-tertiary mb-5 flex-1">
+              Share readings and videos on Align, build your cosmic community, and earn from your
+              content — including commissions when your audience joins through you. Apply from
+              Creator Studio inside the app.
+            </p>
+            <Link href="/creator-studio" className="btn-secondary text-sm px-6 py-2.5 self-start">
+              Open Creator Studio →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-6 pb-20">
         <script
@@ -361,6 +401,7 @@ export default function LandingPage() {
               <Link href="/settings/privacy" className="hover:text-text-secondary">Privacy</Link>
               <Link href="/settings/community-guidelines" className="hover:text-text-secondary">Guidelines</Link>
               <Link href="/affiliates" className="hover:text-text-secondary">Affiliates</Link>
+              <Link href="/creator-studio" className="hover:text-text-secondary">Creators</Link>
             </div>
           </div>
         </div>

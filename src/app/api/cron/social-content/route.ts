@@ -102,6 +102,28 @@ const POOLS: Record<string, string[]> = {
   '806ba1be-51a2-4c77-9f3a-a5e703310852': COSMIC_WEATHER_POOL, // Cosmic Weather
 };
 
+// ── Daily "Earn with Align" promo ───────────────────────────────────────────
+// Posted by Align Daily EVERY day in addition to its regular rotation post.
+// Every variant must keep: the affiliate apply link, and the full Creator
+// Program qualification list (kept in sync with creatorEligibility.ts
+// CREATOR_THRESHOLDS: 100 followers, 1,000 lifetime views, 300 views/30d,
+// 10 published videos, 30-day account age).
+const EARN_ACCOUNT_ID = 'b15846d4-48db-42b2-bdfd-04abe3ff15d6'; // Align Daily
+const EARN_MARKER = 'aligncosmic.com/affiliates'; // idempotency marker — present in every variant
+
+const CREATOR_REQS =
+  'To qualify for the Creator Program you need: 100+ followers, 1,000+ lifetime video views, 300+ views in the last 30 days, 10+ published videos, and an account that\'s 30+ days old — then apply right from Creator Studio in the app. 🎨';
+
+const EARN_PROMO_POOL: string[] = [
+  `💸 Did you know Align pays you to share it? Join the Affiliate Program and earn 20% recurring commission on every subscription you refer — for as long as they stay subscribed. Apply in 2 minutes: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+  `✨ Turn your love for astrology into income. Align affiliates earn 20% of every subscription they refer, month after month — no follower minimum, anyone can apply: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+  `🔗 Your link, your income. Share Align and keep 20% of every subscription you bring in — recurring, with monthly payouts. Start here: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+  `🌟 Two ways to earn with Align: 1) Become an affiliate and get 20% recurring commission on every referral — apply at https://aligncosmic.com/affiliates. 2) Become a creator and earn from your content. ${CREATOR_REQS}`,
+  `💰 Already telling your friends about Align? Get paid for it. The Affiliate Program pays 20% recurring commission on every subscription you refer: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+  `🚀 Astro bloggers, TikTokers, tarot readers, podcast hosts — the Align Affiliate Program was built for you. 20% recurring commission, 30-day tracking, monthly payouts: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+  `🌙 Love it here? Make it pay. Refer friends to Align and earn 20% of their subscription every single month via the Affiliate Program: https://aligncosmic.com/affiliates\n\n${CREATOR_REQS}`,
+];
+
 function dayOfYearUTC(d: Date): number {
   const start = Date.UTC(d.getUTCFullYear(), 0, 0);
   const diff = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - start;
@@ -170,6 +192,39 @@ export async function GET(request: NextRequest) {
         results.push({ account: account.name, status: 'error', reason: insertErr.message });
       } else {
         results.push({ account: account.name, status: 'posted', content });
+      }
+    }
+
+    // Daily "Earn with Align" promo — in addition to the regular rotation.
+    // Idempotent by content marker (the affiliate URL) rather than post count,
+    // so it neither blocks nor is blocked by the regular daily post.
+    {
+      const { count, error: countErr } = await admin
+        .from('posts')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', EARN_ACCOUNT_ID)
+        .gte('created_at', dayStart)
+        .ilike('content', `%${EARN_MARKER}%`);
+
+      if (countErr) {
+        results.push({ account: 'Align Daily (Earn promo)', status: 'error', reason: countErr.message });
+      } else if ((count ?? 0) > 0) {
+        results.push({ account: 'Align Daily (Earn promo)', status: 'skipped', reason: 'Already posted today' });
+      } else {
+        const content = EARN_PROMO_POOL[doy % EARN_PROMO_POOL.length];
+        const { error: insertErr } = await admin.from('posts').insert({
+          user_id: EARN_ACCOUNT_ID,
+          type: 'text',
+          content,
+          image_url: null,
+          visibility: 'public',
+          chart_data: {},
+        });
+        if (insertErr) {
+          results.push({ account: 'Align Daily (Earn promo)', status: 'error', reason: insertErr.message });
+        } else {
+          results.push({ account: 'Align Daily (Earn promo)', status: 'posted', content });
+        }
       }
     }
 

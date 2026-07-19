@@ -13,7 +13,7 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart, MessagesSquare,
+  Mail, Video, Heart, MessagesSquare, Palette, DollarSign,
 } from 'lucide-react';
 
 const TABS = [
@@ -37,6 +37,8 @@ const MORE_ITEMS = [
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
+  { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
+  { href: '/affiliates', labelKey: 'Affiliates', icon: DollarSign },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
   { href: '/profile', labelKey: 'components.sidebar.profile', icon: User },
   { href: '/settings', labelKey: 'components.sidebar.settings', icon: Settings },

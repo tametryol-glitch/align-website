@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { isPlatformAdmin } from '@/lib/admin';
 import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creatorScoreEngine';
 import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
+import { renderTextWithLinks } from '@/lib/linkify';
 
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
@@ -407,7 +408,7 @@ export function FeedCard({
                 className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
                 style={textColor ? { color: textColor } : undefined}
               >
-                {displayText}
+                {renderTextWithLinks(displayText)}
               </p>
             )}
             {youtubeIds.map((vid, i) => (

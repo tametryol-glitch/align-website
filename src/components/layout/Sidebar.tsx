@@ -12,7 +12,7 @@ import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
   Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
-  Bookmark, BarChart3, Palette, Orbit,
+  Bookmark, BarChart3, Palette, Orbit, DollarSign,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -37,6 +37,7 @@ const NAV_ITEMS = [
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
   { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
+  { href: '/affiliates', labelKey: 'Affiliates', icon: DollarSign },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
 ];
 
