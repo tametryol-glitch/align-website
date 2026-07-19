@@ -208,6 +208,7 @@
       "approaching": "Approaching",
       "separating": "Separating",
       "cycleMeaning": "What This Cycle Means for You",
+      "hiddenLayer": "What This Is Really Touching",
       "howToNavigate": "How to Navigate This",
       "technicalDetails": "Technical Details",
       "transit": "Transit",
@@ -1816,7 +1817,131 @@
     "shareReading": "Share a Reading",
     "shareReadingHint": "Post chart interpretations",
     "signInRequired": "Please sign in to access Creator Studio",
-    "loading": "Loading studio..."
+    "loading": "Loading studio...",
+    "applyIntro": "Become an Align Creator to share your astrological insights, build a following, and earn from your content.",
+    "reviewTitle": "Application under review",
+    "reviewBody": "Thanks for applying to the Creator Program. We're reviewing applications by hand while Align grows — keep posting and growing your audience while you wait. Your progress keeps counting below.",
+    "suspendedTitle": "Creator access suspended",
+    "suspendedBody": "Your creator access is currently suspended. Contact support if you believe this is a mistake.",
+    "rejectedTitle": "Application not approved",
+    "rejectedBody": "Your application wasn't approved this time. Keep building your audience — the milestones below show what strengthens a future application.",
+    "applyQualify": "Apply Now — You Qualify",
+    "applyEarly": "Request Early Access",
+    "applyNoteQualify": "You meet every milestone below — applications are reviewed by our team.",
+    "applyNoteEarly": "We're approving founding creators by hand while Align grows. Hit the milestones below to strengthen your application.",
+    "ladderEligible": "Creator Program — Eligible",
+    "ladderTitle": "Road to Creator Program",
+    "ladderGoals": "{{met}}/{{total}} goals",
+    "ladderQualifyHint": "You meet every requirement — apply below to join the monetized Creator Program.",
+    "ladderProgressHint": "Hit these milestones to unlock the monetized Creator Program. Keep posting and engaging.",
+    "overallProgress": "Overall progress",
+    "topContent": "Top Content by Views",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Untitled reel",
+    "videoPost": "Video post",
+    "req": {
+      "followers": "Followers",
+      "lifetimeViews": "Total video views",
+      "views30d": "Views in last 30 days",
+      "videoCount": "Published videos",
+      "accountAgeDays": "Account age (days)"
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate Login",
+      "getStarted": "Get Started Free"
+    },
+    "hero": {
+      "badge": "20% Recurring Commission",
+      "titlePre": "Earn money sharing",
+      "titleHighlight": "cosmic wisdom",
+      "subtitle": "Join the Align Affiliate Program and earn 20% recurring commission on every subscription you refer. Your audience gets professional-grade astrology; you get paid every month they stay.",
+      "applyNow": "Apply Now"
+    },
+    "how": {
+      "title": "How it works",
+      "step1Title": "Apply",
+      "step1Desc": "Fill out the form below. We review applications within 24-48 hours and notify you by email.",
+      "step2Title": "Share",
+      "step2Desc": "Get your unique referral link. Share it on your blog, YouTube, social media, podcast, or newsletter.",
+      "step3Title": "Earn",
+      "step3Desc": "Earn 20% of every subscription payment from users you refer. Commissions are recurring — you earn as long as they stay subscribed."
+    },
+    "commission": {
+      "title": "Commission Structure",
+      "rateLabel": "Commission Rate",
+      "rateSub": "Recurring",
+      "cookieLabel": "Cookie Duration",
+      "cookieValue": "30 days",
+      "cookieSub": "Attribution window",
+      "payoutLabel": "Payout Threshold",
+      "payoutSub": "Minimum payout",
+      "paymentLabel": "Payment",
+      "paymentValue": "Monthly",
+      "paymentSub": "PayPal or bank transfer",
+      "exampleTitle": "Example Earnings",
+      "exampleIntro": "Align Pro costs $9/month. Your 20% commission =",
+      "examplePerUser": "$1.80/month per user",
+      "exampleRefer": "Refer {{count}} users =",
+      "exampleAmount": "{{amount}}/month recurring"
+    },
+    "benefits": {
+      "title": "What you get as an affiliate",
+      "b1Title": "Unique Referral Link",
+      "b1Desc": "Your own link that tracks every click, signup, and conversion with 30-day cookie attribution.",
+      "b2Title": "Real-Time Dashboard",
+      "b2Desc": "Track your clicks, signups, conversions, and earnings in real time from your affiliate dashboard.",
+      "b3Title": "20% Recurring Commission",
+      "b3Desc": "Earn on every monthly payment, not just the first. Your income grows as your referrals stay subscribed.",
+      "b4Title": "High Conversion Rate",
+      "b4Desc": "Align converts well because it offers real value: 26+ readings, AI astrologer, and a cosmic community.",
+      "b5Title": "Works on Web & Mobile",
+      "b5Desc": "Your link works for both the website and the Google Play Store app. Attribution carries across platforms.",
+      "b6Title": "Dedicated Support",
+      "b6Desc": "Get help from our affiliate team. We want you to succeed because when you earn, we grow."
+    },
+    "perfectFor": {
+      "title": "Perfect for",
+      "tag1": "Astrology bloggers",
+      "tag2": "YouTube creators",
+      "tag3": "TikTok astrologers",
+      "tag4": "Podcast hosts",
+      "tag5": "Newsletter writers",
+      "tag6": "Instagram influencers",
+      "tag7": "Tarot readers",
+      "tag8": "Spiritual coaches",
+      "tag9": "App reviewers",
+      "tag10": "Astrology teachers"
+    },
+    "form": {
+      "title": "Apply to the Affiliate Program",
+      "reviewNote": "We review applications within 24-48 hours.",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "websiteLabel": "Website / Blog",
+      "socialLabel": "Social Media Handle",
+      "promoLabel": "How will you promote Align?",
+      "promoPlaceholder": "Blog posts, YouTube videos, social media, newsletter...",
+      "submit": "Submit Application",
+      "submitting": "Submitting...",
+      "disclaimer": "By applying, you agree to our affiliate terms. Commission is 20% recurring on all subscription payments from referred users.",
+      "errorGeneric": "Something went wrong. Please try again."
+    },
+    "success": {
+      "title": "Application Submitted!",
+      "codeIs": "Your affiliate code is:",
+      "reviewEmail": "We will review your application and email you at {{email}} once approved. Your referral link will be:"
+    },
+    "footer": {
+      "rights": "All rights reserved.",
+      "home": "Home",
+      "pricing": "Pricing",
+      "terms": "Terms",
+      "privacy": "Privacy"
+    }
   },
   "qa": {
     "title": "Q&A",
@@ -1962,7 +2087,15 @@
       "viewProfile": "View your profile",
       "bookmarks": "Bookmarks",
       "polls": "Polls",
-      "creatorStudio": "Creator Studio"
+      "creatorStudio": "Creator Studio",
+      "globalIntelligence": "Global Intelligence",
+      "zodisphere": "The Zodisphere",
+      "affiliates": "Affiliates"
+    },
+    "earnBanner": {
+      "message": "New: Earn with Align — get 20% recurring commissions as an affiliate, or monetize your content with the Creator Program.",
+      "cta": "Learn More",
+      "dismiss": "Dismiss"
     },
     "feedCard": {
       "like": "Like",

@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} meses restantes",
       "yearsLeft": "{{count}}+ anos",
       "tapToRead": "Toca para leer tu perspectiva completa",
-      "failedToLoadStorylines": "No se pudieron cargar las narrativas"
+      "failedToLoadStorylines": "No se pudieron cargar las narrativas",
+      "hiddenLayer": "Lo Que Esto Realmente Toca"
     },
     "tarotPage": {
       "title": "Lectura de Tarot",
@@ -1608,7 +1609,8 @@
         "Escaneos ilimitados de Aura Mirror",
         "Entradas ilimitadas en el Diario Cósmico",
         "Acceso a Regalos del Alma y Memoria del Alma"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Compartir una lectura",
     "shareReadingHint": "Publicar interpretaciones de cartas",
     "signInRequired": "Por favor, inicia sesión para acceder al Creator Studio",
-    "loading": "Cargando estudio..."
+    "loading": "Cargando estudio...",
+    "applyIntro": "Conviértete en Creador de Align para compartir tus percepciones astrológicas, construir una audiencia y ganar con tu contenido.",
+    "reviewTitle": "Solicitud en revisión",
+    "reviewBody": "Gracias por postularte al Programa de Creadores. Estamos revisando las solicitudes a mano mientras Align crece — sigue publicando y haciendo crecer tu audiencia mientras esperas. Tu progreso sigue contando abajo.",
+    "suspendedTitle": "Acceso de creador suspendido",
+    "suspendedBody": "Tu acceso de creador está actualmente suspendido. Contacta a soporte si crees que es un error.",
+    "rejectedTitle": "Solicitud no aprobada",
+    "rejectedBody": "Tu solicitud no fue aprobada esta vez. Sigue construyendo tu audiencia — los hitos de abajo muestran lo que fortalece una futura solicitud.",
+    "applyQualify": "Postúlate Ahora — Calificas",
+    "applyEarly": "Solicitar Acceso Anticipado",
+    "applyNoteQualify": "Cumples todos los hitos de abajo — nuestro equipo revisa las solicitudes.",
+    "applyNoteEarly": "Estamos aprobando creadores fundadores a mano mientras Align crece. Alcanza los hitos de abajo para fortalecer tu solicitud.",
+    "ladderEligible": "Programa de Creadores — Elegible",
+    "ladderTitle": "Camino al Programa de Creadores",
+    "ladderGoals": "{{met}}/{{total}} metas",
+    "ladderQualifyHint": "Cumples todos los requisitos — postúlate abajo para unirte al Programa de Creadores monetizado.",
+    "ladderProgressHint": "Alcanza estos hitos para desbloquear el Programa de Creadores monetizado. Sigue publicando e interactuando.",
+    "overallProgress": "Progreso general",
+    "topContent": "Contenido Destacado por Vistas",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel sin título",
+    "videoPost": "Publicación de video",
+    "req": {
+      "followers": "Seguidores",
+      "lifetimeViews": "Vistas totales de videos",
+      "views30d": "Vistas en los últimos 30 días",
+      "videoCount": "Videos publicados",
+      "accountAgeDays": "Antigüedad de la cuenta (días)"
+    }
   },
   "qa": {
     "title": "Preguntas y Respuestas",
@@ -1955,7 +1986,10 @@
       "search": "Buscar",
       "bookmarks": "Marcadores",
       "polls": "Encuestas",
-      "creatorStudio": "Creator Studio"
+      "creatorStudio": "Creator Studio",
+      "globalIntelligence": "Inteligencia Global",
+      "zodisphere": "La Zodisfera",
+      "affiliates": "Afiliados"
     },
     "feedCard": {
       "like": "Me gusta",
@@ -1972,6 +2006,11 @@
       "send": "Enviar",
       "noComments": "Sin comentarios aun",
       "beFirst": "Se el primero en comentar!"
+    },
+    "earnBanner": {
+      "message": "Nuevo: Gana con Align — recibe 20% de comisiones recurrentes como afiliado, o monetiza tu contenido con el Programa de Creadores.",
+      "cta": "Saber Más",
+      "dismiss": "Descartar"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Aprender Astrología",
       "description": "Cursos estructurados para profundizar tu conocimiento astrológico, desde lo básico para principiantes hasta técnicas avanzadas."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Acceso de Afiliados",
+      "getStarted": "Empieza Gratis"
+    },
+    "hero": {
+      "badge": "20% de Comisión Recurrente",
+      "titlePre": "Gana dinero compartiendo",
+      "titleHighlight": "sabiduría cósmica",
+      "subtitle": "Únete al Programa de Afiliados de Align y gana 20% de comisión recurrente por cada suscripción que refieras. Tu audiencia recibe astrología de nivel profesional; tú cobras cada mes que permanezcan.",
+      "applyNow": "Postúlate Ahora"
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "step1Title": "Postúlate",
+      "step1Desc": "Completa el formulario de abajo. Revisamos las solicitudes en 24-48 horas y te notificamos por correo.",
+      "step2Title": "Comparte",
+      "step2Desc": "Recibe tu enlace de referido único. Compártelo en tu blog, YouTube, redes sociales, pódcast o newsletter.",
+      "step3Title": "Gana",
+      "step3Desc": "Gana el 20% de cada pago de suscripción de los usuarios que refieras. Las comisiones son recurrentes — ganas mientras sigan suscritos."
+    },
+    "commission": {
+      "title": "Estructura de Comisiones",
+      "rateLabel": "Tasa de Comisión",
+      "rateSub": "Recurrente",
+      "cookieLabel": "Duración de la Cookie",
+      "cookieValue": "30 días",
+      "cookieSub": "Ventana de atribución",
+      "payoutLabel": "Umbral de Pago",
+      "payoutSub": "Pago mínimo",
+      "paymentLabel": "Pago",
+      "paymentValue": "Mensual",
+      "paymentSub": "PayPal o transferencia bancaria",
+      "exampleTitle": "Ejemplo de Ganancias",
+      "exampleIntro": "Align Pro cuesta $9/mes. Tu comisión del 20% =",
+      "examplePerUser": "$1.80/mes por usuario",
+      "exampleRefer": "Refiere a {{count}} usuarios =",
+      "exampleAmount": "{{amount}}/mes recurrentes"
+    },
+    "benefits": {
+      "title": "Lo que recibes como afiliado",
+      "b1Title": "Enlace de Referido Único",
+      "b1Desc": "Tu propio enlace que rastrea cada clic, registro y conversión con atribución de cookie de 30 días.",
+      "b2Title": "Panel en Tiempo Real",
+      "b2Desc": "Sigue tus clics, registros, conversiones y ganancias en tiempo real desde tu panel de afiliado.",
+      "b3Title": "20% de Comisión Recurrente",
+      "b3Desc": "Gana con cada pago mensual, no solo el primero. Tus ingresos crecen mientras tus referidos sigan suscritos.",
+      "b4Title": "Alta Tasa de Conversión",
+      "b4Desc": "Align convierte bien porque ofrece valor real: más de 26 lecturas, astrólogo con IA y una comunidad cósmica.",
+      "b5Title": "Funciona en Web y Móvil",
+      "b5Desc": "Tu enlace funciona tanto para el sitio web como para la app de Google Play Store. La atribución se mantiene entre plataformas.",
+      "b6Title": "Soporte Dedicado",
+      "b6Desc": "Recibe ayuda de nuestro equipo de afiliados. Queremos que tengas éxito porque cuando tú ganas, nosotros crecemos."
+    },
+    "perfectFor": {
+      "title": "Perfecto para",
+      "tag1": "Blogueros de astrología",
+      "tag2": "Creadores de YouTube",
+      "tag3": "Astrólogos de TikTok",
+      "tag4": "Presentadores de pódcast",
+      "tag5": "Autores de newsletters",
+      "tag6": "Influencers de Instagram",
+      "tag7": "Lectores de tarot",
+      "tag8": "Coaches espirituales",
+      "tag9": "Reseñadores de apps",
+      "tag10": "Profesores de astrología"
+    },
+    "form": {
+      "title": "Postúlate al Programa de Afiliados",
+      "reviewNote": "Revisamos las solicitudes en 24-48 horas.",
+      "nameLabel": "Nombre Completo",
+      "namePlaceholder": "Tu nombre",
+      "emailLabel": "Correo Electrónico",
+      "websiteLabel": "Sitio Web / Blog",
+      "socialLabel": "Usuario de Redes Sociales",
+      "promoLabel": "¿Cómo promocionarás Align?",
+      "promoPlaceholder": "Artículos de blog, videos de YouTube, redes sociales, newsletter...",
+      "submit": "Enviar Solicitud",
+      "submitting": "Enviando...",
+      "disclaimer": "Al postularte, aceptas nuestros términos de afiliados. La comisión es del 20% recurrente sobre todos los pagos de suscripción de los usuarios referidos.",
+      "errorGeneric": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "success": {
+      "title": "¡Solicitud Enviada!",
+      "codeIs": "Tu código de afiliado es:",
+      "reviewEmail": "Revisaremos tu solicitud y te escribiremos a {{email}} una vez aprobada. Tu enlace de referido será:"
+    },
+    "footer": {
+      "rights": "Todos los derechos reservados.",
+      "home": "Inicio",
+      "pricing": "Precios",
+      "terms": "Términos",
+      "privacy": "Privacidad"
     }
   }
 }

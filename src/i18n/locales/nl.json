@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} maanden over",
       "yearsLeft": "{{count}}+ jaar",
       "tapToRead": "Tik om je volledige inzicht te lezen",
-      "failedToLoadStorylines": "Verhaallijnen konden niet worden geladen"
+      "failedToLoadStorylines": "Verhaallijnen konden niet worden geladen",
+      "hiddenLayer": "Wat dit werkelijk raakt"
     },
     "tarotPage": {
       "title": "Tarotlezing",
@@ -1608,7 +1609,8 @@
         "Aura Mirror onbeperkte scans",
         "Cosmic Journal onbeperkte invoer",
         "Toegang tot Zielsgeschenken & Zielgeheugen"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Deel een Lezing",
     "shareReadingHint": "Plaats kaartinterpretaties",
     "signInRequired": "Log in om toegang te krijgen tot Creator Studio",
-    "loading": "Studio laden..."
+    "loading": "Studio laden...",
+    "applyIntro": "Word Align Creator om je astrologische inzichten te delen, een publiek op te bouwen en te verdienen aan je content.",
+    "reviewTitle": "Aanmelding in behandeling",
+    "reviewBody": "Bedankt voor je aanmelding voor het Creator-programma. Terwijl Align groeit, beoordelen we aanmeldingen handmatig — blijf posten en je publiek laten groeien terwijl je wacht. Je voortgang telt hieronder gewoon door.",
+    "suspendedTitle": "Creator-toegang opgeschort",
+    "suspendedBody": "Je creator-toegang is momenteel opgeschort. Neem contact op met support als je denkt dat dit een vergissing is.",
+    "rejectedTitle": "Aanmelding niet goedgekeurd",
+    "rejectedBody": "Je aanmelding is deze keer niet goedgekeurd. Blijf je publiek uitbouwen — de mijlpalen hieronder laten zien wat een toekomstige aanmelding sterker maakt.",
+    "applyQualify": "Meld je nu aan — je komt in aanmerking",
+    "applyEarly": "Vraag vroege toegang aan",
+    "applyNoteQualify": "Je haalt elke mijlpaal hieronder — aanmeldingen worden door ons team beoordeeld.",
+    "applyNoteEarly": "Terwijl Align groeit, keuren we founding creators handmatig goed. Haal de mijlpalen hieronder om je aanmelding sterker te maken.",
+    "ladderEligible": "Creator-programma — je komt in aanmerking",
+    "ladderTitle": "Route naar het Creator-programma",
+    "ladderGoals": "{{met}}/{{total}} doelen",
+    "ladderQualifyHint": "Je voldoet aan alle vereisten — meld je hieronder aan om deel te nemen aan het gemonetiseerde Creator-programma.",
+    "ladderProgressHint": "Haal deze mijlpalen om het gemonetiseerde Creator-programma te ontgrendelen. Blijf posten en betrokken.",
+    "overallProgress": "Totale voortgang",
+    "topContent": "Topcontent op weergaven",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel zonder titel",
+    "videoPost": "Videobericht",
+    "req": {
+      "followers": "Volgers",
+      "lifetimeViews": "Totale videoweergaven",
+      "views30d": "Weergaven laatste 30 dagen",
+      "videoCount": "Gepubliceerde video's",
+      "accountAgeDays": "Leeftijd account (dagen)"
+    }
   },
   "qa": {
     "title": "V&A",
@@ -1955,7 +1986,10 @@
       "search": "Zoeken",
       "bookmarks": "Bladwijzers",
       "polls": "Peilingen",
-      "creatorStudio": "Creator Studio"
+      "creatorStudio": "Creator Studio",
+      "globalIntelligence": "Wereldwijde intelligentie",
+      "zodisphere": "De Zodisfeer",
+      "affiliates": "Affiliates"
     },
     "feedCard": {
       "like": "Leuk",
@@ -1972,6 +2006,11 @@
       "send": "Versturen",
       "noComments": "Nog geen reacties",
       "beFirst": "Wees de eerste die reageert!"
+    },
+    "earnBanner": {
+      "message": "Nieuw: verdien met Align — ontvang 20% terugkerende commissies als affiliate, of monetiseer je content met het Creator-programma.",
+      "cta": "Meer weten",
+      "dismiss": "Sluiten"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Leer Astrologie",
       "description": "Gestructureerde cursussen om je astrologische kennis te verdiepen, van basisbeginselen tot geavanceerde technieken."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate-login",
+      "getStarted": "Gratis beginnen"
+    },
+    "hero": {
+      "badge": "20% terugkerende commissie",
+      "titlePre": "Verdien geld met het delen van",
+      "titleHighlight": "kosmische wijsheid",
+      "subtitle": "Doe mee aan het Align Affiliate-programma en verdien 20% terugkerende commissie op elk abonnement dat je aanbrengt. Jouw publiek krijgt astrologie van professioneel niveau; jij wordt betaald voor elke maand dat ze blijven.",
+      "applyNow": "Meld je nu aan"
+    },
+    "how": {
+      "title": "Zo werkt het",
+      "step1Title": "Aanmelden",
+      "step1Desc": "Vul het formulier hieronder in. We beoordelen aanmeldingen binnen 24-48 uur en informeren je per e-mail.",
+      "step2Title": "Delen",
+      "step2Desc": "Ontvang je unieke verwijzingslink. Deel hem op je blog, YouTube, social media, podcast of nieuwsbrief.",
+      "step3Title": "Verdienen",
+      "step3Desc": "Verdien 20% van elke abonnementsbetaling van gebruikers die jij aanbrengt. Commissies zijn terugkerend — je verdient zolang zij geabonneerd blijven."
+    },
+    "commission": {
+      "title": "Commissiestructuur",
+      "rateLabel": "Commissiepercentage",
+      "rateSub": "Terugkerend",
+      "cookieLabel": "Cookieduur",
+      "cookieValue": "30 dagen",
+      "cookieSub": "Attributievenster",
+      "payoutLabel": "Uitbetalingsdrempel",
+      "payoutSub": "Minimale uitbetaling",
+      "paymentLabel": "Betaling",
+      "paymentValue": "Maandelijks",
+      "paymentSub": "PayPal of bankoverschrijving",
+      "exampleTitle": "Voorbeeldverdiensten",
+      "exampleIntro": "Align Pro kost $9/maand. Jouw 20% commissie =",
+      "examplePerUser": "$1.80/maand per gebruiker",
+      "exampleRefer": "Breng {{count}} gebruikers aan =",
+      "exampleAmount": "{{amount}}/maand terugkerend"
+    },
+    "benefits": {
+      "title": "Wat je krijgt als affiliate",
+      "b1Title": "Unieke verwijzingslink",
+      "b1Desc": "Je eigen link die elke klik, registratie en conversie bijhoudt met 30 dagen cookie-attributie.",
+      "b2Title": "Realtime dashboard",
+      "b2Desc": "Volg je klikken, registraties, conversies en verdiensten in realtime vanuit je affiliate-dashboard.",
+      "b3Title": "20% terugkerende commissie",
+      "b3Desc": "Verdien aan elke maandelijkse betaling, niet alleen de eerste. Je inkomen groeit zolang je aangebrachte gebruikers geabonneerd blijven.",
+      "b4Title": "Hoge conversieratio",
+      "b4Desc": "Align converteert goed omdat het echte waarde biedt: 26+ lezingen, een AI-astroloog en een kosmische community.",
+      "b5Title": "Werkt op web & mobiel",
+      "b5Desc": "Je link werkt voor zowel de website als de Google Play Store-app. Attributie geldt over platforms heen.",
+      "b6Title": "Toegewijde support",
+      "b6Desc": "Krijg hulp van ons affiliate-team. We willen dat jij slaagt, want als jij verdient, groeien wij."
+    },
+    "perfectFor": {
+      "title": "Perfect voor",
+      "tag1": "Astrologiebloggers",
+      "tag2": "YouTube-creators",
+      "tag3": "TikTok-astrologen",
+      "tag4": "Podcasthosts",
+      "tag5": "Nieuwsbriefschrijvers",
+      "tag6": "Instagram-influencers",
+      "tag7": "Tarotlezers",
+      "tag8": "Spirituele coaches",
+      "tag9": "App-reviewers",
+      "tag10": "Astrologiedocenten"
+    },
+    "form": {
+      "title": "Meld je aan voor het Affiliate-programma",
+      "reviewNote": "We beoordelen aanmeldingen binnen 24-48 uur.",
+      "nameLabel": "Volledige naam",
+      "namePlaceholder": "Jouw naam",
+      "emailLabel": "E-mail",
+      "websiteLabel": "Website / blog",
+      "socialLabel": "Social media-handle",
+      "promoLabel": "Hoe ga je Align promoten?",
+      "promoPlaceholder": "Blogposts, YouTube-video's, social media, nieuwsbrief...",
+      "submit": "Aanmelding versturen",
+      "submitting": "Versturen...",
+      "disclaimer": "Door je aan te melden ga je akkoord met onze affiliate-voorwaarden. De commissie is 20% terugkerend op alle abonnementsbetalingen van aangebrachte gebruikers.",
+      "errorGeneric": "Er is iets misgegaan. Probeer het opnieuw."
+    },
+    "success": {
+      "title": "Aanmelding verstuurd!",
+      "codeIs": "Jouw affiliate-code is:",
+      "reviewEmail": "We beoordelen je aanmelding en mailen je op {{email}} zodra deze is goedgekeurd. Je verwijzingslink wordt:"
+    },
+    "footer": {
+      "rights": "Alle rechten voorbehouden.",
+      "home": "Home",
+      "pricing": "Prijzen",
+      "terms": "Voorwaarden",
+      "privacy": "Privacy"
     }
   }
 }

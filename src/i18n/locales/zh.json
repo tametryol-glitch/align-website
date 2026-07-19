@@ -243,7 +243,8 @@
       "monthsLeft": "约 {{count}} 个月",
       "yearsLeft": "{{count}}+ 年",
       "tapToRead": "点击阅读完整洞察",
-      "failedToLoadStorylines": "加载故事线失败"
+      "failedToLoadStorylines": "加载故事线失败",
+      "hiddenLayer": "这真正触及的是什么"
     },
     "tarotPage": {
       "title": "塔罗牌解读",
@@ -1611,7 +1612,8 @@
         "灵气镜无限扫描",
         "宇宙日志无限条目",
         "灵魂礼物与灵魂记忆访问"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1812,7 +1814,36 @@
     "shareReading": "分享解读",
     "shareReadingHint": "发布星盘解读",
     "signInRequired": "请登录以访问创作者工作室",
-    "loading": "加载工作室..."
+    "loading": "加载工作室...",
+    "applyIntro": "成为 Align 创作者，分享你的占星洞见，积累粉丝，并通过内容赚取收益。",
+    "reviewTitle": "申请审核中",
+    "reviewBody": "感谢你申请创作者计划。在 Align 成长期间，我们会逐一人工审核申请——等待期间请继续发布内容、壮大你的受众。你的进度会持续计入下方。",
+    "suspendedTitle": "创作者权限已暂停",
+    "suspendedBody": "你的创作者权限目前已被暂停。如果你认为这是误判，请联系客服。",
+    "rejectedTitle": "申请未获批准",
+    "rejectedBody": "这次你的申请未获批准。请继续壮大你的受众——下方的里程碑展示了如何让下一次申请更有竞争力。",
+    "applyQualify": "立即申请 — 你已符合条件",
+    "applyEarly": "申请抢先体验",
+    "applyNoteQualify": "你已达成下方所有里程碑——申请将由我们的团队审核。",
+    "applyNoteEarly": "在 Align 成长期间，我们正逐一人工批准创始创作者。达成下方里程碑，让你的申请更有分量。",
+    "ladderEligible": "创作者计划 — 符合条件",
+    "ladderTitle": "创作者计划之路",
+    "ladderGoals": "{{met}}/{{total}} 个目标",
+    "ladderQualifyHint": "你已满足所有要求——在下方申请，加入可变现的创作者计划。",
+    "ladderProgressHint": "达成这些里程碑即可解锁可变现的创作者计划。继续发布内容并保持互动。",
+    "overallProgress": "总体进度",
+    "topContent": "播放量最高的内容",
+    "reel": "短视频",
+    "video": "视频",
+    "untitledReel": "未命名短视频",
+    "videoPost": "视频帖",
+    "req": {
+      "followers": "粉丝数",
+      "lifetimeViews": "视频总播放量",
+      "views30d": "近30天播放量",
+      "videoCount": "已发布视频数",
+      "accountAgeDays": "账号年龄（天）"
+    }
   },
   "qa": {
     "title": "问答",
@@ -1958,7 +1989,10 @@
       "search": "搜索",
       "bookmarks": "书签",
       "polls": "投票",
-      "creatorStudio": "创作者工作室"
+      "creatorStudio": "创作者工作室",
+      "globalIntelligence": "全球洞察",
+      "zodisphere": "Zodisphere 星域",
+      "affiliates": "联盟计划"
     },
     "feedCard": {
       "like": "喜欢",
@@ -1975,6 +2009,11 @@
       "send": "发送",
       "noComments": "还没有评论",
       "beFirst": "成为第一个评论的人！"
+    },
+    "earnBanner": {
+      "message": "全新上线：与 Align 一起赚钱 — 成为联盟会员赚取 20% 持续佣金，或通过创作者计划将内容变现。",
+      "cta": "了解更多",
+      "dismiss": "关闭"
     }
   },
   "common": {
@@ -2208,6 +2247,101 @@
     "courses": {
       "title": "学习占星术",
       "description": "结构化课程，深入你的占星知识，从初学者基础到高级技巧。"
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "联盟会员登录",
+      "getStarted": "免费开始"
+    },
+    "hero": {
+      "badge": "20% 持续佣金",
+      "titlePre": "赚钱新方式：分享",
+      "titleHighlight": "宇宙智慧",
+      "subtitle": "加入 Align 联盟计划，你推荐的每一份订阅都能为你带来 20% 的持续佣金。你的受众获得专业级占星服务，只要他们保持订阅，你每个月都有收入。",
+      "applyNow": "立即申请"
+    },
+    "how": {
+      "title": "运作方式",
+      "step1Title": "申请",
+      "step1Desc": "填写下方表单。我们会在 24-48 小时内审核申请，并通过邮件通知你。",
+      "step2Title": "分享",
+      "step2Desc": "获取你的专属推荐链接，分享到博客、YouTube、社交媒体、播客或邮件通讯。",
+      "step3Title": "赚取",
+      "step3Desc": "你推荐的用户每次订阅付款，你都能获得 20%。佣金持续发放——只要他们保持订阅，你就持续有收入。"
+    },
+    "commission": {
+      "title": "佣金结构",
+      "rateLabel": "佣金比例",
+      "rateSub": "持续发放",
+      "cookieLabel": "Cookie 有效期",
+      "cookieValue": "30 天",
+      "cookieSub": "归因窗口",
+      "payoutLabel": "提现门槛",
+      "payoutSub": "最低提现额",
+      "paymentLabel": "付款",
+      "paymentValue": "每月",
+      "paymentSub": "PayPal 或银行转账",
+      "exampleTitle": "收益示例",
+      "exampleIntro": "Align Pro 每月 $9。你的 20% 佣金 =",
+      "examplePerUser": "每位用户每月 $1.80",
+      "exampleRefer": "推荐 {{count}} 位用户 =",
+      "exampleAmount": "每月 {{amount}} 持续收入"
+    },
+    "benefits": {
+      "title": "成为联盟会员的收获",
+      "b1Title": "专属推荐链接",
+      "b1Desc": "你的专属链接，通过 30 天 Cookie 归因追踪每一次点击、注册和转化。",
+      "b2Title": "实时数据看板",
+      "b2Desc": "在联盟看板中实时查看你的点击、注册、转化和收益。",
+      "b3Title": "20% 持续佣金",
+      "b3Desc": "不只首次付款，每一次月度付款都有收益。推荐用户订阅越久，你的收入越多。",
+      "b4Title": "高转化率",
+      "b4Desc": "Align 转化率出色，因为它提供真正的价值：26+ 种解读、AI 占星师和一个宇宙社区。",
+      "b5Title": "网页与移动端通用",
+      "b5Desc": "你的链接同时适用于网站和 Google Play 商店应用，归因跨平台延续。",
+      "b6Title": "专属支持",
+      "b6Desc": "联盟团队随时为你提供帮助。我们希望你成功——你赚得越多，我们成长得越快。"
+    },
+    "perfectFor": {
+      "title": "特别适合",
+      "tag1": "占星博主",
+      "tag2": "YouTube 创作者",
+      "tag3": "TikTok 占星师",
+      "tag4": "播客主播",
+      "tag5": "邮件通讯作者",
+      "tag6": "Instagram 博主",
+      "tag7": "塔罗师",
+      "tag8": "灵性教练",
+      "tag9": "应用测评人",
+      "tag10": "占星老师"
+    },
+    "form": {
+      "title": "申请加入联盟计划",
+      "reviewNote": "我们会在 24-48 小时内审核申请。",
+      "nameLabel": "姓名",
+      "namePlaceholder": "你的姓名",
+      "emailLabel": "邮箱",
+      "websiteLabel": "网站 / 博客",
+      "socialLabel": "社交媒体账号",
+      "promoLabel": "你打算如何推广 Align？",
+      "promoPlaceholder": "博客文章、YouTube 视频、社交媒体、邮件通讯……",
+      "submit": "提交申请",
+      "submitting": "提交中...",
+      "disclaimer": "提交申请即表示你同意我们的联盟条款。佣金为推荐用户所有订阅付款的 20%，持续发放。",
+      "errorGeneric": "出了点问题，请重试。"
+    },
+    "success": {
+      "title": "申请已提交！",
+      "codeIs": "你的联盟代码是：",
+      "reviewEmail": "我们会审核你的申请，通过后发送邮件至 {{email}}。你的推荐链接将是："
+    },
+    "footer": {
+      "rights": "保留所有权利。",
+      "home": "首页",
+      "pricing": "价格",
+      "terms": "条款",
+      "privacy": "隐私"
     }
   }
 }

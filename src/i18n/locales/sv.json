@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} månader kvar",
       "yearsLeft": "{{count}}+ år",
       "tapToRead": "Tryck för att läsa din fullständiga insikt",
-      "failedToLoadStorylines": "Kunde inte ladda berättelser"
+      "failedToLoadStorylines": "Kunde inte ladda berättelser",
+      "hiddenLayer": "Vad detta verkligen berör"
     },
     "tarotPage": {
       "title": "Tarotläsning",
@@ -1608,7 +1609,8 @@
         "Aura Spegel obegränsade skanningar",
         "Kosmisk Journal obegränsade inlägg",
         "Självgåvor & Själminne åtkomst"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Dela en läsning",
     "shareReadingHint": "Publicera diagramtolkningar",
     "signInRequired": "Vänligen logga in för att få tillgång till Creator Studio",
-    "loading": "Laddar studio..."
+    "loading": "Laddar studio...",
+    "applyIntro": "Bli Align Creator för att dela dina astrologiska insikter, bygga en följarskara och tjäna pengar på ditt innehåll.",
+    "reviewTitle": "Ansökan granskas",
+    "reviewBody": "Tack för din ansökan till Creator-programmet. Medan Align växer granskar vi ansökningar för hand — fortsätt posta och bygga din publik medan du väntar. Dina framsteg fortsätter att räknas nedan.",
+    "suspendedTitle": "Creator-åtkomst avstängd",
+    "suspendedBody": "Din creator-åtkomst är för närvarande avstängd. Kontakta supporten om du tror att det är ett misstag.",
+    "rejectedTitle": "Ansökan godkändes inte",
+    "rejectedBody": "Din ansökan godkändes inte den här gången. Fortsätt bygga din publik — milstolparna nedan visar vad som stärker en framtida ansökan.",
+    "applyQualify": "Ansök nu — du kvalificerar dig",
+    "applyEarly": "Begär tidig åtkomst",
+    "applyNoteQualify": "Du uppfyller varje milstolpe nedan — ansökningar granskas av vårt team.",
+    "applyNoteEarly": "Vi godkänner grundar-creators för hand medan Align växer. Nå milstolparna nedan för att stärka din ansökan.",
+    "ladderEligible": "Creator-programmet — kvalificerad",
+    "ladderTitle": "Vägen till Creator-programmet",
+    "ladderGoals": "{{met}}/{{total}} mål",
+    "ladderQualifyHint": "Du uppfyller alla krav — ansök nedan för att gå med i det monetariserade Creator-programmet.",
+    "ladderProgressHint": "Nå dessa milstolpar för att låsa upp det monetariserade Creator-programmet. Fortsätt posta och engagera dig.",
+    "overallProgress": "Total framsteg",
+    "topContent": "Toppinnehåll efter visningar",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel utan titel",
+    "videoPost": "Videoinlägg",
+    "req": {
+      "followers": "Följare",
+      "lifetimeViews": "Totala videovisningar",
+      "views30d": "Visningar senaste 30 dagarna",
+      "videoCount": "Publicerade videor",
+      "accountAgeDays": "Kontoålder (dagar)"
+    }
   },
   "qa": {
     "title": "Frågor & Svar",
@@ -1955,7 +1986,10 @@
       "search": "Sök",
       "bookmarks": "Bokmärken",
       "polls": "Omröstningar",
-      "creatorStudio": "Skaparsstudio"
+      "creatorStudio": "Skaparsstudio",
+      "globalIntelligence": "Global intelligens",
+      "zodisphere": "Zodisfären",
+      "affiliates": "Affiliates"
     },
     "feedCard": {
       "like": "Gilla",
@@ -1972,6 +2006,11 @@
       "send": "Skicka",
       "noComments": "Inga kommentarer ännu",
       "beFirst": "Bli den första att kommentera!"
+    },
+    "earnBanner": {
+      "message": "Nytt: Tjäna med Align — få 20% återkommande provisioner som affiliate, eller monetarisera ditt innehåll med Creator-programmet.",
+      "cta": "Läs mer",
+      "dismiss": "Stäng"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Lär dig Astrologi",
       "description": "Strukturerade kurser för att fördjupa din astrologiska kunskap, från nybörjargrunder till avancerade tekniker."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate-inloggning",
+      "getStarted": "Kom igång gratis"
+    },
+    "hero": {
+      "badge": "20% återkommande provision",
+      "titlePre": "Tjäna pengar på att dela",
+      "titleHighlight": "kosmisk visdom",
+      "subtitle": "Gå med i Aligns affiliate-program och tjäna 20% återkommande provision på varje prenumeration du värvar. Din publik får astrologi i proffsklass; du får betalt varje månad de stannar kvar.",
+      "applyNow": "Ansök nu"
+    },
+    "how": {
+      "title": "Så fungerar det",
+      "step1Title": "Ansök",
+      "step1Desc": "Fyll i formuläret nedan. Vi granskar ansökningar inom 24-48 timmar och meddelar dig via e-post.",
+      "step2Title": "Dela",
+      "step2Desc": "Få din unika värvningslänk. Dela den på din blogg, YouTube, sociala medier, podcast eller nyhetsbrev.",
+      "step3Title": "Tjäna",
+      "step3Desc": "Tjäna 20% av varje prenumerationsbetalning från användare du värvar. Provisionerna är återkommande — du tjänar så länge de fortsätter prenumerera."
+    },
+    "commission": {
+      "title": "Provisionsstruktur",
+      "rateLabel": "Provisionssats",
+      "rateSub": "Återkommande",
+      "cookieLabel": "Cookie-varaktighet",
+      "cookieValue": "30 dagar",
+      "cookieSub": "Attributionsfönster",
+      "payoutLabel": "Utbetalningströskel",
+      "payoutSub": "Minsta utbetalning",
+      "paymentLabel": "Betalning",
+      "paymentValue": "Månadsvis",
+      "paymentSub": "PayPal eller banköverföring",
+      "exampleTitle": "Exempel på intäkter",
+      "exampleIntro": "Align Pro kostar $9/månad. Din 20% provision =",
+      "examplePerUser": "$1.80/månad per användare",
+      "exampleRefer": "Värva {{count}} användare =",
+      "exampleAmount": "{{amount}}/månad återkommande"
+    },
+    "benefits": {
+      "title": "Det här får du som affiliate",
+      "b1Title": "Unik värvningslänk",
+      "b1Desc": "Din egen länk som spårar varje klick, registrering och konvertering med 30 dagars cookie-attribution.",
+      "b2Title": "Instrumentpanel i realtid",
+      "b2Desc": "Följ dina klick, registreringar, konverteringar och intäkter i realtid från din affiliate-panel.",
+      "b3Title": "20% återkommande provision",
+      "b3Desc": "Tjäna på varje månadsbetalning, inte bara den första. Din inkomst växer så länge dina värvningar fortsätter prenumerera.",
+      "b4Title": "Hög konverteringsgrad",
+      "b4Desc": "Align konverterar bra eftersom appen ger verkligt värde: 26+ tolkningar, en AI-astrolog och en kosmisk gemenskap.",
+      "b5Title": "Fungerar på webb & mobil",
+      "b5Desc": "Din länk fungerar både för webbplatsen och appen i Google Play Store. Attributionen gäller över plattformarna.",
+      "b6Title": "Dedikerad support",
+      "b6Desc": "Få hjälp av vårt affiliate-team. Vi vill att du ska lyckas, för när du tjänar växer vi."
+    },
+    "perfectFor": {
+      "title": "Perfekt för",
+      "tag1": "Astrologibloggare",
+      "tag2": "YouTube-kreatörer",
+      "tag3": "TikTok-astrologer",
+      "tag4": "Poddvärdar",
+      "tag5": "Nyhetsbrevsskribenter",
+      "tag6": "Instagram-influencers",
+      "tag7": "Tarottydare",
+      "tag8": "Andliga coacher",
+      "tag9": "Apprecensenter",
+      "tag10": "Astrologilärare"
+    },
+    "form": {
+      "title": "Ansök till affiliate-programmet",
+      "reviewNote": "Vi granskar ansökningar inom 24-48 timmar.",
+      "nameLabel": "Fullständigt namn",
+      "namePlaceholder": "Ditt namn",
+      "emailLabel": "E-post",
+      "websiteLabel": "Webbplats / blogg",
+      "socialLabel": "Sociala medier-handle",
+      "promoLabel": "Hur kommer du att marknadsföra Align?",
+      "promoPlaceholder": "Blogginlägg, YouTube-videor, sociala medier, nyhetsbrev...",
+      "submit": "Skicka ansökan",
+      "submitting": "Skickar...",
+      "disclaimer": "Genom att ansöka godkänner du våra affiliate-villkor. Provisionen är 20% återkommande på alla prenumerationsbetalningar från värvade användare.",
+      "errorGeneric": "Något gick fel. Försök igen."
+    },
+    "success": {
+      "title": "Ansökan skickad!",
+      "codeIs": "Din affiliate-kod är:",
+      "reviewEmail": "Vi granskar din ansökan och mejlar dig på {{email}} när den är godkänd. Din värvningslänk blir:"
+    },
+    "footer": {
+      "rights": "Alla rättigheter förbehållna.",
+      "home": "Hem",
+      "pricing": "Priser",
+      "terms": "Villkor",
+      "privacy": "Integritet"
     }
   }
 }

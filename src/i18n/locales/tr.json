@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} ay kaldi",
       "yearsLeft": "{{count}}+ yil",
       "tapToRead": "Tam icgoruyu okumak icin dokun",
-      "failedToLoadStorylines": "Hikaye hatlari yuklenemedi"
+      "failedToLoadStorylines": "Hikaye hatlari yuklenemedi",
+      "hiddenLayer": "Bunun Gerçekte Dokunduğu Yer"
     },
     "tarotPage": {
       "title": "Tarot Okumasi",
@@ -1608,7 +1609,8 @@
         "Aura Aynası sınırsız taramalar",
         "Kozmik Günlük sınırsız girişler",
         "Ruh Hediyeleri ve Ruh Hafızası erişimi"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Bir Okuma Paylaş",
     "shareReadingHint": "Grafik yorumları paylaş",
     "signInRequired": "Yaratıcı Stüdyoya erişmek için lütfen oturum açın",
-    "loading": "Stüdyo yükleniyor..."
+    "loading": "Stüdyo yükleniyor...",
+    "applyIntro": "Astrolojik içgörülerinizi paylaşmak, takipçi kitlenizi büyütmek ve içeriğinizden kazanç sağlamak için Align Yaratıcısı olun.",
+    "reviewTitle": "Başvuru inceleniyor",
+    "reviewBody": "Yaratıcı Programı'na başvurduğunuz için teşekkürler. Align büyürken başvuruları elle inceliyoruz — beklerken paylaşım yapmaya ve kitlenizi büyütmeye devam edin. Aşağıdaki ilerlemeniz sayılmaya devam ediyor.",
+    "suspendedTitle": "Yaratıcı erişimi askıya alındı",
+    "suspendedBody": "Yaratıcı erişiminiz şu anda askıda. Bunun bir hata olduğunu düşünüyorsanız destek ekibiyle iletişime geçin.",
+    "rejectedTitle": "Başvuru onaylanmadı",
+    "rejectedBody": "Başvurunuz bu sefer onaylanmadı. Kitlenizi büyütmeye devam edin — aşağıdaki hedefler gelecekteki bir başvuruyu neyin güçlendireceğini gösteriyor.",
+    "applyQualify": "Şimdi Başvur — Koşulları Sağlıyorsunuz",
+    "applyEarly": "Erken Erişim Talep Et",
+    "applyNoteQualify": "Aşağıdaki tüm hedefleri karşılıyorsunuz — başvurular ekibimiz tarafından incelenir.",
+    "applyNoteEarly": "Align büyürken kurucu yaratıcıları elle onaylıyoruz. Başvurunuzu güçlendirmek için aşağıdaki hedeflere ulaşın.",
+    "ladderEligible": "Yaratıcı Programı — Uygunsunuz",
+    "ladderTitle": "Yaratıcı Programı'na Giden Yol",
+    "ladderGoals": "{{met}}/{{total}} hedef",
+    "ladderQualifyHint": "Tüm gereksinimleri karşılıyorsunuz — para kazandıran Yaratıcı Programı'na katılmak için aşağıdan başvurun.",
+    "ladderProgressHint": "Para kazandıran Yaratıcı Programı'nın kilidini açmak için bu hedeflere ulaşın. Paylaşmaya ve etkileşime devam edin.",
+    "overallProgress": "Genel ilerleme",
+    "topContent": "Görüntülenmeye Göre En İyi İçerikler",
+    "reel": "Reels",
+    "video": "Video",
+    "untitledReel": "Başlıksız Reels",
+    "videoPost": "Video gönderisi",
+    "req": {
+      "followers": "Takipçiler",
+      "lifetimeViews": "Toplam video görüntülenmesi",
+      "views30d": "Son 30 gündeki görüntülenmeler",
+      "videoCount": "Yayınlanan videolar",
+      "accountAgeDays": "Hesap yaşı (gün)"
+    }
   },
   "qa": {
     "title": "Soru-Cevap",
@@ -1955,7 +1986,10 @@
       "search": "Ara",
       "bookmarks": "Yer İşaretleri",
       "polls": "Anketler",
-      "creatorStudio": "Yaratıcı Stüdyo"
+      "creatorStudio": "Yaratıcı Stüdyo",
+      "globalIntelligence": "Küresel İçgörü",
+      "zodisphere": "Zodisphere",
+      "affiliates": "Satış Ortaklığı"
     },
     "feedCard": {
       "like": "Begen",
@@ -1972,6 +2006,11 @@
       "send": "Gonder",
       "noComments": "Henuz yorum yok",
       "beFirst": "Ilk yorumu yazan sen ol!"
+    },
+    "earnBanner": {
+      "message": "Yeni: Align ile kazanın — satış ortağı olarak 20% yinelenen komisyon alın veya Yaratıcı Programı ile içeriğinizden para kazanın.",
+      "cta": "Daha Fazla Bilgi",
+      "dismiss": "Kapat"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Astroloji Öğren",
       "description": "Başlangıç seviyesinden ileri tekniklere kadar astrolojik bilginizi derinleştirmek için yapılandırılmış kurslar."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Satış Ortağı Girişi",
+      "getStarted": "Ücretsiz Başla"
+    },
+    "hero": {
+      "badge": "20% Yinelenen Komisyon",
+      "titlePre": "Paylaşarak para kazanın:",
+      "titleHighlight": "kozmik bilgelik",
+      "subtitle": "Align Satış Ortaklığı Programı'na katılın ve yönlendirdiğiniz her abonelikten 20% yinelenen komisyon kazanın. Kitleniz profesyonel düzeyde astrolojiye kavuşur; siz de onlar abone kaldığı sürece her ay kazanırsınız.",
+      "applyNow": "Şimdi Başvur"
+    },
+    "how": {
+      "title": "Nasıl çalışır",
+      "step1Title": "Başvurun",
+      "step1Desc": "Aşağıdaki formu doldurun. Başvuruları 24-48 saat içinde inceler ve size e-postayla haber veririz.",
+      "step2Title": "Paylaşın",
+      "step2Desc": "Size özel yönlendirme bağlantınızı alın. Blogunuzda, YouTube'da, sosyal medyada, podcast'inizde veya bülteninizde paylaşın.",
+      "step3Title": "Kazanın",
+      "step3Desc": "Yönlendirdiğiniz kullanıcıların her abonelik ödemesinden 20% kazanın. Komisyonlar yinelenir — onlar abone kaldığı sürece kazanmaya devam edersiniz."
+    },
+    "commission": {
+      "title": "Komisyon Yapısı",
+      "rateLabel": "Komisyon Oranı",
+      "rateSub": "Yinelenen",
+      "cookieLabel": "Çerez Süresi",
+      "cookieValue": "30 gün",
+      "cookieSub": "Atıf penceresi",
+      "payoutLabel": "Ödeme Eşiği",
+      "payoutSub": "Minimum ödeme",
+      "paymentLabel": "Ödeme",
+      "paymentValue": "Aylık",
+      "paymentSub": "PayPal veya banka havalesi",
+      "exampleTitle": "Örnek Kazanç",
+      "exampleIntro": "Align Pro ayda $9. Sizin 20% komisyonunuz =",
+      "examplePerUser": "kullanıcı başına $1.80/ay",
+      "exampleRefer": "{{count}} kullanıcı yönlendirin =",
+      "exampleAmount": "aylık {{amount}} yinelenen"
+    },
+    "benefits": {
+      "title": "Satış ortağı olarak neler elde edersiniz",
+      "b1Title": "Size Özel Yönlendirme Bağlantısı",
+      "b1Desc": "Her tıklamayı, kaydı ve dönüşümü 30 günlük çerez atfıyla izleyen kendi bağlantınız.",
+      "b2Title": "Gerçek Zamanlı Panel",
+      "b2Desc": "Tıklamalarınızı, kayıtları, dönüşümleri ve kazançlarınızı satış ortağı panelinizden gerçek zamanlı takip edin.",
+      "b3Title": "20% Yinelenen Komisyon",
+      "b3Desc": "Yalnızca ilk ödemeden değil, her aylık ödemeden kazanın. Yönlendirdikleriniz abone kaldıkça geliriniz büyür.",
+      "b4Title": "Yüksek Dönüşüm Oranı",
+      "b4Desc": "Align gerçek değer sunduğu için iyi dönüşüm sağlar: 26+ okuma, AI astrolog ve kozmik bir topluluk.",
+      "b5Title": "Web ve Mobilde Çalışır",
+      "b5Desc": "Bağlantınız hem web sitesi hem de Google Play Store uygulaması için çalışır. Atıf platformlar arasında taşınır.",
+      "b6Title": "Özel Destek",
+      "b6Desc": "Satış ortaklığı ekibimizden yardım alın. Başarılı olmanızı istiyoruz çünkü siz kazandığınızda biz büyüyoruz."
+    },
+    "perfectFor": {
+      "title": "Kimler için ideal",
+      "tag1": "Astroloji blog yazarları",
+      "tag2": "YouTube içerik üreticileri",
+      "tag3": "TikTok astrologları",
+      "tag4": "Podcast sunucuları",
+      "tag5": "Bülten yazarları",
+      "tag6": "Instagram fenomenleri",
+      "tag7": "Tarot okuyucuları",
+      "tag8": "Spiritüel koçlar",
+      "tag9": "Uygulama incelemecileri",
+      "tag10": "Astroloji eğitmenleri"
+    },
+    "form": {
+      "title": "Satış Ortaklığı Programı'na Başvur",
+      "reviewNote": "Başvuruları 24-48 saat içinde inceliyoruz.",
+      "nameLabel": "Ad Soyad",
+      "namePlaceholder": "Adınız",
+      "emailLabel": "E-posta",
+      "websiteLabel": "Web sitesi / Blog",
+      "socialLabel": "Sosyal Medya Kullanıcı Adı",
+      "promoLabel": "Align'ı nasıl tanıtacaksınız?",
+      "promoPlaceholder": "Blog yazıları, YouTube videoları, sosyal medya, bülten...",
+      "submit": "Başvuruyu Gönder",
+      "submitting": "Gönderiliyor...",
+      "disclaimer": "Başvurarak satış ortaklığı koşullarımızı kabul etmiş olursunuz. Komisyon, yönlendirilen kullanıcıların tüm abonelik ödemelerinde 20% olarak yinelenir.",
+      "errorGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+    },
+    "success": {
+      "title": "Başvuru Gönderildi!",
+      "codeIs": "Satış ortağı kodunuz:",
+      "reviewEmail": "Başvurunuzu inceleyeceğiz ve onaylandığında {{email}} adresine e-posta göndereceğiz. Yönlendirme bağlantınız şu olacak:"
+    },
+    "footer": {
+      "rights": "Tüm hakları saklıdır.",
+      "home": "Ana Sayfa",
+      "pricing": "Fiyatlandırma",
+      "terms": "Koşullar",
+      "privacy": "Gizlilik"
     }
   }
 }

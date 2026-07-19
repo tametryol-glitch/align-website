@@ -10,10 +10,12 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { applyAsAffiliate } from '@/lib/affiliateService';
 
 export default function AffiliateProgramPage() {
+  const { t } = useTranslation();
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [affiliateCode, setAffiliateCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -59,10 +61,18 @@ export default function AffiliateProgramPage() {
       setAffiliateCode(result.affiliate_code);
       setFormState('success');
     } else {
-      setErrorMsg(result.detail || 'Something went wrong. Please try again.');
+      setErrorMsg(result.detail || t('affiliates.form.errorGeneric'));
       setFormState('error');
     }
   }
+
+  const perfectForTags = [
+    t('affiliates.perfectFor.tag1'), t('affiliates.perfectFor.tag2'),
+    t('affiliates.perfectFor.tag3'), t('affiliates.perfectFor.tag4'),
+    t('affiliates.perfectFor.tag5'), t('affiliates.perfectFor.tag6'),
+    t('affiliates.perfectFor.tag7'), t('affiliates.perfectFor.tag8'),
+    t('affiliates.perfectFor.tag9'), t('affiliates.perfectFor.tag10'),
+  ];
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -74,10 +84,10 @@ export default function AffiliateProgramPage() {
         </Link>
         <div className="flex items-center gap-3">
           <Link href="/affiliates/dashboard" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-            Affiliate Login
+            {t('affiliates.nav.login')}
           </Link>
           <Link href="/auth/signup" className="btn-primary text-sm px-5 py-2">
-            Get Started Free
+            {t('affiliates.nav.getStarted')}
           </Link>
         </div>
       </nav>
@@ -85,44 +95,42 @@ export default function AffiliateProgramPage() {
       {/* Hero */}
       <section className="max-w-4xl mx-auto text-center px-6 pt-16 pb-16">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-medium mb-6">
-          20% Recurring Commission
+          {t('affiliates.hero.badge')}
         </div>
         <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary leading-tight mb-6">
-          Earn money sharing{' '}
+          {t('affiliates.hero.titlePre')}{' '}
           <span className="bg-gradient-to-r from-[#9B6FF6] to-[#EC4899] bg-clip-text text-transparent">
-            cosmic wisdom
+            {t('affiliates.hero.titleHighlight')}
           </span>
         </h1>
         <p className="text-lg text-text-tertiary max-w-2xl mx-auto mb-10">
-          Join the Align Affiliate Program and earn 20% recurring commission
-          on every subscription you refer. Your audience gets professional-grade
-          astrology; you get paid every month they stay.
+          {t('affiliates.hero.subtitle')}
         </p>
         <a href="#apply" className="btn-primary text-base px-10 py-3">
-          Apply Now
+          {t('affiliates.hero.applyNow')}
         </a>
       </section>
 
       {/* How it works */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-10">
-          How it works
+          {t('affiliates.how.title')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <StepCard
             number="1"
-            title="Apply"
-            description="Fill out the form below. We review applications within 24-48 hours and notify you by email."
+            title={t('affiliates.how.step1Title')}
+            description={t('affiliates.how.step1Desc')}
           />
           <StepCard
             number="2"
-            title="Share"
-            description="Get your unique referral link. Share it on your blog, YouTube, social media, podcast, or newsletter."
+            title={t('affiliates.how.step2Title')}
+            description={t('affiliates.how.step2Desc')}
           />
           <StepCard
             number="3"
-            title="Earn"
-            description="Earn 20% of every subscription payment from users you refer. Commissions are recurring — you earn as long as they stay subscribed."
+            title={t('affiliates.how.step3Title')}
+            description={t('affiliates.how.step3Desc')}
           />
         </div>
       </section>
@@ -131,23 +139,26 @@ export default function AffiliateProgramPage() {
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted">
           <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-8">
-            Commission Structure
+            {t('affiliates.commission.title')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard label="Commission Rate" value="20%" sublabel="Recurring" />
-            <StatCard label="Cookie Duration" value="30 days" sublabel="Attribution window" />
-            <StatCard label="Payout Threshold" value="$50" sublabel="Minimum payout" />
-            <StatCard label="Payment" value="Monthly" sublabel="PayPal or bank transfer" />
+            <StatCard label={t('affiliates.commission.rateLabel')} value="20%" sublabel={t('affiliates.commission.rateSub')} />
+            <StatCard label={t('affiliates.commission.cookieLabel')} value={t('affiliates.commission.cookieValue')} sublabel={t('affiliates.commission.cookieSub')} />
+            <StatCard label={t('affiliates.commission.payoutLabel')} value="$50" sublabel={t('affiliates.commission.payoutSub')} />
+            <StatCard label={t('affiliates.commission.paymentLabel')} value={t('affiliates.commission.paymentValue')} sublabel={t('affiliates.commission.paymentSub')} />
           </div>
           <div className="mt-8 bg-white/5 rounded-xl p-6">
             <h3 className="text-sm font-semibold text-accent-primary uppercase tracking-wider mb-3">
-              Example Earnings
+              {t('affiliates.commission.exampleTitle')}
             </h3>
             <div className="space-y-2 text-sm text-text-secondary">
-              <p>Align Pro costs <strong className="text-text-primary">$9/month</strong>. Your 20% commission = <strong className="text-green-400">$1.80/month per user</strong>.</p>
-              <p>Refer 50 users = <strong className="text-green-400">$90/month recurring</strong>.</p>
-              <p>Refer 200 users = <strong className="text-green-400">$360/month recurring</strong>.</p>
-              <p>Refer 1,000 users = <strong className="text-green-400">$1,800/month recurring</strong>.</p>
+              <p>
+                {t('affiliates.commission.exampleIntro')}{' '}
+                <strong className="text-green-400">{t('affiliates.commission.examplePerUser')}</strong>
+              </p>
+              <p>{t('affiliates.commission.exampleRefer', { count: 50 })} <strong className="text-green-400">{t('affiliates.commission.exampleAmount', { amount: '$90' })}</strong>.</p>
+              <p>{t('affiliates.commission.exampleRefer', { count: 200 })} <strong className="text-green-400">{t('affiliates.commission.exampleAmount', { amount: '$360' })}</strong>.</p>
+              <p>{t('affiliates.commission.exampleRefer', { count: 1000 })} <strong className="text-green-400">{t('affiliates.commission.exampleAmount', { amount: '$1,800' })}</strong>.</p>
             </div>
           </div>
         </div>
@@ -156,38 +167,38 @@ export default function AffiliateProgramPage() {
       {/* What you get */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-10">
-          What you get as an affiliate
+          {t('affiliates.benefits.title')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BenefitCard
             icon="&#x1F517;"
-            title="Unique Referral Link"
-            description="Your own link that tracks every click, signup, and conversion with 30-day cookie attribution."
+            title={t('affiliates.benefits.b1Title')}
+            description={t('affiliates.benefits.b1Desc')}
           />
           <BenefitCard
             icon="&#x1F4CA;"
-            title="Real-Time Dashboard"
-            description="Track your clicks, signups, conversions, and earnings in real time from your affiliate dashboard."
+            title={t('affiliates.benefits.b2Title')}
+            description={t('affiliates.benefits.b2Desc')}
           />
           <BenefitCard
             icon="&#x1F4B0;"
-            title="20% Recurring Commission"
-            description="Earn on every monthly payment, not just the first. Your income grows as your referrals stay subscribed."
+            title={t('affiliates.benefits.b3Title')}
+            description={t('affiliates.benefits.b3Desc')}
           />
           <BenefitCard
             icon="&#x1F3AF;"
-            title="High Conversion Rate"
-            description="Align converts well because it offers real value: 26+ readings, AI astrologer, and a cosmic community."
+            title={t('affiliates.benefits.b4Title')}
+            description={t('affiliates.benefits.b4Desc')}
           />
           <BenefitCard
             icon="&#x1F4F1;"
-            title="Works on Web & Mobile"
-            description="Your link works for both the website and the Google Play Store app. Attribution carries across platforms."
+            title={t('affiliates.benefits.b5Title')}
+            description={t('affiliates.benefits.b5Desc')}
           />
           <BenefitCard
             icon="&#x1F4E7;"
-            title="Dedicated Support"
-            description="Get help from our affiliate team. We want you to succeed because when you earn, we grow."
+            title={t('affiliates.benefits.b6Title')}
+            description={t('affiliates.benefits.b6Desc')}
           />
         </div>
       </section>
@@ -195,13 +206,10 @@ export default function AffiliateProgramPage() {
       {/* Who should apply */}
       <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
         <h2 className="text-2xl font-display font-bold text-text-primary mb-4">
-          Perfect for
+          {t('affiliates.perfectFor.title')}
         </h2>
         <div className="flex flex-wrap justify-center gap-3 mb-6">
-          {['Astrology bloggers', 'YouTube creators', 'TikTok astrologers', 'Podcast hosts',
-            'Newsletter writers', 'Instagram influencers', 'Tarot readers', 'Spiritual coaches',
-            'App reviewers', 'Astrology teachers',
-          ].map(tag => (
+          {perfectForTags.map(tag => (
             <span key={tag} className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-text-secondary">
               {tag}
             </span>
@@ -213,22 +221,21 @@ export default function AffiliateProgramPage() {
       <section id="apply" className="max-w-xl mx-auto px-6 pb-24">
         <div className="bg-bg-card border border-border-primary rounded-2xl p-8">
           <h2 className="text-2xl font-display font-bold text-text-primary text-center mb-2">
-            Apply to the Affiliate Program
+            {t('affiliates.form.title')}
           </h2>
           <p className="text-text-muted text-sm text-center mb-8">
-            We review applications within 24-48 hours.
+            {t('affiliates.form.reviewNote')}
           </p>
 
           {formState === 'success' ? (
             <div className="text-center">
               <div className="text-5xl mb-4">&#x1F389;</div>
-              <h3 className="text-xl font-bold text-text-primary mb-2">Application Submitted!</h3>
+              <h3 className="text-xl font-bold text-text-primary mb-2">{t('affiliates.success.title')}</h3>
               <p className="text-text-secondary text-sm mb-4">
-                Your affiliate code is: <strong className="text-accent-primary">{affiliateCode}</strong>
+                {t('affiliates.success.codeIs')} <strong className="text-accent-primary">{affiliateCode}</strong>
               </p>
               <p className="text-text-muted text-sm">
-                We will review your application and email you at <strong>{email}</strong> once approved.
-                Your referral link will be:
+                {t('affiliates.success.reviewEmail', { email })}
               </p>
               <p className="text-accent-primary text-sm font-mono mt-2 break-all">
                 https://aligncosmic.com/ref/{affiliateCode}
@@ -237,7 +244,7 @@ export default function AffiliateProgramPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm text-text-secondary mb-1">Full Name *</label>
+                <label className="block text-sm text-text-secondary mb-1">{t('affiliates.form.nameLabel')} *</label>
                 <input
                   type="text"
                   value={name}
@@ -245,12 +252,12 @@ export default function AffiliateProgramPage() {
                   required
                   minLength={2}
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
-                  placeholder="Your name"
+                  placeholder={t('affiliates.form.namePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-text-secondary mb-1">Email *</label>
+                <label className="block text-sm text-text-secondary mb-1">{t('affiliates.form.emailLabel')} *</label>
                 <input
                   type="email"
                   value={email}
@@ -262,7 +269,7 @@ export default function AffiliateProgramPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-text-secondary mb-1">Website / Blog</label>
+                <label className="block text-sm text-text-secondary mb-1">{t('affiliates.form.websiteLabel')}</label>
                 <input
                   type="url"
                   value={website}
@@ -273,7 +280,7 @@ export default function AffiliateProgramPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-text-secondary mb-1">Social Media Handle</label>
+                <label className="block text-sm text-text-secondary mb-1">{t('affiliates.form.socialLabel')}</label>
                 <input
                   type="text"
                   value={social}
@@ -284,13 +291,13 @@ export default function AffiliateProgramPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-text-secondary mb-1">How will you promote Align?</label>
+                <label className="block text-sm text-text-secondary mb-1">{t('affiliates.form.promoLabel')}</label>
                 <textarea
                   value={promoMethod}
                   onChange={e => setPromoMethod(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors resize-none"
-                  placeholder="Blog posts, YouTube videos, social media, newsletter..."
+                  placeholder={t('affiliates.form.promoPlaceholder')}
                 />
               </div>
 
@@ -305,12 +312,11 @@ export default function AffiliateProgramPage() {
                 disabled={formState === 'submitting'}
                 className="w-full btn-primary py-3 text-base disabled:opacity-50"
               >
-                {formState === 'submitting' ? 'Submitting...' : 'Submit Application'}
+                {formState === 'submitting' ? t('affiliates.form.submitting') : t('affiliates.form.submit')}
               </button>
 
               <p className="text-text-muted text-xs text-center">
-                By applying, you agree to our affiliate terms. Commission is 20% recurring
-                on all subscription payments from referred users.
+                {t('affiliates.form.disclaimer')}
               </p>
             </form>
           )}
@@ -321,13 +327,13 @@ export default function AffiliateProgramPage() {
       <footer className="border-t border-border-primary py-8 px-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-sm text-text-muted">
-            &copy; {new Date().getFullYear()} Align. All rights reserved.
+            &copy; {new Date().getFullYear()} Align. {t('affiliates.footer.rights')}
           </span>
           <div className="flex gap-6 text-sm text-text-muted">
-            <Link href="/" className="hover:text-text-secondary">Home</Link>
-            <Link href="/pricing" className="hover:text-text-secondary">Pricing</Link>
-            <Link href="/settings/terms" className="hover:text-text-secondary">Terms</Link>
-            <Link href="/settings/privacy" className="hover:text-text-secondary">Privacy</Link>
+            <Link href="/" className="hover:text-text-secondary">{t('affiliates.footer.home')}</Link>
+            <Link href="/pricing" className="hover:text-text-secondary">{t('affiliates.footer.pricing')}</Link>
+            <Link href="/settings/terms" className="hover:text-text-secondary">{t('affiliates.footer.terms')}</Link>
+            <Link href="/settings/privacy" className="hover:text-text-secondary">{t('affiliates.footer.privacy')}</Link>
           </div>
         </div>
       </footer>

@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} miesięcy pozostało",
       "yearsLeft": "{{count}}+ lat",
       "tapToRead": "Dotknij, aby przeczytać pełny wgląd",
-      "failedToLoadStorylines": "Nie udało się załadować wątków"
+      "failedToLoadStorylines": "Nie udało się załadować wątków",
+      "hiddenLayer": "Czego to tak naprawdę dotyka"
     },
     "tarotPage": {
       "title": "Odczyt tarota",
@@ -1608,7 +1609,8 @@
         "Nielimitowane skany Aura Mirror",
         "Nielimitowane wpisy w Cosmic Journal",
         "Dostęp do Soul Gifts & Soul Memory"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Podziel się Odczytem",
     "shareReadingHint": "Publikuj interpretacje wykresów",
     "signInRequired": "Zaloguj się, aby uzyskać dostęp do Studio Twórcy",
-    "loading": "Ładowanie studia..."
+    "loading": "Ładowanie studia...",
+    "applyIntro": "Zostań Twórcą Align, aby dzielić się astrologicznymi spostrzeżeniami, budować grono odbiorców i zarabiać na swoich treściach.",
+    "reviewTitle": "Zgłoszenie w trakcie weryfikacji",
+    "reviewBody": "Dziękujemy za zgłoszenie do Programu Twórców. Póki Align rośnie, weryfikujemy zgłoszenia ręcznie — w międzyczasie publikuj dalej i rozwijaj swoją publiczność. Twoje postępy poniżej cały czas się liczą.",
+    "suspendedTitle": "Dostęp twórcy zawieszony",
+    "suspendedBody": "Twój dostęp twórcy jest obecnie zawieszony. Skontaktuj się z pomocą techniczną, jeśli uważasz, że to pomyłka.",
+    "rejectedTitle": "Zgłoszenie nie zostało zatwierdzone",
+    "rejectedBody": "Tym razem Twoje zgłoszenie nie zostało zatwierdzone. Buduj dalej swoją publiczność — poniższe cele pokazują, co wzmocni przyszłe zgłoszenie.",
+    "applyQualify": "Aplikuj teraz — spełniasz warunki",
+    "applyEarly": "Poproś o wcześniejszy dostęp",
+    "applyNoteQualify": "Osiągasz wszystkie poniższe cele — zgłoszenia weryfikuje nasz zespół.",
+    "applyNoteEarly": "Póki Align rośnie, zatwierdzamy twórców-założycieli ręcznie. Osiągnij poniższe cele, aby wzmocnić swoje zgłoszenie.",
+    "ladderEligible": "Program Twórców — kwalifikujesz się",
+    "ladderTitle": "Droga do Programu Twórców",
+    "ladderGoals": "{{met}}/{{total}} celów",
+    "ladderQualifyHint": "Spełniasz wszystkie wymagania — aplikuj poniżej, aby dołączyć do monetyzowanego Programu Twórców.",
+    "ladderProgressHint": "Osiągnij te cele, aby odblokować monetyzowany Program Twórców. Publikuj dalej i angażuj się.",
+    "overallProgress": "Ogólny postęp",
+    "topContent": "Najlepsze treści wg wyświetleń",
+    "reel": "Rolka",
+    "video": "Wideo",
+    "untitledReel": "Rolka bez tytułu",
+    "videoPost": "Post wideo",
+    "req": {
+      "followers": "Obserwujący",
+      "lifetimeViews": "Łączne wyświetlenia wideo",
+      "views30d": "Wyświetlenia z ostatnich 30 dni",
+      "videoCount": "Opublikowane wideo",
+      "accountAgeDays": "Wiek konta (dni)"
+    }
   },
   "qa": {
     "title": "Pytania i odpowiedzi",
@@ -1955,7 +1986,10 @@
       "search": "Szukaj",
       "bookmarks": "Zakładki",
       "polls": "Ankiety",
-      "creatorStudio": "Studio twórcy"
+      "creatorStudio": "Studio twórcy",
+      "globalIntelligence": "Globalny wgląd",
+      "zodisphere": "Zodisfera",
+      "affiliates": "Partnerzy"
     },
     "feedCard": {
       "like": "Polub",
@@ -1972,6 +2006,11 @@
       "send": "Wyślij",
       "noComments": "Brak komentarzy",
       "beFirst": "Bądź pierwszym, który skomentuje!"
+    },
+    "earnBanner": {
+      "message": "Nowość: Zarabiaj z Align — otrzymuj 20% stałej prowizji jako partner albo monetyzuj swoje treści w Programie Twórców.",
+      "cta": "Dowiedz się więcej",
+      "dismiss": "Zamknij"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Ucz się Astrologii",
       "description": "Strukturalne kursy, aby pogłębić swoją wiedzę astrologiczną, od podstaw dla początkujących po zaawansowane techniki."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Logowanie partnera",
+      "getStarted": "Zacznij za darmo"
+    },
+    "hero": {
+      "badge": "20% stałej prowizji",
+      "titlePre": "Zarabiaj, dzieląc się",
+      "titleHighlight": "kosmiczną mądrością",
+      "subtitle": "Dołącz do Programu Partnerskiego Align i zarabiaj 20% stałej prowizji od każdej poleconej subskrypcji. Twoi odbiorcy dostają astrologię na profesjonalnym poziomie, a Ty otrzymujesz wypłatę co miesiąc, dopóki pozostają subskrybentami.",
+      "applyNow": "Aplikuj teraz"
+    },
+    "how": {
+      "title": "Jak to działa",
+      "step1Title": "Aplikuj",
+      "step1Desc": "Wypełnij poniższy formularz. Weryfikujemy zgłoszenia w ciągu 24-48 godzin i powiadamiamy Cię e-mailem.",
+      "step2Title": "Udostępniaj",
+      "step2Desc": "Otrzymaj swój unikalny link polecający. Udostępniaj go na blogu, YouTube, w mediach społecznościowych, podcaście lub newsletterze.",
+      "step3Title": "Zarabiaj",
+      "step3Desc": "Zarabiaj 20% od każdej płatności za subskrypcję użytkowników, których polecisz. Prowizje są stałe — zarabiasz tak długo, jak długo pozostają subskrybentami."
+    },
+    "commission": {
+      "title": "Struktura prowizji",
+      "rateLabel": "Stawka prowizji",
+      "rateSub": "Stała",
+      "cookieLabel": "Czas życia pliku cookie",
+      "cookieValue": "30 dni",
+      "cookieSub": "Okno atrybucji",
+      "payoutLabel": "Próg wypłaty",
+      "payoutSub": "Minimalna wypłata",
+      "paymentLabel": "Płatność",
+      "paymentValue": "Co miesiąc",
+      "paymentSub": "PayPal lub przelew bankowy",
+      "exampleTitle": "Przykładowe zarobki",
+      "exampleIntro": "Align Pro kosztuje $9/miesiąc. Twoja prowizja 20% =",
+      "examplePerUser": "$1.80/miesiąc za użytkownika",
+      "exampleRefer": "Poleć {{count}} użytkowników =",
+      "exampleAmount": "{{amount}}/miesiąc cyklicznie"
+    },
+    "benefits": {
+      "title": "Co zyskujesz jako partner",
+      "b1Title": "Unikalny link polecający",
+      "b1Desc": "Twój własny link, który śledzi każde kliknięcie, rejestrację i konwersję z 30-dniową atrybucją cookie.",
+      "b2Title": "Panel w czasie rzeczywistym",
+      "b2Desc": "Śledź kliknięcia, rejestracje, konwersje i zarobki w czasie rzeczywistym w swoim panelu partnera.",
+      "b3Title": "20% stałej prowizji",
+      "b3Desc": "Zarabiaj na każdej miesięcznej płatności, nie tylko pierwszej. Twój dochód rośnie, dopóki poleceni użytkownicy pozostają subskrybentami.",
+      "b4Title": "Wysoka konwersja",
+      "b4Desc": "Align dobrze konwertuje, bo oferuje realną wartość: ponad 26 odczytów, astrologa AI i kosmiczną społeczność.",
+      "b5Title": "Działa w sieci i na telefonie",
+      "b5Desc": "Twój link działa zarówno dla strony internetowej, jak i aplikacji w Google Play Store. Atrybucja przenosi się między platformami.",
+      "b6Title": "Dedykowane wsparcie",
+      "b6Desc": "Uzyskaj pomoc od naszego zespołu partnerskiego. Chcemy, żebyś odniósł sukces — gdy Ty zarabiasz, my rośniemy."
+    },
+    "perfectFor": {
+      "title": "Idealne dla",
+      "tag1": "Blogerzy astrologiczni",
+      "tag2": "Twórcy YouTube",
+      "tag3": "Astrolodzy TikToka",
+      "tag4": "Prowadzący podcasty",
+      "tag5": "Autorzy newsletterów",
+      "tag6": "Influencerzy Instagrama",
+      "tag7": "Tarociści",
+      "tag8": "Coachowie duchowi",
+      "tag9": "Recenzenci aplikacji",
+      "tag10": "Nauczyciele astrologii"
+    },
+    "form": {
+      "title": "Aplikuj do Programu Partnerskiego",
+      "reviewNote": "Weryfikujemy zgłoszenia w ciągu 24-48 godzin.",
+      "nameLabel": "Imię i nazwisko",
+      "namePlaceholder": "Twoje imię",
+      "emailLabel": "E-mail",
+      "websiteLabel": "Strona / blog",
+      "socialLabel": "Nazwa w mediach społecznościowych",
+      "promoLabel": "Jak będziesz promować Align?",
+      "promoPlaceholder": "Wpisy na blogu, filmy na YouTube, media społecznościowe, newsletter...",
+      "submit": "Wyślij zgłoszenie",
+      "submitting": "Wysyłanie...",
+      "disclaimer": "Aplikując, akceptujesz warunki naszego programu partnerskiego. Prowizja wynosi 20% i jest naliczana cyklicznie od wszystkich płatności za subskrypcje poleconych użytkowników.",
+      "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "success": {
+      "title": "Zgłoszenie wysłane!",
+      "codeIs": "Twój kod partnerski to:",
+      "reviewEmail": "Zweryfikujemy Twoje zgłoszenie i po zatwierdzeniu napiszemy do Ciebie na adres {{email}}. Twój link polecający będzie wyglądał tak:"
+    },
+    "footer": {
+      "rights": "Wszelkie prawa zastrzeżone.",
+      "home": "Strona główna",
+      "pricing": "Cennik",
+      "terms": "Warunki",
+      "privacy": "Prywatność"
     }
   }
 }

@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}}개월 남음",
       "yearsLeft": "{{count}}년 이상",
       "tapToRead": "탭하여 전체 인사이트 읽기",
-      "failedToLoadStorylines": "스토리라인 로드 실패"
+      "failedToLoadStorylines": "스토리라인 로드 실패",
+      "hiddenLayer": "이것이 진짜 건드리는 것"
     },
     "tarotPage": {
       "title": "타로 리딩",
@@ -1608,7 +1609,8 @@
         "아우라 미러 무제한 스캔",
         "코스믹 저널 무제한 항목",
         "영혼의 선물 및 영혼의 기억 접근"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "리딩 공유하기",
     "shareReadingHint": "차트 해석 게시하기",
     "signInRequired": "크리에이터 스튜디오에 접근하려면 로그인하세요",
-    "loading": "스튜디오 로딩 중..."
+    "loading": "스튜디오 로딩 중...",
+    "applyIntro": "Align 크리에이터가 되어 점성술 인사이트를 공유하고, 팔로워를 늘리고, 콘텐츠로 수익을 얻으세요.",
+    "reviewTitle": "신청 검토 중",
+    "reviewBody": "크리에이터 프로그램에 지원해 주셔서 감사합니다. Align이 성장하는 동안 신청서를 하나하나 직접 검토하고 있어요. 기다리시는 동안에도 계속 게시하며 오디언스를 키워 보세요. 진행 상황은 아래에 계속 반영됩니다.",
+    "suspendedTitle": "크리에이터 액세스 정지됨",
+    "suspendedBody": "현재 크리에이터 액세스가 정지되어 있습니다. 오류라고 생각되시면 지원팀에 문의해 주세요.",
+    "rejectedTitle": "신청이 승인되지 않았습니다",
+    "rejectedBody": "이번에는 신청이 승인되지 않았습니다. 계속 오디언스를 키워 보세요. 아래 마일스톤이 다음 신청을 더 탄탄하게 만드는 방법을 보여줍니다.",
+    "applyQualify": "지금 신청 — 자격 충족",
+    "applyEarly": "얼리 액세스 요청",
+    "applyNoteQualify": "아래 모든 마일스톤을 충족했습니다. 신청서는 저희 팀이 검토합니다.",
+    "applyNoteEarly": "Align이 성장하는 동안 창립 크리에이터를 한 분씩 직접 승인하고 있습니다. 아래 마일스톤을 달성해 신청을 강화하세요.",
+    "ladderEligible": "크리에이터 프로그램 — 자격 충족",
+    "ladderTitle": "크리에이터 프로그램으로 가는 길",
+    "ladderGoals": "{{met}}/{{total}} 목표",
+    "ladderQualifyHint": "모든 요건을 충족했습니다. 아래에서 신청해 수익화 크리에이터 프로그램에 참여하세요.",
+    "ladderProgressHint": "이 마일스톤들을 달성하면 수익화 크리에이터 프로그램이 열립니다. 계속 게시하고 소통하세요.",
+    "overallProgress": "전체 진행률",
+    "topContent": "조회수 상위 콘텐츠",
+    "reel": "릴",
+    "video": "동영상",
+    "untitledReel": "제목 없는 릴",
+    "videoPost": "동영상 게시물",
+    "req": {
+      "followers": "팔로워",
+      "lifetimeViews": "총 동영상 조회수",
+      "views30d": "최근 30일 조회수",
+      "videoCount": "게시된 동영상",
+      "accountAgeDays": "계정 사용 기간(일)"
+    }
   },
   "qa": {
     "title": "질문과 답변",
@@ -1955,7 +1986,10 @@
       "search": "검색",
       "bookmarks": "북마크",
       "polls": "투표",
-      "creatorStudio": "크리에이터 스튜디오"
+      "creatorStudio": "크리에이터 스튜디오",
+      "globalIntelligence": "글로벌 인텔리전스",
+      "zodisphere": "조디스피어",
+      "affiliates": "제휴 프로그램"
     },
     "feedCard": {
       "like": "좋아요",
@@ -1972,6 +2006,11 @@
       "send": "전송",
       "noComments": "아직 댓글이 없습니다",
       "beFirst": "첫 댓글을 남겨보세요!"
+    },
+    "earnBanner": {
+      "message": "새 소식: Align과 함께 수익 창출 — 제휴 파트너로 20% 반복 커미션을 받거나, 크리에이터 프로그램으로 콘텐츠를 수익화하세요.",
+      "cta": "자세히 보기",
+      "dismiss": "닫기"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "점성학 배우기",
       "description": "초급 기본부터 고급 기술까지 점성학 지식을 심화할 수 있는 구조화된 과정입니다."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "제휴 로그인",
+      "getStarted": "무료로 시작하기"
+    },
+    "hero": {
+      "badge": "20% 반복 커미션",
+      "titlePre": "공유로 수익을 —",
+      "titleHighlight": "우주의 지혜",
+      "subtitle": "Align 제휴 프로그램에 가입하고 추천한 모든 구독에서 20% 반복 커미션을 받으세요. 오디언스는 전문가급 점성술을 얻고, 당신은 구독이 유지되는 동안 매달 수익을 받습니다.",
+      "applyNow": "지금 신청하기"
+    },
+    "how": {
+      "title": "이용 방법",
+      "step1Title": "신청",
+      "step1Desc": "아래 양식을 작성해 주세요. 24-48시간 내에 신청서를 검토하고 이메일로 알려드립니다.",
+      "step2Title": "공유",
+      "step2Desc": "나만의 추천 링크를 받아 블로그, YouTube, 소셜 미디어, 팟캐스트, 뉴스레터에 공유하세요.",
+      "step3Title": "수익",
+      "step3Desc": "추천한 사용자의 모든 구독 결제에서 20%를 받으세요. 커미션은 반복 지급되어, 구독이 유지되는 한 계속 수익이 발생합니다."
+    },
+    "commission": {
+      "title": "커미션 구조",
+      "rateLabel": "커미션 비율",
+      "rateSub": "반복 지급",
+      "cookieLabel": "쿠키 유효 기간",
+      "cookieValue": "30일",
+      "cookieSub": "어트리뷰션 기간",
+      "payoutLabel": "지급 기준액",
+      "payoutSub": "최소 지급액",
+      "paymentLabel": "지급",
+      "paymentValue": "매월",
+      "paymentSub": "PayPal 또는 계좌 이체",
+      "exampleTitle": "수익 예시",
+      "exampleIntro": "Align Pro는 월 $9입니다. 20% 커미션 =",
+      "examplePerUser": "사용자당 월 $1.80",
+      "exampleRefer": "{{count}}명 추천 =",
+      "exampleAmount": "매월 {{amount}} 반복 수익"
+    },
+    "benefits": {
+      "title": "제휴 파트너 혜택",
+      "b1Title": "나만의 추천 링크",
+      "b1Desc": "30일 쿠키 어트리뷰션으로 모든 클릭, 가입, 전환을 추적하는 전용 링크입니다.",
+      "b2Title": "실시간 대시보드",
+      "b2Desc": "제휴 대시보드에서 클릭, 가입, 전환, 수익을 실시간으로 확인하세요.",
+      "b3Title": "20% 반복 커미션",
+      "b3Desc": "첫 결제뿐 아니라 매달 결제마다 수익이 발생합니다. 추천한 사용자가 구독을 유지할수록 수입이 커집니다.",
+      "b4Title": "높은 전환율",
+      "b4Desc": "Align은 26개 이상의 리딩, AI 점성술사, 코스믹 커뮤니티라는 진짜 가치를 제공하기 때문에 전환율이 높습니다.",
+      "b5Title": "웹 & 모바일 지원",
+      "b5Desc": "링크 하나로 웹사이트와 Google Play 스토어 앱 모두에서 작동합니다. 어트리뷰션은 플랫폼을 넘어 이어집니다.",
+      "b6Title": "전담 지원",
+      "b6Desc": "제휴 팀의 도움을 받으세요. 당신이 벌수록 우리도 성장하기에, 당신의 성공을 진심으로 바랍니다."
+    },
+    "perfectFor": {
+      "title": "이런 분께 딱 맞아요",
+      "tag1": "점성술 블로거",
+      "tag2": "YouTube 크리에이터",
+      "tag3": "TikTok 점성술사",
+      "tag4": "팟캐스트 진행자",
+      "tag5": "뉴스레터 작가",
+      "tag6": "Instagram 인플루언서",
+      "tag7": "타로 리더",
+      "tag8": "영성 코치",
+      "tag9": "앱 리뷰어",
+      "tag10": "점성술 강사"
+    },
+    "form": {
+      "title": "제휴 프로그램 신청",
+      "reviewNote": "24-48시간 내에 신청서를 검토합니다.",
+      "nameLabel": "이름",
+      "namePlaceholder": "이름을 입력하세요",
+      "emailLabel": "이메일",
+      "websiteLabel": "웹사이트 / 블로그",
+      "socialLabel": "소셜 미디어 핸들",
+      "promoLabel": "Align을 어떻게 홍보하실 건가요?",
+      "promoPlaceholder": "블로그 글, YouTube 영상, 소셜 미디어, 뉴스레터...",
+      "submit": "신청서 제출",
+      "submitting": "제출 중...",
+      "disclaimer": "신청하면 제휴 약관에 동의하는 것으로 간주됩니다. 커미션은 추천 사용자의 모든 구독 결제에 대해 20% 반복 지급됩니다.",
+      "errorGeneric": "문제가 발생했습니다. 다시 시도해 주세요."
+    },
+    "success": {
+      "title": "신청이 제출되었습니다!",
+      "codeIs": "당신의 제휴 코드:",
+      "reviewEmail": "신청서를 검토한 후 승인되면 {{email}}(으)로 이메일을 보내드립니다. 추천 링크는 다음과 같습니다:"
+    },
+    "footer": {
+      "rights": "모든 권리 보유.",
+      "home": "홈",
+      "pricing": "요금제",
+      "terms": "이용약관",
+      "privacy": "개인정보처리방침"
     }
   }
 }

@@ -102,13 +102,13 @@ export default function CreatorStudioPage() {
         ...(reelsRes.data || []).map((r) => ({
           id: r.id,
           kind: 'reel' as const,
-          label: r.caption?.slice(0, 60) || 'Untitled reel',
+          label: r.caption?.slice(0, 60) || t('creatorStudio.untitledReel'),
           views: r.views_count || 0,
         })),
         ...(videoPostsRes.data || []).map((p) => ({
           id: p.id,
           kind: 'video' as const,
-          label: p.content?.slice(0, 60) || 'Video post',
+          label: p.content?.slice(0, 60) || t('creatorStudio.videoPost'),
           views: p.video_views_count || 0,
         })),
       ]
@@ -147,12 +147,12 @@ export default function CreatorStudioPage() {
   if (!user) {
     return (
       <div className="max-w-3xl mx-auto card text-center py-12">
-        <p className="text-text-muted">Please sign in to access Creator Studio</p>
+        <p className="text-text-muted">{t('creatorStudio.signInRequired')}</p>
       </div>
     );
   }
 
-  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label="Loading studio..." /></div>;
+  if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('creatorStudio.loading')} /></div>;
 
   // Application under review — applied or under_review.
   if (status === 'applied' || status === 'under_review') {
@@ -160,10 +160,9 @@ export default function CreatorStudioPage() {
       <div className="max-w-2xl mx-auto">
         <div className="card text-center py-12 mb-6">
           <Palette className="w-16 h-16 text-accent-primary mx-auto mb-4" />
-          <h1 className="text-2xl font-display font-bold text-text-primary mb-2">Application under review</h1>
+          <h1 className="text-2xl font-display font-bold text-text-primary mb-2">{t('creatorStudio.reviewTitle')}</h1>
           <p className="text-sm text-text-tertiary max-w-md mx-auto">
-            Thanks for applying to the Creator Program. We&apos;re reviewing applications by hand while Align grows —
-            keep posting and growing your audience while you wait. Your progress keeps counting below.
+            {t('creatorStudio.reviewBody')}
           </p>
         </div>
         {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
@@ -178,12 +177,10 @@ export default function CreatorStudioPage() {
         <div className="card text-center py-12 mb-6">
           <Palette className="w-16 h-16 text-text-muted mx-auto mb-4" />
           <h1 className="text-2xl font-display font-bold text-text-primary mb-2">
-            {status === 'suspended' ? 'Creator access suspended' : 'Application not approved'}
+            {status === 'suspended' ? t('creatorStudio.suspendedTitle') : t('creatorStudio.rejectedTitle')}
           </h1>
           <p className="text-sm text-text-tertiary max-w-md mx-auto">
-            {status === 'suspended'
-              ? 'Your creator access is currently suspended. Contact support if you believe this is a mistake.'
-              : 'Your application wasn’t approved this time. Keep building your audience — the milestones below show what strengthens a future application.'}
+            {status === 'suspended' ? t('creatorStudio.suspendedBody') : t('creatorStudio.rejectedBody')}
           </p>
         </div>
         {eligibility && <CreatorLadder eligibility={eligibility} isCreator={false} />}
@@ -200,23 +197,23 @@ export default function CreatorStudioPage() {
           <Palette className="w-16 h-16 text-accent-primary mx-auto mb-4" />
           <h1 className="text-2xl font-display font-bold text-text-primary mb-3">{t('creatorStudio.title')}</h1>
           <p className="text-sm text-text-tertiary mb-6 max-w-md mx-auto">
-            Become an Align Creator to share your astrological insights, build a following, and earn from your content.
+            {t('creatorStudio.applyIntro')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 text-left max-w-lg mx-auto">
             <div className="p-3 rounded-xl bg-bg-tertiary">
               <Star className="w-5 h-5 text-gold-primary mb-1" />
-              <p className="text-xs text-text-primary font-medium">Share Readings</p>
-              <p className="text-[10px] text-text-muted">Post interpretations & insights</p>
+              <p className="text-xs text-text-primary font-medium">{t('creatorStudio.benefitReadings')}</p>
+              <p className="text-[10px] text-text-muted">{t('creatorStudio.benefitReadingsHint')}</p>
             </div>
             <div className="p-3 rounded-xl bg-bg-tertiary">
               <Users className="w-5 h-5 text-accent-primary mb-1" />
-              <p className="text-xs text-text-primary font-medium">Build Community</p>
-              <p className="text-[10px] text-text-muted">Gain followers & influence</p>
+              <p className="text-xs text-text-primary font-medium">{t('creatorStudio.benefitCommunity')}</p>
+              <p className="text-[10px] text-text-muted">{t('creatorStudio.benefitCommunityHint')}</p>
             </div>
             <div className="p-3 rounded-xl bg-bg-tertiary">
               <DollarSign className="w-5 h-5 text-green-400 mb-1" />
-              <p className="text-xs text-text-primary font-medium">Earn Revenue</p>
-              <p className="text-[10px] text-text-muted">Monetize your expertise</p>
+              <p className="text-xs text-text-primary font-medium">{t('creatorStudio.benefitEarn')}</p>
+              <p className="text-[10px] text-text-muted">{t('creatorStudio.benefitEarnHint')}</p>
             </div>
           </div>
           <button
@@ -224,12 +221,10 @@ export default function CreatorStudioPage() {
             disabled={applying}
             className="btn-primary px-8"
           >
-            {applying ? 'Submitting...' : qualifies ? 'Apply Now — You Qualify' : 'Request Early Access'}
+            {applying ? t('creatorStudio.applying') : qualifies ? t('creatorStudio.applyQualify') : t('creatorStudio.applyEarly')}
           </button>
           <p className="text-[11px] text-text-muted mt-3 max-w-sm mx-auto">
-            {qualifies
-              ? 'You meet every milestone below — applications are reviewed by our team.'
-              : 'We’re approving founding creators by hand while Align grows. Hit the milestones below to strengthen your application.'}
+            {qualifies ? t('creatorStudio.applyNoteQualify') : t('creatorStudio.applyNoteEarly')}
           </p>
         </div>
 
@@ -248,12 +243,12 @@ export default function CreatorStudioPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-        <StatCard icon={FileText} label="Posts" value={stats?.total_posts || 0} />
-        <StatCard icon={Heart} label="Reactions" value={stats?.total_reactions || 0} />
-        <StatCard icon={Eye} label="Views" value={stats?.total_views || 0} />
-        <StatCard icon={Users} label="Followers" value={stats?.total_followers || 0} />
-        <StatCard icon={DollarSign} label="Earnings" value={`$${(stats?.total_earnings || 0).toFixed(2)}`} />
-        <StatCard icon={BarChart3} label="This Month" value={stats?.posts_this_month || 0} />
+        <StatCard icon={FileText} label={t('creatorStudio.statPosts')} value={stats?.total_posts || 0} />
+        <StatCard icon={Heart} label={t('creatorStudio.statReactions')} value={stats?.total_reactions || 0} />
+        <StatCard icon={Eye} label={t('creatorStudio.statViews')} value={stats?.total_views || 0} />
+        <StatCard icon={Users} label={t('creatorStudio.statFollowers')} value={stats?.total_followers || 0} />
+        <StatCard icon={DollarSign} label={t('creatorStudio.statEarnings')} value={`$${(stats?.total_earnings || 0).toFixed(2)}`} />
+        <StatCard icon={BarChart3} label={t('creatorStudio.statThisMonth')} value={stats?.posts_this_month || 0} />
       </div>
 
       {/* Eligibility ladder — for creators it confirms standing */}
@@ -264,14 +259,14 @@ export default function CreatorStudioPage() {
         <div className="card mb-6">
           <h2 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-accent-primary" />
-            Top Content by Views
+            {t('creatorStudio.topContent')}
           </h2>
           <div className="divide-y divide-border-primary">
             {topContent.map((item, i) => (
               <div key={`${item.kind}-${item.id}`} className="flex items-center gap-3 py-2.5">
                 <span className="text-xs text-text-muted w-4">{i + 1}</span>
                 <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted">
-                  {item.kind === 'reel' ? 'Reel' : 'Video'}
+                  {item.kind === 'reel' ? t('creatorStudio.reel') : t('creatorStudio.video')}
                 </span>
                 <p className="text-sm text-text-secondary flex-1 truncate">{item.label}</p>
                 <span className="text-sm font-semibold text-text-primary flex items-center gap-1">
@@ -288,29 +283,29 @@ export default function CreatorStudioPage() {
         <Link href="/feed" className="card hover:border-accent-primary/30 transition-colors flex items-center gap-3">
           <FileText className="w-5 h-5 text-accent-primary" />
           <div>
-            <p className="text-sm font-medium text-text-primary">Create Post</p>
-            <p className="text-[10px] text-text-muted">Share insights with the community</p>
+            <p className="text-sm font-medium text-text-primary">{t('creatorStudio.createPost')}</p>
+            <p className="text-[10px] text-text-muted">{t('creatorStudio.createPostHint')}</p>
           </div>
         </Link>
         <Link href="/polls" className="card hover:border-accent-primary/30 transition-colors flex items-center gap-3">
           <BarChart3 className="w-5 h-5 text-accent-primary" />
           <div>
-            <p className="text-sm font-medium text-text-primary">Create Poll</p>
-            <p className="text-[10px] text-text-muted">Engage with polls & questions</p>
+            <p className="text-sm font-medium text-text-primary">{t('creatorStudio.createPoll')}</p>
+            <p className="text-[10px] text-text-muted">{t('creatorStudio.createPollHint')}</p>
           </div>
         </Link>
         <Link href="/communities" className="card hover:border-accent-primary/30 transition-colors flex items-center gap-3">
           <Users className="w-5 h-5 text-accent-primary" />
           <div>
-            <p className="text-sm font-medium text-text-primary">My Communities</p>
-            <p className="text-[10px] text-text-muted">Manage your groups</p>
+            <p className="text-sm font-medium text-text-primary">{t('creatorStudio.myCommunities')}</p>
+            <p className="text-[10px] text-text-muted">{t('creatorStudio.myCommunitiesHint')}</p>
           </div>
         </Link>
         <Link href="/readings" className="card hover:border-accent-primary/30 transition-colors flex items-center gap-3">
           <Star className="w-5 h-5 text-gold-primary" />
           <div>
-            <p className="text-sm font-medium text-text-primary">Share a Reading</p>
-            <p className="text-[10px] text-text-muted">Post chart interpretations</p>
+            <p className="text-sm font-medium text-text-primary">{t('creatorStudio.shareReading')}</p>
+            <p className="text-[10px] text-text-muted">{t('creatorStudio.shareReadingHint')}</p>
           </div>
         </Link>
       </div>
@@ -335,27 +330,28 @@ function fmt(n: number): string {
 }
 
 function CreatorLadder({ eligibility, isCreator }: { eligibility: CreatorEligibility; isCreator: boolean }) {
+  const { t } = useTranslation();
   return (
     <div className="card mb-6">
       <div className="flex items-center justify-between mb-1">
         <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-accent-primary" />
-          {eligibility.qualifies ? 'Creator Program — Eligible' : 'Road to Creator Program'}
+          {eligibility.qualifies ? t('creatorStudio.ladderEligible') : t('creatorStudio.ladderTitle')}
         </h2>
-        <span className="text-xs text-text-muted">{eligibility.metCount}/{eligibility.totalCount} goals</span>
+        <span className="text-xs text-text-muted">{t('creatorStudio.ladderGoals', { met: eligibility.metCount, total: eligibility.totalCount })}</span>
       </div>
       {!isCreator && (
         <p className="text-xs text-text-tertiary mb-3">
           {eligibility.qualifies
-            ? 'You meet every requirement — apply below to join the monetized Creator Program.'
-            : 'Hit these milestones to unlock the monetized Creator Program. Keep posting and engaging.'}
+            ? t('creatorStudio.ladderQualifyHint')
+            : t('creatorStudio.ladderProgressHint')}
         </p>
       )}
 
       {/* Overall progress */}
       <div className="mb-4">
         <div className="flex justify-between text-[11px] text-text-muted mb-1">
-          <span>Overall progress</span>
+          <span>{t('creatorStudio.overallProgress')}</span>
           <span>{eligibility.overallPct}%</span>
         </div>
         <div className="h-2 rounded-full bg-bg-tertiary overflow-hidden">
@@ -374,7 +370,7 @@ function CreatorLadder({ eligibility, isCreator }: { eligibility: CreatorEligibi
               {r.met
                 ? <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
                 : <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />}
-              <span className="text-xs text-text-secondary flex-1">{r.label}</span>
+              <span className="text-xs text-text-secondary flex-1">{t(`creatorStudio.req.${r.key}`, { defaultValue: r.label })}</span>
               <span className={`text-xs font-medium ${r.met ? 'text-green-400' : 'text-text-primary'}`}>
                 {fmt(r.current)} / {fmt(r.target)}
               </span>

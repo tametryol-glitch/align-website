@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} meses restantes",
       "yearsLeft": "{{count}}+ anos",
       "tapToRead": "Toque para ler seu insight completo",
-      "failedToLoadStorylines": "Falha ao carregar narrativas"
+      "failedToLoadStorylines": "Falha ao carregar narrativas",
+      "hiddenLayer": "O Que Isso Realmente Toca"
     },
     "tarotPage": {
       "title": "Leitura de Tarot",
@@ -836,7 +837,8 @@
         "Escaneamentos ilimitados do Aura Mirror",
         "Entradas ilimitadas no Cosmic Journal",
         "Acesso a Presentes da Alma e Memória da Alma"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1857,7 +1859,36 @@
     "shareReading": "Compartilhar uma Leitura",
     "shareReadingHint": "Postar interpretações de mapas",
     "signInRequired": "Por favor, faça login para acessar o Creator Studio",
-    "loading": "Carregando estúdio..."
+    "loading": "Carregando estúdio...",
+    "applyIntro": "Torne-se um Criador Align para compartilhar suas percepções astrológicas, construir um público e ganhar com seu conteúdo.",
+    "reviewTitle": "Inscrição em análise",
+    "reviewBody": "Obrigado por se inscrever no Programa de Criadores. Estamos analisando as inscrições manualmente enquanto o Align cresce — continue publicando e fazendo seu público crescer enquanto espera. Seu progresso continua contando abaixo.",
+    "suspendedTitle": "Acesso de criador suspenso",
+    "suspendedBody": "Seu acesso de criador está suspenso no momento. Entre em contato com o suporte se acredita que isso é um engano.",
+    "rejectedTitle": "Inscrição não aprovada",
+    "rejectedBody": "Sua inscrição não foi aprovada desta vez. Continue construindo seu público — os marcos abaixo mostram o que fortalece uma futura inscrição.",
+    "applyQualify": "Inscreva-se Agora — Você Se Qualifica",
+    "applyEarly": "Solicitar Acesso Antecipado",
+    "applyNoteQualify": "Você atinge todos os marcos abaixo — as inscrições são analisadas pela nossa equipe.",
+    "applyNoteEarly": "Estamos aprovando criadores fundadores manualmente enquanto o Align cresce. Atinja os marcos abaixo para fortalecer sua inscrição.",
+    "ladderEligible": "Programa de Criadores — Elegível",
+    "ladderTitle": "Caminho para o Programa de Criadores",
+    "ladderGoals": "{{met}}/{{total}} metas",
+    "ladderQualifyHint": "Você atende a todos os requisitos — inscreva-se abaixo para entrar no Programa de Criadores monetizado.",
+    "ladderProgressHint": "Atinja estes marcos para desbloquear o Programa de Criadores monetizado. Continue publicando e interagindo.",
+    "overallProgress": "Progresso geral",
+    "topContent": "Melhores Conteúdos por Visualizações",
+    "reel": "Reel",
+    "video": "Vídeo",
+    "untitledReel": "Reel sem título",
+    "videoPost": "Publicação de vídeo",
+    "req": {
+      "followers": "Seguidores",
+      "lifetimeViews": "Visualizações totais de vídeos",
+      "views30d": "Visualizações nos últimos 30 dias",
+      "videoCount": "Vídeos publicados",
+      "accountAgeDays": "Idade da conta (dias)"
+    }
   },
   "qa": {
     "title": "Perguntas e Respostas",
@@ -2003,7 +2034,10 @@
       "search": "Buscar",
       "bookmarks": "Favoritos",
       "polls": "Enquetes",
-      "creatorStudio": "Estúdio do Criador"
+      "creatorStudio": "Estúdio do Criador",
+      "globalIntelligence": "Inteligência Global",
+      "zodisphere": "A Zodisfera",
+      "affiliates": "Afiliados"
     },
     "feedCard": {
       "like": "Curtir",
@@ -2020,6 +2054,11 @@
       "send": "Enviar",
       "noComments": "Nenhum comentário ainda",
       "beFirst": "Seja o primeiro a comentar!"
+    },
+    "earnBanner": {
+      "message": "Novo: Ganhe com o Align — receba 20% de comissões recorrentes como afiliado, ou monetize seu conteúdo com o Programa de Criadores.",
+      "cta": "Saiba Mais",
+      "dismiss": "Dispensar"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Aprenda Astrologia",
       "description": "Cursos estruturados para aprofundar seu conhecimento astrológico, desde o básico para iniciantes até técnicas avançadas."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Login de Afiliado",
+      "getStarted": "Comece Grátis"
+    },
+    "hero": {
+      "badge": "20% de Comissão Recorrente",
+      "titlePre": "Ganhe dinheiro compartilhando",
+      "titleHighlight": "sabedoria cósmica",
+      "subtitle": "Entre no Programa de Afiliados do Align e ganhe 20% de comissão recorrente em cada assinatura que você indicar. Seu público recebe astrologia de nível profissional; você é pago todo mês em que ele permanecer.",
+      "applyNow": "Inscreva-se Agora"
+    },
+    "how": {
+      "title": "Como funciona",
+      "step1Title": "Inscreva-se",
+      "step1Desc": "Preencha o formulário abaixo. Analisamos as inscrições em 24-48 horas e avisamos você por e-mail.",
+      "step2Title": "Compartilhe",
+      "step2Desc": "Receba seu link de indicação exclusivo. Compartilhe no seu blog, YouTube, redes sociais, podcast ou newsletter.",
+      "step3Title": "Ganhe",
+      "step3Desc": "Ganhe 20% de cada pagamento de assinatura dos usuários que você indicar. As comissões são recorrentes — você ganha enquanto eles continuarem assinantes."
+    },
+    "commission": {
+      "title": "Estrutura de Comissões",
+      "rateLabel": "Taxa de Comissão",
+      "rateSub": "Recorrente",
+      "cookieLabel": "Duração do Cookie",
+      "cookieValue": "30 dias",
+      "cookieSub": "Janela de atribuição",
+      "payoutLabel": "Limite de Pagamento",
+      "payoutSub": "Pagamento mínimo",
+      "paymentLabel": "Pagamento",
+      "paymentValue": "Mensal",
+      "paymentSub": "PayPal ou transferência bancária",
+      "exampleTitle": "Exemplo de Ganhos",
+      "exampleIntro": "O Align Pro custa $9/mês. Sua comissão de 20% =",
+      "examplePerUser": "$1.80/mês por usuário",
+      "exampleRefer": "Indique {{count}} usuários =",
+      "exampleAmount": "{{amount}}/mês recorrentes"
+    },
+    "benefits": {
+      "title": "O que você recebe como afiliado",
+      "b1Title": "Link de Indicação Exclusivo",
+      "b1Desc": "Seu próprio link que rastreia cada clique, cadastro e conversão com atribuição por cookie de 30 dias.",
+      "b2Title": "Painel em Tempo Real",
+      "b2Desc": "Acompanhe seus cliques, cadastros, conversões e ganhos em tempo real no seu painel de afiliado.",
+      "b3Title": "20% de Comissão Recorrente",
+      "b3Desc": "Ganhe em cada pagamento mensal, não só no primeiro. Sua renda cresce enquanto seus indicados continuarem assinantes.",
+      "b4Title": "Alta Taxa de Conversão",
+      "b4Desc": "O Align converte bem porque oferece valor real: mais de 26 leituras, astrólogo com IA e uma comunidade cósmica.",
+      "b5Title": "Funciona na Web e no Celular",
+      "b5Desc": "Seu link funciona tanto para o site quanto para o app da Google Play Store. A atribuição se mantém entre as plataformas.",
+      "b6Title": "Suporte Dedicado",
+      "b6Desc": "Receba ajuda da nossa equipe de afiliados. Queremos que você tenha sucesso, porque quando você ganha, nós crescemos."
+    },
+    "perfectFor": {
+      "title": "Perfeito para",
+      "tag1": "Blogueiros de astrologia",
+      "tag2": "Criadores do YouTube",
+      "tag3": "Astrólogos do TikTok",
+      "tag4": "Apresentadores de podcast",
+      "tag5": "Autores de newsletters",
+      "tag6": "Influenciadores do Instagram",
+      "tag7": "Leitores de tarô",
+      "tag8": "Coaches espirituais",
+      "tag9": "Avaliadores de apps",
+      "tag10": "Professores de astrologia"
+    },
+    "form": {
+      "title": "Inscreva-se no Programa de Afiliados",
+      "reviewNote": "Analisamos as inscrições em 24-48 horas.",
+      "nameLabel": "Nome Completo",
+      "namePlaceholder": "Seu nome",
+      "emailLabel": "E-mail",
+      "websiteLabel": "Site / Blog",
+      "socialLabel": "Perfil nas Redes Sociais",
+      "promoLabel": "Como você vai divulgar o Align?",
+      "promoPlaceholder": "Posts de blog, vídeos no YouTube, redes sociais, newsletter...",
+      "submit": "Enviar Inscrição",
+      "submitting": "Enviando...",
+      "disclaimer": "Ao se inscrever, você concorda com nossos termos de afiliados. A comissão é de 20% recorrente sobre todos os pagamentos de assinatura dos usuários indicados.",
+      "errorGeneric": "Algo deu errado. Tente novamente."
+    },
+    "success": {
+      "title": "Inscrição Enviada!",
+      "codeIs": "Seu código de afiliado é:",
+      "reviewEmail": "Vamos analisar sua inscrição e enviar um e-mail para {{email}} assim que for aprovada. Seu link de indicação será:"
+    },
+    "footer": {
+      "rights": "Todos os direitos reservados.",
+      "home": "Início",
+      "pricing": "Preços",
+      "terms": "Termos",
+      "privacy": "Privacidade"
     }
   }
 }

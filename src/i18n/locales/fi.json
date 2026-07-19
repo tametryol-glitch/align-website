@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} kuukautta jaljella",
       "yearsLeft": "{{count}}+ vuotta",
       "tapToRead": "Napauta lukeaksesi koko oivalluksesi",
-      "failedToLoadStorylines": "Tarinakaaria ei voitu ladata"
+      "failedToLoadStorylines": "Tarinakaaria ei voitu ladata",
+      "hiddenLayer": "Mitä tämä oikeasti koskettaa"
     },
     "tarotPage": {
       "title": "Tarot-lukeminen",
@@ -1608,7 +1609,8 @@
         "Aura Peili rajoittamattomat skannaukset",
         "Kosminen Päiväkirja rajoittamattomat merkinnät",
         "Sielulahjat & Sielumuisti pääsy"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Jaa lukeminen",
     "shareReadingHint": "Julkaise karttatulkintoja",
     "signInRequired": "Kirjaudu sisään päästäksesi Creator Studioon",
-    "loading": "Ladataan studioa..."
+    "loading": "Ladataan studioa...",
+    "applyIntro": "Ryhdy Align-luojaksi: jaa astrologisia näkemyksiäsi, kasvata seuraajakuntaasi ja ansaitse sisällölläsi.",
+    "reviewTitle": "Hakemus käsittelyssä",
+    "reviewBody": "Kiitos hakemuksestasi luojaohjelmaan. Käymme hakemukset läpi käsin Alignin kasvaessa — jatka sillä välin julkaisemista ja yleisösi kasvattamista. Edistymisesi alla lasketaan koko ajan.",
+    "suspendedTitle": "Luojan käyttöoikeus jäädytetty",
+    "suspendedBody": "Luojan käyttöoikeutesi on tällä hetkellä jäädytetty. Ota yhteyttä tukeen, jos uskot tämän olevan virhe.",
+    "rejectedTitle": "Hakemusta ei hyväksytty",
+    "rejectedBody": "Hakemustasi ei hyväksytty tällä kertaa. Jatka yleisösi kasvattamista — alla olevat tavoitteet näyttävät, mikä vahvistaa tulevaa hakemusta.",
+    "applyQualify": "Hae nyt — täytät vaatimukset",
+    "applyEarly": "Pyydä varhaista pääsyä",
+    "applyNoteQualify": "Saavutat kaikki alla olevat tavoitteet — tiimimme käsittelee hakemukset.",
+    "applyNoteEarly": "Hyväksymme perustajaluojat käsin Alignin kasvaessa. Saavuta alla olevat tavoitteet vahvistaaksesi hakemustasi.",
+    "ladderEligible": "Luojaohjelma — täytät vaatimukset",
+    "ladderTitle": "Tie luojaohjelmaan",
+    "ladderGoals": "{{met}}/{{total}} tavoitetta",
+    "ladderQualifyHint": "Täytät kaikki vaatimukset — hae alta mukaan monetisoituun luojaohjelmaan.",
+    "ladderProgressHint": "Saavuta nämä tavoitteet avataksesi monetisoidun luojaohjelman. Jatka julkaisemista ja vuorovaikutusta.",
+    "overallProgress": "Kokonaisedistyminen",
+    "topContent": "Katsotuimmat sisällöt",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Nimetön reel",
+    "videoPost": "Videojulkaisu",
+    "req": {
+      "followers": "Seuraajat",
+      "lifetimeViews": "Videoiden katselukerrat yhteensä",
+      "views30d": "Katselukerrat viimeisen 30 päivän aikana",
+      "videoCount": "Julkaistut videot",
+      "accountAgeDays": "Tilin ikä (päivinä)"
+    }
   },
   "qa": {
     "title": "Kysymykset ja vastaukset",
@@ -1955,7 +1986,10 @@
       "search": "Haku",
       "bookmarks": "Kirjanmerkit",
       "polls": "Kyselyt",
-      "creatorStudio": "Luojastudio"
+      "creatorStudio": "Luojastudio",
+      "globalIntelligence": "Globaali näkymä",
+      "zodisphere": "Zodisphere",
+      "affiliates": "Kumppanit"
     },
     "feedCard": {
       "like": "Tykkaa",
@@ -1972,6 +2006,11 @@
       "send": "Laheta",
       "noComments": "Ei kommentteja viela",
       "beFirst": "Ole ensimmainen kommentoija!"
+    },
+    "earnBanner": {
+      "message": "Uutta: Ansaitse Alignin kanssa — saa 20% jatkuvaa provisiota kumppanina tai monetisoi sisältösi luojaohjelmassa.",
+      "cta": "Lue lisää",
+      "dismiss": "Sulje"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Opettele astrologiaa",
       "description": "Rakenteelliset kurssit syventämään astrologista tietämystäsi, aloittelijan perusteista edistyneisiin tekniikoihin."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Kumppanin kirjautuminen",
+      "getStarted": "Aloita ilmaiseksi"
+    },
+    "hero": {
+      "badge": "20% jatkuva provisio",
+      "titlePre": "Ansaitse rahaa jakamalla",
+      "titleHighlight": "kosmista viisautta",
+      "subtitle": "Liity Alignin kumppaniohjelmaan ja ansaitse 20% jatkuvaa provisiota jokaisesta suosittelemastasi tilauksesta. Yleisösi saa ammattitason astrologiaa; sinä saat maksun joka kuukausi niin kauan kuin he pysyvät tilaajina.",
+      "applyNow": "Hae nyt"
+    },
+    "how": {
+      "title": "Näin se toimii",
+      "step1Title": "Hae",
+      "step1Desc": "Täytä alla oleva lomake. Käsittelemme hakemukset 24-48 tunnissa ja ilmoitamme sinulle sähköpostitse.",
+      "step2Title": "Jaa",
+      "step2Desc": "Saat oman suosittelulinkkisi. Jaa se blogissasi, YouTubessa, somessa, podcastissa tai uutiskirjeessä.",
+      "step3Title": "Ansaitse",
+      "step3Desc": "Ansaitse 20% jokaisesta suosittelemiesi käyttäjien tilausmaksusta. Provisiot ovat jatkuvia — ansaitset niin kauan kuin he pysyvät tilaajina."
+    },
+    "commission": {
+      "title": "Provisiorakenne",
+      "rateLabel": "Provisio",
+      "rateSub": "Jatkuva",
+      "cookieLabel": "Evästeen kesto",
+      "cookieValue": "30 päivää",
+      "cookieSub": "Attribuutioikkuna",
+      "payoutLabel": "Maksuraja",
+      "payoutSub": "Vähimmäismaksu",
+      "paymentLabel": "Maksu",
+      "paymentValue": "Kuukausittain",
+      "paymentSub": "PayPal tai pankkisiirto",
+      "exampleTitle": "Esimerkkiansiot",
+      "exampleIntro": "Align Pro maksaa $9/kk. Sinun 20% provisiosi =",
+      "examplePerUser": "$1.80/kk per käyttäjä",
+      "exampleRefer": "Hanki {{count}} käyttäjää =",
+      "exampleAmount": "{{amount}}/kk jatkuvasti"
+    },
+    "benefits": {
+      "title": "Mitä saat kumppanina",
+      "b1Title": "Oma suosittelulinkki",
+      "b1Desc": "Oma linkkisi, joka seuraa jokaista klikkausta, rekisteröitymistä ja konversiota 30 päivän evästeattribuutiolla.",
+      "b2Title": "Reaaliaikainen hallintapaneeli",
+      "b2Desc": "Seuraa klikkauksia, rekisteröitymisiä, konversioita ja ansioitasi reaaliajassa kumppanipaneelistasi.",
+      "b3Title": "20% jatkuva provisio",
+      "b3Desc": "Ansaitse jokaisesta kuukausimaksusta, et vain ensimmäisestä. Tulosi kasvavat, kun suosittelemasi käyttäjät pysyvät tilaajina.",
+      "b4Title": "Korkea konversio",
+      "b4Desc": "Align konvertoi hyvin, koska se tarjoaa todellista arvoa: 26+ lukemaa, AI-astrologin ja kosmisen yhteisön.",
+      "b5Title": "Toimii verkossa ja mobiilissa",
+      "b5Desc": "Linkkisi toimii sekä verkkosivustolle että Google Play Store -sovellukselle. Attribuutio säilyy alustojen välillä.",
+      "b6Title": "Oma tuki",
+      "b6Desc": "Saat apua kumppanitiimiltämme. Haluamme sinun menestyvän, sillä kun sinä ansaitset, me kasvamme."
+    },
+    "perfectFor": {
+      "title": "Sopii täydellisesti",
+      "tag1": "Astrologiabloggaajat",
+      "tag2": "YouTube-sisällöntekijät",
+      "tag3": "TikTok-astrologit",
+      "tag4": "Podcast-isännät",
+      "tag5": "Uutiskirjeiden kirjoittajat",
+      "tag6": "Instagram-vaikuttajat",
+      "tag7": "Tarot-lukijat",
+      "tag8": "Henkiset valmentajat",
+      "tag9": "Sovellusarvostelijat",
+      "tag10": "Astrologian opettajat"
+    },
+    "form": {
+      "title": "Hae kumppaniohjelmaan",
+      "reviewNote": "Käsittelemme hakemukset 24-48 tunnissa.",
+      "nameLabel": "Koko nimi",
+      "namePlaceholder": "Nimesi",
+      "emailLabel": "Sähköposti",
+      "websiteLabel": "Verkkosivusto / blogi",
+      "socialLabel": "Sometili",
+      "promoLabel": "Miten aiot markkinoida Alignia?",
+      "promoPlaceholder": "Blogikirjoitukset, YouTube-videot, sosiaalinen media, uutiskirje...",
+      "submit": "Lähetä hakemus",
+      "submitting": "Lähetetään...",
+      "disclaimer": "Hakemalla hyväksyt kumppaniehtomme. Provisio on 20% jatkuvana kaikista suositeltujen käyttäjien tilausmaksuista.",
+      "errorGeneric": "Jotain meni pieleen. Yritä uudelleen."
+    },
+    "success": {
+      "title": "Hakemus lähetetty!",
+      "codeIs": "Kumppanikoodisi on:",
+      "reviewEmail": "Käsittelemme hakemuksesi ja lähetämme sähköpostia osoitteeseen {{email}}, kun se on hyväksytty. Suosittelulinkkisi tulee olemaan:"
+    },
+    "footer": {
+      "rights": "Kaikki oikeudet pidätetään.",
+      "home": "Etusivu",
+      "pricing": "Hinnoittelu",
+      "terms": "Ehdot",
+      "privacy": "Tietosuoja"
     }
   }
 }

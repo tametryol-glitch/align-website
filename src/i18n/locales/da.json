@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} maneder tilbage",
       "yearsLeft": "{{count}}+ ar",
       "tapToRead": "Tryk for at laese din fulde indsigt",
-      "failedToLoadStorylines": "Kunne ikke indlaese historielinier"
+      "failedToLoadStorylines": "Kunne ikke indlaese historielinier",
+      "hiddenLayer": "Hvad dette i virkeligheden rører ved"
     },
     "tarotPage": {
       "title": "Tarot-laesning",
@@ -1608,7 +1609,8 @@
         "Aura Spejl ubegrænsede scanninger",
         "Kosmisk Journal ubegrænsede indlæg",
         "Sjæl Gaver & Sjæl Hukommelse adgang"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Del en Læsning",
     "shareReadingHint": "Post diagramfortolkninger",
     "signInRequired": "Log venligst ind for at få adgang til Creator Studio",
-    "loading": "Indlæser studio..."
+    "loading": "Indlæser studio...",
+    "applyIntro": "Bliv Align Creator for at dele dine astrologiske indsigter, opbygge en følgerskare og tjene penge på dit indhold.",
+    "reviewTitle": "Ansøgning under behandling",
+    "reviewBody": "Tak for din ansøgning til Creator-programmet. Mens Align vokser, gennemgår vi ansøgninger manuelt — bliv ved med at poste og udvide dit publikum, mens du venter. Dine fremskridt tæller stadig nedenfor.",
+    "suspendedTitle": "Creator-adgang suspenderet",
+    "suspendedBody": "Din creator-adgang er i øjeblikket suspenderet. Kontakt support, hvis du mener, det er en fejl.",
+    "rejectedTitle": "Ansøgning ikke godkendt",
+    "rejectedBody": "Din ansøgning blev ikke godkendt denne gang. Bliv ved med at opbygge dit publikum — milepælene nedenfor viser, hvad der styrker en fremtidig ansøgning.",
+    "applyQualify": "Ansøg nu — du kvalificerer dig",
+    "applyEarly": "Anmod om tidlig adgang",
+    "applyNoteQualify": "Du opfylder hver milepæl nedenfor — ansøgninger gennemgås af vores team.",
+    "applyNoteEarly": "Vi godkender grundlægger-creators manuelt, mens Align vokser. Nå milepælene nedenfor for at styrke din ansøgning.",
+    "ladderEligible": "Creator-programmet — kvalificeret",
+    "ladderTitle": "Vejen til Creator-programmet",
+    "ladderGoals": "{{met}}/{{total}} mål",
+    "ladderQualifyHint": "Du opfylder alle krav — ansøg nedenfor for at blive en del af det monetariserede Creator-program.",
+    "ladderProgressHint": "Nå disse milepæle for at låse op for det monetariserede Creator-program. Bliv ved med at poste og engagere dig.",
+    "overallProgress": "Samlet fremskridt",
+    "topContent": "Topindhold efter visninger",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel uden titel",
+    "videoPost": "Videoopslag",
+    "req": {
+      "followers": "Følgere",
+      "lifetimeViews": "Videovisninger i alt",
+      "views30d": "Visninger de seneste 30 dage",
+      "videoCount": "Udgivne videoer",
+      "accountAgeDays": "Kontoens alder (dage)"
+    }
   },
   "qa": {
     "title": "Spoergsmal og svar",
@@ -1955,7 +1986,10 @@
       "search": "Søg",
       "bookmarks": "Bogmærker",
       "polls": "Afstemninger",
-      "creatorStudio": "Creator Studio"
+      "creatorStudio": "Creator Studio",
+      "globalIntelligence": "Global intelligens",
+      "zodisphere": "Zodisfæren",
+      "affiliates": "Affiliates"
     },
     "feedCard": {
       "like": "Lik",
@@ -1972,6 +2006,11 @@
       "send": "Send",
       "noComments": "Ingen kommentarer endnu",
       "beFirst": "Vaer den foerste til at kommentere!"
+    },
+    "earnBanner": {
+      "message": "Nyt: Tjen med Align — få 20% tilbagevendende kommissioner som affiliate, eller tjen penge på dit indhold med Creator-programmet.",
+      "cta": "Læs mere",
+      "dismiss": "Luk"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Lær Astrologi",
       "description": "Strukturerede kurser til at uddybe din astrologiske viden, fra begynderniveau til avancerede teknikker."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate-login",
+      "getStarted": "Kom gratis i gang"
+    },
+    "hero": {
+      "badge": "20% tilbagevendende kommission",
+      "titlePre": "Tjen penge på at dele",
+      "titleHighlight": "kosmisk visdom",
+      "subtitle": "Bliv en del af Aligns affiliate-program og tjen 20% tilbagevendende kommission på hvert abonnement, du henviser. Dit publikum får astrologi i professionel kvalitet; du bliver betalt hver måned, de bliver.",
+      "applyNow": "Ansøg nu"
+    },
+    "how": {
+      "title": "Sådan fungerer det",
+      "step1Title": "Ansøg",
+      "step1Desc": "Udfyld formularen nedenfor. Vi gennemgår ansøgninger inden for 24-48 timer og giver dig besked på e-mail.",
+      "step2Title": "Del",
+      "step2Desc": "Få dit unikke henvisningslink. Del det på din blog, YouTube, sociale medier, podcast eller nyhedsbrev.",
+      "step3Title": "Tjen",
+      "step3Desc": "Tjen 20% af hver abonnementsbetaling fra brugere, du henviser. Kommissionerne er tilbagevendende — du tjener, så længe de forbliver abonnenter."
+    },
+    "commission": {
+      "title": "Kommissionsstruktur",
+      "rateLabel": "Kommissionssats",
+      "rateSub": "Tilbagevendende",
+      "cookieLabel": "Cookie-varighed",
+      "cookieValue": "30 dage",
+      "cookieSub": "Attributionsvindue",
+      "payoutLabel": "Udbetalingsgrænse",
+      "payoutSub": "Minimumsudbetaling",
+      "paymentLabel": "Betaling",
+      "paymentValue": "Månedligt",
+      "paymentSub": "PayPal eller bankoverførsel",
+      "exampleTitle": "Eksempel på indtjening",
+      "exampleIntro": "Align Pro koster $9/måned. Din 20% kommission =",
+      "examplePerUser": "$1.80/måned pr. bruger",
+      "exampleRefer": "Henvis {{count}} brugere =",
+      "exampleAmount": "{{amount}}/måned tilbagevendende"
+    },
+    "benefits": {
+      "title": "Det får du som affiliate",
+      "b1Title": "Unikt henvisningslink",
+      "b1Desc": "Dit eget link, der sporer hvert klik, hver tilmelding og hver konvertering med 30 dages cookie-attribution.",
+      "b2Title": "Dashboard i realtid",
+      "b2Desc": "Følg dine klik, tilmeldinger, konverteringer og indtjening i realtid fra dit affiliate-dashboard.",
+      "b3Title": "20% tilbagevendende kommission",
+      "b3Desc": "Tjen på hver månedlig betaling, ikke kun den første. Din indkomst vokser, så længe dine henvisninger forbliver abonnenter.",
+      "b4Title": "Høj konverteringsrate",
+      "b4Desc": "Align konverterer godt, fordi appen giver ægte værdi: 26+ tolkninger, en AI-astrolog og et kosmisk fællesskab.",
+      "b5Title": "Virker på web & mobil",
+      "b5Desc": "Dit link virker både til hjemmesiden og appen i Google Play Store. Attributionen gælder på tværs af platforme.",
+      "b6Title": "Dedikeret support",
+      "b6Desc": "Få hjælp fra vores affiliate-team. Vi ønsker, at du lykkes, for når du tjener, vokser vi."
+    },
+    "perfectFor": {
+      "title": "Perfekt til",
+      "tag1": "Astrologibloggere",
+      "tag2": "YouTube-skabere",
+      "tag3": "TikTok-astrologer",
+      "tag4": "Podcastværter",
+      "tag5": "Nyhedsbrevsskribenter",
+      "tag6": "Instagram-influencere",
+      "tag7": "Tarotlæsere",
+      "tag8": "Spirituelle coaches",
+      "tag9": "App-anmeldere",
+      "tag10": "Astrologiundervisere"
+    },
+    "form": {
+      "title": "Ansøg til affiliate-programmet",
+      "reviewNote": "Vi gennemgår ansøgninger inden for 24-48 timer.",
+      "nameLabel": "Fulde navn",
+      "namePlaceholder": "Dit navn",
+      "emailLabel": "E-mail",
+      "websiteLabel": "Hjemmeside / blog",
+      "socialLabel": "Sociale medier-handle",
+      "promoLabel": "Hvordan vil du promovere Align?",
+      "promoPlaceholder": "Blogindlæg, YouTube-videoer, sociale medier, nyhedsbrev...",
+      "submit": "Send ansøgning",
+      "submitting": "Sender...",
+      "disclaimer": "Ved at ansøge accepterer du vores affiliate-vilkår. Kommissionen er 20% tilbagevendende på alle abonnementsbetalinger fra henviste brugere.",
+      "errorGeneric": "Noget gik galt. Prøv igen."
+    },
+    "success": {
+      "title": "Ansøgning sendt!",
+      "codeIs": "Din affiliate-kode er:",
+      "reviewEmail": "Vi gennemgår din ansøgning og skriver til dig på {{email}}, når den er godkendt. Dit henvisningslink bliver:"
+    },
+    "footer": {
+      "rights": "Alle rettigheder forbeholdes.",
+      "home": "Hjem",
+      "pricing": "Priser",
+      "terms": "Vilkår",
+      "privacy": "Privatliv"
     }
   }
 }

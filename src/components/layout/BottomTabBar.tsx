@@ -28,7 +28,7 @@ const TABS = [
 const MORE_ITEMS = [
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
-  { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
+  { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
@@ -38,7 +38,7 @@ const MORE_ITEMS = [
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
   { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
-  { href: '/affiliates', labelKey: 'Affiliates', icon: DollarSign },
+  { href: '/affiliates', labelKey: 'components.sidebar.affiliates', icon: DollarSign },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
   { href: '/profile', labelKey: 'components.sidebar.profile', icon: User },
   { href: '/settings', labelKey: 'components.sidebar.settings', icon: Settings },

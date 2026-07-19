@@ -21,8 +21,8 @@ const NAV_ITEMS = [
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
   { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
-  { href: '/global-intelligence', labelKey: 'Global Intelligence', icon: Globe },
-  { href: '/zodisphere', labelKey: 'The Zodisphere', icon: Orbit },
+  { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
+  { href: '/zodisphere', labelKey: 'components.sidebar.zodisphere', icon: Orbit },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star, coachmark: 'nav-chart' },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },
@@ -37,7 +37,7 @@ const NAV_ITEMS = [
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
   { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
-  { href: '/affiliates', labelKey: 'Affiliates', icon: DollarSign },
+  { href: '/affiliates', labelKey: 'components.sidebar.affiliates', icon: DollarSign },
   { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
 ];
 

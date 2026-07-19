@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} Monate verbleibend",
       "yearsLeft": "{{count}}+ Jahre",
       "tapToRead": "Tippe, um deine vollständige Einsicht zu lesen",
-      "failedToLoadStorylines": "Handlungsstränge konnten nicht geladen werden"
+      "failedToLoadStorylines": "Handlungsstränge konnten nicht geladen werden",
+      "hiddenLayer": "Was das wirklich berührt"
     },
     "tarotPage": {
       "title": "Tarot-Lesung",
@@ -1608,7 +1609,8 @@
         "Aura Mirror unbegrenzte Scans",
         "Kosmisches Journal unbegrenzte Einträge",
         "Zugang zu Seelen-Geschenken & Seelen-Erinnerungen"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Eine Lesung teilen",
     "shareReadingHint": "Diagramminterpretationen posten",
     "signInRequired": "Bitte melde dich an, um auf das Creator Studio zuzugreifen",
-    "loading": "Studio wird geladen..."
+    "loading": "Studio wird geladen...",
+    "applyIntro": "Werde Align Creator, um deine astrologischen Einsichten zu teilen, eine Community aufzubauen und mit deinen Inhalten Geld zu verdienen.",
+    "reviewTitle": "Bewerbung wird geprüft",
+    "reviewBody": "Danke für deine Bewerbung zum Creator-Programm. Während Align wächst, prüfen wir Bewerbungen von Hand — poste weiter und baue deine Community aus, während du wartest. Dein Fortschritt zählt unten weiter.",
+    "suspendedTitle": "Creator-Zugang gesperrt",
+    "suspendedBody": "Dein Creator-Zugang ist derzeit gesperrt. Kontaktiere den Support, wenn du glaubst, dass es sich um einen Fehler handelt.",
+    "rejectedTitle": "Bewerbung nicht angenommen",
+    "rejectedBody": "Deine Bewerbung wurde dieses Mal nicht angenommen. Baue deine Community weiter aus — die Meilensteine unten zeigen, was eine künftige Bewerbung stärkt.",
+    "applyQualify": "Jetzt bewerben — du qualifizierst dich",
+    "applyEarly": "Frühzugang anfragen",
+    "applyNoteQualify": "Du erfüllst jeden Meilenstein unten — Bewerbungen werden von unserem Team geprüft.",
+    "applyNoteEarly": "Während Align wächst, nehmen wir Gründungs-Creator von Hand auf. Erreiche die Meilensteine unten, um deine Bewerbung zu stärken.",
+    "ladderEligible": "Creator-Programm — qualifiziert",
+    "ladderTitle": "Weg zum Creator-Programm",
+    "ladderGoals": "{{met}}/{{total}} Ziele",
+    "ladderQualifyHint": "Du erfüllst alle Anforderungen — bewirb dich unten, um dem monetarisierten Creator-Programm beizutreten.",
+    "ladderProgressHint": "Erreiche diese Meilensteine, um das monetarisierte Creator-Programm freizuschalten. Poste weiter und bleib aktiv.",
+    "overallProgress": "Gesamtfortschritt",
+    "topContent": "Top-Inhalte nach Aufrufen",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel ohne Titel",
+    "videoPost": "Video-Beitrag",
+    "req": {
+      "followers": "Follower",
+      "lifetimeViews": "Video-Aufrufe gesamt",
+      "views30d": "Aufrufe in den letzten 30 Tagen",
+      "videoCount": "Veröffentlichte Videos",
+      "accountAgeDays": "Kontoalter (Tage)"
+    }
   },
   "qa": {
     "title": "F&A",
@@ -1955,7 +1986,10 @@
       "search": "Suche",
       "bookmarks": "Lesezeichen",
       "polls": "Umfragen",
-      "creatorStudio": "Creator Studio"
+      "creatorStudio": "Creator Studio",
+      "globalIntelligence": "Globale Intelligenz",
+      "zodisphere": "Die Zodisphäre",
+      "affiliates": "Affiliates"
     },
     "feedCard": {
       "like": "Gefällt mir",
@@ -1972,6 +2006,11 @@
       "send": "Senden",
       "noComments": "Noch keine Kommentare",
       "beFirst": "Sei die erste Person, die kommentiert!"
+    },
+    "earnBanner": {
+      "message": "Neu: Verdiene mit Align — erhalte 20% wiederkehrende Provisionen als Affiliate oder monetarisiere deine Inhalte mit dem Creator-Programm.",
+      "cta": "Mehr erfahren",
+      "dismiss": "Ausblenden"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Astrologie lernen",
       "description": "Strukturierte Kurse, um dein astrologisches Wissen zu vertiefen, von den Grundlagen für Anfänger bis hin zu fortgeschrittenen Techniken."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate-Login",
+      "getStarted": "Kostenlos starten"
+    },
+    "hero": {
+      "badge": "20% wiederkehrende Provision",
+      "titlePre": "Verdiene Geld mit",
+      "titleHighlight": "kosmischer Weisheit",
+      "subtitle": "Tritt dem Align-Affiliate-Programm bei und verdiene 20% wiederkehrende Provision auf jedes Abonnement, das du vermittelst. Deine Community bekommt Astrologie auf Profi-Niveau — du wirst jeden Monat bezahlt, den sie dabeibleibt.",
+      "applyNow": "Jetzt bewerben"
+    },
+    "how": {
+      "title": "So funktioniert es",
+      "step1Title": "Bewerben",
+      "step1Desc": "Fülle das Formular unten aus. Wir prüfen Bewerbungen innerhalb von 24-48 Stunden und benachrichtigen dich per E-Mail.",
+      "step2Title": "Teilen",
+      "step2Desc": "Erhalte deinen persönlichen Empfehlungslink. Teile ihn auf deinem Blog, YouTube, Social Media, in deinem Podcast oder Newsletter.",
+      "step3Title": "Verdienen",
+      "step3Desc": "Verdiene 20% jeder Abozahlung von Nutzern, die du vermittelt hast. Die Provisionen sind wiederkehrend — du verdienst, solange sie abonniert bleiben."
+    },
+    "commission": {
+      "title": "Provisionsstruktur",
+      "rateLabel": "Provisionssatz",
+      "rateSub": "Wiederkehrend",
+      "cookieLabel": "Cookie-Laufzeit",
+      "cookieValue": "30 Tage",
+      "cookieSub": "Zuordnungsfenster",
+      "payoutLabel": "Auszahlungsschwelle",
+      "payoutSub": "Mindestauszahlung",
+      "paymentLabel": "Zahlung",
+      "paymentValue": "Monatlich",
+      "paymentSub": "PayPal oder Banküberweisung",
+      "exampleTitle": "Beispielverdienst",
+      "exampleIntro": "Align Pro kostet $9/Monat. Deine 20% Provision =",
+      "examplePerUser": "$1.80/Monat pro Nutzer",
+      "exampleRefer": "Vermittle {{count}} Nutzer =",
+      "exampleAmount": "{{amount}}/Monat wiederkehrend"
+    },
+    "benefits": {
+      "title": "Das bekommst du als Affiliate",
+      "b1Title": "Persönlicher Empfehlungslink",
+      "b1Desc": "Dein eigener Link, der jeden Klick, jede Registrierung und jede Conversion mit 30-tägiger Cookie-Zuordnung erfasst.",
+      "b2Title": "Echtzeit-Dashboard",
+      "b2Desc": "Verfolge deine Klicks, Registrierungen, Conversions und Einnahmen in Echtzeit in deinem Affiliate-Dashboard.",
+      "b3Title": "20% wiederkehrende Provision",
+      "b3Desc": "Verdiene an jeder monatlichen Zahlung, nicht nur an der ersten. Dein Einkommen wächst, solange deine Empfehlungen abonniert bleiben.",
+      "b4Title": "Hohe Conversion-Rate",
+      "b4Desc": "Align konvertiert gut, weil es echten Mehrwert bietet: über 26 Deutungen, einen KI-Astrologen und eine kosmische Community.",
+      "b5Title": "Funktioniert im Web & mobil",
+      "b5Desc": "Dein Link funktioniert für die Website und die Google Play Store-App. Die Zuordnung gilt plattformübergreifend.",
+      "b6Title": "Persönlicher Support",
+      "b6Desc": "Hol dir Hilfe von unserem Affiliate-Team. Wir wollen, dass du Erfolg hast — denn wenn du verdienst, wachsen wir."
+    },
+    "perfectFor": {
+      "title": "Perfekt für",
+      "tag1": "Astrologie-Blogger",
+      "tag2": "YouTube-Creator",
+      "tag3": "TikTok-Astrologen",
+      "tag4": "Podcast-Hosts",
+      "tag5": "Newsletter-Autoren",
+      "tag6": "Instagram-Influencer",
+      "tag7": "Tarot-Leser",
+      "tag8": "Spirituelle Coaches",
+      "tag9": "App-Tester",
+      "tag10": "Astrologie-Lehrer"
+    },
+    "form": {
+      "title": "Bewirb dich für das Affiliate-Programm",
+      "reviewNote": "Wir prüfen Bewerbungen innerhalb von 24-48 Stunden.",
+      "nameLabel": "Vollständiger Name",
+      "namePlaceholder": "Dein Name",
+      "emailLabel": "E-Mail",
+      "websiteLabel": "Website / Blog",
+      "socialLabel": "Social-Media-Handle",
+      "promoLabel": "Wie wirst du Align bewerben?",
+      "promoPlaceholder": "Blogartikel, YouTube-Videos, Social Media, Newsletter...",
+      "submit": "Bewerbung absenden",
+      "submitting": "Wird gesendet...",
+      "disclaimer": "Mit deiner Bewerbung stimmst du unseren Affiliate-Bedingungen zu. Die Provision beträgt 20% wiederkehrend auf alle Abozahlungen vermittelter Nutzer.",
+      "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "success": {
+      "title": "Bewerbung eingereicht!",
+      "codeIs": "Dein Affiliate-Code lautet:",
+      "reviewEmail": "Wir prüfen deine Bewerbung und schreiben dir an {{email}}, sobald sie angenommen ist. Dein Empfehlungslink wird sein:"
+    },
+    "footer": {
+      "rights": "Alle Rechte vorbehalten.",
+      "home": "Startseite",
+      "pricing": "Preise",
+      "terms": "AGB",
+      "privacy": "Datenschutz"
     }
   }
 }

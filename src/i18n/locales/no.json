@@ -243,7 +243,8 @@
       "monthsLeft": "~{{count}} måneder igjen",
       "yearsLeft": "{{count}}+ år",
       "tapToRead": "Trykk for å lese hele innsikten",
-      "failedToLoadStorylines": "Kunne ikke laste historielinjer"
+      "failedToLoadStorylines": "Kunne ikke laste historielinjer",
+      "hiddenLayer": "Hva dette egentlig berører"
     },
     "tarotPage": {
       "title": "Tarot-tolkning",
@@ -1608,7 +1609,8 @@
         "Aura Speil ubegrensede skanninger",
         "Kosmisk Journal ubegrensede oppføringer",
         "Sjelgaver & Sjelminne tilgang"
-      ]
+      ],
+      "price": "$4.99"
     }
   },
   "courses": {
@@ -1809,7 +1811,36 @@
     "shareReading": "Del en lesning",
     "shareReadingHint": "Legg ut horoskoptolkninger",
     "signInRequired": "Vennligst logg inn for å få tilgang til Creator Studio",
-    "loading": "Laster studio..."
+    "loading": "Laster studio...",
+    "applyIntro": "Bli Align Creator for å dele dine astrologiske innsikter, bygge en følgerskare og tjene penger på innholdet ditt.",
+    "reviewTitle": "Søknaden er under vurdering",
+    "reviewBody": "Takk for at du søkte til Creator-programmet. Mens Align vokser, vurderer vi søknader manuelt — fortsett å poste og bygge publikummet ditt mens du venter. Fremgangen din teller fortsatt nedenfor.",
+    "suspendedTitle": "Creator-tilgang suspendert",
+    "suspendedBody": "Creator-tilgangen din er for øyeblikket suspendert. Kontakt support hvis du mener dette er en feil.",
+    "rejectedTitle": "Søknaden ble ikke godkjent",
+    "rejectedBody": "Søknaden din ble ikke godkjent denne gangen. Fortsett å bygge publikummet ditt — milepælene nedenfor viser hva som styrker en fremtidig søknad.",
+    "applyQualify": "Søk nå — du kvalifiserer",
+    "applyEarly": "Be om tidlig tilgang",
+    "applyNoteQualify": "Du oppfyller hver milepæl nedenfor — søknader vurderes av teamet vårt.",
+    "applyNoteEarly": "Vi godkjenner grunnlegger-creators manuelt mens Align vokser. Nå milepælene nedenfor for å styrke søknaden din.",
+    "ladderEligible": "Creator-programmet — kvalifisert",
+    "ladderTitle": "Veien til Creator-programmet",
+    "ladderGoals": "{{met}}/{{total}} mål",
+    "ladderQualifyHint": "Du oppfyller alle kravene — søk nedenfor for å bli med i det monetariserte Creator-programmet.",
+    "ladderProgressHint": "Nå disse milepælene for å låse opp det monetariserte Creator-programmet. Fortsett å poste og engasjere deg.",
+    "overallProgress": "Samlet fremgang",
+    "topContent": "Toppinnhold etter visninger",
+    "reel": "Reel",
+    "video": "Video",
+    "untitledReel": "Reel uten tittel",
+    "videoPost": "Videoinnlegg",
+    "req": {
+      "followers": "Følgere",
+      "lifetimeViews": "Totale videovisninger",
+      "views30d": "Visninger siste 30 dager",
+      "videoCount": "Publiserte videoer",
+      "accountAgeDays": "Kontoens alder (dager)"
+    }
   },
   "qa": {
     "title": "Spørsmål og svar",
@@ -1955,7 +1986,10 @@
       "search": "Søk",
       "bookmarks": "Bokmerker",
       "polls": "Avstemninger",
-      "creatorStudio": "Skaperstudio"
+      "creatorStudio": "Skaperstudio",
+      "globalIntelligence": "Global intelligens",
+      "zodisphere": "Zodisfæren",
+      "affiliates": "Affiliates"
     },
     "feedCard": {
       "like": "Lik",
@@ -1972,6 +2006,11 @@
       "send": "Send",
       "noComments": "Ingen kommentarer ennå",
       "beFirst": "Bli den første til å kommentere!"
+    },
+    "earnBanner": {
+      "message": "Nytt: Tjen med Align — få 20% gjentakende provisjoner som affiliate, eller tjen penger på innholdet ditt med Creator-programmet.",
+      "cta": "Lær mer",
+      "dismiss": "Lukk"
     }
   },
   "common": {
@@ -2205,6 +2244,101 @@
     "courses": {
       "title": "Lær Astrologi",
       "description": "Strukturerte kurs for å utdype din astrologiske kunnskap, fra nybegynnergrunnlag til avanserte teknikker."
+    }
+  },
+  "affiliates": {
+    "nav": {
+      "login": "Affiliate-innlogging",
+      "getStarted": "Kom i gang gratis"
+    },
+    "hero": {
+      "badge": "20% gjentakende provisjon",
+      "titlePre": "Tjen penger på å dele",
+      "titleHighlight": "kosmisk visdom",
+      "subtitle": "Bli med i Aligns affiliate-program og tjen 20% gjentakende provisjon på hvert abonnement du verver. Publikummet ditt får astrologi i profesjonell klasse; du får betalt hver måned de blir værende.",
+      "applyNow": "Søk nå"
+    },
+    "how": {
+      "title": "Slik fungerer det",
+      "step1Title": "Søk",
+      "step1Desc": "Fyll ut skjemaet nedenfor. Vi vurderer søknader innen 24-48 timer og gir deg beskjed på e-post.",
+      "step2Title": "Del",
+      "step2Desc": "Få din unike vervelenke. Del den på bloggen din, YouTube, sosiale medier, podkast eller nyhetsbrev.",
+      "step3Title": "Tjen",
+      "step3Desc": "Tjen 20% av hver abonnementsbetaling fra brukere du verver. Provisjonene er gjentakende — du tjener så lenge de forblir abonnenter."
+    },
+    "commission": {
+      "title": "Provisjonsstruktur",
+      "rateLabel": "Provisjonssats",
+      "rateSub": "Gjentakende",
+      "cookieLabel": "Cookie-varighet",
+      "cookieValue": "30 dager",
+      "cookieSub": "Attribusjonsvindu",
+      "payoutLabel": "Utbetalingsgrense",
+      "payoutSub": "Minsteutbetaling",
+      "paymentLabel": "Betaling",
+      "paymentValue": "Månedlig",
+      "paymentSub": "PayPal eller bankoverføring",
+      "exampleTitle": "Eksempel på inntjening",
+      "exampleIntro": "Align Pro koster $9/måned. Din 20% provisjon =",
+      "examplePerUser": "$1.80/måned per bruker",
+      "exampleRefer": "Verv {{count}} brukere =",
+      "exampleAmount": "{{amount}}/måned gjentakende"
+    },
+    "benefits": {
+      "title": "Dette får du som affiliate",
+      "b1Title": "Unik vervelenke",
+      "b1Desc": "Din egen lenke som sporer hvert klikk, hver registrering og hver konvertering med 30 dagers cookie-attribusjon.",
+      "b2Title": "Sanntidsdashbord",
+      "b2Desc": "Følg klikkene, registreringene, konverteringene og inntektene dine i sanntid fra affiliate-dashbordet ditt.",
+      "b3Title": "20% gjentakende provisjon",
+      "b3Desc": "Tjen på hver månedlige betaling, ikke bare den første. Inntekten din vokser så lenge de du har vervet forblir abonnenter.",
+      "b4Title": "Høy konverteringsrate",
+      "b4Desc": "Align konverterer godt fordi appen gir ekte verdi: 26+ tolkninger, en AI-astrolog og et kosmisk fellesskap.",
+      "b5Title": "Fungerer på nett & mobil",
+      "b5Desc": "Lenken din fungerer både for nettsiden og appen i Google Play Store. Attribusjonen gjelder på tvers av plattformer.",
+      "b6Title": "Dedikert support",
+      "b6Desc": "Få hjelp fra affiliate-teamet vårt. Vi vil at du skal lykkes, for når du tjener, vokser vi."
+    },
+    "perfectFor": {
+      "title": "Perfekt for",
+      "tag1": "Astrologibloggere",
+      "tag2": "YouTube-skapere",
+      "tag3": "TikTok-astrologer",
+      "tag4": "Podkastverter",
+      "tag5": "Nyhetsbrevskribenter",
+      "tag6": "Instagram-influensere",
+      "tag7": "Tarotlesere",
+      "tag8": "Spirituelle coacher",
+      "tag9": "App-anmeldere",
+      "tag10": "Astrologilærere"
+    },
+    "form": {
+      "title": "Søk til affiliate-programmet",
+      "reviewNote": "Vi vurderer søknader innen 24-48 timer.",
+      "nameLabel": "Fullt navn",
+      "namePlaceholder": "Navnet ditt",
+      "emailLabel": "E-post",
+      "websiteLabel": "Nettside / blogg",
+      "socialLabel": "Sosiale medier-brukernavn",
+      "promoLabel": "Hvordan vil du promotere Align?",
+      "promoPlaceholder": "Blogginnlegg, YouTube-videoer, sosiale medier, nyhetsbrev...",
+      "submit": "Send søknad",
+      "submitting": "Sender...",
+      "disclaimer": "Ved å søke godtar du affiliate-vilkårene våre. Provisjonen er 20% gjentakende på alle abonnementsbetalinger fra vervede brukere.",
+      "errorGeneric": "Noe gikk galt. Prøv igjen."
+    },
+    "success": {
+      "title": "Søknad sendt!",
+      "codeIs": "Affiliate-koden din er:",
+      "reviewEmail": "Vi vurderer søknaden din og sender deg en e-post på {{email}} når den er godkjent. Vervelenken din blir:"
+    },
+    "footer": {
+      "rights": "Alle rettigheter forbeholdt.",
+      "home": "Hjem",
+      "pricing": "Priser",
+      "terms": "Vilkår",
+      "privacy": "Personvern"
     }
   }
 }
