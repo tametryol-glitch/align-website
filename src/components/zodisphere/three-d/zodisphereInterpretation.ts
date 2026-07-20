@@ -504,6 +504,22 @@ export interface LocationInterpretation {
   events: string[];
   weights: InterpretationWeights;
   narrative: string;
+  /** How close the driving line actually runs to the tapped point. Absent when
+   *  the point sits on the line (a true crossing / power spot). Present when the
+   *  reading is carried by the NEAREST line for a spot no line runs through. */
+  proximity?: { band: ProximityBand; distanceDeg: number; distanceKm: number };
+}
+
+/** How directly a planetary line touches a spot. 'on' = you're in the current
+ *  (a power spot). The rest describe places no line runs through — the nearest
+ *  line still tints them, more faintly the farther it is. */
+export type ProximityBand = 'on' | 'near' | 'ambient' | 'far';
+
+export function proximityBandFor(distanceDeg: number): ProximityBand {
+  if (distanceDeg <= 2) return 'on';     // within the tap orb — effectively on the line
+  if (distanceDeg <= 5) return 'near';   // ~<550 km — clearly in reach
+  if (distanceDeg <= 10) return 'ambient'; // ~<1100 km — a background colouring
+  return 'far';                          // open field — a distant, diffuse pull
 }
 
 export interface LocationBand { duadSign: string; compendiumSign: string; matrixSign: string; }
@@ -520,6 +536,10 @@ export interface InterpretOptions {
    *  past-life theme is active in this life (a karmic hotspot). */
   karmicHotspot?: boolean;
   weights?: InterpretationWeights;
+  /** Distance from the tapped point to the driving line. When the point isn't on
+   *  any line, the caller passes the NEAREST line + its distance so the reading
+   *  is framed as a softer, at-a-distance influence instead of a power spot. */
+  proximity?: { distanceDeg: number; distanceKm: number };
 }
 
 /**
@@ -595,16 +615,25 @@ export function interpretLocation(
   const repeatedRulers = Array.from(rulerCounts.entries()).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
 
   const karmicHotspot = !!opts.karmicHotspot;
+  // Proximity — is the point on the line, or is this the nearest line to a spot
+  // no line runs through? 'on' reads normally; the rest are softened, at-a-distance.
+  const band = opts.proximity ? proximityBandFor(opts.proximity.distanceDeg) : 'on';
+  const prox = opts.proximity
+    ? { band, distanceDeg: opts.proximity.distanceDeg, distanceKm: opts.proximity.distanceKm }
+    : undefined;
   // Concrete predicted events (present & progressed) — the full range, good & hard.
-  const events = mode === 'draconic' ? [] : (EVENTS[planet]?.[angle] || []);
+  // Off-line spots get fewer, gentler possibilities (the influence is diffuse).
+  const allEvents = mode === 'draconic' ? [] : (EVENTS[planet]?.[angle] || []);
+  const events = band === 'on' ? allEvents : allEvents.slice(0, band === 'near' ? 3 : 2);
   const narrative = mode === 'draconic'
-    ? composeDraconic({ planet, angle, soulSign: planetSign, domElement, domModality, karmicHotspot })
+    ? composeDraconic({ planet, angle, soulSign: planetSign, domElement, domModality, karmicHotspot, proximity: prox })
     : compose({
         planet, angle, natalSign, natalHouse, duadSign, duadHouse, compSign, compHouse,
         matrixSign, matrixHouse, relations, domElement, elemCounts, domModality,
         modeCounts, dominant, repeatedHouses, repeatedSigns, repeatedRulers, weights,
         timing: mode === 'progressed' || mode === 'transit',
         timingKind: mode === 'transit' ? 'transit' : 'progressed',
+        proximity: prox,
       });
 
   return {
@@ -616,7 +645,7 @@ export function interpretLocation(
     rulers: { conditions, dominant },
     patterns: { repeatedHouses, repeatedSigns, repeatedRulers },
     events,
-    weights, narrative,
+    weights, narrative, proximity: prox,
   };
 }
 
@@ -642,11 +671,27 @@ function compose(x: {
   weights: InterpretationWeights;
   timing?: boolean; // progressed/transit — frame it as active NOW
   timingKind?: 'progressed' | 'transit';
+  proximity?: { band: ProximityBand; distanceDeg: number; distanceKm: number };
 }): string {
   const P = x.planet;
   const arena = ANGLE_AREA[x.angle] || HOUSE_LIFE[x.natalHouse];
   const parts: string[] = [];
   const isTransit = x.timingKind === 'transit';
+  const band = x.proximity?.band ?? 'on';
+  const offLine = band !== 'on';
+  const km = x.proximity ? Math.round(x.proximity.distanceKm) : 0;
+
+  // 0a. Off-line framing — no line runs through here, so this is the NEAREST
+  //     current, read at its true (softer) strength. Honest, not hyped.
+  if (offLine) {
+    if (band === 'near') {
+      parts.push(`**No line runs right through here — but you're well within ${P}'s reach.** The nearest current shaping this place is your **${P} ${x.angle}** line, about **${km} km** off. You won't get the full, standing-in-the-current version below — you get a lighter, steadier dose of it. More mood than mandate, but unmistakably ${P}.`);
+    } else if (band === 'ambient') {
+      parts.push(`**No planetary line crosses here, so this isn't a power spot — but one current still tints the whole area.** The closest is your **${P} ${x.angle}** line, roughly **${km} km** away. Read what follows as the background hum of this place — present in the atmosphere, not in your face.`);
+    } else {
+      parts.push(`**You're in open field here — no line runs close.** Even so, the influence that reaches farthest into this spot is your **${P} ${x.angle}** line, about **${km} km** off. Its effect is faint and diffuse — a distant colouring rather than a force. Here's the gentlest read of what it still stirs.`);
+    }
+  }
 
   // 0. Timing intro (progressed/transit) — this is switching on right now.
   if (x.timing) {
@@ -727,6 +772,10 @@ function compose(x: {
     parts.push(isTransit
       ? `This is fast weather, not a season — it's live now and moves on within days or weeks. If there's something here to act on, act soon, because the window is open now.`
       : `This is timely, not permanent — the pull is strongest in this chapter and eases as your chart moves on. If a place like this is calling you now, that's not random. Go toward ${arena}, because it's ripe right now.`);
+  } else if (offLine) {
+    parts.push(band === 'far'
+      ? `Nothing here will grab you the way a line-crossing would — this is a quiet place on your map. But if you still feel a pull toward it, that faint thread toward ${arena} is what it is. Go for the life you'd build, not for a cosmic jolt that isn't waiting here.`
+      : `A place like this won't seize you the way standing on the line would — the volume is turned down. But if you're drawn here, this is the direction it keeps nudging you, gently: toward ${arena}. Enough to feel over time, not enough to knock you off your feet.`);
   } else {
     parts.push(
       `Come here, and life will keep nudging you toward ${arena} whether you feel ready or not — the beautiful parts and the hard parts together. ` +
@@ -743,9 +792,19 @@ function compose(x: {
 function composeDraconic(x: {
   planet: string; angle: Angle; soulSign: string;
   domElement: Element; domModality: Modality; karmicHotspot: boolean;
+  proximity?: { band: ProximityBand; distanceDeg: number; distanceKm: number };
 }): string {
   const P = x.planet;
   const parts: string[] = [];
+  const band = x.proximity?.band ?? 'on';
+  const km = x.proximity ? Math.round(x.proximity.distanceKm) : 0;
+
+  // 0. Off-line framing — the soul-line doesn't cross here; this is the nearest.
+  if (band !== 'on') {
+    parts.push(band === 'far'
+      ? `**Your soul-line doesn't cross this exact place — it runs about ${km} km off.** So this is a distant echo, not a doorway. Faint, but here's the thread that still reaches this far.`
+      : `**No soul-line runs right through here — the nearest is your ${P} ${x.angle}, about ${km} km away.** Close enough that a trace of it still colours this place, softly. Read what follows as a whisper, not a summons.`);
+  }
 
   // 1. The past-life scene (planet × angle), bold hook + detail.
   const scene = PAST_LIFE[P]?.[x.angle];

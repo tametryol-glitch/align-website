@@ -330,6 +330,24 @@ export default function Zodisphere3dPrototypePage() {
     }) || null,
     [lineHits],
   );
+  // Nearest planet line even when NONE runs within the tap orb. This is what lets
+  // spots no line crosses (e.g. Panama City) still get a reading — carried by the
+  // closest current, framed by distance as a softer, at-a-distance influence.
+  const nearestLine = useMemo(() => {
+    if (!tapPoint || !visibleLines.length) return null;
+    // Only real planet lines carry a reading — exclude horizontal grid rungs
+    // BEFORE probing so a grid full of rungs can't crowd out the planet line.
+    const planetLines = visibleLines.filter((l) => {
+      const s = l.style;
+      return s !== 'duad' && s !== 'compendium' && s !== 'gridline' && s !== 'matrix';
+    });
+    if (!planetLines.length) return null;
+    return probeAcgLines(tapPoint.lat, tapPoint.lng, planetLines, 180, 1)[0] || null;
+  }, [tapPoint, visibleLines]);
+  // The line that drives the reading: the one you tapped, else the nearest.
+  const effectiveLine = tappedLine || nearestLine;
+  // Is the reading being carried by a distant line (no line runs through here)?
+  const isOffLine = !tappedLine && !!nearestLine;
   // Grid band (used for the grid-mode band-only fallback readout).
   const gridBand = useMemo(
     () => (chartMode === 'grid' && grid && tapPoint) ? bandAtLatitude(tapPoint.lat, grid) : null,
@@ -343,17 +361,22 @@ export default function Zodisphere3dPrototypePage() {
     return near.some((h) => h.line.planet === tappedLine.line.planet);
   }, [chartMode, tappedLine, tapPoint, natalRefLines]);
   // The full location reading — Natal & Grid (present) or Draconic (past-life).
+  // Driven by the tapped line, or (for spots no line crosses) the nearest line
+  // with a proximity so the prose is framed as a softer, at-a-distance influence.
   const locInterp = useMemo(() => {
-    if (!tappedLine || !natalCtx || !tapPoint) return null;
-    return interpretLocation(natalCtx, tappedLine.line.planet, {
+    if (!effectiveLine || !natalCtx || !tapPoint) return null;
+    return interpretLocation(natalCtx, effectiveLine.line.planet, {
       band: (chartMode === 'grid' && gridBand)
         ? { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign }
         : undefined,
-      angle: tappedLine.line.angle,
+      angle: effectiveLine.line.angle,
       mode: chartMode === 'draconic' ? 'draconic' : chartMode === 'progressed' ? 'progressed' : chartMode === 'transit' ? 'transit' : 'present',
       karmicHotspot,
+      proximity: isOffLine
+        ? { distanceDeg: effectiveLine.distanceDeg, distanceKm: effectiveLine.distanceKm }
+        : undefined,
     });
-  }, [tappedLine, natalCtx, tapPoint, chartMode, gridBand, karmicHotspot]);
+  }, [effectiveLine, isOffLine, natalCtx, tapPoint, chartMode, gridBand, karmicHotspot]);
 
   // Load country polygons (offline reverse-geocode) + saved locations.
   useEffect(() => {
@@ -966,13 +989,18 @@ export default function Zodisphere3dPrototypePage() {
                         ? <>☀️ Right now · transiting {locInterp.planet} {locInterp.angle}</>
                         : <>🔷 {locInterp.planet} {locInterp.angle} · {locInterp.natalSign} in your {ordinalLabel(locInterp.natalHouse)} house</>}
                 </div>
+                {locInterp.proximity && (
+                  <div className="mb-1.5 text-[10px] uppercase tracking-wide text-white/45">
+                    Nearest influence · ~{Math.round(locInterp.proximity.distanceKm)} km away · no line runs through here
+                  </div>
+                )}
                 {locInterp.narrative.split('\n\n').map((para, i) => (
                   <p key={i} className="text-white/85 leading-relaxed mb-2"
                      dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>') }} />
                 ))}
                 {locInterp.mode !== 'draconic' && locInterp.events.length > 0 && (
                   <div className="mt-1 mb-2 rounded-lg bg-black/30 border border-white/10 px-2.5 py-2">
-                    <div className="text-[11px] font-semibold text-white/85 mb-1.5">{locInterp.mode === 'progressed' || locInterp.mode === 'transit' ? 'What could unfold now — the good and the hard' : 'What could unfold here — the good and the hard'}</div>
+                    <div className="text-[11px] font-semibold text-white/85 mb-1.5">{locInterp.proximity ? 'What this place could still stir — softer, and only if you’re drawn here' : locInterp.mode === 'progressed' || locInterp.mode === 'transit' ? 'What could unfold now — the good and the hard' : 'What could unfold here — the good and the hard'}</div>
                     <ul className="space-y-1">
                       {locInterp.events.map((e, i) => (
                         <li key={i} className="flex gap-1.5 text-[11px] text-white/80 leading-snug">
