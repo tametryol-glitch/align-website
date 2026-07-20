@@ -456,10 +456,12 @@ export default function Zodisphere3dPrototypePage() {
   // Open the Location Inspector at a point (used by taps and by search).
   const inspectAt = useCallback((lat: number, lng: number) => {
     setLineHits(probeAcgLines(lat, lng, visibleLines));
-    setLocReport(computeLocationReport(lat, lng, visibleLines));
+    // Pass natalCtx so the duad/compendium/matrix layers (via their houses) feed
+    // the category scores, not just the surface planet × angle.
+    setLocReport(computeLocationReport(lat, lng, visibleLines, natalCtx || undefined));
     setTapPoint({ lat, lng });
     setLineDetailOpen(true);
-  }, [visibleLines]);
+  }, [visibleLines, natalCtx]);
 
   // Tap-to-read: midpoints mode → nearby midpoint lines; lines mode → inspector.
   const handleTap = useCallback((lat: number, lng: number) => {

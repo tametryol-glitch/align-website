@@ -15,6 +15,8 @@
  */
 
 import { probeAcgLines, type AcgLine3D, type AcgProbeHit } from './AstrocartographyDataAdapter';
+import { getFullDuadCompendium, getHouseForSign, RULERS } from '@/lib/engines/duadCompendium';
+import { DEFAULT_WEIGHTS, type InterpretationWeights, type NatalContext } from './zodisphereInterpretation';
 
 export type Domain = 'Career' | 'Relationships' | 'Financial' | 'Home & Family' | 'Spiritual' | 'Visibility';
 export const DOMAINS: Domain[] = ['Career', 'Relationships', 'Financial', 'Home & Family', 'Spiritual', 'Visibility'];
@@ -31,6 +33,9 @@ const PLANET_AFFINITY: Record<string, { domains: Domain[]; valence: number }> = 
   Uranus: { domains: ['Career', 'Visibility'], valence: 0.2 },
   Neptune: { domains: ['Spiritual'], valence: 0.5 },
   Pluto: { domains: ['Career'], valence: -0.2 },
+  // Custom rulerships used by the duad engine (Vesta→Virgo, Juno→Libra).
+  Vesta: { domains: ['Career', 'Spiritual'], valence: 0.4 }, // service, health, devotion
+  Juno: { domains: ['Relationships'], valence: 0.7 },        // partnership, commitment
 };
 
 /** Angle → life-domains it governs (with weight). */
@@ -41,7 +46,34 @@ const ANGLE_DOMAINS: Record<string, Partial<Record<Domain, number>>> = {
   ASC: { Visibility: 0.7 },
 };
 
+/** House → life-domains it governs (with weight). This is the bridge that lets
+ *  the duad/compendium/matrix layers feed the category scores: each layer sign
+ *  resolves to a house, and the house says which life-area it colours. Angular
+ *  houses (1/4/7/10) carry their domain fully; succedent/cadent houses lighter. */
+const HOUSE_DOMAINS: Record<number, Partial<Record<Domain, number>>> = {
+  1: { Visibility: 0.8 },
+  2: { Financial: 1.0 },
+  3: { Career: 0.35 },                    // local mind / communication
+  4: { 'Home & Family': 1.0 },
+  5: { Relationships: 0.7 },              // romance / creativity
+  6: { Career: 0.6 },                     // daily work / health
+  7: { Relationships: 1.0 },
+  8: { Financial: 0.7, Spiritual: 0.3 },  // shared resources / transformation
+  9: { Spiritual: 1.0 },
+  10: { Career: 1.0, Visibility: 0.8 },
+  11: { Career: 0.4, Relationships: 0.4 }, // networks / community
+  12: { Spiritual: 0.8 },
+};
+
 const ORB_DEG = 8; // a line within this range is considered to influence the location
+
+// Emphasis applied to the layer ladder (duad/comp/matrix) when routing them into
+// the scores. The raw ladder weights (.15/.10/.05) are RELATIVE importances; on
+// their own they'd nudge a 3–99 bar by a fraction of a point. This lifts them to
+// a felt-but-subordinate level (a duad ≈ a couple points, a matrix ≈ under one),
+// so the deeper layers colour the categories without ever overpowering the
+// surface line (whose swing is ~40 points). Tune here to make layers louder/softer.
+const LAYER_EMPHASIS = 3;
 
 export interface LocationScore { domain: Domain; score: number; drivers: string[]; }
 export interface LocationReport {
@@ -52,8 +84,23 @@ export interface LocationReport {
   tone: 'ease' | 'mixed' | 'pressure';
 }
 
-/** Compute the interpretive location report from the visible lines. */
-export function computeLocationReport(lat: number, lng: number, lines: AcgLine3D[]): LocationReport {
+/**
+ * Compute the interpretive location report from the visible lines.
+ *
+ * When `natalCtx` is supplied, each nearby line also contributes its deeper
+ * layers — the planet's own duad / compendium / matrix — routed to a life-domain
+ * by the HOUSE each layer-sign falls in, weighted on the canonical ladder
+ * (duad .15 / comp .10 / matrix .05). Deeper layers are progressively subtler,
+ * so a matrix refines a bar but can never overpower the surface line. Without a
+ * natalCtx it falls back to the surface-only (planet × angle) scoring.
+ */
+export function computeLocationReport(
+  lat: number,
+  lng: number,
+  lines: AcgLine3D[],
+  natalCtx?: NatalContext,
+  weights: InterpretationWeights = DEFAULT_WEIGHTS,
+): LocationReport {
   const nearby = probeAcgLines(lat, lng, lines, ORB_DEG, 12);
   const raw = Object.fromEntries(DOMAINS.map((d) => [d, 0])) as Record<Domain, number>;
   const drivers = Object.fromEntries(DOMAINS.map((d) => [d, [] as string[]])) as Record<Domain, string[]>;
@@ -72,6 +119,29 @@ export function computeLocationReport(lat: number, lng: number, lines: AcgLine3D
       if (strength > 0.35) drivers[dom as Domain].push(`${h.line.planet} ${h.line.angle}`);
     }
     if (aff) for (const dom of aff.domains) raw[dom] += strength * 0.6 * aff.valence;
+
+    // Deeper layers: this planet's duad/compendium/matrix → house → domain.
+    if (natalCtx && strength > 0) {
+      const lon = natalCtx.bodies.get(h.line.planet);
+      if (lon != null && Number.isFinite(lon)) {
+        const f = getFullDuadCompendium(lon);
+        const stack: Array<[string, string, number]> = [
+          ['Duad', f.duadSign, weights.duad],
+          ['Compendium', f.compendiumSign, weights.compendium],
+          ['Matrix', f.matrixSign, weights.matrix],
+        ];
+        for (const [label, sign, w] of stack) {
+          const house = getHouseForSign(sign, natalCtx.ascSign);
+          const ruler = RULERS[sign];
+          const lv = ruler && PLANET_AFFINITY[ruler] ? PLANET_AFFINITY[ruler].valence : 0.3;
+          for (const [dom, hw] of Object.entries(HOUSE_DOMAINS[house] || {})) {
+            const add = strength * w * LAYER_EMPHASIS * (hw as number) * lv;
+            raw[dom as Domain] += add;
+            if (Math.abs(add) > 0.03) drivers[dom as Domain].push(`${label} ${sign} · ${house}h`);
+          }
+        }
+      }
+    }
   }
 
   const scores: LocationScore[] = DOMAINS.map((domain) => ({
