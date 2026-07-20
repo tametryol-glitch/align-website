@@ -67,13 +67,13 @@ const HOUSE_DOMAINS: Record<number, Partial<Record<Domain, number>>> = {
 
 const ORB_DEG = 8; // a line within this range is considered to influence the location
 
-// Emphasis applied to the layer ladder (duad/comp/matrix) when routing them into
-// the scores. The raw ladder weights (.15/.10/.05) are RELATIVE importances; on
-// their own they'd nudge a 3–99 bar by a fraction of a point. This lifts them to
-// a felt-but-subordinate level (a duad ≈ a couple points, a matrix ≈ under one),
-// so the deeper layers colour the categories without ever overpowering the
-// surface line (whose swing is ~40 points). Tune here to make layers louder/softer.
-const LAYER_EMPHASIS = 3;
+// Emphasis applied to the house-layer ladder (Placement/duad/comp/matrix) when
+// routing them into the scores. The raw ladder weights (.70/.15/.10/.05) are
+// RELATIVE importances; on their own they'd nudge a 3–99 bar by a fraction of a
+// point. This lifts them to a clearly-felt level — the Placement house moves a
+// bar ~10–18 pts per strong nearby line, the duad a few, the matrix under one —
+// so the deeper structure visibly shapes the categories. Tune to taste.
+const LAYER_EMPHASIS = 1.5;
 
 export interface LocationScore { domain: Domain; score: number; drivers: string[]; }
 export interface LocationReport {
@@ -120,24 +120,35 @@ export function computeLocationReport(
     }
     if (aff) for (const dom of aff.domains) raw[dom] += strength * 0.6 * aff.valence;
 
-    // Deeper layers: this planet's duad/compendium/matrix → house → domain.
+    // House layers: route this planet's placement + duad/compendium/matrix into
+    // the categories by the HOUSE each sign falls in. The Placement layer (the
+    // planet's own natal-sign house) is the strong, CONSISTENT signal — every
+    // nearby planet has one, so every tap moves the bars its houses point to; the
+    // duad/comp/matrix then refine on the canonical ladder (.15/.10/.05). This is
+    // the "Planet+House 45 / Sign 25 / Duad 15 / Comp 10 / Matrix 5" spec, routed
+    // to the score bars. Valence: the planet's own for Placement, each sign's
+    // ruler for the deeper layers.
     if (natalCtx && strength > 0) {
       const lon = natalCtx.bodies.get(h.line.planet);
       if (lon != null && Number.isFinite(lon)) {
         const f = getFullDuadCompendium(lon);
-        const stack: Array<[string, string, number]> = [
-          ['Duad', f.duadSign, weights.duad],
-          ['Compendium', f.compendiumSign, weights.compendium],
-          ['Matrix', f.matrixSign, weights.matrix],
+        const rulerVal = (sign: string) => {
+          const r = RULERS[sign];
+          return r && PLANET_AFFINITY[r] ? PLANET_AFFINITY[r].valence : 0.3;
+        };
+        // [label, sign, ladder-weight, valence]
+        const stack: Array<[string, string, number, number]> = [
+          ['Placement', f.sign, weights.planetHouse + weights.natalSign, valence],
+          ['Duad', f.duadSign, weights.duad, rulerVal(f.duadSign)],
+          ['Compendium', f.compendiumSign, weights.compendium, rulerVal(f.compendiumSign)],
+          ['Matrix', f.matrixSign, weights.matrix, rulerVal(f.matrixSign)],
         ];
-        for (const [label, sign, w] of stack) {
+        for (const [label, sign, w, lv] of stack) {
           const house = getHouseForSign(sign, natalCtx.ascSign);
-          const ruler = RULERS[sign];
-          const lv = ruler && PLANET_AFFINITY[ruler] ? PLANET_AFFINITY[ruler].valence : 0.3;
           for (const [dom, hw] of Object.entries(HOUSE_DOMAINS[house] || {})) {
             const add = strength * w * LAYER_EMPHASIS * (hw as number) * lv;
             raw[dom as Domain] += add;
-            if (Math.abs(add) > 0.03) drivers[dom as Domain].push(`${label} ${sign} · ${house}h`);
+            if (Math.abs(add) > 0.08) drivers[dom as Domain].push(`${label} ${sign} · ${house}h`);
           }
         }
       }
