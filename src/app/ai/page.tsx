@@ -5,6 +5,7 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { buildChartContext, buildSuggestedQuestions, type ChartContext } from '@/lib/aiChartContext';
+import { buildLiveAstrologyContext, ENGINE_CAPABILITIES } from '@/lib/aiAstrologyEngines';
 import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Send, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, Settings, X, Play, RotateCcw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -38,8 +39,16 @@ function genMsgId() {
   return `msg_${Date.now()}_${++msgIdCounter}`;
 }
 
-/** Build a chart_data_text system prompt from whatever chart data we have */
-function buildChartDataText(profile: any, chartData: any, houseSystem?: string): string {
+/** Build a chart_data_text system prompt from whatever chart data we have.
+ *  `liveContext` carries whatever the engine router calculated for THIS question
+ *  (progressions, transits, returns, time lords…) — see lib/aiAstrologyEngines.ts. */
+function buildChartDataText(
+  profile: any,
+  chartData: any,
+  houseSystem?: string,
+  liveContext = '',
+  liveLabels: string[] = [],
+): string {
   const name = profile?.display_name || 'User';
   const parts: string[] = [];
 
@@ -72,7 +81,41 @@ function buildChartDataText(profile: any, chartData: any, houseSystem?: string):
   parts.push(`- Use ${name}'s name naturally.`);
   parts.push(`- Reference ${name}'s actual chart data provided below. Never generic astrology.`);
   parts.push('- Be specific: exact planet positions, signs, houses, aspects, and dates.');
-  parts.push('- If you don\'t have enough data, say so honestly.');
+  parts.push('');
+
+  // ── Calculation capability + platform integrity ──
+  parts.push('YOUR CALCULATION ENGINES:');
+  parts.push(
+    'You are wired directly into Align\'s calculation engines. Every question is routed ' +
+    'through them before it reaches you, and the results are pasted into the sections below. ' +
+    `Engines available: ${ENGINE_CAPABILITIES.join(', ')}.`
+  );
+  parts.push('');
+  parts.push('DATA PRIORITY RULE (CRITICAL):');
+  parts.push('- If a "=== SECTION ===" below holds the data, YOU HAVE IT. Read it and answer. Never claim otherwise.');
+  parts.push(
+    '- Never open with a disclaimer about what you lack. Never say you "don\'t have the chart loaded", ' +
+    '"would need to calculate", or offer estimates when real numbers are below.'
+  );
+  parts.push(
+    '- If a calculation genuinely is not in this prompt, say in one short line which one you are pulling ' +
+    '(e.g. "Pulling your lunar return — ask again and I\'ll have it") and answer the rest from what you do have. ' +
+    'The next message will include it.'
+  );
+  parts.push('- Never estimate or approximate a position you can state exactly from the data below.');
+  parts.push('');
+  parts.push('PLATFORM INTEGRITY (ABSOLUTE — NO EXCEPTIONS):');
+  parts.push(
+    '- NEVER refer the user to an outside astrology website, app, calculator, ephemeris, or service. ' +
+    'Do not name them, do not link them, do not suggest "running your chart elsewhere and bringing it back". ' +
+    'Align calculates everything itself with Swiss Ephemeris.'
+  );
+  parts.push(
+    '- When something needs another chart or a dedicated screen, point INSIDE Align: Astrocartography for ' +
+    'relocation and where-to-live questions, Compatibility/Synastry or Fragments for another person\'s chart, ' +
+    'Transits, Progressed, Solar Return, Lunar Return, Human Design, Starseed, Firdaria, and Zodiacal ' +
+    'Releasing for their own readings.'
+  );
   parts.push('');
 
   if (profile?.birth_date) {
@@ -124,6 +167,16 @@ function buildChartDataText(profile: any, chartData: any, houseSystem?: string):
     }
   }
 
+  if (liveContext) {
+    parts.push(
+      `=== LIVE CALCULATIONS FOR THIS QUESTION ===\nCalculated just now for ${name}: ` +
+      `${liveLabels.join(', ')}. These are real Swiss Ephemeris results — quote them exactly.`
+    );
+    parts.push('');
+    parts.push(liveContext);
+    parts.push('');
+  }
+
   return parts.join('\n');
 }
 
@@ -138,6 +191,8 @@ export default function AIAstrologerPage() {
   const [chartData, setChartData] = useState<any>(null);
   const [chartLoading, setChartLoading] = useState(false);
   const [chartCtx, setChartCtx] = useState<ChartContext | null>(null);
+  const [calculating, setCalculating] = useState(false);
+  const [engineLabels, setEngineLabels] = useState<string[]>([]);
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(FALLBACK_PROMPTS);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -291,11 +346,30 @@ export default function AIAstrologerPage() {
         content: m.content,
       }));
 
+      // Route the question through the app's calculation engines so the AI
+      // answers progression/return/time-lord questions with real numbers
+      // instead of admitting it only has the natal chart.
+      setCalculating(true);
+      let live = { text: '', labels: [] as string[] };
+      try {
+        live = await buildLiveAstrologyContext({
+          question: text,
+          history: messages.filter((m) => m.role === 'user').map((m) => m.content),
+          profile,
+          natalChart: chartData,
+        });
+        setEngineLabels(live.labels);
+      } catch (engineErr) {
+        console.warn('[AIAstrologer] Engine context failed:', engineErr);
+      } finally {
+        setCalculating(false);
+      }
+
       let fullText = '';
 
       await api.streamAIInterpretation(
         {
-          chart_data_text: buildChartDataText(profile, chartData, houseSystem),
+          chart_data_text: buildChartDataText(profile, chartData, houseSystem, live.text, live.labels),
           messages: apiMessages,
           type: 'astrologer_chat',
           chart_context: true,
@@ -391,6 +465,7 @@ export default function AIAstrologerPage() {
                 setMessages([]);
                 setInput('');
                 setError('');
+                setEngineLabels([]);
                 if (isSpeaking) {
                   voiceService.stopPlayback();
                   setIsSpeaking(false);
@@ -439,11 +514,20 @@ export default function AIAstrologerPage() {
       </div>
 
       {/* Chart context indicator */}
-      {chartCtx?.loaded && (
+      {calculating ? (
         <div className="flex items-center justify-center mb-2 flex-shrink-0">
           <span className="inline-flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1 text-xs text-text-muted">
+            <div className="w-3 h-3 border-2 border-accent-primary/40 border-t-accent-primary rounded-full animate-spin" />
+            Running your calculations...
+          </span>
+        </div>
+      ) : chartCtx?.loaded && (
+        <div className="flex items-center justify-center mb-2 flex-shrink-0">
+          <span className="inline-flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1 text-xs text-text-muted text-center">
             <span role="img" aria-label="planet">&#x1FA90;</span>
-            Your chart is loaded
+            {engineLabels.length > 0
+              ? `Chart loaded · ${engineLabels.join(' · ')}`
+              : 'Your chart is loaded'}
           </span>
         </div>
       )}
