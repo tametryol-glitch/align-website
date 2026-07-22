@@ -109,6 +109,24 @@ export interface ReelComment {
   created_at: string;
 }
 
+export interface CreateReelInput {
+  video_url: string;
+  thumbnail_url?: string;
+  caption: string;
+  duration_seconds: number;
+  category: ReelCategory;
+  tags: string[];
+  visibility: ReelVisibility;
+  astrology_metadata?: AstrologyMetadata | null;
+  topic_metadata?: Record<string, any> | null;
+}
+
+export interface CreateReelResult {
+  success: boolean;
+  reel?: Reel;
+  error?: string;
+}
+
 export type ReelReportReason =
   | 'spam'
   | 'harassment'
@@ -647,5 +665,172 @@ export async function reportReel(
     return !error;
   } catch {
     return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Create
+// ═══════════════════════════════════════════════════════════════════
+
+/** Maximum video file size: 100 MB — matches the mobile app's cap. */
+export const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
+
+const ALLOWED_VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v', 'avi'];
+
+/**
+ * Upload a reel video to Supabase storage (shares the post-media bucket with
+ * the mobile app, and the same `reels/{userId}/` prefix).
+ *
+ * The browser streams the File directly — no base64 round-trip.
+ */
+export async function uploadReelVideo(
+  file: File,
+): Promise<{ url?: string; error?: string }> {
+  const userId = currentUserId();
+  if (!userId) return { error: 'Not signed in' };
+
+  if (file.size > MAX_VIDEO_SIZE) {
+    return { error: 'Video is too large. Maximum size is 100 MB.' };
+  }
+
+  const rawExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+  const ext = ALLOWED_VIDEO_EXT.includes(rawExt) ? rawExt : 'mp4';
+  const path = `reels/${userId}/${Date.now()}.${ext}`;
+
+  try {
+    const supabase = createClient();
+
+    const { error } = await supabase.storage
+      .from('post-media')
+      .upload(path, file, {
+        contentType: file.type || `video/${ext === 'mov' ? 'quicktime' : ext}`,
+        upsert: false,
+      });
+
+    if (error) return { error: error.message };
+
+    const { data } = supabase.storage.from('post-media').getPublicUrl(path);
+    if (!data?.publicUrl) return { error: 'Could not resolve the uploaded video URL.' };
+
+    return { url: data.publicUrl };
+  } catch (err: any) {
+    return { error: err?.message || 'Upload failed' };
+  }
+}
+
+/**
+ * Count how many reels the current user has posted this calendar month.
+ * Used to apply the same free-tier cap the mobile app enforces.
+ */
+export async function getMonthlyReelCount(): Promise<number> {
+  const userId = currentUserId();
+  if (!userId) return 0;
+
+  try {
+    const supabase = createClient();
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    const { count, error } = await supabase
+      .from('reels')
+      .select('id', { count: 'exact', head: true })
+      .eq('creator_id', userId)
+      .gte('created_at', startOfMonth);
+
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Is the signed-in user on a paid plan? Free plans get a monthly reel cap. */
+export async function isPaidSubscriber(): Promise<boolean> {
+  const userId = currentUserId();
+  if (!userId) return false;
+
+  try {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('id', userId)
+      .single();
+
+    const tier = (data?.subscription_tier || '').toLowerCase();
+    return tier !== '' && tier !== 'free';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Create a new reel.
+ */
+export async function createReel(input: CreateReelInput): Promise<CreateReelResult> {
+  const userId = currentUserId();
+  if (!userId) return { success: false, error: 'Not signed in' };
+
+  try {
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('reels')
+      .insert({
+        creator_id: userId,
+        video_url: input.video_url,
+        thumbnail_url: input.thumbnail_url || null,
+        caption: input.caption || '',
+        duration_seconds: input.duration_seconds || 0,
+        category: input.category || 'other',
+        tags: input.tags || [],
+        visibility: input.visibility || 'public',
+        astrology_metadata: input.astrology_metadata || null,
+        topic_metadata: input.topic_metadata || null,
+        status: 'active',
+      })
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name, avatar_url, username')
+      .eq('id', userId)
+      .single();
+
+    return {
+      success: true,
+      reel: {
+        id: data.id,
+        creator_id: data.creator_id,
+        creator_name: profile?.display_name || 'User',
+        creator_avatar: profile?.avatar_url || undefined,
+        creator_username: profile?.username || undefined,
+        video_url: data.video_url,
+        thumbnail_url: data.thumbnail_url,
+        caption: data.caption,
+        duration_seconds: data.duration_seconds,
+        category: data.category,
+        tags: data.tags || [],
+        visibility: data.visibility,
+        status: data.status,
+        likes_count: 0,
+        comments_count: 0,
+        saves_count: 0,
+        shares_count: 0,
+        views_count: 0,
+        is_liked: false,
+        is_saved: false,
+        is_following_creator: false,
+        astrology_metadata: data.astrology_metadata,
+        topic_metadata: data.topic_metadata,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      },
+    };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Could not publish reel.' };
   }
 }

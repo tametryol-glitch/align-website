@@ -36,6 +36,7 @@ import {
   MoreHorizontal,
   Flag,
   Trash2,
+  Plus,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -919,11 +920,18 @@ export default function ReelsPage() {
         {selectedCategory && (
           <button
             onClick={() => setSelectedCategory(undefined)}
-            className="mt-2 px-6 py-2.5 bg-[#9B6FF6] text-white text-sm font-semibold rounded-full"
+            className="mt-2 px-6 py-2.5 bg-white/10 text-white text-sm font-semibold rounded-full"
           >
             View All Reels
           </button>
         )}
+        {/* An empty feed shouldn't be a dead end — offer to make the first one. */}
+        <Link
+          href="/reels/create"
+          className="mt-2 flex items-center gap-2 px-6 py-2.5 bg-[#9B6FF6] text-white text-sm font-semibold rounded-full"
+        >
+          <Plus className="w-4 h-4" /> Create a Reel
+        </Link>
       </div>
     );
   }
@@ -935,8 +943,17 @@ export default function ReelsPage() {
 
       {/* Main reels column */}
       <div className="relative w-full max-w-[480px] h-full">
+        {/* Create — the only entry point into the reel composer on web */}
+        <Link
+          href="/reels/create"
+          aria-label="Create a reel"
+          className="absolute top-3 right-3 z-40 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#9B6FF6] text-white text-xs font-bold shadow-lg hover:bg-[#8A5EE8] transition"
+        >
+          <Plus className="w-4 h-4" /> Create
+        </Link>
+
         {/* Category pills - top overlay */}
-        <div className="absolute top-0 left-0 right-0 z-30 pt-3 pb-2 px-3 bg-gradient-to-b from-black/60 to-transparent">
+        <div className="absolute top-0 left-0 right-0 z-30 pt-3 pb-2 pl-3 pr-24 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {allCategories.map((cat) => (
               <button

@@ -12,8 +12,10 @@ import {
 } from '@/lib/feedService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
-import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp } from 'lucide-react';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { useTranslation } from 'react-i18next';
 import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
 
@@ -143,6 +145,7 @@ function CreatePostModal({
   userName,
   userAvatar,
   initialContent = '',
+  initialVideoUrl = '',
   onClose,
   onCreated,
 }: {
@@ -150,16 +153,21 @@ function CreatePostModal({
   userName: string;
   userAvatar?: string | null;
   initialContent?: string;
+  /** An already-hosted video (a render returned by the editor). */
+  initialVideoUrl?: string;
   onClose: () => void;
   onCreated: (post: any) => void;
 }) {
   const { t } = useTranslation();
+  const router = useRouter();
   const [content, setContent] = useState(initialContent);
   const [visibility, setVisibility] = useState<'public' | 'friends'>('public');
   const [selectedPreset, setSelectedPreset] = useState('default');
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState('');
-  const [postMode, setPostMode] = useState<'text' | 'photo' | 'video' | 'poll'>('text');
+  const [postMode, setPostMode] = useState<'text' | 'photo' | 'video' | 'poll'>(
+    initialVideoUrl ? 'video' : 'text',
+  );
 
   // Image state
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -168,7 +176,11 @@ function CreatePostModal({
 
   // Video state
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(initialVideoUrl || null);
+  // Set when the clip is already hosted (an editor render) — posting then
+  // reuses that URL instead of uploading the file again.
+  const [hostedVideoUrl, setHostedVideoUrl] = useState<string | null>(initialVideoUrl || null);
+  const [openingEditor, setOpeningEditor] = useState(false);
 
   // Poll state
   const [pollQuestion, setPollQuestion] = useState('');
@@ -204,8 +216,10 @@ function CreatePostModal({
 
   function clearVideo() {
     setVideoFile(null);
-    if (videoPreview) URL.revokeObjectURL(videoPreview);
+    // Only object URLs need revoking; a hosted render is a plain https URL.
+    if (videoPreview?.startsWith('blob:')) URL.revokeObjectURL(videoPreview);
     setVideoPreview(null);
+    setHostedVideoUrl(null);
   }
 
   function removeVideo() {
@@ -213,17 +227,49 @@ function CreatePostModal({
     setPostMode('text');
   }
 
-  function handleVideoSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const acceptVideoClip = useCallback((file: File) => {
     if (file.size > 200 * 1024 * 1024) {
       setError('Video must be under 200 MB');
       return;
     }
+    setVideoPreview((old) => {
+      if (old?.startsWith('blob:')) URL.revokeObjectURL(old);
+      return URL.createObjectURL(file);
+    });
     setVideoFile(file);
-    setVideoPreview(URL.createObjectURL(file));
+    setHostedVideoUrl(null);
     setPostMode('video');
+    setError('');
     clearImage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const {
+    canRecord, recording, elapsed, error: recorderError,
+    liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds,
+  } = useVideoRecorder({ maxSeconds: 60, onClip: acceptVideoClip });
+
+  function handleVideoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    acceptVideoClip(file);
+  }
+
+  /**
+   * Hand the clip to the browser editor. It reads ?url=, so the file has to be
+   * hosted first; the editor posts the finished render back to /feed.
+   */
+  async function handleEditFirst() {
+    if (!videoFile || openingEditor) return;
+    setOpeningEditor(true);
+    setError('');
+    try {
+      const url = await uploadPostMedia(userId, videoFile);
+      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=feed`);
+    } catch (err: any) {
+      setError(err?.message || 'Could not open the editor. Try again.');
+      setOpeningEditor(false);
+    }
   }
 
   function addPollOption() {
@@ -243,7 +289,7 @@ function CreatePostModal({
         setError('Poll needs a question and at least 2 options');
         return;
       }
-    } else if (!content.trim() && !imageFile && !videoFile) {
+    } else if (!content.trim() && !imageFile && !videoFile && !hostedVideoUrl) {
       return;
     }
 
@@ -292,12 +338,15 @@ function CreatePostModal({
         if (imageFile) {
           imageUrl = await uploadPostMedia(userId, imageFile);
         }
-        if (videoFile) {
+        if (hostedVideoUrl) {
+          // Already uploaded by the editor — don't send it up a second time.
+          videoUrl = hostedVideoUrl;
+        } else if (videoFile) {
           videoUrl = await uploadPostMedia(userId, videoFile);
         }
         setUploading(false);
 
-        const postType = videoFile ? 'video' : imageFile ? 'photo' : 'text';
+        const postType = videoUrl ? 'video' : imageFile ? 'photo' : 'text';
         const data = await createPost({
           userId,
           type: postType,
@@ -441,22 +490,72 @@ function CreatePostModal({
                   >
                     <X className="w-4 h-4" />
                   </button>
+                  {hostedVideoUrl ? (
+                    <span className="absolute bottom-2 left-2 px-2 py-1 rounded bg-black/70 text-white text-[11px] font-semibold">
+                      ✨ Edited
+                    </span>
+                  ) : (
+                    /* Optional hop into the browser editor — posting stays the
+                       fast default. */
+                    <button
+                      onClick={handleEditFirst}
+                      disabled={openingEditor}
+                      className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-accent-primary text-white text-[11px] font-semibold disabled:opacity-60"
+                    >
+                      {openingEditor
+                        ? (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> Opening…</>)
+                        : (<><Scissors className="w-3.5 h-3.5" /> Edit first</>)}
+                    </button>
+                  )}
                 </div>
               )}
 
-              {/* Video upload button (for video mode) */}
-              {!videoPreview && postMode === 'video' && (
-                <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
-                  <Video className="w-8 h-8 text-text-muted" />
-                  <span className="text-sm text-text-muted">{t('feed.composer.uploadVideo')}</span>
-                  <span className="text-xs text-text-muted">MP4, MOV, WebM up to 200 MB</span>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    className="hidden"
-                    onChange={handleVideoSelect}
-                  />
-                </label>
+              {/* Live camera while recording */}
+              {!videoPreview && recording && (
+                <div className="relative rounded-xl overflow-hidden border border-red-500/50 bg-black">
+                  <video ref={liveVideoRef} className="w-full max-h-[240px]" muted playsInline />
+                  <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-black/70">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-white text-[11px] font-semibold">{elapsed}s / {maxSeconds}s</span>
+                  </div>
+                  <button
+                    onClick={stopRecording}
+                    className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-bold"
+                  >
+                    <Square className="w-3.5 h-3.5" /> Stop
+                  </button>
+                </div>
+              )}
+
+              {/* Record / upload (for video mode) */}
+              {!videoPreview && !recording && postMode === 'video' && (
+                <div className="grid grid-cols-2 gap-3">
+                  {canRecord && (
+                    <button
+                      onClick={startRecording}
+                      className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl hover:border-accent-primary/50 transition-colors"
+                    >
+                      <Circle className="w-8 h-8 text-accent-primary" />
+                      <span className="text-sm text-text-muted">Record a video</span>
+                      <span className="text-xs text-text-muted">Up to 60 seconds</span>
+                    </button>
+                  )}
+                  <label className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors ${canRecord ? '' : 'col-span-2'}`}>
+                    <Video className="w-8 h-8 text-text-muted" />
+                    <span className="text-sm text-text-muted">{t('feed.composer.uploadVideo')}</span>
+                    <span className="text-xs text-text-muted">MP4, MOV, WebM up to 200 MB</span>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={handleVideoSelect}
+                    />
+                  </label>
+                </div>
+              )}
+
+              {recorderError && (
+                <p className="text-xs text-red-300">{recorderError}</p>
               )}
 
               {/* Attachment bar (for text mode) */}
@@ -648,6 +747,9 @@ export default function FeedPage() {
   const [hasMore, setHasMore] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [prefillContent, setPrefillContent] = useState('');
+  // A finished render handed back by the video editor.
+  const [prefillVideoUrl, setPrefillVideoUrl] = useState('');
+  const editedVideoHandledRef = useRef(false);
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
   // Comment to scroll to / highlight when the sheet opens via a notification deep-link
   const [highlightCommentId, setHighlightCommentId] = useState<string | null>(null);
@@ -684,6 +786,20 @@ export default function FeedPage() {
   }, [userId]);
 
   useEffect(() => { loadFeed(); }, [loadFeed]);
+
+  // Returning from the video editor: /feed?editedVideoUrl=<url> opens the
+  // composer with the finished render already attached. Same window.location
+  // approach as the deep-link effect below — no Suspense boundary needed.
+  useEffect(() => {
+    if (editedVideoHandledRef.current) return;
+    const url = new URLSearchParams(window.location.search).get('editedVideoUrl');
+    if (!url) return;
+    editedVideoHandledRef.current = true;
+    setPrefillVideoUrl(url);
+    setShowCreate(true);
+    // Drop the param so a refresh doesn't re-attach the same clip.
+    window.history.replaceState({}, '', '/feed');
+  }, []);
 
   // Notification deep-link: /feed?postId=<id>[&commentId=<id>] scrolls to the
   // post and, for comment notifications, opens its comment sheet on the exact
@@ -1030,7 +1146,8 @@ export default function FeedPage() {
           userName={userName}
           userAvatar={userAvatar}
           initialContent={prefillContent}
-          onClose={() => { setShowCreate(false); setPrefillContent(''); }}
+          initialVideoUrl={prefillVideoUrl}
+          onClose={() => { setShowCreate(false); setPrefillContent(''); setPrefillVideoUrl(''); }}
           onCreated={handlePostCreated}
         />
       )}

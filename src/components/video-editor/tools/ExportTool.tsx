@@ -6,9 +6,10 @@
  */
 
 import { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { createClient } from '@/lib/supabase';
-import { Download, Upload, Loader2, AlertCircle, Check } from 'lucide-react';
+import { Download, Upload, Loader2, AlertCircle, Check, Send } from 'lucide-react';
 
 export function ExportTool() {
   const exportState = useVideoEditorStore((s) => s.exportState);
@@ -20,7 +21,9 @@ export function ExportTool() {
   const setExportedBlobUrl = useVideoEditorStore((s) => s.setExportedBlobUrl);
   const setExportError = useVideoEditorStore((s) => s.setExportError);
 
+  const router = useRouter();
   const [uploading, setUploading] = useState(false);
+  const [postingToFeed, setPostingToFeed] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -60,18 +63,17 @@ export function ExportTool() {
     document.body.removeChild(a);
   }, [exportedBlobUrl]);
 
-  const handleUpload = useCallback(async () => {
-    if (!exportedBlobUrl) return;
-    setUploading(true);
-    setUploadError(null);
+  /** Upload the export and return its public URL, or null on failure. */
+  const uploadExport = useCallback(async (): Promise<string | null> => {
+    if (!exportedBlobUrl) return null;
+    if (uploadedUrl) return uploadedUrl;
 
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setUploadError('Not signed in. Please sign in to upload.');
-        setUploading(false);
-        return;
+        return null;
       }
 
       // Fetch the blob from the blob URL
@@ -87,19 +89,34 @@ export function ExportTool() {
       if (error) {
         console.error('[Export] Upload error:', error.message);
         setUploadError(error.message);
-        setUploading(false);
-        return;
+        return null;
       }
 
       const { data: urlData } = supabase.storage.from('post-media').getPublicUrl(path);
       setUploadedUrl(urlData.publicUrl);
-      setUploading(false);
+      return urlData.publicUrl;
     } catch (err: any) {
       console.error('[Export] Upload exception:', err);
       setUploadError(err?.message || 'Upload failed');
-      setUploading(false);
+      return null;
     }
-  }, [exportedBlobUrl]);
+  }, [exportedBlobUrl, uploadedUrl]);
+
+  const handleUpload = useCallback(async () => {
+    setUploading(true);
+    setUploadError(null);
+    await uploadExport();
+    setUploading(false);
+  }, [uploadExport]);
+
+  /** Upload (if needed) and hand the render to the cosmic feed composer. */
+  const handlePostToFeed = useCallback(async () => {
+    setPostingToFeed(true);
+    setUploadError(null);
+    const url = await uploadExport();
+    if (!url) { setPostingToFeed(false); return; }
+    router.push(`/feed?editedVideoUrl=${encodeURIComponent(url)}`);
+  }, [uploadExport, router]);
 
   return (
     <div className="space-y-4">
@@ -171,6 +188,20 @@ export function ExportTool() {
             />
           </div>
 
+          {/* Primary: send the render to the composer so the editor isn't a
+              dead end. Download / Save to Cloud stay available below. */}
+          <button
+            onClick={handlePostToFeed}
+            disabled={postingToFeed}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors disabled:opacity-50"
+          >
+            {postingToFeed ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Preparing...</>
+            ) : (
+              <><Send className="w-4 h-4" /> Post to Cosmic Feed</>
+            )}
+          </button>
+
           {/* Download + Upload buttons */}
           <div className="flex gap-2">
             <button
@@ -182,7 +213,7 @@ export function ExportTool() {
             </button>
             <button
               onClick={handleUpload}
-              disabled={uploading || !!uploadedUrl}
+              disabled={uploading || postingToFeed || !!uploadedUrl}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 text-text-secondary text-sm font-medium hover:bg-white/15 transition-colors disabled:opacity-50"
             >
               {uploading ? (
