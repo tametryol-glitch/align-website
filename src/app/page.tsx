@@ -52,6 +52,9 @@ export default function LandingPage() {
           <Link href="/compatibility" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
             Compatibility
           </Link>
+          <Link href="/soul-age" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
+            Soul Age
+          </Link>
           <Link href="/hidden-zodiac" className="text-sm text-text-secondary hover:text-text-primary transition-colors hidden sm:inline">
             Hidden Zodiac
           </Link>
@@ -128,6 +131,7 @@ export default function LandingPage() {
           />
           <FeatureCard
             glyph="∞"
+            href="/soul-age"
             title="Soul Age Calculator"
             description="How many lifetimes your soul has lived across the universe — and how many were on Earth. Free."
           />
@@ -423,12 +427,25 @@ export default function LandingPage() {
   );
 }
 
-function FeatureCard({ glyph, title, description }: { glyph: string; title: string; description: string }) {
-  return (
-    <div className="rounded-2xl p-6 border border-border-primary bg-bg-card hover:border-accent-primary/30 transition-colors">
+/**
+ * A feature tile. Pass `href` to make the whole card a link — cards without one
+ * stay plain <div>s, so existing tiles are unchanged.
+ */
+function FeatureCard({ glyph, title, description, href }: {
+  glyph: string;
+  title: string;
+  description: string;
+  href?: string;
+}) {
+  const className = 'block rounded-2xl p-6 border border-border-primary bg-bg-card hover:border-accent-primary/30 transition-colors';
+  const inner = (
+    <>
       <span className="text-3xl block mb-3">{glyph}</span>
       <h3 className="text-base font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-tertiary">{description}</p>
-    </div>
+    </>
   );
+  return href
+    ? <Link href={href} className={className}>{inner}</Link>
+    : <div className={className}>{inner}</div>;
 }
