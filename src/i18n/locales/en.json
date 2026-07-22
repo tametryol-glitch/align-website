@@ -2880,5 +2880,63 @@
       "modePublic": "Public within Align",
       "modePublicHint": "Any Align member can find you via your chosen place."
     }
+  },
+  "soulAge": {
+    "title": "Soul Age Calculator",
+    "subtitle": "Discover how many lifetimes your soul has experienced across the universe — and how many were lived on Earth.",
+    "free": "FREE",
+    "freeNote": "Unlimited charts. Never charged.",
+    "calculateMine": "Calculate My Soul Age",
+    "chooseSaved": "Choose a Saved Chart",
+    "calculateOther": "Calculate Another Person",
+    "calculate": "Calculate Soul Age",
+    "calculating": "Reading the Draconic chart…",
+    "back": "Back",
+    "noSavedCharts": "You have no saved charts yet.",
+    "chooseSavedHeading": "Choose a saved chart",
+    "otherHeading": "Calculate another person",
+    "birthTimeRequired": "An accurate birth time is required because the Soul Age Calculator uses the Draconic Ascendant, IC, MC and Whole Sign houses.",
+    "birthTimeUnknown": "birth time unknown",
+    "needBirthDetails": "Add your birth details in Settings first — the Soul Age Calculator needs them.",
+    "saveToChart": "Save to this chart",
+    "saving": "Saving…",
+    "savedOk": "Saved to this chart ✓",
+    "shareCard": "Share result card",
+    "shareNote": "Shares your Soul Ages and lifetime counts only — never your birth details.",
+    "oneOff": "This is a one-off calculation. Save this person as a chart first if you want to keep their Soul Age.",
+    "savedResults": "Your saved Soul Ages",
+    "savedResultsNote": "Ordered by universal lifetimes. Tap one to regenerate its full reading.",
+    "needsRefresh": "needs refresh",
+    "universalSuffix": "universal",
+    "earthSuffix": "Earth",
+    "hereSuffix": "here",
+    "disclaimer": "The Soul Age Calculator is an experimental metaphysical interpretation system. Its results are intended for spiritual reflection and are not scientifically verifiable measurements.",
+    "credit": "Soul Age Calculator methodology created by Astro for AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Total Universal Lifetimes",
+      "universalAge": "Universal Soul Age",
+      "earthLifetimes": "Previous Earth Lifetimes",
+      "earthAge": "Earth Soul Age",
+      "nonEarth": "Previous Non-Earth Lifetimes",
+      "earthPercent": "Earth Incarnation Percentage",
+      "anchoring": "Earth Anchoring Score",
+      "cycles": "Completed Universal Cycles",
+      "currentCycle": "Current Universal Cycle",
+      "through": "{{pct}}% through"
+    },
+    "ages": {
+      "infant": "Infant Soul",
+      "baby": "Baby Soul",
+      "young": "Young Soul",
+      "mature": "Mature Soul",
+      "old": "Old Soul",
+      "transcendental": "Transcendental Soul",
+      "universal": "Universal Soul"
+    },
+    "stage": {
+      "early": "Early",
+      "middle": "Middle",
+      "late": "Late"
+    }
   }
 }

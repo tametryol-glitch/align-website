@@ -2880,5 +2880,63 @@
       "modePublic": "Align içinde herkese açık",
       "modePublicHint": "Herhangi bir Align üyesi sizi seçtiğiniz yer üzerinden bulabilir."
     }
+  },
+  "soulAge": {
+    "title": "Ruh Yaşı Hesaplayıcı",
+    "subtitle": "Ruhunuzun evrende kaç yaşam deneyimlediğini ve bunların kaçının Dünya'da geçtiğini keşfedin.",
+    "free": "ÜCRETSİZ",
+    "freeNote": "Sınırsız harita. Asla ücret alınmaz.",
+    "calculateMine": "Ruh Yaşımı Hesapla",
+    "chooseSaved": "Kayıtlı Harita Seç",
+    "calculateOther": "Başka Bir Kişiyi Hesapla",
+    "calculate": "Ruh Yaşını Hesapla",
+    "calculating": "Drakonik harita okunuyor…",
+    "back": "Geri",
+    "noSavedCharts": "Henüz kayıtlı haritanız yok.",
+    "chooseSavedHeading": "Kayıtlı bir harita seçin",
+    "otherHeading": "Başka bir kişiyi hesapla",
+    "birthTimeRequired": "Ruh Yaşı Hesaplayıcı drakonik Yükselen'i, IC'yi, MC'yi ve tam burç evlerini kullandığı için doğru bir doğum saati gereklidir.",
+    "birthTimeUnknown": "doğum saati bilinmiyor",
+    "needBirthDetails": "Önce Ayarlar'dan doğum bilgilerinizi ekleyin — Ruh Yaşı Hesaplayıcı bunlara ihtiyaç duyar.",
+    "saveToChart": "Bu haritaya kaydet",
+    "saving": "Kaydediliyor…",
+    "savedOk": "Haritaya kaydedildi ✓",
+    "shareCard": "Sonuç kartını paylaş",
+    "shareNote": "Yalnızca Ruh Yaşlarınızı ve yaşam sayılarınızı paylaşır — doğum bilgilerinizi asla.",
+    "oneOff": "Bu tek seferlik bir hesaplamadır. Ruh Yaşını saklamak için bu kişiyi önce harita olarak kaydedin.",
+    "savedResults": "Kayıtlı Ruh Yaşlarınız",
+    "savedResultsNote": "Evrensel yaşam sayısına göre sıralı. Tam yorumu yeniden oluşturmak için birine dokunun.",
+    "needsRefresh": "yenilenmeli",
+    "universalSuffix": "evrensel",
+    "earthSuffix": "Dünya",
+    "hereSuffix": "burada",
+    "disclaimer": "Ruh Yaşı Hesaplayıcı deneysel bir metafizik yorumlama sistemidir. Sonuçları ruhsal tefekkür içindir ve bilimsel olarak doğrulanabilir ölçümler değildir.",
+    "credit": "Ruh Yaşı Hesaplayıcı yöntemi AlignCosmic için Astro tarafından oluşturulmuştur.",
+    "stats": {
+      "totalUniversal": "Toplam Evrensel Yaşam",
+      "universalAge": "Evrensel Ruh Yaşı",
+      "earthLifetimes": "Önceki Dünya Yaşamları",
+      "earthAge": "Dünya Ruh Yaşı",
+      "nonEarth": "Dünya Dışı Önceki Yaşamlar",
+      "earthPercent": "Dünya'da Enkarnasyon Yüzdesi",
+      "anchoring": "Dünya Bağlanma Puanı",
+      "cycles": "Tamamlanan Evrensel Döngüler",
+      "currentCycle": "Mevcut Evrensel Döngü",
+      "through": "%{{pct}} tamamlandı"
+    },
+    "ages": {
+      "infant": "Bebek Ruh",
+      "baby": "Çocuk Ruh",
+      "young": "Genç Ruh",
+      "mature": "Olgun Ruh",
+      "old": "Yaşlı Ruh",
+      "transcendental": "Aşkın Ruh",
+      "universal": "Evrensel Ruh"
+    },
+    "stage": {
+      "early": "Erken",
+      "middle": "Orta",
+      "late": "Geç"
+    }
   }
 }

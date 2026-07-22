@@ -2880,5 +2880,63 @@
       "modePublic": "Offentlig inden for Align",
       "modePublicHint": "Ethvert Align-medlem kan finde dig via dit valgte sted."
     }
+  },
+  "soulAge": {
+    "title": "Sjælsalder-beregner",
+    "subtitle": "Opdag hvor mange liv din sjæl har oplevet i universet — og hvor mange af dem der blev levet på Jorden.",
+    "free": "GRATIS",
+    "freeNote": "Ubegrænset antal horoskoper. Aldrig betaling.",
+    "calculateMine": "Beregn min sjælsalder",
+    "chooseSaved": "Vælg et gemt horoskop",
+    "calculateOther": "Beregn en anden person",
+    "calculate": "Beregn sjælsalder",
+    "calculating": "Læser det drakoniske horoskop…",
+    "back": "Tilbage",
+    "noSavedCharts": "Du har ingen gemte horoskoper endnu.",
+    "chooseSavedHeading": "Vælg et gemt horoskop",
+    "otherHeading": "Beregn en anden person",
+    "birthTimeRequired": "Et nøjagtigt fødselstidspunkt er påkrævet, fordi Sjælsalder-beregneren bruger den drakoniske ascendant, IC, MC og heltegnshuse.",
+    "birthTimeUnknown": "fødselstidspunkt ukendt",
+    "needBirthDetails": "Tilføj først dine fødselsoplysninger under Indstillinger — Sjælsalder-beregneren har brug for dem.",
+    "saveToChart": "Gem i dette horoskop",
+    "saving": "Gemmer…",
+    "savedOk": "Gemt i horoskopet ✓",
+    "shareCard": "Del resultatkort",
+    "shareNote": "Deler kun dine sjælsaldre og antal liv — aldrig dine fødselsoplysninger.",
+    "oneOff": "Dette er en engangsberegning. Gem først denne person som et horoskop, hvis du vil bevare sjælsalderen.",
+    "savedResults": "Dine gemte sjælsaldre",
+    "savedResultsNote": "Sorteret efter universelle liv. Tryk på et for at gendanne hele tydningen.",
+    "needsRefresh": "skal opdateres",
+    "universalSuffix": "universelle",
+    "earthSuffix": "Jorden",
+    "hereSuffix": "her",
+    "disclaimer": "Sjælsalder-beregneren er et eksperimentelt metafysisk fortolkningssystem. Resultaterne er tænkt til åndelig refleksion og er ikke videnskabeligt verificerbare målinger.",
+    "credit": "Metoden bag Sjælsalder-beregneren er skabt af Astro for AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Universelle liv i alt",
+      "universalAge": "Universel sjælsalder",
+      "earthLifetimes": "Tidligere liv på Jorden",
+      "earthAge": "Jordisk sjælsalder",
+      "nonEarth": "Tidligere liv uden for Jorden",
+      "earthPercent": "Andel inkarnationer på Jorden",
+      "anchoring": "Jordforankringsscore",
+      "cycles": "Afsluttede universelle cyklusser",
+      "currentCycle": "Nuværende universelle cyklus",
+      "through": "{{pct}}% gennemført"
+    },
+    "ages": {
+      "infant": "Spædbarnssjæl",
+      "baby": "Barnesjæl",
+      "young": "Ung sjæl",
+      "mature": "Moden sjæl",
+      "old": "Gammel sjæl",
+      "transcendental": "Transcendental sjæl",
+      "universal": "Universel sjæl"
+    },
+    "stage": {
+      "early": "Tidlig",
+      "middle": "Mellem",
+      "late": "Sen"
+    }
   }
 }

@@ -2880,5 +2880,63 @@
       "modePublic": "Pubblico all'interno di Align",
       "modePublicHint": "Qualsiasi membro Align può trovarti tramite il luogo che hai scelto."
     }
+  },
+  "soulAge": {
+    "title": "Calcolatore dell'Età dell'Anima",
+    "subtitle": "Scopri quante vite ha vissuto la tua anima nell'universo, e quante sono state vissute sulla Terra.",
+    "free": "GRATIS",
+    "freeNote": "Temi illimitati. Mai a pagamento.",
+    "calculateMine": "Calcola la mia Età dell'Anima",
+    "chooseSaved": "Scegli un tema salvato",
+    "calculateOther": "Calcola un'altra persona",
+    "calculate": "Calcola l'Età dell'Anima",
+    "calculating": "Lettura del tema draconico…",
+    "back": "Indietro",
+    "noSavedCharts": "Non hai ancora temi salvati.",
+    "chooseSavedHeading": "Scegli un tema salvato",
+    "otherHeading": "Calcola un'altra persona",
+    "birthTimeRequired": "È necessaria un'ora di nascita esatta perché il Calcolatore dell'Età dell'Anima usa l'Ascendente draconico, l'IC, il MC e le case a segno intero.",
+    "birthTimeUnknown": "ora di nascita sconosciuta",
+    "needBirthDetails": "Aggiungi prima i tuoi dati di nascita nelle Impostazioni: al Calcolatore dell'Età dell'Anima servono.",
+    "saveToChart": "Salva in questo tema",
+    "saving": "Salvataggio…",
+    "savedOk": "Salvato in questo tema ✓",
+    "shareCard": "Condividi la scheda del risultato",
+    "shareNote": "Condivide solo le tue Età dell'Anima e il numero di vite, mai i tuoi dati di nascita.",
+    "oneOff": "Questo è un calcolo occasionale. Salva prima questa persona come tema se vuoi conservarne l'Età dell'Anima.",
+    "savedResults": "Le tue Età dell'Anima salvate",
+    "savedResultsNote": "Ordinate per vite universali. Toccane una per rigenerare la lettura completa.",
+    "needsRefresh": "da aggiornare",
+    "universalSuffix": "universali",
+    "earthSuffix": "sulla Terra",
+    "hereSuffix": "qui",
+    "disclaimer": "Il Calcolatore dell'Età dell'Anima è un sistema sperimentale di interpretazione metafisica. I suoi risultati sono destinati alla riflessione spirituale e non sono misurazioni verificabili scientificamente.",
+    "credit": "Metodologia del Calcolatore dell'Età dell'Anima creata da Astro per AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Vite universali totali",
+      "universalAge": "Età dell'Anima universale",
+      "earthLifetimes": "Vite terrestri precedenti",
+      "earthAge": "Età dell'Anima terrestre",
+      "nonEarth": "Vite precedenti fuori dalla Terra",
+      "earthPercent": "Percentuale di incarnazioni terrestri",
+      "anchoring": "Punteggio di ancoraggio terrestre",
+      "cycles": "Cicli universali completati",
+      "currentCycle": "Ciclo universale attuale",
+      "through": "{{pct}}% percorso"
+    },
+    "ages": {
+      "infant": "Anima infante",
+      "baby": "Anima bambina",
+      "young": "Anima giovane",
+      "mature": "Anima matura",
+      "old": "Anima antica",
+      "transcendental": "Anima trascendentale",
+      "universal": "Anima universale"
+    },
+    "stage": {
+      "early": "Iniziale",
+      "middle": "Intermedia",
+      "late": "Avanzata"
+    }
   }
 }

@@ -2880,5 +2880,63 @@
       "modePublic": "Offentlig inom Align",
       "modePublicHint": "Vilken Align-medlem som helst kan hitta dig via din valda plats."
     }
+  },
+  "soulAge": {
+    "title": "Själsålderskalkylator",
+    "subtitle": "Upptäck hur många liv din själ har upplevt i universum — och hur många av dem som levts på jorden.",
+    "free": "GRATIS",
+    "freeNote": "Obegränsat antal kartor. Aldrig någon avgift.",
+    "calculateMine": "Beräkna min själsålder",
+    "chooseSaved": "Välj en sparad karta",
+    "calculateOther": "Beräkna en annan person",
+    "calculate": "Beräkna själsålder",
+    "calculating": "Läser den drakoniska kartan…",
+    "back": "Tillbaka",
+    "noSavedCharts": "Du har inga sparade kartor än.",
+    "chooseSavedHeading": "Välj en sparad karta",
+    "otherHeading": "Beräkna en annan person",
+    "birthTimeRequired": "En exakt födelsetid krävs eftersom Själsålderskalkylatorn använder den drakoniska ascendenten, IC, MC och helteckenhus.",
+    "birthTimeUnknown": "födelsetid okänd",
+    "needBirthDetails": "Lägg först till dina födelseuppgifter i Inställningar — Själsålderskalkylatorn behöver dem.",
+    "saveToChart": "Spara till denna karta",
+    "saving": "Sparar…",
+    "savedOk": "Sparad till kartan ✓",
+    "shareCard": "Dela resultatkort",
+    "shareNote": "Delar endast dina själsåldrar och antal liv — aldrig dina födelseuppgifter.",
+    "oneOff": "Detta är en engångsberäkning. Spara personen som en karta först om du vill behålla själsåldern.",
+    "savedResults": "Dina sparade själsåldrar",
+    "savedResultsNote": "Sorterade efter universella liv. Tryck på en för att generera hela tolkningen igen.",
+    "needsRefresh": "behöver uppdateras",
+    "universalSuffix": "universella",
+    "earthSuffix": "jorden",
+    "hereSuffix": "här",
+    "disclaimer": "Själsålderskalkylatorn är ett experimentellt metafysiskt tolkningssystem. Resultaten är avsedda för andlig reflektion och är inte vetenskapligt verifierbara mätvärden.",
+    "credit": "Metodiken bakom Själsålderskalkylatorn är skapad av Astro för AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Totalt antal universella liv",
+      "universalAge": "Universell själsålder",
+      "earthLifetimes": "Tidigare liv på jorden",
+      "earthAge": "Jordisk själsålder",
+      "nonEarth": "Tidigare liv utanför jorden",
+      "earthPercent": "Andel inkarnationer på jorden",
+      "anchoring": "Jordförankringspoäng",
+      "cycles": "Avslutade universella cykler",
+      "currentCycle": "Nuvarande universell cykel",
+      "through": "{{pct}}% genomförd"
+    },
+    "ages": {
+      "infant": "Spädbarnssjäl",
+      "baby": "Barnasjäl",
+      "young": "Ung själ",
+      "mature": "Mogen själ",
+      "old": "Gammal själ",
+      "transcendental": "Transcendental själ",
+      "universal": "Universell själ"
+    },
+    "stage": {
+      "early": "Tidig",
+      "middle": "Mellan",
+      "late": "Sen"
+    }
   }
 }

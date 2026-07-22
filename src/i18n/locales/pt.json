@@ -2880,5 +2880,63 @@
       "modePublic": "Público dentro do Align",
       "modePublicHint": "Qualquer membro Align pode encontrar você pelo lugar que você escolheu."
     }
+  },
+  "soulAge": {
+    "title": "Calculadora de Idade da Alma",
+    "subtitle": "Descubra quantas vidas a sua alma já experienciou pelo universo — e quantas foram vividas na Terra.",
+    "free": "GRÁTIS",
+    "freeNote": "Mapas ilimitados. Nunca cobrado.",
+    "calculateMine": "Calcular a minha Idade da Alma",
+    "chooseSaved": "Escolher um mapa guardado",
+    "calculateOther": "Calcular outra pessoa",
+    "calculate": "Calcular Idade da Alma",
+    "calculating": "A ler o mapa dracônico…",
+    "back": "Voltar",
+    "noSavedCharts": "Ainda não tem mapas guardados.",
+    "chooseSavedHeading": "Escolha um mapa guardado",
+    "otherHeading": "Calcular outra pessoa",
+    "birthTimeRequired": "É necessária uma hora de nascimento exata porque a Calculadora de Idade da Alma usa o Ascendente dracônico, o IC, o MC e as casas de signo inteiro.",
+    "birthTimeUnknown": "hora de nascimento desconhecida",
+    "needBirthDetails": "Adicione primeiro os seus dados de nascimento nas Definições — a Calculadora de Idade da Alma precisa deles.",
+    "saveToChart": "Guardar neste mapa",
+    "saving": "A guardar…",
+    "savedOk": "Guardado neste mapa ✓",
+    "shareCard": "Partilhar cartão de resultado",
+    "shareNote": "Partilha apenas as suas Idades da Alma e o número de vidas — nunca os seus dados de nascimento.",
+    "oneOff": "Este é um cálculo pontual. Guarde primeiro esta pessoa como mapa se quiser conservar a sua Idade da Alma.",
+    "savedResults": "As suas Idades da Alma guardadas",
+    "savedResultsNote": "Ordenadas por vidas universais. Toque numa para regenerar a leitura completa.",
+    "needsRefresh": "precisa de atualização",
+    "universalSuffix": "universais",
+    "earthSuffix": "na Terra",
+    "hereSuffix": "aqui",
+    "disclaimer": "A Calculadora de Idade da Alma é um sistema experimental de interpretação metafísica. Os seus resultados destinam-se à reflexão espiritual e não são medições cientificamente verificáveis.",
+    "credit": "Metodologia da Calculadora de Idade da Alma criada por Astro para a AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Total de vidas universais",
+      "universalAge": "Idade da Alma universal",
+      "earthLifetimes": "Vidas anteriores na Terra",
+      "earthAge": "Idade da Alma terrestre",
+      "nonEarth": "Vidas anteriores fora da Terra",
+      "earthPercent": "Percentagem de encarnações na Terra",
+      "anchoring": "Pontuação de ancoragem terrestre",
+      "cycles": "Ciclos universais concluídos",
+      "currentCycle": "Ciclo universal atual",
+      "through": "{{pct}}% percorrido"
+    },
+    "ages": {
+      "infant": "Alma infante",
+      "baby": "Alma bebé",
+      "young": "Alma jovem",
+      "mature": "Alma madura",
+      "old": "Alma antiga",
+      "transcendental": "Alma transcendental",
+      "universal": "Alma universal"
+    },
+    "stage": {
+      "early": "Inicial",
+      "middle": "Média",
+      "late": "Tardia"
+    }
   }
 }

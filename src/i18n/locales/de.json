@@ -2880,5 +2880,63 @@
       "modePublic": "Öffentlich innerhalb von Align",
       "modePublicHint": "Jedes Align-Mitglied kann dich über deinen gewählten Ort finden."
     }
+  },
+  "soulAge": {
+    "title": "Seelenalter-Rechner",
+    "subtitle": "Entdecke, wie viele Leben deine Seele im Universum erfahren hat – und wie viele davon auf der Erde gelebt wurden.",
+    "free": "KOSTENLOS",
+    "freeNote": "Unbegrenzte Charts. Niemals kostenpflichtig.",
+    "calculateMine": "Mein Seelenalter berechnen",
+    "chooseSaved": "Gespeichertes Chart wählen",
+    "calculateOther": "Andere Person berechnen",
+    "calculate": "Seelenalter berechnen",
+    "calculating": "Das drakonische Chart wird gelesen…",
+    "back": "Zurück",
+    "noSavedCharts": "Du hast noch keine gespeicherten Charts.",
+    "chooseSavedHeading": "Wähle ein gespeichertes Chart",
+    "otherHeading": "Andere Person berechnen",
+    "birthTimeRequired": "Eine genaue Geburtszeit ist erforderlich, da der Seelenalter-Rechner den drakonischen Aszendenten, IC, MC und Ganzzeichen-Häuser verwendet.",
+    "birthTimeUnknown": "Geburtszeit unbekannt",
+    "needBirthDetails": "Trage zuerst deine Geburtsdaten in den Einstellungen ein – der Seelenalter-Rechner benötigt sie.",
+    "saveToChart": "In diesem Chart speichern",
+    "saving": "Wird gespeichert…",
+    "savedOk": "Im Chart gespeichert ✓",
+    "shareCard": "Ergebniskarte teilen",
+    "shareNote": "Teilt nur deine Seelenalter und Lebenszahlen – niemals deine Geburtsdaten.",
+    "oneOff": "Dies ist eine einmalige Berechnung. Speichere diese Person zuerst als Chart, um ihr Seelenalter zu behalten.",
+    "savedResults": "Deine gespeicherten Seelenalter",
+    "savedResultsNote": "Nach universellen Leben sortiert. Tippe auf eines, um die vollständige Deutung neu zu erzeugen.",
+    "needsRefresh": "Aktualisierung nötig",
+    "universalSuffix": "universelle",
+    "earthSuffix": "auf der Erde",
+    "hereSuffix": "hier",
+    "disclaimer": "Der Seelenalter-Rechner ist ein experimentelles metaphysisches Deutungssystem. Seine Ergebnisse dienen der spirituellen Reflexion und sind keine wissenschaftlich überprüfbaren Messwerte.",
+    "credit": "Methodik des Seelenalter-Rechners entwickelt von Astro für AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Universelle Leben insgesamt",
+      "universalAge": "Universelles Seelenalter",
+      "earthLifetimes": "Frühere Erdenleben",
+      "earthAge": "Irdisches Seelenalter",
+      "nonEarth": "Frühere Leben außerhalb der Erde",
+      "earthPercent": "Anteil irdischer Inkarnationen",
+      "anchoring": "Erdverankerungs-Wert",
+      "cycles": "Abgeschlossene universelle Zyklen",
+      "currentCycle": "Aktueller universeller Zyklus",
+      "through": "{{pct}}% durchlaufen"
+    },
+    "ages": {
+      "infant": "Säuglingsseele",
+      "baby": "Kindseele",
+      "young": "Junge Seele",
+      "mature": "Reife Seele",
+      "old": "Alte Seele",
+      "transcendental": "Transzendentale Seele",
+      "universal": "Universelle Seele"
+    },
+    "stage": {
+      "early": "Früh",
+      "middle": "Mittel",
+      "late": "Spät"
+    }
   }
 }

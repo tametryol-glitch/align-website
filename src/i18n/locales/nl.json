@@ -2880,5 +2880,63 @@
       "modePublic": "Openbaar binnen Align",
       "modePublicHint": "Elk Align-lid kan je vinden via je gekozen plaats."
     }
+  },
+  "soulAge": {
+    "title": "Zielsleeftijd-calculator",
+    "subtitle": "Ontdek hoeveel levens je ziel in het universum heeft ervaren — en hoeveel daarvan op aarde zijn geleefd.",
+    "free": "GRATIS",
+    "freeNote": "Onbeperkt horoscopen. Nooit kosten.",
+    "calculateMine": "Mijn zielsleeftijd berekenen",
+    "chooseSaved": "Kies een opgeslagen horoscoop",
+    "calculateOther": "Iemand anders berekenen",
+    "calculate": "Zielsleeftijd berekenen",
+    "calculating": "De draconische horoscoop wordt gelezen…",
+    "back": "Terug",
+    "noSavedCharts": "Je hebt nog geen opgeslagen horoscopen.",
+    "chooseSavedHeading": "Kies een opgeslagen horoscoop",
+    "otherHeading": "Iemand anders berekenen",
+    "birthTimeRequired": "Een nauwkeurige geboortetijd is vereist, omdat de Zielsleeftijd-calculator de draconische Ascendant, IC, MC en heletekenhuizen gebruikt.",
+    "birthTimeUnknown": "geboortetijd onbekend",
+    "needBirthDetails": "Voeg eerst je geboortegegevens toe in Instellingen — de Zielsleeftijd-calculator heeft ze nodig.",
+    "saveToChart": "Opslaan bij deze horoscoop",
+    "saving": "Opslaan…",
+    "savedOk": "Opgeslagen bij horoscoop ✓",
+    "shareCard": "Resultaatkaart delen",
+    "shareNote": "Deelt alleen je zielsleeftijden en aantallen levens — nooit je geboortegegevens.",
+    "oneOff": "Dit is een eenmalige berekening. Sla deze persoon eerst op als horoscoop om de zielsleeftijd te bewaren.",
+    "savedResults": "Je opgeslagen zielsleeftijden",
+    "savedResultsNote": "Gesorteerd op universele levens. Tik op één om de volledige duiding opnieuw te genereren.",
+    "needsRefresh": "moet worden vernieuwd",
+    "universalSuffix": "universele",
+    "earthSuffix": "aarde",
+    "hereSuffix": "hier",
+    "disclaimer": "De Zielsleeftijd-calculator is een experimenteel metafysisch interpretatiesysteem. De resultaten zijn bedoeld voor spirituele reflectie en zijn geen wetenschappelijk verifieerbare metingen.",
+    "credit": "Methodiek van de Zielsleeftijd-calculator ontwikkeld door Astro voor AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Totaal universele levens",
+      "universalAge": "Universele zielsleeftijd",
+      "earthLifetimes": "Eerdere levens op aarde",
+      "earthAge": "Aardse zielsleeftijd",
+      "nonEarth": "Eerdere levens buiten de aarde",
+      "earthPercent": "Percentage aardse incarnaties",
+      "anchoring": "Aardverankeringsscore",
+      "cycles": "Voltooide universele cycli",
+      "currentCycle": "Huidige universele cyclus",
+      "through": "{{pct}}% voltooid"
+    },
+    "ages": {
+      "infant": "Zuigelingenziel",
+      "baby": "Kinderziel",
+      "young": "Jonge ziel",
+      "mature": "Rijpe ziel",
+      "old": "Oude ziel",
+      "transcendental": "Transcendente ziel",
+      "universal": "Universele ziel"
+    },
+    "stage": {
+      "early": "Vroeg",
+      "middle": "Midden",
+      "late": "Laat"
+    }
   }
 }

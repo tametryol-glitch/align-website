@@ -2880,5 +2880,63 @@
       "modePublic": "Julkinen Alignin sisällä",
       "modePublicHint": "Kuka tahansa Align-jäsen voi löytää sinut valitsemasi paikan kautta."
     }
+  },
+  "soulAge": {
+    "title": "Sielun iän laskuri",
+    "subtitle": "Selvitä, kuinka monta elämää sielusi on kokenut kaikkeudessa — ja kuinka moni niistä elettiin Maassa.",
+    "free": "ILMAINEN",
+    "freeNote": "Rajattomasti karttoja. Ei koskaan maksua.",
+    "calculateMine": "Laske sieluni ikä",
+    "chooseSaved": "Valitse tallennettu kartta",
+    "calculateOther": "Laske toiselle henkilölle",
+    "calculate": "Laske sielun ikä",
+    "calculating": "Luetaan drakonista karttaa…",
+    "back": "Takaisin",
+    "noSavedCharts": "Sinulla ei ole vielä tallennettuja karttoja.",
+    "chooseSavedHeading": "Valitse tallennettu kartta",
+    "otherHeading": "Laske toiselle henkilölle",
+    "birthTimeRequired": "Tarkka syntymäaika vaaditaan, koska Sielun iän laskuri käyttää drakonista ascendenttia, IC:tä, MC:tä ja kokonaismerkkihuoneita.",
+    "birthTimeUnknown": "syntymäaika tuntematon",
+    "needBirthDetails": "Lisää ensin syntymätietosi Asetuksissa — Sielun iän laskuri tarvitsee ne.",
+    "saveToChart": "Tallenna tähän karttaan",
+    "saving": "Tallennetaan…",
+    "savedOk": "Tallennettu karttaan ✓",
+    "shareCard": "Jaa tuloskortti",
+    "shareNote": "Jakaa vain sielun iät ja elämien määrät — ei koskaan syntymätietojasi.",
+    "oneOff": "Tämä on kertaluonteinen laskenta. Tallenna henkilö ensin kartaksi, jos haluat säilyttää sielun iän.",
+    "savedResults": "Tallennetut sielun iät",
+    "savedResultsNote": "Järjestetty kaikkeuden elämien mukaan. Napauta yhtä luodaksesi koko tulkinnan uudelleen.",
+    "needsRefresh": "vaatii päivitystä",
+    "universalSuffix": "kaikkeuden",
+    "earthSuffix": "Maassa",
+    "hereSuffix": "täällä",
+    "disclaimer": "Sielun iän laskuri on kokeellinen metafyysinen tulkintajärjestelmä. Sen tulokset on tarkoitettu hengelliseen pohdintaan eivätkä ne ole tieteellisesti todennettavia mittauksia.",
+    "credit": "Sielun iän laskurin menetelmän on luonut Astro AlignCosmicille.",
+    "stats": {
+      "totalUniversal": "Kaikkeuden elämiä yhteensä",
+      "universalAge": "Kaikkeuden sielun ikä",
+      "earthLifetimes": "Aiemmat elämät Maassa",
+      "earthAge": "Maallinen sielun ikä",
+      "nonEarth": "Aiemmat elämät Maan ulkopuolella",
+      "earthPercent": "Maassa tapahtuneiden inkarnaatioiden osuus",
+      "anchoring": "Maahan ankkuroitumisen pistemäärä",
+      "cycles": "Päättyneet kaikkeuden syklit",
+      "currentCycle": "Nykyinen kaikkeuden sykli",
+      "through": "{{pct}}% edetty"
+    },
+    "ages": {
+      "infant": "Vauvasielu",
+      "baby": "Lapsisielu",
+      "young": "Nuori sielu",
+      "mature": "Kypsä sielu",
+      "old": "Vanha sielu",
+      "transcendental": "Transsendenttinen sielu",
+      "universal": "Kaikkeuden sielu"
+    },
+    "stage": {
+      "early": "Varhainen",
+      "middle": "Keski",
+      "late": "Myöhäinen"
+    }
   }
 }

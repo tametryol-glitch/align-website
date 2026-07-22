@@ -2880,5 +2880,63 @@
       "modePublic": "Publicznie w Align",
       "modePublicHint": "Każdy członek Align może Cię znaleźć poprzez wybrane przez Ciebie miejsce."
     }
+  },
+  "soulAge": {
+    "title": "Kalkulator Wieku Duszy",
+    "subtitle": "Odkryj, ile żyć przeżyła twoja dusza we wszechświecie — i ile z nich na Ziemi.",
+    "free": "ZA DARMO",
+    "freeNote": "Nieograniczona liczba kart. Zawsze bez opłat.",
+    "calculateMine": "Oblicz mój Wiek Duszy",
+    "chooseSaved": "Wybierz zapisaną kartę",
+    "calculateOther": "Oblicz dla innej osoby",
+    "calculate": "Oblicz Wiek Duszy",
+    "calculating": "Odczytywanie karty drakonicznej…",
+    "back": "Wstecz",
+    "noSavedCharts": "Nie masz jeszcze zapisanych kart.",
+    "chooseSavedHeading": "Wybierz zapisaną kartę",
+    "otherHeading": "Oblicz dla innej osoby",
+    "birthTimeRequired": "Wymagana jest dokładna godzina urodzenia, ponieważ Kalkulator Wieku Duszy korzysta z drakonicznego Ascendentu, IC, MC oraz domów pełnoznakowych.",
+    "birthTimeUnknown": "godzina urodzenia nieznana",
+    "needBirthDetails": "Najpierw dodaj dane urodzenia w Ustawieniach — Kalkulator Wieku Duszy ich potrzebuje.",
+    "saveToChart": "Zapisz w tej karcie",
+    "saving": "Zapisywanie…",
+    "savedOk": "Zapisano w karcie ✓",
+    "shareCard": "Udostępnij kartę wyniku",
+    "shareNote": "Udostępnia wyłącznie Wieki Duszy i liczbę żyć — nigdy danych urodzenia.",
+    "oneOff": "To jednorazowe obliczenie. Aby zachować Wiek Duszy, zapisz najpierw tę osobę jako kartę.",
+    "savedResults": "Twoje zapisane Wieki Duszy",
+    "savedResultsNote": "Uporządkowane według żyć wszechświatowych. Dotknij, aby wygenerować pełną interpretację.",
+    "needsRefresh": "wymaga odświeżenia",
+    "universalSuffix": "wszechświatowych",
+    "earthSuffix": "na Ziemi",
+    "hereSuffix": "tutaj",
+    "disclaimer": "Kalkulator Wieku Duszy to eksperymentalny system interpretacji metafizycznej. Jego wyniki służą refleksji duchowej i nie są naukowo weryfikowalnymi pomiarami.",
+    "credit": "Metodologia Kalkulatora Wieku Duszy stworzona przez Astro dla AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Łączna liczba żyć wszechświatowych",
+      "universalAge": "Wszechświatowy Wiek Duszy",
+      "earthLifetimes": "Poprzednie życia na Ziemi",
+      "earthAge": "Ziemski Wiek Duszy",
+      "nonEarth": "Poprzednie życia poza Ziemią",
+      "earthPercent": "Odsetek wcieleń na Ziemi",
+      "anchoring": "Wynik zakorzenienia ziemskiego",
+      "cycles": "Ukończone cykle wszechświatowe",
+      "currentCycle": "Bieżący cykl wszechświatowy",
+      "through": "{{pct}}% ukończone"
+    },
+    "ages": {
+      "infant": "Dusza niemowlęca",
+      "baby": "Dusza dziecięca",
+      "young": "Młoda dusza",
+      "mature": "Dojrzała dusza",
+      "old": "Stara dusza",
+      "transcendental": "Dusza transcendentalna",
+      "universal": "Dusza wszechświatowa"
+    },
+    "stage": {
+      "early": "Wczesna",
+      "middle": "Środkowa",
+      "late": "Późna"
+    }
   }
 }

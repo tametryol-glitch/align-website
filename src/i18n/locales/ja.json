@@ -2880,5 +2880,63 @@
       "modePublic": "Align 内で公開",
       "modePublicHint": "どの Align メンバーも、選んだ場所からあなたを見つけられます。"
     }
+  },
+  "soulAge": {
+    "title": "ソウルエイジ計算",
+    "subtitle": "あなたの魂が宇宙で経験した生の数と、そのうち地球で生きた数を知りましょう。",
+    "free": "無料",
+    "freeNote": "チャート数は無制限。課金は一切ありません。",
+    "calculateMine": "自分のソウルエイジを計算",
+    "chooseSaved": "保存したチャートから選ぶ",
+    "calculateOther": "別の人を計算する",
+    "calculate": "ソウルエイジを計算",
+    "calculating": "ドラコニックチャートを読み取っています…",
+    "back": "戻る",
+    "noSavedCharts": "保存されたチャートはまだありません。",
+    "chooseSavedHeading": "保存したチャートを選択",
+    "otherHeading": "別の人を計算する",
+    "birthTimeRequired": "ソウルエイジ計算はドラコニックのアセンダント、IC、MC、およびホールサインハウスを使用するため、正確な出生時刻が必要です。",
+    "birthTimeUnknown": "出生時刻が不明",
+    "needBirthDetails": "先に設定で出生情報を追加してください。ソウルエイジ計算に必要です。",
+    "saveToChart": "このチャートに保存",
+    "saving": "保存中…",
+    "savedOk": "チャートに保存しました ✓",
+    "shareCard": "結果カードを共有",
+    "shareNote": "共有されるのはソウルエイジと生の回数のみで、出生情報は含まれません。",
+    "oneOff": "これは一回限りの計算です。ソウルエイジを残すには、まずこの人をチャートとして保存してください。",
+    "savedResults": "保存したソウルエイジ",
+    "savedResultsNote": "宇宙での生の数の順です。タップすると完全な読み解きを再生成します。",
+    "needsRefresh": "更新が必要",
+    "universalSuffix": "宇宙",
+    "earthSuffix": "地球",
+    "hereSuffix": "ここ",
+    "disclaimer": "ソウルエイジ計算は実験的な形而上学的解釈システムです。その結果は精神的な内省のためのものであり、科学的に検証可能な測定値ではありません。",
+    "credit": "ソウルエイジ計算の手法は AlignCosmic のために Astro が考案しました。",
+    "stats": {
+      "totalUniversal": "宇宙での総生涯数",
+      "universalAge": "宇宙のソウルエイジ",
+      "earthLifetimes": "地球での過去生の数",
+      "earthAge": "地球のソウルエイジ",
+      "nonEarth": "地球以外での過去生の数",
+      "earthPercent": "地球での転生の割合",
+      "anchoring": "地球定着スコア",
+      "cycles": "完了した宇宙サイクル",
+      "currentCycle": "現在の宇宙サイクル",
+      "through": "{{pct}}% 進行"
+    },
+    "ages": {
+      "infant": "幼児の魂",
+      "baby": "赤子の魂",
+      "young": "若い魂",
+      "mature": "成熟した魂",
+      "old": "古い魂",
+      "transcendental": "超越した魂",
+      "universal": "宇宙の魂"
+    },
+    "stage": {
+      "early": "前期",
+      "middle": "中期",
+      "late": "後期"
+    }
   }
 }

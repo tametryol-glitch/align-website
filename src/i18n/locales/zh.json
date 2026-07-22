@@ -2883,5 +2883,63 @@
       "modePublic": "在 Align 内公开",
       "modePublicHint": "任何 Align 成员都能通过你选择的地点找到你。"
     }
+  },
+  "soulAge": {
+    "title": "灵魂年龄计算器",
+    "subtitle": "了解你的灵魂在宇宙中经历了多少次生命，其中有多少次是在地球上度过的。",
+    "free": "免费",
+    "freeNote": "星盘数量不限，永不收费。",
+    "calculateMine": "计算我的灵魂年龄",
+    "chooseSaved": "选择已保存的星盘",
+    "calculateOther": "计算其他人",
+    "calculate": "计算灵魂年龄",
+    "calculating": "正在读取龙形星盘…",
+    "back": "返回",
+    "noSavedCharts": "你还没有保存的星盘。",
+    "chooseSavedHeading": "选择已保存的星盘",
+    "otherHeading": "计算其他人",
+    "birthTimeRequired": "需要准确的出生时间，因为灵魂年龄计算器使用龙形上升点、天底、天顶以及整宫制宫位。",
+    "birthTimeUnknown": "出生时间未知",
+    "needBirthDetails": "请先在设置中填写你的出生信息，灵魂年龄计算器需要这些资料。",
+    "saveToChart": "保存到此星盘",
+    "saving": "正在保存…",
+    "savedOk": "已保存到星盘 ✓",
+    "shareCard": "分享结果卡片",
+    "shareNote": "仅分享你的灵魂年龄与生命次数，绝不包含出生信息。",
+    "oneOff": "这是一次性计算。若想保留其灵魂年龄，请先将此人保存为星盘。",
+    "savedResults": "你保存的灵魂年龄",
+    "savedResultsNote": "按宇宙生命次数排序。点击其中一项可重新生成完整解读。",
+    "needsRefresh": "需要更新",
+    "universalSuffix": "宇宙",
+    "earthSuffix": "地球",
+    "hereSuffix": "在此",
+    "disclaimer": "灵魂年龄计算器是一套实验性的形而上学解读系统。其结果供心灵省思之用，并非可经科学验证的测量数据。",
+    "credit": "灵魂年龄计算器方法由 Astro 为 AlignCosmic 创立。",
+    "stats": {
+      "totalUniversal": "宇宙生命总次数",
+      "universalAge": "宇宙灵魂年龄",
+      "earthLifetimes": "过往地球生命次数",
+      "earthAge": "地球灵魂年龄",
+      "nonEarth": "过往非地球生命次数",
+      "earthPercent": "地球转世比例",
+      "anchoring": "地球锚定分数",
+      "cycles": "已完成的宇宙循环",
+      "currentCycle": "当前宇宙循环",
+      "through": "已完成 {{pct}}%"
+    },
+    "ages": {
+      "infant": "婴孩灵魂",
+      "baby": "幼儿灵魂",
+      "young": "年轻灵魂",
+      "mature": "成熟灵魂",
+      "old": "古老灵魂",
+      "transcendental": "超越灵魂",
+      "universal": "宇宙灵魂"
+    },
+    "stage": {
+      "early": "早期",
+      "middle": "中期",
+      "late": "晚期"
+    }
   }
 }

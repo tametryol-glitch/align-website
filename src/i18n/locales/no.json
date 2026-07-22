@@ -2880,5 +2880,63 @@
       "modePublic": "Offentlig innen Align",
       "modePublicHint": "Ethvert Align-medlem kan finne deg via det valgte stedet ditt."
     }
+  },
+  "soulAge": {
+    "title": "Sjelsalder-kalkulator",
+    "subtitle": "Oppdag hvor mange liv sjelen din har opplevd i universet — og hvor mange av dem som ble levd på jorden.",
+    "free": "GRATIS",
+    "freeNote": "Ubegrenset antall kart. Aldri betaling.",
+    "calculateMine": "Beregn min sjelsalder",
+    "chooseSaved": "Velg et lagret kart",
+    "calculateOther": "Beregn en annen person",
+    "calculate": "Beregn sjelsalder",
+    "calculating": "Leser det drakoniske kartet…",
+    "back": "Tilbake",
+    "noSavedCharts": "Du har ingen lagrede kart ennå.",
+    "chooseSavedHeading": "Velg et lagret kart",
+    "otherHeading": "Beregn en annen person",
+    "birthTimeRequired": "Et nøyaktig fødselstidspunkt kreves fordi Sjelsalder-kalkulatoren bruker den drakoniske ascendanten, IC, MC og heltegnshus.",
+    "birthTimeUnknown": "fødselstidspunkt ukjent",
+    "needBirthDetails": "Legg først inn fødselsopplysningene dine under Innstillinger — Sjelsalder-kalkulatoren trenger dem.",
+    "saveToChart": "Lagre i dette kartet",
+    "saving": "Lagrer…",
+    "savedOk": "Lagret i kartet ✓",
+    "shareCard": "Del resultatkort",
+    "shareNote": "Deler bare sjelsaldrene og antall liv — aldri fødselsopplysningene dine.",
+    "oneOff": "Dette er en engangsberegning. Lagre denne personen som et kart først hvis du vil beholde sjelsalderen.",
+    "savedResults": "Dine lagrede sjelsaldre",
+    "savedResultsNote": "Sortert etter universelle liv. Trykk på ett for å generere hele tydningen på nytt.",
+    "needsRefresh": "må oppdateres",
+    "universalSuffix": "universelle",
+    "earthSuffix": "jorden",
+    "hereSuffix": "her",
+    "disclaimer": "Sjelsalder-kalkulatoren er et eksperimentelt metafysisk tolkningssystem. Resultatene er ment for åndelig refleksjon og er ikke vitenskapelig verifiserbare målinger.",
+    "credit": "Metodikken bak Sjelsalder-kalkulatoren er laget av Astro for AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Totalt antall universelle liv",
+      "universalAge": "Universell sjelsalder",
+      "earthLifetimes": "Tidligere liv på jorden",
+      "earthAge": "Jordisk sjelsalder",
+      "nonEarth": "Tidligere liv utenfor jorden",
+      "earthPercent": "Andel inkarnasjoner på jorden",
+      "anchoring": "Jordforankringsscore",
+      "cycles": "Fullførte universelle sykluser",
+      "currentCycle": "Nåværende universelle syklus",
+      "through": "{{pct}}% fullført"
+    },
+    "ages": {
+      "infant": "Spedbarnssjel",
+      "baby": "Barnesjel",
+      "young": "Ung sjel",
+      "mature": "Moden sjel",
+      "old": "Gammel sjel",
+      "transcendental": "Transcendental sjel",
+      "universal": "Universell sjel"
+    },
+    "stage": {
+      "early": "Tidlig",
+      "middle": "Midt",
+      "late": "Sen"
+    }
   }
 }

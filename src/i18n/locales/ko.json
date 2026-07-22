@@ -2880,5 +2880,63 @@
       "modePublic": "Align 내 공개",
       "modePublicHint": "모든 Align 멤버가 당신이 선택한 장소를 통해 당신을 찾을 수 있습니다."
     }
+  },
+  "soulAge": {
+    "title": "영혼 나이 계산기",
+    "subtitle": "당신의 영혼이 우주에서 경험한 생의 수와, 그중 지구에서 산 생의 수를 알아보세요.",
+    "free": "무료",
+    "freeNote": "차트 무제한. 요금은 없습니다.",
+    "calculateMine": "내 영혼 나이 계산",
+    "chooseSaved": "저장된 차트 선택",
+    "calculateOther": "다른 사람 계산하기",
+    "calculate": "영혼 나이 계산",
+    "calculating": "드라코닉 차트를 읽는 중…",
+    "back": "뒤로",
+    "noSavedCharts": "아직 저장된 차트가 없습니다.",
+    "chooseSavedHeading": "저장된 차트를 선택하세요",
+    "otherHeading": "다른 사람 계산하기",
+    "birthTimeRequired": "영혼 나이 계산기는 드라코닉 상승궁, IC, MC, 홀사인 하우스를 사용하므로 정확한 출생 시각이 필요합니다.",
+    "birthTimeUnknown": "출생 시각 미상",
+    "needBirthDetails": "먼저 설정에서 출생 정보를 추가하세요. 영혼 나이 계산기에 필요합니다.",
+    "saveToChart": "이 차트에 저장",
+    "saving": "저장 중…",
+    "savedOk": "차트에 저장됨 ✓",
+    "shareCard": "결과 카드 공유",
+    "shareNote": "영혼 나이와 생의 횟수만 공유되며, 출생 정보는 절대 포함되지 않습니다.",
+    "oneOff": "일회성 계산입니다. 영혼 나이를 보관하려면 이 사람을 먼저 차트로 저장하세요.",
+    "savedResults": "저장된 영혼 나이",
+    "savedResultsNote": "우주 생의 수 순입니다. 하나를 눌러 전체 해석을 다시 생성하세요.",
+    "needsRefresh": "새로 고침 필요",
+    "universalSuffix": "우주",
+    "earthSuffix": "지구",
+    "hereSuffix": "여기",
+    "disclaimer": "영혼 나이 계산기는 실험적인 형이상학적 해석 체계입니다. 그 결과는 영적 성찰을 위한 것이며 과학적으로 검증 가능한 측정값이 아닙니다.",
+    "credit": "영혼 나이 계산기 방법론은 AlignCosmic을 위해 Astro가 만들었습니다.",
+    "stats": {
+      "totalUniversal": "우주 전체 생의 수",
+      "universalAge": "우주 영혼 나이",
+      "earthLifetimes": "지구에서의 이전 생",
+      "earthAge": "지구 영혼 나이",
+      "nonEarth": "지구 밖에서의 이전 생",
+      "earthPercent": "지구 환생 비율",
+      "anchoring": "지구 정착 점수",
+      "cycles": "완료된 우주 주기",
+      "currentCycle": "현재 우주 주기",
+      "through": "{{pct}}% 진행"
+    },
+    "ages": {
+      "infant": "유아 영혼",
+      "baby": "아기 영혼",
+      "young": "젊은 영혼",
+      "mature": "성숙한 영혼",
+      "old": "오래된 영혼",
+      "transcendental": "초월한 영혼",
+      "universal": "우주적 영혼"
+    },
+    "stage": {
+      "early": "초기",
+      "middle": "중기",
+      "late": "후기"
+    }
   }
 }

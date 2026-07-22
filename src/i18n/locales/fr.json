@@ -2880,5 +2880,63 @@
       "modePublic": "Public au sein d'Align",
       "modePublicHint": "Tout membre Align peut vous trouver via le lieu que vous avez choisi."
     }
+  },
+  "soulAge": {
+    "title": "Calculateur d'Âge de l'Âme",
+    "subtitle": "Découvrez combien de vies votre âme a vécues à travers l'univers, et combien l'ont été sur Terre.",
+    "free": "GRATUIT",
+    "freeNote": "Thèmes illimités. Jamais facturé.",
+    "calculateMine": "Calculer mon Âge de l'Âme",
+    "chooseSaved": "Choisir un thème enregistré",
+    "calculateOther": "Calculer une autre personne",
+    "calculate": "Calculer l'Âge de l'Âme",
+    "calculating": "Lecture du thème draconique…",
+    "back": "Retour",
+    "noSavedCharts": "Vous n'avez pas encore de thème enregistré.",
+    "chooseSavedHeading": "Choisissez un thème enregistré",
+    "otherHeading": "Calculer une autre personne",
+    "birthTimeRequired": "Une heure de naissance exacte est requise, car le Calculateur d'Âge de l'Âme utilise l'Ascendant draconique, le FC, le MC et les maisons en signes entiers.",
+    "birthTimeUnknown": "heure de naissance inconnue",
+    "needBirthDetails": "Ajoutez d'abord vos données de naissance dans les Réglages : le Calculateur d'Âge de l'Âme en a besoin.",
+    "saveToChart": "Enregistrer dans ce thème",
+    "saving": "Enregistrement…",
+    "savedOk": "Enregistré dans ce thème ✓",
+    "shareCard": "Partager la carte de résultat",
+    "shareNote": "Ne partage que vos Âges de l'Âme et le nombre de vies, jamais vos données de naissance.",
+    "oneOff": "Il s'agit d'un calcul ponctuel. Enregistrez d'abord cette personne comme thème pour conserver son Âge de l'Âme.",
+    "savedResults": "Vos Âges de l'Âme enregistrés",
+    "savedResultsNote": "Classés par vies universelles. Touchez-en un pour régénérer sa lecture complète.",
+    "needsRefresh": "à actualiser",
+    "universalSuffix": "universelles",
+    "earthSuffix": "sur Terre",
+    "hereSuffix": "ici",
+    "disclaimer": "Le Calculateur d'Âge de l'Âme est un système expérimental d'interprétation métaphysique. Ses résultats sont destinés à la réflexion spirituelle et ne sont pas des mesures scientifiquement vérifiables.",
+    "credit": "Méthodologie du Calculateur d'Âge de l'Âme créée par Astro pour AlignCosmic.",
+    "stats": {
+      "totalUniversal": "Total des vies universelles",
+      "universalAge": "Âge de l'Âme universel",
+      "earthLifetimes": "Vies terrestres antérieures",
+      "earthAge": "Âge de l'Âme terrestre",
+      "nonEarth": "Vies antérieures hors de la Terre",
+      "earthPercent": "Pourcentage d'incarnation terrestre",
+      "anchoring": "Score d'ancrage terrestre",
+      "cycles": "Cycles universels achevés",
+      "currentCycle": "Cycle universel actuel",
+      "through": "{{pct}}% parcouru"
+    },
+    "ages": {
+      "infant": "Âme nourrisson",
+      "baby": "Âme enfant",
+      "young": "Âme jeune",
+      "mature": "Âme mûre",
+      "old": "Âme ancienne",
+      "transcendental": "Âme transcendantale",
+      "universal": "Âme universelle"
+    },
+    "stage": {
+      "early": "Début",
+      "middle": "Milieu",
+      "late": "Fin"
+    }
   }
 }
