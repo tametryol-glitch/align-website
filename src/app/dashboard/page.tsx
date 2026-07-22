@@ -504,6 +504,34 @@ export default function DashboardPage() {
         </div>
       </Link>
 
+      {/* ─── Soul Age Calculator ──────────────────────────────
+          Always FREE — never gate this behind a plan, trial or token check. */}
+      <Link href="/soul-age" className="block">
+        <div
+          className="rounded-2xl p-4 border border-accent-primary/30 relative overflow-hidden hover:border-accent-primary/50 transition-colors"
+          style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.18), rgba(236,72,153,0.10))' }}
+        >
+          <div className="flex items-start gap-3">
+            <span className="text-2xl leading-none mt-0.5">∞</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-sm font-semibold text-text-primary">Soul Age Calculator</p>
+                <span className="text-[9px] font-extrabold tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-500 text-emerald-950">
+                  FREE
+                </span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Discover how many lifetimes your soul has experienced across the universe — and how many
+                were lived on Earth.
+              </p>
+              <span className="inline-flex items-center gap-1 text-accent-primary text-xs font-medium mt-2">
+                Calculate My Soul Age <ChevronRight className="w-3 h-3" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* ─── World Echo: Today in Cosmic History ─────────────── */}
       {echoTeaser && (
         <Link href="/world-echo" className="block">

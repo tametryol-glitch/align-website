@@ -89,6 +89,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/events') ||
     pathname.startsWith('/birth-chart-calculator') ||
     pathname.startsWith('/hidden-zodiac') ||
+    pathname.startsWith('/soul-age') ||   // free for everyone, no account required
     pathname.startsWith('/share') ||
     pathname.startsWith('/moon-sign') ||
     pathname.startsWith('/rising-sign') ||

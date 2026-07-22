@@ -90,12 +90,20 @@ export default function LandingPage() {
             I have an account
           </Link>
         </div>
-        <Link
-          href="/hidden-zodiac"
-          className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent-secondary hover:text-accent-primary transition-colors"
-        >
-          ☉ Try the Hidden Zodiac — free, no signup →
-        </Link>
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2">
+          <Link
+            href="/soul-age"
+            className="inline-flex items-center gap-2 text-sm font-medium text-accent-secondary hover:text-accent-primary transition-colors"
+          >
+            ∞ Soul Age Calculator — free, no signup →
+          </Link>
+          <Link
+            href="/hidden-zodiac"
+            className="inline-flex items-center gap-2 text-sm font-medium text-accent-secondary hover:text-accent-primary transition-colors"
+          >
+            ☉ Try the Hidden Zodiac — free, no signup →
+          </Link>
+        </div>
         <StoreBadges className="mt-8" />
         <div className="mt-12">
           <HeroChartPreview />
@@ -117,6 +125,11 @@ export default function LandingPage() {
             glyph="♥"
             title="Compatibility"
             description="Deep synastry analysis across 8 dimensions: emotional, passion, karmic, and more."
+          />
+          <FeatureCard
+            glyph="∞"
+            title="Soul Age Calculator"
+            description="How many lifetimes your soul has lived across the universe — and how many were on Earth. Free."
           />
           <FeatureCard
             glyph="🤖"

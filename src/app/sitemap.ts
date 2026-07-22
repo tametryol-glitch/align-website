@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/',
     '/birth-chart-calculator',
     '/hidden-zodiac',
+    '/soul-age',
     '/auth/login',
     '/auth/signup',
     '/pricing',
