@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { getFriends, type FriendProfile } from '@/lib/friendService';
@@ -12,7 +12,7 @@ import {
 } from '@/lib/cosmicMatchService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2 } from 'lucide-react';
+import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2, Search } from 'lucide-react';
 import { CompatibilityCard, ShareButtonWithCard } from '@/components/share';
 import { generateShareUrl } from '@/lib/shareCardUtils';
 import { useTranslation } from 'react-i18next';
@@ -87,10 +87,13 @@ interface MatchEntry {
 
 export default function MatchesPage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const deepLinkMatchId = searchParams.get('matchId');
   const { user, profile, isLoading: authLoading } = useAuthStore();
   const [entries, setEntries] = useState<MatchEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('overall');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<MatchEntry | null>(null);
   const [showToxicity, setShowToxicity] = useState(false);
 
@@ -128,9 +131,13 @@ export default function MatchesPage() {
     setEntries(paired);
     setLoading(false);
 
-    // Auto-trigger for friends without matches
+    // Auto-trigger for friends with no usable match yet. A row left in
+    // 'calculating' with no calculated_at is a calculation that never finished
+    // (tab closed mid-run) — retry it, otherwise it stays invisible forever.
     for (const f of friends) {
-      if (!matchMap[f.friend_id]) {
+      const m = matchMap[f.friend_id];
+      const needsCalc = !m || (m.status === 'calculating' && !m.calculated_at);
+      if (needsCalc) {
         triggerCosmicMatchCalculation(user.id, f.friend_id).catch(console.error);
       }
     }
@@ -150,6 +157,35 @@ export default function MatchesPage() {
         getScoreForCategory(a.match, selectedCategory),
     );
   }, [entries, selectedCategory]);
+
+  // Filter by search query (name or sign). Applied after sorting so the
+  // category ranking is preserved within the filtered results.
+  const displayedEntries = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return sortedEntries;
+    return sortedEntries.filter(({ friend }) => {
+      const haystack = [
+        friend?.display_name,
+        friend?.username,
+        friend?.sun_sign,
+        friend?.moon_sign,
+        friend?.rising_sign,
+      ].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [sortedEntries, searchQuery]);
+
+  // Auto-open a specific match when arriving from a notification deep-link
+  const deepLinkedRef = useRef(false);
+  useEffect(() => {
+    if (!deepLinkMatchId || deepLinkedRef.current || entries.length === 0) return;
+    const target = entries.find((e) => e.match.id === deepLinkMatchId);
+    if (target) {
+      deepLinkedRef.current = true;
+      setShowToxicity(false);
+      setSelectedMatch(target);
+    }
+  }, [deepLinkMatchId, entries]);
 
   // ── Render ──
 
@@ -177,6 +213,38 @@ export default function MatchesPage() {
         >
           Refresh
         </button>
+      </div>
+
+      {/* Search — by name or sign */}
+      <div className="px-4 mb-3">
+        <div
+          className="flex items-center gap-2 px-3 rounded-xl"
+          style={{
+            height: 42,
+            backgroundColor: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(61,71,96,1)',
+          }}
+        >
+          <Search className="w-4 h-4 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.35)' }} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('cosmicMatch.searchPlaceholder', 'Search by name or sign')}
+            className="flex-1 bg-transparent text-sm text-white outline-none"
+            autoComplete="off"
+          />
+          {searchQuery.length > 0 && (
+            <button
+              onClick={() => setSearchQuery('')}
+              aria-label={t('common.clear', 'Clear')}
+              className="flex-shrink-0"
+              style={{ color: 'rgba(255,255,255,0.35)' }}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Category Tabs */}
@@ -213,8 +281,19 @@ export default function MatchesPage() {
         <div className="text-center py-16 px-6">
           <p style={{ color: 'rgba(255,255,255,0.45)' }}>Sign in to see your cosmic matches.</p>
         </div>
-      ) : sortedEntries.length === 0 ? (
+      ) : displayedEntries.length === 0 ? (
         /* Empty State */
+        searchQuery.trim().length > 0 ? (
+          <div className="flex flex-col items-center py-16 px-8 text-center">
+            <span className="text-5xl mb-4">{'🔍'}</span>
+            <h3 className="text-xl font-bold text-white mb-2">
+              {t('cosmicMatch.noSearchResults', 'No matches found')}
+            </h3>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              {t('cosmicMatch.noSearchResultsHint', 'Try a different name or sign')}
+            </p>
+          </div>
+        ) : (
         <div className="flex flex-col items-center py-16 px-8 text-center">
           <span className="text-5xl mb-4">{'🔭'}</span>
           <h3 className="text-xl font-bold text-white mb-2">No matches yet</h3>
@@ -234,9 +313,10 @@ export default function MatchesPage() {
             Go to Friends
           </Link>
         </div>
+        )
       ) : (
         <div className="space-y-3 px-4 pb-24">
-          {sortedEntries.map((entry) => (
+          {displayedEntries.map((entry) => (
             <div key={entry.match.id} className="relative">
               <MatchCard
                 entry={entry}
@@ -725,10 +805,11 @@ function DetailModal({
             </>
           )}
 
-          {/* Open Full Compatibility Reading */}
+          {/* Open Full Compatibility Reading — the partner is passed through so
+              synastry/composite calculate from their saved birth data. No form. */}
           <Link
-            href="/chart/synastry"
-            className="block mt-6 mb-10 rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
+            href={`/chart/synastry?partnerId=${friend.friend_id}`}
+            className="block mt-6 rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
           >
             <div
               className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold text-white"
@@ -738,6 +819,23 @@ function DetailModal({
             >
               <ExternalLink className="w-4 h-4" />
               Open Full Compatibility Reading
+            </div>
+          </Link>
+
+          <Link
+            href={`/chart/composite?partnerId=${friend.friend_id}`}
+            className="block mt-3 mb-10 rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
+          >
+            <div
+              className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold"
+              style={{
+                backgroundColor: 'rgba(139,92,246,0.12)',
+                border: '1px solid rgba(139,92,246,0.3)',
+                color: '#A78BFA',
+              }}
+            >
+              <ExternalLink className="w-4 h-4" />
+              Open Composite Chart
             </div>
           </Link>
         </div>

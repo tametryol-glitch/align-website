@@ -251,7 +251,9 @@ function getNotificationLink(n: Notification): string {
     case 'eclipse':
       return '/readings';
     case 'cosmic_match_ready':
-      return n.data?.match_id ? `/compatibility/${n.data.match_id}` : '/compatibility';
+      // /compatibility/[signs] is the public sign-pair guide, not this user's
+      // match — deep-link into the Cosmic Match list and auto-open the card.
+      return n.data?.match_id ? `/matches?matchId=${n.data.match_id}` : '/matches';
     case 'cosmic_match_published':
       return '/feed';
     case 'cosmic_match_share_invite':

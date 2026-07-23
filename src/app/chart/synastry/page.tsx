@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api, buildBirthData } from '@/lib/api';
+import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
@@ -34,8 +36,21 @@ function overallBand(score: number): { label: string; color: string } {
   return { label: 'Challenging Dynamic', color: '#ef4444' };
 }
 
+/** Partner birth inputs used by the engine, from the form or a saved profile. */
+interface PartnerInput {
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  lat: number | null;
+  lng: number | null;
+  tz: string;
+}
+
 export default function SynastryPage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const partnerId = searchParams.get('partnerId');
   const { profile } = useAuthStore();
   const [result, setResult] = useState<CompatibilityResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,29 +65,31 @@ export default function SynastryPage() {
   const [partnerLat, setPartnerLat] = useState<number | null>(null);
   const [partnerLng, setPartnerLng] = useState<number | null>(null);
   const [partnerTz, setPartnerTz] = useState('UTC');
+  // Set when the partner came from a saved profile (?partnerId=…) rather than
+  // the manual form — suppresses the form entirely.
+  const [autoPartner, setAutoPartner] = useState(false);
 
   const hasBirthData = profile?.birth_date && profile?.latitude;
 
-  async function calculate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!hasBirthData) return;
+  const runCalculation = useCallback(async (partner: PartnerInput) => {
+    if (!profile?.birth_date || !profile?.latitude) return;
     setLoading(true);
     setError('');
     try {
       // Fetch both natal charts in parallel
       const [chart1Data, chart2Data] = await Promise.all([
-        api.getNatalChart(buildBirthData(profile!)),
+        api.getNatalChart(buildBirthData(profile)),
         (() => {
-          const { offset, label } = resolveTimezoneOffset(partnerTz, partnerLng || 0, partnerDate, partnerTime, partnerLat || undefined);
+          const { offset, label } = resolveTimezoneOffset(partner.tz, partner.lng || 0, partner.date, partner.time, partner.lat || undefined);
           return api.getNatalChart({
-            name: partnerName || '',
-            date: partnerDate,
-            time: partnerTime,
-            latitude: partnerLat || 0,
-            longitude: partnerLng || 0,
+            name: partner.name || '',
+            date: partner.date,
+            time: partner.time,
+            latitude: partner.lat || 0,
+            longitude: partner.lng || 0,
             timezone: label,
             tz_offset: offset,
-            location: partnerLocation,
+            location: partner.location,
           });
         })(),
       ]);
@@ -97,7 +114,72 @@ export default function SynastryPage() {
     } finally {
       setLoading(false);
     }
+  }, [profile]);
+
+  async function calculate(e: React.FormEvent) {
+    e.preventDefault();
+    await runCalculation({
+      name: partnerName,
+      date: partnerDate,
+      time: partnerTime,
+      location: partnerLocation,
+      lat: partnerLat,
+      lng: partnerLng,
+      tz: partnerTz,
+    });
   }
+
+  // ── Auto-run from a saved partner profile (?partnerId=…) ──
+  // Arrived from a Cosmic Match card: pull the friend's stored birth data and
+  // calculate immediately instead of asking the user to retype it.
+  const autoRanRef = useRef(false);
+  useEffect(() => {
+    if (!partnerId || autoRanRef.current) return;
+    if (!profile?.birth_date || !profile?.latitude) return;
+    autoRanRef.current = true;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const supabase = createClient();
+        const { data: partner } = await supabase
+          .from('profiles')
+          .select('display_name, birth_date, birth_time, birth_location, latitude, longitude, timezone')
+          .eq('id', partnerId)
+          .single();
+
+        if (!partner?.birth_date || partner.latitude == null || partner.longitude == null) {
+          setLoading(false);
+          setError(
+            `${partner?.display_name || 'This person'} hasn't added their full birth details yet, so their chart can't be calculated. You can enter them manually below.`,
+          );
+          return;
+        }
+
+        setAutoPartner(true);
+        setPartnerName(partner.display_name || '');
+        setPartnerDate(partner.birth_date);
+        setPartnerTime(partner.birth_time || '12:00');
+        setPartnerLocation(partner.birth_location || '');
+        setPartnerLat(Number(partner.latitude));
+        setPartnerLng(Number(partner.longitude));
+        setPartnerTz(partner.timezone || 'UTC');
+
+        await runCalculation({
+          name: partner.display_name || '',
+          date: partner.birth_date,
+          time: partner.birth_time || '12:00',
+          location: partner.birth_location || '',
+          lat: Number(partner.latitude),
+          lng: Number(partner.longitude),
+          tz: partner.timezone || 'UTC',
+        });
+      } catch {
+        setLoading(false);
+        setError('Could not load your match’s birth data.');
+      }
+    })();
+  }, [partnerId, profile, runCalculation]);
 
   if (!hasBirthData) {
     return (
@@ -173,7 +255,15 @@ export default function SynastryPage() {
         </form>
       )}
 
-      {loading && <LoadingCosmic label="Computing synastry across 7 categories..." />}
+      {loading && (
+        <LoadingCosmic
+          label={
+            autoPartner && partnerName
+              ? `Computing your synastry with ${partnerName}...`
+              : 'Computing synastry across 7 categories...'
+          }
+        />
+      )}
 
       {result && !loading && (
         <div className="space-y-5">
@@ -287,6 +377,12 @@ export default function SynastryPage() {
                 </div>
               )}
             </div>
+          )}
+
+          {partnerId && (
+            <Link href={`/chart/composite?partnerId=${partnerId}`} className="btn-primary w-full block text-center">
+              View Composite Chart{partnerName ? ` with ${partnerName}` : ''}
+            </Link>
           )}
 
           <button onClick={() => { setResult(null); setShowAspects(false); }} className="btn-secondary w-full">

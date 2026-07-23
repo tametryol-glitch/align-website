@@ -23,6 +23,7 @@ import {
   type FriendRequest,
   type SearchUserResult,
 } from '@/lib/friendService';
+import { triggerCosmicMatchCalculation } from '@/lib/cosmicMatchService';
 import { getOrCreateConversation } from '@/lib/messagingService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
@@ -160,7 +161,7 @@ export default function FriendsPage() {
     setActionLoading(null);
   }, [loadData]);
 
-  const handleAccept = useCallback(async (friendshipId: string) => {
+  const handleAccept = useCallback(async (friendshipId: string, otherUserId?: string) => {
     setActionLoading(friendshipId);
     useFriendsStore.getState().removeRequestOptimistic(friendshipId);
     const result = await acceptFriendRequest(friendshipId);
@@ -170,10 +171,14 @@ export default function FriendsPage() {
         message: result.error || 'Failed to accept request.',
         onConfirm: () => setConfirmDialog(null),
       });
+    } else if (user?.id && otherUserId) {
+      // Calculate the cosmic match in the background — this is what sends the
+      // "Cosmic Match Ready" notification to BOTH new friends.
+      triggerCosmicMatchCalculation(user.id, otherUserId).catch(() => {});
     }
     await loadData();
     setActionLoading(null);
-  }, [loadData]);
+  }, [loadData, user?.id]);
 
   const handleDecline = useCallback(async (friendshipId: string) => {
     setActionLoading(friendshipId);
@@ -271,7 +276,7 @@ export default function FriendsPage() {
     if (outgoingTargetIds.has(u.id)) return null;
     if (incomingFromIds.has(u.id)) {
       const req = incomingRequests.find(r => r.from_user_id === u.id);
-      if (req) return { label: 'Accept Request', action: () => { closePreview(); handleAccept(req.friendship_id); } };
+      if (req) return { label: 'Accept Request', action: () => { closePreview(); handleAccept(req.friendship_id, req.from_user_id); } };
     }
     return { label: 'Add Friend', action: () => { closePreview(); handleSendRequest(u.id); } };
   }, [friendIds, outgoingTargetIds, incomingFromIds, incomingRequests, closePreview, handleMessage, handleAccept, handleSendRequest]);
@@ -524,7 +529,7 @@ export default function FriendsPage() {
                     ) : isIncoming ? (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleAccept(req.friendship_id)}
+                          onClick={() => handleAccept(req.friendship_id, req.from_user_id)}
                           className="text-xs font-semibold transition-colors"
                           style={{
                             backgroundColor: 'rgba(74,222,128,0.15)',
@@ -662,7 +667,7 @@ export default function FriendsPage() {
                           onClick={(e) => {
                             e.stopPropagation();
                             const req = incomingRequests.find(r => r.from_user_id === result.id);
-                            if (req) handleAccept(req.friendship_id);
+                            if (req) handleAccept(req.friendship_id, req.from_user_id);
                           }}
                           className="px-3 py-1.5 rounded-lg bg-green-500/15 text-green-400 text-xs font-semibold hover:bg-green-500/25 transition-colors flex-shrink-0"
                         >

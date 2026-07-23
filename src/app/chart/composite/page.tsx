@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api, buildBirthData } from '@/lib/api';
+import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
@@ -117,8 +119,21 @@ function normalizeCompositeResponse(raw: any): NormalizedCompositeData {
   };
 }
 
+/** Partner birth inputs used by the composite endpoint, from the form or a saved profile. */
+interface PartnerInput {
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  lat: number | null;
+  lng: number | null;
+  tz: string;
+}
+
 export default function CompositePage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const partnerId = searchParams.get('partnerId');
   const { profile } = useAuthStore();
   const [result, setResult] = useState<NormalizedCompositeData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -134,28 +149,30 @@ export default function CompositePage() {
   const [partnerLat, setPartnerLat] = useState<number | null>(null);
   const [partnerLng, setPartnerLng] = useState<number | null>(null);
   const [partnerTz, setPartnerTz] = useState('UTC');
+  // Set when the partner came from a saved profile (?partnerId=…) rather than
+  // the manual form.
+  const [autoPartner, setAutoPartner] = useState(false);
 
   const hasBirthData = profile?.birth_date && profile?.latitude;
 
-  async function calculate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!hasBirthData) return;
+  const runCalculation = useCallback(async (partner: PartnerInput) => {
+    if (!profile?.birth_date || !profile?.latitude) return;
     setLoading(true);
     setError('');
     try {
       const raw = await api.getComposite({
-        person1: buildBirthData(profile!),
+        person1: buildBirthData(profile),
         person2: (() => {
-          const { offset, label } = resolveTimezoneOffset(partnerTz, partnerLng || 0, partnerDate, partnerTime, partnerLat || undefined);
+          const { offset, label } = resolveTimezoneOffset(partner.tz, partner.lng || 0, partner.date, partner.time, partner.lat || undefined);
           return {
-            name: partnerName || '',
-            date: partnerDate,
-            time: partnerTime,
-            latitude: partnerLat || 0,
-            longitude: partnerLng || 0,
+            name: partner.name || '',
+            date: partner.date,
+            time: partner.time,
+            latitude: partner.lat || 0,
+            longitude: partner.lng || 0,
             timezone: label,
             tz_offset: offset,
-            location: partnerLocation,
+            location: partner.location,
           };
         })(),
       });
@@ -165,7 +182,72 @@ export default function CompositePage() {
     } finally {
       setLoading(false);
     }
+  }, [profile]);
+
+  async function calculate(e: React.FormEvent) {
+    e.preventDefault();
+    await runCalculation({
+      name: partnerName,
+      date: partnerDate,
+      time: partnerTime,
+      location: partnerLocation,
+      lat: partnerLat,
+      lng: partnerLng,
+      tz: partnerTz,
+    });
   }
+
+  // ── Auto-run from a saved partner profile (?partnerId=…) ──
+  // Arrived from a Cosmic Match card: pull the friend's stored birth data and
+  // calculate immediately instead of asking the user to retype it.
+  const autoRanRef = useRef(false);
+  useEffect(() => {
+    if (!partnerId || autoRanRef.current) return;
+    if (!profile?.birth_date || !profile?.latitude) return;
+    autoRanRef.current = true;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const supabase = createClient();
+        const { data: partner } = await supabase
+          .from('profiles')
+          .select('display_name, birth_date, birth_time, birth_location, latitude, longitude, timezone')
+          .eq('id', partnerId)
+          .single();
+
+        if (!partner?.birth_date || partner.latitude == null || partner.longitude == null) {
+          setLoading(false);
+          setError(
+            `${partner?.display_name || 'This person'} hasn't added their full birth details yet, so the composite chart can't be calculated. You can enter them manually below.`,
+          );
+          return;
+        }
+
+        setAutoPartner(true);
+        setPartnerName(partner.display_name || '');
+        setPartnerDate(partner.birth_date);
+        setPartnerTime(partner.birth_time || '12:00');
+        setPartnerLocation(partner.birth_location || '');
+        setPartnerLat(Number(partner.latitude));
+        setPartnerLng(Number(partner.longitude));
+        setPartnerTz(partner.timezone || 'UTC');
+
+        await runCalculation({
+          name: partner.display_name || '',
+          date: partner.birth_date,
+          time: partner.birth_time || '12:00',
+          location: partner.birth_location || '',
+          lat: Number(partner.latitude),
+          lng: Number(partner.longitude),
+          tz: partner.timezone || 'UTC',
+        });
+      } catch {
+        setLoading(false);
+        setError('Could not load your match’s birth data.');
+      }
+    })();
+  }, [partnerId, profile, runCalculation]);
 
   if (!hasBirthData) {
     return (
@@ -241,7 +323,15 @@ export default function CompositePage() {
         </form>
       )}
 
-      {loading && <LoadingCosmic label="Computing composite midpoints..." />}
+      {loading && (
+        <LoadingCosmic
+          label={
+            autoPartner && partnerName
+              ? `Computing your composite chart with ${partnerName}...`
+              : 'Computing composite midpoints...'
+          }
+        />
+      )}
 
       {result && !loading && (
         <div className="space-y-5">

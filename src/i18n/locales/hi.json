@@ -2139,7 +2139,8 @@
     "download": "डाउनलोड",
     "upload": "अपलोड",
     "noResults": "कोई परिणाम नहीं मिला",
-    "tryAgain": "फिर कोशिश करो"
+    "tryAgain": "फिर कोशिश करो",
+    "clear": "साफ़ करें"
   },
   "zodiac": {
     "aries": "मेष",
@@ -2941,5 +2942,10 @@
       "middle": "मध्य",
       "late": "उत्तर"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "नाम या राशि से खोजें",
+    "noSearchResults": "कोई मैच नहीं मिला",
+    "noSearchResultsHint": "कोई दूसरा नाम या राशि आज़माएँ"
   }
 }

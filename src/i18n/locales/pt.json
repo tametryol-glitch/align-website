@@ -2184,7 +2184,8 @@
     "download": "Baixar",
     "upload": "Enviar",
     "noResults": "Nenhum resultado encontrado",
-    "tryAgain": "Tente novamente"
+    "tryAgain": "Tente novamente",
+    "clear": "Limpar"
   },
   "elements": {
     "fire": "Fogo",
@@ -2938,5 +2939,10 @@
       "middle": "Média",
       "late": "Tardia"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Pesquisar por nome ou signo",
+    "noSearchResults": "Nenhuma correspondência encontrada",
+    "noSearchResultsHint": "Tente outro nome ou signo"
   }
 }

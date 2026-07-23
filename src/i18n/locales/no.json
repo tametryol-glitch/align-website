@@ -2136,7 +2136,8 @@
     "download": "Last ned",
     "upload": "Last opp",
     "noResults": "Ingen resultater funnet",
-    "tryAgain": "Prøv igjen"
+    "tryAgain": "Prøv igjen",
+    "clear": "Tøm"
   },
   "zodiac": {
     "aries": "Væren",
@@ -2938,5 +2939,10 @@
       "middle": "Midt",
       "late": "Sen"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Søk etter navn eller stjernetegn",
+    "noSearchResults": "Ingen treff funnet",
+    "noSearchResultsHint": "Prøv et annet navn eller stjernetegn"
   }
 }

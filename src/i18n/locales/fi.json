@@ -2136,7 +2136,8 @@
     "download": "Lataa",
     "upload": "Lataa",
     "noResults": "Tuloksia ei loytynyt",
-    "tryAgain": "Yrita uudelleen"
+    "tryAgain": "Yrita uudelleen",
+    "clear": "Tyhjennä"
   },
   "zodiac": {
     "aries": "Oinas",
@@ -2938,5 +2939,10 @@
       "middle": "Keski",
       "late": "Myöhäinen"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Hae nimellä tai tähtimerkillä",
+    "noSearchResults": "Osumia ei löytynyt",
+    "noSearchResultsHint": "Kokeile toista nimeä tai tähtimerkkiä"
   }
 }

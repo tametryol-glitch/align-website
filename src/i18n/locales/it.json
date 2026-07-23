@@ -2136,7 +2136,8 @@
     "download": "Scarica",
     "upload": "Carica",
     "noResults": "Nessun risultato trovato",
-    "tryAgain": "Riprova"
+    "tryAgain": "Riprova",
+    "clear": "Cancella"
   },
   "zodiac": {
     "aries": "Ariete",
@@ -2938,5 +2939,10 @@
       "middle": "Intermedia",
       "late": "Avanzata"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Cerca per nome o segno",
+    "noSearchResults": "Nessuna corrispondenza trovata",
+    "noSearchResultsHint": "Prova un altro nome o segno"
   }
 }

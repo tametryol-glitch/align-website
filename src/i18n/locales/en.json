@@ -2346,7 +2346,8 @@
     "download": "Download",
     "upload": "Upload",
     "noResults": "No results found",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "clear": "Clear"
   },
   "zodiac": {
     "aries": "Aries",
@@ -2938,5 +2939,10 @@
       "middle": "Middle",
       "late": "Late"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Search by name or sign",
+    "noSearchResults": "No matches found",
+    "noSearchResultsHint": "Try a different name or sign"
   }
 }

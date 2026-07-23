@@ -2136,7 +2136,8 @@
     "download": "Pobierz",
     "upload": "Prześlij",
     "noResults": "Brak wyników",
-    "tryAgain": "Spróbuj ponownie"
+    "tryAgain": "Spróbuj ponownie",
+    "clear": "Wyczyść"
   },
   "zodiac": {
     "aries": "Baran",
@@ -2938,5 +2939,10 @@
       "middle": "Środkowa",
       "late": "Późna"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Szukaj po imieniu lub znaku",
+    "noSearchResults": "Nie znaleziono dopasowań",
+    "noSearchResultsHint": "Spróbuj innego imienia lub znaku"
   }
 }

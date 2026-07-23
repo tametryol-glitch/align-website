@@ -2136,7 +2136,8 @@
     "download": "تحميل",
     "upload": "رفع",
     "noResults": "لم يتم العثور على نتائج",
-    "tryAgain": "حاول مرة أخرى"
+    "tryAgain": "حاول مرة أخرى",
+    "clear": "مسح"
   },
   "zodiac": {
     "aries": "الحمل",
@@ -2938,5 +2939,10 @@
       "middle": "متوسطة",
       "late": "متأخرة"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "ابحث بالاسم أو البرج",
+    "noSearchResults": "لم يتم العثور على تطابقات",
+    "noSearchResultsHint": "جرّب اسمًا أو برجًا آخر"
   }
 }

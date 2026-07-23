@@ -12,6 +12,7 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { sendFriendRequest as sendFriendRequestService, acceptFriendRequest, removeFriend as removeFriendService, cancelFriendRequest, blockUser } from '@/lib/friendService';
+import { triggerCosmicMatchCalculation } from '@/lib/cosmicMatchService';
 import { getOrCreateConversation } from '@/lib/messagingService';
 import {
   getUserPosts, toggleReaction, deletePost, editPost, repostPost, toggleBookmark, getUserBookmarks,
@@ -279,6 +280,9 @@ export default function UserProfilePage() {
       const result = await acceptFriendRequest(friendshipId);
       if (result.success) {
         setFriendStatus('friends');
+        // Calculate the cosmic match in the background — this is what sends the
+        // "Cosmic Match Ready" notification to BOTH new friends.
+        if (user?.id) triggerCosmicMatchCalculation(user.id, userId).catch(() => {});
       }
     } catch { /* */ }
     setSendingRequest(false);

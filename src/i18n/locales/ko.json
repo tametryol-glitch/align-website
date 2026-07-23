@@ -2136,7 +2136,8 @@
     "download": "다운로드",
     "upload": "업로드",
     "noResults": "결과가 없습니다",
-    "tryAgain": "다시 시도하세요"
+    "tryAgain": "다시 시도하세요",
+    "clear": "지우기"
   },
   "zodiac": {
     "aries": "양자리",
@@ -2938,5 +2939,10 @@
       "middle": "중기",
       "late": "후기"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "이름 또는 별자리로 검색",
+    "noSearchResults": "일치하는 항목이 없습니다",
+    "noSearchResultsHint": "다른 이름이나 별자리를 시도해 보세요"
   }
 }

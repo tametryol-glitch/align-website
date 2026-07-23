@@ -2136,7 +2136,8 @@
     "download": "Downloaden",
     "upload": "Uploaden",
     "noResults": "Geen resultaten gevonden",
-    "tryAgain": "Probeer opnieuw"
+    "tryAgain": "Probeer opnieuw",
+    "clear": "Wissen"
   },
   "zodiac": {
     "aries": "Ram",
@@ -2938,5 +2939,10 @@
       "middle": "Midden",
       "late": "Laat"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Zoek op naam of sterrenbeeld",
+    "noSearchResults": "Geen matches gevonden",
+    "noSearchResultsHint": "Probeer een andere naam of sterrenbeeld"
   }
 }

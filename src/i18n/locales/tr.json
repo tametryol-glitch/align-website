@@ -2136,7 +2136,8 @@
     "download": "Indir",
     "upload": "Yukle",
     "noResults": "Sonuc bulunamadi",
-    "tryAgain": "Tekrar dene"
+    "tryAgain": "Tekrar dene",
+    "clear": "Temizle"
   },
   "zodiac": {
     "aries": "Koc",
@@ -2938,5 +2939,10 @@
       "middle": "Orta",
       "late": "Geç"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "İsme veya burca göre ara",
+    "noSearchResults": "Eşleşme bulunamadı",
+    "noSearchResultsHint": "Farklı bir isim veya burç deneyin"
   }
 }

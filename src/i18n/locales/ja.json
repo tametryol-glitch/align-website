@@ -2136,7 +2136,8 @@
     "download": "ダウンロード",
     "upload": "アップロード",
     "noResults": "結果が見つかりません",
-    "tryAgain": "もう一度お試しください"
+    "tryAgain": "もう一度お試しください",
+    "clear": "クリア"
   },
   "zodiac": {
     "aries": "おひつじ座",
@@ -2938,5 +2939,10 @@
       "middle": "中期",
       "late": "後期"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "名前または星座で検索",
+    "noSearchResults": "一致するものが見つかりません",
+    "noSearchResultsHint": "別の名前や星座を試してください"
   }
 }

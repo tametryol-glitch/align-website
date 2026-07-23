@@ -2136,7 +2136,8 @@
     "download": "Скачать",
     "upload": "Загрузить",
     "noResults": "Ничего не найдено",
-    "tryAgain": "Попробуйте снова"
+    "tryAgain": "Попробуйте снова",
+    "clear": "Очистить"
   },
   "zodiac": {
     "aries": "Овен",
@@ -2938,5 +2939,10 @@
       "middle": "Средняя",
       "late": "Поздняя"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Поиск по имени или знаку",
+    "noSearchResults": "Совпадений не найдено",
+    "noSearchResultsHint": "Попробуйте другое имя или знак"
   }
 }

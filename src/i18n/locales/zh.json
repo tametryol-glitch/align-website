@@ -2139,7 +2139,8 @@
     "download": "下载",
     "upload": "上传",
     "noResults": "未找到结果",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "clear": "清除"
   },
   "zodiac": {
     "aries": "白羊座",
@@ -2941,5 +2942,10 @@
       "middle": "中期",
       "late": "晚期"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "按姓名或星座搜索",
+    "noSearchResults": "未找到匹配",
+    "noSearchResultsHint": "试试其他姓名或星座"
   }
 }

@@ -153,8 +153,11 @@ async function fetchChartPositions(profile: any): Promise<{
 
 /**
  * Map a base-engine CompatibilityResult to the DB row columns.
- * Advanced scores (passion, marriage, violence, toxicity) are set to null
- * because the web does not have the advanced compatibility module.
+ *
+ * The advanced columns (passion, marriage, violence, toxicity) are deliberately
+ * NOT included: the web has no advanced compatibility module, and writing nulls
+ * would wipe values a mobile calculation already stored for the same pair.
+ * Omitting the keys leaves whatever is already there untouched.
  */
 function resultToRow(result: CompatibilityResult): Record<string, any> {
   return {
@@ -167,19 +170,6 @@ function resultToRow(result: CompatibilityResult): Record<string, any> {
     attraction_score: Math.round(result.scores?.Attraction || 0),
     stability_score: Math.round(result.scores?.Stability || 0),
     karmic_score: Math.round(result.scores?.Karmic || 0),
-
-    // Advanced modules not available on web
-    passion_score: null,
-    passion_intensity: null,
-    marriage_score: null,
-    marriage_level: null,
-    violence_risk_score: null,
-    toxicity_score: null,
-    marriage_sub_scores: {},
-    violence_sub_scores: {},
-    toxicity_subcategories: [],
-    passion_indicators: [],
-    marriage_indicators: [],
 
     band_text: result.band_text || '',
     style_label: result.style_label || '',
@@ -320,6 +310,26 @@ export async function triggerCosmicMatchCalculation(
 
     if (!matchId) return null;
 
+    // 1b. Has this pair ever produced a result? Drives two things:
+    //     - skip pointless recalculation of an already-ready match
+    //     - only fire the "Cosmic Match Ready" notification the first time
+    const { data: existing } = await supabase
+      .from('cosmic_matches')
+      .select('status, calculated_at')
+      .eq('id', matchId)
+      .single();
+
+    if (existing?.status === 'ready' && existing?.calculated_at) {
+      const { data: current } = await supabase
+        .from('cosmic_matches')
+        .select('*')
+        .eq('id', matchId)
+        .single();
+      return (current as CosmicMatch) || null;
+    }
+
+    const isFirstResult = !existing?.calculated_at;
+
     // 2. Mark as calculating
     await supabase
       .from('cosmic_matches')
@@ -413,6 +423,36 @@ export async function triggerCosmicMatchCalculation(
         .update({ status: 'error' })
         .eq('id', matchId);
       return null;
+    }
+
+    // 9. Notify BOTH users — whoever triggered the calculation and the partner.
+    // create_notification is SECURITY DEFINER, so a client may write the row
+    // for the other user. Only on the first result, so recalculations from a
+    // stale profile don't re-notify.
+    if (isFirstResult) {
+      try {
+        const score = matchData.overall_score;
+        const band = matchData.band_text || 'See your full match';
+        const bodyFor = (otherName: string) =>
+          `You and ${otherName} scored ${score}/100 — ${band}`;
+
+        await Promise.all([
+          supabase.rpc('create_notification', {
+            p_user_id: a,
+            p_type: 'cosmic_match_ready',
+            p_title: 'Cosmic Match Ready!',
+            p_body: bodyFor(profileB.display_name || 'your new friend'),
+            p_data: { match_id: matchId, other_user_id: b, score },
+          }),
+          supabase.rpc('create_notification', {
+            p_user_id: b,
+            p_type: 'cosmic_match_ready',
+            p_title: 'Cosmic Match Ready!',
+            p_body: bodyFor(profileA.display_name || 'your new friend'),
+            p_data: { match_id: matchId, other_user_id: a, score },
+          }),
+        ]);
+      } catch { /* notifications are best-effort */ }
     }
 
     return updated as CosmicMatch;

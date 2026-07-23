@@ -2136,7 +2136,8 @@
     "download": "Ladda ner",
     "upload": "Ladda upp",
     "noResults": "Inga resultat hittade",
-    "tryAgain": "Försök igen"
+    "tryAgain": "Försök igen",
+    "clear": "Rensa"
   },
   "zodiac": {
     "aries": "Väduren",
@@ -2938,5 +2939,10 @@
       "middle": "Mellan",
       "late": "Sen"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Sök efter namn eller stjärntecken",
+    "noSearchResults": "Inga matchningar hittades",
+    "noSearchResultsHint": "Prova ett annat namn eller stjärntecken"
   }
 }

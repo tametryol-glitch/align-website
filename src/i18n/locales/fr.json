@@ -2136,7 +2136,8 @@
     "download": "Telecharger",
     "upload": "Telecharger",
     "noResults": "Aucun resultat",
-    "tryAgain": "Reessayer"
+    "tryAgain": "Reessayer",
+    "clear": "Effacer"
   },
   "zodiac": {
     "aries": "Belier",
@@ -2938,5 +2939,10 @@
       "middle": "Milieu",
       "late": "Fin"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Rechercher par nom ou signe",
+    "noSearchResults": "Aucune correspondance trouvée",
+    "noSearchResultsHint": "Essayez un autre nom ou signe"
   }
 }

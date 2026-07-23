@@ -2136,7 +2136,8 @@
     "download": "ดาวน์โหลด",
     "upload": "อัปโหลด",
     "noResults": "ไม่พบผลลัพธ์",
-    "tryAgain": "ลองอีกครั้ง"
+    "tryAgain": "ลองอีกครั้ง",
+    "clear": "ล้าง"
   },
   "zodiac": {
     "aries": "ราศีเมษ",
@@ -2938,5 +2939,10 @@
       "middle": "ช่วงกลาง",
       "late": "ช่วงปลาย"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "ค้นหาด้วยชื่อหรือราศี",
+    "noSearchResults": "ไม่พบคู่ที่ตรงกัน",
+    "noSearchResultsHint": "ลองชื่อหรือราศีอื่น"
   }
 }

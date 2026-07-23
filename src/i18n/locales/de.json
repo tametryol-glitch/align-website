@@ -2136,7 +2136,8 @@
     "download": "Herunterladen",
     "upload": "Hochladen",
     "noResults": "Keine Ergebnisse gefunden",
-    "tryAgain": "Erneut versuchen"
+    "tryAgain": "Erneut versuchen",
+    "clear": "Löschen"
   },
   "zodiac": {
     "aries": "Widder",
@@ -2938,5 +2939,10 @@
       "middle": "Mittel",
       "late": "Spät"
     }
+  },
+  "cosmicMatch": {
+    "searchPlaceholder": "Nach Name oder Sternzeichen suchen",
+    "noSearchResults": "Keine Übereinstimmungen gefunden",
+    "noSearchResultsHint": "Versuche einen anderen Namen oder ein anderes Sternzeichen"
   }
 }
