@@ -29,6 +29,18 @@ export interface CallClient {
   onRemoteUserJoined(callback: (uid: number) => void): void;
   /** Register callback for when a remote user leaves */
   onRemoteUserLeft(callback: (uid: number) => void): void;
+  /**
+   * Register callback for local media acquisition failures. Without this the
+   * call silently continues while publishing nothing — the other side sees a
+   * black screen and hears silence, and neither user is told why.
+   */
+  onMediaError(callback: (kind: 'mic' | 'camera', message: string) => void): void;
+  /**
+   * Register callback fired whenever the remote video track appears or goes
+   * away. The remote peer publishes audio first and video a moment later, so
+   * polling once shortly after join misses the video track entirely.
+   */
+  onRemoteVideoChanged(callback: (track: any | null) => void): void;
   /** Get the local video track for rendering */
   getLocalVideoTrack(): any | null;
   /** Get the remote video track for rendering */
@@ -122,6 +134,8 @@ export function createCallClient(): CallClient {
   // Callback holders
   let onJoinedCallback: ((uid: number) => void) | null = null;
   let onLeftCallback: ((uid: number) => void) | null = null;
+  let onMediaErrorCallback: ((kind: 'mic' | 'camera', message: string) => void) | null = null;
+  let onRemoteVideoCallback: ((track: any | null) => void) | null = null;
 
   return {
     async join(channelName: string, token: string, uid: number): Promise<boolean> {
@@ -148,6 +162,9 @@ export function createCallClient(): CallClient {
             }
             if (mediaType === 'video') {
               remoteVideoTrack = user.videoTrack || null;
+              if (onRemoteVideoCallback) {
+                onRemoteVideoCallback(remoteVideoTrack);
+              }
             }
             if (onJoinedCallback) {
               onJoinedCallback(user.uid);
@@ -160,6 +177,9 @@ export function createCallClient(): CallClient {
         agoraClient.on('user-unpublished', (user: any, mediaType: string) => {
           if (mediaType === 'video') {
             remoteVideoTrack = null;
+            if (onRemoteVideoCallback) {
+              onRemoteVideoCallback(null);
+            }
           }
           if (mediaType === 'audio') {
             try { user.audioTrack?.stop(); } catch { /* already stopped */ }
@@ -168,6 +188,9 @@ export function createCallClient(): CallClient {
 
         agoraClient.on('user-left', (user: any) => {
           remoteVideoTrack = null;
+          if (onRemoteVideoCallback) {
+            onRemoteVideoCallback(null);
+          }
           if (onLeftCallback) {
             onLeftCallback(user.uid);
           }
@@ -183,6 +206,9 @@ export function createCallClient(): CallClient {
           await agoraClient.publish([localAudioTrack]);
         } catch (err: any) {
           console.warn('[Calling] Failed to create/publish audio track:', err?.message);
+          if (onMediaErrorCallback) {
+            onMediaErrorCallback('mic', err?.message || 'Microphone unavailable');
+          }
         }
 
         return true;
@@ -267,6 +293,15 @@ export function createCallClient(): CallClient {
         }
       } catch (err: any) {
         console.warn('[Calling] toggleCamera error:', err?.message);
+        // A track created just before a failed publish would otherwise leak
+        // and be re-created on the next toggle, holding the camera open.
+        if (!cameraOn && localVideoTrack) {
+          try { localVideoTrack.close(); } catch { /* already closed */ }
+          localVideoTrack = null;
+        }
+        if (onMediaErrorCallback) {
+          onMediaErrorCallback('camera', err?.message || 'Camera unavailable');
+        }
       }
     },
 
@@ -284,6 +319,14 @@ export function createCallClient(): CallClient {
 
     onRemoteUserLeft(callback: (uid: number) => void): void {
       onLeftCallback = callback;
+    },
+
+    onMediaError(callback: (kind: 'mic' | 'camera', message: string) => void): void {
+      onMediaErrorCallback = callback;
+    },
+
+    onRemoteVideoChanged(callback: (track: any | null) => void): void {
+      onRemoteVideoCallback = callback;
     },
 
     getLocalVideoTrack(): any | null {
@@ -309,6 +352,8 @@ export function createCallClient(): CallClient {
 
         onJoinedCallback = null;
         onLeftCallback = null;
+        onMediaErrorCallback = null;
+        onRemoteVideoCallback = null;
       } catch (err: any) {
         console.warn('[Calling] destroy() error:', err?.message);
       }

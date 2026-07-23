@@ -104,6 +104,8 @@ export default function MessagesPage() {
   const [callDuration, setCallDuration] = useState(0);
   const [callMuted, setCallMuted] = useState(false);
   const [callCameraOn, setCallCameraOn] = useState(true);
+  const [callMediaWarning, setCallMediaWarning] = useState<string | null>(null);
+  const [callPeer, setCallPeer] = useState<{ id: string; name: string; avatar_url?: string } | null>(null);
   const pendingAcceptedCall = useCallStore((s) => s.pendingAcceptedCall);
   const activeSignal = useCallStore((s) => s.activeSignal);
   const clearPendingCall = useCallStore((s) => s.setPendingAcceptedCall);
@@ -530,33 +532,75 @@ export default function MessagesPage() {
     setForwardMessage(null);
   }
 
+  // ── Video attach helper ──
+  // The video containers only exist once callState flips to 'active', and the
+  // remote peer publishes video some time after audio. A single fire-and-forget
+  // timeout races both of those and silently gives up, leaving a black screen.
+  // Retry until the track and its container are both present.
+  function attachTrackWhenReady(
+    getTrack: () => unknown,
+    ref: React.RefObject<HTMLDivElement>,
+    label: string,
+  ) {
+    const deadline = Date.now() + 8000;
+    const tick = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const track = getTrack() as any;
+      if (track && ref.current) {
+        try {
+          track.play(ref.current);
+        } catch (err) {
+          console.warn(`[Call] Could not play ${label} video:`, err);
+        }
+        return;
+      }
+      if (Date.now() < deadline) {
+        setTimeout(tick, 150);
+      } else {
+        console.warn(`[Call] Gave up attaching ${label} video (track=${!!track}, container=${!!ref.current})`);
+      }
+    };
+    tick();
+  }
+
   // ── Agora connection helper ──
   async function connectToAgoraCall(channelName: string, type: 'voice' | 'video') {
     try {
       setCallState('connecting');
+      setCallMediaWarning(null);
       const client = createCallClient();
       callClientRef.current = client;
       const uid = Math.floor(Math.random() * 100000) + 1;
       const token = await fetchAgoraToken(channelName, uid);
       if (!token) {
         console.warn('[Call] Failed to get Agora token');
+        setCallMediaWarning('Could not reach the call server. Please try again.');
         handleEndCall();
         return;
       }
+      client.onMediaError((kind, message) => {
+        console.warn(`[Call] ${kind} unavailable:`, message);
+        setCallMediaWarning(
+          kind === 'mic'
+            ? 'Your microphone is blocked — the other person cannot hear you. Allow microphone access and call again.'
+            : 'Your camera is blocked — the other person cannot see you. Allow camera access and call again.',
+        );
+        if (kind === 'camera') setCallCameraOn(false);
+      });
       client.onRemoteUserJoined(() => {
         setCallState('active');
-        setCallDuration(0);
-        callTimerRef.current = setInterval(() => {
-          setCallDuration(prev => prev + 1);
-        }, 1000);
-        if (type === 'video') {
-          setTimeout(() => {
-            const track = client.getRemoteVideoTrack();
-            if (track && remoteVideoRef.current) {
-              track.play(remoteVideoRef.current);
-            }
-          }, 500);
+        // Fires once per published track (audio, then video). Starting a second
+        // interval here would double-count the duration and leak the first one.
+        if (!callTimerRef.current) {
+          setCallDuration(0);
+          callTimerRef.current = setInterval(() => {
+            setCallDuration(prev => prev + 1);
+          }, 1000);
         }
+      });
+      client.onRemoteVideoChanged((track) => {
+        if (type !== 'video' || !track) return;
+        attachTrackWhenReady(() => client.getRemoteVideoTrack(), remoteVideoRef, 'remote');
       });
       client.onRemoteUserLeft(() => {
         handleEndCall();
@@ -564,18 +608,15 @@ export default function MessagesPage() {
       const joined = await client.join(channelName, token, uid);
       if (!joined) {
         console.warn('[Call] Failed to join Agora channel');
+        setCallMediaWarning('Could not connect to the call.');
         handleEndCall();
         return;
       }
       if (type === 'video') {
         await client.toggleCamera();
-        setCallCameraOn(true);
-        setTimeout(() => {
-          const localTrack = client.getLocalVideoTrack();
-          if (localTrack && localVideoRef.current) {
-            localTrack.play(localVideoRef.current);
-          }
-        }, 500);
+        // Reflect whether the camera actually came up, not what we hoped for.
+        setCallCameraOn(client.isCameraOn());
+        attachTrackWhenReady(() => client.getLocalVideoTrack(), localVideoRef, 'local');
       }
     } catch (err) {
       console.error('[Call] connectToAgoraCall error:', err);
@@ -609,25 +650,34 @@ export default function MessagesPage() {
   // ── Pick up pending accepted calls ──
   useEffect(() => {
     if (!pendingAcceptedCall || !user) return;
+    const call = pendingAcceptedCall;
+    clearPendingCall(null);
     (async () => {
-      const convId = await getOrCreateConversation(pendingAcceptedCall.callerId);
-      if (convId) {
-        await loadConversations();
-        store.setActiveConversationId(convId);
+      // Opening the conversation is presentation only — if it fails we still
+      // have to join the channel, or the caller sits at "connected" forever
+      // talking to an empty room.
+      try {
+        const convId = await getOrCreateConversation(call.callerId);
+        if (convId) {
+          await loadConversations();
+          store.setActiveConversationId(convId);
+        }
+      } catch (err) {
+        console.warn('[Call] Could not open conversation for incoming call:', err);
       }
-      setCallType(pendingAcceptedCall.callType);
+      setCallPeer({ id: call.callerId, name: call.callerName, avatar_url: call.callerAvatar });
+      setCallType(call.callType);
       setCallIsOutgoing(false);
       setCallDuration(0);
       setCallMuted(false);
-      setCallCameraOn(pendingAcceptedCall.callType === 'video');
+      setCallCameraOn(call.callType === 'video');
       callSessionRef.current = {
-        channelName: pendingAcceptedCall.channelName,
-        sessionId: pendingAcceptedCall.sessionId,
-        otherId: pendingAcceptedCall.callerId,
-        callType: pendingAcceptedCall.callType,
+        channelName: call.channelName,
+        sessionId: call.sessionId,
+        otherId: call.callerId,
+        callType: call.callType,
       };
-      connectToAgoraCall(pendingAcceptedCall.channelName, pendingAcceptedCall.callType);
-      clearPendingCall(null);
+      connectToAgoraCall(call.channelName, call.callType);
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingAcceptedCall, user]);
@@ -637,11 +687,17 @@ export default function MessagesPage() {
     if (!user || !activeConv) return;
     const otherId = activeConv.other_user_id;
     if (!otherId) return;
+    setCallPeer({
+      id: otherId,
+      name: activeConv.other_user_name,
+      avatar_url: activeConv.other_user_avatar || undefined,
+    });
     setCallType(type);
     setCallIsOutgoing(true);
     setCallState('ringing');
     setCallDuration(0);
     setCallMuted(false);
+    setCallMediaWarning(null);
     setCallCameraOn(type === 'video');
     const channelName = generateChannelName(user.id, otherId);
     const sessionId = generateSessionId();
@@ -722,12 +778,11 @@ export default function MessagesPage() {
     const isNowOn = callClientRef.current.isCameraOn();
     setCallCameraOn(isNowOn);
     if (!wasOn && isNowOn) {
-      setTimeout(() => {
-        const localTrack = callClientRef.current?.getLocalVideoTrack();
-        if (localTrack && localVideoRef.current) {
-          localTrack.play(localVideoRef.current);
-        }
-      }, 300);
+      attachTrackWhenReady(
+        () => callClientRef.current?.getLocalVideoTrack() ?? null,
+        localVideoRef,
+        'local',
+      );
     }
   }
 
@@ -1073,20 +1128,21 @@ export default function MessagesPage() {
       )}
 
       {/* ───────────── Call Screen ───────────── */}
-      {callState !== 'idle' && activeConv && (
+      {callState !== 'idle' && (callPeer || activeConv) && (
         <CallScreen
           isOpen={true}
           callType={callType}
           callState={callState as 'ringing' | 'connecting' | 'active' | 'ended'}
-          targetUser={{
-            id: activeConv.other_user_id || '',
-            name: activeConv.other_user_name,
-            avatar_url: activeConv.other_user_avatar || undefined,
+          targetUser={callPeer ?? {
+            id: activeConv!.other_user_id || '',
+            name: activeConv!.other_user_name,
+            avatar_url: activeConv!.other_user_avatar || undefined,
           }}
           isOutgoing={callIsOutgoing}
           duration={callDuration}
           isMuted={callMuted}
           isCameraOn={callCameraOn}
+          mediaWarning={callMediaWarning}
           localVideoRef={localVideoRef}
           remoteVideoRef={remoteVideoRef}
           onToggleMute={handleCallToggleMute}

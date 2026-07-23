@@ -23,6 +23,8 @@ interface CallScreenProps {
   duration: number;
   isMuted: boolean;
   isCameraOn: boolean;
+  /** Shown as a banner when the local mic or camera could not be acquired */
+  mediaWarning?: string | null;
   localVideoRef?: React.RefObject<HTMLDivElement>;
   remoteVideoRef?: React.RefObject<HTMLDivElement>;
   onToggleMute: () => void;
@@ -386,6 +388,7 @@ export function CallScreen({
   duration,
   isMuted,
   isCameraOn,
+  mediaWarning,
   localVideoRef,
   remoteVideoRef,
   onToggleMute,
@@ -775,6 +778,24 @@ export function CallScreen({
           <CosmicBackground />
           <Starfield stars={stars} />
         </>
+      )}
+
+      {/* Local media failure — the call is up but we are sending nothing */}
+      {mediaWarning && callState !== 'ended' && (
+        <div className="absolute left-0 right-0 z-40 flex justify-center px-4" style={{ top: 12 }}>
+          <div
+            style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.94)',
+              borderRadius: 12,
+              padding: '8px 14px',
+              maxWidth: 440,
+            }}
+          >
+            <p className="text-white text-center" style={{ fontSize: 13, lineHeight: 1.4 }}>
+              {mediaWarning}
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Content */}
