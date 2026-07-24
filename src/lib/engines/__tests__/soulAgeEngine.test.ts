@@ -207,7 +207,10 @@ describe('§20 reference chart — Universal lifetimes', () => {
   });
 
   it('validates all 11 cycles from independent closure evidence', () => {
-    expect(result.closure.rawClosureUnits).toBe(14);
+    // 15 raw since method 1.1.0: the §8-I karmic category adds 1 unit for the
+    // Draconic South Node in the 8th house. base stays capped at 12, so the
+    // ratio, octaves, validated cycles and total are unchanged from 1.0.0.
+    expect(result.closure.rawClosureUnits).toBe(15);
     expect(result.closure.baseClosureUnits).toBe(12);
     expect(result.closure.closureRatio).toBe(1);
     expect(result.closure.additionalOctaves).toBe(0);
@@ -459,6 +462,120 @@ describe('closure-unit de-duplication', () => {
     }
     expect(result.closure.baseClosureUnits).toBeLessThanOrEqual(12);
     expect(result.closure.closureRatio).toBeLessThanOrEqual(1);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// §8-I — Karmic completion signatures (method 1.1.0)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('§8-I karmic completion signatures', () => {
+  const at = (sign: string, deg: number, min = 0) =>
+    ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].indexOf(sign) * 30 + deg + min / 60;
+
+  // A Taurus Draconic Ascendant: node at 0° Aries, ASC at 16° Taurus, so the
+  // rotation is the identity on signs. Node in the 12th (Aries from a Taurus ASC).
+  function taurusRisingChart(overrides: Record<string, { lon: number; retro?: boolean }>) {
+    const node = 0; // North Node at 0° Aries → Draconic == natal
+    const base: Record<string, { lon: number; retro?: boolean }> = {
+      Sun: { lon: at('Gemini', 10) },
+      Moon: { lon: at('Leo', 10) },
+      Mercury: { lon: at('Cancer', 10) },
+      Venus: { lon: at('Taurus', 20) },
+      Mars: { lon: at('Gemini', 10) },
+      Jupiter: { lon: at('Sagittarius', 10) },
+      Saturn: { lon: at('Libra', 10) },
+      Uranus: { lon: at('Scorpio', 10) },
+      Neptune: { lon: at('Scorpio', 10) },
+      Pluto: { lon: at('Virgo', 10) },
+      Vesta: { lon: at('Virgo', 10) },
+      Juno: { lon: at('Leo', 10) },
+    };
+    const merged = { ...base, ...overrides };
+    return calculateSoulAge({
+      bodies: [
+        ...Object.entries(merged).map(([name, v]) => ({ name, longitude: v.lon, retrograde: v.retro })),
+        { name: 'True Node', longitude: node },
+      ],
+      ascendant: at('Taurus', 16),
+      midheaven: at('Capricorn', 16),
+      birthTimeKnown: true,
+    });
+  }
+
+  it('scores retrograde load among the eight classical planets', () => {
+    const r = taurusRisingChart({
+      Mercury: { lon: at('Cancer', 10), retro: true },
+      Jupiter: { lon: at('Sagittarius', 10), retro: true },
+      Uranus: { lon: at('Scorpio', 10), retro: true },
+      Neptune: { lon: at('Scorpio', 10), retro: true },
+    });
+    const i = r.closure.categories.find((c) => c.id === 'I')!;
+    expect(i.evidence.some((e) => /retrograde planets/.test(e.label))).toBe(true);
+  });
+
+  it('scores a node in the 8th or 12th house', () => {
+    const r = taurusRisingChart({});
+    const i = r.closure.categories.find((c) => c.id === 'I')!;
+    // North Node 0° Aries from a Taurus ASC is the 12th house.
+    expect(i.evidence.some((e) => /North Node in the 12th/.test(e.label))).toBe(true);
+  });
+
+  it('scores an anaretic (29°) core placement', () => {
+    const r = taurusRisingChart({ Sun: { lon: at('Gemini', 29, 30) } });
+    const i = r.closure.categories.find((c) => c.id === 'I')!;
+    expect(i.evidence.some((e) => /Anaretic/.test(e.label))).toBe(true);
+  });
+
+  it('never lets the karmic category exceed its cap', () => {
+    const r = taurusRisingChart({
+      Mercury: { lon: at('Cancer', 29, 40), retro: true },
+      Venus: { lon: at('Taurus', 20), retro: true },
+      Mars: { lon: at('Gemini', 10), retro: true },
+      Jupiter: { lon: at('Scorpio', 10), retro: true }, // 8th from Taurus
+      Saturn: { lon: at('Sagittarius', 10), retro: true }, // 8th from Taurus
+      Uranus: { lon: at('Scorpio', 10), retro: true },
+      Neptune: { lon: at('Sagittarius', 10), retro: true },
+      Pluto: { lon: at('Sagittarius', 10), retro: true },
+    });
+    const i = r.closure.categories.find((c) => c.id === 'I')!;
+    expect(i.units).toBeLessThanOrEqual(5);
+  });
+
+  it('scores nothing when no karmic signature is present', () => {
+    // No retrogrades, node not in 8th/12th, no anaretic, no deep-house cluster.
+    // Aquarius Draconic Ascendant so the node (0° Aries) lands in the 3rd house.
+    const r = calculateSoulAge({
+      bodies: [
+        { name: 'Sun', longitude: at('Taurus', 10) },
+        { name: 'Moon', longitude: at('Gemini', 10) },
+        { name: 'Saturn', longitude: at('Leo', 10) },
+        { name: 'Pluto', longitude: at('Libra', 10) },
+        { name: 'Neptune', longitude: at('Cancer', 10) },
+        { name: 'True Node', longitude: 0 },
+      ],
+      ascendant: at('Aquarius', 10),
+      midheaven: at('Scorpio', 10),
+      birthTimeKnown: true,
+    });
+    const i = r.closure.categories.find((c) => c.id === 'I')!;
+    expect(i.units).toBe(0);
+  });
+
+  it('lifts a karmically-loaded low-candidate chart via the maturity coefficient', () => {
+    const bare = taurusRisingChart({});
+    const loaded = taurusRisingChart({
+      Sun: { lon: at('Gemini', 29, 30) },                       // anaretic
+      Mercury: { lon: at('Cancer', 10), retro: true },
+      Jupiter: { lon: at('Sagittarius', 10), retro: true },
+      Uranus: { lon: at('Scorpio', 10), retro: true },
+      Neptune: { lon: at('Scorpio', 10), retro: true },
+    });
+    // More closure evidence → higher ratio → higher maturity coefficient → more
+    // lifetimes, even though a candidate-1 chart still validates 0 completed cycles.
+    expect(loaded.closure.rawClosureUnits).toBeGreaterThan(bare.closure.rawClosureUnits);
+    expect(loaded.universalMaturityCoefficient).toBeGreaterThan(bare.universalMaturityCoefficient);
+    expect(loaded.totalUniversalLifetimes).toBeGreaterThan(bare.totalUniversalLifetimes);
   });
 });
 

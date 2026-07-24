@@ -130,7 +130,7 @@ describe('row reconciles with the engine result', () => {
 
   it('includes the §19 transparency payload', () => {
     expect(ROW.detail.chronometers.length).toBeGreaterThan(0);
-    expect(ROW.detail.closure).toHaveLength(8);            // categories A–H
+    expect(ROW.detail.closure).toHaveLength(9);            // categories A–I
     expect(ROW.detail.earthAnchoring).toHaveLength(5);     // categories A–E
     expect(ROW.detail.keyPoints.length).toBeGreaterThan(0);
     // Every chronometer discloses sign/house/duad/compendium.

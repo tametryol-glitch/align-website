@@ -56,7 +56,7 @@ import {
  * Stored alongside every persisted Soul Age result so the methodology can be
  * revised later WITHOUT silently re-interpreting historical results.
  */
-export const SOUL_AGE_METHOD_VERSION = '1.0.0';
+export const SOUL_AGE_METHOD_VERSION = '1.1.0';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Immutable model constants
@@ -122,6 +122,14 @@ export interface SoulAgeBodyInput {
   name: string;
   /** Ecliptic longitude in decimal degrees, tropical geocentric, full precision. */
   longitude: number;
+  /**
+   * Whether the body was retrograde at birth. Optional — when absent it is
+   * treated as false. Used only by the §8-I karmic-completion closures; the
+   * Draconic rotation never changes retrograde status, so the same flag applies
+   * in both frames. Angles and derived points (Earth, IC, nodes-as-axis) are
+   * not retrograde in any meaningful sense.
+   */
+  retrograde?: boolean;
 }
 
 export interface SoulAgeChartInput {
@@ -162,6 +170,8 @@ export interface SoulAgePoint {
   arcSecWithinCompendium: number;
   /** Whole-Sign house within this point's own frame (natal or Draconic). */
   house: number | null;
+  /** Retrograde at birth (carried unchanged through the Draconic rotation). */
+  retrograde: boolean;
 }
 
 export type SoulAgeFrame = Record<string, SoulAgePoint>;
@@ -186,7 +196,7 @@ export interface ClosureUnit {
   label: string;
 }
 
-export type ClosureCategoryId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
+export type ClosureCategoryId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I';
 
 export interface ClosureCategoryResult {
   id: ClosureCategoryId;
@@ -362,7 +372,12 @@ export function formatPoint(absArcSec: number): string {
  * must be the Ascendant sign OF THE SAME FRAME (natal ASC for natal points,
  * Draconic ASC for Draconic points) — mixing frames would misreport houses.
  */
-export function buildPoint(name: string, absArcSec: number, ascSign: string | null): SoulAgePoint {
+export function buildPoint(
+  name: string,
+  absArcSec: number,
+  ascSign: string | null,
+  retrograde = false,
+): SoulAgePoint {
   const abs = wrapArcSec(absArcSec);
   const signIndex = Math.floor(abs / ARCSEC_PER_SIGN) % 12;
   const sign = SIGNS[signIndex];
@@ -385,6 +400,7 @@ export function buildPoint(name: string, absArcSec: number, ascSign: string | nu
     compendiumIndex: compendium.index,
     arcSecWithinCompendium: arcSecWithinSign - compendium.startArcSeconds,
     house: ascSign ? calculateWholeSignHouse(sign, ascSign) : null,
+    retrograde,
   };
 }
 
@@ -477,9 +493,14 @@ export function buildFrames(input: SoulAgeChartInput): {
 
   // ── Assemble raw absolute positions in the natal frame ────────────────────
   const raw = new Map<string, number>();
+  // Retrograde status by body name — carried into both frames unchanged, since
+  // the Draconic rotation is a rigid shift and never reverses motion. Derived
+  // points (angles, Earth, IC) stay false.
+  const retro = new Map<string, boolean>();
   for (const body of input.bodies) {
     if (!Number.isFinite(body.longitude)) continue;
     raw.set(body.name, longitudeToAbsArcSec(body.longitude));
+    retro.set(body.name, body.retrograde === true);
   }
 
   const ascAbs = longitudeToAbsArcSec(input.ascendant);
@@ -500,7 +521,7 @@ export function buildFrames(input: SoulAgeChartInput): {
 
   const natal: SoulAgeFrame = {};
   raw.forEach((abs, name) => {
-    natal[name] = buildPoint(name, abs, natalAscSign);
+    natal[name] = buildPoint(name, abs, natalAscSign, retro.get(name) === true);
   });
 
   // ── Rotate into the Draconic frame ────────────────────────────────────────
@@ -509,7 +530,7 @@ export function buildFrames(input: SoulAgeChartInput): {
 
   const draconic: SoulAgeFrame = {};
   raw.forEach((abs, name) => {
-    draconic[name] = buildPoint(name, wrapArcSec(abs - nodeAbs), draconicAscSign);
+    draconic[name] = buildPoint(name, wrapArcSec(abs - nodeAbs), draconicAscSign, retro.get(name) === true);
   });
 
   const usedMeanNode = !input.bodies.some((b) => TRUE_NODE_ALIASES.indexOf(b.name) >= 0);
@@ -521,6 +542,8 @@ export function buildFrames(input: SoulAgeChartInput): {
 export interface ChartApiPosition {
   name: string;
   longitude: number;
+  /** Swiss-Ephemeris retrograde flag; feeds the §8-I karmic-completion closures. */
+  is_retrograde?: boolean;
 }
 
 /**
@@ -551,7 +574,7 @@ export function buildSoulAgeInputFromPositions(
 ): SoulAgeChartInput {
   const bodies: SoulAgeBodyInput[] = (positions ?? [])
     .filter((p) => p && typeof p.name === 'string' && Number.isFinite(p.longitude))
-    .map((p) => ({ name: p.name, longitude: p.longitude }));
+    .map((p) => ({ name: p.name, longitude: p.longitude, retrograde: p.is_retrograde === true }));
 
   if (typeof options.trueNodeLongitude === 'number' && Number.isFinite(options.trueNodeLongitude)) {
     bodies.push({ name: 'True Node', longitude: options.trueNodeLongitude });
@@ -786,6 +809,25 @@ function pointsFor(frame: SoulAgeFrame, names: (string | null)[]): SoulAgePoint[
   return out;
 }
 
+/**
+ * §8-I — KARMIC COMPLETION SIGNATURES (added in method version 1.1.0)
+ * ===================================================================
+ * Credits the old-soul markers the original A–H categories don't measure:
+ * retrograde load, a nodal axis in the karmic-completion houses, anaretic
+ * (29th-degree) placements, and outer-planet weight in the 8th/12th. Like every
+ * other category it feeds `rawClosureUnits` and is capped, so it raises a chart's
+ * closure RATIO — which lifts both the validated-cycle count and, crucially for
+ * low-candidate charts, the maturity coefficient (ratio⁵).
+ *
+ * These are the ONLY discretionary weights in the engine. They are gathered here,
+ * named, so the methodology owner can tune them without touching the scoring
+ * logic. The cap is kept modest so this category cannot, on its own, push a chart
+ * past the 24-unit Universal-Octave threshold or disturb the §20 reference result.
+ */
+export const KARMIC_COMPLETION_CAP = 5;
+/** Retrograde count among the eight classical planets that scores 1 unit / 2 units. */
+export const KARMIC_RETRO_THRESHOLDS = { one: 3, two: 5 } as const;
+
 const CLOSURE_CATEGORY_META: Record<ClosureCategoryId, { title: string; cap: number }> = {
   A: { title: 'Draconic Ascendant closures', cap: 3 },
   B: { title: 'Saturn–Pluto completion closures', cap: 3 },
@@ -795,6 +837,7 @@ const CLOSURE_CATEGORY_META: Record<ClosureCategoryId, { title: string; cap: num
   F: { title: 'Compendium repetition closures', cap: 3 },
   G: { title: 'Dispositor completion closures', cap: 3 },
   H: { title: 'Role-amplification closures', cap: 2 },
+  I: { title: 'Karmic completion signatures', cap: KARMIC_COMPLETION_CAP },
 };
 
 /**
@@ -999,6 +1042,47 @@ export function calculateClosureUnits(
     ledger.add('H', 'roles:2', 2, `${multiRole.map((c) => `${c.planet} (${c.roles.length} roles)`).join(', ')}`);
   } else if (multiRole.length === 1) {
     ledger.add('H', 'roles:1', 1, `${multiRole[0].planet} holds ${multiRole[0].roles.length} Universal Chronometer roles`);
+  }
+
+  // ── I. Karmic completion signatures (cap KARMIC_COMPLETION_CAP) ───────────
+  // All read from the DRACONIC frame — the soul-level chart.
+
+  // I-1. Retrograde revisiting. A soul reworking old material tends to carry
+  // several retrograde planets. Counted across the eight classical planets
+  // (the Sun and Moon are never retrograde and are excluded).
+  const retroPlanets = ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    .filter((n) => draconic[n]?.retrograde);
+  if (retroPlanets.length >= KARMIC_RETRO_THRESHOLDS.two) {
+    ledger.add('I', 'retro:2', 2, `${retroPlanets.length} retrograde planets — ${retroPlanets.join(', ')}`);
+  } else if (retroPlanets.length >= KARMIC_RETRO_THRESHOLDS.one) {
+    ledger.add('I', 'retro:1', 1, `${retroPlanets.length} retrograde planets — ${retroPlanets.join(', ')}`);
+  }
+
+  // I-2. Nodal axis in a karmic-completion house (8th or 12th) — the houses of
+  // endings, hidden karma and what is carried between lives.
+  for (const nodeName of ['North Node', 'South Node']) {
+    const p = draconic[nodeName];
+    if (p && (p.house === 8 || p.house === 12)) {
+      // Only the 8th and 12th reach here, so "th" is always the right suffix.
+      ledger.add('I', `node:${nodeName}`, 1, `Draconic ${nodeName} in the ${p.house}th house`);
+    }
+  }
+
+  // I-3. Anaretic completion — a core point at the 29th degree (the "degree of
+  // completion", 29°00′00″–29°59′59″), read across the Sun and the core
+  // chronometers.
+  const anareticCandidates = pointsFor(draconic, ['Sun', ...coreNames]);
+  const anaretic = anareticCandidates.filter((p) => p.arcSecWithinSign >= 29 * ARCSEC_PER_DEGREE);
+  if (anaretic.length > 0) {
+    ledger.add('I', 'anaretic', 1, `Anaretic (29°) placement — ${anaretic.map((p) => p.name).join(', ')}`);
+  }
+
+  // I-4. Deep-house karmic weight — two or more heavy bodies in the 8th/12th.
+  const deepBodies = ['Saturn', 'Jupiter', 'Uranus', 'Neptune', 'Pluto']
+    .map((n) => draconic[n])
+    .filter((p): p is SoulAgePoint => Boolean(p) && (p.house === 8 || p.house === 12));
+  if (deepBodies.length >= 2) {
+    ledger.add('I', 'deephouse', 1, `${deepBodies.length} heavy bodies in the 8th/12th — ${deepBodies.map((p) => p.name).join(', ')}`);
   }
 
   // ── Totals ───────────────────────────────────────────────────────────────
