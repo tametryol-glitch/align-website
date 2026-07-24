@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useCallback, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   type FeedPost, type ReactionEmoji, type PostReaction,
   REACTION_OPTIONS, POST_STYLE_PRESETS, reportPost, recordPostVideoView,
 } from '@/lib/feedService';
-import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users } from 'lucide-react';
+import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users, Download, Loader2 } from 'lucide-react';
+import { downloadVideo } from '@/lib/videoDownloadService';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { isPlatformAdmin } from '@/lib/admin';
@@ -361,6 +362,26 @@ export function FeedCard({
 }) {
   const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  // Doubles as progress text while a cold variant encodes, then as the error
+  // if it fails. Null = show the plain "Save video" label.
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+
+  // Saves the branded copy (clip + Align outro). The first download of a given
+  // video waits on the encode; later ones are instant.
+  const handleDownload = useCallback(async () => {
+    if (downloading || !post.videoUrl) return;
+    setDownloading(true);
+    setDownloadNotice(null);
+    try {
+      const result = await downloadVideo('post', post.id, post.videoUrl, setDownloadNotice);
+      setDownloadNotice(result.saved ? null : result.error || 'Could not save.');
+    } finally {
+      setDownloading(false);
+    }
+  }, [downloading, post.id, post.videoUrl]);
+
+  const downloadLabel = downloadNotice || 'Save video';
   const [showMenu, setShowMenu] = useState(false);
   const [showReportMenu, setShowReportMenu] = useState(false);
   const [reported, setReported] = useState(false);
@@ -641,6 +662,25 @@ export function FeedCard({
         >
           <Share2 className="w-4 h-4" /> {t('components.feedCard.share')}
         </button>
+
+        {/* Download — video posts only, and only when the creator allows it.
+            The saved file carries the Align outro. */}
+        {post.videoUrl && post.allowDownload !== false && (
+          <>
+            <div className="w-px h-5 bg-border-primary" />
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              title="Save video"
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors disabled:opacity-60"
+            >
+              {downloading
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <Download className="w-4 h-4" />}
+              {downloadLabel}
+            </button>
+          </>
+        )}
       </div>
 
       {/* Reaction picker */}

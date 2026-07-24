@@ -39,6 +39,11 @@ export interface FeedPost {
   posterUrl?: string;
   /** Total video plays (unique-per-user log lives in post_video_views). */
   videoViewsCount?: number;
+  /**
+   * Creator opt-out for video posts. When false no download button is shown.
+   * Defaults to true; only meaningful when videoUrl is set.
+   */
+  allowDownload?: boolean;
   chartData?: any;
   reactions: PostReaction[];
   comments: FeedComment[];
@@ -191,6 +196,9 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
+      // Rows predating the downloads migration have no value — treat those
+      // as allowed, matching the DB default.
+      allowDownload: p.allow_download !== false,
       chartData: p.chart_data || undefined,
       reactions: reactionsMap.get(p.id) || [],
       comments: comments.slice(0, 3),
@@ -298,6 +306,9 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
+      // Rows predating the downloads migration have no value — treat those
+      // as allowed, matching the DB default.
+      allowDownload: p.allow_download !== false,
       chartData: p.chart_data || undefined,
       reactions: reactionsMap.get(p.id) || [],
       comments: comments.slice(0, 3),
@@ -340,6 +351,8 @@ export async function createPost(post: {
   imageUrl?: string;
   mediaKind?: string;
   videoUrl?: string;
+  /** Defaults to true — creators opt out, not in. Video posts only. */
+  allowDownload?: boolean;
   style?: { preset?: string; font?: string } | null;
 }) {
   const supabase = createClient();
@@ -380,6 +393,7 @@ export async function createPost(post: {
       image_url: post.imageUrl || null,
       media_kind: post.mediaKind || null,
       video_url: post.videoUrl || null,
+      allow_download: post.allowDownload !== false,
       style: styleToSave,
       // Set explicitly — the feed filters `.eq('is_deleted', false)`, so a
       // null default here would make new posts invisible.

@@ -47,6 +47,7 @@ export default function CreateReelPage() {
   const [category, setCategory] = useState<ReelCategory>('personal');
   const [tagsText, setTagsText] = useState('');
   const [visibility, setVisibility] = useState<ReelVisibility>('public');
+  const [allowDownload, setAllowDownload] = useState(true);
 
   const [showAstroTags, setShowAstroTags] = useState(false);
   const [astroSign, setAstroSign] = useState<string | null>(null);
@@ -136,6 +137,7 @@ export default function CreateReelPage() {
         tags,
         visibility,
         astrology_metadata,
+        allow_download: allowDownload,
       });
 
       if (result.success) {
@@ -331,6 +333,23 @@ export default function CreateReelPage() {
             </button>
           ))}
         </div>
+
+        {/* ─── Downloads ─── */}
+        <h2 className="text-white text-sm font-bold mt-4 mb-2">Downloads</h2>
+        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={allowDownload}
+            onChange={(e) => setAllowDownload(e.target.checked)}
+            className="w-4 h-4 mt-0.5 accent-[#9B6FF6]"
+          />
+          <span>
+            <span className="block text-white text-sm">Let others download this reel</span>
+            <span className="block text-white/40 text-[11px] mt-0.5">
+              Saved copies end with the Align outro.
+            </span>
+          </span>
+        </label>
 
         {/* ─── Optional astrology tags ─── */}
         <button

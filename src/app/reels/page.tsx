@@ -19,6 +19,7 @@ import {
   type ReelCategory,
   type ReelReportReason,
 } from '@/lib/reelsService';
+import { downloadVideo } from '@/lib/videoDownloadService';
 import {
   Heart,
   Bookmark,
@@ -37,6 +38,7 @@ import {
   Flag,
   Trash2,
   Plus,
+  Download,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -73,6 +75,8 @@ function ReelItem({
   onOpenComments,
   onReport,
   onView,
+  onDownload,
+  downloading,
 }: {
   reel: Reel;
   isActive: boolean;
@@ -84,6 +88,8 @@ function ReelItem({
   onOpenComments: () => void;
   onReport: () => void;
   onView: () => void;
+  onDownload: () => void;
+  downloading: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -346,6 +352,23 @@ function ReelItem({
             {formatCount(reel.shares_count)}
           </span>
         </button>
+
+        {/* Download — hidden when the creator opted out. The saved file
+            carries the Align outro. */}
+        {reel.allow_download && (
+          <button
+            onClick={onDownload}
+            disabled={downloading}
+            title="Save video"
+            className="flex flex-col items-center gap-1 group disabled:opacity-70"
+          >
+            <div className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+              {downloading
+                ? <Loader2 className="w-5 h-5 text-white animate-spin" />
+                : <Download className="w-6 h-6 text-white" />}
+            </div>
+          </button>
+        )}
 
         {/* Views */}
         <div className="flex flex-col items-center gap-1">
@@ -637,6 +660,10 @@ export default function ReelsPage() {
   const [isMuted, setIsMuted] = useState(true);
   const [activeReelIndex, setActiveReelIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  /** Reel id currently being downloaded — one at a time. */
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  /** Progress or failure text for the download toast. */
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
 
   // Comment panel
   const [commentReelId, setCommentReelId] = useState<string | null>(null);
@@ -869,6 +896,20 @@ export default function ReelsPage() {
     }
   }, []);
 
+  // Downloads the branded copy (clip + Align outro). The first download of a
+  // given reel waits on the encode; later ones are instant.
+  const handleDownload = useCallback(async (reel: Reel) => {
+    if (downloadingId) return;
+    setDownloadingId(reel.id);
+    setDownloadNotice(null);
+    try {
+      const result = await downloadVideo('reel', reel.id, reel.video_url, setDownloadNotice);
+      setDownloadNotice(result.saved ? null : result.error || 'Could not save the video.');
+    } finally {
+      setDownloadingId(null);
+    }
+  }, [downloadingId]);
+
   const handleRecordView = useCallback((reelId: string) => {
     recordReelView(reelId);
   }, []);
@@ -994,6 +1035,8 @@ export default function ReelsPage() {
                 onOpenComments={() => setCommentReelId(reel.id)}
                 onReport={() => setReportReelId(reel.id)}
                 onView={() => handleRecordView(reel.id)}
+                onDownload={() => handleDownload(reel)}
+                downloading={downloadingId === reel.id}
               />
             </div>
           ))}
@@ -1016,6 +1059,20 @@ export default function ReelsPage() {
       </div>
 
       <div className="hidden lg:block flex-1 bg-[#0a0a14]" />
+
+      {/* Download status — the first save of a video waits on the encode, so
+          say something rather than looking frozen. */}
+      {downloadNotice && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 rounded-full bg-black/85 px-5 py-3 backdrop-blur-sm">
+          {downloadingId && <Loader2 className="w-4 h-4 text-white animate-spin" />}
+          <span className="text-white text-sm font-semibold">{downloadNotice}</span>
+          {!downloadingId && (
+            <button onClick={() => setDownloadNotice(null)} className="ml-1 text-white/60 hover:text-white">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Comment panel */}
       {commentReelId && (

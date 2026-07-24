@@ -176,6 +176,8 @@ function CreatePostModal({
 
   // Video state
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  /** Composer: whether the video post being written allows downloads. */
+  const [allowDownload, setAllowDownload] = useState(true);
   const [videoPreview, setVideoPreview] = useState<string | null>(initialVideoUrl || null);
   // Set when the clip is already hosted (an editor render) — posting then
   // reuses that URL instead of uploading the file again.
@@ -355,6 +357,7 @@ function CreatePostModal({
           imageUrl,
           mediaKind: imageFile ? 'photo' : undefined,
           videoUrl,
+          ...(videoUrl ? { allowDownload } : {}),
           style: hasGradient ? { preset: selectedPreset } : null,
         });
         onCreated(data);
@@ -508,6 +511,20 @@ function CreatePostModal({
                     </button>
                   )}
                 </div>
+              )}
+
+              {/* Downloads opt-out — video posts only. Saved copies carry the
+                  Align outro, so this is the creator's say over that. */}
+              {videoPreview && (
+                <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
+                  <input
+                    type="checkbox"
+                    checked={allowDownload}
+                    onChange={(e) => setAllowDownload(e.target.checked)}
+                    className="w-4 h-4 accent-accent-primary"
+                  />
+                  <span className="text-sm text-text-muted">Let others download this video</span>
+                </label>
               )}
 
               {/* Live camera while recording */}

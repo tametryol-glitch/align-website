@@ -92,6 +92,8 @@ export interface Reel {
   is_following_creator: boolean;
   astrology_metadata?: AstrologyMetadata | null;
   topic_metadata?: Record<string, any> | null;
+  /** Creator opt-out. When false no download button is shown. */
+  allow_download: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -119,6 +121,8 @@ export interface CreateReelInput {
   visibility: ReelVisibility;
   astrology_metadata?: AstrologyMetadata | null;
   topic_metadata?: Record<string, any> | null;
+  /** Defaults to true — creators opt out, not in. */
+  allow_download?: boolean;
 }
 
 export interface CreateReelResult {
@@ -178,6 +182,9 @@ function mapReelRow(
     is_following_creator: followingIds.has(r.creator_id),
     astrology_metadata: r.astrology_metadata || null,
     topic_metadata: r.topic_metadata || null,
+    // Rows created before the downloads migration have no column value —
+    // treat those as allowed, matching the DB default.
+    allow_download: r.allow_download !== false,
     created_at: r.created_at,
     updated_at: r.updated_at,
   };
@@ -787,6 +794,7 @@ export async function createReel(input: CreateReelInput): Promise<CreateReelResu
         visibility: input.visibility || 'public',
         astrology_metadata: input.astrology_metadata || null,
         topic_metadata: input.topic_metadata || null,
+        allow_download: input.allow_download !== false,
         status: 'active',
       })
       .select()
@@ -826,6 +834,7 @@ export async function createReel(input: CreateReelInput): Promise<CreateReelResu
         is_following_creator: false,
         astrology_metadata: data.astrology_metadata,
         topic_metadata: data.topic_metadata,
+        allow_download: data.allow_download !== false,
         created_at: data.created_at,
         updated_at: data.updated_at,
       },
