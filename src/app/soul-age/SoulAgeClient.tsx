@@ -577,7 +577,10 @@ export function SoulAgeClient() {
               <Stat label="Previous Non-Earth Lifetimes" value={formatCount(result.nonEarthLifetimes)} />
               <Stat label="Earth Incarnation Percentage" value={`${result.earthPercentage.toFixed(2)}%`} />
               <Stat label="Earth Anchoring Score" value={`${result.earthAnchoring.displayScore} / 100`} />
-              <Stat label="Completed Universal Cycles" value={String(result.validatedCompletedCycles)} />
+              {/* validated / candidate — the denominator is the count the Draconic
+                  Ascendant offers, so a "0 / 1" reads as "detected, not yet validated"
+                  rather than "nothing found". */}
+              <Stat label="Completed Universal Cycles" value={`${result.validatedCompletedCycles} / ${result.candidateCompletedCycles}`} />
               <Stat
                 label="Current Universal Cycle"
                 value={`${(result.currentCyclePosition * 100).toFixed(2)}% through`}
