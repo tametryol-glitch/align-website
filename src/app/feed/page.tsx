@@ -590,15 +590,15 @@ function CreatePostModal({
                       onChange={handleImageSelect}
                     />
                   </label>
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
+                  {/* Switch to video mode so both Record and Upload are shown,
+                      instead of jumping straight to a file picker. */}
+                  <button
+                    type="button"
+                    onClick={() => { setPostMode('video'); clearImage(); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors"
+                  >
                     <Video className="w-4 h-4" /> {t('feed.composer.addVideo')}
-                    <input
-                      type="file"
-                      accept="video/*"
-                      className="hidden"
-                      onChange={handleVideoSelect}
-                    />
-                  </label>
+                  </button>
                 </div>
               )}
 

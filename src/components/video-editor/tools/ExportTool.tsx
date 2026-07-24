@@ -109,14 +109,25 @@ export function ExportTool() {
     setUploading(false);
   }, [uploadExport]);
 
-  /** Upload (if needed) and hand the render to the cosmic feed composer. */
-  const handlePostToFeed = useCallback(async () => {
+  /**
+   * Upload (if needed) and hand the render to the composer it came from —
+   * the reel composer when opened with ?returnTo=reel, otherwise the feed.
+   */
+  const handlePost = useCallback(async () => {
     setPostingToFeed(true);
     setUploadError(null);
     const url = await uploadExport();
     if (!url) { setPostingToFeed(false); return; }
-    router.push(`/feed?editedVideoUrl=${encodeURIComponent(url)}`);
+    const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+    const dest = returnTo === 'reel'
+      ? `/reels/create?editedVideoUrl=${encodeURIComponent(url)}`
+      : `/feed?editedVideoUrl=${encodeURIComponent(url)}`;
+    router.push(dest);
   }, [uploadExport, router]);
+
+  const returnToReel =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('returnTo') === 'reel';
 
   return (
     <div className="space-y-4">
@@ -191,14 +202,14 @@ export function ExportTool() {
           {/* Primary: send the render to the composer so the editor isn't a
               dead end. Download / Save to Cloud stay available below. */}
           <button
-            onClick={handlePostToFeed}
+            onClick={handlePost}
             disabled={postingToFeed}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 transition-colors disabled:opacity-50"
           >
             {postingToFeed ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Preparing...</>
             ) : (
-              <><Send className="w-4 h-4" /> Post to Cosmic Feed</>
+              <><Send className="w-4 h-4" /> {returnToReel ? 'Continue to reel' : 'Post to Cosmic Feed'}</>
             )}
           </button>
 

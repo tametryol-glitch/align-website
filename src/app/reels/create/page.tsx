@@ -24,7 +24,7 @@ import {
 } from '@/lib/reelsService';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import {
-  Upload, Video as VideoIcon, X, Loader2, ArrowLeft, Circle, Square, Globe, Users, Lock,
+  Upload, Video as VideoIcon, X, Loader2, ArrowLeft, Circle, Square, Globe, Users, Lock, Scissors,
 } from 'lucide-react';
 
 const ZODIAC_SIGNS = [
@@ -42,6 +42,11 @@ export default function CreateReelPage() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [durationSeconds, setDurationSeconds] = useState(0);
+  // Set when a clip is already hosted (the raw upload before editing, or the
+  // finished render coming back). Publish then skips re-uploading it.
+  const [hostedUrl, setHostedUrl] = useState<string | null>(null);
+  const [openingEditor, setOpeningEditor] = useState(false);
+  const editedHandledRef = useRef(false);
 
   const [caption, setCaption] = useState('');
   const [category, setCategory] = useState<ReelCategory>('personal');
@@ -65,8 +70,9 @@ export default function CreateReelPage() {
   }, [previewUrl]);
 
   const acceptClip = useCallback((f: File) => {
-    setPreviewUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f); });
+    setPreviewUrl((old) => { if (old?.startsWith('blob:')) URL.revokeObjectURL(old); return URL.createObjectURL(f); });
     setFile(f);
+    setHostedUrl(null);
     setDurationSeconds(0);
     setError(null);
   }, []);
@@ -75,6 +81,51 @@ export default function CreateReelPage() {
     canRecord, recording, elapsed, error: recorderError,
     liveVideoRef, start: startRecording, stop: stopRecording,
   } = useVideoRecorder({ maxSeconds: MAX_RECORD_SECONDS, onClip: acceptClip });
+
+  // Returning from the editor: /reels/create?editedVideoUrl=<url> adopts the
+  // finished render as the reel's video. window.location (not useSearchParams)
+  // keeps this page statically buildable — matching the feed page.
+  useEffect(() => {
+    if (editedHandledRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('editedVideoUrl');
+    if (!url) return;
+    editedHandledRef.current = true;
+    setHostedUrl(url);
+    setPreviewUrl(url);
+    setFile(null);
+    const d = Number(params.get('durationSeconds'));
+    if (Number.isFinite(d) && d > 0) setDurationSeconds(d);
+    window.history.replaceState({}, '', '/reels/create');
+  }, []);
+
+  /**
+   * Hand the clip to the browser editor. It reads ?url=, so the file has to be
+   * hosted first; the editor posts the finished render back here.
+   */
+  const handleEdit = useCallback(async () => {
+    if (openingEditor) return;
+    setOpeningEditor(true);
+    setError(null);
+    try {
+      // A hosted clip (e.g. re-editing a render) needs no re-upload.
+      let url = hostedUrl;
+      if (!url) {
+        if (!file) { setOpeningEditor(false); return; }
+        const res = await uploadReelVideo(file);
+        if (!res.url) {
+          setError(res.error || 'Could not open the editor. Try again.');
+          setOpeningEditor(false);
+          return;
+        }
+        url = res.url;
+      }
+      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=reel`);
+    } catch (err: any) {
+      setError(err?.message || 'Could not open the editor. Try again.');
+      setOpeningEditor(false);
+    }
+  }, [openingEditor, hostedUrl, file, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -85,15 +136,16 @@ export default function CreateReelPage() {
   };
 
   const clearClip = () => {
-    setPreviewUrl((old) => { if (old) URL.revokeObjectURL(old); return null; });
+    setPreviewUrl((old) => { if (old?.startsWith('blob:')) URL.revokeObjectURL(old); return null; });
     setFile(null);
+    setHostedUrl(null);
     setDurationSeconds(0);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // ─── Publish ───
   const handlePublish = async () => {
-    if (publishing || !file) return;
+    if (publishing || (!file && !hostedUrl)) return;
     setError(null);
     setPublishing(true);
 
@@ -109,9 +161,19 @@ export default function CreateReelPage() {
         }
       }
 
-      const { url, error: uploadError } = await uploadReelVideo(file);
+      // An editor render (or an already-hosted clip) is reused as-is.
+      let url = hostedUrl;
+      if (!url && file) {
+        const res = await uploadReelVideo(file);
+        url = res.url ?? null;
+        if (!url) {
+          setError(res.error || 'Upload failed. Check your connection and try again.');
+          setPublishing(false);
+          return;
+        }
+      }
       if (!url) {
-        setError(uploadError || 'Upload failed. Check your connection and try again.');
+        setError('No video to publish.');
         setPublishing(false);
         return;
       }
@@ -217,6 +279,22 @@ export default function CreateReelPage() {
               <span className="absolute bottom-2 left-2 px-2 py-1 rounded bg-black/70 text-white text-[11px]">
                 {durationSeconds.toFixed(1)}s
               </span>
+            )}
+            {hostedUrl && !file ? (
+              <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-white text-[11px] font-semibold">
+                ✨ Edited
+              </span>
+            ) : (
+              /* Trim, filter, caption and text before posting. */
+              <button
+                onClick={handleEdit}
+                disabled={openingEditor}
+                className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#9B6FF6] text-white text-[11px] font-semibold disabled:opacity-60"
+              >
+                {openingEditor
+                  ? (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> Opening…</>)
+                  : (<><Scissors className="w-3.5 h-3.5" /> Edit</>)}
+              </button>
             )}
           </div>
         ) : recording ? (
@@ -394,7 +472,7 @@ export default function CreateReelPage() {
         {/* ─── Publish ─── */}
         <button
           onClick={handlePublish}
-          disabled={!file || publishing}
+          disabled={(!file && !hostedUrl) || publishing}
           className="w-full mt-7 py-3.5 rounded-xl bg-[#9B6FF6] text-white text-base font-bold disabled:opacity-40 flex items-center justify-center gap-2"
         >
           {publishing ? (<><Loader2 className="w-5 h-5 animate-spin" /> Publishing...</>) : (<><VideoIcon className="w-5 h-5" /> Publish Reel</>)}
