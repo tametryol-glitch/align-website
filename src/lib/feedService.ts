@@ -17,6 +17,10 @@ export interface FeedComment {
   userAvatar?: string;
   text: string;
   createdAt: string;
+  /** null for a top-level comment, the parent's id for a reply. */
+  parentCommentId?: string | null;
+  replyCount?: number;
+  isEdited?: boolean;
 }
 
 /** A user tagged in a post (e.g. the two people in a cosmic_match card). */
@@ -122,7 +126,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   // Batch-fetch reactions and comments
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -175,9 +179,14 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       userAvatar: profile?.avatar_url || undefined,
       text: c.text,
       createdAt: c.created_at,
+      parentCommentId: c.parent_comment_id || null,
     };
-    if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
-    commentsMap.get(c.post_id)!.push(comment);
+    // Replies live under their parent in the sheet — the card preview
+    // only shows top-level comments, but the count covers the thread.
+    if (!c.parent_comment_id) {
+      if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
+      commentsMap.get(c.post_id)!.push(comment);
+    }
     commentCountMap.set(c.post_id, (commentCountMap.get(c.post_id) || 0) + 1);
   }
 
@@ -251,7 +260,7 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
 
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -285,9 +294,12 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       userAvatar: profile?.avatar_url || undefined,
       text: c.text,
       createdAt: c.created_at,
+      parentCommentId: c.parent_comment_id || null,
     };
-    if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
-    commentsMap.get(c.post_id)!.push(comment);
+    if (!c.parent_comment_id) {
+      if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
+      commentsMap.get(c.post_id)!.push(comment);
+    }
     commentCountMap.set(c.post_id, (commentCountMap.get(c.post_id) || 0) + 1);
   }
 
@@ -446,7 +458,16 @@ export async function toggleReaction(postId: string, userId: string, emoji: Reac
   return Array.from(reactionMap.values());
 }
 
-export async function addComment(postId: string, userId: string, text: string) {
+/**
+ * Post a comment, or a reply when `parentCommentId` is given. Replies are
+ * one level deep — the DB rejects a reply to a reply.
+ */
+export async function addComment(
+  postId: string,
+  userId: string,
+  text: string,
+  parentCommentId?: string | null,
+) {
   const supabase = createClient();
 
   const { data: { session } } = await supabase.auth.getSession();
@@ -454,21 +475,28 @@ export async function addComment(postId: string, userId: string, text: string) {
 
   const effectiveUserId = session.user.id;
 
-  const { error: insertError } = await supabase
-    .from('post_comments')
-    .insert({ post_id: postId, user_id: effectiveUserId, text });
+  const row: Record<string, any> = { post_id: postId, user_id: effectiveUserId, text };
+  if (parentCommentId) row.parent_comment_id = parentCommentId;
+
+  const { error: insertError } = await supabase.from('post_comments').insert(row);
 
   if (insertError) throw new Error(`Insert failed: ${insertError.message} (code: ${insertError.code})`);
 
+  // Read the row back separately — a notification trigger failing on the
+  // SELECT must never look like the INSERT failed.
+  let readback = supabase
+    .from('post_comments')
+    .select('id, created_at')
+    .eq('post_id', postId)
+    .eq('user_id', effectiveUserId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+  readback = parentCommentId
+    ? readback.eq('parent_comment_id', parentCommentId)
+    : readback.is('parent_comment_id', null);
+
   const [commentRes, profileRes] = await Promise.all([
-    supabase
-      .from('post_comments')
-      .select('id, created_at')
-      .eq('post_id', postId)
-      .eq('user_id', effectiveUserId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single(),
+    readback.maybeSingle(),
     supabase
       .from('profiles')
       .select('display_name, avatar_url')
@@ -483,20 +511,17 @@ export async function addComment(postId: string, userId: string, text: string) {
     userAvatar: profileRes.data?.avatar_url || undefined,
     text,
     createdAt: commentRes.data?.created_at || new Date().toISOString(),
+    parentCommentId: parentCommentId || null,
+    replyCount: 0,
+    isEdited: false,
   } as FeedComment;
 }
 
-export async function getComments(postId: string): Promise<FeedComment[]> {
+const COMMENT_COLUMNS = 'id, user_id, text, created_at, parent_comment_id, reply_count, is_edited';
+
+async function hydrateComments(rows: any[]): Promise<FeedComment[]> {
+  if (!rows.length) return [];
   const supabase = createClient();
-  const { data: rows, error } = await supabase
-    .from('post_comments')
-    .select('id, user_id, text, created_at')
-    .eq('post_id', postId)
-    .eq('is_deleted', false)
-    .order('created_at', { ascending: true });
-
-  if (error || !rows || rows.length === 0) return [];
-
   const userIds = Array.from(new Set(rows.map((c: any) => c.user_id)));
   const { data: profiles } = await supabase
     .from('profiles')
@@ -515,8 +540,62 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
       userAvatar: p?.avatar_url || undefined,
       text: c.text,
       createdAt: c.created_at,
+      parentCommentId: c.parent_comment_id || null,
+      replyCount: c.reply_count || 0,
+      isEdited: !!c.is_edited,
     };
   });
+}
+
+/** Top-level comments on a post, oldest first. Replies load on demand. */
+export async function getComments(postId: string): Promise<FeedComment[]> {
+  const supabase = createClient();
+  const { data: rows, error } = await supabase
+    .from('post_comments')
+    .select(COMMENT_COLUMNS)
+    .eq('post_id', postId)
+    .eq('is_deleted', false)
+    .is('parent_comment_id', null)
+    .order('created_at', { ascending: true });
+
+  if (error || !rows) return [];
+  return hydrateComments(rows);
+}
+
+/** The replies under one top-level comment, oldest first. */
+export async function getReplies(parentCommentId: string): Promise<FeedComment[]> {
+  const supabase = createClient();
+  const { data: rows, error } = await supabase
+    .from('post_comments')
+    .select(COMMENT_COLUMNS)
+    .eq('parent_comment_id', parentCommentId)
+    .eq('is_deleted', false)
+    .order('created_at', { ascending: true });
+
+  if (error || !rows) return [];
+  return hydrateComments(rows);
+}
+
+/** Which top-level comment a reply belongs to (notification deep-links). */
+export async function getCommentParentId(commentId: string): Promise<string | null> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from('post_comments')
+    .select('parent_comment_id')
+    .eq('id', commentId)
+    .maybeSingle();
+  return (data as any)?.parent_comment_id || null;
+}
+
+/** Edit your own comment. RLS enforces ownership. */
+export async function editComment(commentId: string, text: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('post_comments')
+    .update({ text, is_edited: true, edited_at: new Date().toISOString() })
+    .eq('id', commentId);
+  if (error) return { success: false, error: error.message };
+  return { success: true };
 }
 
 export async function deleteComment(commentId: string) {

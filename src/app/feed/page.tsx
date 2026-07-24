@@ -12,6 +12,7 @@ import {
 } from '@/lib/feedService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
+import { MentionInput } from '@/components/feed/MentionInput';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -443,12 +444,14 @@ function CreatePostModal({
                 className="rounded-xl p-4 min-h-[120px] border border-border-primary"
                 style={hasGradient ? { background: `linear-gradient(135deg, ${preset!.gradient[0]}, ${preset!.gradient[1]})` } : { background: 'var(--bg-card, #1E2640)' }}
               >
-                <textarea
+                <MentionInput
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder={t('feed.composer.placeholder')}
-                  maxLength={2000}
+                  onChange={setContent}
+                  excludeUserId={userId}
+                  multiline
                   rows={4}
+                  maxLength={2000}
+                  placeholder={t('feed.composer.placeholder')}
                   className="w-full bg-transparent border-none outline-none resize-none text-sm placeholder:text-white/40"
                   style={hasGradient ? { color: preset!.textColor } : { color: '#FFFFFF' }}
                 />
@@ -837,6 +840,10 @@ export default function FeedPage() {
       setHighlightCommentId(targetCommentId);
       setCommentPostId(targetPostId);
     }
+    // Drop the params once consumed. Without this the deep-link URL sticks
+    // around in history, so every later visit to /feed (refresh, back, a
+    // bookmark) re-opened that same comment sheet.
+    window.history.replaceState({}, '', '/feed');
   }, [loading]);
 
   async function loadMore() {
@@ -1200,9 +1207,11 @@ export default function FeedPage() {
               </button>
             </div>
             <div className="px-5 py-4">
-              <textarea
+              <MentionInput
                 value={editText}
-                onChange={(e) => setEditText(e.target.value)}
+                onChange={setEditText}
+                excludeUserId={userId}
+                multiline
                 rows={5}
                 maxLength={2000}
                 className="w-full bg-bg-card border border-border-primary rounded-xl p-4 text-sm text-text-primary resize-none outline-none focus:border-accent-primary transition-colors"

@@ -14,7 +14,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { isPlatformAdmin } from '@/lib/admin';
 import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creatorScoreEngine';
 import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
-import { renderTextWithLinks } from '@/lib/linkify';
+import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
@@ -133,10 +133,11 @@ function ExpandablePostText({ text, className, style }: {
   const [stage, setStage] = useState(0);
   const cuts = getFoldCuts(text);
   const folded = stage < cuts.length;
-  const shown = folded ? text.slice(0, cuts[stage]).trimEnd() : text;
+  // Never cut in the middle of "@[Name](id)" — that would leak raw markup.
+  const shown = folded ? text.slice(0, clampCutOutsideMention(text, cuts[stage])).trimEnd() : text;
   return (
     <p className={className} style={style}>
-      {renderTextWithLinks(shown)}
+      {renderRichText(shown)}
       {folded && (
         <>
           {'… '}
@@ -717,7 +718,7 @@ export function FeedCard({
                 {isGifOrStickerUrl(c.text) ? (
                   <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[180px] max-h-[120px] rounded-lg object-contain" />
                 ) : (
-                  <span className="text-text-secondary">{c.text}</span>
+                  <span className="text-text-secondary">{renderRichText(c.text)}</span>
                 )}
               </div>
             </div>
