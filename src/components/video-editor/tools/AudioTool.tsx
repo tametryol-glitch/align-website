@@ -6,6 +6,7 @@
  * the music library + playback engine are built.
  */
 
+import { useMemo, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { Volume2, VolumeX, Music } from 'lucide-react';
 import { trackUrl, trackByUrl, useAudioLibrary } from '@/lib/musicLibrary';
@@ -25,6 +26,16 @@ export function AudioTool() {
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
   const { music: MUSIC_TRACKS } = useAudioLibrary();
   const activeTrack = trackByUrl(musicTrackUrl, MUSIC_TRACKS);
+
+  // Genre filter for the music picker.
+  const [genre, setGenre] = useState<string>('all');
+  const genres = useMemo(
+    () => Array.from(new Set(MUSIC_TRACKS.map((t) => t.category).filter(Boolean))).sort(),
+    [MUSIC_TRACKS],
+  );
+  const shownTracks = genre === 'all'
+    ? MUSIC_TRACKS
+    : MUSIC_TRACKS.filter((t) => t.category === genre);
   const wave = useWaveform(musicTrackUrl);
   // How far into the song we can start while still covering the whole video.
   const usedLen = Math.max(0.1, trimEnd - trimStart);
@@ -82,6 +93,19 @@ export function AudioTool() {
         <div className="flex items-center gap-2">
           <Music className="w-4 h-4 text-text-muted" />
           <span className="text-sm text-text-secondary">Background Music</span>
+          {genres.length > 0 && (
+            <select
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className="ml-auto text-[11px] px-2 py-1 rounded-md bg-white/5 border border-white/10 text-text-secondary focus:outline-none focus:border-accent-primary"
+              title="Filter by genre"
+            >
+              <option value="all">All genres</option>
+              {genres.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-1.5">
@@ -91,7 +115,7 @@ export function AudioTool() {
           >
             None
           </button>
-          {MUSIC_TRACKS.map((t) => {
+          {shownTracks.map((t) => {
             const active = activeTrack?.id === t.id;
             return (
               <button
@@ -100,7 +124,7 @@ export function AudioTool() {
                 className={`px-2.5 py-2 rounded-md text-xs text-left border ${active ? 'border-accent-primary bg-accent-primary/10 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}
               >
                 <span className="block font-medium truncate">{t.name}</span>
-                <span className="block text-[10px] text-text-muted">{t.mood}</span>
+                <span className="block text-[10px] text-text-muted truncate">{t.category || t.mood}</span>
               </button>
             );
           })}

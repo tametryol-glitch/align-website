@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { randomUUID } from 'crypto';
+import { isValidCategory } from '@/lib/audioCategories';
 
 const BUCKET = 'cosmic-videos';
 const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
     const file = form.get('file');
     const name = (form.get('name') as string || '').trim();
     const mood = (form.get('mood') as string || '').trim();
+    const category = (form.get('category') as string || '').trim();
     const kind = (form.get('kind') as string || 'music').trim();
     const durationSeconds = parseFloat(form.get('durationSeconds') as string) || 0;
 
@@ -98,6 +100,9 @@ export async function POST(req: NextRequest) {
     }
     if (kind !== 'music' && kind !== 'sfx') {
       return NextResponse.json({ error: 'kind must be "music" or "sfx".' }, { status: 400 });
+    }
+    if (!isValidCategory(category)) {
+      return NextResponse.json({ error: 'Unknown category.' }, { status: 400 });
     }
     if (file.type && !ALLOWED.includes(file.type)) {
       return NextResponse.json({ error: 'Unsupported audio type. Use MP3, WAV, M4A/AAC, or OGG.' }, { status: 400 });
@@ -136,6 +141,7 @@ export async function POST(req: NextRequest) {
       .insert({
         name,
         mood,
+        category,
         kind,
         storage_path: path,
         duration_seconds: durationSeconds,
@@ -170,6 +176,12 @@ export async function PATCH(req: NextRequest) {
     if (typeof rest.is_active === 'boolean') patch.is_active = rest.is_active;
     if (typeof rest.name === 'string') patch.name = rest.name.trim();
     if (typeof rest.mood === 'string') patch.mood = rest.mood.trim();
+    if (typeof rest.category === 'string') {
+      if (!isValidCategory(rest.category.trim())) {
+        return NextResponse.json({ error: 'Unknown category.' }, { status: 400 });
+      }
+      patch.category = rest.category.trim();
+    }
     if (typeof rest.sort_order === 'number') patch.sort_order = rest.sort_order;
     if (Object.keys(patch).length === 0) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });

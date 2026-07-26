@@ -4,9 +4,10 @@
  * /admin/audio — Audio Library manager.
  *
  * Admin-only. Upload background songs and short sound bites into the video
- * editor's shared library (audio_tracks table + cosmic-videos storage bucket).
- * The web editor, mobile editor, and renderer all read this library, so a
- * track uploaded here is immediately selectable by every user.
+ * editor's shared library (audio_tracks table + cosmic-videos storage bucket),
+ * filed under a genre/category. The web editor, mobile editor, and renderer all
+ * read this library, so a track uploaded here is immediately selectable by
+ * every user.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -16,11 +17,13 @@ import Link from 'next/link';
 import {
   Shield, Music, Upload, Trash2, Loader2, ArrowLeft, Eye, EyeOff, Play, Pause, Volume2, Zap,
 } from 'lucide-react';
+import { AUDIO_CATEGORIES, UNCATEGORIZED } from '@/lib/audioCategories';
 
 interface AudioTrack {
   id: string;
   name: string;
   mood: string;
+  category: string;
   kind: 'music' | 'sfx';
   storage_path: string;
   duration_seconds: number;
@@ -79,13 +82,18 @@ function AudioManager() {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
   const [mood, setMood] = useState('');
+  const [category, setCategory] = useState<string>('');
   const [kind, setKind] = useState<'music' | 'sfx'>('music');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Library filter
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+
   // Playback preview
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playError, setPlayError] = useState('');
 
   const loadTracks = useCallback(async () => {
     setLoading(true);
@@ -102,6 +110,11 @@ function AudioManager() {
   }, []);
 
   useEffect(() => { loadTracks(); }, [loadTracks]);
+
+  // Stop any preview when leaving the page.
+  useEffect(() => {
+    return () => { audioRef.current?.pause(); audioRef.current = null; };
+  }, []);
 
   // Read the file's duration in the browser before upload so we can store it.
   function readDuration(f: File): Promise<number> {
@@ -139,6 +152,7 @@ function AudioManager() {
       form.append('file', file);
       form.append('name', name.trim());
       form.append('mood', mood.trim());
+      form.append('category', category);
       form.append('kind', kind);
       form.append('durationSeconds', String(duration));
 
@@ -171,6 +185,19 @@ function AudioManager() {
     } catch {}
   }
 
+  async function updateCategory(track: AudioTrack, newCategory: string) {
+    try {
+      const res = await fetch('/api/admin/audio', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: track.id, category: newCategory }),
+      });
+      if (res.ok) {
+        setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, category: newCategory } : t)));
+      }
+    } catch {}
+  }
+
   async function deleteTrack(track: AudioTrack) {
     if (!confirm(`Delete "${track.name}"? This removes it from the editor and cannot be undone.`)) return;
     try {
@@ -184,23 +211,43 @@ function AudioManager() {
   }
 
   function togglePlay(track: AudioTrack) {
-    if (playingId === track.id) {
-      audioRef.current?.pause();
+    setPlayError('');
+    // Tapping the currently-playing track pauses it.
+    if (playingId === track.id && audioRef.current) {
+      audioRef.current.pause();
       setPlayingId(null);
       return;
     }
+    // Stop whatever else was playing.
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current = null;
     }
-    const a = new Audio(publicUrl(track.storage_path));
+    const a = new Audio();
+    a.src = publicUrl(track.storage_path);
     a.onended = () => setPlayingId(null);
-    a.play().catch(() => setPlayingId(null));
+    a.onerror = () => {
+      setPlayError(`Couldn't play "${track.name}". The audio file may be missing from storage — re-upload it.`);
+      setPlayingId(null);
+    };
     audioRef.current = a;
-    setPlayingId(track.id);
+    a.play()
+      .then(() => setPlayingId(track.id))
+      .catch((e) => {
+        setPlayError(`Couldn't play "${track.name}": ${e?.message || 'playback blocked'}`);
+        setPlayingId(null);
+      });
   }
 
-  const songs = tracks.filter((t) => t.kind === 'music');
-  const bites = tracks.filter((t) => t.kind === 'sfx');
+  // Apply the category filter, then split by kind.
+  const visible = filterCategory === 'all'
+    ? tracks
+    : tracks.filter((t) => (t.category || '') === (filterCategory === UNCATEGORIZED ? '' : filterCategory));
+  const songs = visible.filter((t) => t.kind === 'music');
+  const bites = visible.filter((t) => t.kind === 'sfx');
+
+  // Which categories actually have tracks (for the filter dropdown).
+  const usedCategories = Array.from(new Set(tracks.map((t) => t.category || UNCATEGORIZED))).sort();
 
   return (
     <div className="max-w-4xl mx-auto pb-16">
@@ -213,8 +260,8 @@ function AudioManager() {
         <h1 className="text-2xl font-display font-bold text-text-primary">Audio Library</h1>
       </div>
       <p className="text-sm text-text-muted mb-6 ml-8">
-        Upload background songs and sound bites for the video editor. Anything you add here is instantly
-        selectable by every user on web and mobile.
+        Upload background songs and sound bites for the video editor, filed by genre. Anything you add here is
+        instantly selectable by every user on web and mobile.
       </p>
 
       {/* Upload form */}
@@ -249,19 +296,33 @@ function AudioManager() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={kind === 'music' ? 'Celestial Drift' : 'Cosmic Whoosh'}
+              placeholder={kind === 'music' ? 'Midnight Drive' : 'Cosmic Whoosh'}
               className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Mood / tag</label>
-            <input
-              value={mood}
-              onChange={(e) => setMood(e.target.value)}
-              placeholder={kind === 'music' ? 'Ethereal, Calm, Upbeat…' : 'Whoosh, Sparkle, Impact…'}
+            <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Genre / Category *</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
-            />
+            >
+              <option value="">Uncategorized</option>
+              {AUDIO_CATEGORIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        <div className="mb-3">
+          <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Extra tag (optional)</label>
+          <input
+            value={mood}
+            onChange={(e) => setMood(e.target.value)}
+            placeholder="e.g. Dark, Uplifting, 120bpm…"
+            className="w-full px-4 py-2.5 rounded-xl bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+          />
         </div>
 
         <label className="block text-xs text-text-muted uppercase tracking-wider mb-1">Audio file *</label>
@@ -288,6 +349,11 @@ function AudioManager() {
         </button>
       </div>
 
+      {/* Playback error banner */}
+      {playError && (
+        <p className="text-sm text-amber-400 bg-amber-500/10 px-3 py-2 rounded-lg mb-4">{playError}</p>
+      )}
+
       {/* Library */}
       {loading ? (
         <div className="flex items-center gap-2 py-8 justify-center">
@@ -296,6 +362,23 @@ function AudioManager() {
         </div>
       ) : (
         <>
+          {/* Category filter */}
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xs text-text-muted uppercase tracking-wider">Filter</label>
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="px-3 py-1.5 rounded-lg bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors"
+            >
+              <option value="all">All genres ({tracks.length})</option>
+              {usedCategories.map((c) => (
+                <option key={c} value={c}>
+                  {c} ({tracks.filter((t) => (t.category || UNCATEGORIZED) === c).length})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <TrackSection
             title="Background Songs"
             icon={<Volume2 className="w-4 h-4" />}
@@ -304,6 +387,7 @@ function AudioManager() {
             onPlay={togglePlay}
             onToggleActive={toggleActive}
             onDelete={deleteTrack}
+            onChangeCategory={updateCategory}
           />
           <TrackSection
             title="Sound Bites"
@@ -313,6 +397,7 @@ function AudioManager() {
             onPlay={togglePlay}
             onToggleActive={toggleActive}
             onDelete={deleteTrack}
+            onChangeCategory={updateCategory}
           />
         </>
       )}
@@ -321,7 +406,7 @@ function AudioManager() {
 }
 
 function TrackSection({
-  title, icon, tracks, playingId, onPlay, onToggleActive, onDelete,
+  title, icon, tracks, playingId, onPlay, onToggleActive, onDelete, onChangeCategory,
 }: {
   title: string;
   icon: React.ReactNode;
@@ -330,6 +415,7 @@ function TrackSection({
   onPlay: (t: AudioTrack) => void;
   onToggleActive: (t: AudioTrack) => void;
   onDelete: (t: AudioTrack) => void;
+  onChangeCategory: (t: AudioTrack, category: string) => void;
 }) {
   return (
     <div className="mb-8">
@@ -339,7 +425,7 @@ function TrackSection({
         <span className="text-xs text-text-muted">({tracks.length})</span>
       </div>
       {tracks.length === 0 ? (
-        <p className="text-sm text-text-muted italic px-1">None yet.</p>
+        <p className="text-sm text-text-muted italic px-1">None here yet.</p>
       ) : (
         <div className="space-y-2">
           {tracks.map((t) => (
@@ -357,10 +443,22 @@ function TrackSection({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-text-primary truncate">{t.name}</p>
                 <p className="text-xs text-text-muted">
-                  {t.mood || 'No tag'} · {fmtDuration(t.duration_seconds)}
+                  {t.mood ? `${t.mood} · ` : ''}{fmtDuration(t.duration_seconds)}
                   {!t.is_active && <span className="text-amber-400"> · Hidden</span>}
                 </p>
               </div>
+              {/* Inline category editor */}
+              <select
+                value={t.category || ''}
+                onChange={(e) => onChangeCategory(t, e.target.value)}
+                className="text-xs px-2 py-1.5 rounded-lg bg-bg-primary border border-border-primary text-text-secondary focus:outline-none focus:border-accent-primary transition-colors max-w-[140px]"
+                title="Genre"
+              >
+                <option value="">Uncategorized</option>
+                {AUDIO_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
               <button
                 onClick={() => onToggleActive(t)}
                 className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"

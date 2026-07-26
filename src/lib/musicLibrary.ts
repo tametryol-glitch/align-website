@@ -17,6 +17,7 @@ export interface MusicTrack {
   id: string;
   name: string;
   mood: string;
+  category: string;
   kind: 'music' | 'sfx';
   storagePath: string;
   durationSeconds: number;
@@ -24,12 +25,12 @@ export interface MusicTrack {
 
 /** Original six tracks — fallback only, kept in sync with the DB seed. */
 export const FALLBACK_TRACKS: MusicTrack[] = [
-  { id: 'celestial_drift', name: 'Celestial Drift', mood: 'Ethereal', kind: 'music', storagePath: 'music/celestial_drift.mp3', durationSeconds: 60 },
-  { id: 'cosmic_pulse', name: 'Cosmic Pulse', mood: 'Energetic', kind: 'music', storagePath: 'music/cosmic_pulse.mp3', durationSeconds: 60 },
-  { id: 'lunar_whisper', name: 'Lunar Whisper', mood: 'Calm', kind: 'music', storagePath: 'music/lunar_whisper.mp3', durationSeconds: 60 },
-  { id: 'starfire', name: 'Starfire', mood: 'Dramatic', kind: 'music', storagePath: 'music/starfire.mp3', durationSeconds: 60 },
-  { id: 'nebula_flow', name: 'Nebula Flow', mood: 'Chill', kind: 'music', storagePath: 'music/nebula_flow.mp3', durationSeconds: 60 },
-  { id: 'zodiac_beat', name: 'Zodiac Beat', mood: 'Upbeat', kind: 'music', storagePath: 'music/zodiac_beat.mp3', durationSeconds: 60 },
+  { id: 'celestial_drift', name: 'Celestial Drift', mood: 'Ethereal', category: 'Ambient', kind: 'music', storagePath: 'music/celestial_drift.mp3', durationSeconds: 60 },
+  { id: 'cosmic_pulse', name: 'Cosmic Pulse', mood: 'Energetic', category: 'EDM', kind: 'music', storagePath: 'music/cosmic_pulse.mp3', durationSeconds: 60 },
+  { id: 'lunar_whisper', name: 'Lunar Whisper', mood: 'Calm', category: 'Chill', kind: 'music', storagePath: 'music/lunar_whisper.mp3', durationSeconds: 60 },
+  { id: 'starfire', name: 'Starfire', mood: 'Dramatic', category: 'Cinematic', kind: 'music', storagePath: 'music/starfire.mp3', durationSeconds: 60 },
+  { id: 'nebula_flow', name: 'Nebula Flow', mood: 'Chill', category: 'Lo-fi', kind: 'music', storagePath: 'music/nebula_flow.mp3', durationSeconds: 60 },
+  { id: 'zodiac_beat', name: 'Zodiac Beat', mood: 'Upbeat', category: 'Pop', kind: 'music', storagePath: 'music/zodiac_beat.mp3', durationSeconds: 60 },
 ];
 
 /** @deprecated Prefer useAudioLibrary(); kept so old imports don't break. */
@@ -52,6 +53,7 @@ interface AudioRow {
   id: string;
   name: string;
   mood: string;
+  category: string | null;
   kind: 'music' | 'sfx';
   storage_path: string;
   duration_seconds: number | null;
@@ -63,17 +65,22 @@ export async function fetchAudioTracks(): Promise<MusicTrack[]> {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('audio_tracks')
-      .select('id, name, mood, kind, storage_path, duration_seconds')
+      .select('id, name, mood, category, kind, storage_path, duration_seconds')
       .eq('is_active', true)
       .order('kind', { ascending: true })
       .order('sort_order', { ascending: true });
 
-    if (error || !data || data.length === 0) return FALLBACK_TRACKS;
+    // Only fall back on a real error (e.g. table missing before the migration
+    // runs). A legitimately empty library returns [] — showing phantom seed
+    // tracks that don't exist in storage would just confuse users.
+    if (error) return FALLBACK_TRACKS;
+    if (!data) return [];
 
     return (data as AudioRow[]).map((r) => ({
       id: r.id,
       name: r.name,
       mood: r.mood || '',
+      category: r.category || '',
       kind: r.kind,
       storagePath: r.storage_path,
       durationSeconds: r.duration_seconds || 0,
