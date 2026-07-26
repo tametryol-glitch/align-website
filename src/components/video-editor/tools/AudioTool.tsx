@@ -8,7 +8,7 @@
 
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { Volume2, VolumeX, Music } from 'lucide-react';
-import { MUSIC_TRACKS, trackUrl, trackByUrl } from '@/lib/musicLibrary';
+import { trackUrl, trackByUrl, useAudioLibrary } from '@/lib/musicLibrary';
 import { useWaveform } from '../hooks/useWaveform';
 
 export function AudioTool() {
@@ -23,7 +23,8 @@ export function AudioTool() {
   const trimStart = useVideoEditorStore((s) => s.trimStart);
   const trimEnd = useVideoEditorStore((s) => s.trimEnd);
   const pushHistory = useVideoEditorStore((s) => s.pushHistory);
-  const activeTrack = trackByUrl(musicTrackUrl);
+  const { music: MUSIC_TRACKS } = useAudioLibrary();
+  const activeTrack = trackByUrl(musicTrackUrl, MUSIC_TRACKS);
   const wave = useWaveform(musicTrackUrl);
   // How far into the song we can start while still covering the whole video.
   const usedLen = Math.max(0.1, trimEnd - trimStart);

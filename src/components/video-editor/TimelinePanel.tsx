@@ -13,7 +13,7 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { useWaveform } from './hooks/useWaveform';
-import { trackByUrl } from '@/lib/musicLibrary';
+import { trackByUrl, useAudioLibrary } from '@/lib/musicLibrary';
 
 // Extract evenly-spaced frame thumbnails from the source video for a filmstrip.
 // Best-effort: if the canvas is tainted (CORS) it bails and the track falls
@@ -105,6 +105,7 @@ export function TimelinePanel() {
   const musicTrackUrl = useVideoEditorStore((s) => s.musicTrackUrl);
   const musicTrimStart = useVideoEditorStore((s) => s.musicTrimStart);
   const setActiveTool = useVideoEditorStore((s) => s.setActiveTool);
+  const { tracks: audioLibrary } = useAudioLibrary();
 
   const thumbs = useFilmstrip(sourceVideoUrl, videoDuration);
   const wave = useWaveform(musicTrackUrl);
@@ -628,7 +629,7 @@ export function TimelinePanel() {
 
         {/* ── Background music row (waveform) ─────────────── */}
         {musicTrackUrl && (() => {
-          const track = trackByUrl(musicTrackUrl);
+          const track = trackByUrl(musicTrackUrl, audioLibrary);
           const winLen = Math.max(0.1, trimEnd - trimStart);
           const left = trimStart * timelineZoom + PADDING_LEFT;
           const width = Math.max(40, winLen * timelineZoom);
