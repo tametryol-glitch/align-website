@@ -142,23 +142,55 @@ function AudioManager() {
     }
   }
 
+  const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
+
   async function handleUpload() {
     if (!file || !name.trim()) return;
+    if (file.size > MAX_BYTES) {
+      setError('Audio file is too large (max 20 MB).');
+      return;
+    }
     setUploading(true);
     setError('');
     try {
       const duration = await readDuration(file);
-      const form = new FormData();
-      form.append('file', file);
-      form.append('name', name.trim());
-      form.append('mood', mood.trim());
-      form.append('category', category);
-      form.append('kind', kind);
-      form.append('durationSeconds', String(duration));
+      const ext = file.name.split('.').pop() || 'mp3';
 
-      const res = await fetch('/api/admin/audio', { method: 'POST', body: form });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      // 1. Ask the server for a one-time signed upload URL (tiny JSON request).
+      const signRes = await fetch('/api/admin/audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: 'sign', kind, ext }),
+      });
+      const signData = await signRes.json();
+      if (!signRes.ok) throw new Error(signData.error || 'Could not start upload');
+
+      // 2. Upload the file straight to Supabase Storage from the browser —
+      //    bypasses Vercel's 4.5 MB API body limit entirely.
+      const supabase = createClient();
+      const { error: upErr } = await supabase.storage
+        .from('cosmic-videos')
+        .uploadToSignedUrl(signData.path, signData.token, file, {
+          contentType: file.type || 'audio/mpeg',
+        });
+      if (upErr) throw new Error(upErr.message);
+
+      // 3. Commit the DB row (metadata only).
+      const commitRes = await fetch('/api/admin/audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          step: 'commit',
+          name: name.trim(),
+          mood: mood.trim(),
+          category,
+          kind,
+          storagePath: signData.path,
+          durationSeconds: duration,
+        }),
+      });
+      const commitData = await commitRes.json();
+      if (!commitRes.ok) throw new Error(commitData.error || 'Upload failed');
 
       // Reset form and reload.
       setFile(null);

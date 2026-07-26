@@ -19,8 +19,6 @@ import { randomUUID } from 'crypto';
 import { isValidCategory } from '@/lib/audioCategories';
 
 const BUCKET = 'cosmic-videos';
-const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
-const ALLOWED = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/aac', 'audio/ogg', 'audio/webm'];
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -79,85 +77,89 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/**
+ * Two-step upload (bypasses Vercel's 4.5 MB request-body limit — the audio
+ * file never touches this route; the browser uploads it straight to storage):
+ *
+ *   step 'sign'   { kind, ext } → { path, token, signedUrl }
+ *                 admin gets a one-time signed upload URL for a fresh path.
+ *   step 'commit' { name, mood, category, kind, storagePath, durationSeconds }
+ *                 → { track }  inserts the DB row after the browser upload.
+ */
 export async function POST(req: NextRequest) {
   try {
     const user = await verifyAdmin(req);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const form = await req.formData();
-    const file = form.get('file');
-    const name = (form.get('name') as string || '').trim();
-    const mood = (form.get('mood') as string || '').trim();
-    const category = (form.get('category') as string || '').trim();
-    const kind = (form.get('kind') as string || 'music').trim();
-    const durationSeconds = parseFloat(form.get('durationSeconds') as string) || 0;
-
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
-    if (!name) {
-      return NextResponse.json({ error: 'A track name is required.' }, { status: 400 });
-    }
-    if (kind !== 'music' && kind !== 'sfx') {
-      return NextResponse.json({ error: 'kind must be "music" or "sfx".' }, { status: 400 });
-    }
-    if (!isValidCategory(category)) {
-      return NextResponse.json({ error: 'Unknown category.' }, { status: 400 });
-    }
-    if (file.type && !ALLOWED.includes(file.type)) {
-      return NextResponse.json({ error: 'Unsupported audio type. Use MP3, WAV, M4A/AAC, or OGG.' }, { status: 400 });
-    }
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: 'Audio file is too large (max 20 MB).' }, { status: 400 });
-    }
-
-    const ext = (file.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp3';
-    const prefix = kind === 'sfx' ? 'sfx' : 'music';
-    const path = `${prefix}/${Date.now()}-${randomUUID()}.${ext}`;
-
+    const body = await req.json();
+    const step = body?.step;
     const admin = getAdminClient();
-    const bytes = Buffer.from(await file.arrayBuffer());
 
-    const { error: uploadErr } = await admin.storage
-      .from(BUCKET)
-      .upload(path, bytes, { contentType: file.type || 'audio/mpeg', upsert: false });
-
-    if (uploadErr) {
-      return NextResponse.json({ error: uploadErr.message }, { status: 500 });
+    if (step === 'sign') {
+      const kind = body.kind === 'sfx' ? 'sfx' : 'music';
+      const ext = String(body.ext || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp3';
+      const path = `${kind}/${Date.now()}-${randomUUID()}.${ext}`;
+      const { data, error } = await admin.storage.from(BUCKET).createSignedUploadUrl(path);
+      if (error || !data) {
+        return NextResponse.json({ error: error?.message || 'Could not start upload' }, { status: 500 });
+      }
+      return NextResponse.json({ path, token: data.token, signedUrl: data.signedUrl });
     }
 
-    // Place new tracks after existing ones of the same kind.
-    const { data: maxRow } = await admin
-      .from('audio_tracks')
-      .select('sort_order')
-      .eq('kind', kind)
-      .order('sort_order', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    const nextOrder = (maxRow?.sort_order ?? 0) + 1;
+    if (step === 'commit') {
+      const name = (body.name as string || '').trim();
+      const mood = (body.mood as string || '').trim();
+      const category = (body.category as string || '').trim();
+      const kind = body.kind === 'sfx' ? 'sfx' : 'music';
+      const storagePath = (body.storagePath as string || '').trim();
+      const durationSeconds = Number(body.durationSeconds) || 0;
 
-    const { data: track, error: insertErr } = await admin
-      .from('audio_tracks')
-      .insert({
-        name,
-        mood,
-        category,
-        kind,
-        storage_path: path,
-        duration_seconds: durationSeconds,
-        sort_order: nextOrder,
-        is_active: true,
-      })
-      .select()
-      .single();
+      if (!name) {
+        return NextResponse.json({ error: 'A track name is required.' }, { status: 400 });
+      }
+      if (!isValidCategory(category)) {
+        return NextResponse.json({ error: 'Unknown category.' }, { status: 400 });
+      }
+      // Only accept paths our own sign step could have produced.
+      if (!/^(music|sfx)\/[0-9]+-[a-f0-9-]+\.[a-z0-9]+$/.test(storagePath)) {
+        return NextResponse.json({ error: 'Invalid upload path.' }, { status: 400 });
+      }
 
-    if (insertErr) {
-      // Roll back the orphaned upload so we don't leave a dangling file.
-      await admin.storage.from(BUCKET).remove([path]);
-      return NextResponse.json({ error: insertErr.message }, { status: 500 });
+      // Place new tracks after existing ones of the same kind.
+      const { data: maxRow } = await admin
+        .from('audio_tracks')
+        .select('sort_order')
+        .eq('kind', kind)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextOrder = (maxRow?.sort_order ?? 0) + 1;
+
+      const { data: track, error: insertErr } = await admin
+        .from('audio_tracks')
+        .insert({
+          name,
+          mood,
+          category,
+          kind,
+          storage_path: storagePath,
+          duration_seconds: durationSeconds,
+          sort_order: nextOrder,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (insertErr) {
+        // Roll back the orphaned upload so we don't leave a dangling file.
+        await admin.storage.from(BUCKET).remove([storagePath]);
+        return NextResponse.json({ error: insertErr.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ track });
     }
 
-    return NextResponse.json({ track });
+    return NextResponse.json({ error: 'Unknown step' }, { status: 400 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Upload failed' }, { status: 500 });
   }
