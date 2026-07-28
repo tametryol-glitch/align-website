@@ -40,11 +40,15 @@ Text/stickers were floating overlays, not timeline lanes.
   gappable); Add-text adds a text clip. Verified live: song added at 150.3s true
   length, split into [0-10][10-150.3]. Cosmetic: Remotion preview spawns a few
   stray erroring data-URI audio elements (benign, clean up in polish).
-- **Phase 4 (next):** export/renderer parity — teach `align-video-renderer` the
-  multi-track spec so server exports match the preview, and add an Export/Post
-  button to MultiTrackEditor (serialize timeline → spec → requestRender). This is
-  what lets the edited video actually be posted. Also: B-roll add-clip (overlay
-  track), and edit-text-after-adding.
+- **Phase 4 (done):** Export + renderer parity. MultiTrackEditor Export button
+  uploads local blobs → serializes timeline into `edit_spec.__multitrack` →
+  server render (reuses user_video_edit path) → poll → download link. Renderer
+  (align-video-renderer, DEPLOYED to Railway) has `MultiTrackComposition` +
+  UserVideoEdit branch on `__multitrack` + duration from `__multitrack.durationSeconds`;
+  existing templates untouched. Verified with a real `remotion still` render (video
+  composites, vignette/effects apply, text over footage). Caught+fixed a layering
+  bug: render order is now video→overlay→text (front). TODO: post-to-feed wiring
+  (currently returns a download link), B-roll add-clip, edit-text-after-add.
 - **Phase 5:** polish — audio waveforms, magnetic snapping refinements, ripple
   delete, keyboard shortcuts, fades.
 
