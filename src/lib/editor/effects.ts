@@ -38,6 +38,20 @@ export const EFFECT_IDS = EFFECTS.map((e) => e.id);
 // ── Entrance transitions ─────────────────────────────────────────────────────
 export type TransitionId = 'none' | 'fade' | 'fade-black' | 'zoom' | 'slide' | 'spin' | 'glitch' | 'whip';
 
+// ── Ken Burns motion presets (animated across the whole clip) ────────────────
+export type MotionId = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'pan-up' | 'pan-down' | 'ken-burns';
+
+export const MOTIONS: Array<{ id: MotionId; name: string }> = [
+  { id: 'none', name: 'None' },
+  { id: 'zoom-in', name: 'Zoom in' },
+  { id: 'zoom-out', name: 'Zoom out' },
+  { id: 'pan-left', name: 'Pan left' },
+  { id: 'pan-right', name: 'Pan right' },
+  { id: 'pan-up', name: 'Pan up' },
+  { id: 'pan-down', name: 'Pan down' },
+  { id: 'ken-burns', name: 'Ken Burns' },
+];
+
 export const TRANSITIONS: Array<{ id: TransitionId; name: string }> = [
   { id: 'none', name: 'None' },
   { id: 'fade', name: 'Fade' },

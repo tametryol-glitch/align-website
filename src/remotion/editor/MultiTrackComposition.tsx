@@ -197,6 +197,10 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
     transform += ` translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
   }
 
+  // Ken Burns motion across the whole clip.
+  const durFrames = Math.max(1, Math.round(m.duration * fps));
+  transform += motionTransform(m.motion, frame / durFrames);
+
   // Entrance transition over the clip's opening.
   const tr = transitionIn(m, frame, fps);
   if (tr.transform) transform += ` ${tr.transform}`;
@@ -248,6 +252,23 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   ) : (
     <AbsoluteFill>{inner}</AbsoluteFill>
   );
+}
+
+/** Ken Burns transform for a clip at progress p (0→1). Slight over-scale keeps
+ *  pans from exposing the frame edge. */
+function motionTransform(motion: string | undefined, p: number): string {
+  if (!motion || motion === 'none') return '';
+  const e = Math.max(0, Math.min(1, p));
+  switch (motion) {
+    case 'zoom-in': return ` scale(${(1 + 0.25 * e).toFixed(4)})`;
+    case 'zoom-out': return ` scale(${(1.25 - 0.25 * e).toFixed(4)})`;
+    case 'pan-left': return ` scale(1.12) translateX(${(-8 * e).toFixed(2)}%)`;
+    case 'pan-right': return ` scale(1.12) translateX(${(8 * e).toFixed(2)}%)`;
+    case 'pan-up': return ` scale(1.12) translateY(${(-8 * e).toFixed(2)}%)`;
+    case 'pan-down': return ` scale(1.12) translateY(${(8 * e).toFixed(2)}%)`;
+    case 'ken-burns': return ` scale(${(1.1 + 0.15 * e).toFixed(4)}) translateX(${(-4 * e).toFixed(2)}%)`;
+    default: return '';
+  }
 }
 
 /** Entrance transition state at `frame` for a clip: opacity, extra transform, overlay. */

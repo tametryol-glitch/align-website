@@ -19,7 +19,7 @@ import {
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
-import { EFFECTS, TRANSITIONS } from '@/lib/editor/effects';
+import { EFFECTS, TRANSITIONS, MOTIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
@@ -357,6 +357,22 @@ function FiltersSheet({ clip, onChange, onSpeed, onClose }: {
               <button key={sp} onClick={() => onSpeed(sp)}
                 className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
                 {sp}×
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Motion (Ken Burns) */}
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Motion</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {MOTIONS.map((mo) => {
+            const active = (clip.motion || 'none') === mo.id;
+            return (
+              <button key={mo.id} onClick={() => onChange({ motion: mo.id === 'none' ? undefined : mo.id })}
+                className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                {mo.name}
               </button>
             );
           })}
