@@ -71,6 +71,17 @@ export interface MediaClip extends ClipBase {
   /** Manual keyframes — interpolated by clip progress t (0..1). Any subset of
    *  props per keyframe; missing props hold their neighbours. Overrides motion. */
   keyframes?: Array<{ t: number; scale?: number; x?: number; y?: number; opacity?: number; rotation?: number }>;
+  /** Green-screen / chroma key. When set, the key colour is made transparent so
+   *  lower tracks show through. See remotion/editor/ChromaKeyVideo. */
+  chroma?: ChromaOptions;
+}
+
+/** Chroma-key (green screen) settings for a video clip. */
+export interface ChromaOptions {
+  keyColor: string;    // hex, e.g. '#00FF00'
+  similarity: number;  // 0..1 — how close to keyColor counts as background
+  smoothness: number;  // 0..1 — edge feather width
+  spill: number;       // 0..1 — suppress key-colour bleed on the subject
 }
 
 /** A text card placed on a text lane. */

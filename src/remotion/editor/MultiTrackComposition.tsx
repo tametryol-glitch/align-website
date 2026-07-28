@@ -15,6 +15,7 @@ import type {
 } from '@/lib/editor/timelineModel';
 import { getFilterById, scaleCssFilter } from '@/lib/videoFilters';
 import type { FilterPresetId } from '@/stores/videoEditorStore';
+import { ChromaKeyVideo } from './ChromaKeyVideo';
 
 const f = (sec: number, fps: number) => Math.round(sec * fps);
 
@@ -212,7 +213,19 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   const tr = transitionIn(m, frame, fps);
   if (tr.transform) transform += ` ${tr.transform}`;
 
-  const video = (
+  const video = m.chroma ? (
+    <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
+      <ChromaKeyVideo
+        src={m.sourceUrl}
+        startFrom={f(m.sourceStart, fps)}
+        playbackRate={m.speed ?? 1}
+        muted={track.muted || m.volume === 0}
+        volume={m.volume ?? 1}
+        chroma={m.chroma}
+        objectFit={isPip ? 'contain' : 'cover'}
+      />
+    </div>
+  ) : (
     <OffthreadVideo
       src={m.sourceUrl}
       startFrom={f(m.sourceStart, fps)}
