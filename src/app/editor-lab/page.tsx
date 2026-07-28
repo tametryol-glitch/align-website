@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
 import { timelineDuration } from '@/lib/editor/timelineModel';
+import { detectBeats } from '@/lib/editor/beatDetect';
 
 export default function EditorLabPage() {
   const data = useTimelineStore((s) => s.data);
@@ -17,7 +18,11 @@ export default function EditorLabPage() {
   const playhead = useTimelineStore((s) => s.playhead);
 
   // Branch-only test hook so the timeline can be driven from the console.
-  useEffect(() => { (window as unknown as { __timeline?: unknown }).__timeline = useTimelineStore; }, []);
+  useEffect(() => {
+    const w = window as unknown as { __timeline?: unknown; __detectBeats?: unknown };
+    w.__timeline = useTimelineStore;
+    w.__detectBeats = detectBeats;
+  }, []);
 
   const sel = data.clips.find((c) => c.id === selectedClipId);
 

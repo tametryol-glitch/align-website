@@ -22,7 +22,8 @@ import { FILTER_PRESETS } from '@/lib/videoFilters';
 import { EFFECTS, TRANSITIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check } from 'lucide-react';
+import { detectBeats } from '@/lib/editor/beatDetect';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -52,6 +53,34 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const selectedClip = data.clips.find((c) => c.id === selectedClipId);
   const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
   const selectedText = selectedClip && selectedClip.kind === 'text' ? selectedClip : null;
+  const selectedAudio = selectedClip && selectedClip.kind === 'audio' ? selectedClip : null;
+
+  // ── Beat sync: cut the video to the selected song's beats ─────
+  const [beatBusy, setBeatBusy] = useState(false);
+  const [beatMsg, setBeatMsg] = useState<string | null>(null);
+  const syncToBeat = async (audioClip: MediaClip) => {
+    setBeatBusy(true); setBeatMsg(null);
+    try {
+      const beats = await detectBeats(audioClip.sourceUrl);
+      const store = useTimelineStore.getState();
+      const videoTrack = store.data.tracks.find((t) => t.kind === 'video');
+      if (!videoTrack) { setBeatMsg('Add a video first.'); setBeatBusy(false); return; }
+      // Map each beat (source time) to a timeline time within the clip's window,
+      // and cut the video there. Iterate so each split sees the updated state.
+      let cuts = 0;
+      for (const b of beats) {
+        if (b < audioClip.sourceStart || b > audioClip.sourceEnd) continue;
+        const tl = audioClip.start + (b - audioClip.sourceStart);
+        const before = useTimelineStore.getState().data.clips.filter((c) => c.trackId === videoTrack.id).length;
+        useTimelineStore.getState().splitAt(videoTrack.id, tl);
+        if (useTimelineStore.getState().data.clips.filter((c) => c.trackId === videoTrack.id).length > before) cuts++;
+      }
+      setBeatMsg(`${beats.length} beats detected · ${cuts} cuts made`);
+    } catch (e: any) {
+      setBeatMsg(`Beat sync failed: ${e.message}`);
+    }
+    setBeatBusy(false);
+  };
 
   // ── Export ────────────────────────────────────────────────────
   const [exporting, setExporting] = useState(false);
@@ -202,6 +231,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
                 <Type className="w-4 h-4" /> Edit text
               </button>
             )}
+            {selectedAudio && (
+              <button onClick={() => syncToBeat(selectedAudio)} disabled={beatBusy}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/15 text-emerald-300 text-sm font-medium hover:bg-emerald-500/25 disabled:opacity-40"
+                title="Cut the video to this song's beats">
+                {beatBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity className="w-4 h-4" />} Beat sync
+              </button>
+            )}
             <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
               className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -209,6 +245,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
             </button>
           </div>
 
+          {beatMsg && <p className="text-xs text-emerald-300 bg-emerald-500/10 px-3 py-2 rounded-lg">{beatMsg}</p>}
           {exportError && <p className="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{exportError}</p>}
           {resultUrl && (
             <div className="flex items-center gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">

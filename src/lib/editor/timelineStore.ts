@@ -51,6 +51,7 @@ interface TimelineStore {
   moveClip: (clipId: string, newStart: number, newTrackId?: string) => void;
   trimClip: (clipId: string, edge: 'start' | 'end', newTime: number) => void;
   splitAtPlayhead: (trackId: string) => void;
+  splitAt: (trackId: string, t: number) => void;
   closeGapBefore: (clipId: string) => void;
 
   // ui
@@ -117,6 +118,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     moveClip: (clipId, newStart, newTrackId) => commit((d) => mMoveClip(d, clipId, newStart, newTrackId)),
     trimClip: (clipId, edge, newTime) => commit((d) => mTrimClip(d, clipId, edge, newTime)),
     splitAtPlayhead: (trackId) => commit((d) => mSplitAt(d, trackId, get().playhead)),
+    splitAt: (trackId, t) => commit((d) => mSplitAt(d, trackId, t)),
     closeGapBefore: (clipId) => commit((d) => mCloseGap(d, clipId)),
 
     selectClip: (clipId) => set({ selectedClipId: clipId }),
