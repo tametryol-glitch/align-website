@@ -73,7 +73,9 @@ Ship one verified feature at a time on the multi-track engine.
   scales 1.0→1.22. (This covers most keyframe use; manual keyframes still TODO.)
 - [ ] Keyframes — manual per-property keyframes (x/y/scale/opacity/rotation over time)
 - [ ] Green screen / chroma key + AI background remover (MediaPipe selfie seg, on-device)
-- [ ] Aspect ratio / reframe (9:16, 1:1, 16:9 + auto-reframe)
+- [x] **Aspect ratio / reframe** (9:16, 1:1, 4:5, 16:9) — store.aspect, player
+  width/height, editor picker + dynamic preview, export via calculateMetadata.
+  Verified 1:1 render = 1080x1080. (Auto-reframe subject-tracking still TODO.)
 - [ ] AI voiceover via our own Kokoro TTS + voice effects
 - [x] **Sound-FX picker** — library sfx kind surfaced in the editor (Sound FX
   button) onto a dedicated SFX audio lane. (Trending rail still TODO.)
