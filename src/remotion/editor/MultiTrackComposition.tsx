@@ -205,6 +205,7 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
     <OffthreadVideo
       src={m.sourceUrl}
       startFrom={f(m.sourceStart, fps)}
+      playbackRate={m.speed ?? 1}
       muted={track.muted || m.volume === 0}
       volume={m.volume ?? 1}
       style={{

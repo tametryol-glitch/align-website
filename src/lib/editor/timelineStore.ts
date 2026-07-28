@@ -47,6 +47,7 @@ interface TimelineStore {
   addClip: (clip: TimelineClip) => void;
   removeClip: (clipId: string) => void;
   updateClip: (clipId: string, patch: Partial<TimelineClip>) => void;
+  setClipSpeed: (clipId: string, speed: number) => void;
   moveClip: (clipId: string, newStart: number, newTrackId?: string) => void;
   trimClip: (clipId: string, edge: 'start' | 'end', newTime: number) => void;
   splitAtPlayhead: (trackId: string) => void;
@@ -105,6 +106,14 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       if (get().selectedClipId === clipId) set({ selectedClipId: null });
     },
     updateClip: (clipId, patch) => commit((d) => mUpdateClip(d, clipId, patch)),
+    setClipSpeed: (clipId, speed) => commit((d) => {
+      const clip = d.clips.find((c) => c.id === clipId);
+      if (!clip || (clip.kind !== 'video' && clip.kind !== 'audio')) return d;
+      const m = clip as { sourceStart: number; sourceEnd: number };
+      const sp = Math.max(0.25, Math.min(4, speed));
+      const newDuration = (m.sourceEnd - m.sourceStart) / sp;
+      return mUpdateClip(d, clipId, { speed: sp, duration: newDuration } as Partial<TimelineClip>);
+    }),
     moveClip: (clipId, newStart, newTrackId) => commit((d) => mMoveClip(d, clipId, newStart, newTrackId)),
     trimClip: (clipId, edge, newTime) => commit((d) => mTrimClip(d, clipId, edge, newTime)),
     splitAtPlayhead: (trackId) => commit((d) => mSplitAt(d, trackId, get().playhead)),

@@ -44,6 +44,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const addTrack = useTimelineStore((s) => s.addTrack);
   const addClip = useTimelineStore((s) => s.addClip);
   const updateClip = useTimelineStore((s) => s.updateClip);
+  const setClipSpeed = useTimelineStore((s) => s.setClipSpeed);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
   const [sheet, setSheet] = useState<'music' | 'text' | 'filters' | 'edittext' | null>(null);
@@ -225,7 +226,8 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'music' && <MusicSheet onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'text' && <TextSheet onAdd={addText} onClose={() => setSheet(null)} />}
           {sheet === 'filters' && selectedVideo && (
-            <FiltersSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+            <FiltersSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)}
+              onSpeed={(sp) => setClipSpeed(selectedVideo.id, sp)} onClose={() => setSheet(null)} />
           )}
           {sheet === 'edittext' && selectedText && (
             <TextEditSheet clip={selectedText} onChange={(patch) => updateClip(selectedText.id, patch)} onClose={() => setSheet(null)} />
@@ -239,9 +241,10 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   );
 }
 
-function FiltersSheet({ clip, onChange, onClose }: {
+function FiltersSheet({ clip, onChange, onSpeed, onClose }: {
   clip: MediaClip;
   onChange: (patch: Partial<MediaClip>) => void;
+  onSpeed: (speed: number) => void;
   onClose: () => void;
 }) {
   const adjust = clip.adjust || {};
@@ -301,6 +304,22 @@ function FiltersSheet({ clip, onChange, onClose }: {
                 className={`px-1.5 py-1.5 rounded-md text-left border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
                 <span className="block text-[10px] font-medium text-text-primary truncate">{e.name}</span>
                 <span className="block text-[9px] text-text-muted">{e.vibe}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Speed */}
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Speed</p>
+        <div className="grid grid-cols-6 gap-1.5">
+          {[0.5, 1, 1.5, 2, 3, 4].map((sp) => {
+            const active = (clip.speed || 1) === sp;
+            return (
+              <button key={sp} onClick={() => onSpeed(sp)}
+                className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                {sp}×
               </button>
             );
           })}
