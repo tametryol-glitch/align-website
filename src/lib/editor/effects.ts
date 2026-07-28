@@ -34,3 +34,17 @@ export const EFFECTS: EffectDef[] = [
 ];
 
 export const EFFECT_IDS = EFFECTS.map((e) => e.id);
+
+// ── Entrance transitions ─────────────────────────────────────────────────────
+export type TransitionId = 'none' | 'fade' | 'fade-black' | 'zoom' | 'slide' | 'spin' | 'glitch' | 'whip';
+
+export const TRANSITIONS: Array<{ id: TransitionId; name: string }> = [
+  { id: 'none', name: 'None' },
+  { id: 'fade', name: 'Fade' },
+  { id: 'fade-black', name: 'From black' },
+  { id: 'zoom', name: 'Zoom' },
+  { id: 'slide', name: 'Slide' },
+  { id: 'spin', name: 'Spin' },
+  { id: 'whip', name: 'Whip' },
+  { id: 'glitch', name: 'Glitch' },
+];

@@ -197,6 +197,10 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
     transform += ` translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
   }
 
+  // Entrance transition over the clip's opening.
+  const tr = transitionIn(m, frame, fps);
+  if (tr.transform) transform += ` ${tr.transform}`;
+
   const video = (
     <OffthreadVideo
       src={m.sourceUrl}
@@ -229,8 +233,10 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
     overlays.push(<div key="glow" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.18), rgba(255,255,255,0) 60%)', mixBlendMode: 'screen', pointerEvents: 'none' }} />);
   }
 
+  if (tr.overlay) overlays.push(tr.overlay);
+
   const inner = (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity: tr.opacity }}>
       {video}
       {overlays}
     </div>
@@ -241,6 +247,28 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   ) : (
     <AbsoluteFill>{inner}</AbsoluteFill>
   );
+}
+
+/** Entrance transition state at `frame` for a clip: opacity, extra transform, overlay. */
+function transitionIn(m: MediaClip, frame: number, fps: number): { opacity: number; transform: string; overlay: React.ReactNode | null } {
+  const t = m.transitionIn;
+  if (!t || !t.type || t.type === 'none') return { opacity: 1, transform: '', overlay: null };
+  const durF = Math.max(1, Math.round((t.durationSec || 0.5) * fps));
+  if (frame >= durF) return { opacity: 1, transform: '', overlay: null };
+  const p = frame / durF; // 0→1
+  switch (t.type) {
+    case 'fade': return { opacity: p, transform: '', overlay: null };
+    case 'fade-black': return { opacity: 1, transform: '', overlay: <div key="tr" style={{ position: 'absolute', inset: 0, background: '#000', opacity: 1 - p, pointerEvents: 'none' }} /> };
+    case 'zoom': return { opacity: p, transform: ` scale(${(1.4 - 0.4 * p).toFixed(3)})`, overlay: null };
+    case 'slide': return { opacity: 1, transform: ` translateX(${((1 - p) * 100).toFixed(1)}%)`, overlay: null };
+    case 'spin': return { opacity: p, transform: ` rotate(${((1 - p) * 90).toFixed(1)}deg) scale(${(0.6 + 0.4 * p).toFixed(3)})`, overlay: null };
+    case 'whip': return { opacity: interpolate(p, [0, 0.5, 1], [0, 0.2, 1]), transform: ` translateX(${((1 - p) * 60).toFixed(1)}%)`, overlay: null };
+    case 'glitch': return {
+      opacity: 1, transform: ` translateX(${(Math.sin(frame * 3) * (1 - p) * 12).toFixed(1)}px)`,
+      overlay: <div key="tr" style={{ position: 'absolute', inset: 0, background: 'rgba(255,0,80,0.25)', mixBlendMode: 'screen', opacity: 1 - p, pointerEvents: 'none' }} />,
+    };
+    default: return { opacity: 1, transform: '', overlay: null };
+  }
 }
 
 function pipStyle(m: MediaClip): React.CSSProperties {

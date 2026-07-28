@@ -19,7 +19,7 @@ import {
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
-import { EFFECTS } from '@/lib/editor/effects';
+import { EFFECTS, TRANSITIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { Music, Type, X, Plus, Wand2, Download, Loader2, Check } from 'lucide-react';
@@ -301,6 +301,23 @@ function FiltersSheet({ clip, onChange, onClose }: {
                 className={`px-1.5 py-1.5 rounded-md text-left border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
                 <span className="block text-[10px] font-medium text-text-primary truncate">{e.name}</span>
                 <span className="block text-[9px] text-text-muted">{e.vibe}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Transition in */}
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Transition in</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {TRANSITIONS.map((tr) => {
+            const active = (clip.transitionIn?.type || 'none') === tr.id;
+            return (
+              <button key={tr.id}
+                onClick={() => onChange({ transitionIn: tr.id === 'none' ? undefined : { type: tr.id, durationSec: clip.transitionIn?.durationSec || 0.5 } })}
+                className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                {tr.name}
               </button>
             );
           })}

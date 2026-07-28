@@ -64,6 +64,8 @@ export interface MediaClip extends ClipBase {
   filterIntensity?: number;   // 0–1
   adjust?: { brightness?: number; contrast?: number; saturation?: number; warmth?: number };
   effects?: string[];         // EffectId[] — see lib/editor/effects.ts
+  /** Entrance transition played over the clip's opening. */
+  transitionIn?: { type: string; durationSec: number };
 }
 
 /** A text card placed on a text lane. */
