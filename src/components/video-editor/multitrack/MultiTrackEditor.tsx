@@ -24,9 +24,23 @@ import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
+
+/** Probe an audio/video file's duration (seconds) in the browser. */
+function readDuration(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    try {
+      const url = URL.createObjectURL(file);
+      const a = new Audio();
+      a.preload = 'metadata';
+      a.onloadedmetadata = () => { URL.revokeObjectURL(url); resolve(isFinite(a.duration) ? a.duration : 0); };
+      a.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
+      a.src = url;
+    } catch { resolve(0); }
+  });
+}
 
 const ASPECTS = [
   { id: '9:16', w: 1080, h: 1920 },
@@ -58,7 +72,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -219,6 +233,27 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     setSheet(null);
   };
 
+  const addVoiceover = async (text: string, voice: string) => {
+    const res = await fetch('/api/tts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voice, format: 'mp3' }),
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || `TTS failed (${res.status})`);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const duration = await readDuration(new File([blob], 'vo.mp3', { type: 'audio/mpeg' })) || 3;
+    const trackId = ensureAudioTrack('Voiceover');
+    const start = freeStartOnTrack(trackId, playhead, duration);
+    addClip({
+      id: nextId('clip'), trackId, kind: 'audio', start, duration,
+      sourceUrl: url, sourceStart: 0, sourceEnd: duration, sourceDuration: duration, speed: 1, volume: 1,
+    });
+    setSheet(null);
+  };
+
   const addSfx = (mt: MusicTrack) => {
     const trackId = ensureAudioTrack('SFX');
     const len = mt.durationSeconds > 0 ? mt.durationSeconds : 2;
@@ -282,6 +317,10 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/15 text-purple-300 text-sm font-medium hover:bg-purple-500/25">
               <Sparkles className="w-4 h-4" /> Templates
             </button>
+            <button onClick={() => setSheet('voiceover')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300 text-sm font-medium hover:bg-rose-500/25">
+              <Mic className="w-4 h-4" /> Voiceover
+            </button>
             <button onClick={() => setSheet('text')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
               <Type className="w-4 h-4" /> Add text
@@ -328,6 +367,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           </p>
           {sheet === 'music' && <MusicSheet kind="music" onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
+          {sheet === 'voiceover' && <VoiceoverSheet onGenerate={addVoiceover} onClose={() => setSheet(null)} />}
           {sheet === 'looks' && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
               <div className="flex items-center gap-2 mb-2">
@@ -503,6 +543,54 @@ const TEXT_ANIMATIONS: Array<[string, string]> = [
   ['none', 'None'], ['fade', 'Fade'], ['slide', 'Slide up'], ['scale', 'Pop in'],
   ['bounce', 'Bounce'], ['typewriter', 'Typewriter'], ['word-pop', 'Word pop'], ['karaoke', 'Karaoke'],
 ];
+
+const VOICES: Array<[string, string]> = [
+  ['af_heart', 'Heart (US ♀)'], ['af_bella', 'Bella (US ♀)'], ['am_michael', 'Michael (US ♂)'],
+  ['am_fenrir', 'Fenrir (US ♂)'], ['bf_emma', 'Emma (UK ♀)'], ['bm_george', 'George (UK ♂)'],
+];
+
+function VoiceoverSheet({ onGenerate, onClose }: {
+  onGenerate: (text: string, voice: string) => Promise<void>;
+  onClose: () => void;
+}) {
+  const [text, setText] = useState('');
+  const [voice, setVoice] = useState('af_heart');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const go = async () => {
+    if (!text.trim()) return;
+    setBusy(true); setErr(null);
+    try { await onGenerate(text.trim(), voice); }
+    catch (e: any) { setErr(e.message); }
+    setBusy(false);
+  };
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Mic className="w-4 h-4 text-rose-400" />
+        <span className="text-sm font-medium text-text-secondary">AI Voiceover</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+      </div>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3}
+        placeholder="Type what the narrator should say…"
+        className="w-full px-3 py-2 rounded-lg bg-bg-primary border border-border-primary text-sm text-text-primary focus:outline-none focus:border-accent-primary resize-none" />
+      <div className="flex items-center gap-2">
+        <select value={voice} onChange={(e) => setVoice(e.target.value)}
+          className="text-xs px-2 py-1.5 rounded-md bg-bg-primary border border-border-primary text-text-secondary">
+          {VOICES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+        </select>
+        <button onClick={go} disabled={busy || !text.trim()}
+          className="ml-auto flex items-center gap-2 px-4 py-1.5 rounded-lg bg-rose-500/20 text-rose-200 text-sm font-medium hover:bg-rose-500/30 disabled:opacity-40">
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
+          {busy ? 'Generating…' : 'Generate'}
+        </button>
+      </div>
+      {err && <p className="text-xs text-red-400 bg-red-500/10 px-2 py-1.5 rounded-lg">{err}</p>}
+    </div>
+  );
+}
 
 function TextEditSheet({ clip, onChange, onClose }: {
   clip: TextClip;

@@ -1,0 +1,52 @@
+/**
+ * POST /api/tts — AI voiceover proxy to the self-hosted Kokoro TTS server.
+ *
+ * Body: { text, voice?, speed?, format? } → returns the generated audio.
+ * Proxies to KOKORO_URL (default http://127.0.0.1:8080), so it works wherever
+ * the Next server can reach the TTS sidecar (local dev, or a deployed sidecar
+ * via the KOKORO_URL env). Keeps the CPU-bound model off the client and hides
+ * the token.
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+
+const KOKORO_URL = process.env.KOKORO_URL || 'http://127.0.0.1:8080';
+const KOKORO_TOKEN = process.env.KOKORO_TOKEN || '';
+const MAX_CHARS = 1200;
+
+export async function POST(req: NextRequest) {
+  try {
+    const { text, voice, speed, format } = await req.json();
+    const clean = (text as string || '').trim();
+    if (!clean) return NextResponse.json({ error: 'No text provided.' }, { status: 400 });
+    if (clean.length > MAX_CHARS) {
+      return NextResponse.json({ error: `Text too long (max ${MAX_CHARS} characters).` }, { status: 400 });
+    }
+
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (KOKORO_TOKEN) headers.Authorization = `Bearer ${KOKORO_TOKEN}`;
+
+    const resp = await fetch(`${KOKORO_URL}/tts`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ text: clean, voice: voice || 'af_heart', speed: speed || 1, format: format || 'mp3' }),
+    });
+
+    if (!resp.ok) {
+      const msg = await resp.text().catch(() => '');
+      return NextResponse.json({ error: `TTS server error (${resp.status}). ${msg.slice(0, 200)}` }, { status: 502 });
+    }
+
+    const audio = await resp.arrayBuffer();
+    return new NextResponse(audio, {
+      status: 200,
+      headers: {
+        'Content-Type': resp.headers.get('content-type') || 'audio/mpeg',
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (e: any) {
+    // ECONNREFUSED etc. — the sidecar isn't reachable.
+    return NextResponse.json({ error: `Voiceover unavailable: ${e?.message || 'TTS server not reachable'}` }, { status: 503 });
+  }
+}
