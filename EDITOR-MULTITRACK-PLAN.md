@@ -22,9 +22,12 @@ Text/stickers were floating overlays, not timeline lanes.
   with absolute `start`/`duration`; add/remove/move/trim/split clips; gaps allowed,
   overlaps rejected; `closeGapBefore` ripple; media clips keep `sourceDuration` so
   a trimmed end can be re-extended. 22/22 model tests green.
-- **Phase 2 (next):** timeline UI — real lanes per track, drag to move, trim
-  handles, split at playhead, add/remove tracks, waveforms showing true audio
-  length. Build against `timelineModel`.
+- **Phase 2 (done):** timeline UI — `timelineStore.ts` (zustand + undo/redo) and
+  `components/video-editor/multitrack/MultiTrackTimeline.tsx`. Real lanes per
+  track, drag to move (within + across same-kind tracks), trim handles, split at
+  playhead, close-gap, add/remove tracks, mute/hide, snapping, zoom. Verified in
+  `/editor-lab` (branch-only testbed). TODO in later polish: audio waveforms
+  showing amplitude (true length already shown by clip width).
 - **Phase 3:** preview — extend `VideoEditSpec` + `UserVideoEdit` (web preview
   AND server renderer) to lay out positioned multi-track clips with gaps
   (black/silence fill) and multiple audio tracks.
