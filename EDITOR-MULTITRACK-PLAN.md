@@ -57,7 +57,12 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **Filters + Adjust + Effects pack** — 17 grades + intensity, 4 adjust, 8 FX
   (grain/vignette/light-leak/RGB-split/zoom-pulse/shake/glow/dust). Per-clip,
   frame-driven, live preview. (effects.ts, FiltersSheet, MultiTrackComposition)
-- [ ] Animated karaoke captions (auto-transcribe → word-timed text clips + highlight)
+- [x] **Kinetic text + karaoke captions** — text clips animate (fade/slide/pop/
+  bounce/typewriter/word-pop/karaoke); karaoke sweeps gold word-highlight. Edit-text
+  panel (content/animation/colour/size/position). Verified via server still. STILL
+  TODO: auto-transcribe hookup (Whisper) to auto-generate caption clips.
+- [x] **Clip entrance transitions** — fade/from-black/zoom/slide/spin/whip/glitch
+  per clip, in Filters & FX panel. Verified via server still.
 - [ ] Beat sync (Web Audio beat detection → markers → snap cuts)
 - [ ] Speed ramping (velocity curves + smooth slow-mo)
 - [ ] Keyframes (animate x/y/scale/opacity/rotation over time)
