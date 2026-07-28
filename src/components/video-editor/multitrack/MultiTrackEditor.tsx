@@ -30,6 +30,32 @@ import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, S
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
+/** Best-effort: does this video have an audio track? Remotion's server render
+ *  CRASHES trying to mix a video that has NO audio when other audio is present,
+ *  so silent videos must be muted. Detection uses mozHasAudio / audioTracks, or
+ *  a brief muted play to populate Chrome's webkitAudioDecodedByteCount. */
+function probeHasAudio(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    let done = false;
+    const v = document.createElement('video');
+    const finish = (val: boolean) => {
+      if (done) return; done = true;
+      try { v.pause(); v.removeAttribute('src'); v.load(); } catch { /* noop */ }
+      resolve(val);
+    };
+    v.muted = true;
+    v.preload = 'auto';
+    v.onloadeddata = () => {
+      const a = v as unknown as { mozHasAudio?: boolean; audioTracks?: { length: number }; webkitAudioDecodedByteCount?: number };
+      if (a.mozHasAudio || (a.audioTracks && a.audioTracks.length > 0)) return finish(true);
+      v.play().then(() => setTimeout(() => finish(!!a.webkitAudioDecodedByteCount), 300)).catch(() => finish(true));
+    };
+    v.onerror = () => finish(false);
+    v.src = url;
+    setTimeout(() => finish(true), 4000); // slow network: don't silence by mistake
+  });
+}
+
 /** Probe a video file's duration (seconds) from a blob/URL in the browser. */
 function readVideoDuration(url: string): Promise<number> {
   return new Promise((resolve) => {
@@ -266,7 +292,11 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   useEffect(() => {
     const d = loadDraft();
     if (d && d.sourceUrl === sourceUrl && (d.data?.clips?.length ?? 0) > 1) setRestoreDraft(d);
-    setData(initialTimeline(sourceUrl, Math.max(0.1, sourceDuration)));
+    const initial = initialTimeline(sourceUrl, Math.max(0.1, sourceDuration));
+    setData(initial);
+    // Mute the source in render if it has no audio track (else the server render crashes).
+    const vClip = initial.clips.find((c) => c.kind === 'video');
+    if (vClip) probeHasAudio(sourceUrl).then((has) => { if (!has) useTimelineStore.getState().updateClip(vClip.id, { volume: 0 }); });
   }, [sourceUrl, sourceDuration, setData]);
 
   // Auto-save the edit to localStorage (debounced) so nothing is lost.
@@ -362,11 +392,12 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     if (!file) return;
     const url = URL.createObjectURL(file);
     const dur = (await readVideoDuration(url)) || 5;
+    const hasAudio = await probeHasAudio(url);
     const trackId = ensureNamedTrack('overlay', 'Overlay');
     const start = freeStartOnTrack(trackId, playhead, dur);
     addClip({
       id: nextId('clip'), trackId, kind: 'video', start, duration: dur,
-      sourceUrl: url, sourceStart: 0, sourceEnd: dur, sourceDuration: dur, speed: 1, volume: 1,
+      sourceUrl: url, sourceStart: 0, sourceEnd: dur, sourceDuration: dur, speed: 1, volume: hasAudio ? 1 : 0,
       x: 50, y: 50, scale: 0.6, opacity: 1,
     });
   };
