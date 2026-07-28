@@ -9,6 +9,8 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { createClient } from '@/lib/supabase';
+import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
+import { storeToEditSpec } from '@/lib/videoEditSpec';
 import { Download, Upload, Loader2, AlertCircle, Check, Send } from 'lucide-react';
 
 export function ExportTool() {
@@ -28,23 +30,72 @@ export function ExportTool() {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleExport = useCallback(async () => {
+    const supabase = createClient();
     try {
-      setExportState('loading-ffmpeg');
-      setExportProgress(0);
+      setExportState('processing');
+      setExportProgress(5);
       setExportError(null);
       setUploadedUrl(null);
       setUploadError(null);
 
-      // Dynamically import the export service to keep the main bundle small
-      const { exportVideo } = await import('@/lib/videoExportService');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Please sign in to export your video.');
 
-      setExportState('processing');
+      // The render service fetches media by URL, so any local (blob:) clip —
+      // the source or an imported b-roll — must be uploaded to public storage
+      // first. Already-hosted http(s) URLs pass straight through.
+      const uploadBlob = async (blobUrl: string, prefix: string): Promise<string> => {
+        const resp = await fetch(blobUrl);
+        const blob = await resp.blob();
+        const file = new File([blob], `${prefix}.mp4`, { type: blob.type || 'video/mp4' });
+        const path = `${user.id}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.mp4`;
+        const { error } = await supabase.storage
+          .from('post-media')
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw new Error(`Upload failed: ${error.message}`);
+        return supabase.storage.from('post-media').getPublicUrl(path).data.publicUrl;
+      };
+      const ensureHosted = (url: string, prefix: string) =>
+        url && url.startsWith('blob:') ? uploadBlob(url, prefix) : Promise.resolve(url);
 
-      const blobUrl = await exportVideo((progress) => {
-        setExportProgress(Math.round(progress * 100));
+      const state = useVideoEditorStore.getState();
+
+      const hostedSource = await ensureHosted(state.sourceVideoUrl, 'edit-src');
+      setExportProgress(25);
+
+      const spec = storeToEditSpec(state, { sourceVideoUrl: hostedSource });
+      if (spec.brollClips && spec.brollClips.length > 0) {
+        spec.brollClips = await Promise.all(
+          spec.brollClips.map(async (b) => ({ ...b, sourceUrl: await ensureHosted(b.sourceUrl, 'edit-broll') })),
+        );
+      }
+      setExportProgress(40);
+
+      // Kick off the server render and poll for completion (~3s cadence, 3min cap).
+      const job = await requestRender({
+        template_id: 'user_video_edit',
+        astro_data: {},
+        audio_option: { type: 'none' },
+        customizations: { edit_spec: spec as unknown as Record<string, unknown> },
       });
+      const jobId = job.id || job.job_id;
+      if (!jobId) throw new Error('Render did not start.');
 
-      setExportedBlobUrl(blobUrl);
+      let final: string | null = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const s = await getRenderStatus(jobId);
+        setExportProgress(Math.min(95, 45 + i * 3));
+        if (s.status === 'ready' && s.video_url) { final = s.video_url; break; }
+        if (s.status === 'failed') throw new Error(s.error || 'Render failed on the server.');
+      }
+      if (!final) throw new Error('Render timed out. Please try again.');
+
+      setExportProgress(100);
+      // Output is already a hosted public URL — record it as the uploaded URL so
+      // Post / Save-to-Cloud reuse it without re-uploading.
+      setExportedBlobUrl(final);
+      setUploadedUrl(final);
       setExportState('done');
     } catch (err: any) {
       console.error('[Export] Failed:', err);
@@ -135,14 +186,9 @@ export function ExportTool() {
       {exportState === 'idle' && (
         <>
           <p className="text-sm text-text-secondary">
-            Export your edited video as MP4. This runs entirely in your browser.
+            Render your edited video and post it straight to the feed. Rendering
+            happens on our servers, so you can close this tab once it starts.
           </p>
-          <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-            <p className="text-xs text-yellow-200">
-              First export may take a moment to download the processing engine (~30MB).
-              Subsequent exports will be faster.
-            </p>
-          </div>
           <button
             onClick={handleExport}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent-primary text-white font-medium hover:bg-accent-primary/90 transition-colors"
@@ -176,7 +222,7 @@ export function ExportTool() {
             />
           </div>
           <p className="text-xs text-text-muted text-center">
-            Processing video in your browser. Keep this tab open.
+            Rendering your video on our servers — this can take up to a minute.
           </p>
         </div>
       )}

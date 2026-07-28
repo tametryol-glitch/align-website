@@ -8,6 +8,7 @@
  */
 
 import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { useVideoPlayback } from './hooks/useVideoPlayback';
 import { useTransitionPreview } from './hooks/useTransitionPreview';
@@ -16,7 +17,12 @@ import { StickerOverlayLayer } from './StickerOverlayLayer';
 import { BrollLayer } from './BrollLayer';
 import { MusicPlayer } from './MusicPlayer';
 import { getFilterById, scaleCssFilter } from '@/lib/videoFilters';
-import { Play, Pause, Repeat, SkipBack, SkipForward, ChevronLeft, ChevronRight } from 'lucide-react';
+import { storeToEditSpec, type VideoEditSpec } from '@/lib/videoEditSpec';
+import { Play, Pause, Repeat, SkipBack, SkipForward, ChevronLeft, ChevronRight, Eye, Pencil } from 'lucide-react';
+
+// The WYSIWYG preview renders the same Remotion composition the server does.
+// Loaded client-only (the Remotion Player has no SSR path).
+const EditorPlayer = dynamic(() => import('@/remotion/editor/EditorPlayer'), { ssr: false });
 
 // One frame at an assumed 30fps — the granularity for arrow-key / button stepping.
 const FRAME = 1 / 30;
@@ -47,6 +53,20 @@ export function PreviewPanel() {
   const setLoopPlayback = useVideoEditorStore((s) => s.setLoopPlayback);
 
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+
+  // WYSIWYG preview: renders the exact server composition. Only subscribes to
+  // the store while active, so normal edit-mode re-render behaviour is untouched.
+  const [wysiwyg, setWysiwyg] = useState(false);
+  const [previewSpec, setPreviewSpec] = useState<VideoEditSpec | null>(null);
+  useEffect(() => {
+    if (!wysiwyg) {
+      setPreviewSpec(null);
+      return;
+    }
+    const build = () => setPreviewSpec(storeToEditSpec(useVideoEditorStore.getState()));
+    build();
+    return useVideoEditorStore.subscribe(build);
+  }, [wysiwyg]);
 
   // Sync video element with store
   useVideoPlayback(videoRef);
@@ -209,6 +229,10 @@ export function PreviewPanel() {
         className="relative flex-1 w-full max-w-[440px] aspect-[9/16] max-h-full rounded-xl overflow-hidden bg-black"
         onClick={handleBackgroundClick}
       >
+        {wysiwyg && previewSpec ? (
+          <EditorPlayer spec={previewSpec} />
+        ) : (
+        <>
         {/* Video element */}
         <video
           ref={videoRef}
@@ -252,6 +276,25 @@ export function PreviewPanel() {
             </div>
           </button>
         )}
+        </>
+        )}
+
+        {/* WYSIWYG / edit-mode toggle */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!wysiwyg) {
+              videoRef.current?.pause();
+              setIsPlaying(false);
+            }
+            setWysiwyg((v) => !v);
+          }}
+          className="absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm text-[11px] font-medium text-white hover:bg-black/70 transition-colors"
+          title={wysiwyg ? 'Back to editing' : 'Preview exactly what will be posted'}
+        >
+          {wysiwyg ? <Pencil className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+          {wysiwyg ? 'Edit' : 'Preview'}
+        </button>
       </div>
 
       {/* Playback controls with scrubbing */}

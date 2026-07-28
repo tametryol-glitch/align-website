@@ -15,7 +15,8 @@ export type TemplateId =
   | 'transit_alert'
   | 'compatibility_check'
   | 'zodiac_personality'
-  | 'daily_forecast_studio';
+  | 'daily_forecast_studio'
+  | 'user_video_edit';
 
 export type RenderStatus = 'queued' | 'rendering' | 'ready' | 'failed';
 
@@ -57,6 +58,9 @@ export interface RenderRequest {
     studio_headline?: string;
     studio_forecast_title?: string;
     studio_forecast_sub?: string;
+    /** Serialized VideoEditSpec for the user_video_edit composition (opaque
+     *  passthrough — the render service consumes it in editSpec). */
+    edit_spec?: Record<string, unknown>;
   };
 }
 
