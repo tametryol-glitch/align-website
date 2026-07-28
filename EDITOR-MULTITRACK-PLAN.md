@@ -60,7 +60,11 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **Kinetic text + karaoke captions** — text clips animate (fade/slide/pop/
   bounce/typewriter/word-pop/karaoke); karaoke sweeps gold word-highlight. Edit-text
   panel (content/animation/colour/size/position). Verified via server still. STILL
-  TODO: auto-transcribe hookup (Whisper) to auto-generate caption clips.
+  DONE: auto-transcribe hookup — see below.
+- [x] **Auto-captions (FREE, local Whisper)** — /api/transcribe prefers the
+  self-hosted faster-whisper sidecar (no OpenAI credits; OpenAI is fallback only).
+  "Auto-captions" button transcribes a selected audio clip → karaoke caption
+  clips. Verified: voiceover → 3 accurate karaoke lines, free.
 - [x] **Clip entrance transitions** — fade/from-black/zoom/slide/spin/whip/glitch
   per clip, in Filters & FX panel. Verified via server still.
 - [x] **Beat sync** — beatDetect.ts (Web Audio energy-onset), "Beat sync" button
