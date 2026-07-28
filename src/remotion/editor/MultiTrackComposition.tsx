@@ -199,7 +199,12 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
 
   // Ken Burns motion across the whole clip.
   const durFrames = Math.max(1, Math.round(m.duration * fps));
-  transform += motionTransform(m.motion, frame / durFrames);
+  const progress = frame / durFrames;
+  transform += motionTransform(m.motion, progress);
+
+  // Manual keyframes (override/compose motion) — position/scale/rotate + opacity.
+  const kf = keyframeState(m.keyframes, progress);
+  if (kf.transform) transform += kf.transform;
 
   // Entrance transition over the clip's opening.
   const tr = transitionIn(m, frame, fps);
@@ -241,7 +246,7 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   if (tr.overlay) overlays.push(tr.overlay);
 
   const inner = (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity: tr.opacity }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity: tr.opacity * (kf.opacity ?? 1) }}>
       {video}
       {overlays}
     </div>
@@ -252,6 +257,35 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   ) : (
     <AbsoluteFill>{inner}</AbsoluteFill>
   );
+}
+
+type Keyframe = { t: number; scale?: number; x?: number; y?: number; opacity?: number; rotation?: number };
+
+/** Interpolate manual keyframes at clip progress p (0→1). Each property is
+ *  interpolated across only the keyframes that define it; holds at the ends. */
+function keyframeState(keyframes: Keyframe[] | undefined, p: number): { transform: string; opacity: number | null } {
+  if (!keyframes || keyframes.length === 0) return { transform: '', opacity: null };
+  const sorted = [...keyframes].sort((a, b) => a.t - b.t);
+  const prop = (key: keyof Keyframe, def: number): number => {
+    const pts = sorted.filter((k) => k[key] != null);
+    if (pts.length === 0) return def;
+    if (p <= pts[0].t) return pts[0][key] as number;
+    if (p >= pts[pts.length - 1].t) return pts[pts.length - 1][key] as number;
+    for (let i = 0; i < pts.length - 1; i++) {
+      if (p >= pts[i].t && p <= pts[i + 1].t) {
+        const span = pts[i + 1].t - pts[i].t || 1;
+        const f = (p - pts[i].t) / span;
+        return (pts[i][key] as number) + ((pts[i + 1][key] as number) - (pts[i][key] as number)) * f;
+      }
+    }
+    return def;
+  };
+  const scale = prop('scale', 1), x = prop('x', 0), y = prop('y', 0), rotation = prop('rotation', 0);
+  const hasOpacity = sorted.some((k) => k.opacity != null);
+  return {
+    transform: ` translate(${x.toFixed(2)}%, ${y.toFixed(2)}%) scale(${scale.toFixed(4)}) rotate(${rotation.toFixed(2)}deg)`,
+    opacity: hasOpacity ? prop('opacity', 1) : null,
+  };
 }
 
 /** Ken Burns transform for a clip at progress p (0→1). Slight over-scale keeps

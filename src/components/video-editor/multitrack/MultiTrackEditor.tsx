@@ -72,7 +72,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -377,6 +377,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
               <Wand2 className="w-4 h-4" /> Filters &amp; FX
             </button>
+            {selectedVideo && (
+              <button onClick={() => setSheet('keyframes')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
+                title="Animate scale/position/opacity with keyframes">
+                <Activity className="w-4 h-4" /> Keyframes
+              </button>
+            )}
             {selectedText && (
               <button onClick={() => setSheet('edittext')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
@@ -448,6 +455,9 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           )}
           {sheet === 'edittext' && selectedText && (
             <TextEditSheet clip={selectedText} onChange={(patch) => updateClip(selectedText.id, patch)} onClose={() => setSheet(null)} />
+          )}
+          {sheet === 'keyframes' && selectedVideo && (
+            <KeyframeSheet clip={selectedVideo} playhead={playhead} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
           )}
         </div>
       </div>
@@ -598,6 +608,68 @@ const TEXT_ANIMATIONS: Array<[string, string]> = [
   ['none', 'None'], ['fade', 'Fade'], ['slide', 'Slide up'], ['scale', 'Pop in'],
   ['bounce', 'Bounce'], ['typewriter', 'Typewriter'], ['word-pop', 'Word pop'], ['karaoke', 'Karaoke'],
 ];
+
+function KeyframeSheet({ clip, playhead, onChange, onClose }: {
+  clip: MediaClip;
+  playhead: number;
+  onChange: (patch: Partial<MediaClip>) => void;
+  onClose: () => void;
+}) {
+  const progress = Math.max(0, Math.min(1, (playhead - clip.start) / Math.max(0.001, clip.duration)));
+  const [scale, setScale] = useState(1);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [opacity, setOpacity] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const kfs = [...(clip.keyframes || [])].sort((a, b) => a.t - b.t);
+
+  const addKeyframe = () => {
+    const next = kfs.filter((k) => Math.abs(k.t - progress) > 0.005);
+    next.push({ t: +progress.toFixed(3), scale, x, y, opacity, rotation });
+    next.sort((a, b) => a.t - b.t);
+    onChange({ keyframes: next });
+  };
+  const removeKeyframe = (t: number) => onChange({ keyframes: kfs.filter((k) => k.t !== t) });
+
+  const Slider = ({ label, val, set, min, max, step }: { label: string; val: number; set: (n: number) => void; min: number; max: number; step: number }) => (
+    <label className="flex items-center gap-2 text-[11px] text-text-muted">
+      <span className="w-14">{label}</span>
+      <input type="range" min={min} max={max} step={step} value={val} onChange={(e) => set(parseFloat(e.target.value))} className="flex-1 accent-indigo-400" />
+      <span className="w-9 text-right font-mono">{val}</span>
+    </label>
+  );
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Activity className="w-4 h-4 text-indigo-400" />
+        <span className="text-sm font-medium text-text-secondary">Keyframes</span>
+        <span className="text-[10px] text-text-muted">· playhead at {Math.round(progress * 100)}% of clip</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+      </div>
+      <Slider label="Scale" val={scale} set={setScale} min={0.3} max={3} step={0.01} />
+      <Slider label="X %" val={x} set={setX} min={-60} max={60} step={1} />
+      <Slider label="Y %" val={y} set={setY} min={-60} max={60} step={1} />
+      <Slider label="Opacity" val={opacity} set={setOpacity} min={0} max={1} step={0.01} />
+      <Slider label="Rotate°" val={rotation} set={setRotation} min={-180} max={180} step={1} />
+      <button onClick={addKeyframe}
+        className="w-full px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-200 text-sm font-medium hover:bg-indigo-500/30">
+        + Add keyframe at playhead ({Math.round(progress * 100)}%)
+      </button>
+      {kfs.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {kfs.map((k) => (
+            <span key={k.t} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-text-secondary">
+              {Math.round(k.t * 100)}%
+              <button onClick={() => removeKeyframe(k.t)} className="text-text-muted hover:text-red-400"><X className="w-3 h-3" /></button>
+            </span>
+          ))}
+        </div>
+      )}
+      <p className="text-[10px] text-text-muted">Move the playhead, set values, add a keyframe. Two+ keyframes animate between them.</p>
+    </div>
+  );
+}
 
 const VOICES: Array<[string, string]> = [
   ['af_heart', 'Heart (US ♀)'], ['af_bella', 'Bella (US ♀)'], ['am_michael', 'Michael (US ♂)'],

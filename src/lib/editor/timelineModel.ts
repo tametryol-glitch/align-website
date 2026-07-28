@@ -68,6 +68,9 @@ export interface MediaClip extends ClipBase {
   transitionIn?: { type: string; durationSec: number };
   /** Ken Burns-style motion animated across the whole clip. See lib/editor/effects.ts MOTIONS. */
   motion?: string;
+  /** Manual keyframes — interpolated by clip progress t (0..1). Any subset of
+   *  props per keyframe; missing props hold their neighbours. Overrides motion. */
+  keyframes?: Array<{ t: number; scale?: number; x?: number; y?: number; opacity?: number; rotation?: number }>;
 }
 
 /** A text card placed on a text lane. */
