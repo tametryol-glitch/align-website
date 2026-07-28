@@ -80,7 +80,8 @@ function EditorPageInner() {
   const router = useRouter();
   const videoUrl = searchParams.get('url') || '';
   const videoId = searchParams.get('videoId') || '';
-  const multiTrack = searchParams.get('mt') === '1'; // new multi-track editor (beta)
+  // New multi-track editor is the default; ?classic=1 (or ?mt=0) loads the old one.
+  const classic = searchParams.get('classic') === '1' || searchParams.get('mt') === '0';
   const init = useVideoEditorStore((s) => s.init);
   const sourceVideoUrl = useVideoEditorStore((s) => s.sourceVideoUrl);
   const videoDuration = useVideoEditorStore((s) => s.videoDuration);
@@ -256,10 +257,10 @@ function EditorPageInner() {
 
   // ── Editor loaded ─────────────────────────────────────────────
   if (sourceVideoUrl) {
-    if (multiTrack) {
-      return <MultiTrackEditor sourceUrl={sourceVideoUrl} sourceDuration={videoDuration} />;
+    if (classic) {
+      return <EditorLayout videoId={videoId} />;
     }
-    return <EditorLayout videoId={videoId} />;
+    return <MultiTrackEditor sourceUrl={sourceVideoUrl} sourceDuration={videoDuration} />;
   }
 
   // ── Import screen (no video loaded yet) ───────────────────────

@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 import { MultiTrackTimeline } from './MultiTrackTimeline';
 import {
@@ -187,6 +188,17 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const [progress, setProgress] = useState(0);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+
+  // When the editor was opened from the feed/reels record flow (?returnTo=),
+  // hand the finished render back to that composer to post — not a dead end.
+  const router = useRouter();
+  const returnTo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('returnTo') : null;
+  const postToComposer = (url: string) => {
+    const dest = returnTo === 'reel'
+      ? `/reels/create?editedVideoUrl=${encodeURIComponent(url)}`
+      : `/feed?editedVideoUrl=${encodeURIComponent(url)}`;
+    router.push(dest);
+  };
 
   const handleExport = async () => {
     setExporting(true); setProgress(3); setExportError(null); setResultUrl(null);
@@ -493,12 +505,16 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {capMsg && <p className="text-xs text-sky-300 bg-sky-500/10 px-3 py-2 rounded-lg">{capMsg}</p>}
           {exportError && <p className="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{exportError}</p>}
           {resultUrl && (
-            <div className="flex items-center gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
+            <div className="flex items-center flex-wrap gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
               <Check className="w-4 h-4 text-emerald-400" />
               <span className="text-emerald-300">Export ready.</span>
+              <button onClick={() => postToComposer(resultUrl)}
+                className="ml-auto px-2.5 py-1 rounded-md bg-accent-primary text-white font-semibold hover:bg-accent-primary/90">
+                {returnTo === 'reel' ? 'Continue to reel' : 'Post to Cosmic Feed'}
+              </button>
               <a href={resultUrl} target="_blank" rel="noopener noreferrer" download
-                className="ml-auto px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-200 font-medium hover:bg-emerald-500/30">
-                Download / Open
+                className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-200 font-medium hover:bg-emerald-500/30">
+                Download
               </a>
             </div>
           )}
