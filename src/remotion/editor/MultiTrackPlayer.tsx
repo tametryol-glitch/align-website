@@ -12,7 +12,7 @@ const FPS = 30;
  * TimelineState via @remotion/player — the same composition the server will
  * render in Phase 4, so the preview matches the export.
  */
-export default function MultiTrackPlayer({ timeline }: { timeline: TimelineState }) {
+export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920 }: { timeline: TimelineState; width?: number; height?: number }) {
   const durationInFrames = Math.max(1, Math.round(Math.max(0.1, timelineDuration(timeline)) * FPS));
   const ref = useRef<PlayerRef>(null);
   // Branch-only test hook so the preview can be seeked from the console.
@@ -24,8 +24,8 @@ export default function MultiTrackPlayer({ timeline }: { timeline: TimelineState
       inputProps={{ timeline } as unknown as Record<string, unknown>}
       durationInFrames={durationInFrames}
       fps={FPS}
-      compositionWidth={1080}
-      compositionHeight={1920}
+      compositionWidth={width}
+      compositionHeight={height}
       style={{ width: '100%', height: '100%', borderRadius: 12, overflow: 'hidden', background: '#000' }}
       controls
     />

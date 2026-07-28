@@ -28,6 +28,13 @@ import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, S
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
+const ASPECTS = [
+  { id: '9:16', w: 1080, h: 1920 },
+  { id: '1:1', w: 1080, h: 1080 },
+  { id: '4:5', w: 1080, h: 1350 },
+  { id: '16:9', w: 1920, h: 1080 },
+];
+
 /** Build the starting timeline: one video track holding the whole source clip. */
 function initialTimeline(sourceUrl: string, duration: number): TimelineState {
   _resetIds();
@@ -47,6 +54,8 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const addClip = useTimelineStore((s) => s.addClip);
   const updateClip = useTimelineStore((s) => s.updateClip);
   const setClipSpeed = useTimelineStore((s) => s.setClipSpeed);
+  const aspect = useTimelineStore((s) => s.aspect);
+  const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
   const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | null>(null);
@@ -140,7 +149,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
         template_id: 'user_video_edit',
         astro_data: {},
         audio_option: { type: 'none' },
-        customizations: { edit_spec: { __multitrack: { timeline, durationSeconds } } as unknown as Record<string, unknown> },
+        customizations: { edit_spec: { __multitrack: { timeline, durationSeconds, width: aspect.w, height: aspect.h } } as unknown as Record<string, unknown> },
       });
       const jobId = job.id || job.job_id;
       if (!jobId) throw new Error('Render did not start.');
@@ -239,8 +248,23 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     <div className="flex flex-col gap-3 p-3 h-full">
       <div className="flex gap-4 items-start">
         {/* Preview */}
-        <div className="w-[240px] flex-shrink-0 aspect-[9/16] rounded-xl overflow-hidden bg-black">
-          <MultiTrackPlayer timeline={data} />
+        <div className="flex-shrink-0">
+          <div data-testid="mt-preview" className="rounded-xl overflow-hidden bg-black mx-auto"
+            style={{ width: 240, aspectRatio: `${aspect.w} / ${aspect.h}`, maxHeight: 420 }}>
+            <MultiTrackPlayer timeline={data} width={aspect.w} height={aspect.h} />
+          </div>
+          {/* Aspect ratio */}
+          <div className="flex gap-1 mt-2 justify-center">
+            {ASPECTS.map((a) => {
+              const active = aspect.w === a.w && aspect.h === a.h;
+              return (
+                <button key={a.id} onClick={() => setAspect(a.w, a.h)}
+                  className={`px-2 py-1 rounded-md text-[10px] border ${active ? 'border-accent-primary bg-accent-primary/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                  {a.id}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Add tools */}

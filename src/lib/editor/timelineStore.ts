@@ -29,6 +29,7 @@ interface TimelineStore {
   selectedClipId: string | null;
   playhead: number; // seconds
   pxPerSec: number; // zoom
+  aspect: { w: number; h: number }; // output canvas dimensions
   history: TimelineState[];
   historyIndex: number;
 
@@ -58,6 +59,7 @@ interface TimelineStore {
   selectClip: (clipId: string | null) => void;
   setPlayhead: (t: number) => void;
   setPxPerSec: (px: number) => void;
+  setAspect: (w: number, h: number) => void;
 
   // history
   undo: () => void;
@@ -85,6 +87,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     selectedClipId: null,
     playhead: 0,
     pxPerSec: 50,
+    aspect: { w: 1080, h: 1920 },
     history: [EMPTY_TIMELINE],
     historyIndex: 0,
 
@@ -124,6 +127,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     selectClip: (clipId) => set({ selectedClipId: clipId }),
     setPlayhead: (t) => set({ playhead: Math.max(0, t) }),
     setPxPerSec: (px) => set({ pxPerSec: Math.max(10, Math.min(240, px)) }),
+    setAspect: (w, h) => set({ aspect: { w, h } }),
 
     undo: () => set((s) => {
       if (s.historyIndex <= 0) return {};
