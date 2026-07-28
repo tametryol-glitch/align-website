@@ -18,7 +18,9 @@ import {
   type TimelineState, type MediaClip, type TextClip, type TimelineTrack,
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
-import { Music, Type, X, Plus } from 'lucide-react';
+import { FILTER_PRESETS } from '@/lib/videoFilters';
+import { EFFECTS } from '@/lib/editor/effects';
+import { Music, Type, X, Plus, Wand2 } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -39,8 +41,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const data = useTimelineStore((s) => s.data);
   const addTrack = useTimelineStore((s) => s.addTrack);
   const addClip = useTimelineStore((s) => s.addClip);
+  const updateClip = useTimelineStore((s) => s.updateClip);
   const playhead = useTimelineStore((s) => s.playhead);
-  const [sheet, setSheet] = useState<'music' | 'text' | null>(null);
+  const selectedClipId = useTimelineStore((s) => s.selectedClipId);
+  const [sheet, setSheet] = useState<'music' | 'text' | 'filters' | null>(null);
+
+  const selectedClip = data.clips.find((c) => c.id === selectedClipId);
+  const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
 
   // Seed once from the loaded video.
   useEffect(() => {
@@ -113,17 +120,111 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
               <Type className="w-4 h-4" /> Add text
             </button>
+            <button onClick={() => setSheet('filters')} disabled={!selectedVideo}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-fuchsia-500/15 text-fuchsia-300 text-sm font-medium hover:bg-fuchsia-500/25 disabled:opacity-30"
+              title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
+              <Wand2 className="w-4 h-4" /> Filters &amp; FX
+            </button>
           </div>
           <p className="text-xs text-text-muted">
             {data.tracks.length} track{data.tracks.length !== 1 ? 's' : ''} · {data.clips.length} clip{data.clips.length !== 1 ? 's' : ''} · {timelineDuration(data).toFixed(1)}s
           </p>
           {sheet === 'music' && <MusicSheet onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'text' && <TextSheet onAdd={addText} onClose={() => setSheet(null)} />}
+          {sheet === 'filters' && selectedVideo && (
+            <FiltersSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          )}
         </div>
       </div>
 
       {/* Timeline */}
       <MultiTrackTimeline />
+    </div>
+  );
+}
+
+function FiltersSheet({ clip, onChange, onClose }: {
+  clip: MediaClip;
+  onChange: (patch: Partial<MediaClip>) => void;
+  onClose: () => void;
+}) {
+  const adjust = clip.adjust || {};
+  const effects = clip.effects || [];
+  const setAdjust = (k: 'brightness' | 'contrast' | 'saturation' | 'warmth', v: number) =>
+    onChange({ adjust: { ...adjust, [k]: v } });
+  const toggleEffect = (id: string) =>
+    onChange({ effects: effects.includes(id) ? effects.filter((e) => e !== id) : [...effects, id] });
+
+  const ADJ: Array<['brightness' | 'contrast' | 'saturation' | 'warmth', string]> = [
+    ['brightness', 'Brightness'], ['contrast', 'Contrast'], ['saturation', 'Saturation'], ['warmth', 'Warmth'],
+  ];
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-3">
+      <div className="flex items-center gap-2">
+        <Wand2 className="w-4 h-4 text-fuchsia-400" />
+        <span className="text-sm font-medium text-text-secondary">Filters &amp; Effects</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+      </div>
+
+      {/* Filter presets */}
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Filter</p>
+        <div className="grid grid-cols-4 gap-1.5 max-h-28 overflow-auto">
+          {FILTER_PRESETS.map((p) => {
+            const active = (clip.filter || 'none') === p.id;
+            return (
+              <button key={p.id}
+                onClick={() => onChange({ filter: p.id, filterIntensity: clip.filterIntensity ?? 1 })}
+                className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                {p.name}
+              </button>
+            );
+          })}
+        </div>
+        {clip.filter && clip.filter !== 'none' && (
+          <div className="mt-2">
+            <div className="flex justify-between text-[10px] text-text-muted mb-0.5">
+              <span>Intensity</span><span>{Math.round((clip.filterIntensity ?? 1) * 100)}%</span>
+            </div>
+            <input type="range" min={0} max={1} step={0.01} value={clip.filterIntensity ?? 1}
+              onChange={(e) => onChange({ filterIntensity: parseFloat(e.target.value) })}
+              className="w-full accent-fuchsia-400" />
+          </div>
+        )}
+      </div>
+
+      {/* Effects */}
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Effects</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {EFFECTS.map((e) => {
+            const active = effects.includes(e.id);
+            return (
+              <button key={e.id} onClick={() => toggleEffect(e.id)}
+                className={`px-1.5 py-1.5 rounded-md text-left border ${active ? 'border-fuchsia-400 bg-fuchsia-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                <span className="block text-[10px] font-medium text-text-primary truncate">{e.name}</span>
+                <span className="block text-[9px] text-text-muted">{e.vibe}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Adjust */}
+      <div className="space-y-1.5">
+        <p className="text-[10px] text-text-muted uppercase tracking-wider">Adjust</p>
+        {ADJ.map(([k, label]) => (
+          <div key={k}>
+            <div className="flex justify-between text-[10px] text-text-muted">
+              <span>{label}</span><span>{Math.round((adjust[k] || 0) * 100)}</span>
+            </div>
+            <input type="range" min={-1} max={1} step={0.01} value={adjust[k] || 0}
+              onChange={(e) => setAdjust(k, parseFloat(e.target.value))}
+              className="w-full accent-fuchsia-400" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

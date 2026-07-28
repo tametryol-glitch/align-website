@@ -12,6 +12,7 @@ import {
   updateTrack as mUpdateTrack,
   addClip as mAddClip,
   removeClip as mRemoveClip,
+  updateClip as mUpdateClip,
   moveClip as mMoveClip,
   trimClip as mTrimClip,
   splitAt as mSplitAt,
@@ -45,6 +46,7 @@ interface TimelineStore {
   // clips
   addClip: (clip: TimelineClip) => void;
   removeClip: (clipId: string) => void;
+  updateClip: (clipId: string, patch: Partial<TimelineClip>) => void;
   moveClip: (clipId: string, newStart: number, newTrackId?: string) => void;
   trimClip: (clipId: string, edge: 'start' | 'end', newTime: number) => void;
   splitAtPlayhead: (trackId: string) => void;
@@ -102,6 +104,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
       commit((d) => mRemoveClip(d, clipId));
       if (get().selectedClipId === clipId) set({ selectedClipId: null });
     },
+    updateClip: (clipId, patch) => commit((d) => mUpdateClip(d, clipId, patch)),
     moveClip: (clipId, newStart, newTrackId) => commit((d) => mMoveClip(d, clipId, newStart, newTrackId)),
     trimClip: (clipId, edge, newTime) => commit((d) => mTrimClip(d, clipId, edge, newTime)),
     splitAtPlayhead: (trackId) => commit((d) => mSplitAt(d, trackId, get().playhead)),

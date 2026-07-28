@@ -59,6 +59,11 @@ export interface MediaClip extends ClipBase {
   scale?: number;    // fraction of frame width, 0.1–1
   opacity?: number;  // 0–1
   rotation?: number; // degrees
+  // Look (video clips): color grade + manual adjust + effect overlays.
+  filter?: string;            // FilterPresetId
+  filterIntensity?: number;   // 0–1
+  adjust?: { brightness?: number; contrast?: number; saturation?: number; warmth?: number };
+  effects?: string[];         // EffectId[] — see lib/editor/effects.ts
 }
 
 /** A text card placed on a text lane. */
