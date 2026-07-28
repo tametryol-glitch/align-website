@@ -75,7 +75,9 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **Ken Burns motion** — MediaClip.motion + MOTIONS (zoom in/out, pan L/R/U/D,
   ken-burns), animated across the clip; picker in Filters & FX. Verified zoom-in
   scales 1.0→1.22. (This covers most keyframe use; manual keyframes still TODO.)
-- [ ] Keyframes — manual per-property keyframes (x/y/scale/opacity/rotation over time)
+- [x] **Manual keyframes** — MediaClip.keyframes interpolated per property
+  (scale/x/y/opacity/rotation) by clip progress; Keyframes panel (set values +
+  add at playhead + delete). Verified: scale 1→2 reads 1.5 at midpoint.
 - [ ] Green screen / chroma key + AI background remover (MediaPipe selfie seg, on-device)
 - [x] **Aspect ratio / reframe** (9:16, 1:1, 4:5, 16:9) — store.aspect, player
   width/height, editor picker + dynamic preview, export via calculateMetadata.
