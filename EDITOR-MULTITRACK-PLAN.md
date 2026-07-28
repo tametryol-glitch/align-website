@@ -85,7 +85,13 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **AI voiceover via Kokoro TTS** — /api/tts proxies to KOKORO_URL; editor
   Voiceover panel (text + 6 voices) → narration audio clip. Verified live (text →
   4.1s clip). Works where the Next server reaches the TTS sidecar (local now; set
-  KOKORO_URL for prod). Voice effects still TODO.
+  KOKORO_URL for prod).
+- [x] **Voice FX** — pitch/speed presets on audio clips (Chipmunk/Deep/etc via
+  playbackRate). Verified: Chipmunk → audio playbackRate 1.6.
+
+### Needs a different render engine (Remotion OffthreadVideo gives no per-frame pixel/DSP access) — scoped as future work:
+- Green screen / chroma key + AI background remover (per-frame canvas/WebGL/ML)
+- Studio pitch-shift (pitch without speed change) + speed-ramp velocity curves (per-frame variable rate)
 - [x] **Sound-FX picker** — library sfx kind surfaced in the editor (Sound FX
   button) onto a dedicated SFX audio lane. (Trending rail still TODO.)
 - [x] **Templates (Looks)** — 8 one-tap Looks (looks.ts) applying filter+motion+
