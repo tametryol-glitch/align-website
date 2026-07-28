@@ -46,10 +46,11 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const updateClip = useTimelineStore((s) => s.updateClip);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'text' | 'filters' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'text' | 'filters' | 'edittext' | null>(null);
 
   const selectedClip = data.clips.find((c) => c.id === selectedClipId);
   const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
+  const selectedText = selectedClip && selectedClip.kind === 'text' ? selectedClip : null;
 
   // ── Export ────────────────────────────────────────────────────
   const [exporting, setExporting] = useState(false);
@@ -194,6 +195,12 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
               <Wand2 className="w-4 h-4" /> Filters &amp; FX
             </button>
+            {selectedText && (
+              <button onClick={() => setSheet('edittext')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
+                <Type className="w-4 h-4" /> Edit text
+              </button>
+            )}
             <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
               className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -219,6 +226,9 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'text' && <TextSheet onAdd={addText} onClose={() => setSheet(null)} />}
           {sheet === 'filters' && selectedVideo && (
             <FiltersSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          )}
+          {sheet === 'edittext' && selectedText && (
+            <TextEditSheet clip={selectedText} onChange={(patch) => updateClip(selectedText.id, patch)} onClose={() => setSheet(null)} />
           )}
         </div>
       </div>
@@ -310,6 +320,66 @@ function FiltersSheet({ clip, onChange, onClose }: {
               className="w-full accent-fuchsia-400" />
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+const TEXT_ANIMATIONS: Array<[string, string]> = [
+  ['none', 'None'], ['fade', 'Fade'], ['slide', 'Slide up'], ['scale', 'Pop in'],
+  ['bounce', 'Bounce'], ['typewriter', 'Typewriter'], ['word-pop', 'Word pop'], ['karaoke', 'Karaoke'],
+];
+
+function TextEditSheet({ clip, onChange, onClose }: {
+  clip: TextClip;
+  onChange: (patch: Partial<TextClip>) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-3">
+      <div className="flex items-center gap-2">
+        <Type className="w-4 h-4 text-amber-400" />
+        <span className="text-sm font-medium text-text-secondary">Edit text</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+      </div>
+      <input value={clip.text} onChange={(e) => onChange({ text: e.target.value })}
+        placeholder="Your text…"
+        className="w-full px-3 py-2 rounded-lg bg-bg-primary border border-border-primary text-sm text-text-primary focus:outline-none focus:border-accent-primary" />
+
+      <div>
+        <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Animation</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {TEXT_ANIMATIONS.map(([id, label]) => {
+            const active = (clip.animation || 'none') === id;
+            return (
+              <button key={id} onClick={() => onChange({ animation: id as TextClip['animation'] })}
+                className={`px-1.5 py-1.5 rounded-md text-[10px] border ${active ? 'border-amber-400 bg-amber-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <label className="flex items-center gap-1.5 text-[11px] text-text-muted">
+          Color
+          <input type="color" value={clip.color} onChange={(e) => onChange({ color: e.target.value })}
+            className="w-6 h-6 rounded bg-transparent border border-white/10" />
+        </label>
+        <label className="flex-1 flex items-center gap-2 text-[11px] text-text-muted">
+          Size
+          <input type="range" min={24} max={140} step={1} value={clip.fontSize}
+            onChange={(e) => onChange({ fontSize: parseInt(e.target.value) })} className="flex-1 accent-amber-400" />
+        </label>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="flex items-center gap-2 text-[11px] text-text-muted">X
+          <input type="range" min={0} max={100} value={clip.x} onChange={(e) => onChange({ x: parseInt(e.target.value) })} className="flex-1 accent-amber-400" />
+        </label>
+        <label className="flex items-center gap-2 text-[11px] text-text-muted">Y
+          <input type="range" min={0} max={100} value={clip.y} onChange={(e) => onChange({ y: parseInt(e.target.value) })} className="flex-1 accent-amber-400" />
+        </label>
       </div>
     </div>
   );

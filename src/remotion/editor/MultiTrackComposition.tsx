@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { AbsoluteFill, OffthreadVideo, Audio, Sequence, useVideoConfig, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, OffthreadVideo, Audio, Sequence, useVideoConfig, useCurrentFrame, interpolate, spring } from 'remotion';
 import type {
   TimelineState, TimelineClip, MediaClip, TextClip, StickerClip, TimelineTrack,
 } from '@/lib/editor/timelineModel';
@@ -83,33 +83,9 @@ function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineT
   }
 
   if (clip.kind === 'text') {
-    const t = clip as TextClip;
     return (
       <Sequence from={from} durationInFrames={dur} layout="none">
-        <AbsoluteFill>
-          <div
-            style={{
-              position: 'absolute',
-              left: `${t.x}%`,
-              top: `${t.y}%`,
-              transform: `translate(-50%, -50%) rotate(${t.rotation || 0}deg)`,
-              color: t.color,
-              fontSize: t.fontSize,
-              fontFamily: t.fontFamily || 'Inter, sans-serif',
-              fontWeight: 700,
-              textAlign: t.textAlign || 'center',
-              background: t.bgColor || 'transparent',
-              padding: t.bgColor ? '0.15em 0.4em' : 0,
-              borderRadius: t.bgColor ? 8 : 0,
-              WebkitTextStroke: t.strokeWidth ? `${t.strokeWidth}px ${t.strokeColor || '#000'}` : undefined,
-              whiteSpace: 'pre-wrap',
-              maxWidth: '90%',
-              lineHeight: 1.15,
-            }}
-          >
-            {t.text}
-          </div>
-        </AbsoluteFill>
+        <TextClipRender clip={clip as TextClip} />
       </Sequence>
     );
   }
@@ -137,6 +113,68 @@ function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineT
         </div>
       </AbsoluteFill>
     </Sequence>
+  );
+}
+
+/** Renders a text clip with kinetic animation (fade/slide/scale/bounce/
+ *  typewriter/word-pop/karaoke). Word-timed animations distribute the clip's
+ *  duration across its words — which is exactly how auto-captions read. */
+function TextClipRender({ clip: t }: { clip: TextClip }) {
+  const { fps } = useVideoConfig();
+  const frame = useCurrentFrame();
+  const durFrames = Math.max(1, Math.round(t.duration * fps));
+  const anim = t.animation || 'none';
+  const HIGHLIGHT = '#FFD84D';
+
+  // In/out fade shared by all animations.
+  const inF = interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const outF = interpolate(frame, [durFrames - 8, durFrames], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const baseOpacity = Math.min(inF, outF);
+
+  let opacity = baseOpacity;
+  let translateY = 0;
+  let scale = 1;
+  if (anim === 'slide') translateY = interpolate(frame, [0, 10], [40, 0], { extrapolateRight: 'clamp' });
+  if (anim === 'scale') scale = spring({ frame, fps, config: { damping: 13 } });
+  if (anim === 'bounce') scale = spring({ frame, fps, config: { damping: 7, stiffness: 130 } });
+
+  const words = t.text.split(/\s+/).filter(Boolean);
+  const perWord = durFrames / Math.max(1, words.length);
+
+  let content: React.ReactNode = t.text;
+  if (anim === 'typewriter') {
+    const chars = Math.floor(interpolate(frame, [0, durFrames * 0.6], [0, t.text.length], { extrapolateRight: 'clamp' }));
+    content = t.text.slice(0, chars);
+  } else if (anim === 'word-pop') {
+    content = words.map((w, i) => {
+      const local = frame - i * perWord;
+      const s = local >= 0 ? spring({ frame: local, fps, config: { damping: 10 } }) : 0;
+      return <span key={i} style={{ display: 'inline-block', margin: '0 0.14em', transform: `scale(${s})`, opacity: local >= 0 ? 1 : 0 }}>{w}</span>;
+    });
+  } else if (anim === 'karaoke') {
+    content = words.map((w, i) => {
+      const wordStart = i * perWord;
+      const spoken = frame >= wordStart;
+      const current = spoken && frame < wordStart + perWord;
+      return <span key={i} style={{ display: 'inline-block', margin: '0 0.14em', color: spoken ? HIGHLIGHT : t.color, transform: current ? 'scale(1.1)' : 'scale(1)', transition: 'none' }}>{w}</span>;
+    });
+  }
+
+  return (
+    <AbsoluteFill>
+      <div style={{
+        position: 'absolute', left: `${t.x}%`, top: `${t.y}%`,
+        transform: `translate(-50%, -50%) translateY(${translateY}px) scale(${scale}) rotate(${t.rotation || 0}deg)`,
+        opacity,
+        color: t.color, fontSize: t.fontSize, fontFamily: t.fontFamily || 'Inter, sans-serif', fontWeight: 800,
+        textAlign: t.textAlign || 'center', background: t.bgColor || 'transparent',
+        padding: t.bgColor ? '0.15em 0.4em' : 0, borderRadius: t.bgColor ? 8 : 0,
+        WebkitTextStroke: t.strokeWidth ? `${t.strokeWidth}px ${t.strokeColor || '#000'}` : undefined,
+        whiteSpace: 'pre-wrap', maxWidth: '90%', lineHeight: 1.15, textShadow: '0 2px 12px rgba(0,0,0,0.35)',
+      }}>
+        {content}
+      </div>
+    </AbsoluteFill>
   );
 }
 
