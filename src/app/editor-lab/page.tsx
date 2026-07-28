@@ -7,9 +7,12 @@
  */
 
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 import { MultiTrackTimeline } from '@/components/video-editor/multitrack/MultiTrackTimeline';
 import { nextId, _resetIds, type TimelineState, type MediaClip, type TextClip } from '@/lib/editor/timelineModel';
+
+const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
 function seed(): TimelineState {
   _resetIds();
@@ -21,11 +24,11 @@ function seed(): TimelineState {
   ];
   const vClip = (start: number, s0: number, s1: number): MediaClip => ({
     id: nextId('clip'), trackId: vId, kind: 'video', start, duration: s1 - s0,
-    sourceUrl: 'demo.mp4', sourceStart: s0, sourceEnd: s1, sourceDuration: 30, speed: 1, volume: 1,
+    sourceUrl: '/lab-sample.mp4', sourceStart: s0, sourceEnd: s1, sourceDuration: 30, speed: 1, volume: 1,
   });
   const music: MediaClip = {
     id: nextId('clip'), trackId: aId, kind: 'audio', start: 0, duration: 8,
-    sourceUrl: 'song.mp3', sourceStart: 0, sourceEnd: 8, sourceDuration: 45, speed: 1, volume: 0.6,
+    sourceUrl: '/lab-song.mp3', sourceStart: 0, sourceEnd: 8, sourceDuration: 45, speed: 1, volume: 0.6,
   };
   const text: TextClip = {
     id: nextId('clip'), trackId: tId, kind: 'text', start: 1, duration: 2.5,
@@ -59,7 +62,14 @@ export default function EditorLabPage() {
         </p>
       </div>
 
-      <MultiTrackTimeline />
+      <div className="flex gap-4 items-start">
+        <div className="w-[220px] flex-shrink-0 aspect-[9/16] rounded-xl overflow-hidden bg-black">
+          <MultiTrackPlayer timeline={data} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <MultiTrackTimeline />
+        </div>
+      </div>
 
       <div className="text-xs text-text-muted font-mono space-y-1">
         <div>playhead: {playhead.toFixed(2)}s · tracks: {data.tracks.length} · clips: {data.clips.length}</div>
