@@ -33,14 +33,18 @@ Text/stickers were floating overlays, not timeline lanes.
   audio mixed, gaps = black), `MultiTrackPlayer.tsx` (@remotion/player). Verified
   live in `/editor-lab` with real media: gap→black, per-clip source in/out, text
   in-window, audio mixing.
-- **Phase 3.5 (next — APP INTEGRATION):** mount `MultiTrackTimeline` + `MultiTrackPlayer`
-  into the real editor (`cosmic-video/edit` / EditorLayout), replacing the old
-  single-track TimelinePanel. Initialise the timeline store from the loaded video
-  (one video track + clip). Rewire the tool panels so Audio adds an audio CLIP
-  from the library (true length, splittable), Text adds a text clip, B-roll adds
-  an overlay-track clip. This is what makes it usable on the user's real video.
-- **Phase 4:** export/renderer parity — teach `align-video-renderer` the
-  multi-track spec so server exports match the preview.
+- **Phase 3.5 (done — APP INTEGRATION):** `MultiTrackEditor.tsx` mounted at
+  `/cosmic-video/edit?mt=1` (beside the old editor, no risk). Inits the timeline
+  from the loaded video (video track + full-span clip). Add-music picks from the
+  genre library and adds an audio clip at the song's TRUE length (splittable/
+  gappable); Add-text adds a text clip. Verified live: song added at 150.3s true
+  length, split into [0-10][10-150.3]. Cosmetic: Remotion preview spawns a few
+  stray erroring data-URI audio elements (benign, clean up in polish).
+- **Phase 4 (next):** export/renderer parity — teach `align-video-renderer` the
+  multi-track spec so server exports match the preview, and add an Export/Post
+  button to MultiTrackEditor (serialize timeline → spec → requestRender). This is
+  what lets the edited video actually be posted. Also: B-roll add-clip (overlay
+  track), and edit-text-after-adding.
 - **Phase 5:** polish — audio waveforms, magnetic snapping refinements, ripple
   delete, keyboard shortcuts, fades.
 
