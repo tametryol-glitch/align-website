@@ -20,7 +20,9 @@ import {
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
 import { EFFECTS } from '@/lib/editor/effects';
-import { Music, Type, X, Plus, Wand2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase';
+import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -48,6 +50,73 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
 
   const selectedClip = data.clips.find((c) => c.id === selectedClipId);
   const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
+
+  // ── Export ────────────────────────────────────────────────────
+  const [exporting, setExporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const handleExport = async () => {
+    setExporting(true); setProgress(3); setExportError(null); setResultUrl(null);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Please sign in to export.');
+
+      // Upload any local (blob:) clip sources to public storage; the renderer
+      // fetches media by URL. Already-hosted http(s) URLs pass straight through.
+      const state = useTimelineStore.getState().data;
+      const uniqueBlobs = Array.from(new Set(state.clips.map((c) => (c as MediaClip).sourceUrl).filter((u) => u && u.startsWith('blob:'))));
+      const urlMap = new Map<string, string>();
+      for (let i = 0; i < uniqueBlobs.length; i++) {
+        const blobUrl = uniqueBlobs[i];
+        const resp = await fetch(blobUrl);
+        const blob = await resp.blob();
+        const ext = blob.type.includes('audio') ? 'mp3' : 'mp4';
+        const file = new File([blob], `edit.${ext}`, { type: blob.type || 'video/mp4' });
+        const path = `${user.id}/mt-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw new Error(`Upload failed: ${error.message}`);
+        urlMap.set(blobUrl, supabase.storage.from('post-media').getPublicUrl(path).data.publicUrl);
+        setProgress(5 + Math.round((i + 1) / uniqueBlobs.length * 25));
+      }
+
+      const timeline = {
+        tracks: state.tracks,
+        clips: state.clips.map((c) => {
+          const m = c as MediaClip;
+          return m.sourceUrl && urlMap.has(m.sourceUrl) ? { ...c, sourceUrl: urlMap.get(m.sourceUrl) } : c;
+        }),
+      };
+      const durationSeconds = Math.max(1, Math.round(timelineDuration(state as never)));
+      setProgress(35);
+
+      const job = await requestRender({
+        template_id: 'user_video_edit',
+        astro_data: {},
+        audio_option: { type: 'none' },
+        customizations: { edit_spec: { __multitrack: { timeline, durationSeconds } } as unknown as Record<string, unknown> },
+      });
+      const jobId = job.id || job.job_id;
+      if (!jobId) throw new Error('Render did not start.');
+
+      let final: string | null = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const st = await getRenderStatus(jobId);
+        setProgress(Math.min(95, 40 + i * 3));
+        if (st.status === 'ready' && st.video_url) { final = st.video_url; break; }
+        if (st.status === 'failed') throw new Error(st.error || 'Render failed on the server.');
+      }
+      if (!final) throw new Error('Render timed out. Try again.');
+      setProgress(100);
+      setResultUrl(final);
+    } catch (e: any) {
+      setExportError(e.message);
+    }
+    setExporting(false);
+  };
 
   // Seed once from the loaded video.
   useEffect(() => {
@@ -125,7 +194,24 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
               <Wand2 className="w-4 h-4" /> Filters &amp; FX
             </button>
+            <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
+              className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {exporting ? `Exporting… ${progress}%` : 'Export'}
+            </button>
           </div>
+
+          {exportError && <p className="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{exportError}</p>}
+          {resultUrl && (
+            <div className="flex items-center gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-300">Export ready.</span>
+              <a href={resultUrl} target="_blank" rel="noopener noreferrer" download
+                className="ml-auto px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-200 font-medium hover:bg-emerald-500/30">
+                Download / Open
+              </a>
+            </div>
+          )}
           <p className="text-xs text-text-muted">
             {data.tracks.length} track{data.tracks.length !== 1 ? 's' : ''} · {data.clips.length} clip{data.clips.length !== 1 ? 's' : ''} · {timelineDuration(data).toFixed(1)}s
           </p>

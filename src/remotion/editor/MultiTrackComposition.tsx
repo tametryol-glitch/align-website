@@ -53,10 +53,12 @@ export const MultiTrackComposition: React.FC<{ timeline?: TimelineState }> = ({ 
   }
 
   const clipsOf = (trackId: string) => timeline.clips.filter((c) => c.trackId === trackId);
-  // Visual lanes: order 0 = front, so render back-to-front (highest order first).
+  // Layer back-to-front: video (back) → overlay → text (front), so captions and
+  // stickers always sit over the footage. Within a kind, top lane (order 0) is front.
+  const rank: Record<string, number> = { video: 0, overlay: 1, text: 2 };
   const visual = timeline.tracks
     .filter((t) => t.kind !== 'audio' && !t.hidden)
-    .sort((a, b) => b.order - a.order);
+    .sort((a, b) => (rank[a.kind] - rank[b.kind]) || (b.order - a.order));
   const audio = timeline.tracks.filter((t) => t.kind === 'audio' && !t.muted);
 
   return (
