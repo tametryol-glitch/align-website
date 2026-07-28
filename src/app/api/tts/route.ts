@@ -17,6 +17,15 @@ const KOKORO_URL = (process.env.KOKORO_URL || 'http://127.0.0.1:8080').trim();
 const KOKORO_TOKEN = (process.env.KOKORO_TOKEN || '').trim();
 const MAX_CHARS = 1200;
 
+// Legacy callers (and stored records) may still use OpenAI voice names; the
+// Kokoro sidecar 400s on those. Map them to Kokoro equivalents. Names already
+// in Kokoro form pass through unchanged.
+const OPENAI_TO_KOKORO: Record<string, string> = {
+  nova: 'af_heart', shimmer: 'af_sky', alloy: 'af_bella', echo: 'am_michael',
+  fable: 'bm_fable', onyx: 'am_onyx', coral: 'af_jessica', sage: 'bm_george',
+  ash: 'am_adam', ballad: 'bf_emma',
+};
+
 export async function POST(req: NextRequest) {
   try {
     const { text, voice, speed, format } = await req.json();
@@ -32,7 +41,7 @@ export async function POST(req: NextRequest) {
     const resp = await fetch(`${KOKORO_URL}/tts`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ text: clean, voice: voice || 'af_heart', speed: speed || 1, format: format || 'mp3' }),
+      body: JSON.stringify({ text: clean, voice: OPENAI_TO_KOKORO[voice] || voice || 'af_heart', speed: speed || 1, format: format || 'mp3' }),
     });
 
     if (!resp.ok) {
