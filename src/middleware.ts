@@ -107,6 +107,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/north-node-in') ||
     pathname.startsWith('/south-node-in') ||
     pathname.startsWith('/planets-in-houses') ||
+    pathname.startsWith('/editor-lab') ||        // multi-track editor testbed (branch only; no data/tokens) — remove before merging to master
     pathname.startsWith('/synastry-aspects');
   const isProtected = !isPublicPage && !isPublicApi;
 
