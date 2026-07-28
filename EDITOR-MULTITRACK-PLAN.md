@@ -48,6 +48,28 @@ Text/stickers were floating overlays, not timeline lanes.
 - **Phase 5:** polish — audio waveforms, magnetic snapping refinements, ripple
   delete, keyboard shortcuts, fades.
 
+## TikTok/CapCut feature program (CEO wishlist — "make it all")
+Ship one verified feature at a time on the multi-track engine.
+- [x] **Filters + Adjust + Effects pack** — 17 grades + intensity, 4 adjust, 8 FX
+  (grain/vignette/light-leak/RGB-split/zoom-pulse/shake/glow/dust). Per-clip,
+  frame-driven, live preview. (effects.ts, FiltersSheet, MultiTrackComposition)
+- [ ] Animated karaoke captions (auto-transcribe → word-timed text clips + highlight)
+- [ ] Beat sync (Web Audio beat detection → markers → snap cuts)
+- [ ] Speed ramping (velocity curves + smooth slow-mo)
+- [ ] Keyframes (animate x/y/scale/opacity/rotation over time)
+- [ ] Green screen / chroma key + AI background remover (MediaPipe selfie seg, on-device)
+- [ ] Aspect ratio / reframe (9:16, 1:1, 16:9 + auto-reframe)
+- [ ] AI voiceover via our own Kokoro TTS + voice effects
+- [ ] Sound-FX library (wire the sound bites) + Trending sounds rail
+- [ ] Templates gallery (one-tap trending edits) + Drafts
+- [ ] Beauty/retouch (MediaPipe face landmarker) — Tier 2
+- [ ] AI beauty (Bold Glamour-grade), auto-highlight, upscale — Tier 3 (needs provider+$ decision)
+- [ ] Align-unique: zodiac AR pack, auto-caption from user's chart, horoscope templates
+
+Known dev-only issues to clean in polish: Remotion preview logs a benign
+MediaError from stray data-URI audio elements; a setState-in-render warning
+appears during HMR (not on clean load / not in the error boundary).
+
 ## Before merging to master
 Strip branch-only testbed: `/editor-lab` page, its middleware allowlist entry,
 `window.__timeline` / `window.__player` hooks, and `public/lab-sample.mp4` +
