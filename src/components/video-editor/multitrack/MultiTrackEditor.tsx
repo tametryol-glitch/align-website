@@ -16,7 +16,7 @@ import { useTimelineStore } from '@/lib/editor/timelineStore';
 import { MultiTrackTimeline } from './MultiTrackTimeline';
 import {
   nextId, _resetIds, timelineDuration,
-  type TimelineState, type MediaClip, type TextClip, type TimelineTrack,
+  type TimelineState, type TimelineClip, type MediaClip, type TextClip, type StickerClip, type TimelineTrack,
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
@@ -26,7 +26,7 @@ import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -83,6 +83,83 @@ function readDuration(file: File): Promise<number> {
   });
 }
 
+/** Draggable handles over the preview — move text/captions/stickers/emojis to
+ *  any position. Shows the elements active at the current playhead; dragging
+ *  updates the clip's x/y (% of the frame). */
+function PositioningOverlay() {
+  const clips = useTimelineStore((s) => s.data.clips);
+  const playhead = useTimelineStore((s) => s.playhead);
+  const selectedClipId = useTimelineStore((s) => s.selectedClipId);
+  const selectClip = useTimelineStore((s) => s.selectClip);
+  const updateClip = useTimelineStore((s) => s.updateClip);
+  const ref = useRef<HTMLDivElement>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+
+  const positionable = clips.filter((c) =>
+    (c.kind === 'text' || c.kind === 'overlay') && playhead >= c.start - 0.02 && playhead < c.start + c.duration,
+  ) as Array<TextClip | StickerClip>;
+
+  useEffect(() => {
+    if (!dragId) return;
+    const onMove = (e: PointerEvent) => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const x = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+      const y = Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100));
+      updateClip(dragId, { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 } as Partial<TimelineClip>);
+    };
+    const onUp = () => setDragId(null);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+  }, [dragId, updateClip]);
+
+  return (
+    <div ref={ref} className="absolute inset-0" style={{ pointerEvents: 'none' }}>
+      {positionable.map((c) => {
+        const isText = c.kind === 'text';
+        const label = isText ? ((c as TextClip).text || 'Text') : ((c as StickerClip).emoji || '🙂');
+        const sel = c.id === selectedClipId;
+        return (
+          <div key={c.id}
+            onPointerDown={(e) => { e.stopPropagation(); selectClip(c.id); setDragId(c.id); }}
+            style={{
+              position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, transform: 'translate(-50%, -50%)',
+              pointerEvents: 'auto', cursor: dragId === c.id ? 'grabbing' : 'grab', touchAction: 'none',
+              border: sel ? '1.5px solid #fff' : '1px dashed rgba(255,255,255,0.6)', borderRadius: 6,
+              padding: isText ? '1px 5px' : '2px', maxWidth: '86%', background: 'rgba(0,0,0,0.12)',
+            }}>
+            <span style={{ fontSize: isText ? 10 : 22, lineHeight: 1.1, color: '#fff', opacity: 0.9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: 170 }}>
+              {label}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const STICKER_EMOJIS = ['😀','😂','😍','🥹','😎','🤩','😭','😱','🥳','😅','🙃','🔥','✨','⭐','💫','🌟','💥','💯','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💖','👍','👎','👏','🙌','🙏','👀','💀','👑','🎉','🎊','🎈','🌈','⚡','🌙','☀️','🌸','🌹','🦋','🐉','🔮','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🪐','🌌','💎','🃏','🌞'];
+
+function StickerSheet({ onPick, onClose }: { onPick: (emoji: string) => void; onClose: () => void }) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+      <div className="flex items-center gap-2 mb-2">
+        <Smile className="w-4 h-4 text-pink-400" />
+        <span className="text-sm font-medium text-text-secondary">Stickers &amp; emojis</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+      </div>
+      <div className="grid grid-cols-10 gap-1 max-h-40 overflow-auto">
+        {STICKER_EMOJIS.map((e, i) => (
+          <button key={i} onClick={() => onPick(e)} className="text-xl leading-none hover:bg-white/10 rounded p-1">{e}</button>
+        ))}
+      </div>
+      <p className="text-[10px] text-text-muted mt-2">Tap to add, then drag it anywhere on the video.</p>
+    </div>
+  );
+}
+
 const VOICE_FX: Array<[string, number]> = [
   ['Normal', 1], ['Chipmunk', 1.6], ['Squeaky', 1.35], ['Deep', 0.7], ['Slow-mo', 0.8], ['Fast', 1.3],
 ];
@@ -117,7 +194,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -319,16 +396,6 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     setRestoreDraft(null);
   };
 
-  // Find (or lazily create) the first track of a kind, returning its id.
-  const ensureTrack = (kind: TimelineTrack['kind'], name?: string): string => {
-    const existing = useTimelineStore.getState().data.tracks.find((t) => t.kind === kind);
-    if (existing) return existing.id;
-    addTrack(kind, name);
-    // addTrack appended; grab the newest of that kind.
-    const after = useTimelineStore.getState().data.tracks.filter((t) => t.kind === kind);
-    return after[after.length - 1].id;
-  };
-
   // Find (or create) a track of a kind by name (Music/SFX/Voiceover lanes, Captions).
   const ensureNamedTrack = (kind: TimelineTrack['kind'], name: string): string => {
     const existing = useTimelineStore.getState().data.tracks.find((t) => t.kind === kind && t.name === name);
@@ -338,6 +405,21 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     return after[after.length - 1].id;
   };
   const ensureAudioTrack = (name: string) => ensureNamedTrack('audio', name);
+
+  // Find a track (of kind, name-prefixed) with room for [start, start+duration);
+  // create a new one if all overlap. Lets multiple stickers/texts stack in time
+  // as separate layers instead of being rejected.
+  const freeTrackFor = (kind: TimelineTrack['kind'], prefix: string, start: number, duration: number): string => {
+    const st = () => useTimelineStore.getState();
+    const tracks = st().data.tracks.filter((t) => t.kind === kind && t.name.startsWith(prefix));
+    for (const t of tracks) {
+      const overlap = st().data.clips.some((c) => c.trackId === t.id && start < c.start + c.duration && start + duration > c.start);
+      if (!overlap) return t.id;
+    }
+    addTrack(kind, tracks.length === 0 ? prefix : `${prefix} ${tracks.length + 1}`);
+    const after = st().data.tracks.filter((t) => t.kind === kind);
+    return after[after.length - 1].id;
+  };
 
   // Place a new clip at the playhead, or slide right to the next free slot.
   const freeStartOnTrack = (trackId: string, want: number, len: number): number => {
@@ -402,6 +484,16 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     });
   };
 
+  const addSticker = (emoji: string) => {
+    const start = playhead;
+    const trackId = freeTrackFor('overlay', 'Stickers', start, 3);
+    addClip({
+      id: nextId('clip'), trackId, kind: 'overlay', emoji,
+      x: 50, y: 45, scale: 1, rotation: 0, start, duration: 3,
+    } as StickerClip);
+    setSheet(null);
+  };
+
   const addSfx = (mt: MusicTrack) => {
     const trackId = ensureAudioTrack('SFX');
     const len = mt.durationSeconds > 0 ? mt.durationSeconds : 2;
@@ -415,9 +507,9 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   };
 
   const addText = (text: string) => {
-    const trackId = ensureTrack('text', 'Text');
     const len = 2.5;
-    const start = freeStartOnTrack(trackId, playhead, len);
+    const start = playhead;
+    const trackId = freeTrackFor('text', 'Text', start, len);
     const clip: TextClip = {
       id: nextId('clip'), trackId, kind: 'text', start, duration: len,
       text: text || 'Your text', x: 50, y: 50, fontSize: 64, color: '#ffffff', fontFamily: 'Inter',
@@ -439,9 +531,10 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
       <div className="flex gap-4 items-start">
         {/* Preview */}
         <div className="flex-shrink-0">
-          <div data-testid="mt-preview" className="rounded-xl overflow-hidden bg-black mx-auto"
+          <div data-testid="mt-preview" className="relative rounded-xl overflow-hidden bg-black mx-auto"
             style={{ width: 240, aspectRatio: `${aspect.w} / ${aspect.h}`, maxHeight: 420 }}>
             <MultiTrackPlayer timeline={data} width={aspect.w} height={aspect.h} />
+            <PositioningOverlay />
           </div>
           {/* Aspect ratio */}
           <div className="flex gap-1 mt-2 justify-center">
@@ -485,6 +578,10 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
             <button onClick={() => setSheet('text')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
               <Type className="w-4 h-4" /> Add text
+            </button>
+            <button onClick={() => setSheet('stickers')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-500/15 text-pink-300 text-sm font-medium hover:bg-pink-500/25">
+              <Smile className="w-4 h-4" /> Stickers
             </button>
             <button onClick={() => setSheet('filters')} disabled={!selectedVideo}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-fuchsia-500/15 text-fuchsia-300 text-sm font-medium hover:bg-fuchsia-500/25 disabled:opacity-30"
@@ -555,6 +652,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'music' && <MusicSheet kind="music" onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
           {sheet === 'voiceover' && <VoiceoverSheet onGenerate={addVoiceover} onClose={() => setSheet(null)} />}
+          {sheet === 'stickers' && <StickerSheet onPick={addSticker} onClose={() => setSheet(null)} />}
           {sheet === 'voicefx' && selectedAudio && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
               <div className="flex items-center gap-2 mb-2">
