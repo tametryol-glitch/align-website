@@ -12,6 +12,7 @@ import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
+import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
 import { Loader2, Upload, Film, Smartphone, HardDrive } from 'lucide-react';
 
 /**
@@ -79,8 +80,10 @@ function EditorPageInner() {
   const router = useRouter();
   const videoUrl = searchParams.get('url') || '';
   const videoId = searchParams.get('videoId') || '';
+  const multiTrack = searchParams.get('mt') === '1'; // new multi-track editor (beta)
   const init = useVideoEditorStore((s) => s.init);
   const sourceVideoUrl = useVideoEditorStore((s) => s.sourceVideoUrl);
+  const videoDuration = useVideoEditorStore((s) => s.videoDuration);
 
   const [loading, setLoading] = useState(!!videoUrl);
   const [error, setError] = useState<string | null>(null);
@@ -253,6 +256,9 @@ function EditorPageInner() {
 
   // ── Editor loaded ─────────────────────────────────────────────
   if (sourceVideoUrl) {
+    if (multiTrack) {
+      return <MultiTrackEditor sourceUrl={sourceVideoUrl} sourceDuration={videoDuration} />;
+    }
     return <EditorLayout videoId={videoId} />;
   }
 
