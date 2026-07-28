@@ -10,8 +10,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-const KOKORO_URL = process.env.KOKORO_URL || 'http://127.0.0.1:8080';
-const KOKORO_TOKEN = process.env.KOKORO_TOKEN || '';
+// .trim() guards against a stray newline/space in the dashboard env value —
+// the sidecar compares the bearer token byte-for-byte, so trailing whitespace
+// would 401 every call.
+const KOKORO_URL = (process.env.KOKORO_URL || 'http://127.0.0.1:8080').trim();
+const KOKORO_TOKEN = (process.env.KOKORO_TOKEN || '').trim();
 const MAX_CHARS = 1200;
 
 export async function POST(req: NextRequest) {

@@ -20,8 +20,9 @@ export const maxDuration = 60;
  * Returns: { words: [{ word, start, end }], text, engine: 'local' | 'openai' }.
  */
 
-const WHISPER_URL = process.env.WHISPER_URL || 'http://127.0.0.1:8081';
-const WHISPER_TOKEN = process.env.WHISPER_TOKEN || '';
+// .trim() guards against a stray newline/space in the dashboard env value.
+const WHISPER_URL = (process.env.WHISPER_URL || 'http://127.0.0.1:8081').trim();
+const WHISPER_TOKEN = (process.env.WHISPER_TOKEN || '').trim();
 const MAX_MB = Number(process.env.TRANSCRIBE_MAX_MB ?? 12);
 const MAX_SECONDS = Number(process.env.TRANSCRIBE_MAX_SECONDS ?? 300);
 const DAILY_LIMIT = Number(process.env.TRANSCRIBE_DAILY_LIMIT ?? 50);
