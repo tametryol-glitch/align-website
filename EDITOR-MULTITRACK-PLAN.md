@@ -68,7 +68,10 @@ Ship one verified feature at a time on the multi-track engine.
   0.50s-spaced beats; 1 clip → 24 beat-aligned clips.
 - [x] **Per-clip speed** — setClipSpeed recomputes duration, composition plays at
   playbackRate. Verified 30s→15s@2x/60s@0.5x. TODO: velocity curves / smooth slow-mo.
-- [ ] Keyframes (animate x/y/scale/opacity/rotation over time)
+- [x] **Ken Burns motion** — MediaClip.motion + MOTIONS (zoom in/out, pan L/R/U/D,
+  ken-burns), animated across the clip; picker in Filters & FX. Verified zoom-in
+  scales 1.0→1.22. (This covers most keyframe use; manual keyframes still TODO.)
+- [ ] Keyframes — manual per-property keyframes (x/y/scale/opacity/rotation over time)
 - [ ] Green screen / chroma key + AI background remover (MediaPipe selfie seg, on-device)
 - [ ] Aspect ratio / reframe (9:16, 1:1, 16:9 + auto-reframe)
 - [ ] AI voiceover via our own Kokoro TTS + voice effects
