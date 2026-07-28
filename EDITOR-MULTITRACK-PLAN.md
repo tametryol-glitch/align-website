@@ -76,7 +76,10 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **Aspect ratio / reframe** (9:16, 1:1, 4:5, 16:9) — store.aspect, player
   width/height, editor picker + dynamic preview, export via calculateMetadata.
   Verified 1:1 render = 1080x1080. (Auto-reframe subject-tracking still TODO.)
-- [ ] AI voiceover via our own Kokoro TTS + voice effects
+- [x] **AI voiceover via Kokoro TTS** — /api/tts proxies to KOKORO_URL; editor
+  Voiceover panel (text + 6 voices) → narration audio clip. Verified live (text →
+  4.1s clip). Works where the Next server reaches the TTS sidecar (local now; set
+  KOKORO_URL for prod). Voice effects still TODO.
 - [x] **Sound-FX picker** — library sfx kind surfaced in the editor (Sound FX
   button) onto a dedicated SFX audio lane. (Trending rail still TODO.)
 - [x] **Templates (Looks)** — 8 one-tap Looks (looks.ts) applying filter+motion+
