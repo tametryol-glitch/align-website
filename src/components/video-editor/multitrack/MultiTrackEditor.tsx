@@ -119,7 +119,7 @@ function PositioningOverlay() {
     <div ref={ref} className="absolute inset-0" style={{ pointerEvents: 'none' }}>
       {positionable.map((c) => {
         const isText = c.kind === 'text';
-        const label = isText ? ((c as TextClip).text || 'Text') : ((c as StickerClip).emoji || '🙂');
+        const sticker = c as StickerClip;
         const sel = c.id === selectedClipId;
         return (
           <div key={c.id}
@@ -130,9 +130,14 @@ function PositioningOverlay() {
               border: sel ? '1.5px solid #fff' : '1px dashed rgba(255,255,255,0.6)', borderRadius: 6,
               padding: isText ? '1px 5px' : '2px', maxWidth: '86%', background: 'rgba(0,0,0,0.12)',
             }}>
-            <span style={{ fontSize: isText ? 10 : 22, lineHeight: 1.1, color: '#fff', opacity: 0.9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: 170 }}>
-              {label}
-            </span>
+            {!isText && sticker.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={sticker.imageUrl} alt="" style={{ width: 38, height: 38, objectFit: 'contain', display: 'block', pointerEvents: 'none' }} />
+            ) : (
+              <span style={{ fontSize: isText ? 10 : 22, lineHeight: 1.1, color: '#fff', opacity: 0.9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: 170 }}>
+                {isText ? ((c as TextClip).text || 'Text') : (sticker.emoji || '🙂')}
+              </span>
+            )}
           </div>
         );
       })}
@@ -142,19 +147,65 @@ function PositioningOverlay() {
 
 const STICKER_EMOJIS = ['😀','😂','😍','🥹','😎','🤩','😭','😱','🥳','😅','🙃','🔥','✨','⭐','💫','🌟','💥','💯','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💖','👍','👎','👏','🙌','🙏','👀','💀','👑','🎉','🎊','🎈','🌈','⚡','🌙','☀️','🌸','🌹','🦋','🐉','🔮','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🪐','🌌','💎','🃏','🌞'];
 
-function StickerSheet({ onPick, onClose }: { onPick: (emoji: string) => void; onClose: () => void }) {
+function StickerSheet({ onPick, onClose }: { onPick: (opts: { emoji?: string; imageUrl?: string }) => void; onClose: () => void }) {
+  const [tab, setTab] = useState<'emoji' | 'gif'>('emoji');
+  const [q, setQ] = useState('');
+  const [gifs, setGifs] = useState<Array<{ id: string; preview: string; full: string }>>([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadGifs = async (query: string) => {
+    setLoading(true);
+    try {
+      const svc = await import('@/lib/giphyService');
+      const res = query.trim() ? await svc.searchStickers(query) : await svc.getTrendingStickers();
+      setGifs((res.data || []).map((g) => ({ id: g.id, preview: g.images.fixed_height?.url || g.images.preview_gif?.url, full: g.images.original?.url || g.images.fixed_height?.url })));
+    } catch { setGifs([]); }
+    setLoading(false);
+  };
+
+  useEffect(() => { if (tab === 'gif' && gifs.length === 0) loadGifs(''); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
       <div className="flex items-center gap-2 mb-2">
         <Smile className="w-4 h-4 text-pink-400" />
-        <span className="text-sm font-medium text-text-secondary">Stickers &amp; emojis</span>
+        <div className="flex gap-1">
+          <button onClick={() => setTab('emoji')} className={`px-2 py-0.5 rounded-md text-xs ${tab === 'emoji' ? 'bg-pink-500/20 text-pink-200' : 'text-text-muted hover:text-text-secondary'}`}>Emoji</button>
+          <button onClick={() => setTab('gif')} className={`px-2 py-0.5 rounded-md text-xs ${tab === 'gif' ? 'bg-pink-500/20 text-pink-200' : 'text-text-muted hover:text-text-secondary'}`}>GIF</button>
+        </div>
         <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
       </div>
-      <div className="grid grid-cols-10 gap-1 max-h-40 overflow-auto">
-        {STICKER_EMOJIS.map((e, i) => (
-          <button key={i} onClick={() => onPick(e)} className="text-xl leading-none hover:bg-white/10 rounded p-1">{e}</button>
-        ))}
-      </div>
+
+      {tab === 'emoji' ? (
+        <div className="grid grid-cols-10 gap-1 max-h-40 overflow-auto">
+          {STICKER_EMOJIS.map((e, i) => (
+            <button key={i} onClick={() => onPick({ emoji: e })} className="text-xl leading-none hover:bg-white/10 rounded p-1">{e}</button>
+          ))}
+        </div>
+      ) : (
+        <div>
+          <div className="flex gap-2 mb-2">
+            <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') loadGifs(q); }}
+              placeholder="Search GIFs…"
+              className="flex-1 px-3 py-1.5 rounded-lg bg-bg-primary border border-border-primary text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            <button onClick={() => loadGifs(q)} className="px-3 py-1.5 rounded-lg bg-pink-500/20 text-pink-200 text-xs font-medium hover:bg-pink-500/30">Search</button>
+          </div>
+          {loading ? (
+            <p className="text-xs text-text-muted py-4 text-center">Loading…</p>
+          ) : (
+            <div className="grid grid-cols-4 gap-1 max-h-40 overflow-auto">
+              {gifs.map((g) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <button key={g.id} onClick={() => onPick({ imageUrl: g.full })} className="rounded overflow-hidden hover:ring-2 hover:ring-pink-400">
+                  <img src={g.preview} alt="" className="w-full h-16 object-cover" />
+                </button>
+              ))}
+              {gifs.length === 0 && <p className="col-span-4 text-xs text-text-muted py-4 text-center">No GIFs — try a search.</p>}
+            </div>
+          )}
+          <p className="text-[9px] text-text-muted text-center mt-1">Powered by GIPHY</p>
+        </div>
+      )}
       <p className="text-[10px] text-text-muted mt-2">Tap to add, then drag it anywhere on the video.</p>
     </div>
   );
@@ -484,11 +535,11 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     });
   };
 
-  const addSticker = (emoji: string) => {
+  const addSticker = (opts: { emoji?: string; imageUrl?: string }) => {
     const start = playhead;
     const trackId = freeTrackFor('overlay', 'Stickers', start, 3);
     addClip({
-      id: nextId('clip'), trackId, kind: 'overlay', emoji,
+      id: nextId('clip'), trackId, kind: 'overlay', emoji: opts.emoji, imageUrl: opts.imageUrl,
       x: 50, y: 45, scale: 1, rotation: 0, start, duration: 3,
     } as StickerClip);
     setSheet(null);
@@ -552,7 +603,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
 
         {/* Add tools */}
         <div className="flex-1 min-w-0 space-y-3">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button onClick={() => videoInputRef.current?.click()}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
               title="Import a second video as a B-roll / overlay clip">

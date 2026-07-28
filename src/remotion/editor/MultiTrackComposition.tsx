@@ -90,7 +90,9 @@ function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineT
     );
   }
 
-  // overlay: sticker (emoji / image)
+  // overlay: sticker (emoji / image / animated GIF)
+  // Browser preview: a plain <img> animates GIFs natively. (@remotion/gif is
+  // used only in the server renderer, where fetch() isn't blocked by Giphy CORS.)
   const s = clip as StickerClip;
   return (
     <Sequence from={from} durationInFrames={dur} layout="none">
@@ -106,7 +108,7 @@ function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineT
         >
           {s.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={s.imageUrl} alt="" style={{ width: 200, height: 'auto' }} />
+            <img src={s.imageUrl} alt="" style={{ width: 240, height: 'auto' }} />
           ) : (
             s.emoji
           )}
