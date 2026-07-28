@@ -345,9 +345,11 @@ function AudioClipEl({ clip, fps }: { clip: MediaClip; fps: number }) {
   const from = f(clip.start, fps);
   const startFrom = f(clip.sourceStart, fps);
   const dur = Math.max(1, f(clip.duration, fps));
+  // Voice FX = playbackRate (speed + pitch). endAt uses the source out-point so
+  // the correct span plays regardless of rate.
   return (
     <Sequence from={from} durationInFrames={dur} layout="none">
-      <Audio src={clip.sourceUrl} startFrom={startFrom} endAt={startFrom + dur} volume={clip.volume ?? 1} />
+      <Audio src={clip.sourceUrl} startFrom={startFrom} endAt={f(clip.sourceEnd, fps)} volume={clip.volume ?? 1} playbackRate={clip.speed ?? 1} />
     </Sequence>
   );
 }

@@ -43,6 +43,10 @@ function readDuration(file: File): Promise<number> {
   });
 }
 
+const VOICE_FX: Array<[string, number]> = [
+  ['Normal', 1], ['Chipmunk', 1.6], ['Squeaky', 1.35], ['Deep', 0.7], ['Slow-mo', 0.8], ['Fast', 1.3],
+];
+
 const ASPECTS = [
   { id: '9:16', w: 1080, h: 1920 },
   { id: '1:1', w: 1080, h: 1080 },
@@ -73,7 +77,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -435,6 +439,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
                 {capBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Auto-captions
               </button>
             )}
+            {selectedAudio && (
+              <button onClick={() => setSheet('voicefx')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300 text-sm font-medium hover:bg-rose-500/25"
+                title="Pitch / speed voice effects">
+                <Mic className="w-4 h-4" /> Voice FX
+              </button>
+            )}
             <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
               className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -461,6 +472,27 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'music' && <MusicSheet kind="music" onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
           {sheet === 'voiceover' && <VoiceoverSheet onGenerate={addVoiceover} onClose={() => setSheet(null)} />}
+          {sheet === 'voicefx' && selectedAudio && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Mic className="w-4 h-4 text-rose-400" />
+                <span className="text-sm font-medium text-text-secondary">Voice FX</span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {VOICE_FX.map(([name, rate]) => {
+                  const active = (selectedAudio.speed || 1) === rate;
+                  return (
+                    <button key={name} onClick={() => setClipSpeed(selectedAudio.id, rate)}
+                      className={`px-2 py-2 rounded-md text-[11px] border ${active ? 'border-rose-400 bg-rose-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-text-muted mt-2">Voice FX shift pitch &amp; speed together (classic chipmunk / deep-voice style).</p>
+            </div>
+          )}
           {sheet === 'looks' && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
               <div className="flex items-center gap-2 mb-2">
