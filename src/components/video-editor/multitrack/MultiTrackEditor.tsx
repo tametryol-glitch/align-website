@@ -24,6 +24,7 @@ import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
+import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
 import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
@@ -231,10 +232,33 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     setExporting(false);
   };
 
-  // Seed once from the loaded video.
+  // Seed once from the loaded video, capturing any prior draft to offer restore.
+  const [restoreDraft, setRestoreDraft] = useState<EditorDraft | null>(null);
   useEffect(() => {
+    const d = loadDraft();
+    if (d && d.sourceUrl === sourceUrl && (d.data?.clips?.length ?? 0) > 1) setRestoreDraft(d);
     setData(initialTimeline(sourceUrl, Math.max(0.1, sourceDuration)));
   }, [sourceUrl, sourceDuration, setData]);
+
+  // Auto-save the edit to localStorage (debounced) so nothing is lost.
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const unsub = useTimelineStore.subscribe(() => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const st = useTimelineStore.getState();
+        saveDraft({ sourceUrl, data: st.data, aspect: st.aspect, savedAt: Date.now() });
+      }, 1500);
+    });
+    return () => { clearTimeout(timer); unsub(); };
+  }, [sourceUrl]);
+
+  const applyRestore = () => {
+    if (!restoreDraft) return;
+    setData(restoreDraft.data);
+    setAspect(restoreDraft.aspect.w, restoreDraft.aspect.h);
+    setRestoreDraft(null);
+  };
 
   // Find (or lazily create) the first track of a kind, returning its id.
   const ensureTrack = (kind: TimelineTrack['kind'], name?: string): string => {
@@ -328,6 +352,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
 
   return (
     <div className="flex flex-col gap-3 p-3 h-full">
+      {restoreDraft && (
+        <div className="flex items-center gap-2 text-xs bg-indigo-500/10 border border-indigo-500/20 px-3 py-2 rounded-lg">
+          <span className="text-indigo-200">You have an unsaved edit from {agoLabel(restoreDraft.savedAt, Date.now())}.</span>
+          <button onClick={applyRestore} className="ml-auto px-2.5 py-1 rounded-md bg-indigo-500/25 text-indigo-100 font-medium hover:bg-indigo-500/35">Restore</button>
+          <button onClick={() => setRestoreDraft(null)} className="px-2 py-1 rounded-md text-text-muted hover:text-text-primary">Dismiss</button>
+        </div>
+      )}
       <div className="flex gap-4 items-start">
         {/* Preview */}
         <div className="flex-shrink-0">
