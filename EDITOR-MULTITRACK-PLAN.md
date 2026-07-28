@@ -63,8 +63,11 @@ Ship one verified feature at a time on the multi-track engine.
   TODO: auto-transcribe hookup (Whisper) to auto-generate caption clips.
 - [x] **Clip entrance transitions** — fade/from-black/zoom/slide/spin/whip/glitch
   per clip, in Filters & FX panel. Verified via server still.
-- [ ] Beat sync (Web Audio beat detection → markers → snap cuts)
-- [ ] Speed ramping (velocity curves + smooth slow-mo)
+- [x] **Beat sync** — beatDetect.ts (Web Audio energy-onset), "Beat sync" button
+  cuts the video at each beat of the selected song. Verified: 120 BPM click →
+  0.50s-spaced beats; 1 clip → 24 beat-aligned clips.
+- [x] **Per-clip speed** — setClipSpeed recomputes duration, composition plays at
+  playbackRate. Verified 30s→15s@2x/60s@0.5x. TODO: velocity curves / smooth slow-mo.
 - [ ] Keyframes (animate x/y/scale/opacity/rotation over time)
 - [ ] Green screen / chroma key + AI background remover (MediaPipe selfie seg, on-device)
 - [ ] Aspect ratio / reframe (9:16, 1:1, 16:9 + auto-reframe)
