@@ -21,6 +21,7 @@ export const maxDuration = 60;
  */
 
 const WHISPER_URL = process.env.WHISPER_URL || 'http://127.0.0.1:8081';
+const WHISPER_TOKEN = process.env.WHISPER_TOKEN || '';
 const MAX_MB = Number(process.env.TRANSCRIBE_MAX_MB ?? 12);
 const MAX_SECONDS = Number(process.env.TRANSCRIBE_MAX_SECONDS ?? 300);
 const DAILY_LIMIT = Number(process.env.TRANSCRIBE_DAILY_LIMIT ?? 50);
@@ -90,6 +91,7 @@ export async function POST(request: NextRequest) {
     local.append('file', file, (file as File).name || 'audio.mp3');
     const r = await fetch(`${WHISPER_URL}/transcribe`, {
       method: 'POST', body: local, signal: AbortSignal.timeout(120_000),
+      headers: WHISPER_TOKEN ? { Authorization: `Bearer ${WHISPER_TOKEN}` } : undefined,
     });
     if (r.ok) {
       const data = await r.json();
