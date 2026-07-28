@@ -100,12 +100,13 @@ export function MultiTrackTimeline() {
     return Math.max(0, best);
   }, [data.clips, pxPerSec, playhead]);
 
-  // Which track lane is the pointer over (for cross-track drags)?
+  // Which track lane is the pointer over (for cross-track drags)? Rows sit
+  // below the sticky ruler, so subtract RULER_H.
   const trackAtY = useCallback((clientY: number): TimelineTrack | null => {
     const el = lanesRef.current;
     if (!el) return null;
     const rect = el.getBoundingClientRect();
-    const idx = Math.floor((clientY - rect.top + el.scrollTop) / LANE_H);
+    const idx = Math.floor((clientY - rect.top - RULER_H + el.scrollTop) / LANE_H);
     return tracks[idx] ?? null;
   }, [tracks]);
 
@@ -146,12 +147,11 @@ export function MultiTrackTimeline() {
     };
   }, [drag, pxPerSec, moveClip, trimClip, snapStart, trackAtY]);
 
-  // Click ruler / lane background to move the playhead.
-  const seekFromClientX = (clientX: number) => {
-    const el = lanesRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    setPlayhead((clientX - rect.left + el.scrollLeft) / pxPerSec);
+  // Click ruler / lane background to move the playhead. `laneEl` is the ruler or
+  // lane element whose left edge is timeline t=0 (getBoundingClientRect accounts
+  // for horizontal scroll).
+  const seekFromClientX = (clientX: number, laneEl: HTMLElement) => {
+    setPlayhead((clientX - laneEl.getBoundingClientRect().left) / pxPerSec);
   };
 
   const selectedClip = data.clips.find((c) => c.id === selectedClipId) || null;
@@ -193,65 +193,60 @@ export function MultiTrackTimeline() {
         </div>
       </div>
 
-      <div className="flex" style={{ maxHeight: 340 }}>
-        {/* Track headers (left column) */}
-        <div className="flex-shrink-0 border-r border-white/10 bg-bg-tertiary" style={{ width: HEADER_W }}>
-          <div style={{ height: RULER_H }} className="border-b border-white/10" />
-          {tracks.map((t) => (
-            <div key={t.id} style={{ height: LANE_H }}
-              className="flex items-center gap-1 px-2 border-b border-white/5">
-              <span className="text-text-muted">{KIND_ICON[t.kind]}</span>
-              <span className="text-[11px] text-text-secondary truncate flex-1">{t.name}</span>
-              {(t.kind === 'audio' || t.kind === 'video') && (
-                <button onClick={() => updateTrack(t.id, { muted: !t.muted })} className="text-text-muted hover:text-text-primary" title={t.muted ? 'Unmute' : 'Mute'}>
-                  {t.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                </button>
-              )}
-              {(t.kind === 'video' || t.kind === 'overlay' || t.kind === 'text') && (
-                <button onClick={() => updateTrack(t.id, { hidden: !t.hidden })} className="text-text-muted hover:text-text-primary" title={t.hidden ? 'Show' : 'Hide'}>
-                  {t.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                </button>
-              )}
-              <button onClick={() => removeTrack(t.id)} className="text-text-muted hover:text-red-400" title="Delete track"><Trash2 className="w-3 h-3" /></button>
-            </div>
-          ))}
-          {tracks.length === 0 && (
-            <div className="p-3 text-[10px] text-text-muted">Add a track to begin →</div>
-          )}
-        </div>
-
-        {/* Scrollable lanes */}
-        <div ref={lanesRef} className="flex-1 overflow-auto relative">
-          <div style={{ width: contentW, position: 'relative' }}>
-            {/* Ruler */}
-            <div style={{ height: RULER_H }}
-              className="sticky top-0 z-10 border-b border-white/10 bg-bg-secondary cursor-pointer"
-              onPointerDown={(e) => seekFromClientX(e.clientX)}>
+      {/* Single scroll container — sticky ruler (top) + sticky headers (left) so
+          headers and lanes scroll together, both vertically and horizontally. */}
+      <div ref={lanesRef} className="overflow-auto relative" style={{ minHeight: 240, maxHeight: 460 }}>
+        <div style={{ width: HEADER_W + contentW, position: 'relative' }}>
+          {/* Ruler row */}
+          <div className="sticky top-0 z-40 flex" style={{ height: RULER_H }}>
+            <div className="sticky left-0 z-50 flex-shrink-0 bg-bg-tertiary border-r border-b border-white/10" style={{ width: HEADER_W }} />
+            <div className="relative bg-bg-secondary border-b border-white/10 cursor-pointer"
+              style={{ width: contentW, height: RULER_H }}
+              onPointerDown={(e) => seekFromClientX(e.clientX, e.currentTarget)}>
               {Array.from({ length: Math.ceil(totalDur) + 1 }).map((_, i) => (
                 <div key={i} className="absolute top-0 h-full border-l border-white/10" style={{ left: i * pxPerSec }}>
                   <span className="text-[9px] text-text-muted ml-1">{i}s</span>
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Lanes */}
-            {tracks.map((t) => (
-              <div key={t.id} style={{ height: LANE_H }}
-                className="relative border-b border-white/5"
-                onPointerDown={(e) => { if (e.target === e.currentTarget) { selectClip(null); seekFromClientX(e.clientX); } }}>
+          {/* Track rows: sticky header + lane */}
+          {tracks.map((t) => (
+            <div key={t.id} className="flex" style={{ height: LANE_H }}>
+              <div className="sticky left-0 z-30 flex-shrink-0 bg-bg-tertiary border-r border-b border-white/5 flex items-center gap-1 px-2" style={{ width: HEADER_W }}>
+                <span className="text-text-muted">{KIND_ICON[t.kind]}</span>
+                <span className="text-[11px] text-text-secondary truncate flex-1">{t.name}</span>
+                {(t.kind === 'audio' || t.kind === 'video') && (
+                  <button onClick={() => updateTrack(t.id, { muted: !t.muted })} className="text-text-muted hover:text-text-primary" title={t.muted ? 'Unmute' : 'Mute'}>
+                    {t.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                  </button>
+                )}
+                {(t.kind === 'video' || t.kind === 'overlay' || t.kind === 'text') && (
+                  <button onClick={() => updateTrack(t.id, { hidden: !t.hidden })} className="text-text-muted hover:text-text-primary" title={t.hidden ? 'Show' : 'Hide'}>
+                    {t.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  </button>
+                )}
+                <button onClick={() => removeTrack(t.id)} className="text-text-muted hover:text-red-400" title="Delete track"><Trash2 className="w-3 h-3" /></button>
+              </div>
+              <div className="relative border-b border-white/5" style={{ width: contentW, height: LANE_H }}
+                onPointerDown={(e) => { if (e.target === e.currentTarget) { selectClip(null); seekFromClientX(e.clientX, e.currentTarget); } }}>
                 {data.clips.filter((c) => c.trackId === t.id).map((c) => (
                   <ClipBlock key={c.id} clip={c} pxPerSec={pxPerSec}
                     selected={c.id === selectedClipId}
                     onPointerDown={onPointerDownClip} />
                 ))}
               </div>
-            ))}
-
-            {/* Playhead */}
-            <div className="absolute top-0 bottom-0 w-px bg-accent-primary z-20 pointer-events-none"
-              style={{ left: playhead * pxPerSec }}>
-              <div className="w-2.5 h-2.5 -ml-[5px] rotate-45 bg-accent-primary" />
             </div>
+          ))}
+          {tracks.length === 0 && (
+            <div className="p-3 text-[10px] text-text-muted">Add a track to begin.</div>
+          )}
+
+          {/* Playhead — spans the lanes, offset past the sticky header column */}
+          <div className="absolute w-px bg-accent-primary z-20 pointer-events-none"
+            style={{ left: HEADER_W + playhead * pxPerSec, top: RULER_H, bottom: 0 }}>
+            <div className="w-2.5 h-2.5 -ml-[5px] -mt-[5px] rotate-45 bg-accent-primary" />
           </div>
         </div>
       </div>

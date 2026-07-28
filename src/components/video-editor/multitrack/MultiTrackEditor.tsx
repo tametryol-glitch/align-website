@@ -25,9 +25,22 @@ import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
+
+/** Probe a video file's duration (seconds) from a blob/URL in the browser. */
+function readVideoDuration(url: string): Promise<number> {
+  return new Promise((resolve) => {
+    try {
+      const v = document.createElement('video');
+      v.preload = 'metadata';
+      v.onloadedmetadata = () => resolve(isFinite(v.duration) ? v.duration : 0);
+      v.onerror = () => resolve(0);
+      v.src = url;
+    } catch { resolve(0); }
+  });
+}
 
 /** Probe an audio/video file's duration (seconds) in the browser. */
 function readDuration(file: File): Promise<number> {
@@ -329,6 +342,23 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     setSheet(null);
   };
 
+  // Import a second video as an overlay / B-roll clip (picture-in-picture).
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const onPickOverlayVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const dur = (await readVideoDuration(url)) || 5;
+    const trackId = ensureNamedTrack('overlay', 'Overlay');
+    const start = freeStartOnTrack(trackId, playhead, dur);
+    addClip({
+      id: nextId('clip'), trackId, kind: 'video', start, duration: dur,
+      sourceUrl: url, sourceStart: 0, sourceEnd: dur, sourceDuration: dur, speed: 1, volume: 1,
+      x: 50, y: 50, scale: 0.6, opacity: 1,
+    });
+  };
+
   const addSfx = (mt: MusicTrack) => {
     const trackId = ensureAudioTrack('SFX');
     const len = mt.durationSeconds > 0 ? mt.durationSeconds : 2;
@@ -355,7 +385,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   };
 
   return (
-    <div className="flex flex-col gap-3 p-3 h-full">
+    <div className="flex flex-col gap-3 p-3 h-full min-h-0 overflow-y-auto">
       {restoreDraft && (
         <div className="flex items-center gap-2 text-xs bg-indigo-500/10 border border-indigo-500/20 px-3 py-2 rounded-lg">
           <span className="text-indigo-200">You have an unsaved edit from {agoLabel(restoreDraft.savedAt, Date.now())}.</span>
@@ -387,6 +417,12 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
         {/* Add tools */}
         <div className="flex-1 min-w-0 space-y-3">
           <div className="flex gap-2">
+            <button onClick={() => videoInputRef.current?.click()}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
+              title="Import a second video as a B-roll / overlay clip">
+              <Film className="w-4 h-4" /> Add video
+            </button>
+            <input ref={videoInputRef} type="file" accept="video/*,.mp4,.mov,.webm,.mkv" onChange={onPickOverlayVideo} className="hidden" />
             <button onClick={() => setSheet('music')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/15 text-emerald-300 text-sm font-medium hover:bg-emerald-500/25">
               <Music className="w-4 h-4" /> Add music
