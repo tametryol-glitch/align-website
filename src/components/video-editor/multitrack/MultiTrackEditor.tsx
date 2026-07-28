@@ -23,7 +23,8 @@ import { EFFECTS, TRANSITIONS, MOTIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
 import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity } from 'lucide-react';
+import { LOOKS, type Look } from '@/lib/editor/looks';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -48,7 +49,19 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setClipSpeed = useTimelineStore((s) => s.setClipSpeed);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'text' | 'filters' | 'edittext' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | null>(null);
+
+  const applyLook = (look: Look) => {
+    const store = useTimelineStore.getState();
+    store.data.clips.filter((c) => c.kind === 'video').forEach((c) => {
+      store.updateClip(c.id, {
+        filter: look.filter, filterIntensity: look.filterIntensity, motion: look.motion || undefined,
+        transitionIn: look.transition === 'none' ? undefined : { type: look.transition, durationSec: 0.5 },
+        effects: [...look.effects],
+      } as Partial<MediaClip>);
+    });
+    setSheet(null);
+  };
 
   const selectedClip = data.clips.find((c) => c.id === selectedClipId);
   const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
@@ -164,6 +177,15 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     return after[after.length - 1].id;
   };
 
+  // Find (or create) an audio track by name — keeps Music and SFX on separate lanes.
+  const ensureAudioTrack = (name: string): string => {
+    const existing = useTimelineStore.getState().data.tracks.find((t) => t.kind === 'audio' && t.name === name);
+    if (existing) return existing.id;
+    addTrack('audio', name);
+    const after = useTimelineStore.getState().data.tracks.filter((t) => t.kind === 'audio');
+    return after[after.length - 1].id;
+  };
+
   // Place a new clip at the playhead, or slide right to the next free slot.
   const freeStartOnTrack = (trackId: string, want: number, len: number): number => {
     const clips = useTimelineStore.getState().data.clips
@@ -177,12 +199,24 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   };
 
   const addMusic = (mt: MusicTrack) => {
-    const trackId = ensureTrack('audio', 'Music');
+    const trackId = ensureAudioTrack('Music');
     const len = mt.durationSeconds > 0 ? mt.durationSeconds : Math.min(sourceDuration, 30);
     const start = freeStartOnTrack(trackId, playhead, len);
     const clip: MediaClip = {
       id: nextId('clip'), trackId, kind: 'audio', start, duration: len,
       sourceUrl: trackUrl(mt), sourceStart: 0, sourceEnd: len, sourceDuration: len, speed: 1, volume: 0.7,
+    };
+    addClip(clip);
+    setSheet(null);
+  };
+
+  const addSfx = (mt: MusicTrack) => {
+    const trackId = ensureAudioTrack('SFX');
+    const len = mt.durationSeconds > 0 ? mt.durationSeconds : 2;
+    const start = freeStartOnTrack(trackId, playhead, len);
+    const clip: MediaClip = {
+      id: nextId('clip'), trackId, kind: 'audio', start, duration: len,
+      sourceUrl: trackUrl(mt), sourceStart: 0, sourceEnd: len, sourceDuration: len, speed: 1, volume: 0.9,
     };
     addClip(clip);
     setSheet(null);
@@ -215,6 +249,14 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
             <button onClick={() => setSheet('music')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/15 text-emerald-300 text-sm font-medium hover:bg-emerald-500/25">
               <Music className="w-4 h-4" /> Add music
+            </button>
+            <button onClick={() => setSheet('sfx')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-500/15 text-teal-300 text-sm font-medium hover:bg-teal-500/25">
+              <Zap className="w-4 h-4" /> Sound FX
+            </button>
+            <button onClick={() => setSheet('looks')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/15 text-purple-300 text-sm font-medium hover:bg-purple-500/25">
+              <Sparkles className="w-4 h-4" /> Templates
             </button>
             <button onClick={() => setSheet('text')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/15 text-amber-300 text-sm font-medium hover:bg-amber-500/25">
@@ -260,7 +302,26 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           <p className="text-xs text-text-muted">
             {data.tracks.length} track{data.tracks.length !== 1 ? 's' : ''} · {data.clips.length} clip{data.clips.length !== 1 ? 's' : ''} · {timelineDuration(data).toFixed(1)}s
           </p>
-          {sheet === 'music' && <MusicSheet onPick={addMusic} onClose={() => setSheet(null)} />}
+          {sheet === 'music' && <MusicSheet kind="music" onPick={addMusic} onClose={() => setSheet(null)} />}
+          {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
+          {sheet === 'looks' && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-text-secondary">Templates — one tap, applies to all clips</span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {LOOKS.map((l) => (
+                  <button key={l.id} onClick={() => applyLook(l)}
+                    className="px-2 py-2.5 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 text-center">
+                    <span className="block text-lg leading-none mb-0.5">{l.emoji}</span>
+                    <span className="block text-[10px] font-medium text-text-primary">{l.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {sheet === 'text' && <TextSheet onAdd={addText} onClose={() => setSheet(null)} />}
           {sheet === 'filters' && selectedVideo && (
             <FiltersSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)}
@@ -474,16 +535,18 @@ function TextEditSheet({ clip, onChange, onClose }: {
   );
 }
 
-function MusicSheet({ onPick, onClose }: { onPick: (t: MusicTrack) => void; onClose: () => void }) {
-  const { music, loading } = useAudioLibrary();
+function MusicSheet({ kind, onPick, onClose }: { kind: 'music' | 'sfx'; onPick: (t: MusicTrack) => void; onClose: () => void }) {
+  const lib = useAudioLibrary();
+  const items = kind === 'sfx' ? lib.sfx : lib.music;
+  const loading = lib.loading;
   const [genre, setGenre] = useState('all');
-  const genres = Array.from(new Set(music.map((m) => m.category).filter(Boolean))).sort();
-  const shown = genre === 'all' ? music : music.filter((m) => m.category === genre);
+  const genres = Array.from(new Set(items.map((m) => m.category).filter(Boolean))).sort();
+  const shown = genre === 'all' ? items : items.filter((m) => m.category === genre);
 
   return (
     <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm font-medium text-text-secondary">Music library</span>
+        <span className="text-sm font-medium text-text-secondary">{kind === 'sfx' ? 'Sound effects' : 'Music library'}</span>
         {genres.length > 0 && (
           <select value={genre} onChange={(e) => setGenre(e.target.value)}
             className="ml-auto text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-text-secondary">
