@@ -6,18 +6,21 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 /**
- * POST /api/transcribe — forwards an audio clip to OpenAI Whisper and returns
- * word-level timestamps. The API key never reaches the browser.
+ * POST /api/transcribe — word-level transcription for auto-captions.
  *
- * Cost guardrails (all env-tunable):
- *  - TRANSCRIBE_MAX_MB        hard per-request size cap (default 12MB)
- *  - TRANSCRIBE_MAX_SECONDS   reject clips longer than this (default 300s)
- *  - TRANSCRIBE_DAILY_LIMIT   per-user generations per day (default 50)
+ * FREE BY DEFAULT: tries the self-hosted Whisper sidecar (WHISPER_URL, default
+ * http://127.0.0.1:8081) first — no OpenAI credits. Only if the sidecar is
+ * unreachable does it fall back to the paid OpenAI Whisper API (when
+ * OPENAI_API_KEY is set), preserving the old behaviour as a safety net.
+ *
+ * Cost guardrails apply to the OpenAI fallback only (local is free):
+ *  - TRANSCRIBE_MAX_MB / TRANSCRIBE_MAX_SECONDS / TRANSCRIBE_DAILY_LIMIT
  *
  * Body: multipart/form-data with `file` (audio), optional `durationSec`, `language`.
- * Returns: { words: [{ word, start, end }], text }.
+ * Returns: { words: [{ word, start, end }], text, engine: 'local' | 'openai' }.
  */
 
+const WHISPER_URL = process.env.WHISPER_URL || 'http://127.0.0.1:8081';
 const MAX_MB = Number(process.env.TRANSCRIBE_MAX_MB ?? 12);
 const MAX_SECONDS = Number(process.env.TRANSCRIBE_MAX_SECONDS ?? 300);
 const DAILY_LIMIT = Number(process.env.TRANSCRIBE_DAILY_LIMIT ?? 50);
@@ -69,14 +72,6 @@ function withinDailyLimit(uid: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    return NextResponse.json(
-      { error: 'Auto-captions are not configured yet. Add OPENAI_API_KEY to the server environment.' },
-      { status: 503 },
-    );
-  }
-
   let form: FormData;
   try {
     form = await request.formData();
@@ -88,6 +83,31 @@ export async function POST(request: NextRequest) {
   if (!(file instanceof Blob)) {
     return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
   }
+
+  // ── 1. Free path: self-hosted Whisper sidecar (no credits) ──────────────
+  try {
+    const local = new FormData();
+    local.append('file', file, (file as File).name || 'audio.mp3');
+    const r = await fetch(`${WHISPER_URL}/transcribe`, {
+      method: 'POST', body: local, signal: AbortSignal.timeout(120_000),
+    });
+    if (r.ok) {
+      const data = await r.json();
+      return NextResponse.json({ words: data.words ?? [], text: data.text ?? '', engine: 'local' });
+    }
+  } catch {
+    // sidecar unreachable → fall through to the paid fallback
+  }
+
+  // ── 2. Paid fallback: OpenAI Whisper (only if configured) ───────────────
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) {
+    return NextResponse.json(
+      { error: 'Auto-captions unavailable: start the local Whisper sidecar (WHISPER_URL) or set OPENAI_API_KEY.' },
+      { status: 503 },
+    );
+  }
+
   if (file.size > MAX_MB * 1024 * 1024) {
     return NextResponse.json(
       { error: `Audio is too large to caption (max ${MAX_MB}MB). Trim the video and try again.` },

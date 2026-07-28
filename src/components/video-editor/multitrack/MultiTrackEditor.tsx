@@ -91,6 +91,52 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const selectedText = selectedClip && selectedClip.kind === 'text' ? selectedClip : null;
   const selectedAudio = selectedClip && selectedClip.kind === 'audio' ? selectedClip : null;
 
+  // ── Auto-captions: free local Whisper → karaoke caption clips ──
+  const [capBusy, setCapBusy] = useState(false);
+  const [capMsg, setCapMsg] = useState<string | null>(null);
+  const autoCaptions = async (audioClip: MediaClip) => {
+    setCapBusy(true); setCapMsg(null);
+    try {
+      const blob = await (await fetch(audioClip.sourceUrl)).blob();
+      const fd = new FormData();
+      fd.append('file', new File([blob], 'audio.mp3', { type: blob.type || 'audio/mpeg' }));
+      const r = await fetch('/api/transcribe', { method: 'POST', body: fd });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Transcribe failed');
+      const words: Array<{ word: string; start: number; end: number }> = data.words || [];
+      if (!words.length) { setCapMsg('No speech detected in that clip.'); setCapBusy(false); return; }
+
+      // Group words into short caption lines (≤5 words, break on a >0.7s gap).
+      const lines: Array<typeof words> = [];
+      let cur: typeof words = [];
+      for (const w of words) {
+        if (cur.length && (cur.length >= 5 || w.start - cur[cur.length - 1].end > 0.7)) { lines.push(cur); cur = []; }
+        cur.push(w);
+      }
+      if (cur.length) lines.push(cur);
+
+      const objs = lines.map((ln) => ({ startT: ln[0].start, endT: ln[ln.length - 1].end, text: ln.map((w) => w.word).join(' ').replace(/\s+/g, ' ').trim() }));
+      for (let i = 0; i < objs.length; i++) {
+        if (i + 1 < objs.length && objs[i].endT > objs[i + 1].startT) objs[i].endT = objs[i + 1].startT - 0.02;
+      }
+      const trackId = ensureNamedTrack('text', 'Captions');
+      const store = useTimelineStore.getState();
+      objs.forEach((o) => {
+        const start = audioClip.start + (o.startT - audioClip.sourceStart);
+        const dur = Math.max(0.4, o.endT - o.startT);
+        store.addClip({
+          id: nextId('clip'), trackId, kind: 'text', start, duration: dur, text: o.text,
+          x: 50, y: 82, fontSize: 58, color: '#ffffff', fontFamily: 'Inter',
+          bgColor: '', strokeColor: '#000000', strokeWidth: 5, textAlign: 'center', rotation: 0, animation: 'karaoke',
+        } as TextClip);
+      });
+      setCapMsg(`${words.length} words · ${objs.length} caption lines${data.engine === 'local' ? ' · free (local Whisper)' : ''}`);
+    } catch (e: any) {
+      setCapMsg(`Auto-captions failed: ${e.message}`);
+    }
+    setCapBusy(false);
+  };
+
   // ── Beat sync: cut the video to the selected song's beats ─────
   const [beatBusy, setBeatBusy] = useState(false);
   const [beatMsg, setBeatMsg] = useState<string | null>(null);
@@ -200,14 +246,15 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     return after[after.length - 1].id;
   };
 
-  // Find (or create) an audio track by name — keeps Music and SFX on separate lanes.
-  const ensureAudioTrack = (name: string): string => {
-    const existing = useTimelineStore.getState().data.tracks.find((t) => t.kind === 'audio' && t.name === name);
+  // Find (or create) a track of a kind by name (Music/SFX/Voiceover lanes, Captions).
+  const ensureNamedTrack = (kind: TimelineTrack['kind'], name: string): string => {
+    const existing = useTimelineStore.getState().data.tracks.find((t) => t.kind === kind && t.name === name);
     if (existing) return existing.id;
-    addTrack('audio', name);
-    const after = useTimelineStore.getState().data.tracks.filter((t) => t.kind === 'audio');
+    addTrack(kind, name);
+    const after = useTimelineStore.getState().data.tracks.filter((t) => t.kind === kind);
     return after[after.length - 1].id;
   };
+  const ensureAudioTrack = (name: string) => ensureNamedTrack('audio', name);
 
   // Place a new clip at the playhead, or slide right to the next free slot.
   const freeStartOnTrack = (trackId: string, want: number, len: number): number => {
@@ -343,6 +390,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
                 {beatBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity className="w-4 h-4" />} Beat sync
               </button>
             )}
+            {selectedAudio && (
+              <button onClick={() => autoCaptions(selectedAudio)} disabled={capBusy}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-500/15 text-sky-300 text-sm font-medium hover:bg-sky-500/25 disabled:opacity-40"
+                title="Transcribe this clip into karaoke captions (free, local)">
+                {capBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Auto-captions
+              </button>
+            )}
             <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
               className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -351,6 +405,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           </div>
 
           {beatMsg && <p className="text-xs text-emerald-300 bg-emerald-500/10 px-3 py-2 rounded-lg">{beatMsg}</p>}
+          {capMsg && <p className="text-xs text-sky-300 bg-sky-500/10 px-3 py-2 rounded-lg">{capMsg}</p>}
           {exportError && <p className="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{exportError}</p>}
           {resultUrl && (
             <div className="flex items-center gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
