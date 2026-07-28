@@ -89,7 +89,9 @@ Ship one verified feature at a time on the multi-track engine.
 - [x] **Sound-FX picker** — library sfx kind surfaced in the editor (Sound FX
   button) onto a dedicated SFX audio lane. (Trending rail still TODO.)
 - [x] **Templates (Looks)** — 8 one-tap Looks (looks.ts) applying filter+motion+
-  transition+effects to all video clips. Verified "Hype". (Drafts still TODO.)
+  transition+effects to all video clips. Verified "Hype".
+- [x] **Drafts** — auto-save to localStorage (debounced) + restore banner on
+  reload (drafts.ts). Verified: split → reload → Restore brought back the edit.
 - [ ] Beauty/retouch (MediaPipe face landmarker) — Tier 2
 - [ ] AI beauty (Bold Glamour-grade), auto-highlight, upscale — Tier 3 (needs provider+$ decision)
 - [ ] Align-unique: zodiac AR pack, auto-caption from user's chart, horoscope templates
