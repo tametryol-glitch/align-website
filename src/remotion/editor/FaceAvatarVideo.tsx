@@ -117,8 +117,17 @@ export const FaceAvatarVideo: React.FC<{
       t.renderer.render(t.scene, t.cam);
 
       const box = headH * 2.2;
+      // Centre on the whole HEAD, not the face midpoint. The crown/hair sits
+      // well above the forehead landmark, so shift the avatar up along the head
+      // axis (chin→forehead direction, so it's correct even when tilted) — else
+      // the top of the real head shows above the avatar.
+      const upX = fore.x - chin.x, upY = fore.y - chin.y;
+      const ul = Math.hypot(upX, upY) || 1;
+      const shift = headH * 0.42;
+      const cx = headCX + (upX / ul) * shift;
+      const cy = headCY + (upY / ul) * shift;
       ctx.save();
-      ctx.translate(headCX, headCY);
+      ctx.translate(cx, cy);
       ctx.rotate(roll);
       ctx.drawImage(t.canvas, -box / 2, -box / 2, box, box);
       ctx.restore();

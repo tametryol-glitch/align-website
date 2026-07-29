@@ -42,9 +42,10 @@ export const StylizeVideo: React.FC<{
       const sw = f.videoWidth || f.displayWidth || f.width || 0;
       const sh = f.videoHeight || f.displayHeight || f.height || 0;
       ctx.clearRect(0, 0, cw, ch);
-      // Soft blur first so edge-detection catches real contours, not fabric/
-      // water texture — the difference between "cartoon" and "photocopy".
-      ctx.filter = `blur(${Math.max(1, cw / 360).toFixed(2)}px)`;
+      // Blur first so we flatten skin/fabric/background into clean flats and
+      // edge-detection catches real contours, not texture noise — the
+      // difference between a clean "cartoon" and a mottled "photocopy".
+      ctx.filter = `blur(${Math.max(1.6, cw / 200).toFixed(2)}px)`;
       if (sw && sh) {
         const fit = objectFit === 'contain' ? Math.min(cw / sw, ch / sh) : Math.max(cw / sw, ch / sh);
         const dw = sw * fit, dh = sh * fit;
@@ -63,10 +64,10 @@ export const StylizeVideo: React.FC<{
         const p = i * 4;
         lum[i] = 0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2];
       }
-      const LEVELS = 5;
+      const LEVELS = 4;
       const q = 255 / (LEVELS - 1);
-      const EDGE = 62;
-      const SAT = 1.4;
+      const EDGE = 48;
+      const SAT = 1.5;
       for (let y = 0; y < ch; y++) {
         for (let x = 0; x < cw; x++) {
           const i = y * cw + x;
@@ -82,10 +83,16 @@ export const StylizeVideo: React.FC<{
           if (edge > EDGE) {
             d[p] = 22; d[p + 1] = 20; d[p + 2] = 28; // ink outline
           } else {
-            const li = lum[i];
+            // Hue-preserving cel shading: quantize BRIGHTNESS into bands, then
+            // shade the real colour to that band (ratio) instead of posterizing
+            // each channel on its own — that per-channel banding is what mottled
+            // the flats. Saturation is punched around the band centre.
+            const li = lum[i] < 1 ? 1 : lum[i];
+            const band = Math.round(li / q) * q;
+            const ratio = band / li;
             for (let ch2 = 0; ch2 < 3; ch2++) {
-              let v = li + (d[p + ch2] - li) * SAT;       // punch saturation
-              v = Math.round(v / q) * q;                    // posterize
+              let v = d[p + ch2] * ratio;                   // shade to band, keep hue
+              v = band + (v - band) * SAT;                  // punch saturation
               d[p + ch2] = v < 0 ? 0 : v > 255 ? 255 : v;
             }
           }
