@@ -8,7 +8,7 @@ export type Anchor =
 
 export type FilterPiece =
   | { kind: 'emoji'; emoji: string; anchor: Anchor; scale: number; dx?: number; dy?: number; rotate?: boolean }
-  | { kind: 'shape'; shape: 'sunglasses' | 'halo' | 'dogEars' | 'devilHorns' | 'blush' };
+  | { kind: 'shape'; shape: 'sunglasses' | 'halo' | 'dogEars' | 'devilHorns' | 'blush' | 'cowboyHat' };
 
 export interface FaceFilter { id: string; name: string; icon: string; pieces: FilterPiece[]; }
 
@@ -23,7 +23,7 @@ export const FACE_FILTERS: FaceFilter[] = [
   { id: 'party', name: 'Party', icon: '🥳', pieces: [{ kind: 'emoji', emoji: '🎉', anchor: 'headLeft', scale: 1.0, rotate: true }, { kind: 'emoji', emoji: '🎊', anchor: 'headRight', scale: 1.0, rotate: true }] },
   { id: 'flowerCrown', name: 'Flowers', icon: '🌸', pieces: [{ kind: 'emoji', emoji: '🌸', anchor: 'forehead', scale: 0.7, dx: -1.0, dy: -0.5, rotate: true }, { kind: 'emoji', emoji: '🌷', anchor: 'forehead', scale: 0.7, dy: -0.65, rotate: true }, { kind: 'emoji', emoji: '🌼', anchor: 'forehead', scale: 0.7, dx: 1.0, dy: -0.5, rotate: true }] },
   { id: 'blush', name: 'Blush', icon: '🥰', pieces: [{ kind: 'shape', shape: 'blush' }] },
-  { id: 'cowboy', name: 'Howdy', icon: '🤠', pieces: [{ kind: 'emoji', emoji: '🤠', anchor: 'aboveHead', scale: 2.2, dy: 0.5, rotate: true }] },
+  { id: 'cowboy', name: 'Howdy', icon: '🤠', pieces: [{ kind: 'shape', shape: 'cowboyHat' }] },
   { id: 'starEyes', name: 'Star', icon: '🤩', pieces: [{ kind: 'emoji', emoji: '⭐', anchor: 'aboveHead', scale: 0.8, dx: -1.2 }, { kind: 'emoji', emoji: '🌟', anchor: 'aboveHead', scale: 1.0 }, { kind: 'emoji', emoji: '⭐', anchor: 'aboveHead', scale: 0.8, dx: 1.2 }] },
 ];
 
@@ -80,7 +80,7 @@ export function drawFaceFilter(
 
 function drawShape(
   ctx: CanvasRenderingContext2D,
-  shape: 'sunglasses' | 'halo' | 'dogEars' | 'devilHorns' | 'blush',
+  shape: 'sunglasses' | 'halo' | 'dogEars' | 'devilHorns' | 'blush' | 'cowboyHat',
   g: { leftEye: Pt; rightEye: Pt; eyeW: number; angle: number; anchors: Record<Anchor, Pt> },
 ): void {
   const { leftEye, rightEye, eyeW, angle, anchors } = g;
@@ -119,6 +119,24 @@ function drawShape(
       ctx.quadraticCurveTo(side * eyeW * 0.2, -eyeW * 0.55, 0, 0); ctx.closePath(); ctx.fill();
       ctx.restore();
     }
+  } else if (shape === 'cowboyHat') {
+    // Sits on the head: wide brim at the hairline, domed crown above, band.
+    const c = anchors.forehead;
+    ctx.save(); ctx.translate(c.x, c.y - eyeW * 0.25); ctx.rotate(angle);
+    // brim
+    ctx.fillStyle = '#b98a4e';
+    ctx.beginPath(); ctx.ellipse(0, 0, eyeW * 1.55, eyeW * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    // crown (dome)
+    ctx.fillStyle = '#a9793f';
+    ctx.beginPath();
+    ctx.moveTo(-eyeW * 0.78, eyeW * 0.05);
+    ctx.quadraticCurveTo(-eyeW * 0.72, -eyeW * 1.15, 0, -eyeW * 1.2);
+    ctx.quadraticCurveTo(eyeW * 0.72, -eyeW * 1.15, eyeW * 0.78, eyeW * 0.05);
+    ctx.closePath(); ctx.fill();
+    // band
+    ctx.fillStyle = '#6f4a22';
+    ctx.beginPath(); ctx.ellipse(0, -eyeW * 0.02, eyeW * 0.8, eyeW * 0.16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   } else if (shape === 'blush') {
     for (const c of [anchors.leftCheek, anchors.rightCheek]) {
       const grd = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, eyeW * 0.5);
