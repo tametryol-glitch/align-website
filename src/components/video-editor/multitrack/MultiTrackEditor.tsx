@@ -26,7 +26,7 @@ import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2 } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -245,7 +245,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -263,6 +263,8 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const selectedVideo = selectedClip && selectedClip.kind === 'video' ? selectedClip : null;
   const selectedText = selectedClip && selectedClip.kind === 'text' ? selectedClip : null;
   const selectedAudio = selectedClip && selectedClip.kind === 'audio' ? selectedClip : null;
+  // Any clip that carries audio (music/SFX/voiceover clips, or a video clip's own sound).
+  const selectedMedia = selectedAudio || selectedVideo;
 
   // ── Auto-captions: free local Whisper → karaoke caption clips ──
   const [capBusy, setCapBusy] = useState(false);
@@ -657,6 +659,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
                 <Type className="w-4 h-4" /> Edit text
               </button>
             )}
+            {selectedMedia && (
+              <button onClick={() => setSheet('volume')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-500/15 text-teal-300 text-sm font-medium hover:bg-teal-500/25"
+                title="Adjust the volume of the selected clip">
+                <Volume2 className="w-4 h-4" /> Volume
+              </button>
+            )}
             {selectedAudio && (
               <button onClick={() => syncToBeat(selectedAudio)} disabled={beatBusy}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/15 text-emerald-300 text-sm font-medium hover:bg-emerald-500/25 disabled:opacity-40"
@@ -709,6 +718,38 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
           {sheet === 'voiceover' && <VoiceoverSheet onGenerate={addVoiceover} onClose={() => setSheet(null)} />}
           {sheet === 'stickers' && <StickerSheet onPick={addSticker} onClose={() => setSheet(null)} />}
+          {sheet === 'volume' && selectedMedia && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-3">
+                <Volume2 className="w-4 h-4 text-teal-400" />
+                <span className="text-sm font-medium text-text-secondary">
+                  Volume — {selectedMedia.kind === 'audio' ? 'audio clip' : 'video sound'}
+                </span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-text-muted mb-1">
+                <span>Level</span>
+                <span className="text-text-primary font-medium">
+                  {(selectedMedia.volume ?? 1) === 0 ? 'Muted' : `${Math.round((selectedMedia.volume ?? 1) * 100)}%`}
+                </span>
+              </div>
+              <input type="range" min={0} max={2} step={0.05} value={selectedMedia.volume ?? 1}
+                onChange={(e) => updateClip(selectedMedia.id, { volume: parseFloat(e.target.value) } as Partial<TimelineClip>)}
+                className="w-full accent-teal-400" />
+              <div className="grid grid-cols-4 gap-1.5 mt-2">
+                {([['Mute', 0], ['50%', 0.5], ['100%', 1], ['150%', 1.5]] as Array<[string, number]>).map(([label, v]) => {
+                  const active = (selectedMedia.volume ?? 1) === v;
+                  return (
+                    <button key={label} onClick={() => updateClip(selectedMedia.id, { volume: v } as Partial<TimelineClip>)}
+                      className={`px-2 py-1.5 rounded-md text-[11px] border ${active ? 'border-teal-400 bg-teal-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-text-muted mt-2">Slide past 100% to boost quiet clips. Set to Mute to silence a clip while keeping it on the track.</p>
+            </div>
+          )}
           {sheet === 'voicefx' && selectedAudio && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
               <div className="flex items-center gap-2 mb-2">
