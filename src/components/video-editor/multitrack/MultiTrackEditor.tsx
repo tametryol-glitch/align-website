@@ -28,7 +28,7 @@ import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
 import { EMOJI_CATEGORIES } from '@/lib/editor/emojiData';
 import { FACE_FILTERS } from '@/lib/editor/faceFilters';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2 } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2, Orbit } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -257,7 +257,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | 'morph' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -671,6 +671,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               </button>
             )}
             {selectedVideo && (
+              <button onClick={() => setSheet('morph')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-500/15 text-violet-300 text-sm font-medium hover:bg-violet-500/25"
+                title="Reshape your face — alien, big eyes, chipmunk">
+                <Orbit className="w-4 h-4" /> Morph
+              </button>
+            )}
+            {selectedVideo && (
               <button onClick={() => setSheet('keyframes')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
                 title="Animate scale/position/opacity with keyframes">
@@ -826,6 +833,28 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           )}
           {sheet === 'background' && selectedVideo && (
             <BackgroundSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          )}
+          {sheet === 'morph' && selectedVideo && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Orbit className="w-4 h-4 text-violet-400" />
+                <span className="text-sm font-medium text-text-secondary">Face Morph</span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {([['off', 'Off', '🚫'], ['alien', 'Alien', '👽'], ['bigEyes', 'Big Eyes', '😳'], ['chipmunk', 'Chipmunk', '🐿️']] as Array<[string, string, string]>).map(([id, name, emo]) => {
+                  const active = (selectedVideo.faceWarp || 'off') === id;
+                  return (
+                    <button key={id} onClick={() => updateClip(selectedVideo.id, { faceWarp: id === 'off' ? undefined : id } as Partial<TimelineClip>)}
+                      className={`px-1.5 py-2 rounded-md text-center border ${active ? 'border-violet-400 bg-violet-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                      <span className="block text-lg leading-none mb-0.5">{emo}</span>
+                      <span className="block text-[9px] font-medium text-text-primary">{name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-text-muted mt-2">Reshapes your real face — free, tracks you, and renders into the export. Works best facing the camera.</p>
+            </div>
           )}
           {sheet === 'facefx' && selectedVideo && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">

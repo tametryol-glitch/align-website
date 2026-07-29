@@ -86,6 +86,8 @@ export interface MediaClip extends ClipBase {
   faceFilter?: string;
   /** Full-frame stylization, e.g. 'toon' (cartoon look). See StylizeVideo. */
   stylize?: string;
+  /** Face-reshape warp, e.g. 'alien' / 'bigEyes'. See FaceWarpVideo. */
+  faceWarp?: string;
 }
 
 /** Chroma-key (green screen) settings for a video clip. */
