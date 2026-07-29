@@ -66,7 +66,7 @@ export const MultiTrackComposition: React.FC<{ timeline?: TimelineState }> = ({ 
   return (
     <AbsoluteFill style={{ background: '#000' }}>
       {visual.map((t) => clipsOf(t.id).map((c) => <VisualClip key={c.id} clip={c} track={t} fps={fps} />))}
-      {audio.map((t) => clipsOf(t.id).map((c) => <AudioClipEl key={c.id} clip={c as MediaClip} fps={fps} />))}
+      {audio.map((t) => clipsOf(t.id).map((c) => <AudioClipEl key={c.id} clip={c as MediaClip} track={t} fps={fps} />))}
     </AbsoluteFill>
   );
 };
@@ -187,6 +187,9 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame(); // relative to the clip's Sequence
   const isPip = track.kind === 'overlay' || (m.scale != null && m.scale < 1);
+  // Effective sound = clip level × the lane's master level.
+  const effVol = (m.volume ?? 1) * (track.volume ?? 1);
+  const isMuted = track.muted || effVol === 0;
   const fx = m.effects || [];
 
   // Frame-driven transforms.
@@ -220,8 +223,8 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
         src={m.sourceUrl}
         startFrom={f(m.sourceStart, fps)}
         playbackRate={m.speed ?? 1}
-        muted={track.muted || m.volume === 0}
-        volume={m.volume ?? 1}
+        muted={isMuted}
+        volume={effVol}
         options={m.bgRemove}
         objectFit={isPip ? 'contain' : 'cover'}
       />
@@ -232,8 +235,8 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
         src={m.sourceUrl}
         startFrom={f(m.sourceStart, fps)}
         playbackRate={m.speed ?? 1}
-        muted={track.muted || m.volume === 0}
-        volume={m.volume ?? 1}
+        muted={isMuted}
+        volume={effVol}
         chroma={m.chroma}
         objectFit={isPip ? 'contain' : 'cover'}
       />
@@ -243,8 +246,8 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
       src={m.sourceUrl}
       startFrom={f(m.sourceStart, fps)}
       playbackRate={m.speed ?? 1}
-      muted={track.muted || m.volume === 0}
-      volume={m.volume ?? 1}
+      muted={isMuted}
+      volume={effVol}
       style={{
         width: '100%', height: '100%', objectFit: isPip ? 'contain' : 'cover', display: 'block',
         filter: lookFilter(m) || undefined,
@@ -369,15 +372,16 @@ function pipStyle(m: MediaClip): React.CSSProperties {
   };
 }
 
-function AudioClipEl({ clip, fps }: { clip: MediaClip; fps: number }) {
+function AudioClipEl({ clip, track, fps }: { clip: MediaClip; track: TimelineTrack; fps: number }) {
   const from = f(clip.start, fps);
   const startFrom = f(clip.sourceStart, fps);
+  const effVol = (clip.volume ?? 1) * (track.volume ?? 1);
   const dur = Math.max(1, f(clip.duration, fps));
   // Voice FX = playbackRate (speed + pitch). endAt uses the source out-point so
   // the correct span plays regardless of rate.
   return (
     <Sequence from={from} durationInFrames={dur} layout="none">
-      <Audio src={clip.sourceUrl} startFrom={startFrom} endAt={f(clip.sourceEnd, fps)} volume={clip.volume ?? 1} playbackRate={clip.speed ?? 1} />
+      <Audio src={clip.sourceUrl} startFrom={startFrom} endAt={f(clip.sourceEnd, fps)} volume={effVol} playbackRate={clip.speed ?? 1} />
     </Sequence>
   );
 }

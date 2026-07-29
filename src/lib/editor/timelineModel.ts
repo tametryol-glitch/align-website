@@ -26,6 +26,9 @@ export interface TimelineTrack {
   muted?: boolean;   // audio / video sound
   hidden?: boolean;  // video / overlay / text visibility
   locked?: boolean;  // prevents edits/moves
+  /** Master level for the whole lane (0..2), multiplied with each clip's own
+   *  volume. Undefined = 1 (unchanged). */
+  volume?: number;
 }
 
 interface ClipBase {

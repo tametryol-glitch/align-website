@@ -217,20 +217,29 @@ export function MultiTrackTimeline() {
           {/* Track rows: sticky header + lane */}
           {tracks.map((t) => (
             <div key={t.id} className="flex" style={{ height: LANE_H }}>
-              <div className="sticky left-0 z-30 flex-shrink-0 bg-bg-tertiary border-r border-b border-white/5 flex items-center gap-1 px-2" style={{ width: HEADER_W }}>
-                <span className="text-text-muted">{KIND_ICON[t.kind]}</span>
-                <span className="text-[11px] text-text-secondary truncate flex-1">{t.name}</span>
+              <div className="sticky left-0 z-30 flex-shrink-0 bg-bg-tertiary border-r border-b border-white/5 flex flex-col justify-center gap-1 px-2" style={{ width: HEADER_W }}>
+                <div className="flex items-center gap-1">
+                  <span className="text-text-muted">{KIND_ICON[t.kind]}</span>
+                  <span className="text-[11px] text-text-secondary truncate flex-1">{t.name}</span>
+                  {(t.kind === 'video' || t.kind === 'overlay' || t.kind === 'text') && (
+                    <button onClick={() => updateTrack(t.id, { hidden: !t.hidden })} className="text-text-muted hover:text-text-primary" title={t.hidden ? 'Show' : 'Hide'}>
+                      {t.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                    </button>
+                  )}
+                  <button onClick={() => removeTrack(t.id)} className="text-text-muted hover:text-red-400" title="Delete track"><Trash2 className="w-3 h-3" /></button>
+                </div>
                 {(t.kind === 'audio' || t.kind === 'video') && (
-                  <button onClick={() => updateTrack(t.id, { muted: !t.muted })} className="text-text-muted hover:text-text-primary" title={t.muted ? 'Unmute' : 'Mute'}>
-                    {t.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                  </button>
+                  <div className="flex items-center gap-1" title="Track volume — applies to every clip on this lane">
+                    <button onClick={() => updateTrack(t.id, { muted: !t.muted })} className="text-text-muted hover:text-text-primary flex-shrink-0" title={t.muted ? 'Unmute lane' : 'Mute lane'}>
+                      {t.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                    </button>
+                    <input type="range" min={0} max={2} step={0.05} value={t.muted ? 0 : (t.volume ?? 1)}
+                      disabled={t.muted}
+                      onChange={(e) => updateTrack(t.id, { volume: parseFloat(e.target.value) })}
+                      className="flex-1 h-1 accent-teal-400 disabled:opacity-40 min-w-0" />
+                    <span className="text-[8px] text-text-muted w-5 text-right flex-shrink-0">{t.muted ? 'M' : Math.round((t.volume ?? 1) * 100)}</span>
+                  </div>
                 )}
-                {(t.kind === 'video' || t.kind === 'overlay' || t.kind === 'text') && (
-                  <button onClick={() => updateTrack(t.id, { hidden: !t.hidden })} className="text-text-muted hover:text-text-primary" title={t.hidden ? 'Show' : 'Hide'}>
-                    {t.hidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                  </button>
-                )}
-                <button onClick={() => removeTrack(t.id)} className="text-text-muted hover:text-red-400" title="Delete track"><Trash2 className="w-3 h-3" /></button>
               </div>
               <div className="relative border-b border-white/5" style={{ width: contentW, height: LANE_H }}
                 onPointerDown={(e) => { if (e.target === e.currentTarget) { selectClip(null); seekFromClientX(e.clientX, e.currentTarget); } }}>
