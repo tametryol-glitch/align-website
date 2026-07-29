@@ -19,6 +19,9 @@ import {
   Scissors, Trash2, Plus, Undo2, Redo2, ZoomIn, ZoomOut,
   Volume2, Video, Type, Sparkles, VolumeX, Eye, EyeOff,
 } from 'lucide-react';
+import { getPeaks, getCachedPeaks } from '@/lib/editor/waveform';
+
+const MAX_VOL = 2; // 200% — top of the on-clip volume line
 
 const LANE_H = 56;
 const RULER_H = 26;
@@ -254,12 +257,27 @@ export function MultiTrackTimeline() {
   );
 }
 
+// Decode + cache a clip's audio peaks for the timeline waveform.
+function useWaveform(url?: string): number[] | null {
+  const [peaks, setPeaks] = useState<number[] | null>(() => (url ? getCachedPeaks(url) ?? null : null));
+  useEffect(() => {
+    if (!url) { setPeaks(null); return; }
+    const cached = getCachedPeaks(url);
+    if (cached) { setPeaks(cached); return; }
+    let alive = true;
+    getPeaks(url).then((p) => { if (alive) setPeaks(p); }).catch(() => { if (alive) setPeaks(null); });
+    return () => { alive = false; };
+  }, [url]);
+  return peaks;
+}
+
 function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
   clip: TimelineClip;
   pxPerSec: number;
   selected: boolean;
   onPointerDown: (clip: TimelineClip, mode: DragMode, e: React.PointerEvent) => void;
 }) {
+  const updateClip = useTimelineStore((s) => s.updateClip);
   const left = clip.start * pxPerSec;
   const width = Math.max(6, clip.duration * pxPerSec);
   const label = clip.kind === 'text' ? (clip as { text: string }).text || 'Text'
@@ -267,28 +285,102 @@ function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
     : clip.kind === 'audio' ? 'Audio'
     : (clip as { emoji?: string }).emoji || 'Overlay';
   const media = clip.kind === 'video' || clip.kind === 'audio' ? (clip as MediaClip) : null;
+  const peaks = useWaveform(media?.sourceUrl);
+  const vol = media?.volume ?? 1;
+  const volPct = Math.min(1, vol / MAX_VOL); // 0..1 up from the bottom
+  const lineTop = `${(1 - volPct) * 100}%`;
+
+  // Drag the volume line up/down to set THIS clip's level (Filmora-style).
+  const onVolDown = (e: React.PointerEvent) => {
+    if (!media) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const rect = (e.currentTarget.parentElement as HTMLElement).getBoundingClientRect();
+    const apply = (clientY: number) => {
+      const frac = 1 - Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+      updateClip(media.id, { volume: Math.round(frac * MAX_VOL * 20) / 20 } as Partial<TimelineClip>);
+    };
+    apply(e.clientY);
+    const move = (ev: PointerEvent) => apply(ev.clientY);
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
 
   return (
     <div
       onPointerDown={(e) => onPointerDown(clip, 'move', e)}
       className={`absolute top-1 bottom-1 rounded-md bg-gradient-to-b border cursor-grab active:cursor-grabbing overflow-hidden ${CLIP_COLOR[clip.kind]} ${selected ? 'ring-2 ring-white' : ''}`}
       style={{ left, width }}
-      title={`${label} — ${clip.duration.toFixed(2)}s`}
+      title={`${label} — ${clip.duration.toFixed(2)}s${media ? ` · ${Math.round(vol * 100)}% vol` : ''}`}
     >
-      {/* left trim handle */}
+      {/* waveform */}
+      {media && peaks && (
+        <Waveform peaks={peaks} sourceStart={media.sourceStart} sourceEnd={media.sourceEnd} sourceDuration={media.sourceDuration} />
+      )}
+
+      {/* left / right trim handles */}
       <div onPointerDown={(e) => onPointerDown(clip, 'trim-start', e)}
-        className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize bg-white/20 hover:bg-white/40" />
-      {/* right trim handle */}
+        className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize bg-white/20 hover:bg-white/40 z-20" />
       <div onPointerDown={(e) => onPointerDown(clip, 'trim-end', e)}
-        className="absolute right-0 top-0 bottom-0 w-2 cursor-ew-resize bg-white/20 hover:bg-white/40" />
-      <div className="px-2.5 py-1 text-[10px] font-medium text-white truncate pointer-events-none">
+        className="absolute right-0 top-0 bottom-0 w-2 cursor-ew-resize bg-white/20 hover:bg-white/40 z-20" />
+
+      <div className="px-2.5 py-1 text-[10px] font-medium text-white truncate pointer-events-none relative z-10">
         {label}
       </div>
+
+      {/* volume line + drag band (media clips) */}
+      {media && width > 24 && (
+        <>
+          <div className="absolute left-0 right-0 z-10 pointer-events-none"
+            style={{ top: lineTop, height: 0, borderTop: `2px solid ${vol === 0 ? 'rgba(248,113,113,0.95)' : 'rgba(253,224,71,0.95)'}` }} />
+          <div onPointerDown={onVolDown}
+            className="absolute left-2 right-2 z-20 cursor-ns-resize"
+            style={{ top: `calc(${lineTop} - 6px)`, height: 12 }}
+            title="Drag to set volume" />
+          <span className="absolute right-1 z-10 text-[8px] font-semibold text-white/90 pointer-events-none px-0.5 rounded bg-black/30"
+            style={{ top: `calc(${lineTop} - 12px)` }}>
+            {vol === 0 ? 'muted' : `${Math.round(vol * 100)}%`}
+          </span>
+        </>
+      )}
+
       {media && (
-        <div className="absolute bottom-1 left-2.5 right-2.5 text-[9px] text-white/70 pointer-events-none truncate">
+        <div className="absolute bottom-1 left-2.5 text-[9px] text-white/70 pointer-events-none truncate z-10">
           {media.duration.toFixed(1)}s{media.speed !== 1 ? ` · ${media.speed}x` : ''}
         </div>
       )}
     </div>
+  );
+}
+
+// Symmetric amplitude waveform for the trimmed [sourceStart, sourceEnd] slice.
+function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration }: {
+  peaks: number[];
+  sourceStart: number;
+  sourceEnd: number;
+  sourceDuration: number;
+}) {
+  const total = peaks.length;
+  const a = Math.max(0, Math.floor((sourceStart / Math.max(0.001, sourceDuration)) * total));
+  const b = Math.min(total, Math.ceil((sourceEnd / Math.max(0.001, sourceDuration)) * total));
+  const slice = peaks.slice(a, Math.max(a + 1, b));
+  const N = Math.min(slice.length, 240);
+  if (N <= 0) return null;
+  const step = slice.length / N;
+  const bars: number[] = [];
+  for (let i = 0; i < N; i++) {
+    let m = 0;
+    const s = Math.floor(i * step), e = Math.max(s + 1, Math.floor((i + 1) * step));
+    for (let j = s; j < e; j++) if (slice[j] > m) m = slice[j];
+    bars.push(m);
+  }
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${N} 100`} preserveAspectRatio="none">
+      {bars.map((p, i) => {
+        const h = Math.max(1.2, p * 44);
+        return <line key={i} x1={i + 0.5} x2={i + 0.5} y1={50 - h} y2={50 + h} stroke="rgba(255,255,255,0.5)" strokeWidth={0.85} />;
+      })}
+    </svg>
   );
 }
