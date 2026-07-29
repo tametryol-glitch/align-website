@@ -246,6 +246,7 @@ export function MultiTrackTimeline() {
                 {data.clips.filter((c) => c.trackId === t.id).map((c) => (
                   <ClipBlock key={c.id} clip={c} pxPerSec={pxPerSec}
                     selected={c.id === selectedClipId}
+                    trackVolume={t.muted ? 0 : (t.volume ?? 1)}
                     onPointerDown={onPointerDownClip} />
                 ))}
               </div>
@@ -280,10 +281,11 @@ function useWaveform(url?: string): number[] | null {
   return peaks;
 }
 
-function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
+function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
   clip: TimelineClip;
   pxPerSec: number;
   selected: boolean;
+  trackVolume: number;
   onPointerDown: (clip: TimelineClip, mode: DragMode, e: React.PointerEvent) => void;
 }) {
   const updateClip = useTimelineStore((s) => s.updateClip);
@@ -296,6 +298,9 @@ function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
   const media = clip.kind === 'video' || clip.kind === 'audio' ? (clip as MediaClip) : null;
   const peaks = useWaveform(media?.sourceUrl);
   const vol = media?.volume ?? 1;
+  // What the clip actually plays at = its own level × the lane master. The
+  // waveform is drawn at this height so it shrinks/grows with the volume.
+  const effVol = vol * trackVolume;
   const volPct = Math.min(1, vol / MAX_VOL); // 0..1 up from the bottom
   const lineTop = `${(1 - volPct) * 100}%`;
 
@@ -323,9 +328,10 @@ function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
       style={{ left, width }}
       title={`${label} — ${clip.duration.toFixed(2)}s${media ? ` · ${Math.round(vol * 100)}% vol` : ''}`}
     >
-      {/* waveform */}
+      {/* waveform — height scales with the effective volume, like Filmora */}
       {media && peaks && (
-        <Waveform peaks={peaks} sourceStart={media.sourceStart} sourceEnd={media.sourceEnd} sourceDuration={media.sourceDuration} />
+        <Waveform peaks={peaks} sourceStart={media.sourceStart} sourceEnd={media.sourceEnd}
+          sourceDuration={media.sourceDuration} volumeScale={effVol} />
       )}
 
       {/* left / right trim handles */}
@@ -364,11 +370,14 @@ function ClipBlock({ clip, pxPerSec, selected, onPointerDown }: {
 }
 
 // Symmetric amplitude waveform for the trimmed [sourceStart, sourceEnd] slice.
-function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration }: {
+// `volumeScale` is the effective level (clip × track): the bar heights track it
+// so lowering the volume visibly shrinks the wave, and muting flattens it.
+function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration, volumeScale }: {
   peaks: number[];
   sourceStart: number;
   sourceEnd: number;
   sourceDuration: number;
+  volumeScale: number;
 }) {
   const total = peaks.length;
   const a = Math.max(0, Math.floor((sourceStart / Math.max(0.001, sourceDuration)) * total));
@@ -384,11 +393,14 @@ function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration }: {
     for (let j = s; j < e; j++) if (slice[j] > m) m = slice[j];
     bars.push(m);
   }
+  // 100% volume fills the lane; boosts go taller (clamped), mute → flat line.
+  const gain = Math.min(1.15, volumeScale) * 44;
+  const muted = volumeScale <= 0.001;
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${N} 100`} preserveAspectRatio="none">
       {bars.map((p, i) => {
-        const h = Math.max(1.2, p * 44);
-        return <line key={i} x1={i + 0.5} x2={i + 0.5} y1={50 - h} y2={50 + h} stroke="rgba(255,255,255,0.5)" strokeWidth={0.85} />;
+        const h = muted ? 0.4 : Math.max(0.4, Math.min(48, p * gain));
+        return <line key={i} x1={i + 0.5} x2={i + 0.5} y1={50 - h} y2={50 + h} stroke={muted ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.55)'} strokeWidth={0.85} />;
       })}
     </svg>
   );
