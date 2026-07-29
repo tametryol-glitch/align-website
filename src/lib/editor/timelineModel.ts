@@ -81,6 +81,9 @@ export interface MediaClip extends ClipBase {
    *  segmentation keeps the person and makes the background transparent.
    *  See remotion/editor/SegmentedVideo. Takes precedence over chroma. */
   bgRemove?: BgRemoveOptions;
+  /** Face-tracking AR filter id (see lib/editor/faceFilters). Draws accessories
+   *  anchored to the face landmarks. See remotion/editor/FaceFilterVideo. */
+  faceFilter?: string;
 }
 
 /** Chroma-key (green screen) settings for a video clip. */

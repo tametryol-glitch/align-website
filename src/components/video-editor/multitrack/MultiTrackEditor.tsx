@@ -27,6 +27,7 @@ import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
 import { EMOJI_CATEGORIES } from '@/lib/editor/emojiData';
+import { FACE_FILTERS } from '@/lib/editor/faceFilters';
 import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2 } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
@@ -256,7 +257,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -657,6 +658,11 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               title={selectedVideo ? 'Remove background: AI cut-out or green screen' : 'Select a video clip first'}>
               <Layers className="w-4 h-4" /> Background
             </button>
+            <button onClick={() => setSheet('facefx')} disabled={!selectedVideo}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-500/15 text-pink-300 text-sm font-medium hover:bg-pink-500/25 disabled:opacity-30"
+              title={selectedVideo ? 'Face filters — glasses, crowns, ears, that track your face' : 'Select a video clip first'}>
+              <Smile className="w-4 h-4" /> Face FX
+            </button>
             {selectedVideo && (
               <button onClick={() => setSheet('keyframes')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
@@ -813,6 +819,33 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           )}
           {sheet === 'background' && selectedVideo && (
             <BackgroundSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          )}
+          {sheet === 'facefx' && selectedVideo && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Smile className="w-4 h-4 text-pink-400" />
+                <span className="text-sm font-medium text-text-secondary">Face Filters</span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 max-h-56 overflow-auto">
+                <button onClick={() => updateClip(selectedVideo.id, { faceFilter: undefined } as Partial<TimelineClip>)}
+                  className={`px-1.5 py-2 rounded-md text-center border ${!selectedVideo.faceFilter ? 'border-pink-400 bg-pink-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                  <span className="block text-lg leading-none mb-0.5">🚫</span>
+                  <span className="block text-[9px] font-medium text-text-primary">Off</span>
+                </button>
+                {FACE_FILTERS.map((flt) => {
+                  const active = selectedVideo.faceFilter === flt.id;
+                  return (
+                    <button key={flt.id} onClick={() => updateClip(selectedVideo.id, { faceFilter: flt.id } as Partial<TimelineClip>)}
+                      className={`px-1.5 py-2 rounded-md text-center border ${active ? 'border-pink-400 bg-pink-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                      <span className="block text-lg leading-none mb-0.5">{flt.icon}</span>
+                      <span className="block text-[9px] font-medium text-text-primary truncate">{flt.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-text-muted mt-2">Filters track your face and follow it as you move — they render into the exported video too. Works best when your face is clearly visible.</p>
+            </div>
           )}
         </div>
       </div>

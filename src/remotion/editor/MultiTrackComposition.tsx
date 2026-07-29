@@ -17,6 +17,7 @@ import { getFilterById, scaleCssFilter } from '@/lib/videoFilters';
 import type { FilterPresetId } from '@/stores/videoEditorStore';
 import { ChromaKeyVideo } from './ChromaKeyVideo';
 import { SegmentedVideo } from './SegmentedVideo';
+import { FaceFilterVideo } from './FaceFilterVideo';
 
 const f = (sec: number, fps: number) => Math.round(sec * fps);
 
@@ -217,7 +218,19 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   const tr = transitionIn(m, frame, fps);
   if (tr.transform) transform += ` ${tr.transform}`;
 
-  const video = m.bgRemove ? (
+  const video = m.faceFilter ? (
+    <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
+      <FaceFilterVideo
+        src={m.sourceUrl}
+        startFrom={f(m.sourceStart, fps)}
+        playbackRate={m.speed ?? 1}
+        muted={isMuted}
+        volume={effVol}
+        filterId={m.faceFilter}
+        objectFit={isPip ? 'contain' : 'cover'}
+      />
+    </div>
+  ) : m.bgRemove ? (
     <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
       <SegmentedVideo
         src={m.sourceUrl}
