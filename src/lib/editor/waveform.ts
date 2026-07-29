@@ -1,20 +1,27 @@
 'use client';
 
 /**
- * Decode an audio (or video) file to a set of amplitude peaks for drawing a
- * timeline waveform. Results are cached per URL so each song is only decoded
- * once, and concurrent requests share one in-flight decode.
+ * Decode an audio (or video) file to amplitude peaks for a timeline waveform,
+ * plus the TRUE decoded duration. Slicing the waveform by the real duration
+ * (not the clip's stored metadata) keeps the wave aligned with the audio you
+ * actually hear. Results are cached per URL; concurrent calls share one decode.
  */
 
 const PEAKS = 2400; // resolution of the cached peak array (whole source)
-const cache = new Map<string, number[]>();
-const inflight = new Map<string, Promise<number[]>>();
 
-export function getCachedPeaks(url: string): number[] | undefined {
+export interface WaveData {
+  peaks: number[];    // 0..1, normalized, whole source
+  duration: number;   // real decoded length in seconds
+}
+
+const cache = new Map<string, WaveData>();
+const inflight = new Map<string, Promise<WaveData>>();
+
+export function getCachedPeaks(url: string): WaveData | undefined {
   return cache.get(url);
 }
 
-export async function getPeaks(url: string): Promise<number[]> {
+export async function getPeaks(url: string): Promise<WaveData> {
   const hit = cache.get(url);
   if (hit) return hit;
   const running = inflight.get(url);
@@ -43,10 +50,10 @@ export async function getPeaks(url: string): Promise<number[]> {
         peaks[i] = max;
         if (max > globalMax) globalMax = max;
       }
-      // Normalise to 0..1 so quiet tracks still show a readable waveform.
       for (let i = 0; i < PEAKS; i++) peaks[i] = peaks[i] / globalMax;
-      cache.set(url, peaks);
-      return peaks;
+      const data: WaveData = { peaks, duration: audio.duration };
+      cache.set(url, data);
+      return data;
     } finally {
       ctx.close();
       inflight.delete(url);

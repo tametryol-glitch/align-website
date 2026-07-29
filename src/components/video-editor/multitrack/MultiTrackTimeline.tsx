@@ -19,7 +19,7 @@ import {
   Scissors, Trash2, Plus, Undo2, Redo2, ZoomIn, ZoomOut,
   Volume2, Video, Type, Sparkles, VolumeX, Eye, EyeOff,
 } from 'lucide-react';
-import { getPeaks, getCachedPeaks } from '@/lib/editor/waveform';
+import { getPeaks, getCachedPeaks, type WaveData } from '@/lib/editor/waveform';
 
 const MAX_VOL = 2; // 200% — top of the on-clip volume line
 
@@ -160,7 +160,7 @@ export function MultiTrackTimeline() {
   const selectedClip = data.clips.find((c) => c.id === selectedClipId) || null;
 
   return (
-    <div className="flex flex-col bg-bg-secondary rounded-xl border border-white/10 overflow-hidden select-none">
+    <div className="flex flex-col shrink-0 bg-bg-secondary rounded-xl border border-white/10 overflow-hidden select-none">
       {/* Toolbar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/10 flex-wrap">
         <span className="text-xs font-mono text-text-secondary w-20">{fmt(playhead)}</span>
@@ -267,18 +267,18 @@ export function MultiTrackTimeline() {
   );
 }
 
-// Decode + cache a clip's audio peaks for the timeline waveform.
-function useWaveform(url?: string): number[] | null {
-  const [peaks, setPeaks] = useState<number[] | null>(() => (url ? getCachedPeaks(url) ?? null : null));
+// Decode + cache a clip's audio peaks (+ real duration) for the waveform.
+function useWaveform(url?: string): WaveData | null {
+  const [wave, setWave] = useState<WaveData | null>(() => (url ? getCachedPeaks(url) ?? null : null));
   useEffect(() => {
-    if (!url) { setPeaks(null); return; }
+    if (!url) { setWave(null); return; }
     const cached = getCachedPeaks(url);
-    if (cached) { setPeaks(cached); return; }
+    if (cached) { setWave(cached); return; }
     let alive = true;
-    getPeaks(url).then((p) => { if (alive) setPeaks(p); }).catch(() => { if (alive) setPeaks(null); });
+    getPeaks(url).then((w) => { if (alive) setWave(w); }).catch(() => { if (alive) setWave(null); });
     return () => { alive = false; };
   }, [url]);
-  return peaks;
+  return wave;
 }
 
 function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
@@ -296,7 +296,7 @@ function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
     : clip.kind === 'audio' ? 'Audio'
     : (clip as { emoji?: string }).emoji || 'Overlay';
   const media = clip.kind === 'video' || clip.kind === 'audio' ? (clip as MediaClip) : null;
-  const peaks = useWaveform(media?.sourceUrl);
+  const wave = useWaveform(media?.sourceUrl);
   const vol = media?.volume ?? 1;
   // What the clip actually plays at = its own level × the lane master. The
   // waveform is drawn at this height so it shrinks/grows with the volume.
@@ -328,10 +328,11 @@ function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
       style={{ left, width }}
       title={`${label} — ${clip.duration.toFixed(2)}s${media ? ` · ${Math.round(vol * 100)}% vol` : ''}`}
     >
-      {/* waveform — height scales with the effective volume, like Filmora */}
-      {media && peaks && (
-        <Waveform peaks={peaks} sourceStart={media.sourceStart} sourceEnd={media.sourceEnd}
-          sourceDuration={media.sourceDuration} volumeScale={effVol} />
+      {/* waveform — sliced by the REAL decoded duration so it stays aligned
+          with the audio; height scales with the effective volume (Filmora). */}
+      {media && wave && (
+        <Waveform peaks={wave.peaks} sourceStart={media.sourceStart} sourceEnd={media.sourceEnd}
+          sourceDuration={wave.duration || media.sourceDuration} volumeScale={effVol} />
       )}
 
       {/* left / right trim handles */}
