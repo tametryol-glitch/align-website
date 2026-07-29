@@ -48,11 +48,11 @@ export const FaceFilterVideo: React.FC<{
   // Preload any PNG assets the filter uses (transparent art in public/filters/).
   useEffect(() => {
     for (const p of filter.pieces) {
-      if (p.kind !== 'image' || imgMapRef.current.has(p.src)) continue;
+      if (p.kind !== 'image' || imgMapRef.current.has(p.asset)) continue;
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.onload = () => imgMapRef.current.set(p.src, img);
-      img.src = p.src;
+      img.onload = () => imgMapRef.current.set(p.asset, img);
+      img.src = staticFile(`filters/${p.asset}`);
     }
   }, [filter]);
 

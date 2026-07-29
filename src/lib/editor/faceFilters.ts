@@ -13,8 +13,9 @@ export type Anchor =
 export type FilterPiece =
   | { kind: 'emoji'; emoji: string; anchor: Anchor; scale: number; dx?: number; dy?: number; rotate?: boolean }
   | { kind: 'shape'; shape: ShapeId }
-  // Transparent PNG asset (put files in public/filters/, src = staticFile path).
-  | { kind: 'image'; src: string; anchor: Anchor; scale: number; dx?: number; dy?: number; rotate?: boolean };
+  // Transparent PNG asset: put the file in public/filters/, set asset to the
+  // bare filename (e.g. 'crown.png'). The component resolves it with staticFile.
+  | { kind: 'image'; asset: string; anchor: Anchor; scale: number; dx?: number; dy?: number; rotate?: boolean };
 
 export type ShapeId = 'sunglasses' | 'halo' | 'dogEars' | 'bunnyEars' | 'devilHorns' | 'blush' | 'cowboyHat' | 'crown';
 
@@ -92,7 +93,7 @@ export function drawFaceFilter(
       ctx.textBaseline = 'middle';
       ctx.fillText(piece.emoji, 0, 0);
     } else {
-      const img = images?.get(piece.src);
+      const img = images?.get(piece.asset);
       if (img) {
         const iw = (img as { width?: number }).width || eyeW * 2;
         const ih = (img as { height?: number }).height || eyeW * 2;
