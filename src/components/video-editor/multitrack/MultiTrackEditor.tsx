@@ -664,6 +664,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               <Smile className="w-4 h-4" /> Face FX
             </button>
             {selectedVideo && (
+              <button onClick={() => updateClip(selectedVideo.id, { stylize: selectedVideo.stylize === 'toon' ? undefined : 'toon' } as Partial<TimelineClip>)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border ${selectedVideo.stylize === 'toon' ? 'border-orange-400 bg-orange-500/20 text-orange-200' : 'border-white/10 bg-orange-500/10 text-orange-300 hover:bg-orange-500/20'}`}
+                title="Turn the clip into a cartoon (free — no AI credits)">
+                <Zap className="w-4 h-4" /> {selectedVideo.stylize === 'toon' ? 'Cartoon ✓' : 'Cartoon'}
+              </button>
+            )}
+            {selectedVideo && (
               <button onClick={() => setSheet('keyframes')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
                 title="Animate scale/position/opacity with keyframes">

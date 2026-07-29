@@ -84,6 +84,8 @@ export interface MediaClip extends ClipBase {
   /** Face-tracking AR filter id (see lib/editor/faceFilters). Draws accessories
    *  anchored to the face landmarks. See remotion/editor/FaceFilterVideo. */
   faceFilter?: string;
+  /** Full-frame stylization, e.g. 'toon' (cartoon look). See StylizeVideo. */
+  stylize?: string;
 }
 
 /** Chroma-key (green screen) settings for a video clip. */
