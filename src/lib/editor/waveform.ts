@@ -6,7 +6,7 @@
  * once, and concurrent requests share one in-flight decode.
  */
 
-const PEAKS = 600; // resolution of the cached peak array (whole source)
+const PEAKS = 2400; // resolution of the cached peak array (whole source)
 const cache = new Map<string, number[]>();
 const inflight = new Map<string, Promise<number[]>>();
 

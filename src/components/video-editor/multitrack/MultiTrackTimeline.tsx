@@ -383,8 +383,8 @@ function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration, volumeScale }
   const a = Math.max(0, Math.floor((sourceStart / Math.max(0.001, sourceDuration)) * total));
   const b = Math.min(total, Math.ceil((sourceEnd / Math.max(0.001, sourceDuration)) * total));
   const slice = peaks.slice(a, Math.max(a + 1, b));
-  const N = Math.min(slice.length, 240);
-  if (N <= 0) return null;
+  const N = Math.min(slice.length, 500);
+  if (N <= 1) return null;
   const step = slice.length / N;
   const bars: number[] = [];
   for (let i = 0; i < N; i++) {
@@ -394,14 +394,19 @@ function Waveform({ peaks, sourceStart, sourceEnd, sourceDuration, volumeScale }
     bars.push(m);
   }
   // 100% volume fills the lane; boosts go taller (clamped), mute → flat line.
-  const gain = Math.min(1.15, volumeScale) * 44;
+  const gain = Math.min(1.15, volumeScale) * 46;
   const muted = volumeScale <= 0.001;
+  const H = (p: number) => (muted ? 0.6 : Math.max(0.6, Math.min(48, p * gain)));
+  // Build one filled, mirrored area path so it reads as a solid waveform
+  // (not spaced bars): trace the top envelope, then back along the bottom.
+  let top = `M0,${50 - H(bars[0])}`;
+  for (let i = 1; i < N; i++) top += `L${i},${(50 - H(bars[i])).toFixed(2)}`;
+  let bottom = '';
+  for (let i = N - 1; i >= 0; i--) bottom += `L${i},${(50 + H(bars[i])).toFixed(2)}`;
+  const d = `${top}${bottom}Z`;
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${N} 100`} preserveAspectRatio="none">
-      {bars.map((p, i) => {
-        const h = muted ? 0.4 : Math.max(0.4, Math.min(48, p * gain));
-        return <line key={i} x1={i + 0.5} x2={i + 0.5} y1={50 - h} y2={50 + h} stroke={muted ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.55)'} strokeWidth={0.85} />;
-      })}
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${Math.max(1, N - 1)} 100`} preserveAspectRatio="none">
+      <path d={d} fill={muted ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.52)'} />
     </svg>
   );
 }
