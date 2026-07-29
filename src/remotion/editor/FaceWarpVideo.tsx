@@ -43,10 +43,19 @@ function recipeFor(warp: string, pts: { leftEye: [number, number]; rightEye: [nu
     ]] };
   }
   if (warp === 'chipmunk') {
-    return { passes: [[
-      { cx: leftEye[0] - eyeW * 0.2, cy: chin[1] - eyeW * 0.3, r: eyeW * 1.1, s: 0.45 },
-      { cx: rightEye[0] + eyeW * 0.2, cy: chin[1] - eyeW * 0.3, r: eyeW * 1.1, s: 0.45 },
-    ]] };
+    // Puffy cheeks (strong bulge low on the face) + wide eyes — two passes so
+    // the cheek and eye reshapes stack instead of cancelling.
+    const cheekY = (leftEye[1] + chin[1]) / 2 + eyeW * 0.15;
+    return { passes: [
+      [
+        { cx: leftEye[0] - eyeW * 0.55, cy: cheekY, r: eyeW * 1.6, s: 0.78 },
+        { cx: rightEye[0] + eyeW * 0.55, cy: cheekY, r: eyeW * 1.6, s: 0.78 },
+      ],
+      [
+        { cx: leftEye[0], cy: leftEye[1], r: eyeW * 0.85, s: 0.5 },
+        { cx: rightEye[0], cy: rightEye[1], r: eyeW * 0.85, s: 0.5 },
+      ],
+    ] };
   }
   // alien: pass 1 reshapes the skull (bulbous cranium, tiny chin/mid-face),
   // pass 2 blows up the eyes on the reshaped face so they don't fight.

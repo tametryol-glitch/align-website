@@ -86,8 +86,18 @@ export function useVideoRecorder({ maxSeconds = 60, onClip }: UseVideoRecorderOp
     }
 
     try {
+      // Ask for a 30fps target explicitly. Without a frameRate hint, cameras
+      // asked for a high resolution often negotiate a low-fps mode (e.g. 15fps),
+      // which makes both the live preview and the recorded clip look choppy.
+      // 720×1280 is a mode virtually every camera hits at a smooth 30fps and is
+      // plenty for portrait reels.
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1920 } },
+        video: {
+          facingMode: 'user',
+          width: { ideal: 720 },
+          height: { ideal: 1280 },
+          frameRate: { ideal: 30, max: 30 },
+        },
         audio: true,
       });
       streamRef.current = stream;
