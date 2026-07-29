@@ -84,6 +84,7 @@ const SIGN_GLYPHS: Record<string, string> = {
 // ── Feature Banners (matches mobile exactly) ────────────────────────
 
 const FEATURE_BANNERS = [
+  { href: '/zodisphere', emoji: '🌍', title: 'Zodisphere', sub: 'See how every place on Earth shapes your chart', gradient: 'from-[#0EA5E9] to-[#6366F1]' },
   { href: '/reels', emoji: '🎬', title: 'Reels', sub: 'Watch and share short videos', gradient: 'from-[#E11D48] to-[#9333EA]' },
   { href: '/celebrity-matches', emoji: '⭐', title: 'Celebrity Matches', sub: 'Check your compatibility with famous people', gradient: 'from-[#F59E0B] to-[#D97706]' },
   { href: '/cosmic-index', emoji: '🪐', title: 'Cosmic Index', sub: 'Find people by planet, sign, house & degree', gradient: 'from-[#6366F1] to-[#4338CA]' },

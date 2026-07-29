@@ -13,7 +13,7 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart, MessagesSquare, Palette, DollarSign,
+  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit,
 } from 'lucide-react';
 
 const TABS = [
@@ -27,6 +27,7 @@ const TABS = [
 
 const MORE_ITEMS = [
   { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
+  { href: '/zodisphere', labelKey: 'components.sidebar.zodisphere', icon: Orbit },
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
   { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
