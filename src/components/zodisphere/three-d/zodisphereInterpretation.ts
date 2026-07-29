@@ -834,3 +834,104 @@ function composeDraconic(x: {
 
   return parts.join('\n\n');
 }
+
+// ── Draconic COMPOSITE composer — the TWO-SOUL past-life reading ─────────────
+// For "Soul Places": a place where the blended draconic (soul) charts of two
+// people fall angular on Earth. Voice: past-tense, two-soul ("the two of you"),
+// evocative, a "what could have been" — never a literal claim. Weaves the
+// duad / compendium / matrix UNNAMED (as escalating texture), and calibrates by
+// how close the line runs (all hits are inside the 50-mile orb).
+
+/** Per-body relational theme for the two-soul reading. */
+const BODY_BOND: Record<string, { verb: string; theme: string }> = {
+  Sun: { verb: 'built a life around a shared purpose', theme: 'a bond of identity and pride' },
+  Moon: { verb: 'made a home and a safety of each other', theme: 'a bond of belonging and care' },
+  Mercury: { verb: 'talked through the nights and finished each other’s thoughts', theme: 'a meeting of minds' },
+  Venus: { verb: 'loved each other, plainly and completely', theme: 'a bond of tenderness and desire' },
+  Mars: { verb: 'fought for — and sometimes with — each other', theme: 'a bond of heat, drive, and friction' },
+  Jupiter: { verb: 'threw open each other’s world', theme: 'a bond of growth and faith' },
+  Saturn: { verb: 'carried a heavy, binding duty together', theme: 'a bond of obligation and endurance' },
+  Uranus: { verb: 'broke the rules together and answered to no one', theme: 'a bond of freedom and rupture' },
+  Neptune: { verb: 'dissolved into each other until the edges blurred', theme: 'a bond of devotion and illusion' },
+  Pluto: { verb: 'remade each other, for better and for worse', theme: 'a bond of obsession and transformation' },
+};
+
+/** Where the shared imprint lands, per angle. */
+const ANGLE_SCENE: Record<Angle, string> = {
+  MC: 'out in the world, where everyone could see it',
+  IC: 'behind closed doors, at the root of a home',
+  ASC: 'from the very moment you first laid eyes on each other',
+  DSC: 'across a table, face to face, as partners',
+};
+
+export interface SoulPlaceReading {
+  headline: string;
+  narrative: string;        // 2–4 short paragraphs, two-soul voice
+  whatCouldHaveBeen: string; // one punchy conditional line
+}
+
+/**
+ * Compose a two-soul "Soul Places" reading for one composite-draconic line.
+ * `compositeDraconicLon` is the ALREADY-ROTATED, already-midpointed longitude —
+ * this does not rotate again. Layers (sign → duad → compendium → matrix) are
+ * woven as escalating texture, never named.
+ */
+export function composeDraconicComposite(opts: {
+  body: string;
+  angle: Angle;
+  compositeDraconicLon: number;
+  distanceMiles: number;
+  nameA?: string;
+  nameB?: string;
+}): SoulPlaceReading {
+  const { body, angle, compositeDraconicLon, distanceMiles } = opts;
+  const bond = BODY_BOND[body] || { verb: 'were bound to each other', theme: 'a bond that outlived the life it was made in' };
+  const soulSign = signOfLon(compositeDraconicLon);
+  const f = getFullDuadCompendium(compositeDraconicLon);
+  const layerTrait = (s: string) => SIGN_TRAIT[s] || 'wired its own way';
+  const element = ELEMENT[soulSign];
+  const miles = Math.max(1, Math.round(distanceMiles));
+  const mi = `${miles} ${miles === 1 ? 'mile' : 'miles'}`;
+  const closeness = miles <= 15
+    ? `almost dead-on this spot — only ${mi} off`
+    : miles <= 35
+      ? `close, about ${mi} away`
+      : `just inside reach, roughly ${mi} off`;
+
+  const headline = `${body} ${angle} · ${cap(bond.theme)}`;
+
+  const parts: string[] = [];
+
+  // 1. The shared scene.
+  parts.push(
+    `**In some life, the two of you ${bond.verb} — ${ANGLE_SCENE[angle]}.** ` +
+    `This is where your two souls' shared imprint falls on Earth, ${closeness}.`,
+  );
+
+  // 2. The nature of the bond (soul sign) + the emotional weather (element).
+  parts.push(
+    `The bond itself was ${layerTrait(soulSign)} — that was its whole nature. ` +
+    `Being here together would have felt ${ELEMENT_ATMOSPHERE[element]}.`,
+  );
+
+  // 3. What could have been, deepening — duad → compendium → matrix, unnamed.
+  parts.push(
+    `Underneath the obvious, there was a quieter current: one of you was ${layerTrait(f.duadSign)}, ` +
+    `and it pulled the two of you somewhere the surface never showed. ` +
+    `Go deeper still and the thread turns — ${layerTrait(f.compendiumSign)} — ` +
+    `the part of the bond only the two of you would have known. ` +
+    `And at the very core of it, almost too fine to name: ${layerTrait(f.matrixSign)}.`,
+  );
+
+  // 4. Close — a return, conditional and a little haunting.
+  parts.push(
+    `Come here together now and something old may stir — not a memory you can point to, ` +
+    `but a pull neither of you quite chose. Some places aren't new to a pair of souls. They're returns.`,
+  );
+
+  const whatCouldHaveBeen =
+    `What could have been here: ${bond.theme}, ${ANGLE_SCENE[angle]} — ` +
+    `the kind of thing that marks two souls for lifetimes.`;
+
+  return { headline, narrative: parts.join('\n\n'), whatCouldHaveBeen };
+}

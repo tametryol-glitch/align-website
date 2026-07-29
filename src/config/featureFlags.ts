@@ -38,6 +38,15 @@ export const featureFlags = {
    *  gates it, and remains the emergency kill switch). Flip back to true to
    *  re-restrict to ZODISPHERE_3D_DEV_ALLOWLIST. */
   zodisphere_3d_dev_only: false,
+
+  // ── Zodisphere "Soul Places" (Draconic Composite astrocartography) ──
+
+  /** Master switch for the Draconic Composite "Soul Places" beta. DEFAULT OFF —
+   *  Phase 1 is founder-only (see zodisphere_soul_places_dev_only), no billing. */
+  zodisphere_soul_places_enabled: false,
+
+  /** Restrict Soul Places to the developer/founder allowlist during the soak. */
+  zodisphere_soul_places_dev_only: true,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {
@@ -93,6 +102,28 @@ export function isZodisphere3dEnabled(userEmail?: string | null): boolean {
   if (featureFlags.zodisphere_3d_dev_only) {
     const email = (userEmail || '').toLowerCase();
     if (!email || !ZODISPHERE_3D_DEV_ALLOWLIST.has(email)) return false;
+  }
+  return true;
+}
+
+// ── Zodisphere "Soul Places" (Draconic Composite) access ────────────────────
+
+export const SOUL_PLACES_DEV_ALLOWLIST = new Set<string>(['tametryol@gmail.com']);
+
+/**
+ * Resolve whether the Draconic Composite "Soul Places" beta is available for a
+ * user. Fail-safe: with the master flag off, the feature is completely invisible.
+ * Precedence mirrors the 3D globe — NEXT_PUBLIC_ZODISPHERE_SOUL_PLACES ('on'/'off')
+ * overrides the static flag so it can be enabled/killed without a redeploy.
+ */
+export function isSoulPlacesEnabled(userEmail?: string | null): boolean {
+  const env = (process.env.NEXT_PUBLIC_ZODISPHERE_SOUL_PLACES || '').toLowerCase();
+  if (env === 'off') return false;
+  const masterOn = env === 'on' || featureFlags.zodisphere_soul_places_enabled;
+  if (!masterOn) return false;
+  if (featureFlags.zodisphere_soul_places_dev_only) {
+    const email = (userEmail || '').toLowerCase();
+    if (!email || !SOUL_PLACES_DEV_ALLOWLIST.has(email)) return false;
   }
   return true;
 }
