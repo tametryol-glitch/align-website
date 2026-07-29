@@ -38,10 +38,23 @@ export const FaceFilterVideo: React.FC<{
 }> = ({ src, startFrom, playbackRate, muted, volume, filterId, objectFit = 'cover' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const flRef = useRef<FaceLandmarker | null>(null);
+  const prevLmRef = useRef<Array<{ x: number; y: number }> | null>(null);
+  const imgMapRef = useRef<Map<string, CanvasImageSource>>(new Map());
   const { width, height } = useVideoConfig();
   const frame = useCurrentFrame();
   const [handle] = useState(() => delayRender('load-face-landmarker'));
   const filter = FACE_FILTERS.find((f) => f.id === filterId) || FACE_FILTERS[0];
+
+  // Preload any PNG assets the filter uses (transparent art in public/filters/).
+  useEffect(() => {
+    for (const p of filter.pieces) {
+      if (p.kind !== 'image' || imgMapRef.current.has(p.src)) continue;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => imgMapRef.current.set(p.src, img);
+      img.src = p.src;
+    }
+  }, [filter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,8 +87,17 @@ export const FaceFilterVideo: React.FC<{
       const fl = flRef.current;
       if (!fl) return;
       const res = fl.detect(canvas);
-      const lm = res.faceLandmarks?.[0];
-      if (lm) drawFaceFilter(ctx, lm, W, H, filter);
+      const raw = res.faceLandmarks?.[0];
+      if (!raw) { prevLmRef.current = null; return; }
+      // Temporal smoothing: blend with the previous frame's points to stop the
+      // accessories jittering when the detector wobbles a pixel or two.
+      const prev = prevLmRef.current;
+      const a = 0.55;
+      const lm = prev && prev.length === raw.length
+        ? raw.map((p, i) => ({ x: p.x * a + prev[i].x * (1 - a), y: p.y * a + prev[i].y * (1 - a) }))
+        : raw.map((p) => ({ x: p.x, y: p.y }));
+      prevLmRef.current = lm;
+      drawFaceFilter(ctx, lm, W, H, filter, imgMapRef.current);
     },
     [filter, objectFit, frame],
   );
