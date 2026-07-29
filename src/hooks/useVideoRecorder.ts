@@ -60,6 +60,19 @@ export function useVideoRecorder({ maxSeconds = 60, onClip }: UseVideoRecorderOp
     return () => { streamRef.current?.getTracks().forEach((t) => t.stop()); };
   }, []);
 
+  // Attach the live stream once the preview <video> is actually mounted. The
+  // element is rendered only while `recording` is true, so attaching inside
+  // start() (before setRecording(true)) finds a null ref and leaves the preview
+  // black — do it here, after the mount, whenever both are present.
+  useEffect(() => {
+    const v = liveVideoRef.current;
+    const s = streamRef.current;
+    if (recording && v && s && v.srcObject !== s) {
+      v.srcObject = s;
+      v.play().catch(() => {});
+    }
+  }, [recording]);
+
   const stop = useCallback(() => {
     if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
   }, []);
