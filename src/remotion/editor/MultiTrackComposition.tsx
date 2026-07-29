@@ -20,6 +20,7 @@ import { SegmentedVideo } from './SegmentedVideo';
 import { FaceFilterVideo } from './FaceFilterVideo';
 import { StylizeVideo } from './StylizeVideo';
 import { FaceWarpVideo } from './FaceWarpVideo';
+import { ExpressionFxVideo } from './ExpressionFxVideo';
 
 const f = (sec: number, fps: number) => Math.round(sec * fps);
 
@@ -220,7 +221,19 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   const tr = transitionIn(m, frame, fps);
   if (tr.transform) transform += ` ${tr.transform}`;
 
-  const video = m.faceWarp ? (
+  const video = m.expressionFx ? (
+    <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
+      <ExpressionFxVideo
+        src={m.sourceUrl}
+        startFrom={f(m.sourceStart, fps)}
+        playbackRate={m.speed ?? 1}
+        muted={isMuted}
+        volume={effVol}
+        effectId={m.expressionFx}
+        objectFit={isPip ? 'contain' : 'cover'}
+      />
+    </div>
+  ) : m.faceWarp ? (
     <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
       <FaceWarpVideo
         src={m.sourceUrl}

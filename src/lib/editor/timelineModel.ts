@@ -88,6 +88,8 @@ export interface MediaClip extends ClipBase {
   stylize?: string;
   /** Face-reshape warp, e.g. 'alien' / 'bigEyes'. See FaceWarpVideo. */
   faceWarp?: string;
+  /** Expression-triggered particle FX, e.g. 'hearts' / 'fire'. See ExpressionFxVideo. */
+  expressionFx?: string;
 }
 
 /** Chroma-key (green screen) settings for a video clip. */
