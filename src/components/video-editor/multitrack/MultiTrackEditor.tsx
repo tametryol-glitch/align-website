@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 import { MultiTrackTimeline } from './MultiTrackTimeline';
 import {
-  nextId, _resetIds, timelineDuration,
+  nextId, _resetIds, timelineDuration, sampleKeyframes,
   type TimelineState, type TimelineClip, type MediaClip, type TextClip, type StickerClip, type TimelineTrack,
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
@@ -259,6 +259,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
+  const setPreview = useTimelineStore((s) => s.setPreview);
   const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | 'morph' | 'reactions' | 'avatar' | null>(null);
 
   const applyLook = (look: Look) => {
@@ -845,7 +846,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
             <TextEditSheet clip={selectedText} onChange={(patch) => updateClip(selectedText.id, patch)} onClose={() => setSheet(null)} />
           )}
           {sheet === 'keyframes' && selectedVideo && (
-            <KeyframeSheet clip={selectedVideo} playhead={playhead} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+            <KeyframeSheet clip={selectedVideo} playhead={playhead} onChange={(patch) => updateClip(selectedVideo.id, patch)} onPreview={setPreview} onClose={() => { setPreview(null); setSheet(null); }} />
           )}
           {sheet === 'background' && selectedVideo && (
             <BackgroundSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
@@ -1193,35 +1194,62 @@ const TEXT_ANIMATIONS: Array<[string, string]> = [
   ['bounce', 'Bounce'], ['typewriter', 'Typewriter'], ['word-pop', 'Word pop'], ['karaoke', 'Karaoke'],
 ];
 
-function KeyframeSheet({ clip, playhead, onChange, onClose }: {
+// Module-level so its identity is stable across KeyframeSheet re-renders — a
+// nested component would remount the range input on every drag tick and break
+// smooth dragging (you'd only move one step per click).
+function KfSlider({ label, value, onChange, min, max, step, fmt }: {
+  label: string; value: number; onChange: (n: number) => void; min: number; max: number; step: number; fmt: (n: number) => string;
+}) {
+  return (
+    <label className="flex items-center gap-2 text-[11px] text-text-muted">
+      <span className="w-14">{label}</span>
+      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} className="flex-1 accent-indigo-400" />
+      <span className="w-10 text-right font-mono">{fmt(value)}</span>
+    </label>
+  );
+}
+
+type KfVals = { scale: number; x: number; y: number; opacity: number; rotation: number };
+
+function KeyframeSheet({ clip, playhead, onChange, onPreview, onClose }: {
   clip: MediaClip;
   playhead: number;
   onChange: (patch: Partial<MediaClip>) => void;
+  onPreview: (p: (KfVals & { clipId: string }) | null) => void;
   onClose: () => void;
 }) {
   const progress = Math.max(0, Math.min(1, (playhead - clip.start) / Math.max(0.001, clip.duration)));
-  const [scale, setScale] = useState(1);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-  const [opacity, setOpacity] = useState(1);
-  const [rotation, setRotation] = useState(0);
+  const [vals, setVals] = useState<KfVals>(() => sampleKeyframes(clip.keyframes, progress));
   const kfs = [...(clip.keyframes || [])].sort((a, b) => a.t - b.t);
+
+  // Seed the sliders from the current framing and switch the live preview ON
+  // when the sheet opens or the selected clip changes — no jump, and what you
+  // drag is seen instantly in the preview at the parked playhead.
+  useEffect(() => {
+    const s = sampleKeyframes(clip.keyframes, progress);
+    setVals(s);
+    onPreview({ clipId: clip.id, ...s });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clip.id]);
+
+  // Always clear the preview override when the sheet goes away (switching tools,
+  // deselecting the clip, etc.), not only via the X button — otherwise the clip
+  // would stay flat-overridden.
+  useEffect(() => () => onPreview(null), []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const set = (key: keyof KfVals, v: number) => {
+    const next = { ...vals, [key]: v };
+    setVals(next);
+    onPreview({ clipId: clip.id, ...next }); // instant WYSIWYG
+  };
 
   const addKeyframe = () => {
     const next = kfs.filter((k) => Math.abs(k.t - progress) > 0.005);
-    next.push({ t: +progress.toFixed(3), scale, x, y, opacity, rotation });
+    next.push({ t: +progress.toFixed(3), ...vals });
     next.sort((a, b) => a.t - b.t);
     onChange({ keyframes: next });
   };
   const removeKeyframe = (t: number) => onChange({ keyframes: kfs.filter((k) => k.t !== t) });
-
-  const Slider = ({ label, val, set, min, max, step }: { label: string; val: number; set: (n: number) => void; min: number; max: number; step: number }) => (
-    <label className="flex items-center gap-2 text-[11px] text-text-muted">
-      <span className="w-14">{label}</span>
-      <input type="range" min={min} max={max} step={step} value={val} onChange={(e) => set(parseFloat(e.target.value))} className="flex-1 accent-indigo-400" />
-      <span className="w-9 text-right font-mono">{val}</span>
-    </label>
-  );
 
   return (
     <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-2">
@@ -1231,11 +1259,11 @@ function KeyframeSheet({ clip, playhead, onChange, onClose }: {
         <span className="text-[10px] text-text-muted">· playhead at {Math.round(progress * 100)}% of clip</span>
         <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
       </div>
-      <Slider label="Scale" val={scale} set={setScale} min={0.3} max={3} step={0.01} />
-      <Slider label="X %" val={x} set={setX} min={-60} max={60} step={1} />
-      <Slider label="Y %" val={y} set={setY} min={-60} max={60} step={1} />
-      <Slider label="Opacity" val={opacity} set={setOpacity} min={0} max={1} step={0.01} />
-      <Slider label="Rotate°" val={rotation} set={setRotation} min={-180} max={180} step={1} />
+      <KfSlider label="Scale" value={vals.scale} onChange={(v) => set('scale', v)} min={0.3} max={3} step={0.01} fmt={(n) => n.toFixed(2)} />
+      <KfSlider label="X %" value={vals.x} onChange={(v) => set('x', v)} min={-60} max={60} step={1} fmt={(n) => `${Math.round(n)}`} />
+      <KfSlider label="Y %" value={vals.y} onChange={(v) => set('y', v)} min={-60} max={60} step={1} fmt={(n) => `${Math.round(n)}`} />
+      <KfSlider label="Opacity" value={vals.opacity} onChange={(v) => set('opacity', v)} min={0} max={1} step={0.01} fmt={(n) => n.toFixed(2)} />
+      <KfSlider label="Rotate°" value={vals.rotation} onChange={(v) => set('rotation', v)} min={-180} max={180} step={1} fmt={(n) => `${Math.round(n)}`} />
       <button onClick={addKeyframe}
         className="w-full px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-200 text-sm font-medium hover:bg-indigo-500/30">
         + Add keyframe at playhead ({Math.round(progress * 100)}%)
@@ -1250,7 +1278,7 @@ function KeyframeSheet({ clip, playhead, onChange, onClose }: {
           ))}
         </div>
       )}
-      <p className="text-[10px] text-text-muted">Move the playhead, set values, add a keyframe. Two+ keyframes animate between them.</p>
+      <p className="text-[10px] text-text-muted">Drag to reframe — the preview updates live. Add a keyframe to lock it in; two+ keyframes animate between them.</p>
     </div>
   );
 }

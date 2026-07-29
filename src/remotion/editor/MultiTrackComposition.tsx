@@ -53,7 +53,11 @@ function lookFilter(m: MediaClip): string {
   return parts.join(' ');
 }
 
-export const MultiTrackComposition: React.FC<{ timeline?: TimelineState }> = ({ timeline }) => {
+/** Live keyframe-editor preview: a flat transform override for one clip so the
+ *  editor shows scale/pan instantly at the parked playhead. Editor-only. */
+type ClipPreview = { clipId: string; scale: number; x: number; y: number; opacity: number; rotation: number };
+
+export const MultiTrackComposition: React.FC<{ timeline?: TimelineState; preview?: ClipPreview | null }> = ({ timeline, preview }) => {
   const { fps } = useVideoConfig();
   if (!timeline || timeline.clips.length === 0) {
     return <AbsoluteFill style={{ background: '#0D0A24' }} />;
@@ -70,13 +74,15 @@ export const MultiTrackComposition: React.FC<{ timeline?: TimelineState }> = ({ 
 
   return (
     <AbsoluteFill style={{ background: '#000' }}>
-      {visual.map((t) => clipsOf(t.id).map((c) => <VisualClip key={c.id} clip={c} track={t} fps={fps} />))}
+      {visual.map((t) => clipsOf(t.id).map((c) => (
+        <VisualClip key={c.id} clip={c} track={t} fps={fps} preview={preview && preview.clipId === c.id ? preview : null} />
+      )))}
       {audio.map((t) => clipsOf(t.id).map((c) => <AudioClipEl key={c.id} clip={c as MediaClip} track={t} fps={fps} />))}
     </AbsoluteFill>
   );
 };
 
-function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineTrack; fps: number }) {
+function VisualClip({ clip, track, fps, preview }: { clip: TimelineClip; track: TimelineTrack; fps: number; preview?: ClipPreview | null }) {
   const from = f(clip.start, fps);
   const dur = Math.max(1, f(clip.duration, fps));
 
@@ -84,7 +90,7 @@ function VisualClip({ clip, track, fps }: { clip: TimelineClip; track: TimelineT
     const m = clip as MediaClip;
     return (
       <Sequence from={from} durationInFrames={dur} layout="none">
-        <VideoClipRender clip={m} track={track} />
+        <VideoClipRender clip={m} track={track} preview={preview} />
       </Sequence>
     );
   }
@@ -188,7 +194,7 @@ function TextClipRender({ clip: t }: { clip: TextClip }) {
 }
 
 /** Renders one video clip with its colour grade, adjust, and animated effects. */
-function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineTrack }) {
+function VideoClipRender({ clip: m, track, preview }: { clip: MediaClip; track: TimelineTrack; preview?: ClipPreview | null }) {
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame(); // relative to the clip's Sequence
   const isPip = track.kind === 'overlay' || (m.scale != null && m.scale < 1);
@@ -221,6 +227,14 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   // Entrance transition over the clip's opening.
   const tr = transitionIn(m, frame, fps);
   if (tr.transform) transform += ` ${tr.transform}`;
+
+  // Live keyframe-editor preview: replace the whole transform with the slider
+  // values so the user sees the exact framing at the parked playhead (motion,
+  // keyframes and entrance transition are bypassed while dragging).
+  if (preview) {
+    transform = ` translate(${preview.x.toFixed(2)}%, ${preview.y.toFixed(2)}%) scale(${preview.scale.toFixed(4)}) rotate(${preview.rotation.toFixed(2)}deg)`;
+  }
+  const innerOpacity = preview ? preview.opacity : tr.opacity * (kf.opacity ?? 1);
 
   const video = m.avatar ? (
     <div style={{ width: '100%', height: '100%', filter: lookFilter(m) || undefined, transform: transform || undefined }}>
@@ -342,7 +356,7 @@ function VideoClipRender({ clip: m, track }: { clip: MediaClip; track: TimelineT
   if (tr.overlay) overlays.push(tr.overlay);
 
   const inner = (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity: tr.opacity * (kf.opacity ?? 1) }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', opacity: innerOpacity }}>
       {video}
       {overlays}
     </div>

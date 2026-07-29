@@ -22,10 +22,12 @@ export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920
   const ref = useRef<PlayerRef>(null);
   const playhead = useTimelineStore((s) => s.playhead);
   const setPlayhead = useTimelineStore((s) => s.setPlayhead);
-  // Stable inputProps: only change identity when the timeline itself changes, so
-  // playback (which re-renders this component every frame via `playhead`) doesn't
-  // hand the Player a new object and force a full composition re-render each tick.
-  const inputProps = useMemo(() => ({ timeline }), [timeline]);
+  const preview = useTimelineStore((s) => s.preview);
+  // Stable inputProps: identity changes only when the timeline OR the live
+  // keyframe preview changes. During playback both are stable, so ticks don't
+  // force a full composition re-render (the stutter fix); while the keyframe
+  // editor is open, dragging a slider updates `preview` → instant WYSIWYG.
+  const inputProps = useMemo(() => ({ timeline, preview }), [timeline, preview]);
   const component = useMemo(() => MultiTrackComposition as unknown as React.ComponentType<Record<string, unknown>>, []);
 
   // Playback → playhead: follow the player's frame so the timeline indicator moves.

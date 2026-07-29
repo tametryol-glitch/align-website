@@ -94,6 +94,37 @@ export interface MediaClip extends ClipBase {
   avatar?: string;
 }
 
+/** One manual keyframe point. */
+export type KeyframePoint = { t: number; scale?: number; x?: number; y?: number; opacity?: number; rotation?: number };
+
+/** Sample the keyframe track at clip progress p (0..1), interpolating each
+ *  property across only the keyframes that define it (holds at the ends).
+ *  Mirrors keyframeState() in MultiTrackComposition — used to seed the keyframe
+ *  editor's sliders from the current playhead so opening it doesn't jump. */
+export function sampleKeyframes(
+  keyframes: KeyframePoint[] | undefined,
+  p: number,
+): { scale: number; x: number; y: number; opacity: number; rotation: number } {
+  const def = { scale: 1, x: 0, y: 0, opacity: 1, rotation: 0 };
+  if (!keyframes || keyframes.length === 0) return def;
+  const sorted = [...keyframes].sort((a, b) => a.t - b.t);
+  const prop = (key: keyof KeyframePoint, d: number): number => {
+    const pts = sorted.filter((k) => k[key] != null);
+    if (pts.length === 0) return d;
+    if (p <= pts[0].t) return pts[0][key] as number;
+    if (p >= pts[pts.length - 1].t) return pts[pts.length - 1][key] as number;
+    for (let i = 0; i < pts.length - 1; i++) {
+      if (p >= pts[i].t && p <= pts[i + 1].t) {
+        const span = pts[i + 1].t - pts[i].t || 1;
+        const fr = (p - pts[i].t) / span;
+        return (pts[i][key] as number) + ((pts[i + 1][key] as number) - (pts[i][key] as number)) * fr;
+      }
+    }
+    return d;
+  };
+  return { scale: prop('scale', 1), x: prop('x', 0), y: prop('y', 0), opacity: prop('opacity', 1), rotation: prop('rotation', 0) };
+}
+
 /** Chroma-key (green screen) settings for a video clip. */
 export interface ChromaOptions {
   keyColor: string;    // hex, e.g. '#00FF00'

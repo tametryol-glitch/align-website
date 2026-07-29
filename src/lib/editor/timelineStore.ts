@@ -24,12 +24,25 @@ import {
   type TrackKind,
 } from './timelineModel';
 
+/** Live transform preview for the keyframe editor — a transient override the
+ *  Player applies to one clip so scale/pan is seen instantly at the playhead,
+ *  before a keyframe is committed. Not part of undo history or the saved doc. */
+export interface KeyframePreview {
+  clipId: string;
+  scale: number;
+  x: number;
+  y: number;
+  opacity: number;
+  rotation: number;
+}
+
 interface TimelineStore {
   data: TimelineState;
   selectedClipId: string | null;
   playhead: number; // seconds
   pxPerSec: number; // zoom
   aspect: { w: number; h: number }; // output canvas dimensions
+  preview: KeyframePreview | null; // transient keyframe-editor live preview
   history: TimelineState[];
   historyIndex: number;
 
@@ -60,6 +73,7 @@ interface TimelineStore {
   setPlayhead: (t: number) => void;
   setPxPerSec: (px: number) => void;
   setAspect: (w: number, h: number) => void;
+  setPreview: (p: KeyframePreview | null) => void;
 
   // history
   undo: () => void;
@@ -88,6 +102,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     playhead: 0,
     pxPerSec: 50,
     aspect: { w: 1080, h: 1920 },
+    preview: null,
     history: [EMPTY_TIMELINE],
     historyIndex: 0,
 
@@ -128,6 +143,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => {
     setPlayhead: (t) => set({ playhead: Math.max(0, t) }),
     setPxPerSec: (px) => set({ pxPerSec: Math.max(10, Math.min(240, px)) }),
     setAspect: (w, h) => set({ aspect: { w, h } }),
+    setPreview: (p) => set({ preview: p }),
 
     undo: () => set((s) => {
       if (s.historyIndex <= 0) return {};
