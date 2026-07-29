@@ -123,7 +123,7 @@ export const FaceAvatarVideo: React.FC<{
       // the top of the real head shows above the avatar.
       const upX = fore.x - chin.x, upY = fore.y - chin.y;
       const ul = Math.hypot(upX, upY) || 1;
-      const shift = headH * 0.42;
+      const shift = headH * 0.30;
       const cx = headCX + (upX / ul) * shift;
       const cy = headCY + (upY / ul) * shift;
       ctx.save();
