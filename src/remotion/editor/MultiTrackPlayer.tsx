@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { MultiTrackComposition } from './MultiTrackComposition';
 import { timelineDuration, type TimelineState } from '@/lib/editor/timelineModel';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 
 const FPS = 30;
+// Hoisted so it's a stable reference — a fresh style object each render makes
+// the Player re-render the whole composition on every playhead tick.
+const PLAYER_STYLE: React.CSSProperties = { width: '100%', height: '100%', borderRadius: 12, overflow: 'hidden', background: '#000' };
 
 /**
  * WYSIWYG preview for the multi-track timeline. Renders the positioned
@@ -19,6 +22,11 @@ export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920
   const ref = useRef<PlayerRef>(null);
   const playhead = useTimelineStore((s) => s.playhead);
   const setPlayhead = useTimelineStore((s) => s.setPlayhead);
+  // Stable inputProps: only change identity when the timeline itself changes, so
+  // playback (which re-renders this component every frame via `playhead`) doesn't
+  // hand the Player a new object and force a full composition re-render each tick.
+  const inputProps = useMemo(() => ({ timeline }), [timeline]);
+  const component = useMemo(() => MultiTrackComposition as unknown as React.ComponentType<Record<string, unknown>>, []);
 
   // Playback → playhead: follow the player's frame so the timeline indicator moves.
   useEffect(() => {
@@ -41,13 +49,13 @@ export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920
   return (
     <Player
       ref={ref}
-      component={MultiTrackComposition as unknown as React.ComponentType<Record<string, unknown>>}
-      inputProps={{ timeline } as unknown as Record<string, unknown>}
+      component={component}
+      inputProps={inputProps as unknown as Record<string, unknown>}
       durationInFrames={durationInFrames}
       fps={FPS}
       compositionWidth={width}
       compositionHeight={height}
-      style={{ width: '100%', height: '100%', borderRadius: 12, overflow: 'hidden', background: '#000' }}
+      style={PLAYER_STYLE}
       controls
     />
   );
