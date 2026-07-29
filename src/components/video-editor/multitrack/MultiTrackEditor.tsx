@@ -29,6 +29,7 @@ import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/d
 import { EMOJI_CATEGORIES } from '@/lib/editor/emojiData';
 import { FACE_FILTERS } from '@/lib/editor/faceFilters';
 import { EXPRESSION_FX } from '@/lib/editor/expressionFx';
+import { AVATARS } from '@/lib/editor/avatar3d';
 import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2, Orbit } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
@@ -258,7 +259,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | 'morph' | 'reactions' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | 'volume' | 'facefx' | 'morph' | 'reactions' | 'avatar' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -686,6 +687,13 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               </button>
             )}
             {selectedVideo && (
+              <button onClick={() => setSheet('avatar')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-cyan-500/15 text-cyan-300 text-sm font-medium hover:bg-cyan-500/25"
+                title="Replace your head with a 3D character that copies your expressions">
+                <Orbit className="w-4 h-4" /> 3D Avatar
+              </button>
+            )}
+            {selectedVideo && (
               <button onClick={() => setSheet('keyframes')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/15 text-indigo-300 text-sm font-medium hover:bg-indigo-500/25"
                 title="Animate scale/position/opacity with keyframes">
@@ -841,6 +849,33 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           )}
           {sheet === 'background' && selectedVideo && (
             <BackgroundSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          )}
+          {sheet === 'avatar' && selectedVideo && (
+            <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Orbit className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm font-medium text-text-secondary">3D Avatar</span>
+                <button onClick={() => setSheet(null)} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                <button onClick={() => updateClip(selectedVideo.id, { avatar: undefined } as Partial<TimelineClip>)}
+                  className={`px-1.5 py-2 rounded-md text-center border ${!selectedVideo.avatar ? 'border-cyan-400 bg-cyan-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                  <span className="block text-lg leading-none mb-0.5">🚫</span>
+                  <span className="block text-[9px] font-medium text-text-primary">Off</span>
+                </button>
+                {AVATARS.map((av) => {
+                  const active = selectedVideo.avatar === av.id;
+                  return (
+                    <button key={av.id} onClick={() => updateClip(selectedVideo.id, { avatar: av.id } as Partial<TimelineClip>)}
+                      className={`px-1.5 py-2 rounded-md text-center border ${active ? 'border-cyan-400 bg-cyan-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                      <span className="block text-lg leading-none mb-0.5">{av.icon}</span>
+                      <span className="block text-[9px] font-medium text-text-primary">{av.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-text-muted mt-2">A 3D head replaces yours and copies your expressions — blink, open your mouth, smile. Renders into the export. Works best facing the camera.</p>
+            </div>
           )}
           {sheet === 'reactions' && selectedVideo && (
             <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">

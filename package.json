@@ -39,6 +39,7 @@
     "remotion": "^4.0.242",
     "stripe": "^22.1.1",
     "tailwind-merge": "^2.3.0",
+    "three": "^0.169.0",
     "tz-lookup": "^6.1.25",
     "zustand": "^5.0.0"
   },
@@ -46,7 +47,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@types/three": "^0.185.0",
+    "@types/three": "^0.169.0",
     "@types/tz-lookup": "^6.1.2",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
