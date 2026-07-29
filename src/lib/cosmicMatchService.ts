@@ -2,15 +2,16 @@
 // Cosmic Match Service — Web port
 // Auto-compatibility between friends. Mirrors mobile cosmicMatchService
 // but uses web infra (createClient, api.getNatalChart, buildBirthData,
-// computeSynastryCompatibility from engines).
+// computeAdvancedCompatibility from engines).
 //
-// NOTE: Web does NOT have computeAdvancedCompatibility, so passion,
-// marriage, violence, and toxicity scores are left null.
+// Web now runs the SAME advanced engine as mobile (computeAdvancedCompatibility),
+// so passion, marriage, violence, and toxicity are computed and stored on
+// whichever client calculates the pair first — no more null (0-displayed) scores.
 // ═══════════════════════════════════════════════════════════════════
 
 import { createClient } from '@/lib/supabase';
 import { api, buildBirthData } from '@/lib/api';
-import { computeSynastryCompatibility, type CompatibilityResult } from '@/lib/engines';
+import { computeAdvancedCompatibility, type AdvancedCompatibilityResult } from '@/lib/engines/advancedCompatibility';
 
 // ── Types ──
 
@@ -74,6 +75,17 @@ export interface CosmicMatch {
  */
 function normalizePair(id1: string, id2: string): [string, string] {
   return id1 < id2 ? [id1, id2] : [id2, id1];
+}
+
+/** Stable hash of the birth data a calculation was based on (for stale detection). */
+function hashBirthData(profile: any): string {
+  const parts = [
+    profile.birth_date || '',
+    profile.birth_time || '',
+    profile.latitude || '',
+    profile.longitude || '',
+  ];
+  return parts.join('|');
 }
 
 // Sign to approximate zodiacal longitude (middle of sign)
@@ -152,17 +164,61 @@ async function fetchChartPositions(profile: any): Promise<{
 }
 
 /**
- * Map a base-engine CompatibilityResult to the DB row columns.
+ * Map a full AdvancedCompatibilityResult to the DB row columns.
  *
- * The advanced columns (passion, marriage, violence, toxicity) are deliberately
- * NOT included: the web has no advanced compatibility module, and writing nulls
- * would wipe values a mobile calculation already stored for the same pair.
- * Omitting the keys leaves whatever is already there untouched.
+ * Mirrors the mobile resultToRow so a match calculated on either client writes
+ * an identical row (same 9-category overall, same passion/marriage/violence/
+ * toxicity, same band text). This is what stops web-first matches from leaving
+ * the advanced columns null (displayed as 0).
  */
-function resultToRow(result: CompatibilityResult): Record<string, any> {
+function resultToRow(result: AdvancedCompatibilityResult, profileA: any, profileB: any): Record<string, any> {
+  // Recompute overall from ALL 9 displayed categories so list and detail match.
+  // The base engine only blends 5 (Attraction, Emotional, Mental, Stability, Karmic),
+  // ignoring Passion, Marriage, Spiritual, Physical which are computed by advanced modules.
+  const emotional  = result.emotional_score ?? 0;
+  const attraction = result.scores?.Attraction ?? 0;
+  const passion    = result.passion?.score ?? 0;
+  const marriage   = result.marriage?.score ?? 0;
+  const stability  = result.scores?.Stability ?? 0;
+  const karmic     = result.scores?.Karmic ?? result.spiritual_score ?? 0;
+  const mental     = result.intellectual_score ?? 0;
+  const spiritual  = result.spiritual_score ?? 0;
+  const physical   = result.physical_score ?? 0;
+
+  const fullOverall = Math.round(
+    emotional  * 0.15 +
+    attraction * 0.12 +
+    passion    * 0.12 +
+    marriage   * 0.08 +
+    stability  * 0.14 +
+    karmic     * 0.09 +
+    mental     * 0.10 +
+    spiritual  * 0.08 +
+    physical   * 0.12
+  );
+  const clampedOverall = Math.max(0, Math.min(100, fullOverall));
+
+  // Re-derive band text from the corrected overall
+  const OVERALL_BANDS: Array<[number, string]> = [
+    [90, 'Rare compatibility — very strong bond, high attraction and support'],
+    [80, 'Very strong relationship potential'],
+    [70, 'Good compatibility with some friction'],
+    [60, 'Mixed but workable if mature'],
+    [50, 'Strong pull but inconsistent harmony'],
+    [40, 'Difficult, unstable, karmically heavy'],
+    [0,  'More lesson than peace'],
+  ];
+  let bandText = result.band_text || 'Unknown';
+  for (const [threshold, text] of OVERALL_BANDS) {
+    if (clampedOverall >= threshold) {
+      bandText = text;
+      break;
+    }
+  }
+
   return {
     status: 'ready' as const,
-    overall_score: Math.round(result.overall_score),
+    overall_score: clampedOverall,
     emotional_score: Math.round(result.emotional_score),
     intellectual_score: Math.round(result.intellectual_score),
     physical_score: Math.round(result.physical_score),
@@ -170,8 +226,26 @@ function resultToRow(result: CompatibilityResult): Record<string, any> {
     attraction_score: Math.round(result.scores?.Attraction || 0),
     stability_score: Math.round(result.scores?.Stability || 0),
     karmic_score: Math.round(result.scores?.Karmic || 0),
-
-    band_text: result.band_text || '',
+    passion_score: Math.round(result.passion?.score || 0),
+    passion_intensity: result.passion?.intensity || null,
+    marriage_score: Math.round(result.marriage?.score || 0),
+    marriage_level: result.marriage?.level || null,
+    violence_risk_score: Math.round(result.violenceRisk?.score || 0),
+    toxicity_score: Math.round(result.toxicity?.overallScore || 0),
+    marriage_sub_scores: {
+      domestic: Math.round(result.marriage?.domesticScore || 0),
+      loyalty: Math.round(result.marriage?.loyaltyScore || 0),
+      growth: Math.round(result.marriage?.growthTogetherScore || 0),
+    },
+    violence_sub_scores: {
+      control: Math.round(result.violenceRisk?.controlScore || 0),
+      volatility: Math.round(result.violenceRisk?.volatilityScore || 0),
+      manipulation: Math.round(result.violenceRisk?.manipulationScore || 0),
+    },
+    toxicity_subcategories: (result.toxicity?.subcategories || []).map(s => ({
+      name: s.name, score: Math.round(s.score), icon: s.icon, interpretation: s.interpretation,
+    })),
+    band_text: bandText,
     style_label: result.style_label || '',
     summary: result.summary || '',
     strengths: result.strengths || [],
@@ -184,9 +258,16 @@ function resultToRow(result: CompatibilityResult): Record<string, any> {
       strength: Math.round(a.strength * 100) / 100,
       supportive: a.supportive,
     })),
-
-    midpoint_count: 0,
-    midpoint_activation_count: 0,
+    passion_indicators: (result.passion?.indicators || []).slice(0, 8).map(i => ({
+      description: i.description, score: Math.round(i.score * 100) / 100,
+    })),
+    marriage_indicators: (result.marriage?.indicators || []).slice(0, 8).map(i => ({
+      description: i.description, weight: Math.round(i.weight * 100) / 100, type: i.type,
+    })),
+    midpoint_count: result.midpointCount || 0,
+    midpoint_activation_count: result.midpointActivationCount || 0,
+    user_a_birth_hash: hashBirthData(profileA),
+    user_b_birth_hash: hashBirthData(profileB),
     calculated_at: new Date().toISOString(),
   };
 }
@@ -288,7 +369,7 @@ export async function optInCosmicMatchShare(matchId: string): Promise<ShareOptIn
  *   3. Fetch both profiles
  *   4. Check birth data
  *   5. Get charts via api.getNatalChart
- *   6. Run computeSynastryCompatibility (fallback to sign-based)
+ *   6. Run computeAdvancedCompatibility (fallback to sign-based)
  *   7. Map results to DB columns
  *   8. Upsert
  */
@@ -363,7 +444,7 @@ export async function triggerCosmicMatchCalculation(
     }
 
     // 5. Try to get chart positions from API
-    let result: CompatibilityResult | null = null;
+    let result: AdvancedCompatibilityResult | null = null;
 
     try {
       const [chart1, chart2] = await Promise.all([
@@ -372,7 +453,7 @@ export async function triggerCosmicMatchCalculation(
       ]);
 
       if (chart1 && chart2) {
-        result = computeSynastryCompatibility(
+        result = computeAdvancedCompatibility(
           chart1.positions,
           chart2.positions,
           chart1.houseCusps,
@@ -390,7 +471,7 @@ export async function triggerCosmicMatchCalculation(
       const defaultCusps = buildDefaultHouseCusps();
 
       try {
-        result = computeSynastryCompatibility(
+        result = computeAdvancedCompatibility(
           signPositions1,
           signPositions2,
           defaultCusps,
@@ -407,7 +488,7 @@ export async function triggerCosmicMatchCalculation(
     }
 
     // 7. Map results to DB columns
-    const matchData = resultToRow(result);
+    const matchData = resultToRow(result, profileA, profileB);
 
     // 8. Upsert
     const { data: updated, error: updateError } = await supabase
