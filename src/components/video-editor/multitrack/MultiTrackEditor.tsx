@@ -26,6 +26,7 @@ import { requestRender, getRenderStatus } from '@/lib/cosmicVideoService';
 import { detectBeats } from '@/lib/editor/beatDetect';
 import { LOOKS, type Look } from '@/lib/editor/looks';
 import { saveDraft, loadDraft, agoLabel, type EditorDraft } from '@/lib/editor/drafts';
+import { EMOJI_CATEGORIES } from '@/lib/editor/emojiData';
 import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2 } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
@@ -145,10 +146,9 @@ function PositioningOverlay() {
   );
 }
 
-const STICKER_EMOJIS = ['😀','😂','😍','🥹','😎','🤩','😭','😱','🥳','😅','🙃','🔥','✨','⭐','💫','🌟','💥','💯','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💖','👍','👎','👏','🙌','🙏','👀','💀','👑','🎉','🎊','🎈','🌈','⚡','🌙','☀️','🌸','🌹','🦋','🐉','🔮','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🪐','🌌','💎','🃏','🌞'];
-
 function StickerSheet({ onPick, onClose }: { onPick: (opts: { emoji?: string; imageUrl?: string }) => void; onClose: () => void }) {
   const [tab, setTab] = useState<'emoji' | 'gif'>('emoji');
+  const [emojiCat, setEmojiCat] = useState(EMOJI_CATEGORIES[0].id);
   const [q, setQ] = useState('');
   const [gifs, setGifs] = useState<Array<{ id: string; preview: string; full: string }>>([]);
   const [loading, setLoading] = useState(false);
@@ -177,10 +177,21 @@ function StickerSheet({ onPick, onClose }: { onPick: (opts: { emoji?: string; im
       </div>
 
       {tab === 'emoji' ? (
-        <div className="grid grid-cols-10 gap-1 max-h-40 overflow-auto">
-          {STICKER_EMOJIS.map((e, i) => (
-            <button key={i} onClick={() => onPick({ emoji: e })} className="text-xl leading-none hover:bg-white/10 rounded p-1">{e}</button>
-          ))}
+        <div>
+          {/* category tabs */}
+          <div className="flex gap-0.5 mb-2 overflow-x-auto pb-1">
+            {EMOJI_CATEGORIES.map((c) => (
+              <button key={c.id} onClick={() => setEmojiCat(c.id)} title={c.name}
+                className={`flex-shrink-0 text-lg leading-none rounded-md px-1.5 py-1 ${emojiCat === c.id ? 'bg-pink-500/25' : 'hover:bg-white/10 opacity-70'}`}>
+                {c.icon}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-10 gap-1 max-h-56 overflow-auto">
+            {(EMOJI_CATEGORIES.find((c) => c.id === emojiCat) || EMOJI_CATEGORIES[0]).emojis.map((e, i) => (
+              <button key={i} onClick={() => onPick({ emoji: e })} className="text-xl leading-none hover:bg-white/10 rounded p-1">{e}</button>
+            ))}
+          </div>
         </div>
       ) : (
         <div>
