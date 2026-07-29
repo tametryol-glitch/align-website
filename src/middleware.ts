@@ -76,6 +76,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/zodisphere/globe3d/embed') || // chromeless 3D globe for the mobile WebView — same token-free pattern; the app injects birth details via postMessage
     pathname.startsWith('/geo/') ||             // public map assets (country GeoJSON) — must load unauthenticated for the embed globe
     pathname.startsWith('/cesium/') ||          // self-hosted CesiumJS engine assets (Workers/Assets/Widgets) — must load unauthenticated or the 3D globe can't initialize
+    pathname.startsWith('/mp-wasm') ||          // self-hosted MediaPipe segmentation runtime (wasm loader .js) for the editor's AI background removal — must load unauthenticated
     pathname.startsWith('/rush-nation') ||
     pathname.startsWith('/affiliates') ||
     pathname.startsWith('/ref/') ||
@@ -151,5 +152,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|mp3|wav|m4a|ogg)$).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|mp3|wav|m4a|ogg|wasm|tflite)$).*)'],
 };

@@ -245,7 +245,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
   const selectedClipId = useTimelineStore((s) => s.selectedClipId);
-  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'greenscreen' | null>(null);
+  const [sheet, setSheet] = useState<'music' | 'sfx' | 'text' | 'filters' | 'edittext' | 'looks' | 'voiceover' | 'keyframes' | 'voicefx' | 'stickers' | 'background' | null>(null);
 
   const applyLook = (look: Look) => {
     const store = useTimelineStore.getState();
@@ -639,10 +639,10 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
               title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
               <Wand2 className="w-4 h-4" /> Filters &amp; FX
             </button>
-            <button onClick={() => setSheet('greenscreen')} disabled={!selectedVideo}
+            <button onClick={() => setSheet('background')} disabled={!selectedVideo}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-500/15 text-green-300 text-sm font-medium hover:bg-green-500/25 disabled:opacity-30"
-              title={selectedVideo ? 'Green screen / background removal for the selected clip' : 'Select a video clip first'}>
-              <Layers className="w-4 h-4" /> Green Screen
+              title={selectedVideo ? 'Remove background: AI cut-out or green screen' : 'Select a video clip first'}>
+              <Layers className="w-4 h-4" /> Background
             </button>
             {selectedVideo && (
               <button onClick={() => setSheet('keyframes')}
@@ -759,8 +759,8 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
           {sheet === 'keyframes' && selectedVideo && (
             <KeyframeSheet clip={selectedVideo} playhead={playhead} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
           )}
-          {sheet === 'greenscreen' && selectedVideo && (
-            <GreenScreenSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
+          {sheet === 'background' && selectedVideo && (
+            <BackgroundSheet clip={selectedVideo} onChange={(patch) => updateClip(selectedVideo.id, patch)} onClose={() => setSheet(null)} />
           )}
         </div>
       </div>
@@ -772,74 +772,91 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
 }
 
 const DEFAULT_CHROMA = { keyColor: '#00FF00', similarity: 0.4, smoothness: 0.1, spill: 0.12 };
+const DEFAULT_BG = { feather: 0.15 };
 
-function GreenScreenSheet({ clip, onChange, onClose }: {
+function BackgroundSheet({ clip, onChange, onClose }: {
   clip: MediaClip;
   onChange: (patch: Partial<MediaClip>) => void;
   onClose: () => void;
 }) {
-  const chroma = clip.chroma;
-  const on = !!chroma;
-  const cur = chroma || DEFAULT_CHROMA;
-  const set = (patch: Partial<typeof DEFAULT_CHROMA>) => onChange({ chroma: { ...cur, ...patch } });
+  const mode: 'off' | 'ai' | 'green' = clip.bgRemove ? 'ai' : clip.chroma ? 'green' : 'off';
+  const chroma = clip.chroma || DEFAULT_CHROMA;
+  const bg = clip.bgRemove || DEFAULT_BG;
+  const setChroma = (patch: Partial<typeof DEFAULT_CHROMA>) => onChange({ chroma: { ...chroma, ...patch }, bgRemove: undefined });
+  const setBg = (patch: Partial<typeof DEFAULT_BG>) => onChange({ bgRemove: { ...bg, ...patch }, chroma: undefined });
 
-  const SLIDERS: Array<['similarity' | 'smoothness' | 'spill', string, string]> = [
+  const CHROMA_SLIDERS: Array<['similarity' | 'smoothness' | 'spill', string, string]> = [
     ['similarity', 'Amount', 'How much of the colour to remove'],
     ['smoothness', 'Softness', 'Feather the cut-out edges'],
     ['spill', 'Spill', 'Remove colour glow on the subject'],
   ];
   const PRESETS: Array<[string, string]> = [['#00FF00', 'Green'], ['#0047FF', 'Blue'], ['#FF00FF', 'Magenta']];
+  const modeBtn = (m: 'off' | 'ai' | 'green', label: string) => (
+    <button onClick={() => onChange(m === 'off' ? { chroma: undefined, bgRemove: undefined } : m === 'ai' ? { bgRemove: DEFAULT_BG, chroma: undefined } : { chroma: DEFAULT_CHROMA, bgRemove: undefined })}
+      className={`flex-1 px-2 py-2 rounded-md text-[11px] font-medium border ${mode === m ? 'border-green-400 bg-green-500/20 text-green-200' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+      {label}
+    </button>
+  );
 
   return (
     <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-3">
       <div className="flex items-center gap-2">
         <Layers className="w-4 h-4 text-green-400" />
-        <span className="text-sm font-medium text-text-secondary">Green Screen</span>
+        <span className="text-sm font-medium text-text-secondary">Background</span>
         <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
       </div>
 
-      <button
-        onClick={() => onChange({ chroma: on ? undefined : DEFAULT_CHROMA })}
-        className={`w-full px-3 py-2 rounded-lg text-sm font-medium border ${on ? 'border-green-400 bg-green-500/20 text-green-200' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
-        {on ? '✓ Green screen ON — tap to turn off' : 'Turn on green screen (remove backdrop)'}
-      </button>
+      <div className="flex gap-1.5">
+        {modeBtn('off', 'Off')}
+        {modeBtn('ai', 'AI Remove')}
+        {modeBtn('green', 'Green Screen')}
+      </div>
 
-      {on && (
+      {mode === 'ai' && (
+        <>
+          <p className="text-[10px] text-text-muted">Removes the background automatically — no green screen needed. Put another clip on a lower track to show behind you.</p>
+          <div>
+            <div className="flex justify-between text-[10px] text-text-muted mb-0.5">
+              <span>Edge softness</span><span>{Math.round(bg.feather * 100)}%</span>
+            </div>
+            <input type="range" min={0} max={0.6} step={0.01} value={bg.feather}
+              onChange={(e) => setBg({ feather: parseFloat(e.target.value) })} className="w-full accent-green-400" />
+          </div>
+        </>
+      )}
+
+      {mode === 'green' && (
         <>
           <div>
             <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Key colour</p>
             <div className="flex items-center gap-1.5">
               {PRESETS.map(([hex, name]) => (
-                <button key={hex} onClick={() => set({ keyColor: hex })}
-                  className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] border ${cur.keyColor.toLowerCase() === hex.toLowerCase() ? 'border-green-400 bg-green-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
+                <button key={hex} onClick={() => setChroma({ keyColor: hex })}
+                  className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] border ${chroma.keyColor.toLowerCase() === hex.toLowerCase() ? 'border-green-400 bg-green-500/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`}>
                   <span className="w-3 h-3 rounded-sm border border-white/20" style={{ background: hex }} />{name}
                 </button>
               ))}
               <label className="ml-auto flex items-center gap-1 text-[10px] text-text-muted cursor-pointer">
                 Pick
-                <input type="color" value={cur.keyColor} onChange={(e) => set({ keyColor: e.target.value })}
+                <input type="color" value={chroma.keyColor} onChange={(e) => setChroma({ keyColor: e.target.value })}
                   className="w-7 h-7 rounded bg-transparent border border-white/10 cursor-pointer" />
               </label>
             </div>
           </div>
-
-          {SLIDERS.map(([key, label, hint]) => (
+          {CHROMA_SLIDERS.map(([key, label, hint]) => (
             <div key={key}>
               <div className="flex justify-between text-[10px] text-text-muted mb-0.5">
-                <span>{label}</span><span>{Math.round((cur[key] as number) * 100)}%</span>
+                <span>{label}</span><span>{Math.round((chroma[key] as number) * 100)}%</span>
               </div>
-              <input type="range" min={0} max={key === 'similarity' ? 0.9 : 0.5} step={0.01} value={cur[key] as number}
-                onChange={(e) => set({ [key]: parseFloat(e.target.value) } as Partial<typeof DEFAULT_CHROMA>)}
+              <input type="range" min={0} max={key === 'similarity' ? 0.9 : 0.5} step={0.01} value={chroma[key] as number}
+                onChange={(e) => setChroma({ [key]: parseFloat(e.target.value) } as Partial<typeof DEFAULT_CHROMA>)}
                 className="w-full accent-green-400" />
               <p className="text-[9px] text-text-muted">{hint}</p>
             </div>
           ))}
+          <p className="text-[10px] text-text-muted">Shoot against an evenly-lit solid backdrop for the cleanest cut.</p>
         </>
       )}
-
-      <p className="text-[10px] text-text-muted">
-        Shoot against an evenly-lit solid backdrop for the cleanest cut. Put another clip on a lower track to show through.
-      </p>
     </div>
   );
 }

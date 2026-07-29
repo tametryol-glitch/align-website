@@ -74,6 +74,10 @@ export interface MediaClip extends ClipBase {
   /** Green-screen / chroma key. When set, the key colour is made transparent so
    *  lower tracks show through. See remotion/editor/ChromaKeyVideo. */
   chroma?: ChromaOptions;
+  /** AI background removal (no green screen needed). When set, on-device
+   *  segmentation keeps the person and makes the background transparent.
+   *  See remotion/editor/SegmentedVideo. Takes precedence over chroma. */
+  bgRemove?: BgRemoveOptions;
 }
 
 /** Chroma-key (green screen) settings for a video clip. */
@@ -82,6 +86,11 @@ export interface ChromaOptions {
   similarity: number;  // 0..1 — how close to keyColor counts as background
   smoothness: number;  // 0..1 — edge feather width
   spill: number;       // 0..1 — suppress key-colour bleed on the subject
+}
+
+/** AI background-removal settings for a video clip. */
+export interface BgRemoveOptions {
+  feather: number; // 0..1 — soften the person/background edge
 }
 
 /** A text card placed on a text lane. */
