@@ -41,9 +41,11 @@ export const featureFlags = {
 
   // ── Zodisphere "Soul Places" (Draconic Composite astrocartography) ──
 
-  /** Master switch for the Draconic Composite "Soul Places" beta. DEFAULT OFF —
-   *  Phase 1 is founder-only (see zodisphere_soul_places_dev_only), no billing. */
-  zodisphere_soul_places_enabled: false,
+  /** Master switch for the Draconic Composite "Soul Places" beta. ON but
+   *  founder-only via zodisphere_soul_places_dev_only, so it's live for the
+   *  allowlist and invisible to everyone else. Kill without a redeploy via
+   *  NEXT_PUBLIC_ZODISPHERE_SOUL_PLACES=off. Flip dev_only false for open beta. */
+  zodisphere_soul_places_enabled: true,
 
   /** Restrict Soul Places to the developer/founder allowlist during the soak. */
   zodisphere_soul_places_dev_only: true,

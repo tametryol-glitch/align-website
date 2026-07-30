@@ -18,7 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useSubscriptionStore, FREE_ZODISPHERE_3D_VIEWS } from '@/stores/subscriptionStore';
 import { createClient } from '@/lib/supabase';
-import { isZodisphere3dEnabled } from '@/config/featureFlags';
+import { isZodisphere3dEnabled, isSoulPlacesEnabled } from '@/config/featureFlags';
+import SoulPlacesPanel from '@/components/zodisphere/three-d/SoulPlacesPanel';
 import ZodisphereErrorBoundary from '@/components/zodisphere/three-d/ZodisphereErrorBoundary';
 import ZodisphereFallbackView from '@/components/zodisphere/three-d/ZodisphereFallbackView';
 import type { ZodisphereGlobeController } from '@/components/zodisphere/three-d/ZodisphereGlobeCesium';
@@ -136,6 +137,8 @@ export default function Zodisphere3dPrototypePage() {
   // Gate on the reliable Supabase auth email (profile.email can be null on
   // mobile even when logged in), and fall back to profile.email as a backup.
   const enabled = isZodisphere3dEnabled(authUser?.email || profile?.email);
+  // Founder-gated Draconic Composite "Soul Places" beta.
+  const soulPlacesOn = isSoulPlacesEnabled(authUser?.email || profile?.email);
 
   // Free-look metering. ANY paying subscriber → unlimited. Free tier → first
   // FREE_ZODISPHERE_3D_VIEWS opens, counted on their profile row, then paywall.
@@ -578,6 +581,11 @@ export default function Zodisphere3dPrototypePage() {
             <GitMerge className="w-4 h-4" /> Midpoints
           </button>
         </div>
+      )}
+
+      {/* Soul Places (Draconic Composite) — founder-gated beta, top-right panel. */}
+      {mounted && enabled && webglOk && !error && soulPlacesOn && (
+        <SoulPlacesPanel profile={profile} cities={cityData} />
       )}
 
       {/* Place search (offline cities + countries) → fly-to + inspector. */}
