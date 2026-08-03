@@ -41,14 +41,13 @@ export const featureFlags = {
 
   // ── Zodisphere "Soul Places" (Draconic Composite astrocartography) ──
 
-  /** Master switch for the Draconic Composite "Soul Places" beta. ON but
-   *  founder-only via zodisphere_soul_places_dev_only, so it's live for the
-   *  allowlist and invisible to everyone else. Kill without a redeploy via
-   *  NEXT_PUBLIC_ZODISPHERE_SOUL_PLACES=off. Flip dev_only false for open beta. */
+  /** Master switch for the Draconic Composite "Soul Places". ON. Kill without a
+   *  redeploy via NEXT_PUBLIC_ZODISPHERE_SOUL_PLACES=off. */
   zodisphere_soul_places_enabled: true,
 
-  /** Restrict Soul Places to the developer/founder allowlist during the soak. */
-  zodisphere_soul_places_dev_only: true,
+  /** OPEN to everyone (founder soak complete 2026-07-29). Flip back to true to
+   *  re-restrict Soul Places to SOUL_PLACES_DEV_ALLOWLIST. */
+  zodisphere_soul_places_dev_only: false,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {
