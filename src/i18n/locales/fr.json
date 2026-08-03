@@ -1443,7 +1443,7 @@
           "moonPhases": "Phases Lunaires",
           "eclipses": "Éclipses",
           "retrogrades": "Retrogradations",
-          "ingresses": "Ingresses"
+          "ingresses": "Ingrès"
         },
         "minIntensity": "Intensite Minimale",
         "advanceNotice": "Preavis (jours)"
@@ -1948,7 +1948,54 @@
   },
   "reels": {
     "title": "Reels Cosmiques",
-    "empty": "Pas encore de reels"
+    "empty": "Pas encore de reels",
+    "create": {
+      "signInTitle": "Connectez-vous pour créer un reel",
+      "signIn": "Se connecter",
+      "cancel": "Annuler",
+      "title": "Créer un reel",
+      "freeLimitReached": "Vous avez atteint la limite gratuite de {{count}} reels ce mois-ci.",
+      "upgrade": "Passer à la version supérieure",
+      "toPostUnlimited": "pour publier des reels en illimité.",
+      "videoHeading": "Vidéo",
+      "removeVideo": "Supprimer la vidéo",
+      "edited": "Modifiée",
+      "opening": "Ouverture…",
+      "edit": "Modifier",
+      "stop": "Arrêter",
+      "record": "Enregistrer",
+      "uploadVideo": "Importer une vidéo",
+      "videoHint": "MP4 ou MOV, jusqu'à 100 Mo.",
+      "recordingUnsupported": "L'enregistrement n'est pas pris en charge dans ce navigateur — importez plutôt une vidéo.",
+      "caption": "Légende",
+      "captionPlaceholder": "À quoi pensez-vous ?",
+      "category": "Catégorie",
+      "tags": "Tags",
+      "tagsPlaceholder": "amour, croissance, mercure rétrograde...",
+      "tagsHint": "Séparez par des virgules. 10 tags maximum.",
+      "visibility": "Visibilité",
+      "visibilityPublic": "Public",
+      "visibilityFriends": "Amis",
+      "visibilityPrivate": "Privé",
+      "downloads": "Téléchargements",
+      "allowDownload": "Autoriser les autres à télécharger ce reel",
+      "allowDownloadHint": "Les copies enregistrées se terminent par l'outro Align.",
+      "hideAstroTags": "♈ Masquer les tags d'astrologie",
+      "addAstroTags": "♈ Ajouter des tags d'astrologie (facultatif)",
+      "astroHint": "Marquez ce reel comme lié à l'astrologie. C'est totalement facultatif.",
+      "zodiacSign": "Signe du zodiaque",
+      "topic": "Sujet",
+      "topicPlaceholder": "ex. retour de saturne, transit de vénus, thème natal...",
+      "publishing": "Publication...",
+      "publishReel": "Publier le reel",
+      "errorOpenEditor": "Impossible d'ouvrir l'éditeur. Réessayez.",
+      "errorNotVideo": "Veuillez choisir un fichier vidéo.",
+      "errorTooLarge": "La vidéo est trop volumineuse. La taille maximale est de 100 Mo.",
+      "errorUploadFailed": "L'importation a échoué. Vérifiez votre connexion et réessayez.",
+      "errorNoVideo": "Aucune vidéo à publier.",
+      "errorPublishFailed": "Impossible de publier le reel.",
+      "errorGeneric": "Une erreur s'est produite."
+    }
   },
   "fragments": {
     "title": "Fragments Cosmiques",
@@ -2181,11 +2228,11 @@
     "trine": "Trigone",
     "opposition": "Opposition",
     "quincunx": "Quinconce",
-    "semisextile": "Semi-Sextile",
+    "semisextile": "Semi-sextile",
     "semisquare": "Semi-Carre",
     "sesquiquadrate": "Sesqui-Carre",
     "quintile": "Quintile",
-    "biquintile": "Bi-Quintile"
+    "biquintile": "Bi-quintile"
   },
   "elements": {
     "fire": "Feu",
@@ -2938,11 +2985,170 @@
       "early": "Début",
       "middle": "Milieu",
       "late": "Fin"
+    },
+    "readFrom": "Lu à partir de votre Ascendant Draconique à {{asc}} et de votre Terre Draconique à {{earth}} en {{house}}.",
+    "linkCopied": "Lien copié ✓",
+    "shareText": "Mon Âge de l'Âme : {{age}} — {{count}} vies universelles.",
+    "form": {
+      "noAccountNote": "Aucun compte requis. Calculez autant de thèmes que vous le souhaitez.",
+      "orAnotherBelow": "ou calculez le thème d'une autre personne ci-dessous",
+      "nameLabel": "Nom ou libellé du thème",
+      "namePlaceholder": "ex. Mon thème",
+      "birthDate": "Date de naissance",
+      "birthTime": "Heure de naissance exacte",
+      "birthTimeHint": "Obligatoire — l'Ascendant Draconique en dépend.",
+      "secondsKnown": "Je connais les secondes de mon heure de naissance",
+      "seconds": "Secondes",
+      "secondsNote": "Calculé avec 00 seconde d'heure de naissance. Les secondes exactes peuvent légèrement affiner le résultat.",
+      "birthplace": "Lieu de naissance",
+      "birthplacePlaceholder": "Recherchez votre ville de naissance..."
+    },
+    "table": {
+      "chart": "Thème",
+      "universal": "Universel",
+      "earth": "Terre",
+      "onEarth": "Sur Terre",
+      "myChart": "Mon thème",
+      "savedChart": "Thème enregistré",
+      "needsRefreshTitle": "Calculé avec une ancienne méthode ou le Nœud Moyen — rouvrez pour actualiser"
+    },
+    "cta": {
+      "readAnotherTitle": "Lire un autre thème",
+      "readAnotherBody": "Calculez l'Âge de l'Âme de n'importe quel thème enregistré, ou saisissez une nouvelle personne. C'est toujours gratuit.",
+      "calculateAnotherChart": "Calculer un autre thème",
+      "saveTitle": "Enregistrer ce résultat",
+      "saveBody": "Vos données de naissance n'ont pas été conservées. Créez un compte gratuit pour enregistrer cette lecture dans votre thème, la recalculer après modification et comparer les Âges de l'Âme entre thèmes enregistrés.",
+      "createAccount": "Créer un compte pour enregistrer le résultat"
+    },
+    "errors": {
+      "noBirthDate": "Veuillez saisir une date de naissance.",
+      "noBirthplace": "Veuillez choisir un lieu de naissance parmi les suggestions afin que l'Ascendant puisse être calculé.",
+      "calcFailed": "Impossible de calculer le thème. Veuillez réessayer.",
+      "needBirthDetails": "Ajoutez d'abord vos données de naissance à votre profil — le Calculateur d'Âge de l'Âme en a besoin.",
+      "savedNoBirthTime": "{{name}} n'a aucune heure de naissance exacte enregistrée.",
+      "chartGone": "Ce thème n'est plus enregistré dans votre compte.",
+      "saveFailed": "Impossible d'enregistrer ce résultat."
     }
   },
   "cosmicMatch": {
     "searchPlaceholder": "Rechercher par nom ou signe",
     "noSearchResults": "Aucune correspondance trouvée",
     "noSearchResultsHint": "Essayez un autre nom ou signe"
+  },
+  "birthChartCalc": {
+    "form": {
+      "birthDate": "Date de naissance",
+      "birthTime": "Heure de naissance",
+      "unknownTime": "Je ne connais pas mon heure de naissance",
+      "birthPlace": "Lieu de naissance",
+      "locationPlaceholder": "Rechercher une ville, une région ou un pays...",
+      "submit": "Calculer mon thème natal — Gratuit",
+      "noSignup": "Aucune inscription requise. Vos données ne sont pas conservées."
+    },
+    "result": {
+      "calculating": "Calcul de votre thème natal en cours...",
+      "sun": "Soleil",
+      "sunDesc": "Votre moi profond",
+      "moon": "Lune",
+      "moonDesc": "Votre monde intérieur",
+      "rising": "Ascendant",
+      "risingDesc": "Comment les autres vous perçoivent",
+      "unknownTimeNote": "Heure de naissance inconnue — votre Ascendant et vos maisons sont approximatifs (calculés pour 12h00).",
+      "shareBigThree": "Partager mon Trio Astral",
+      "newChart": "Nouveau thème",
+      "planetaryPositions": "Positions planétaires",
+      "planetInSign": "{{planet}} en {{sign}}",
+      "house": "Maison {{number}}",
+      "shareText": "Je suis Soleil {{sun}}, Lune {{moon}}, Ascendant {{rising}} ✨ Calculez le vôtre gratuitement :",
+      "shareTitle": "Mon Trio Astral — Align",
+      "linkCopied": "Lien copié dans le presse-papiers !"
+    },
+    "errors": {
+      "selectLocation": "Veuillez sélectionner un lieu de naissance parmi les suggestions."
+    },
+    "cta": {
+      "heading": "Ce n'est que la surface",
+      "description": "Créez un compte gratuit pour enregistrer votre thème, obtenir des interprétations propulsées par l'IA, les transits quotidiens, des analyses de compatibilité et bien plus — en 20 langues.",
+      "saveChart": "Enregistrer mon thème — Gratuit",
+      "noCreditCard": "Aucune carte bancaire requise."
+    }
+  },
+  "hiddenZodiac": {
+    "form": {
+      "modeBirth": "À partir de mes données de naissance",
+      "modeManual": "Je connais les degrés exacts",
+      "planetOrPointReveal": "Planète ou point à révéler",
+      "planetOrPoint": "Planète ou point",
+      "zodiacSign": "Signe du zodiaque",
+      "birthDate": "Date de naissance",
+      "birthTime": "Heure de naissance",
+      "unknownBirthTime": "Je ne connais pas mon heure de naissance",
+      "birthPlace": "Lieu de naissance",
+      "citySearchPlaceholder": "Rechercher une ville, une région ou un pays...",
+      "findingDegrees": "Recherche de vos degrés exacts...",
+      "revealFree": "Révéler mon Zodiaque Caché — Gratuit",
+      "noSignup": "Aucune inscription requise. Votre degré, minute et seconde exacts sont calculés pour vous.",
+      "exactPosition": "Position exacte dans le signe",
+      "degree": "Degré",
+      "minute": "Minute",
+      "second": "Seconde",
+      "secondsUnknown": "Secondes inconnues — calcul avec 00″ (les résultats proches d'une limite peuvent changer une fois les secondes exactes connues)",
+      "ascendantSign": "Signe de l'Ascendant (nécessaire pour les maisons activées)",
+      "reveal": "Révéler mon Zodiaque Caché",
+      "enterRange": "Saisir {{range}}",
+      "dmsAria": "{{label}} 0 à {{max}}",
+      "foundText": "Votre {{object}} se situe à {{position}}",
+      "foundTextUnknownTime": " (heure de naissance inconnue — les maisons sont approximatives, calculées pour 12h00)"
+    },
+    "errors": {
+      "correctFields": "Veuillez corriger les champs surlignés.",
+      "enterBirthDate": "Veuillez saisir votre date de naissance.",
+      "selectLocation": "Veuillez sélectionner un lieu de naissance parmi les suggestions.",
+      "objectUnavailable": "{{object}} n'est pas disponible depuis le moteur de thème natal — passez à « Je connais les degrés exacts » pour le saisir manuellement.",
+      "chartFailed": "Impossible de calculer votre thème. Veuillez réessayer."
+    },
+    "result": {
+      "nthHouse": "{{ordinal}} Maison",
+      "headerObjectAt": "{{name}} à {{position}}",
+      "natalHouse": "Maison natale",
+      "duad": "Duade",
+      "compendium": "Compendium",
+      "duadCompendiumRange": "Plage de la Duade {{duadStart}}–{{duadEnd}} · Plage du Compendium {{compStart}}–{{compEnd}}",
+      "nextCompendium": "Le prochain Compendium commence dans {{next}}",
+      "boundarySensitive": "  ·  ⚠ Placement sensible aux limites",
+      "formulaTitle": "Votre formule du Zodiaque Caché",
+      "formulaMain": "{{sign}} → {{house}}",
+      "formulaDuad": "Duade {{sign}} → activation de la {{house}}",
+      "formulaCompendium": "Compendium {{sign}} → activation de la {{house}}",
+      "threeHouseTitle": "La connexion des trois maisons",
+      "primaryHouse": "Maison principale",
+      "duadHouse": "Maison de la Duade · {{sign}}",
+      "compendiumHouse": "Maison du Compendium · {{sign}}",
+      "houseUnknown": "Maison inconnue",
+      "addAscendant": "Ajoutez un Ascendant pour déterminer cette maison.",
+      "makeItAboutYou": "Rendez-le personnel",
+      "rulerHintSingular": "Indiquez où se situe réellement votre maître. La maison est déterminée à partir de votre Ascendant, et l'interprétation se réécrit pour en tenir compte.",
+      "rulerHintPlural": "Indiquez où se situent réellement vos maîtres. La maison est déterminée à partir de votre Ascendant, et l'interprétation se réécrit pour en tenir compte.",
+      "rulerIsIn": "{{ruler}} est en…",
+      "signUnknown": "— signe inconnu —",
+      "rulerChainTitle": "Chaîne des maîtres",
+      "duadRulerLabel": "Duade {{sign}}",
+      "compendiumRulerLabel": "Compendium {{sign}}",
+      "realLifeExamples": "Exemples concrets"
+    },
+    "houseBlurbs": {
+      "1": "identité, image de soi et façon de se présenter",
+      "2": "argent, estime de soi et ressources",
+      "3": "communication, apprentissage, fratrie",
+      "4": "foyer, famille, racines, fondations",
+      "5": "créativité, romance, expression de soi",
+      "6": "travail, santé, routines, service",
+      "7": "partenariats et liens en tête-à-tête",
+      "8": "transformation, ressources partagées, intimité",
+      "9": "voyages, philosophie, études supérieures",
+      "10": "carrière, réputation, direction de vie",
+      "11": "communauté, amitiés, vision d'avenir",
+      "12": "solitude, spiritualité, schémas cachés"
+    }
   }
 }

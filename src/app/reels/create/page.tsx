@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -37,6 +38,7 @@ const MAX_RECORD_SECONDS = 60;
 
 export default function CreateReelPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user } = useAuthStore();
 
   const [file, setFile] = useState<File | null>(null);
@@ -114,7 +116,7 @@ export default function CreateReelPage() {
         if (!file) { setOpeningEditor(false); return; }
         const res = await uploadReelVideo(file);
         if (!res.url) {
-          setError(res.error || 'Could not open the editor. Try again.');
+          setError(res.error || t('reels.create.errorOpenEditor'));
           setOpeningEditor(false);
           return;
         }
@@ -122,16 +124,16 @@ export default function CreateReelPage() {
       }
       router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=reel`);
     } catch (err: any) {
-      setError(err?.message || 'Could not open the editor. Try again.');
+      setError(err?.message || t('reels.create.errorOpenEditor'));
       setOpeningEditor(false);
     }
-  }, [openingEditor, hostedUrl, file, router]);
+  }, [openingEditor, hostedUrl, file, router, t]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!f.type.startsWith('video/')) { setError('Please choose a video file.'); return; }
-    if (f.size > MAX_VIDEO_SIZE) { setError('Video is too large. Maximum size is 100 MB.'); return; }
+    if (!f.type.startsWith('video/')) { setError(t('reels.create.errorNotVideo')); return; }
+    if (f.size > MAX_VIDEO_SIZE) { setError(t('reels.create.errorTooLarge')); return; }
     acceptClip(f);
   };
 
@@ -167,13 +169,13 @@ export default function CreateReelPage() {
         const res = await uploadReelVideo(file);
         url = res.url ?? null;
         if (!url) {
-          setError(res.error || 'Upload failed. Check your connection and try again.');
+          setError(res.error || t('reels.create.errorUploadFailed'));
           setPublishing(false);
           return;
         }
       }
       if (!url) {
-        setError('No video to publish.');
+        setError(t('reels.create.errorNoVideo'));
         setPublishing(false);
         return;
       }
@@ -205,11 +207,11 @@ export default function CreateReelPage() {
       if (result.success) {
         router.push('/reels');
       } else {
-        setError(result.error || 'Could not publish reel.');
+        setError(result.error || t('reels.create.errorPublishFailed'));
         setPublishing(false);
       }
     } catch (err: any) {
-      setError(err?.message || 'Something went wrong.');
+      setError(err?.message || t('reels.create.errorGeneric'));
       setPublishing(false);
     }
   };
@@ -219,9 +221,9 @@ export default function CreateReelPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#0a0a14] flex flex-col items-center justify-center gap-4 px-6">
-        <h1 className="text-white text-xl font-bold">Sign in to create a reel</h1>
+        <h1 className="text-white text-xl font-bold">{t('reels.create.signInTitle')}</h1>
         <Link href="/login" className="px-6 py-2.5 bg-[#9B6FF6] text-white text-sm font-semibold rounded-full">
-          Sign in
+          {t('reels.create.signIn')}
         </Link>
       </div>
     );
@@ -233,9 +235,9 @@ export default function CreateReelPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <Link href="/reels" className="flex items-center gap-1.5 text-[#9B6FF6] text-sm font-semibold">
-            <ArrowLeft className="w-4 h-4" /> Cancel
+            <ArrowLeft className="w-4 h-4" /> {t('reels.create.cancel')}
           </Link>
-          <h1 className="text-white text-lg font-bold">Create Reel</h1>
+          <h1 className="text-white text-lg font-bold">{t('reels.create.title')}</h1>
           <span className="w-14" />
         </div>
 
@@ -247,14 +249,14 @@ export default function CreateReelPage() {
 
         {atFreeLimit && (
           <div className="mb-4 px-4 py-3 rounded-xl bg-[#9B6FF6]/10 border border-[#9B6FF6]/30 text-white/80 text-sm">
-            You&apos;ve reached the free limit of {FREE_MONTHLY_REEL_LIMIT} reels this month.{' '}
-            <Link href="/pricing" className="text-[#9B6FF6] font-semibold underline">Upgrade</Link>{' '}
-            to post unlimited reels.
+            {t('reels.create.freeLimitReached', { count: FREE_MONTHLY_REEL_LIMIT })}{' '}
+            <Link href="/pricing" className="text-[#9B6FF6] font-semibold underline">{t('reels.create.upgrade')}</Link>{' '}
+            {t('reels.create.toPostUnlimited')}
           </div>
         )}
 
         {/* ─── Video ─── */}
-        <h2 className="text-white text-sm font-bold mb-2">Video</h2>
+        <h2 className="text-white text-sm font-bold mb-2">{t('reels.create.videoHeading')}</h2>
 
         {previewUrl ? (
           <div className="relative rounded-xl overflow-hidden bg-black border border-white/10">
@@ -270,7 +272,7 @@ export default function CreateReelPage() {
             />
             <button
               onClick={clearClip}
-              aria-label="Remove video"
+              aria-label={t('reels.create.removeVideo')}
               className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 flex items-center justify-center text-white"
             >
               <X className="w-4 h-4" />
@@ -282,7 +284,7 @@ export default function CreateReelPage() {
             )}
             {hostedUrl && !file ? (
               <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-white text-[11px] font-semibold">
-                ✨ Edited
+                ✨ {t('reels.create.edited')}
               </span>
             ) : (
               /* Trim, filter, caption and text before posting. */
@@ -292,8 +294,8 @@ export default function CreateReelPage() {
                 className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#9B6FF6] text-white text-[11px] font-semibold disabled:opacity-60"
               >
                 {openingEditor
-                  ? (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> Opening…</>)
-                  : (<><Scissors className="w-3.5 h-3.5" /> Edit</>)}
+                  ? (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('reels.create.opening')}</>)
+                  : (<><Scissors className="w-3.5 h-3.5" /> {t('reels.create.edit')}</>)}
               </button>
             )}
           </div>
@@ -310,7 +312,7 @@ export default function CreateReelPage() {
               onClick={stopRecording}
               className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500 text-white text-sm font-bold"
             >
-              <Square className="w-4 h-4" /> Stop
+              <Square className="w-4 h-4" /> {t('reels.create.stop')}
             </button>
           </div>
         ) : (
@@ -321,7 +323,7 @@ export default function CreateReelPage() {
                 className="flex flex-col items-center justify-center gap-2 py-7 rounded-xl bg-white/5 border border-white/10 hover:border-[#9B6FF6]/50 transition"
               >
                 <Circle className="w-7 h-7 text-[#9B6FF6]" />
-                <span className="text-white/80 text-sm font-semibold">Record</span>
+                <span className="text-white/80 text-sm font-semibold">{t('reels.create.record')}</span>
               </button>
             )}
             <button
@@ -329,7 +331,7 @@ export default function CreateReelPage() {
               className={`flex flex-col items-center justify-center gap-2 py-7 rounded-xl bg-white/5 border border-white/10 hover:border-[#9B6FF6]/50 transition ${canRecord ? '' : 'col-span-2'}`}
             >
               <Upload className="w-7 h-7 text-[#9B6FF6]" />
-              <span className="text-white/80 text-sm font-semibold">Upload a video</span>
+              <span className="text-white/80 text-sm font-semibold">{t('reels.create.uploadVideo')}</span>
             </button>
           </div>
         )}
@@ -345,24 +347,24 @@ export default function CreateReelPage() {
 
         {!previewUrl && !recording && (
           <p className="text-white/40 text-xs mt-2">
-            MP4 or MOV, up to 100 MB.{!canRecord && ' Recording isn’t supported in this browser — upload a video instead.'}
+            {t('reels.create.videoHint')}{!canRecord && ` ${t('reels.create.recordingUnsupported')}`}
           </p>
         )}
 
         {/* ─── Caption ─── */}
-        <h2 className="text-white text-sm font-bold mt-6 mb-2">Caption</h2>
+        <h2 className="text-white text-sm font-bold mt-6 mb-2">{t('reels.create.caption')}</h2>
         <textarea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
           maxLength={500}
           rows={3}
-          placeholder="What's on your mind?"
+          placeholder={t('reels.create.captionPlaceholder')}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white text-sm placeholder-white/30 outline-none focus:border-[#9B6FF6]/60 resize-none"
         />
         <p className="text-white/40 text-[11px] text-right mt-1">{caption.length}/500</p>
 
         {/* ─── Category ─── */}
-        <h2 className="text-white text-sm font-bold mt-4 mb-2">Category</h2>
+        <h2 className="text-white text-sm font-bold mt-4 mb-2">{t('reels.create.category')}</h2>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {REEL_CATEGORIES.map((cat) => (
             <button
@@ -380,23 +382,23 @@ export default function CreateReelPage() {
         </div>
 
         {/* ─── Tags ─── */}
-        <h2 className="text-white text-sm font-bold mt-4 mb-2">Tags</h2>
+        <h2 className="text-white text-sm font-bold mt-4 mb-2">{t('reels.create.tags')}</h2>
         <input
           value={tagsText}
           onChange={(e) => setTagsText(e.target.value)}
           maxLength={200}
-          placeholder="love, growth, mercury retrograde..."
+          placeholder={t('reels.create.tagsPlaceholder')}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white text-sm placeholder-white/30 outline-none focus:border-[#9B6FF6]/60"
         />
-        <p className="text-white/40 text-[11px] mt-1">Separate with commas. Max 10 tags.</p>
+        <p className="text-white/40 text-[11px] mt-1">{t('reels.create.tagsHint')}</p>
 
         {/* ─── Visibility ─── */}
-        <h2 className="text-white text-sm font-bold mt-4 mb-2">Visibility</h2>
+        <h2 className="text-white text-sm font-bold mt-4 mb-2">{t('reels.create.visibility')}</h2>
         <div className="grid grid-cols-3 gap-2">
           {([
-            { value: 'public', label: 'Public', Icon: Globe },
-            { value: 'friends', label: 'Friends', Icon: Users },
-            { value: 'private', label: 'Private', Icon: Lock },
+            { value: 'public', label: t('reels.create.visibilityPublic'), Icon: Globe },
+            { value: 'friends', label: t('reels.create.visibilityFriends'), Icon: Users },
+            { value: 'private', label: t('reels.create.visibilityPrivate'), Icon: Lock },
           ] as const).map((v) => (
             <button
               key={v.value}
@@ -413,7 +415,7 @@ export default function CreateReelPage() {
         </div>
 
         {/* ─── Downloads ─── */}
-        <h2 className="text-white text-sm font-bold mt-4 mb-2">Downloads</h2>
+        <h2 className="text-white text-sm font-bold mt-4 mb-2">{t('reels.create.downloads')}</h2>
         <label className="flex items-start gap-2.5 cursor-pointer select-none">
           <input
             type="checkbox"
@@ -422,9 +424,9 @@ export default function CreateReelPage() {
             className="w-4 h-4 mt-0.5 accent-[#9B6FF6]"
           />
           <span>
-            <span className="block text-white text-sm">Let others download this reel</span>
+            <span className="block text-white text-sm">{t('reels.create.allowDownload')}</span>
             <span className="block text-white/40 text-[11px] mt-0.5">
-              Saved copies end with the Align outro.
+              {t('reels.create.allowDownloadHint')}
             </span>
           </span>
         </label>
@@ -434,15 +436,15 @@ export default function CreateReelPage() {
           onClick={() => setShowAstroTags(!showAstroTags)}
           className="mt-5 pt-4 border-t border-white/10 w-full text-left text-[#C4A5FF] text-[13px] font-semibold"
         >
-          {showAstroTags ? '♈ Hide astrology tags' : '♈ Add astrology tags (optional)'}
+          {showAstroTags ? t('reels.create.hideAstroTags') : t('reels.create.addAstroTags')}
         </button>
 
         {showAstroTags && (
           <div className="mt-3 p-4 rounded-xl bg-white/5 border border-white/10">
             <p className="text-white/40 text-[11px] mb-3">
-              Mark this reel as astrology-related. This is completely optional.
+              {t('reels.create.astroHint')}
             </p>
-            <p className="text-white/60 text-xs font-semibold mb-2">Zodiac Sign</p>
+            <p className="text-white/60 text-xs font-semibold mb-2">{t('reels.create.zodiacSign')}</p>
             <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
               {ZODIAC_SIGNS.map((sign) => (
                 <button
@@ -458,12 +460,12 @@ export default function CreateReelPage() {
                 </button>
               ))}
             </div>
-            <p className="text-white/60 text-xs font-semibold mt-3 mb-2">Topic</p>
+            <p className="text-white/60 text-xs font-semibold mt-3 mb-2">{t('reels.create.topic')}</p>
             <input
               value={astroTopic}
               onChange={(e) => setAstroTopic(e.target.value)}
               maxLength={100}
-              placeholder="e.g. saturn return, venus transit, birth chart..."
+              placeholder={t('reels.create.topicPlaceholder')}
               className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-white text-sm placeholder-white/30 outline-none focus:border-[#9B6FF6]/60"
             />
           </div>
@@ -475,7 +477,7 @@ export default function CreateReelPage() {
           disabled={(!file && !hostedUrl) || publishing}
           className="w-full mt-7 py-3.5 rounded-xl bg-[#9B6FF6] text-white text-base font-bold disabled:opacity-40 flex items-center justify-center gap-2"
         >
-          {publishing ? (<><Loader2 className="w-5 h-5 animate-spin" /> Publishing...</>) : (<><VideoIcon className="w-5 h-5" /> Publish Reel</>)}
+          {publishing ? (<><Loader2 className="w-5 h-5 animate-spin" /> {t('reels.create.publishing')}</>) : (<><VideoIcon className="w-5 h-5" /> {t('reels.create.publishReel')}</>)}
         </button>
       </div>
     </div>

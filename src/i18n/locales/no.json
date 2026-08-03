@@ -914,7 +914,7 @@
       "low": "#F87171"
     },
     "auraSynastry": {
-      "title": "Aura Synastry",
+      "title": "Aura-synastri",
       "yourMatch": "Din match",
       "loading": "Leser energifeltene dine...",
       "matchNotFound": "Ingen treff",
@@ -1948,7 +1948,54 @@
   },
   "reels": {
     "title": "Kosmiske Reels",
-    "empty": "Ingen reels ennå"
+    "empty": "Ingen reels ennå",
+    "create": {
+      "signInTitle": "Logg inn for å lage en reel",
+      "signIn": "Logg inn",
+      "cancel": "Avbryt",
+      "title": "Lag reel",
+      "freeLimitReached": "Du har nådd den gratis grensen på {{count}} reels denne måneden.",
+      "upgrade": "Oppgrader",
+      "toPostUnlimited": "for å legge ut ubegrenset antall reels.",
+      "videoHeading": "Video",
+      "removeVideo": "Fjern video",
+      "edited": "Redigert",
+      "opening": "Åpner…",
+      "edit": "Rediger",
+      "stop": "Stopp",
+      "record": "Ta opp",
+      "uploadVideo": "Last opp en video",
+      "videoHint": "MP4 eller MOV, opptil 100 MB.",
+      "recordingUnsupported": "Opptak støttes ikke i denne nettleseren — last opp en video i stedet.",
+      "caption": "Bildetekst",
+      "captionPlaceholder": "Hva tenker du på?",
+      "category": "Kategori",
+      "tags": "Tagger",
+      "tagsPlaceholder": "kjærlighet, vekst, merkur retrograd...",
+      "tagsHint": "Skill med komma. Maks 10 tagger.",
+      "visibility": "Synlighet",
+      "visibilityPublic": "Offentlig",
+      "visibilityFriends": "Venner",
+      "visibilityPrivate": "Privat",
+      "downloads": "Nedlastinger",
+      "allowDownload": "La andre laste ned denne reelen",
+      "allowDownloadHint": "Lagrede kopier avsluttes med Align-outroen.",
+      "hideAstroTags": "♈ Skjul astrologitagger",
+      "addAstroTags": "♈ Legg til astrologitagger (valgfritt)",
+      "astroHint": "Merk denne reelen som astrologirelatert. Dette er helt valgfritt.",
+      "zodiacSign": "Stjernetegn",
+      "topic": "Emne",
+      "topicPlaceholder": "f.eks. saturn-retur, venus-transitt, fødselshoroskop...",
+      "publishing": "Publiserer...",
+      "publishReel": "Publiser reel",
+      "errorOpenEditor": "Kunne ikke åpne editoren. Prøv igjen.",
+      "errorNotVideo": "Velg en videofil.",
+      "errorTooLarge": "Videoen er for stor. Maksimal størrelse er 100 MB.",
+      "errorUploadFailed": "Opplastingen mislyktes. Sjekk tilkoblingen din og prøv igjen.",
+      "errorNoVideo": "Ingen video å publisere.",
+      "errorPublishFailed": "Kunne ikke publisere reel.",
+      "errorGeneric": "Noe gikk galt."
+    }
   },
   "fragments": {
     "title": "Kosmiske fragmenter",
@@ -2064,7 +2111,7 @@
       "creatorStudio": "Skaperstudio",
       "globalIntelligence": "Global intelligens",
       "zodisphere": "Zodisfæren",
-      "affiliates": "Affiliates"
+      "affiliates": "Partnere"
     },
     "feedCard": {
       "like": "Lik",
@@ -2534,7 +2581,7 @@
     "poweredBy": "Drevet av ekte fødselshoroskopberegninger"
   },
   "divineTiming": {
-    "title": "Divine Timing",
+    "title": "Guddommelig timing",
     "subtitle": "Still et ekte spørsmål. Kast øyeblikket. Motta dommen.",
     "questionPlaceholder": "Still et spesifikt spørsmål – f.eks. «Vil dette forholdet fungere?», «Bør jeg lansere i dag?», «Får jeg pengene?»",
     "questionType": "Spørsmålstype",
@@ -2822,7 +2869,7 @@
       "events": "Hendelser",
       "noEvents": "Ingen hendelser her ennå.",
       "inPerson": "Fysisk",
-      "online": "Online",
+      "online": "Pålogget",
       "venueRevealed": "Stedet avsløres etter registrering",
       "voices": "Stemmer herfra",
       "noPosts": "Ingen Zodisphere-innlegg fra dette området ennå.",
@@ -2938,11 +2985,170 @@
       "early": "Tidlig",
       "middle": "Midt",
       "late": "Sen"
+    },
+    "readFrom": "Avlest fra din drakoniske ascendant på {{asc}} og din drakoniske Jord på {{earth}} i {{house}}.",
+    "linkCopied": "Lenke kopiert ✓",
+    "shareText": "Min sjelsalder: {{age}} — {{count}} universelle levetider.",
+    "form": {
+      "noAccountNote": "Ingen konto nødvendig. Beregn så mange horoskoper du vil.",
+      "orAnotherBelow": "eller beregn en annen person nedenfor",
+      "nameLabel": "Navn eller horoskopetikett",
+      "namePlaceholder": "f.eks. Mitt horoskop",
+      "birthDate": "Fødselsdato",
+      "birthTime": "Nøyaktig fødselstidspunkt",
+      "birthTimeHint": "Nødvendig — den drakoniske ascendanten avhenger av det.",
+      "secondsKnown": "Jeg kjenner sekundene i fødselstidspunktet mitt",
+      "seconds": "Sekunder",
+      "secondsNote": "Beregnet med 00 sekunder for fødselstidspunktet. Nøyaktige sekunder kan finjustere resultatet litt.",
+      "birthplace": "Fødested",
+      "birthplacePlaceholder": "Søk etter fødebyen din..."
+    },
+    "table": {
+      "chart": "Horoskop",
+      "universal": "Universell",
+      "earth": "Jord",
+      "onEarth": "På Jorden",
+      "myChart": "Mitt horoskop",
+      "savedChart": "Lagret horoskop",
+      "needsRefreshTitle": "Beregnet med en eldre metode eller med Middelnoden — åpne på nytt for å oppdatere"
+    },
+    "cta": {
+      "readAnotherTitle": "Avles et annet horoskop",
+      "readAnotherBody": "Beregn sjelsalderen for et hvilket som helst lagret horoskop, eller legg inn en ny person. Det er alltid gratis.",
+      "calculateAnotherChart": "Beregn et annet horoskop",
+      "saveTitle": "Lagre dette resultatet",
+      "saveBody": "Fødselsopplysningene dine er ikke lagret. Opprett en gratis konto for å lagre denne avlesningen til horoskopet ditt, beregne den på nytt etter endringer og sammenligne sjelsaldre mellom lagrede horoskoper.",
+      "createAccount": "Opprett konto for å lagre resultat"
+    },
+    "errors": {
+      "noBirthDate": "Angi en fødselsdato.",
+      "noBirthplace": "Velg et fødested fra forslagene slik at ascendanten kan beregnes.",
+      "calcFailed": "Kunne ikke beregne horoskopet. Prøv igjen.",
+      "needBirthDetails": "Legg først fødselsopplysningene dine til profilen din — sjelsalder-kalkulatoren trenger dem.",
+      "savedNoBirthTime": "{{name}} har ikke noe nøyaktig fødselstidspunkt lagret.",
+      "chartGone": "Det horoskopet er ikke lenger lagret på kontoen din.",
+      "saveFailed": "Kunne ikke lagre dette resultatet."
     }
   },
   "cosmicMatch": {
     "searchPlaceholder": "Søk etter navn eller stjernetegn",
     "noSearchResults": "Ingen treff funnet",
     "noSearchResultsHint": "Prøv et annet navn eller stjernetegn"
+  },
+  "birthChartCalc": {
+    "form": {
+      "birthDate": "Fødselsdato",
+      "birthTime": "Fødselstidspunkt",
+      "unknownTime": "Jeg vet ikke fødselstidspunktet mitt",
+      "birthPlace": "Fødested",
+      "locationPlaceholder": "Søk etter by, region eller land...",
+      "submit": "Beregn fødselshoroskopet mitt — gratis",
+      "noSignup": "Ingen registrering nødvendig. Dataene dine lagres ikke."
+    },
+    "result": {
+      "calculating": "Beregner fødselshoroskopet ditt...",
+      "sun": "Sol",
+      "sunDesc": "Ditt innerste jeg",
+      "moon": "Måne",
+      "moonDesc": "Din indre verden",
+      "rising": "Ascendant",
+      "risingDesc": "Slik andre ser deg",
+      "unknownTimeNote": "Fødselstidspunkt ukjent — ascendanten og husene dine er omtrentlige (beregnet for kl. 12:00).",
+      "shareBigThree": "Del de tre store mine",
+      "newChart": "Nytt horoskop",
+      "planetaryPositions": "Planetposisjoner",
+      "planetInSign": "{{planet}} i {{sign}}",
+      "house": "Hus {{number}}",
+      "shareText": "Jeg er {{sun}} Sol, {{moon}} Måne, {{rising}} Ascendant ✨ Beregn dine gratis:",
+      "shareTitle": "De tre store mine — Align",
+      "linkCopied": "Lenke kopiert til utklippstavlen!"
+    },
+    "errors": {
+      "selectLocation": "Velg et fødested fra forslagene."
+    },
+    "cta": {
+      "heading": "Dette er bare overflaten",
+      "description": "Opprett en gratis konto for å lagre horoskopet ditt, få AI-drevne tolkninger, daglige transitter, kompatibilitetsavlesninger og mye mer — på 20 språk.",
+      "saveChart": "Lagre horoskopet mitt — gratis",
+      "noCreditCard": "Ingen kredittkort nødvendig."
+    }
+  },
+  "hiddenZodiac": {
+    "form": {
+      "modeBirth": "Ut fra fødselsopplysningene mine",
+      "modeManual": "Jeg kjenner de nøyaktige gradene",
+      "planetOrPointReveal": "Planet eller punkt som skal avsløres",
+      "planetOrPoint": "Planet eller punkt",
+      "zodiacSign": "Stjernetegn",
+      "birthDate": "Fødselsdato",
+      "birthTime": "Fødselstidspunkt",
+      "unknownBirthTime": "Jeg vet ikke fødselstidspunktet mitt",
+      "birthPlace": "Fødested",
+      "citySearchPlaceholder": "Søk etter by, region eller land...",
+      "findingDegrees": "Finner de nøyaktige gradene dine...",
+      "revealFree": "Avslør min skjulte zodiak — gratis",
+      "noSignup": "Ingen registrering nødvendig. Din nøyaktige grad, minutt og sekund beregnes for deg.",
+      "exactPosition": "Nøyaktig posisjon innenfor tegnet",
+      "degree": "Grad",
+      "minute": "Minutt",
+      "second": "Sekund",
+      "secondsUnknown": "Sekunder ukjent — beregn med 00″ (resultater nær en grense kan endre seg når de nøyaktige sekundene er kjent)",
+      "ascendantSign": "Ascendanttegn (nødvendig for de aktiverte husene)",
+      "reveal": "Avslør min skjulte zodiak",
+      "enterRange": "Angi {{range}}",
+      "dmsAria": "{{label}} 0 til {{max}}",
+      "foundText": "{{object}} ligger på {{position}}",
+      "foundTextUnknownTime": " (fødselstidspunkt ukjent — husene er omtrentlige, beregnet for kl. 12:00)"
+    },
+    "errors": {
+      "correctFields": "Rett opp de markerte feltene.",
+      "enterBirthDate": "Angi fødselsdatoen din.",
+      "selectLocation": "Velg et fødested fra forslagene.",
+      "objectUnavailable": "{{object}} er ikke tilgjengelig fra fødselshoroskop-motoren — bytt til \"Jeg kjenner de nøyaktige gradene\" for å legge den inn manuelt.",
+      "chartFailed": "Kunne ikke beregne horoskopet ditt. Prøv igjen."
+    },
+    "result": {
+      "nthHouse": "{{ordinal}} hus",
+      "headerObjectAt": "{{name}} på {{position}}",
+      "natalHouse": "Natalt hus",
+      "duad": "Duad",
+      "compendium": "Compendium",
+      "duadCompendiumRange": "Duad-intervall {{duadStart}}–{{duadEnd}} · Compendium-intervall {{compStart}}–{{compEnd}}",
+      "nextCompendium": "Neste Compendium begynner om {{next}}",
+      "boundarySensitive": "  ·  ⚠ Grensesensitiv plassering",
+      "formulaTitle": "Din skjulte zodiak-formel",
+      "formulaMain": "{{sign}} → {{house}}",
+      "formulaDuad": "{{sign}} Duad → {{house}}-aktivering",
+      "formulaCompendium": "{{sign}} Compendium → {{house}}-aktivering",
+      "threeHouseTitle": "Forbindelsen mellom de tre husene",
+      "primaryHouse": "Primærhus",
+      "duadHouse": "Duad-hus · {{sign}}",
+      "compendiumHouse": "Compendium-hus · {{sign}}",
+      "houseUnknown": "Hus ukjent",
+      "addAscendant": "Legg til en ascendant for å fastslå dette huset.",
+      "makeItAboutYou": "Gjør det personlig",
+      "rulerHintSingular": "Fortell den hvor herskeren din faktisk sitter. Huset utledes fra ascendanten din, og avlesningen skriver seg selv om for å ta hensyn til det.",
+      "rulerHintPlural": "Fortell den hvor herskerne dine faktisk sitter. Huset utledes fra ascendanten din, og avlesningen skriver seg selv om for å ta hensyn til det.",
+      "rulerIsIn": "{{ruler}} er i…",
+      "signUnknown": "— tegn ukjent —",
+      "rulerChainTitle": "Herskerkjede",
+      "duadRulerLabel": "{{sign}} Duad",
+      "compendiumRulerLabel": "{{sign}} Compendium",
+      "realLifeExamples": "Eksempler fra det virkelige liv"
+    },
+    "houseBlurbs": {
+      "1": "identitet, selvbilde og hvordan du fremstår",
+      "2": "penger, selvfølelse og ressurser",
+      "3": "kommunikasjon, læring, søsken",
+      "4": "hjem, familie, røtter, fundament",
+      "5": "kreativitet, romantikk, selvutfoldelse",
+      "6": "arbeid, helse, rutiner, tjeneste",
+      "7": "partnerskap og en-til-en-bånd",
+      "8": "forvandling, delte ressurser, intimitet",
+      "9": "reiser, filosofi, høyere læring",
+      "10": "karriere, omdømme, livsretning",
+      "11": "fellesskap, vennskap, fremtidsvisjon",
+      "12": "ensomhet, spiritualitet, skjulte mønstre"
+    }
   }
 }

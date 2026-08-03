@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
@@ -18,6 +19,7 @@ const SIGNS = [
 ];
 
 export function CalculatorClient() {
+  const { t } = useTranslation();
   const [birthDate, setBirthDate] = useState('');
   const [birthTime, setBirthTime] = useState('12:00');
   const [unknownTime, setUnknownTime] = useState(false);
@@ -42,7 +44,7 @@ export function CalculatorClient() {
   async function calculateChart(e?: React.FormEvent) {
     if (e) e.preventDefault();
     if (!latitude || !longitude) {
-      setError('Please select a birth location from the suggestions.');
+      setError(t('birthChartCalc.errors.selectLocation'));
       return;
     }
     setLoading(true);
@@ -119,10 +121,14 @@ export function CalculatorClient() {
       moon: bigThree.moon,
       rising: bigThree.rising,
     });
-    const text = `I'm a ${bigThree.sun} Sun, ${bigThree.moon} Moon, ${bigThree.rising} Rising ✨ Calculate yours free:`;
-    const result = await shareCard('My Big Three — Align', text, url);
+    const text = t('birthChartCalc.result.shareText', {
+      sun: bigThree.sun,
+      moon: bigThree.moon,
+      rising: bigThree.rising,
+    });
+    const result = await shareCard(t('birthChartCalc.result.shareTitle'), text, url);
     if (result.copied) {
-      setShareStatus('Link copied to clipboard!');
+      setShareStatus(t('birthChartCalc.result.linkCopied'));
       setTimeout(() => setShareStatus(''), 3000);
     }
   }
@@ -138,7 +144,7 @@ export function CalculatorClient() {
         <form onSubmit={calculateChart} className="bg-bg-card border border-border-primary rounded-2xl p-6 sm:p-8 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="bcc-date" className="block text-sm font-medium text-text-secondary mb-1.5">Birth Date</label>
+              <label htmlFor="bcc-date" className="block text-sm font-medium text-text-secondary mb-1.5">{t('birthChartCalc.form.birthDate')}</label>
               <input
                 id="bcc-date"
                 type="date"
@@ -149,7 +155,7 @@ export function CalculatorClient() {
               />
             </div>
             <div>
-              <label htmlFor="bcc-time" className="block text-sm font-medium text-text-secondary mb-1.5">Birth Time</label>
+              <label htmlFor="bcc-time" className="block text-sm font-medium text-text-secondary mb-1.5">{t('birthChartCalc.form.birthTime')}</label>
               <input
                 id="bcc-time"
                 type="time"
@@ -165,27 +171,27 @@ export function CalculatorClient() {
                   onChange={(e) => setUnknownTime(e.target.checked)}
                   className="rounded border-border-primary"
                 />
-                I don&apos;t know my birth time
+                {t('birthChartCalc.form.unknownTime')}
               </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Birth Place</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('birthChartCalc.form.birthPlace')}</label>
             <CitySearch
               value={birthLocation}
               onChange={handleCitySelect}
-              placeholder="Search city, state, or country..."
+              placeholder={t('birthChartCalc.form.locationPlaceholder')}
             />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full text-base py-3">
-            Calculate My Birth Chart — Free
+            {t('birthChartCalc.form.submit')}
           </button>
-          <p className="text-xs text-text-muted text-center">No signup required. Your data is not stored.</p>
+          <p className="text-xs text-text-muted text-center">{t('birthChartCalc.form.noSignup')}</p>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </form>
       )}
 
-      {loading && <LoadingCosmic label="Calculating your natal chart..." />}
+      {loading && <LoadingCosmic label={t('birthChartCalc.result.calculating')} />}
 
       {chart && wheelProps && bigThree && (
         <div className="space-y-6">
@@ -193,9 +199,9 @@ export function CalculatorClient() {
           <div className="bg-gradient-cosmic border border-accent-muted rounded-2xl p-6">
             <div className="grid grid-cols-3 gap-4 text-center">
               {[
-                { label: 'Sun', sign: bigThree.sun, desc: 'Your core self' },
-                { label: 'Moon', sign: bigThree.moon, desc: 'Your inner world' },
-                { label: 'Rising', sign: bigThree.rising, desc: 'How others see you' },
+                { label: t('birthChartCalc.result.sun'), sign: bigThree.sun, desc: t('birthChartCalc.result.sunDesc') },
+                { label: t('birthChartCalc.result.moon'), sign: bigThree.moon, desc: t('birthChartCalc.result.moonDesc') },
+                { label: t('birthChartCalc.result.rising'), sign: bigThree.rising, desc: t('birthChartCalc.result.risingDesc') },
               ].map((item) => (
                 <div key={item.label}>
                   <p className="text-xs text-text-muted mb-1">{item.label}</p>
@@ -207,18 +213,18 @@ export function CalculatorClient() {
             </div>
             {unknownTime && (
               <p className="text-[11px] text-text-muted text-center mt-4">
-                Birth time unknown — your Rising sign and houses are approximate (calculated for 12:00 noon).
+                {t('birthChartCalc.result.unknownTimeNote')}
               </p>
             )}
             <div className="flex items-center justify-center gap-3 mt-5">
               <button onClick={handleShare} className="btn-primary text-sm px-6 py-2.5">
-                Share My Big Three
+                {t('birthChartCalc.result.shareBigThree')}
               </button>
               <button
                 onClick={() => { setChart(null); setExpanded(new Set()); }}
                 className="text-sm text-text-secondary hover:text-text-primary px-4 py-2.5 transition-colors"
               >
-                New Chart
+                {t('birthChartCalc.result.newChart')}
               </button>
             </div>
             {shareStatus && <p className="text-xs text-accent-primary text-center mt-2">{shareStatus}</p>}
@@ -238,7 +244,7 @@ export function CalculatorClient() {
 
           {/* Planet positions with interpretations */}
           <div className="bg-bg-card border border-border-primary rounded-2xl p-6">
-            <h3 className="text-lg font-display font-semibold text-text-primary mb-4">Planetary Positions</h3>
+            <h3 className="text-lg font-display font-semibold text-text-primary mb-4">{t('birthChartCalc.result.planetaryPositions')}</h3>
             <div className="divide-y divide-border-primary">
               {planetPositions.map((p: any) => {
                 const interp = getPlacementInterpretation(p.name, p.sign, p.house, p.sign_degree ?? (p.longitude % 30));
@@ -253,11 +259,11 @@ export function CalculatorClient() {
                         <span className="text-xl w-7 text-center">{getZodiacGlyph(p.sign)}</span>
                         <div>
                           <p className="text-sm font-medium text-text-primary">
-                            {p.name} in {p.sign}
+                            {t('birthChartCalc.result.planetInSign', { planet: p.name, sign: p.sign })}
                             {p.is_retrograde && <span className="text-text-muted text-xs ml-1.5">℞</span>}
                           </p>
                           <p className="text-xs text-text-muted">
-                            {Math.floor(p.sign_degree ?? (p.longitude % 30))}°{p.house ? ` · House ${p.house}` : ''}
+                            {Math.floor(p.sign_degree ?? (p.longitude % 30))}°{p.house ? ` · ${t('birthChartCalc.result.house', { number: p.house })}` : ''}
                           </p>
                         </div>
                       </div>
@@ -279,16 +285,15 @@ export function CalculatorClient() {
           {/* Conversion CTA */}
           <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted text-center">
             <h3 className="text-xl sm:text-2xl font-display font-bold text-text-primary mb-3">
-              This is just the surface
+              {t('birthChartCalc.cta.heading')}
             </h3>
             <p className="text-text-tertiary max-w-md mx-auto mb-6 text-sm">
-              Create a free account to save your chart, get AI-powered interpretations, daily transits,
-              compatibility readings, and more — in 20 languages.
+              {t('birthChartCalc.cta.description')}
             </p>
             <Link href="/onboarding" className="btn-primary text-base px-10 py-3.5 inline-block">
-              Save My Chart — Free
+              {t('birthChartCalc.cta.saveChart')}
             </Link>
-            <p className="text-text-muted text-xs mt-3">No credit card required.</p>
+            <p className="text-text-muted text-xs mt-3">{t('birthChartCalc.cta.noCreditCard')}</p>
           </div>
         </div>
       )}

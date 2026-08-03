@@ -1996,7 +1996,54 @@
   },
   "reels": {
     "title": "Reels Cósmicos",
-    "empty": "Nenhum reel ainda"
+    "empty": "Nenhum reel ainda",
+    "create": {
+      "signInTitle": "Entre para criar um reel",
+      "signIn": "Entrar",
+      "cancel": "Cancelar",
+      "title": "Criar reel",
+      "freeLimitReached": "Você atingiu o limite gratuito de {{count}} reels este mês.",
+      "upgrade": "Fazer upgrade",
+      "toPostUnlimited": "para publicar reels ilimitados.",
+      "videoHeading": "Vídeo",
+      "removeVideo": "Remover vídeo",
+      "edited": "Editado",
+      "opening": "Abrindo…",
+      "edit": "Editar",
+      "stop": "Parar",
+      "record": "Gravar",
+      "uploadVideo": "Enviar um vídeo",
+      "videoHint": "MP4 ou MOV, até 100 MB.",
+      "recordingUnsupported": "A gravação não é compatível com este navegador — envie um vídeo em vez disso.",
+      "caption": "Legenda",
+      "captionPlaceholder": "O que você está pensando?",
+      "category": "Categoria",
+      "tags": "Tags",
+      "tagsPlaceholder": "amor, crescimento, mercúrio retrógrado...",
+      "tagsHint": "Separe com vírgulas. Máximo de 10 tags.",
+      "visibility": "Visibilidade",
+      "visibilityPublic": "Público",
+      "visibilityFriends": "Amigos",
+      "visibilityPrivate": "Privado",
+      "downloads": "Downloads",
+      "allowDownload": "Permitir que outros baixem este reel",
+      "allowDownloadHint": "As cópias salvas terminam com o encerramento do Align.",
+      "hideAstroTags": "♈ Ocultar tags de astrologia",
+      "addAstroTags": "♈ Adicionar tags de astrologia (opcional)",
+      "astroHint": "Marque este reel como relacionado à astrologia. Isto é totalmente opcional.",
+      "zodiacSign": "Signo do zodíaco",
+      "topic": "Tópico",
+      "topicPlaceholder": "ex.: retorno de Saturno, trânsito de Vênus, mapa natal...",
+      "publishing": "Publicando...",
+      "publishReel": "Publicar reel",
+      "errorOpenEditor": "Não foi possível abrir o editor. Tente novamente.",
+      "errorNotVideo": "Escolha um arquivo de vídeo.",
+      "errorTooLarge": "O vídeo é muito grande. O tamanho máximo é 100 MB.",
+      "errorUploadFailed": "O envio falhou. Verifique sua conexão e tente novamente.",
+      "errorNoVideo": "Nenhum vídeo para publicar.",
+      "errorPublishFailed": "Não foi possível publicar o reel.",
+      "errorGeneric": "Algo deu errado."
+    }
   },
   "fragments": {
     "title": "Fragmentos Cósmicos",
@@ -2194,7 +2241,7 @@
     "water": "Água"
   },
   "modalities": {
-    "cardinal": "Cardinal",
+    "cardinal": "Cardeal",
     "fixed": "Fixo",
     "mutable": "Mutável"
   },
@@ -2534,7 +2581,7 @@
     "poweredBy": "Baseado em cálculos reais de mapa natal"
   },
   "divineTiming": {
-    "title": "Divine Timing",
+    "title": "Tempo Divino",
     "subtitle": "Faça uma pergunta real. Fixe o momento. Receba o veredito.",
     "questionPlaceholder": "Faça uma pergunta específica — ex. “Este relacionamento vai dar certo?”, “Devo lançar hoje?”, “Vou receber o dinheiro?”",
     "questionType": "Tipo de pergunta",
@@ -2938,11 +2985,170 @@
       "early": "Inicial",
       "middle": "Média",
       "late": "Tardia"
+    },
+    "readFrom": "Lido a partir do seu Ascendente Dracônico em {{asc}} e da sua Terra Dracônica em {{earth}} na {{house}}.",
+    "linkCopied": "Link copiado ✓",
+    "shareText": "Minha Idade da Alma: {{age}} — {{count}} vidas universais.",
+    "form": {
+      "noAccountNote": "Não requer conta. Calcule quantos mapas quiser.",
+      "orAnotherBelow": "ou calcule outra pessoa abaixo",
+      "nameLabel": "Nome ou rótulo do mapa",
+      "namePlaceholder": "ex.: Meu mapa",
+      "birthDate": "Data de nascimento",
+      "birthTime": "Hora exata de nascimento",
+      "birthTimeHint": "Obrigatório — o Ascendente Dracônico depende disso.",
+      "secondsKnown": "Sei os segundos da minha hora de nascimento",
+      "seconds": "Segundos",
+      "secondsNote": "Calculado usando 00 segundos da hora de nascimento. Os segundos exatos podem refinar levemente o resultado.",
+      "birthplace": "Local de nascimento",
+      "birthplacePlaceholder": "Busque sua cidade de nascimento..."
+    },
+    "table": {
+      "chart": "Mapa",
+      "universal": "Universal",
+      "earth": "Terra",
+      "onEarth": "Na Terra",
+      "myChart": "Meu mapa",
+      "savedChart": "Mapa salvo",
+      "needsRefreshTitle": "Calculado com um método mais antigo ou com o Nodo Médio — reabra para atualizar"
+    },
+    "cta": {
+      "readAnotherTitle": "Ler outro mapa",
+      "readAnotherBody": "Calcule a Idade da Alma de qualquer mapa salvo, ou insira alguém novo. É sempre grátis.",
+      "calculateAnotherChart": "Calcular outro mapa",
+      "saveTitle": "Salvar este resultado",
+      "saveBody": "Seus dados de nascimento não foram armazenados. Crie uma conta gratuita para salvar esta leitura no seu mapa, recalculá-la após edições e comparar Idades da Alma entre mapas salvos.",
+      "createAccount": "Criar conta para salvar o resultado"
+    },
+    "errors": {
+      "noBirthDate": "Insira uma data de nascimento.",
+      "noBirthplace": "Escolha um local de nascimento entre as sugestões para que o Ascendente possa ser calculado.",
+      "calcFailed": "Não foi possível calcular o mapa. Tente novamente.",
+      "needBirthDetails": "Adicione primeiro seus dados de nascimento ao seu perfil — a Calculadora de Idade da Alma precisa deles.",
+      "savedNoBirthTime": "{{name}} não tem uma hora exata de nascimento salva.",
+      "chartGone": "Esse mapa não está mais salvo na sua conta.",
+      "saveFailed": "Não foi possível salvar este resultado."
     }
   },
   "cosmicMatch": {
     "searchPlaceholder": "Pesquisar por nome ou signo",
     "noSearchResults": "Nenhuma correspondência encontrada",
     "noSearchResultsHint": "Tente outro nome ou signo"
+  },
+  "birthChartCalc": {
+    "form": {
+      "birthDate": "Data de nascimento",
+      "birthTime": "Hora de nascimento",
+      "unknownTime": "Não sei minha hora de nascimento",
+      "birthPlace": "Local de nascimento",
+      "locationPlaceholder": "Busque cidade, estado ou país...",
+      "submit": "Calcular meu mapa natal — Grátis",
+      "noSignup": "Não requer cadastro. Seus dados não são armazenados."
+    },
+    "result": {
+      "calculating": "Calculando seu mapa natal...",
+      "sun": "Sol",
+      "sunDesc": "Sua essência",
+      "moon": "Lua",
+      "moonDesc": "Seu mundo interior",
+      "rising": "Ascendente",
+      "risingDesc": "Como os outros te veem",
+      "unknownTimeNote": "Hora de nascimento desconhecida — seu Ascendente e suas casas são aproximados (calculados para 12:00 do meio-dia).",
+      "shareBigThree": "Compartilhar meu Grande Trio",
+      "newChart": "Novo mapa",
+      "planetaryPositions": "Posições planetárias",
+      "planetInSign": "{{planet}} em {{sign}}",
+      "house": "Casa {{number}}",
+      "shareText": "Sou Sol em {{sun}}, Lua em {{moon}}, Ascendente em {{rising}} ✨ Calcule o seu de graça:",
+      "shareTitle": "Meu Grande Trio — Align",
+      "linkCopied": "Link copiado para a área de transferência!"
+    },
+    "errors": {
+      "selectLocation": "Selecione um local de nascimento entre as sugestões."
+    },
+    "cta": {
+      "heading": "Isto é só a superfície",
+      "description": "Crie uma conta gratuita para salvar seu mapa, obter interpretações com IA, trânsitos diários, leituras de compatibilidade e muito mais — em 20 idiomas.",
+      "saveChart": "Salvar meu mapa — Grátis",
+      "noCreditCard": "Não requer cartão de crédito."
+    }
+  },
+  "hiddenZodiac": {
+    "form": {
+      "modeBirth": "A partir dos meus dados de nascimento",
+      "modeManual": "Sei os graus exatos",
+      "planetOrPointReveal": "Planeta ou ponto a revelar",
+      "planetOrPoint": "Planeta ou ponto",
+      "zodiacSign": "Signo do zodíaco",
+      "birthDate": "Data de nascimento",
+      "birthTime": "Hora de nascimento",
+      "unknownBirthTime": "Não sei minha hora de nascimento",
+      "birthPlace": "Local de nascimento",
+      "citySearchPlaceholder": "Busque cidade, estado ou país...",
+      "findingDegrees": "Encontrando seus graus exatos...",
+      "revealFree": "Revelar meu Zodíaco Oculto — Grátis",
+      "noSignup": "Não requer cadastro. Seu grau, minuto e segundo exatos são calculados para você.",
+      "exactPosition": "Posição exata dentro do signo",
+      "degree": "Grau",
+      "minute": "Minuto",
+      "second": "Segundo",
+      "secondsUnknown": "Segundos desconhecidos — calcula-se com 00″ (resultados perto de um limite podem mudar quando os segundos exatos forem conhecidos)",
+      "ascendantSign": "Signo do Ascendente (necessário para as casas ativadas)",
+      "reveal": "Revelar meu Zodíaco Oculto",
+      "enterRange": "Insira {{range}}",
+      "dmsAria": "{{label}} 0 a {{max}}",
+      "foundText": "Seu {{object}} está em {{position}}",
+      "foundTextUnknownTime": " (hora de nascimento desconhecida — as casas são aproximadas, calculadas para 12:00 do meio-dia)"
+    },
+    "errors": {
+      "correctFields": "Corrija os campos destacados.",
+      "enterBirthDate": "Insira sua data de nascimento.",
+      "selectLocation": "Selecione um local de nascimento entre as sugestões.",
+      "objectUnavailable": "{{object}} não está disponível no motor de mapa natal — mude para «Sei os graus exatos» para inseri-lo manualmente.",
+      "chartFailed": "Não foi possível calcular seu mapa. Tente novamente."
+    },
+    "result": {
+      "nthHouse": "{{ordinal}} Casa",
+      "headerObjectAt": "{{name}} em {{position}}",
+      "natalHouse": "Casa natal",
+      "duad": "Duad",
+      "compendium": "Compêndio",
+      "duadCompendiumRange": "Faixa do Duad {{duadStart}}–{{duadEnd}} · Faixa do Compêndio {{compStart}}–{{compEnd}}",
+      "nextCompendium": "O próximo Compêndio começa em {{next}}",
+      "boundarySensitive": "  ·  ⚠ Posição sensível ao limite",
+      "formulaTitle": "Sua fórmula do Zodíaco Oculto",
+      "formulaMain": "{{sign}} → {{house}}",
+      "formulaDuad": "Duad em {{sign}} → ativação da {{house}}",
+      "formulaCompendium": "Compêndio em {{sign}} → ativação da {{house}}",
+      "threeHouseTitle": "A conexão das três casas",
+      "primaryHouse": "Casa principal",
+      "duadHouse": "Casa do Duad · {{sign}}",
+      "compendiumHouse": "Casa do Compêndio · {{sign}}",
+      "houseUnknown": "Casa desconhecida",
+      "addAscendant": "Adicione um Ascendente para resolver esta casa.",
+      "makeItAboutYou": "Torne isto sobre você",
+      "rulerHintSingular": "Diga onde seu regente realmente está. A casa é calculada a partir do seu Ascendente, e a leitura se reescreve para considerá-lo.",
+      "rulerHintPlural": "Diga onde seus regentes realmente estão. A casa é calculada a partir do seu Ascendente, e a leitura se reescreve para considerá-los.",
+      "rulerIsIn": "{{ruler}} está em…",
+      "signUnknown": "— signo desconhecido —",
+      "rulerChainTitle": "Cadeia de regência",
+      "duadRulerLabel": "Duad em {{sign}}",
+      "compendiumRulerLabel": "Compêndio em {{sign}}",
+      "realLifeExamples": "Exemplos da vida real"
+    },
+    "houseBlurbs": {
+      "1": "identidade, autoimagem e como você se apresenta",
+      "2": "dinheiro, autoestima e recursos",
+      "3": "comunicação, aprendizado, irmãos",
+      "4": "lar, família, raízes, fundamentos",
+      "5": "criatividade, romance, autoexpressão",
+      "6": "trabalho, saúde, rotinas, serviço",
+      "7": "parcerias e vínculos individuais",
+      "8": "transformação, recursos compartilhados, intimidade",
+      "9": "viagens, filosofia, aprendizado superior",
+      "10": "carreira, reputação, direção de vida",
+      "11": "comunidade, amizades, visão de futuro",
+      "12": "solidão, espiritualidade, padrões ocultos"
+    }
   }
 }

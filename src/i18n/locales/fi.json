@@ -181,7 +181,7 @@
     "pathway": "Polku menestykseen",
     "nameAnalysis": "Nimianalyysi",
     "firdaria": "Firdaria",
-    "zodiacalReleasing": "Zodiacal Releasing",
+    "zodiacalReleasing": "Zodiakaalinen vapautuminen",
     "planetaryHours": "Planetaariset tunnit",
     "moonPhases": "Kuun vaiheet",
     "acg": "Astrokartografia",
@@ -615,7 +615,7 @@
       "subtitle": "Muinaiset persialaiset planeettagjaksot"
     },
     "zodiacalReleasingPage": {
-      "title": "Zodiacal Releasing",
+      "title": "Zodiakaalinen vapautuminen",
       "subtitle": "Hellenistinen ajoitustekniikka"
     },
     "acgPage": {
@@ -914,7 +914,7 @@
       "low": "#F87171"
     },
     "auraSynastry": {
-      "title": "Aura Synastry",
+      "title": "Aura-synastria",
       "yourMatch": "Ottelusi",
       "loading": "Luen energiakenttäsi...",
       "matchNotFound": "Ottelua ei löytynyt",
@@ -1948,7 +1948,54 @@
   },
   "reels": {
     "title": "Kosmiset reelsit",
-    "empty": "Ei reelseja viela"
+    "empty": "Ei reelseja viela",
+    "create": {
+      "signInTitle": "Kirjaudu sisään luodaksesi reelin",
+      "signIn": "Kirjaudu sisään",
+      "cancel": "Peruuta",
+      "title": "Luo reel",
+      "freeLimitReached": "Olet saavuttanut ilmaisrajan {{count}} reeliä tässä kuussa.",
+      "upgrade": "Päivitä",
+      "toPostUnlimited": "julkaistaksesi rajattomasti reelejä.",
+      "videoHeading": "Video",
+      "removeVideo": "Poista video",
+      "edited": "Muokattu",
+      "opening": "Avataan…",
+      "edit": "Muokkaa",
+      "stop": "Lopeta",
+      "record": "Tallenna",
+      "uploadVideo": "Lataa video",
+      "videoHint": "MP4 tai MOV, enintään 100 Mt.",
+      "recordingUnsupported": "Tallennusta ei tueta tässä selaimessa — lataa video sen sijaan.",
+      "caption": "Kuvateksti",
+      "captionPlaceholder": "Mitä sinulla on mielessä?",
+      "category": "Kategoria",
+      "tags": "Tunnisteet",
+      "tagsPlaceholder": "rakkaus, kasvu, merkurius peruutusliikkeessä...",
+      "tagsHint": "Erota pilkuilla. Enintään 10 tunnistetta.",
+      "visibility": "Näkyvyys",
+      "visibilityPublic": "Julkinen",
+      "visibilityFriends": "Ystävät",
+      "visibilityPrivate": "Yksityinen",
+      "downloads": "Lataukset",
+      "allowDownload": "Salli muiden ladata tämä reel",
+      "allowDownloadHint": "Tallennetut kopiot päättyvät Alignin lopputekstiin.",
+      "hideAstroTags": "♈ Piilota astrologiatunnisteet",
+      "addAstroTags": "♈ Lisää astrologiatunnisteita (valinnainen)",
+      "astroHint": "Merkitse tämä reel astrologiaan liittyväksi. Tämä on täysin valinnaista.",
+      "zodiacSign": "Horoskooppimerkki",
+      "topic": "Aihe",
+      "topicPlaceholder": "esim. saturnuksen paluu, venustransiitti, syntymäkartta...",
+      "publishing": "Julkaistaan...",
+      "publishReel": "Julkaise reel",
+      "errorOpenEditor": "Editoria ei voitu avata. Yritä uudelleen.",
+      "errorNotVideo": "Valitse videotiedosto.",
+      "errorTooLarge": "Video on liian suuri. Enimmäiskoko on 100 Mt.",
+      "errorUploadFailed": "Lataus epäonnistui. Tarkista yhteytesi ja yritä uudelleen.",
+      "errorNoVideo": "Ei julkaistavaa videota.",
+      "errorPublishFailed": "Reeliä ei voitu julkaista.",
+      "errorGeneric": "Jokin meni pieleen."
+    }
   },
   "fragments": {
     "title": "Kosmiset fragmentit",
@@ -2938,11 +2985,170 @@
       "early": "Varhainen",
       "middle": "Keski",
       "late": "Myöhäinen"
+    },
+    "readFrom": "Luettu drakonisesta ascendantistasi kohdassa {{asc}} ja drakonisesta Maastasi kohdassa {{earth}} huoneessa {{house}}.",
+    "linkCopied": "Linkki kopioitu ✓",
+    "shareText": "Sieluni ikä: {{age}} — {{count}} universaalia elinaikaa.",
+    "form": {
+      "noAccountNote": "Tiliä ei tarvita. Laske niin monta karttaa kuin haluat.",
+      "orAnotherBelow": "tai laske toinen henkilö alta",
+      "nameLabel": "Nimi tai kartan tunniste",
+      "namePlaceholder": "esim. Oma karttani",
+      "birthDate": "Syntymäaika",
+      "birthTime": "Tarkka syntymäkellonaika",
+      "birthTimeHint": "Pakollinen — drakoninen ascendant riippuu siitä.",
+      "secondsKnown": "Tiedän syntymäkellonaikani sekunnit",
+      "seconds": "Sekunnit",
+      "secondsNote": "Laskettu käyttäen syntymäajan sekunteina 00. Tarkat sekunnit voivat hieman tarkentaa tulosta.",
+      "birthplace": "Syntymäpaikka",
+      "birthplacePlaceholder": "Hae syntymäkaupunkiasi..."
+    },
+    "table": {
+      "chart": "Kartta",
+      "universal": "Universaali",
+      "earth": "Maa",
+      "onEarth": "Maassa",
+      "myChart": "Oma karttani",
+      "savedChart": "Tallennettu kartta",
+      "needsRefreshTitle": "Laskettu vanhemmalla menetelmällä tai keskisolmulla — avaa uudelleen päivittääksesi"
+    },
+    "cta": {
+      "readAnotherTitle": "Lue toinen kartta",
+      "readAnotherBody": "Laske minkä tahansa tallennetun kartan sieluni ikä, tai syötä uusi henkilö. Se on aina ilmaista.",
+      "calculateAnotherChart": "Laske toinen kartta",
+      "saveTitle": "Tallenna tämä tulos",
+      "saveBody": "Syntymätietojasi ei ole tallennettu. Luo ilmainen tili tallentaaksesi tämän lukeman karttaasi, laskeaksesi sen uudelleen muokkausten jälkeen ja vertaillaksesi sielunikiä tallennettujen karttojen välillä.",
+      "createAccount": "Luo tili tallentaaksesi tuloksen"
+    },
+    "errors": {
+      "noBirthDate": "Anna syntymäaika.",
+      "noBirthplace": "Valitse syntymäpaikka ehdotuksista, jotta ascendant voidaan laskea.",
+      "calcFailed": "Karttaa ei voitu laskea. Yritä uudelleen.",
+      "needBirthDetails": "Lisää ensin syntymätietosi profiiliisi — Sielun iän laskuri tarvitsee ne.",
+      "savedNoBirthTime": "{{name}} ei ole tallennettu tarkkaa syntymäkellonaikaa.",
+      "chartGone": "Tuota karttaa ei ole enää tallennettu tilillesi.",
+      "saveFailed": "Tämän tuloksen tallentaminen epäonnistui."
     }
   },
   "cosmicMatch": {
     "searchPlaceholder": "Hae nimellä tai tähtimerkillä",
     "noSearchResults": "Osumia ei löytynyt",
     "noSearchResultsHint": "Kokeile toista nimeä tai tähtimerkkiä"
+  },
+  "birthChartCalc": {
+    "form": {
+      "birthDate": "Syntymäaika",
+      "birthTime": "Syntymäkellonaika",
+      "unknownTime": "En tiedä syntymäkellonaikaani",
+      "birthPlace": "Syntymäpaikka",
+      "locationPlaceholder": "Hae kaupunki, alue tai maa...",
+      "submit": "Laske syntymäkarttani — ilmaiseksi",
+      "noSignup": "Rekisteröitymistä ei tarvita. Tietojasi ei tallenneta."
+    },
+    "result": {
+      "calculating": "Lasketaan syntymäkarttaasi...",
+      "sun": "Aurinko",
+      "sunDesc": "Ydinminäsi",
+      "moon": "Kuu",
+      "moonDesc": "Sisäinen maailmasi",
+      "rising": "Nouseva merkki",
+      "risingDesc": "Miten muut näkevät sinut",
+      "unknownTimeNote": "Syntymäkellonaika tuntematon — nouseva merkkisi ja huoneesi ovat likimääräisiä (laskettu klo 12:00).",
+      "shareBigThree": "Jaa kolme suurtani",
+      "newChart": "Uusi kartta",
+      "planetaryPositions": "Planeettojen sijainnit",
+      "planetInSign": "{{planet}} merkissä {{sign}}",
+      "house": "Huone {{number}}",
+      "shareText": "Minulla on {{sun}}-aurinko, {{moon}}-kuu, {{rising}}-nouseva ✨ Laske omasi ilmaiseksi:",
+      "shareTitle": "Kolme suurtani — Align",
+      "linkCopied": "Linkki kopioitu leikepöydälle!"
+    },
+    "errors": {
+      "selectLocation": "Valitse syntymäpaikka ehdotuksista."
+    },
+    "cta": {
+      "heading": "Tämä on vasta pintaa",
+      "description": "Luo ilmainen tili tallentaaksesi karttasi, saadaksesi tekoälypohjaisia tulkintoja, päivittäisiä transiitteja, yhteensopivuuslukemia ja paljon muuta — 20 kielellä.",
+      "saveChart": "Tallenna karttani — ilmaiseksi",
+      "noCreditCard": "Luottokorttia ei tarvita."
+    }
+  },
+  "hiddenZodiac": {
+    "form": {
+      "modeBirth": "Syntymätiedoistani",
+      "modeManual": "Tiedän tarkat asteet",
+      "planetOrPointReveal": "Paljastettava planeetta tai piste",
+      "planetOrPoint": "Planeetta tai piste",
+      "zodiacSign": "Horoskooppimerkki",
+      "birthDate": "Syntymäaika",
+      "birthTime": "Syntymäkellonaika",
+      "unknownBirthTime": "En tiedä syntymäkellonaikaani",
+      "birthPlace": "Syntymäpaikka",
+      "citySearchPlaceholder": "Hae kaupunki, alue tai maa...",
+      "findingDegrees": "Etsitään tarkkoja asteitasi...",
+      "revealFree": "Paljasta piilotettu zodiakkini — ilmaiseksi",
+      "noSignup": "Rekisteröitymistä ei tarvita. Tarkka asteesi, minuuttisi ja sekuntisi lasketaan puolestasi.",
+      "exactPosition": "Tarkka sijainti merkin sisällä",
+      "degree": "Aste",
+      "minute": "Minuutti",
+      "second": "Sekunti",
+      "secondsUnknown": "Sekunnit tuntemattomat — laske arvolla 00″ (rajan lähellä olevat tulokset voivat muuttua, kun tarkat sekunnit tiedetään)",
+      "ascendantSign": "Ascendantin merkki (tarvitaan aktivoituja huoneita varten)",
+      "reveal": "Paljasta piilotettu zodiakkini",
+      "enterRange": "Anna {{range}}",
+      "dmsAria": "{{label}} 0 – {{max}}",
+      "foundText": "{{object}} sijaitsee kohdassa {{position}}",
+      "foundTextUnknownTime": " (syntymäkellonaika tuntematon — huoneet ovat likimääräisiä, laskettu klo 12:00)"
+    },
+    "errors": {
+      "correctFields": "Korjaa korostetut kentät.",
+      "enterBirthDate": "Anna syntymäaikasi.",
+      "selectLocation": "Valitse syntymäpaikka ehdotuksista.",
+      "objectUnavailable": "{{object}} ei ole saatavilla syntymäkarttamoottorista — vaihda vaihtoehtoon \"Tiedän tarkat asteet\" syöttääksesi sen manuaalisesti.",
+      "chartFailed": "Karttaasi ei voitu laskea. Yritä uudelleen."
+    },
+    "result": {
+      "nthHouse": "{{ordinal}} huone",
+      "headerObjectAt": "{{name}} kohdassa {{position}}",
+      "natalHouse": "Syntymähuone",
+      "duad": "Duad",
+      "compendium": "Kompendium",
+      "duadCompendiumRange": "Duad-alue {{duadStart}}–{{duadEnd}} · Kompendium-alue {{compStart}}–{{compEnd}}",
+      "nextCompendium": "Seuraava kompendium alkaa {{next}} kuluttua",
+      "boundarySensitive": "  ·  ⚠ Rajaherkkä sijainti",
+      "formulaTitle": "Piilotetun zodiakkisi kaava",
+      "formulaMain": "{{sign}} → {{house}}",
+      "formulaDuad": "{{sign}} duad → {{house}} aktivointi",
+      "formulaCompendium": "{{sign}} kompendium → {{house}} aktivointi",
+      "threeHouseTitle": "Kolmen huoneen yhteys",
+      "primaryHouse": "Ensisijainen huone",
+      "duadHouse": "Duad-huone · {{sign}}",
+      "compendiumHouse": "Kompendium-huone · {{sign}}",
+      "houseUnknown": "Huone tuntematon",
+      "addAscendant": "Lisää ascendant tämän huoneen ratkaisemiseksi.",
+      "makeItAboutYou": "Tee siitä henkilökohtainen",
+      "rulerHintSingular": "Kerro, missä hallitsijasi todella sijaitsee. Huone lasketaan ascendantistasi, ja lukema kirjoitetaan uudelleen ottaen sen huomioon.",
+      "rulerHintPlural": "Kerro, missä hallitsijasi todella sijaitsevat. Huone lasketaan ascendantistasi, ja lukema kirjoitetaan uudelleen ottaen sen huomioon.",
+      "rulerIsIn": "{{ruler}} on…",
+      "signUnknown": "— merkki tuntematon —",
+      "rulerChainTitle": "Hallitsijaketju",
+      "duadRulerLabel": "{{sign}} duad",
+      "compendiumRulerLabel": "{{sign}} kompendium",
+      "realLifeExamples": "Tosielämän esimerkkejä"
+    },
+    "houseBlurbs": {
+      "1": "identiteetti, minäkuva ja miten esiinnyt",
+      "2": "raha, itsearvostus ja voimavarat",
+      "3": "viestintä, oppiminen, sisarukset",
+      "4": "koti, perhe, juuret, perusta",
+      "5": "luovuus, romantiikka, itseilmaisu",
+      "6": "työ, terveys, rutiinit, palvelu",
+      "7": "kumppanuudet ja kahdenkeskiset siteet",
+      "8": "muutos, jaetut voimavarat, läheisyys",
+      "9": "matkustaminen, filosofia, korkeampi oppiminen",
+      "10": "ura, maine, elämänsuunta",
+      "11": "yhteisö, ystävyyssuhteet, tulevaisuudennäkymä",
+      "12": "yksinäisyys, henkisyys, piilotetut kaavat"
+    }
   }
 }

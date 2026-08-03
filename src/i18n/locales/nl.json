@@ -549,7 +549,7 @@
       "pictureScanDesc": "Neem een selfie of upload een foto",
       "voiceScanTitle": "Stem Aura Scan",
       "voiceScanDesc": "Vertel Align wat je nu voelt",
-      "videoScanTitle": "Live Video Scan",
+      "videoScanTitle": "Live videoscan",
       "videoScanDesc": "15-seconden video van je energie",
       "deepReadingTitle": "Diepe Aura Lezing",
       "deepReadingDesc": "Foto + stem + humeur + astrologie gecombineerd",
@@ -577,7 +577,7 @@
       "detectedTone": "Gedetecteerde toon:",
       "micDenied": "Microfoon toegang niet beschikbaar",
       "micDeniedHint": "Je kunt typen wat je voelt in plaats daarvan",
-      "videoStepTitle2": "Live Video Scan",
+      "videoStepTitle2": "Live videoscan",
       "videoStepDesc": "Kijk in de camera. Adem normaal. Neem 15 seconden op.",
       "recordVideo": "Video Opnemen",
       "skipVideo": "Video scan overslaan",
@@ -914,7 +914,7 @@
       "low": "#F87171"
     },
     "auraSynastry": {
-      "title": "Aura Synastry",
+      "title": "Aura-synastrie",
       "yourMatch": "Jouw Match",
       "loading": "Je energievelden aan het lezen...",
       "matchNotFound": "Match niet gevonden",
@@ -980,7 +980,7 @@
       "text": "Tekst",
       "photo": "Foto",
       "video": "Video",
-      "poll": "Poll"
+      "poll": "Peiling"
     },
     "composer": {
       "placeholder": "Wat houdt je kosmische geest bezig?",
@@ -1124,7 +1124,7 @@
       "gif": "GIF",
       "voiceMessage": "Spraakbericht",
       "location": "Locatie",
-      "poll": "Poll:"
+      "poll": "Peiling:"
     },
     "composer": {
       "placeholder": "Typ een bericht...",
@@ -1719,7 +1719,7 @@
       "fullInterpretation": "Volledige interpretatie",
       "astrologicalDetails": "Astrologische details",
       "transit": "Transit",
-      "natal": "Natal",
+      "natal": "Nataal",
       "aspect": "Aspect",
       "retrograde": "Retrograde",
       "yes": "Ja",
@@ -1948,7 +1948,54 @@
   },
   "reels": {
     "title": "Kosmische Reels",
-    "empty": "Nog geen reels"
+    "empty": "Nog geen reels",
+    "create": {
+      "signInTitle": "Meld je aan om een reel te maken",
+      "signIn": "Aanmelden",
+      "cancel": "Annuleren",
+      "title": "Reel maken",
+      "freeLimitReached": "Je hebt de gratis limiet van {{count}} reels deze maand bereikt.",
+      "upgrade": "Upgraden",
+      "toPostUnlimited": "om onbeperkt reels te plaatsen.",
+      "videoHeading": "Video",
+      "removeVideo": "Video verwijderen",
+      "edited": "Bewerkt",
+      "opening": "Wordt geopend…",
+      "edit": "Bewerken",
+      "stop": "Stoppen",
+      "record": "Opnemen",
+      "uploadVideo": "Een video uploaden",
+      "videoHint": "MP4 of MOV, tot 100 MB.",
+      "recordingUnsupported": "Opnemen wordt niet ondersteund in deze browser — upload in plaats daarvan een video.",
+      "caption": "Bijschrift",
+      "captionPlaceholder": "Wat houdt je bezig?",
+      "category": "Categorie",
+      "tags": "Tags",
+      "tagsPlaceholder": "liefde, groei, mercurius retrograde...",
+      "tagsHint": "Scheid met komma's. Maximaal 10 tags.",
+      "visibility": "Zichtbaarheid",
+      "visibilityPublic": "Openbaar",
+      "visibilityFriends": "Vrienden",
+      "visibilityPrivate": "Privé",
+      "downloads": "Downloads",
+      "allowDownload": "Anderen deze reel laten downloaden",
+      "allowDownloadHint": "Opgeslagen kopieën eindigen met de Align-outro.",
+      "hideAstroTags": "♈ Astrologietags verbergen",
+      "addAstroTags": "♈ Astrologietags toevoegen (optioneel)",
+      "astroHint": "Markeer deze reel als astrologiegerelateerd. Dit is volledig optioneel.",
+      "zodiacSign": "Sterrenbeeld",
+      "topic": "Onderwerp",
+      "topicPlaceholder": "bijv. saturnus-terugkeer, venus-transit, geboortehoroscoop...",
+      "publishing": "Wordt gepubliceerd...",
+      "publishReel": "Reel publiceren",
+      "errorOpenEditor": "De editor kon niet worden geopend. Probeer het opnieuw.",
+      "errorNotVideo": "Kies een videobestand.",
+      "errorTooLarge": "De video is te groot. De maximale grootte is 100 MB.",
+      "errorUploadFailed": "Uploaden mislukt. Controleer je verbinding en probeer het opnieuw.",
+      "errorNoVideo": "Geen video om te publiceren.",
+      "errorPublishFailed": "Reel kon niet worden gepubliceerd.",
+      "errorGeneric": "Er is iets misgegaan."
+    }
   },
   "fragments": {
     "title": "Kosmische Fragmenten",
@@ -2938,11 +2985,170 @@
       "early": "Vroeg",
       "middle": "Midden",
       "late": "Laat"
+    },
+    "readFrom": "Gelezen uit je draconische ascendant op {{asc}} en je draconische Aarde op {{earth}} in het {{house}}.",
+    "linkCopied": "Link gekopieerd ✓",
+    "shareText": "Mijn zielsleeftijd: {{age}} — {{count}} universele levens.",
+    "form": {
+      "noAccountNote": "Geen account nodig. Bereken zoveel horoscopen als je wilt.",
+      "orAnotherBelow": "of bereken hieronder een andere persoon",
+      "nameLabel": "Naam of horoscooplabel",
+      "namePlaceholder": "bijv. Mijn horoscoop",
+      "birthDate": "Geboortedatum",
+      "birthTime": "Exacte geboortetijd",
+      "birthTimeHint": "Vereist — de draconische ascendant hangt ervan af.",
+      "secondsKnown": "Ik ken de seconden van mijn geboortetijd",
+      "seconds": "Seconden",
+      "secondsNote": "Berekend met 00 seconden geboortetijd. Exacte seconden kunnen het resultaat licht verfijnen.",
+      "birthplace": "Geboorteplaats",
+      "birthplacePlaceholder": "Zoek je geboortestad..."
+    },
+    "table": {
+      "chart": "Horoscoop",
+      "universal": "Universeel",
+      "earth": "Aarde",
+      "onEarth": "Op Aarde",
+      "myChart": "Mijn horoscoop",
+      "savedChart": "Opgeslagen horoscoop",
+      "needsRefreshTitle": "Berekend met een oudere methode of de Gemiddelde Knoop — heropen om te vernieuwen"
+    },
+    "cta": {
+      "readAnotherTitle": "Nog een horoscoop lezen",
+      "readAnotherBody": "Bereken de zielsleeftijd van elk opgeslagen horoscoop, of voer iemand nieuw in. Het is altijd gratis.",
+      "calculateAnotherChart": "Nog een horoscoop berekenen",
+      "saveTitle": "Dit resultaat opslaan",
+      "saveBody": "Je geboortegegevens zijn niet opgeslagen. Maak een gratis account om deze lezing in je horoscoop op te slaan, deze na bewerkingen opnieuw te berekenen en zielsleeftijden tussen opgeslagen horoscopen te vergelijken.",
+      "createAccount": "Account maken om resultaat op te slaan"
+    },
+    "errors": {
+      "noBirthDate": "Voer een geboortedatum in.",
+      "noBirthplace": "Kies een geboorteplaats uit de suggesties zodat de ascendant kan worden berekend.",
+      "calcFailed": "Het horoscoop kon niet worden berekend. Probeer het opnieuw.",
+      "needBirthDetails": "Voeg eerst je geboortegegevens toe aan je profiel — de zielsleeftijdcalculator heeft ze nodig.",
+      "savedNoBirthTime": "Voor {{name}} is geen exacte geboortetijd opgeslagen.",
+      "chartGone": "Dit horoscoop is niet langer opgeslagen in je account.",
+      "saveFailed": "Dit resultaat kon niet worden opgeslagen."
     }
   },
   "cosmicMatch": {
     "searchPlaceholder": "Zoek op naam of sterrenbeeld",
     "noSearchResults": "Geen matches gevonden",
     "noSearchResultsHint": "Probeer een andere naam of sterrenbeeld"
+  },
+  "birthChartCalc": {
+    "form": {
+      "birthDate": "Geboortedatum",
+      "birthTime": "Geboortetijd",
+      "unknownTime": "Ik ken mijn geboortetijd niet",
+      "birthPlace": "Geboorteplaats",
+      "locationPlaceholder": "Zoek stad, provincie of land...",
+      "submit": "Bereken mijn geboortehoroscoop — gratis",
+      "noSignup": "Geen registratie nodig. Je gegevens worden niet opgeslagen."
+    },
+    "result": {
+      "calculating": "Je geboortehoroscoop wordt berekend...",
+      "sun": "Zon",
+      "sunDesc": "Je kern-zelf",
+      "moon": "Maan",
+      "moonDesc": "Je innerlijke wereld",
+      "rising": "Ascendant",
+      "risingDesc": "Hoe anderen je zien",
+      "unknownTimeNote": "Geboortetijd onbekend — je ascendant en huizen zijn bij benadering (berekend voor 12:00 uur 's middags).",
+      "shareBigThree": "Mijn Big Three delen",
+      "newChart": "Nieuw horoscoop",
+      "planetaryPositions": "Planeetposities",
+      "planetInSign": "{{planet}} in {{sign}}",
+      "house": "Huis {{number}}",
+      "shareText": "Ik ben {{sun}}-Zon, {{moon}}-Maan, {{rising}}-Ascendant ✨ Bereken die van jou gratis:",
+      "shareTitle": "Mijn Big Three — Align",
+      "linkCopied": "Link gekopieerd naar klembord!"
+    },
+    "errors": {
+      "selectLocation": "Kies een geboorteplaats uit de suggesties."
+    },
+    "cta": {
+      "heading": "Dit is slechts het oppervlak",
+      "description": "Maak een gratis account om je horoscoop op te slaan, AI-gestuurde interpretaties, dagelijkse transits, compatibiliteitsanalyses en meer te krijgen — in 20 talen.",
+      "saveChart": "Mijn horoscoop opslaan — gratis",
+      "noCreditCard": "Geen creditcard nodig."
+    }
+  },
+  "hiddenZodiac": {
+    "form": {
+      "modeBirth": "Uit mijn geboortegegevens",
+      "modeManual": "Ik ken de exacte graden",
+      "planetOrPointReveal": "Planeet of punt om te onthullen",
+      "planetOrPoint": "Planeet of punt",
+      "zodiacSign": "Sterrenbeeld",
+      "birthDate": "Geboortedatum",
+      "birthTime": "Geboortetijd",
+      "unknownBirthTime": "Ik ken mijn geboortetijd niet",
+      "birthPlace": "Geboorteplaats",
+      "citySearchPlaceholder": "Zoek stad, provincie of land...",
+      "findingDegrees": "Je exacte graden worden gezocht...",
+      "revealFree": "Mijn verborgen dierenriem onthullen — gratis",
+      "noSignup": "Geen registratie nodig. Je exacte graad, minuut en seconde worden voor je berekend.",
+      "exactPosition": "Exacte positie binnen het teken",
+      "degree": "Graad",
+      "minute": "Minuut",
+      "second": "Seconde",
+      "secondsUnknown": "Seconden onbekend — berekend met 00″ (resultaten nabij een grens kunnen veranderen zodra de exacte seconden bekend zijn)",
+      "ascendantSign": "Ascendantteken (nodig voor de geactiveerde huizen)",
+      "reveal": "Mijn verborgen dierenriem onthullen",
+      "enterRange": "Voer {{range}} in",
+      "dmsAria": "{{label}} 0 tot {{max}}",
+      "foundText": "Je {{object}} staat op {{position}}",
+      "foundTextUnknownTime": " (geboortetijd onbekend — huizen zijn bij benadering, berekend voor 12:00 uur 's middags)"
+    },
+    "errors": {
+      "correctFields": "Corrigeer de gemarkeerde velden.",
+      "enterBirthDate": "Voer je geboortedatum in.",
+      "selectLocation": "Kies een geboorteplaats uit de suggesties.",
+      "objectUnavailable": "{{object}} is niet beschikbaar via de horoscoop-engine — schakel over naar \"Ik ken de exacte graden\" om het handmatig in te voeren.",
+      "chartFailed": "Je horoscoop kon niet worden berekend. Probeer het opnieuw."
+    },
+    "result": {
+      "nthHouse": "{{ordinal}} huis",
+      "headerObjectAt": "{{name}} op {{position}}",
+      "natalHouse": "Radix-huis",
+      "duad": "Duad",
+      "compendium": "Compendium",
+      "duadCompendiumRange": "Duad-bereik {{duadStart}}–{{duadEnd}} · Compendium-bereik {{compStart}}–{{compEnd}}",
+      "nextCompendium": "Volgend Compendium begint over {{next}}",
+      "boundarySensitive": "  ·  ⚠ Grensgevoelige plaatsing",
+      "formulaTitle": "Jouw formule van de verborgen dierenriem",
+      "formulaMain": "{{sign}} → {{house}}",
+      "formulaDuad": "{{sign}} Duad → {{house}}-activering",
+      "formulaCompendium": "{{sign}} Compendium → {{house}}-activering",
+      "threeHouseTitle": "De drie-huizen-verbinding",
+      "primaryHouse": "Primair huis",
+      "duadHouse": "Duad-huis · {{sign}}",
+      "compendiumHouse": "Compendium-huis · {{sign}}",
+      "houseUnknown": "Huis onbekend",
+      "addAscendant": "Voeg een ascendant toe om dit huis te bepalen.",
+      "makeItAboutYou": "Maak het over jou",
+      "rulerHintSingular": "Vertel het waar je heerser werkelijk staat. Het huis wordt bepaald op basis van je ascendant, en de lezing herschrijft zichzelf om het mee te wegen.",
+      "rulerHintPlural": "Vertel het waar je heersers werkelijk staan. Het huis wordt bepaald op basis van je ascendant, en de lezing herschrijft zichzelf om ze mee te wegen.",
+      "rulerIsIn": "{{ruler}} staat in…",
+      "signUnknown": "— teken onbekend —",
+      "rulerChainTitle": "Heersersketen",
+      "duadRulerLabel": "{{sign}} Duad",
+      "compendiumRulerLabel": "{{sign}} Compendium",
+      "realLifeExamples": "Praktijkvoorbeelden"
+    },
+    "houseBlurbs": {
+      "1": "identiteit, zelfbeeld en hoe je je presenteert",
+      "2": "geld, eigenwaarde en middelen",
+      "3": "communicatie, leren, broers en zussen",
+      "4": "thuis, familie, wortels, fundamenten",
+      "5": "creativiteit, romantiek, zelfexpressie",
+      "6": "werk, gezondheid, routines, dienstbaarheid",
+      "7": "partnerschappen en één-op-één-banden",
+      "8": "transformatie, gedeelde middelen, intimiteit",
+      "9": "reizen, filosofie, hoger leren",
+      "10": "carrière, reputatie, levensrichting",
+      "11": "gemeenschap, vriendschappen, toekomstvisie",
+      "12": "afzondering, spiritualiteit, verborgen patronen"
+    }
   }
 }

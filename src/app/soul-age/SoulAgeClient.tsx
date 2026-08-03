@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { createClient } from '@/lib/supabase';
@@ -23,7 +24,6 @@ import { CitySearch } from '@/components/ui/CitySearch';
 import {
   calculateSoulAge,
   buildSoulAgeInputFromPositions,
-  BIRTH_TIME_REQUIRED_MESSAGE,
   type SoulAgeResult,
 } from '@/lib/engines/soulAgeEngine';
 import {
@@ -31,8 +31,6 @@ import {
   buildShareCard,
   formatCount,
   ordinalHouse,
-  SOUL_AGE_DISCLAIMER,
-  SOUL_AGE_CREDIT,
   type SoulAgeInterpretation,
 } from '@/lib/engines/soulAgeInterpretation';
 import {
@@ -138,6 +136,7 @@ function Section({ section, index }: { section: SoulAgeInterpretation['sections'
 }
 
 export function SoulAgeClient() {
+  const { t } = useTranslation();
   const [label, setLabel] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [birthTime, setBirthTime] = useState('');
@@ -211,11 +210,11 @@ export function SoulAgeClient() {
     setSaveState('idle');
     setSubjectKey(source.subjectKey ?? null);
 
-    if (!source.date) { setError('Please enter a birth date.'); return; }
+    if (!source.date) { setError(t('soulAge.errors.noBirthDate')); return; }
     // §17 — an accurate birth time is required. Never silently substitute noon.
-    if (!source.time) { setError(BIRTH_TIME_REQUIRED_MESSAGE); return; }
+    if (!source.time) { setError(t('soulAge.birthTimeRequired')); return; }
     if (source.latitude == null || source.longitude == null) {
-      setError('Please choose a birthplace from the suggestions so the Ascendant can be calculated.');
+      setError(t('soulAge.errors.noBirthplace'));
       return;
     }
 
@@ -253,7 +252,7 @@ export function SoulAgeClient() {
       setSubjectLabel(source.label);
       // Guest birth data stays in component state only — never persisted.
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not calculate the chart. Please try again.');
+      setError(err instanceof Error ? err.message : t('soulAge.errors.calcFailed'));
     } finally {
       setLoading(false);
     }
@@ -281,13 +280,13 @@ export function SoulAgeClient() {
     if (!profile?.birth_date || !profile.birth_time) {
       setError(
         profile?.birth_date
-          ? BIRTH_TIME_REQUIRED_MESSAGE
-          : 'Add your birth details to your profile first — the Soul Age Calculator needs them.',
+          ? t('soulAge.birthTimeRequired')
+          : t('soulAge.errors.needBirthDetails'),
       );
       return;
     }
     runCalculation({
-      label: profile.display_name || 'My chart',
+      label: profile.display_name || t('soulAge.table.myChart'),
       date: profile.birth_date,
       time: profile.birth_time,
       place: profile.birth_location || '',
@@ -301,7 +300,7 @@ export function SoulAgeClient() {
 
   function calculateSaved(chart: SavedChartRow) {
     if (chart.birth_time_unknown || !chart.birth_time) {
-      setError(`${chart.full_name} has no exact birth time saved. ${BIRTH_TIME_REQUIRED_MESSAGE}`);
+      setError(`${t('soulAge.errors.savedNoBirthTime', { name: chart.full_name })} ${t('soulAge.birthTimeRequired')}`);
       return;
     }
     runCalculation({
@@ -328,7 +327,7 @@ export function SoulAgeClient() {
     if (stored.subject_key === 'self') { calculateMine(); return; }
     const chart = savedCharts.find((c) => c.id === stored.subject_key);
     if (chart) { calculateSaved(chart); return; }
-    setError('That chart is no longer saved to your account.');
+    setError(t('soulAge.errors.chartGone'));
   }
 
   /**
@@ -373,7 +372,7 @@ export function SoulAgeClient() {
       void loadSavedResults(); // keep the comparison table current
     } catch (err) {
       setSaveState('error');
-      setError(err instanceof Error ? err.message : 'Could not save this result.');
+      setError(err instanceof Error ? err.message : t('soulAge.errors.saveFailed'));
     }
   }
 
@@ -381,10 +380,13 @@ export function SoulAgeClient() {
     const url = shareUrl();
     if (!url) return;
     const absolute = new URL(url, window.location.origin).toString();
-    const text = `My Soul Age: ${result!.universalSoulAge.label} — ${formatCount(result!.totalUniversalLifetimes)} universal lifetimes.`;
+    const text = t('soulAge.shareText', {
+      age: result!.universalSoulAge.label,
+      count: formatCount(result!.totalUniversalLifetimes),
+    });
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'Soul Age Calculator', text, url: absolute });
+        await navigator.share({ title: t('soulAge.title'), text, url: absolute });
       } else {
         await navigator.clipboard.writeText(`${text} ${absolute}`);
         setCopied(true);
@@ -402,15 +404,15 @@ export function SoulAgeClient() {
       {!result ? (
         <div className="bg-bg-card border border-border-primary rounded-2xl p-6 space-y-5">
           <div className="flex items-center gap-2">
-            <span className="sa-free-badge">FREE</span>
-            <span className="text-xs text-text-muted">No account required. Calculate as many charts as you like.</span>
+            <span className="sa-free-badge">{t('soulAge.free')}</span>
+            <span className="text-xs text-text-muted">{t('soulAge.form.noAccountNote')}</span>
           </div>
 
           {/* §16 — signed-in shortcuts. Guests go straight to the form below. */}
           {isAuthenticated ? (
             <div className="space-y-2">
               <button type="button" onClick={calculateMine} disabled={loading} className="btn-primary w-full py-2.5 text-sm disabled:opacity-60">
-                Calculate My Soul Age
+                {t('soulAge.calculateMine')}
               </button>
               {savedCharts.length > 0 ? (
                 <>
@@ -420,7 +422,7 @@ export function SoulAgeClient() {
                     aria-expanded={showSaved}
                     className="btn-ghost w-full py-2.5 text-sm"
                   >
-                    Choose a Saved Chart ({savedCharts.length})
+                    {t('soulAge.chooseSaved')} ({savedCharts.length})
                   </button>
                   {showSaved ? (
                     <div className="border border-border-primary rounded-xl divide-y divide-[#262C42] max-h-64 overflow-y-auto">
@@ -434,7 +436,7 @@ export function SoulAgeClient() {
                           <span className="block text-sm text-text-primary">{c.full_name}</span>
                           <span className="block text-[11px] text-text-muted mt-0.5">
                             {c.birth_date}
-                            {c.birth_time_unknown || !c.birth_time ? ' · birth time unknown' : ` · ${c.birth_time}`}
+                            {c.birth_time_unknown || !c.birth_time ? ` · ${t('soulAge.birthTimeUnknown')}` : ` · ${c.birth_time}`}
                             {c.birth_place ? ` · ${c.birth_place}` : ''}
                           </span>
                         </button>
@@ -443,25 +445,25 @@ export function SoulAgeClient() {
                   ) : null}
                 </>
               ) : null}
-              <p className="text-[11px] text-text-muted text-center pt-1">or calculate another person below</p>
+              <p className="text-[11px] text-text-muted text-center pt-1">{t('soulAge.form.orAnotherBelow')}</p>
             </div>
           ) : null}
 
-          <Field label="Name or chart label">
+          <Field label={t('soulAge.form.nameLabel')}>
             <input
               className="sa-input"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. My chart"
+              placeholder={t('soulAge.form.namePlaceholder')}
               maxLength={40}
             />
           </Field>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Birth date">
+            <Field label={t('soulAge.form.birthDate')}>
               <input type="date" className="sa-input" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
             </Field>
-            <Field label="Exact birth time" hint="Required — the Draconic Ascendant depends on it.">
+            <Field label={t('soulAge.form.birthTime')} hint={t('soulAge.form.birthTimeHint')}>
               <input type="time" className="sa-input" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} />
             </Field>
           </div>
@@ -474,11 +476,11 @@ export function SoulAgeClient() {
                 onChange={(e) => setSecondsKnown(e.target.checked)}
                 className="accent-[#9B6FF6]"
               />
-              <span className="text-xs text-text-tertiary">I know the seconds of my birth time</span>
+              <span className="text-xs text-text-tertiary">{t('soulAge.form.secondsKnown')}</span>
             </label>
             {secondsKnown ? (
               <div className="mt-3 max-w-[140px]">
-                <Field label="Seconds">
+                <Field label={t('soulAge.form.seconds')}>
                   <input
                     type="number" min={0} max={59} className="sa-input"
                     value={birthSeconds}
@@ -488,13 +490,13 @@ export function SoulAgeClient() {
               </div>
             ) : (
               <p className="text-[11px] text-text-muted mt-1.5">
-                Calculated using 00 birth-time seconds. Exact seconds may slightly refine the result.
+                {t('soulAge.form.secondsNote')}
               </p>
             )}
           </div>
 
-          <Field label="Birthplace">
-            <CitySearch value={birthLocation} onChange={handleCitySelect} placeholder="Search for your birth city..." />
+          <Field label={t('soulAge.form.birthplace')}>
+            <CitySearch value={birthLocation} onChange={handleCitySelect} placeholder={t('soulAge.form.birthplacePlaceholder')} />
           </Field>
 
           {error ? (
@@ -504,25 +506,25 @@ export function SoulAgeClient() {
           ) : null}
 
           <button type="button" onClick={calculate} disabled={loading} className="btn-primary w-full py-3 text-base disabled:opacity-60">
-            {loading ? 'Calculating…' : 'Calculate Soul Age'}
+            {loading ? t('soulAge.calculating') : t('soulAge.calculate')}
           </button>
 
           {/* §18 — compare Universal and Earth Soul Ages across saved charts.
               Ordered by universal lifetimes so the comparison reads at a glance. */}
           {savedResults.length > 0 ? (
             <div className="pt-2">
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Your saved Soul Ages</h3>
+              <h3 className="text-sm font-semibold text-text-primary mb-1">{t('soulAge.savedResults')}</h3>
               <p className="text-[11px] text-text-muted mb-3">
-                Ordered by universal lifetimes. Select one to regenerate its full reading.
+                {t('soulAge.savedResultsNote')}
               </p>
               <div className="sa-table-wrap">
                 <table className="sa-table">
                   <thead>
                     <tr>
-                      <th scope="col">Chart</th>
-                      <th scope="col">Universal</th>
-                      <th scope="col">Earth</th>
-                      <th scope="col">On Earth</th>
+                      <th scope="col">{t('soulAge.table.chart')}</th>
+                      <th scope="col">{t('soulAge.table.universal')}</th>
+                      <th scope="col">{t('soulAge.table.earth')}</th>
+                      <th scope="col">{t('soulAge.table.onEarth')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -533,10 +535,10 @@ export function SoulAgeClient() {
                         className="cursor-pointer hover:bg-white/[0.03]"
                       >
                         <td>
-                          {s.subject_label || (s.subject_key === 'self' ? 'My chart' : 'Saved chart')}
+                          {s.subject_label || (s.subject_key === 'self' ? t('soulAge.table.myChart') : t('soulAge.table.savedChart'))}
                           {isStaleResult(s) ? (
-                            <span className="sa-stale" title="Calculated with an older method or the Mean Node — reopen to refresh">
-                              needs refresh
+                            <span className="sa-stale" title={t('soulAge.table.needsRefreshTitle')}>
+                              {t('soulAge.needsRefresh')}
                             </span>
                           ) : null}
                         </td>
@@ -561,7 +563,7 @@ export function SoulAgeClient() {
         <div className="space-y-6">
           {/* ── Headline summary ── */}
           <div className="sa-summary">
-            <span className="sa-eyebrow">Soul Age Calculator</span>
+            <span className="sa-eyebrow">{t('soulAge.title')}</span>
             {subjectLabel ? (
               <h2 className="text-xl font-display font-bold text-text-primary mt-1">{subjectLabel}</h2>
             ) : null}
@@ -570,20 +572,20 @@ export function SoulAgeClient() {
             ))}
 
             <div className="sa-stat-grid mt-5">
-              <Stat label="Total Universal Lifetimes" value={formatCount(result.totalUniversalLifetimes)} accent />
-              <Stat label="Universal Soul Age" value={result.universalSoulAge.label} />
-              <Stat label="Previous Earth Lifetimes" value={formatCount(result.earthLifetimes)} accent />
-              <Stat label="Earth Soul Age" value={result.earthSoulAge.label} />
-              <Stat label="Previous Non-Earth Lifetimes" value={formatCount(result.nonEarthLifetimes)} />
-              <Stat label="Earth Incarnation Percentage" value={`${result.earthPercentage.toFixed(2)}%`} />
-              <Stat label="Earth Anchoring Score" value={`${result.earthAnchoring.displayScore} / 100`} />
+              <Stat label={t('soulAge.stats.totalUniversal')} value={formatCount(result.totalUniversalLifetimes)} accent />
+              <Stat label={t('soulAge.stats.universalAge')} value={result.universalSoulAge.label} />
+              <Stat label={t('soulAge.stats.earthLifetimes')} value={formatCount(result.earthLifetimes)} accent />
+              <Stat label={t('soulAge.stats.earthAge')} value={result.earthSoulAge.label} />
+              <Stat label={t('soulAge.stats.nonEarth')} value={formatCount(result.nonEarthLifetimes)} />
+              <Stat label={t('soulAge.stats.earthPercent')} value={`${result.earthPercentage.toFixed(2)}%`} />
+              <Stat label={t('soulAge.stats.anchoring')} value={`${result.earthAnchoring.displayScore} / 100`} />
               {/* validated / candidate — the denominator is the count the Draconic
                   Ascendant offers, so a "0 / 1" reads as "detected, not yet validated"
                   rather than "nothing found". */}
-              <Stat label="Completed Universal Cycles" value={`${result.validatedCompletedCycles} / ${result.candidateCompletedCycles}`} />
+              <Stat label={t('soulAge.stats.cycles')} value={`${result.validatedCompletedCycles} / ${result.candidateCompletedCycles}`} />
               <Stat
-                label="Current Universal Cycle"
-                value={`${(result.currentCyclePosition * 100).toFixed(2)}% through`}
+                label={t('soulAge.stats.currentCycle')}
+                value={t('soulAge.stats.through', { pct: (result.currentCyclePosition * 100).toFixed(2) })}
               />
             </div>
           </div>
@@ -599,8 +601,11 @@ export function SoulAgeClient() {
               </div>
               {dEarth ? (
                 <p className="text-[11px] text-text-muted mt-4 pt-4 border-t border-border-primary">
-                  Read from your Draconic Ascendant at {result.draconic.Ascendant.positionLabel} and your
-                  Draconic Earth at {dEarth.positionLabel} in the {ordinalHouse(dEarth.house)}.
+                  {t('soulAge.readFrom', {
+                    asc: result.draconic.Ascendant.positionLabel,
+                    earth: dEarth.positionLabel,
+                    house: ordinalHouse(dEarth.house),
+                  })}
                 </p>
               ) : null}
             </div>
@@ -615,21 +620,21 @@ export function SoulAgeClient() {
                 disabled={saveState === 'saving' || saveState === 'saved'}
                 className="btn-primary px-6 py-2.5 text-sm w-full sm:w-auto disabled:opacity-60"
               >
-                {saveState === 'saving' ? 'Saving…'
-                  : saveState === 'saved' ? 'Saved to this chart ✓'
-                  : 'Save to this chart'}
+                {saveState === 'saving' ? t('soulAge.saving')
+                  : saveState === 'saved' ? t('soulAge.savedOk')
+                  : t('soulAge.saveToChart')}
               </button>
             ) : null}
             <button type="button" onClick={share} className="btn-ghost px-6 py-2.5 text-sm w-full sm:w-auto">
-              {copied ? 'Link copied ✓' : 'Share result card'}
+              {copied ? t('soulAge.linkCopied') : t('soulAge.shareCard')}
             </button>
             <span className="text-[11px] text-text-muted">
-              Shares your Soul Ages and lifetime counts only — never your birth details.
+              {t('soulAge.shareNote')}
             </span>
           </div>
           {isAuthenticated && !subjectKey ? (
             <p className="text-[11px] text-text-muted -mt-3">
-              This is a one-off calculation. Save this person as a chart first if you want to keep their Soul Age.
+              {t('soulAge.oneOff')}
             </p>
           ) : null}
 
@@ -644,33 +649,32 @@ export function SoulAgeClient() {
           <div className="bg-gradient-cosmic rounded-2xl p-6 border border-accent-muted text-center">
             {isAuthenticated ? (
               <>
-                <h3 className="text-base font-display font-semibold text-text-primary mb-2">Read another chart</h3>
+                <h3 className="text-base font-display font-semibold text-text-primary mb-2">{t('soulAge.cta.readAnotherTitle')}</h3>
                 <p className="text-[13px] text-text-tertiary mb-5 max-w-md mx-auto">
-                  Calculate the Soul Age of any saved chart, or enter someone new. It is always free.
+                  {t('soulAge.cta.readAnotherBody')}
                 </p>
                 <button type="button" onClick={reset} className="btn-primary px-7 py-2.5 text-sm">
-                  Calculate Another Chart
+                  {t('soulAge.cta.calculateAnotherChart')}
                 </button>
               </>
             ) : (
               <>
-                <h3 className="text-base font-display font-semibold text-text-primary mb-2">Save this result</h3>
+                <h3 className="text-base font-display font-semibold text-text-primary mb-2">{t('soulAge.cta.saveTitle')}</h3>
                 <p className="text-[13px] text-text-tertiary mb-5 max-w-md mx-auto">
-                  Your birth details have not been stored. Create a free account to save this reading to your chart,
-                  recalculate it after edits, and compare Soul Ages between saved charts.
+                  {t('soulAge.cta.saveBody')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link href="/auth/signup" className="btn-primary px-7 py-2.5 text-sm">Create Account to Save Result</Link>
-                  <button type="button" onClick={reset} className="btn-ghost px-7 py-2.5 text-sm">Calculate Another Person</button>
+                  <Link href="/auth/signup" className="btn-primary px-7 py-2.5 text-sm">{t('soulAge.cta.createAccount')}</Link>
+                  <button type="button" onClick={reset} className="btn-ghost px-7 py-2.5 text-sm">{t('soulAge.calculateOther')}</button>
                 </div>
               </>
             )}
           </div>
 
           <p className="text-[11px] text-text-muted text-center leading-relaxed px-4">
-            {SOUL_AGE_DISCLAIMER}
+            {t('soulAge.disclaimer')}
             <br />
-            <span className="opacity-70">{SOUL_AGE_CREDIT}</span>
+            <span className="opacity-70">{t('soulAge.credit')}</span>
           </p>
         </div>
       )}
