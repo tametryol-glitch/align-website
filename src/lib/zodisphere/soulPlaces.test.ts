@@ -90,4 +90,18 @@ describe('findSoulPlaces', () => {
     expect(places.length).toBe(1);         // capped
     expect(places[0].city).toBe('Closest'); // closest wins
   });
+
+  it('collects the OTHER cities on the same line as `nearby` (closest first)', () => {
+    const cities: Array<[string, number, number]> = [
+      ['Primary', 0, -86.802 + 2 / MILES_PER_DEG],
+      ['SecondClosest', 0, -86.802 + 8 / MILES_PER_DEG],
+      ['Third', 0, -86.802 + 20 / MILES_PER_DEG],
+      ['OffLine', 0, 0],
+    ];
+    const [place] = findSoulPlaces(result, cities, 50, 12);
+    expect(place.city).toBe('Primary');
+    expect(place.nearby.map((n) => n.city)).toEqual(['SecondClosest', 'Third']);
+    // ordered by distance, primary excluded, off-line excluded
+    expect(place.nearby[0].distanceMiles).toBeLessThan(place.nearby[1].distanceMiles);
+  });
 });

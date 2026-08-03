@@ -585,7 +585,7 @@ export default function Zodisphere3dPrototypePage() {
 
       {/* Soul Places (Draconic Composite) — founder-gated beta, top-right panel. */}
       {mounted && enabled && webglOk && !error && soulPlacesOn && (
-        <SoulPlacesPanel profile={profile} cities={cityData} />
+        <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} />
       )}
 
       {/* Place search (offline cities + countries) → fly-to + inspector. */}

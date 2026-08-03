@@ -79,6 +79,13 @@ export interface DraconicCompositeResult {
   unavailable: string[];
 }
 
+export interface NearbyPlace {
+  city: string;
+  lat: number;
+  lng: number;
+  distanceMiles: number;
+}
+
 export interface SoulPlace {
   city: string;
   lat: number;
@@ -87,6 +94,9 @@ export interface SoulPlace {
   angle: AcgAngle;
   distanceMiles: number;
   reading: SoulPlaceReading;
+  /** Other cities the SAME soul-line runs close to — "also here", closest first,
+   *  excluding the primary city. Same body/angle bond, different towns. */
+  nearby: NearbyPlace[];
 }
 
 /**
@@ -184,12 +194,14 @@ export function findSoulPlaces(
   cities: Array<[string, number, number]>,
   maxMiles = 50,
   max = 12,
+  nearbyMax = 6,
 ): SoulPlace[] {
   const latMargin = maxMiles / MILES_PER_DEG + 1; // segments span ≤1° of latitude
   const out: SoulPlace[] = [];
 
   for (const line of result.lines) {
-    let best: { city: string; lat: number; lng: number; d: number } | null = null;
+    // Every city within the orb of THIS line (not just the closest).
+    const withinOrb: Array<{ city: string; lat: number; lng: number; d: number }> = [];
     for (const [city, clat, clng] of cities) {
       let bd = Infinity;
       for (let i = 0; i < line.points.length - 1; i++) {
@@ -200,25 +212,31 @@ export function findSoulPlaces(
         const d = pointToSegmentMiles(clat, clng, a.lat, a.lon, b.lat, b.lon);
         if (d < bd) bd = d;
       }
-      if (bd <= maxMiles && (!best || bd < best.d)) best = { city, lat: clat, lng: clng, d: bd };
+      if (bd <= maxMiles) withinOrb.push({ city, lat: clat, lng: clng, d: bd });
     }
-    if (best) {
-      const lon = result.compositeLon[line.planet];
-      out.push({
-        city: best.city,
-        lat: best.lat,
-        lng: best.lng,
+    if (!withinOrb.length) continue;
+
+    withinOrb.sort((a, b) => a.d - b.d);
+    const primary = withinOrb[0];
+    const nearby: NearbyPlace[] = withinOrb.slice(1, 1 + nearbyMax).map((c) => ({
+      city: c.city, lat: c.lat, lng: c.lng, distanceMiles: c.d,
+    }));
+    const lon = result.compositeLon[line.planet];
+    out.push({
+      city: primary.city,
+      lat: primary.lat,
+      lng: primary.lng,
+      body: line.planet,
+      angle: line.angle,
+      distanceMiles: primary.d,
+      reading: composeDraconicComposite({
         body: line.planet,
         angle: line.angle,
-        distanceMiles: best.d,
-        reading: composeDraconicComposite({
-          body: line.planet,
-          angle: line.angle,
-          compositeDraconicLon: lon,
-          distanceMiles: best.d,
-        }),
-      });
-    }
+        compositeDraconicLon: lon,
+        distanceMiles: primary.d,
+      }),
+      nearby,
+    });
   }
 
   return out.sort((a, b) => a.distanceMiles - b.distanceMiles).slice(0, max);

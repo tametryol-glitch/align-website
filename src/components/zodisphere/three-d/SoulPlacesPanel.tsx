@@ -17,21 +17,40 @@
 import { useState } from 'react';
 import { Heart, X, Loader2, MapPin, Sparkles } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { countryAt } from '@/components/zodisphere/three-d/locationInspector';
 import {
   getDraconicCompositeAcgLines,
   findSoulPlaces,
   type SoulPlace,
+  type NearbyPlace,
 } from '@/lib/zodisphere/soulPlaces';
 
 const boldToHtml = (s: string) =>
   s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
 
+/** Trim the couple of long Natural-Earth names so the list stays tidy. */
+const SHORT_COUNTRY: Record<string, string> = {
+  'United States of America': 'USA',
+  'United Kingdom': 'UK',
+  'United Arab Emirates': 'UAE',
+  'Democratic Republic of the Congo': 'DR Congo',
+};
+const shortCountry = (c: string | null) => (c ? SHORT_COUNTRY[c] || c : '');
+
+type EnrichedNearby = NearbyPlace & { country: string | null };
+interface EnrichedPlace extends Omit<SoulPlace, 'nearby'> {
+  country: string | null;
+  nearby: EnrichedNearby[];
+}
+
 export default function SoulPlacesPanel({
   profile,
   cities,
+  countryFeatures,
 }: {
   profile: any;
   cities: Array<[string, number, number]>;
+  countryFeatures: any[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -46,7 +65,10 @@ export default function SoulPlacesPanel({
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [places, setPlaces] = useState<SoulPlace[] | null>(null);
+  const [places, setPlaces] = useState<EnrichedPlace[] | null>(null);
+
+  const countryOf = (lat: number, lng: number): string | null =>
+    countryFeatures?.length ? countryAt(lat, lng, countryFeatures) : null;
 
   const myOk = !!(profile?.birth_date && profile?.birth_time && profile?.latitude != null);
   const partnerOk = !!(date && time && lat != null && lng != null);
@@ -71,7 +93,13 @@ export default function SoulPlacesPanel({
         return;
       }
       const found = findSoulPlaces(result, cities, 50, 12);
-      setPlaces(found);
+      // Enrich once with offline country lookups so render stays cheap.
+      const enriched: EnrichedPlace[] = found.map((p) => ({
+        ...p,
+        country: countryOf(p.lat, p.lng),
+        nearby: p.nearby.map((n) => ({ ...n, country: countryOf(n.lat, n.lng) })),
+      }));
+      setPlaces(enriched);
     } catch (e: any) {
       setErr(e?.message || 'Something went wrong computing your soul places.');
     } finally {
@@ -167,7 +195,9 @@ export default function SoulPlacesPanel({
               <div key={`${p.body}-${p.angle}-${i}`} className="rounded-xl border border-violet-400/20 bg-violet-500/5 px-3 py-3">
                 <div className="flex items-center gap-2 mb-1">
                   <MapPin className="w-3.5 h-3.5 text-violet-300 shrink-0" />
-                  <span className="text-[13px] font-semibold text-white">{p.city}</span>
+                  <span className="text-[13px] font-semibold text-white">
+                    {p.city}{p.country ? <span className="text-white/55 font-normal">, {shortCountry(p.country)}</span> : null}
+                  </span>
                   <span className="ml-auto text-[11px] text-white/45 shrink-0">{Math.round(p.distanceMiles)} mi</span>
                 </div>
                 <div className="text-[11px] font-medium text-violet-200/90 mb-1.5">{p.reading.headline}</div>
@@ -177,6 +207,23 @@ export default function SoulPlacesPanel({
                 ))}
                 <p className="text-[11px] text-violet-100/85 leading-relaxed mt-1 pt-1.5 border-t border-white/10 italic"
                    dangerouslySetInnerHTML={{ __html: boldToHtml(p.reading.whatCouldHaveBeen) }} />
+
+                {p.nearby.length > 0 && (
+                  <div className="mt-2 pt-1.5 border-t border-white/10">
+                    <div className="text-[10px] uppercase tracking-wide text-white/40 mb-1">
+                      Also along this soul-line
+                    </div>
+                    <div className="space-y-0.5">
+                      {p.nearby.map((n, k) => (
+                        <div key={`${n.city}-${k}`} className="flex items-center gap-1.5 text-[11px] text-white/65">
+                          <MapPin className="w-3 h-3 text-violet-300/50 shrink-0" />
+                          <span className="truncate">{n.city}{n.country ? `, ${shortCountry(n.country)}` : ''}</span>
+                          <span className="ml-auto text-white/40 shrink-0">{Math.round(n.distanceMiles)} mi</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
