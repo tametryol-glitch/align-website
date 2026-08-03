@@ -48,8 +48,11 @@ function isInjectedProfile(v: unknown): v is InjectedProfile {
     okStr(p.birth_location) && okNum(p.latitude) && okNum(p.longitude) && okStr(p.timezone);
 }
 
+interface InjectedFriend { friend_id: string; display_name: string; avatar_url: string | null; }
+
 export default function Zodisphere3dEmbedPage() {
   const [injected, setInjected] = useState(false);
+  const [friends, setFriends] = useState<InjectedFriend[] | null>(null);
   const injectedRef = useRef<UserProfile | null>(null);
 
   useEffect(() => {
@@ -85,6 +88,19 @@ export default function Zodisphere3dEmbedPage() {
         const msg = JSON.parse(raw);
         if (msg?.type === 'zodisphere3d:init' && isInjectedProfile(msg.profile)) {
           apply(msg.profile);
+        }
+        // Optional: the app injects the friends list (the embed has no session to
+        // fetch it itself) so the Soul Places friend picker works on mobile.
+        if (msg?.type === 'zodisphere3d:friends' && Array.isArray(msg.friends)) {
+          setFriends(
+            msg.friends
+              .filter((f: any) => f && typeof f.friend_id === 'string')
+              .map((f: any) => ({
+                friend_id: f.friend_id,
+                display_name: typeof f.display_name === 'string' ? f.display_name : 'Friend',
+                avatar_url: typeof f.avatar_url === 'string' ? f.avatar_url : null,
+              })),
+          );
         }
       } catch {
         // ignore non-JSON messages
@@ -122,5 +138,5 @@ export default function Zodisphere3dEmbedPage() {
     );
   }
 
-  return <Zodisphere3dPrototypePage />;
+  return <Zodisphere3dPrototypePage injectedFriends={friends} />;
 }

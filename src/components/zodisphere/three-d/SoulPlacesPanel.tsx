@@ -19,7 +19,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Heart, X, Loader2, MapPin, Sparkles, User, PenLine, Users } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { createClient } from '@/lib/supabase';
-import { getFriends, type FriendProfile } from '@/lib/friendService';
+import { getFriends } from '@/lib/friendService';
 import { countryAt } from '@/components/zodisphere/three-d/locationInspector';
 import {
   getDraconicCompositeAcgLines,
@@ -47,6 +47,14 @@ interface EnrichedPlace extends Omit<SoulPlace, 'nearby'> {
   nearby: EnrichedNearby[];
 }
 
+/** Minimal friend shape the picker needs. On web it comes from getFriends(); in
+ *  the mobile WebView embed (no session) the app injects it via postMessage. */
+export interface SoulFriend {
+  friend_id: string;
+  display_name: string;
+  avatar_url: string | null;
+}
+
 /** A profiles-shaped birth object — exactly what getMyChartBodies consumes. */
 interface PartnerProfile {
   display_name?: string;
@@ -63,11 +71,14 @@ export default function SoulPlacesPanel({
   cities,
   countryFeatures,
   autoPartnerId,
+  injectedFriends,
 }: {
   profile: any;
   cities: Array<[string, number, number]>;
   countryFeatures: any[];
   autoPartnerId?: string | null;
+  /** Friends supplied by the host (mobile embed) when there's no web session. */
+  injectedFriends?: SoulFriend[] | null;
 }) {
   const [open, setOpen] = useState(!!autoPartnerId);
   const [source, setSource] = useState<'manual' | 'friend'>(autoPartnerId ? 'friend' : 'manual');
@@ -82,7 +93,7 @@ export default function SoulPlacesPanel({
   const [tz, setTz] = useState('UTC');
 
   // Friend picker.
-  const [friends, setFriends] = useState<FriendProfile[] | null>(null);
+  const [friends, setFriends] = useState<SoulFriend[] | null>(null);
   const [friendsLoading, setFriendsLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -151,22 +162,24 @@ export default function SoulPlacesPanel({
     return { partner: data as PartnerProfile, label: data.display_name || 'them' };
   };
 
-  const selectFriend = async (f: FriendProfile) => {
+  const selectFriend = async (f: SoulFriend) => {
     setLoading(true);
     const res = await fetchPartnerById(f.friend_id);
     if (!res) { setLoading(false); setErr(`Couldn’t load ${f.display_name}'s chart.`); return; }
     await runWith(res.partner, res.label || f.display_name);
   };
 
-  // Load friends the first time the Friend tab is shown.
+  // Load friends the first time the Friend tab is shown. In the mobile embed the
+  // host injects the list (no web session), so prefer that when present.
   useEffect(() => {
     if (source !== 'friend' || friends || friendsLoading) return;
+    if (injectedFriends) { setFriends(injectedFriends); return; }
     setFriendsLoading(true);
     getFriends()
-      .then((f) => setFriends(f))
+      .then((f) => setFriends(f as SoulFriend[]))
       .catch(() => setFriends([]))
       .finally(() => setFriendsLoading(false));
-  }, [source, friends, friendsLoading]);
+  }, [source, friends, friendsLoading, injectedFriends]);
 
   // Auto-run from a ?soulPartner=<id> deep link (e.g. a Cosmic Match), once.
   const autoRanRef = useRef(false);
