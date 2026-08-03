@@ -3,9 +3,11 @@ import {
   draconicCompositeLongitudes,
   projectDraconicCompositeLines,
   findSoulPlaces,
+  summarizeSoulRole,
   MILES_PER_DEG,
   COMPOSITE_BODIES,
   type DraconicCompositeResult,
+  type SoulPlace,
 } from './soulPlaces';
 import type { AcgLine3D } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
 
@@ -103,5 +105,26 @@ describe('findSoulPlaces', () => {
     expect(place.nearby.map((n) => n.city)).toEqual(['SecondClosest', 'Third']);
     // ordered by distance, primary excluded, off-line excluded
     expect(place.nearby[0].distanceMiles).toBeLessThan(place.nearby[1].distanceMiles);
+  });
+});
+
+describe('summarizeSoulRole', () => {
+  const mk = (body: string): SoulPlace => ({
+    city: 'X', lat: 0, lng: 0, body, angle: 'DSC', distanceMiles: 10,
+    reading: { headline: '', narrative: '', whatCouldHaveBeen: '' }, nearby: [],
+  });
+
+  it('returns null for an empty list', () => {
+    expect(summarizeSoulRole([])).toBeNull();
+  });
+
+  it('picks the role from the dominant body', () => {
+    const r = summarizeSoulRole([mk('Venus'), mk('Venus'), mk('Mars')]);
+    expect(r?.role).toBe('lovers');
+    expect(r?.blurb.length).toBeGreaterThan(0);
+  });
+
+  it('maps Saturn-dominant to a duty bond', () => {
+    expect(summarizeSoulRole([mk('Saturn'), mk('Saturn'), mk('Sun')])?.role).toBe('bound by duty');
   });
 });

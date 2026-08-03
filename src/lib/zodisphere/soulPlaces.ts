@@ -241,3 +241,30 @@ export function findSoulPlaces(
 
   return out.sort((a, b) => a.distanceMiles - b.distanceMiles).slice(0, max);
 }
+
+/** The relationship "role" two souls most likely played, per dominant body. */
+const SOUL_ROLE: Record<string, { label: string; blurb: string }> = {
+  Venus: { label: 'lovers', blurb: 'Again and again your lines cross where love and tenderness live — most likely, the two of you were lovers.' },
+  Moon: { label: 'family', blurb: 'Your shared lines gather around home and belonging — you may have been family, or cared for one another like it.' },
+  Sun: { label: 'kindred spirits', blurb: 'Your paths meet where purpose and pride live — kindred spirits who shone brighter side by side.' },
+  Mars: { label: 'rivals — or fierce lovers', blurb: 'Heat runs through your shared places — you were rivals, or lovers who burned hot and clashed just as hard.' },
+  Mercury: { label: 'confidants', blurb: 'Your lines meet where words and ideas live — confidants who lived inside each other’s minds.' },
+  Jupiter: { label: 'mentor and seeker', blurb: 'Your shared places open outward — one of you likely lifted or taught the other; fellow travelers chasing something bigger.' },
+  Saturn: { label: 'bound by duty', blurb: 'Your lines gather around weight and obligation — a bond of duty, a debt or a vow that held you together whether you wanted it or not.' },
+  Uranus: { label: 'free rebels', blurb: 'Your shared places break the mold — the two of you found freedom together and answered to no one.' },
+  Neptune: { label: 'entangled souls', blurb: 'Your lines dissolve into each other — devoted and dreamlike, hard to tell where one of you ended and the other began.' },
+  Pluto: { label: 'a fated bond', blurb: 'Your shared places run deep and dark — a fated bond that remade you both, for better and for worse.' },
+};
+
+/**
+ * Summarize the single "role" two souls most likely played to each other, from
+ * which body dominates their shared soul-places. Returns null for an empty list.
+ */
+export function summarizeSoulRole(places: SoulPlace[]): { role: string; blurb: string } | null {
+  if (!places.length) return null;
+  const counts: Record<string, number> = {};
+  for (const p of places) counts[p.body] = (counts[p.body] || 0) + 1;
+  const topBody = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  const r = SOUL_ROLE[topBody] || { label: 'two souls who kept crossing paths', blurb: 'Your lines meet again and again — whatever you were to each other, it wasn’t incidental.' };
+  return { role: r.label, blurb: r.blurb };
+}

@@ -139,6 +139,16 @@ export default function Zodisphere3dPrototypePage() {
   const enabled = isZodisphere3dEnabled(authUser?.email || profile?.email);
   // Founder-gated Draconic Composite "Soul Places" beta.
   const soulPlacesOn = isSoulPlacesEnabled(authUser?.email || profile?.email);
+  // Optional ?soulPartner=<profileId> deep-link (e.g. from a Cosmic Match) →
+  // auto-open Soul Places for that person. Read from the URL client-side to
+  // avoid useSearchParams' Suspense requirement on this large component.
+  const [soulPartnerId, setSoulPartnerId] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get('soulPartner');
+      if (p) setSoulPartnerId(p);
+    } catch { /* ignore */ }
+  }, []);
 
   // Free-look metering. ANY paying subscriber → unlimited. Free tier → first
   // FREE_ZODISPHERE_3D_VIEWS opens, counted on their profile row, then paywall.
@@ -585,7 +595,7 @@ export default function Zodisphere3dPrototypePage() {
 
       {/* Soul Places (Draconic Composite) — founder-gated beta, top-right panel. */}
       {mounted && enabled && webglOk && !error && soulPlacesOn && (
-        <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} />
+        <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} autoPartnerId={soulPartnerId} />
       )}
 
       {/* Place search (offline cities + countries) → fly-to + inspector. */}

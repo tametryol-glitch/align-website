@@ -12,7 +12,8 @@ import {
 } from '@/lib/cosmicMatchService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2, Search } from 'lucide-react';
+import { Users, X, ExternalLink, AlertTriangle, Lock, Unlock, Share2, Search, Heart } from 'lucide-react';
+import { isSoulPlacesEnabled } from '@/config/featureFlags';
 import { CompatibilityCard, ShareButtonWithCard } from '@/components/share';
 import { generateShareUrl } from '@/lib/shareCardUtils';
 import { useTranslation } from 'react-i18next';
@@ -513,6 +514,8 @@ function DetailModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const { user, profile } = useAuthStore();
+  const soulPlacesOn = isSoulPlacesEnabled(user?.email || profile?.email);
   const { friend, match } = entry;
   const overallScore = match.overall_score ?? 0;
   const overallColor = getScoreColor(overallScore);
@@ -821,6 +824,23 @@ function DetailModal({
               Open Full Compatibility Reading
             </div>
           </Link>
+
+          {/* Soul Places (Draconic Composite) — founder-gated beta. Where the
+              two souls may have met before + the role they played. */}
+          {soulPlacesOn && (
+            <Link
+              href={`/zodisphere/globe3d?soulPartner=${friend.friend_id}`}
+              className="block mt-3 rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
+            >
+              <div
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #7C3AED, #4338CA)' }}
+              >
+                <Heart className="w-4 h-4" />
+                Where your souls have met before
+              </div>
+            </Link>
+          )}
 
           <Link
             href={`/chart/composite?partnerId=${friend.friend_id}`}
