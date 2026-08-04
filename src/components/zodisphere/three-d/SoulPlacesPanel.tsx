@@ -21,6 +21,7 @@ import { CitySearch } from '@/components/ui/CitySearch';
 import { createClient } from '@/lib/supabase';
 import { getFriends } from '@/lib/friendService';
 import { countryAt } from '@/components/zodisphere/three-d/locationInspector';
+import { useSoulFriendsStore, type SoulFriend } from '@/components/zodisphere/three-d/soulFriendsStore';
 import {
   getDraconicCompositeAcgLines,
   findSoulPlaces,
@@ -47,14 +48,6 @@ interface EnrichedPlace extends Omit<SoulPlace, 'nearby'> {
   nearby: EnrichedNearby[];
 }
 
-/** Minimal friend shape the picker needs. On web it comes from getFriends(); in
- *  the mobile WebView embed (no session) the app injects it via postMessage. */
-export interface SoulFriend {
-  friend_id: string;
-  display_name: string;
-  avatar_url: string | null;
-}
-
 /** A profiles-shaped birth object — exactly what getMyChartBodies consumes. */
 interface PartnerProfile {
   display_name?: string;
@@ -71,15 +64,14 @@ export default function SoulPlacesPanel({
   cities,
   countryFeatures,
   autoPartnerId,
-  injectedFriends,
 }: {
   profile: any;
   cities: Array<[string, number, number]>;
   countryFeatures: any[];
   autoPartnerId?: string | null;
-  /** Friends supplied by the host (mobile embed) when there's no web session. */
-  injectedFriends?: SoulFriend[] | null;
 }) {
+  // Friends injected by the mobile embed host (no web session there); null on web.
+  const injectedFriends = useSoulFriendsStore((s) => s.friends);
   const [open, setOpen] = useState(!!autoPartnerId);
   const [source, setSource] = useState<'manual' | 'friend'>(autoPartnerId ? 'friend' : 'manual');
 

@@ -77,12 +77,7 @@ function hasWebGL(): boolean {
   }
 }
 
-export default function Zodisphere3dPrototypePage({
-  injectedFriends,
-}: {
-  /** Friends injected by the mobile embed host (no web session there). */
-  injectedFriends?: Array<{ friend_id: string; display_name: string; avatar_url: string | null }> | null;
-} = {}) {
+export default function Zodisphere3dPrototypePage() {
   const profile = useAuthStore((s) => s.profile);
   const authUser = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.isLoading);
@@ -600,7 +595,7 @@ export default function Zodisphere3dPrototypePage({
 
       {/* Soul Places (Draconic Composite) — founder-gated beta, top-right panel. */}
       {mounted && enabled && webglOk && !error && soulPlacesOn && (
-        <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} autoPartnerId={soulPartnerId} injectedFriends={injectedFriends} />
+        <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} autoPartnerId={soulPartnerId} />
       )}
 
       {/* Place search (offline cities + countries) → fly-to + inspector. */}

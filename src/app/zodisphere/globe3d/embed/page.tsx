@@ -21,6 +21,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useAuthStore, type UserProfile } from '@/stores/authStore';
+import { useSoulFriendsStore } from '@/components/zodisphere/three-d/soulFriendsStore';
 import Zodisphere3dPrototypePage from '../page';
 
 declare global {
@@ -48,11 +49,8 @@ function isInjectedProfile(v: unknown): v is InjectedProfile {
     okStr(p.birth_location) && okNum(p.latitude) && okNum(p.longitude) && okStr(p.timezone);
 }
 
-interface InjectedFriend { friend_id: string; display_name: string; avatar_url: string | null; }
-
 export default function Zodisphere3dEmbedPage() {
   const [injected, setInjected] = useState(false);
-  const [friends, setFriends] = useState<InjectedFriend[] | null>(null);
   const injectedRef = useRef<UserProfile | null>(null);
 
   useEffect(() => {
@@ -92,7 +90,7 @@ export default function Zodisphere3dEmbedPage() {
         // Optional: the app injects the friends list (the embed has no session to
         // fetch it itself) so the Soul Places friend picker works on mobile.
         if (msg?.type === 'zodisphere3d:friends' && Array.isArray(msg.friends)) {
-          setFriends(
+          useSoulFriendsStore.getState().setFriends(
             msg.friends
               .filter((f: any) => f && typeof f.friend_id === 'string')
               .map((f: any) => ({
@@ -138,5 +136,5 @@ export default function Zodisphere3dEmbedPage() {
     );
   }
 
-  return <Zodisphere3dPrototypePage injectedFriends={friends} />;
+  return <Zodisphere3dPrototypePage />;
 }
