@@ -8,6 +8,7 @@ import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
   Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
   ArrowUpRight, ArrowDownRight, Minus, Filter, Repeat, UserPlus,
+  DollarSign, Share2,
 } from 'lucide-react';
 
 interface TrendRow {
@@ -33,6 +34,9 @@ interface AnalyticsData {
   retention: { d1: number | null; d7: number | null; d30: number | null; cohort: { d1: number; d7: number; d30: number } };
   engagement: { active?: number; new?: number; returning?: number; sessions?: number; bounces?: number };
   funnel: { signups?: number; birth?: number; charted?: number };
+  revenue: { total: number; paid: number; free: number; mrr: number; arpu: number; conversionPct: number; price: number };
+  traffic: { source: string; sessions: number; users: number }[];
+  affiliates: { signups: number; conversions: number };
   generatedAt: string;
 }
 
@@ -252,6 +256,66 @@ function EngagementCard({ eng }: { eng: AnalyticsData['engagement'] }) {
   );
 }
 
+function RevenueCard({ rev }: { rev: AnalyticsData['revenue'] }) {
+  const total = Math.max(1, rev.total);
+  const paidPct = Math.round((rev.paid / total) * 100);
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <DollarSign className="w-4 h-4 text-green-400" />
+        <h2 className="text-sm font-bold text-text-primary">Revenue</h2>
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div>
+          <p className="text-2xl font-extrabold text-green-400">${fmt(rev.mrr)}</p>
+          <p className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">MRR (est.)</p>
+        </div>
+        <div>
+          <p className="text-2xl font-extrabold text-text-primary">{fmt(rev.paid)}</p>
+          <p className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">Subscribers</p>
+        </div>
+        <div>
+          <p className="text-2xl font-extrabold text-text-primary">{rev.conversionPct}%</p>
+          <p className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">Paid rate</p>
+        </div>
+      </div>
+      <div className="flex h-3 rounded-full overflow-hidden bg-bg-tertiary">
+        <div className="bg-green-500" style={{ width: `${paidPct}%` }} />
+      </div>
+      <div className="flex justify-between text-[11px] mt-1.5">
+        <span className="text-green-400">Paid {fmt(rev.paid)}</span>
+        <span className="text-text-muted">Free {fmt(rev.free)}</span>
+      </div>
+      <p className="text-[10px] text-text-muted mt-3">
+        MRR estimated at ${rev.price}/mo × subscribers · ARPU ${rev.arpu}. Connect Stripe for exact MRR, trials &amp; churn.
+      </p>
+    </div>
+  );
+}
+
+function TrafficCard({ traffic, affiliates }: { traffic: AnalyticsData['traffic']; affiliates: AnalyticsData['affiliates'] }) {
+  const max = Math.max(1, ...(traffic || []).map(t => t.sessions));
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <Share2 className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Traffic sources</h2>
+      </div>
+      {(traffic || []).length === 0 ? (
+        <p className="text-xs text-text-muted py-3">No sessions in this range yet.</p>
+      ) : (
+        <div>{(traffic || []).slice(0, 8).map(t => (
+          <BarRow key={t.source} label={<span className="truncate">{t.source}</span>} value={t.sessions} max={max} hint="sessions" />
+        ))}</div>
+      )}
+      <div className="mt-3 pt-3 border-t border-border-primary flex justify-between text-xs">
+        <span className="text-text-secondary">Affiliate-driven</span>
+        <span className="text-text-primary font-medium">{fmt(affiliates?.signups)} signups · {fmt(affiliates?.conversions)} conversions</span>
+      </div>
+    </div>
+  );
+}
+
 export default function AnalyticsAdminPage() {
   const { profile } = useAuthStore();
   const [verified, setVerified] = useState(false);
@@ -395,6 +459,12 @@ export default function AnalyticsAdminPage() {
               <Delta pct={deltas?.dauAvg} />
             </div>
             <DauChart rows={trend} />
+          </div>
+
+          {/* Money & growth: revenue + traffic */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {data?.revenue && <RevenueCard rev={data.revenue} />}
+            {data?.traffic && <TrafficCard traffic={data.traffic} affiliates={data.affiliates} />}
           </div>
 
           {/* Growth: funnel + retention */}

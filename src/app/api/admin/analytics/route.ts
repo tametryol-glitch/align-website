@@ -16,6 +16,9 @@ import { createServerClient } from '@supabase/ssr';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Monthly subscription price (USD) used for estimated MRR until Stripe is wired.
+const MONTHLY_PRICE = 9;
+
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
@@ -60,7 +63,7 @@ export async function GET(req: NextRequest) {
     const fromPrev = startDay(range * 2); // for period-over-period deltas
     const db = getAdminClient();
 
-    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes, retRes, engRes, funnelRes] = await Promise.all([
+    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes, retRes, engRes, funnelRes, revRes, trafRes, affRes] = await Promise.all([
       db.rpc('analytics_live_metrics'),
       // Pull 2× the range so we can compare this period vs the previous one.
       db.from('analytics_daily_overview').select('*').gte('day', fromPrev).order('day', { ascending: true }),
@@ -71,6 +74,9 @@ export async function GET(req: NextRequest) {
       db.from('analytics_daily_retention').select('day_offset, cohort_size, retained').gte('cohort_day', startDay(60)),
       db.rpc('analytics_engagement_metrics', { range_days: range }),
       db.rpc('analytics_funnel'),
+      db.rpc('analytics_revenue_metrics'),
+      db.rpc('analytics_traffic_sources', { range_days: range }),
+      db.from('affiliates').select('total_signups, total_conversions'),
     ]);
 
     const allRows = trendAllRes.data || [];
@@ -156,6 +162,29 @@ export async function GET(req: NextRequest) {
       cohort: { d1: retAgg[1].size, d7: retAgg[7].size, d30: retAgg[30].size },
     };
 
+    // ── Revenue (estimated MRR from paid count × price until Stripe is wired) ──
+    const rev = (revRes.data as any) || {};
+    const paid = rev.paid || 0;
+    const totalMembers = rev.total || 0;
+    const revenue = {
+      total: totalMembers,
+      paid,
+      free: rev.free || 0,
+      mrr: paid * MONTHLY_PRICE,
+      arpu: totalMembers ? Math.round((paid * MONTHLY_PRICE / totalMembers) * 100) / 100 : 0,
+      conversionPct: totalMembers ? Math.round((paid / totalMembers) * 100) : 0,
+      price: MONTHLY_PRICE,
+    };
+
+    // ── Affiliate-driven acquisition (sum across all affiliates) ──
+    const affiliates = (affRes.data || []).reduce(
+      (a: { signups: number; conversions: number }, r: any) => ({
+        signups: a.signups + (r.total_signups || 0),
+        conversions: a.conversions + (r.total_conversions || 0),
+      }),
+      { signups: 0, conversions: 0 },
+    );
+
     return NextResponse.json({
       live: liveRes.data || {},
       range,
@@ -169,6 +198,9 @@ export async function GET(req: NextRequest) {
       retention,
       engagement: engRes.data || {},
       funnel: funnelRes.data || {},
+      revenue,
+      traffic: trafRes.data || [],
+      affiliates,
       generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {
