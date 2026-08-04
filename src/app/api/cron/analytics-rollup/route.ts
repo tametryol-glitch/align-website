@@ -57,6 +57,8 @@ export async function GET(request: NextRequest) {
       }
       rolled.push(day);
     }
+    // Retention curves (Phase 2). Ignore if the migration isn't applied yet.
+    try { await db.rpc('analytics_retention_rollup', { lookback_days: 60 }); } catch {}
     return NextResponse.json({ ok: true, rolled, processedAt: new Date().toISOString() });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

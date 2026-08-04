@@ -7,7 +7,7 @@ import Link from 'next/link';
 import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
   Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
-  ArrowUpRight, ArrowDownRight, Minus,
+  ArrowUpRight, ArrowDownRight, Minus, Filter, Repeat, UserPlus,
 } from 'lucide-react';
 
 interface TrendRow {
@@ -30,6 +30,9 @@ interface AnalyticsData {
   locale: { locale: string; users: number }[];
   platforms: { web: number; ios: number; android: number };
   deltas: { newUsers: number; sessions: number; dauAvg: number; dauToday: number };
+  retention: { d1: number | null; d7: number | null; d30: number | null; cohort: { d1: number; d7: number; d30: number } };
+  engagement: { active?: number; new?: number; returning?: number; sessions?: number; bounces?: number };
+  funnel: { signups?: number; birth?: number; charted?: number };
   generatedAt: string;
 }
 
@@ -154,6 +157,97 @@ function DauChart({ rows }: { rows: TrendRow[] }) {
         <span>{rows[0]?.day || ''}</span>
         <span>{rows[rows.length - 1]?.day || ''}</span>
       </div>
+    </div>
+  );
+}
+
+function FunnelCard({ funnel }: { funnel: AnalyticsData['funnel'] }) {
+  const steps = [
+    { label: 'Signed up', value: funnel.signups ?? 0, color: 'from-accent-primary to-purple-500' },
+    { label: 'Added birth info', value: funnel.birth ?? 0, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Got their chart', value: funnel.charted ?? 0, color: 'from-green-500 to-emerald-500' },
+  ];
+  const top = Math.max(1, steps[0].value);
+  const overall = steps[0].value > 0 ? Math.round((steps[2].value / steps[0].value) * 100) : 0;
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <Filter className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Signup → activation funnel</h2>
+      </div>
+      <div className="space-y-3">
+        {steps.map((s, i) => {
+          const pctOfTop = Math.round((s.value / top) * 100);
+          const conv = i === 0 ? null : steps[i - 1].value ? Math.round((s.value / steps[i - 1].value) * 100) : 0;
+          return (
+            <div key={s.label}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-text-secondary">{s.label}</span>
+                <span className="text-sm font-semibold text-text-primary">
+                  {fmt(s.value)}
+                  {conv != null && <span className="text-text-muted text-xs font-normal ml-1.5">{conv}% of prev</span>}
+                </span>
+              </div>
+              <div className="h-3 bg-bg-tertiary rounded-full overflow-hidden">
+                <div className={`h-full bg-gradient-to-r ${s.color} rounded-full`} style={{ width: `${Math.max(3, pctOfTop)}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[10px] text-text-muted mt-3">All-time · {overall}% of signups reach their chart. The biggest drop is where to focus.</p>
+    </div>
+  );
+}
+
+function RetentionCard({ retention }: { retention: AnalyticsData['retention'] }) {
+  const items = [
+    { k: 'Day 1', v: retention?.d1, n: retention?.cohort?.d1 ?? 0 },
+    { k: 'Day 7', v: retention?.d7, n: retention?.cohort?.d7 ?? 0 },
+    { k: 'Day 30', v: retention?.d30, n: retention?.cohort?.d30 ?? 0 },
+  ];
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <Repeat className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Retention</h2>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {items.map(it => (
+          <div key={it.k} className="text-center bg-bg-tertiary/40 rounded-lg py-3">
+            <p className="text-2xl font-extrabold text-text-primary">{it.v == null ? '—' : `${it.v}%`}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{it.k}</p>
+            <p className="text-[9px] text-text-muted mt-0.5">{it.n > 0 ? `${it.n} in cohort` : 'collecting…'}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-[10px] text-text-muted mt-3">% of new users who returned on that day. Fills in as data matures (D7 needs 7 days, D30 needs 30).</p>
+    </div>
+  );
+}
+
+function EngagementCard({ eng }: { eng: AnalyticsData['engagement'] }) {
+  const nu = eng?.new ?? 0, ret = eng?.returning ?? 0, tot = nu + ret;
+  const bounce = eng?.sessions ? Math.round(((eng.bounces || 0) / eng.sessions) * 100) : null;
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <UserPlus className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Engagement quality</h2>
+      </div>
+      <div className="flex h-3 rounded-full overflow-hidden bg-bg-tertiary">
+        <div className="bg-green-500" style={{ width: `${tot ? (nu / tot) * 100 : 0}%` }} />
+        <div className="bg-accent-primary" style={{ width: `${tot ? (ret / tot) * 100 : 0}%` }} />
+      </div>
+      <div className="flex justify-between text-[11px] mt-1.5 mb-3">
+        <span className="text-green-400">New {fmt(nu)}</span>
+        <span className="text-accent-primary">Returning {fmt(ret)}</span>
+      </div>
+      <div className="flex justify-between text-sm">
+        <span className="text-text-secondary">Bounce rate</span>
+        <span className="font-semibold text-text-primary">{bounce == null ? '—' : `${bounce}%`}</span>
+      </div>
+      <p className="text-[10px] text-text-muted mt-1">Bounce = sessions with no real interaction. Lower is better.</p>
     </div>
   );
 }
@@ -303,6 +397,12 @@ export default function AnalyticsAdminPage() {
             <DauChart rows={trend} />
           </div>
 
+          {/* Growth: funnel + retention */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {data?.funnel && <FunnelCard funnel={data.funnel} />}
+            {data?.retention && <RetentionCard retention={data.retention} />}
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6">
             {/* Top pages */}
             <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
@@ -364,8 +464,11 @@ export default function AnalyticsAdminPage() {
               )}
             </div>
 
+            {/* Engagement quality */}
+            {data?.engagement && <EngagementCard eng={data.engagement} />}
+
             {/* Platform split */}
-            <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary md:col-span-2">
+            <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
               <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-accent-primary" />
                 <h2 className="text-sm font-bold text-text-primary">Platform ({range}d sessions)</h2>

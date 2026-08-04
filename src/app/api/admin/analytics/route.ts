@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     const fromPrev = startDay(range * 2); // for period-over-period deltas
     const db = getAdminClient();
 
-    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes] = await Promise.all([
+    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes, retRes, engRes, funnelRes] = await Promise.all([
       db.rpc('analytics_live_metrics'),
       // Pull 2× the range so we can compare this period vs the previous one.
       db.from('analytics_daily_overview').select('*').gte('day', fromPrev).order('day', { ascending: true }),
@@ -68,6 +68,9 @@ export async function GET(req: NextRequest) {
       db.from('analytics_daily_geo').select('country, users, sessions').gte('day', from),
       db.from('analytics_daily_locale').select('locale, users').gte('day', from),
       db.from('analytics_daily_features').select('feature, opens, unique_users').gte('day', from),
+      db.from('analytics_daily_retention').select('day_offset, cohort_size, retained').gte('cohort_day', startDay(60)),
+      db.rpc('analytics_engagement_metrics', { range_days: range }),
+      db.rpc('analytics_funnel'),
     ]);
 
     const allRows = trendAllRes.data || [];
@@ -140,6 +143,19 @@ export async function GET(req: NextRequest) {
       dauToday: pct(dauToday, dauYday),
     };
 
+    // ── Retention: aggregate mature cohorts into overall D1/D7/D30 % ──
+    const retAgg: Record<number, { size: number; retained: number }> = { 1: { size: 0, retained: 0 }, 7: { size: 0, retained: 0 }, 30: { size: 0, retained: 0 } };
+    for (const r of retRes.data || []) {
+      const b = retAgg[r.day_offset];
+      if (b) { b.size += r.cohort_size || 0; b.retained += r.retained || 0; }
+    }
+    const retention = {
+      d1: retAgg[1].size ? Math.round((retAgg[1].retained / retAgg[1].size) * 100) : null,
+      d7: retAgg[7].size ? Math.round((retAgg[7].retained / retAgg[7].size) * 100) : null,
+      d30: retAgg[30].size ? Math.round((retAgg[30].retained / retAgg[30].size) * 100) : null,
+      cohort: { d1: retAgg[1].size, d7: retAgg[7].size, d30: retAgg[30].size },
+    };
+
     return NextResponse.json({
       live: liveRes.data || {},
       range,
@@ -150,6 +166,9 @@ export async function GET(req: NextRequest) {
       locale,
       platforms,
       deltas,
+      retention,
+      engagement: engRes.data || {},
+      funnel: funnelRes.data || {},
       generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {
@@ -172,6 +191,8 @@ export async function POST(req: NextRequest) {
       const { error } = await db.rpc('analytics_rollup', { target_day: d.toISOString().slice(0, 10) });
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    // Refresh retention too (ignore error if Phase 2 migration not yet applied).
+    try { await db.rpc('analytics_retention_rollup', { lookback_days: 60 }); } catch {}
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Internal error' }, { status: 500 });
