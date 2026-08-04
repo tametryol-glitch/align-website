@@ -263,17 +263,37 @@ BEGIN
     AND locale IS NOT NULL AND locale <> ''
   GROUP BY 2;
 
-  -- ── Feature opens ────────────────────────────────────────────────────────────
+  -- ── Feature usage ────────────────────────────────────────────────────────────
+  -- Counts explicit feature_opened events AND the app's key engagement events,
+  -- mapping each to a friendly feature name so the "Top features" card is useful.
   INSERT INTO public.analytics_daily_features (day, feature, opens, unique_users)
-  SELECT
-    target_day,
-    COALESCE(NULLIF(event_data->>'feature', ''), path, 'unknown'),
-    COUNT(*),
-    COUNT(DISTINCT COALESCE(user_id::text, anon_id))
-  FROM public.analytics_events
-  WHERE created_at >= d0 AND created_at < d1
-    AND event_name = 'feature_opened'
-  GROUP BY 2;
+  SELECT target_day, feature, COUNT(*), COUNT(DISTINCT ident)
+  FROM (
+    SELECT
+      COALESCE(
+        NULLIF(event_data->>'feature', ''),
+        CASE event_name
+          WHEN 'chart_view'       THEN 'chart'
+          WHEN 'reading_viewed'   THEN 'reading'
+          WHEN 'message_sent'     THEN 'chat'
+          WHEN 'post_created'     THEN 'feed'
+          WHEN 'friend_added'     THEN 'friends'
+          WHEN 'dating_like'      THEN 'dating'
+          WHEN 'dating_match'     THEN 'dating'
+          WHEN 'dating_message_sent' THEN 'dating'
+        END
+      ) AS feature,
+      COALESCE(user_id::text, anon_id) AS ident
+    FROM public.analytics_events
+    WHERE created_at >= d0 AND created_at < d1
+      AND (
+        event_name = 'feature_opened'
+        OR event_data ? 'feature'
+        OR event_name IN ('chart_view','reading_viewed','message_sent','post_created','friend_added','dating_like','dating_match','dating_message_sent')
+      )
+  ) s
+  WHERE feature IS NOT NULL
+  GROUP BY feature;
 END;
 $$;
 
