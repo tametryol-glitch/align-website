@@ -103,9 +103,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  /* Planet-in-sign pages (12 signs each) */
+  /* Planet-in-sign pages (12 signs each).
+     moon-sign is handled separately below because it has localized (es/pt/fr)
+     variants with hreflang alternates (SEO i18n pilot). */
   const planetRoutes = [
-    'mars-in', 'venus-in', 'mercury-in', 'moon-sign', 'rising-sign',
+    'mars-in', 'venus-in', 'mercury-in', 'rising-sign',
     'jupiter-in', 'saturn-in', 'uranus-in', 'neptune-in', 'pluto-in',
     'juno-in', 'vesta-in', 'chiron-in', 'north-node-in', 'south-node-in',
   ];
@@ -118,6 +120,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
   ]);
+
+  /* Moon-sign family with localized es/pt/fr variants + hreflang (SEO i18n pilot).
+     Each URL declares the full language cluster so crawlers pair the variants. */
+  const moonPaths = ['', ...ALL_SIGN_KEYS.map((s) => `/${s}`)];
+  const moonLangs = (p: string) => ({
+    en: `${base}/moon-sign${p}`,
+    es: `${base}/es/moon-sign${p}`,
+    pt: `${base}/pt/moon-sign${p}`,
+    fr: `${base}/fr/moon-sign${p}`,
+    'x-default': `${base}/moon-sign${p}`,
+  });
+  const moonPages = ['moon-sign', 'es/moon-sign', 'pt/moon-sign', 'fr/moon-sign'].flatMap((prefix) =>
+    moonPaths.map((p) => ({
+      url: `${base}/${prefix}${p}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: p === '' ? 0.7 : 0.6,
+      alternates: { languages: moonLangs(p) },
+    })),
+  );
 
   /* Planets in Houses (120 placements) */
   const houseSlugs = getAllHouseSlugs();
@@ -178,6 +200,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
     ...planetPages,
+    ...moonPages,
     ...housePages,
     ...synastryPages,
     /* Blog posts */

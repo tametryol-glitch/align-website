@@ -2,6 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ALL_SIGN_KEYS, SIGNS, getElementColor, type ZodiacSign } from '@/data/moonSignContent';
+import { SEO_LOCALES, HREFLANG } from '@/data/i18n/seoLocale';
+
+const BASE = 'https://aligncosmic.com';
+const INDEX_ALTERNATES: Record<string, string> = {
+  'x-default': `${BASE}/moon-sign`,
+  en: `${BASE}/moon-sign`,
+  ...Object.fromEntries(SEO_LOCALES.map((l) => [HREFLANG[l], `${BASE}/${l}/moon-sign`])),
+};
 
 export const metadata: Metadata = {
   title: 'Moon Signs — Your Emotional Blueprint in Astrology',
@@ -19,7 +27,7 @@ export const metadata: Metadata = {
     url: 'https://aligncosmic.com/moon-sign', siteName: 'Align', type: 'website',
   },
   twitter: { card: 'summary_large_image', title: 'Moon Signs — Your Emotional Blueprint | Align', description: 'Explore all 12 Moon signs with in-depth guides.' },
-  alternates: { canonical: 'https://aligncosmic.com/moon-sign' },
+  alternates: { canonical: 'https://aligncosmic.com/moon-sign', languages: INDEX_ALTERNATES },
 };
 
 const ELEMENT_GROUPS: { element: 'fire' | 'earth' | 'air' | 'water'; label: string; signs: ZodiacSign[] }[] = [

@@ -93,6 +93,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/soul-age') ||   // free for everyone, no account required
     pathname.startsWith('/share') ||
     pathname.startsWith('/moon-sign') ||
+    /^\/(es|pt|fr)\/moon-sign(\/|$)/.test(pathname) || // localized Moon-sign SEO pages (pilot)
     pathname.startsWith('/rising-sign') ||
     pathname.startsWith('/mars-in') ||
     pathname.startsWith('/venus-in') ||

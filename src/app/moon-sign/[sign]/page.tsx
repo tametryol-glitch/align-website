@@ -10,6 +10,16 @@ import {
   MOON_SYMBOL,
   type ZodiacSign,
 } from '@/data/moonSignContent';
+import { SEO_LOCALES, HREFLANG } from '@/data/i18n/seoLocale';
+
+const BASE = 'https://aligncosmic.com';
+
+/** hreflang alternates for this Moon-sign detail page. */
+function localeAlternates(sign: string): Record<string, string> {
+  const langs: Record<string, string> = { 'x-default': `${BASE}/moon-sign/${sign}`, en: `${BASE}/moon-sign/${sign}` };
+  for (const l of SEO_LOCALES) langs[HREFLANG[l]] = `${BASE}/${l}/moon-sign/${sign}`;
+  return langs;
+}
 
 export function generateStaticParams() {
   return ALL_SIGN_KEYS.map((sign) => ({ sign }));
@@ -37,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: `https://aligncosmic.com/moon-sign/${sign}`, siteName: 'Align', type: 'article',
     },
     twitter: { card: 'summary_large_image', title: `${title} | Align`, description },
-    alternates: { canonical: `https://aligncosmic.com/moon-sign/${sign}` },
+    alternates: { canonical: `https://aligncosmic.com/moon-sign/${sign}`, languages: localeAlternates(sign) },
   };
 }
 
