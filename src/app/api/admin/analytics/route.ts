@@ -16,8 +16,6 @@ import { createServerClient } from '@supabase/ssr';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const K_ANON = 10;
-
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
@@ -59,17 +57,24 @@ export async function GET(req: NextRequest) {
     const rangeParam = parseInt(req.nextUrl.searchParams.get('range') || '7', 10);
     const range = rangeParam === 30 ? 30 : 7;
     const from = startDay(range);
+    const fromPrev = startDay(range * 2); // for period-over-period deltas
     const db = getAdminClient();
 
-    const [liveRes, trendRes, pagesRes, geoRes, localeRes] = await Promise.all([
+    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes] = await Promise.all([
       db.rpc('analytics_live_metrics'),
-      db.from('analytics_daily_overview').select('*').gte('day', from).order('day', { ascending: true }),
-      db.from('analytics_daily_pages').select('platform, path, views, unique_users').gte('day', from),
+      // Pull 2× the range so we can compare this period vs the previous one.
+      db.from('analytics_daily_overview').select('*').gte('day', fromPrev).order('day', { ascending: true }),
+      db.from('analytics_daily_pages').select('path, views, unique_users').gte('day', from),
       db.from('analytics_daily_geo').select('country, users, sessions').gte('day', from),
       db.from('analytics_daily_locale').select('locale, users').gte('day', from),
+      db.from('analytics_daily_features').select('feature, opens, unique_users').gte('day', from),
     ]);
 
-    // ── Top pages: sum views across the range, rank, top 25 ──
+    const allRows = trendAllRes.data || [];
+    const trend = allRows.filter((r: any) => r.day >= from);
+    const prevRows = allRows.filter((r: any) => r.day < from);
+
+    // ── Top pages: sum views across the range, rank ──
     const pageMap = new Map<string, { path: string; views: number; users: number }>();
     for (const r of pagesRes.data || []) {
       const cur = pageMap.get(r.path) || { path: r.path, views: 0, users: 0 };
@@ -79,7 +84,17 @@ export async function GET(req: NextRequest) {
     }
     const pages = Array.from(pageMap.values()).sort((a, b) => b.views - a.views).slice(0, 25);
 
-    // ── Geography: sum per country, fold sub-K countries into "Other" ──
+    // ── Feature usage: sum opens across the range, rank ──
+    const featMap = new Map<string, { feature: string; opens: number; users: number }>();
+    for (const r of featRes.data || []) {
+      const cur = featMap.get(r.feature) || { feature: r.feature, opens: 0, users: 0 };
+      cur.opens += r.opens || 0;
+      cur.users += r.unique_users || 0;
+      featMap.set(r.feature, cur);
+    }
+    const features = Array.from(featMap.values()).sort((a, b) => b.opens - a.opens).slice(0, 25);
+
+    // ── Geography (internal admin view: exact counts, no k-anon fold) ──
     const geoMap = new Map<string, { country: string; users: number; sessions: number }>();
     for (const r of geoRes.data || []) {
       const cur = geoMap.get(r.country) || { country: r.country, users: 0, sessions: 0 };
@@ -87,48 +102,55 @@ export async function GET(req: NextRequest) {
       cur.sessions += r.sessions || 0;
       geoMap.set(r.country, cur);
     }
-    let geoOther = { country: 'Other', users: 0, sessions: 0 };
-    const geo: { country: string; users: number; sessions: number }[] = [];
-    for (const g of Array.from(geoMap.values())) {
-      if (g.users < K_ANON) {
-        geoOther.users += g.users;
-        geoOther.sessions += g.sessions;
-      } else geo.push(g);
-    }
-    geo.sort((a, b) => b.users - a.users);
-    if (geoOther.users > 0) geo.push(geoOther);
+    const geo = Array.from(geoMap.values()).sort((a, b) => b.users - a.users);
 
-    // ── Languages: sum per locale, fold sub-K into "other" ──
+    // ── Languages (exact counts) ──
     const locMap = new Map<string, number>();
     for (const r of localeRes.data || []) {
       locMap.set(r.locale, (locMap.get(r.locale) || 0) + (r.users || 0));
     }
-    let locOther = 0;
-    const locale: { locale: string; users: number }[] = [];
-    for (const [loc, users] of Array.from(locMap.entries())) {
-      if (users < K_ANON) locOther += users;
-      else locale.push({ locale: loc, users });
-    }
-    locale.sort((a, b) => b.users - a.users);
-    if (locOther > 0) locale.push({ locale: 'other', users: locOther });
+    const locale = Array.from(locMap.entries())
+      .map(([loc, users]) => ({ locale: loc, users }))
+      .sort((a, b) => b.users - a.users);
 
-    // ── Platform totals across the range (from the overview rollup) ──
+    // ── Platform totals across the range ──
     const platforms = { web: 0, ios: 0, android: 0 };
-    for (const r of trendRes.data || []) {
+    for (const r of trend) {
       platforms.web += r.platform_web || 0;
       platforms.ios += r.platform_ios || 0;
       platforms.android += r.platform_android || 0;
     }
 
+    // ── Period-over-period deltas (this range vs the preceding one) ──
+    const sum = (rows: any[], k: string) => rows.reduce((s, r) => s + (r[k] || 0), 0);
+    const avg = (rows: any[], k: string) => (rows.length ? sum(rows, k) / rows.length : 0);
+    const pct = (cur: number, prev: number) =>
+      prev > 0 ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0;
+
+    // Today vs yesterday DAU (from the daily rollup; live.dau is "today so far").
+    const todayStr = startDay(1);
+    const ydayStr = (() => { const d = new Date(); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); })();
+    const dauToday = allRows.find((r: any) => r.day === todayStr)?.dau ?? (liveRes.data as any)?.dau ?? 0;
+    const dauYday = allRows.find((r: any) => r.day === ydayStr)?.dau ?? 0;
+
+    const deltas = {
+      newUsers: pct(sum(trend, 'new_users'), sum(prevRows, 'new_users')),
+      sessions: pct(sum(trend, 'sessions'), sum(prevRows, 'sessions')),
+      dauAvg: pct(Math.round(avg(trend, 'dau')), Math.round(avg(prevRows, 'dau'))),
+      dauToday: pct(dauToday, dauYday),
+    };
+
     return NextResponse.json({
       live: liveRes.data || {},
       range,
-      trend: trendRes.data || [],
+      trend,
       pages,
+      features,
       geo,
       locale,
       platforms,
-      kAnon: K_ANON,
+      deltas,
+      generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Internal error' }, { status: 500 });

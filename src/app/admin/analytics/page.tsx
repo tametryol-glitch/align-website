@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
 import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
-  Users, Radio, TrendingUp, MousePointerClick, ArrowLeft,
+  Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
+  ArrowUpRight, ArrowDownRight, Minus,
 } from 'lucide-react';
 
 interface TrendRow {
@@ -24,10 +25,12 @@ interface AnalyticsData {
   range: number;
   trend: TrendRow[];
   pages: { path: string; views: number; users: number }[];
+  features: { feature: string; opens: number; users: number }[];
   geo: { country: string; users: number; sessions: number }[];
   locale: { locale: string; users: number }[];
   platforms: { web: number; ios: number; android: number };
-  kAnon: number;
+  deltas: { newUsers: number; sessions: number; dauAvg: number; dauToday: number };
+  generatedAt: string;
 }
 
 function flagEmoji(cc: string): string {
@@ -40,7 +43,6 @@ function flagEmoji(cc: string): string {
 }
 
 function countryName(cc: string): string {
-  if (cc === 'Other') return 'Other (small groups)';
   try {
     const dn = new Intl.DisplayNames(['en'], { type: 'region' });
     return dn.of(cc.toUpperCase()) || cc;
@@ -48,7 +50,7 @@ function countryName(cc: string): string {
 }
 
 function langName(code: string): string {
-  if (code === 'other') return 'Other (small groups)';
+  if (code === 'other') return 'Other';
   try {
     const dn = new Intl.DisplayNames(['en'], { type: 'language' });
     return dn.of(code) || code;
@@ -60,22 +62,48 @@ function fmt(n: number | undefined): string {
   return n.toLocaleString();
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: string }) {
+function timeAgo(iso?: string): string {
+  if (!iso) return '';
+  const s = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 60) return `${s}s ago`;
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  return `${Math.floor(s / 3600)}h ago`;
+}
+
+function Delta({ pct }: { pct?: number }) {
+  if (pct == null) return null;
+  if (pct === 0) return <span className="inline-flex items-center gap-0.5 text-[11px] text-text-muted"><Minus className="w-3 h-3" />0%</span>;
+  const up = pct > 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${up ? 'text-green-400' : 'text-red-400'}`}>
+      {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}{Math.abs(pct)}%
+    </span>
+  );
+}
+
+function Stat({ label, value, accent, delta, deltaHint }: { label: string; value: string; accent?: string; delta?: number; deltaHint?: string }) {
   return (
     <div className="bg-bg-secondary rounded-xl p-4 border border-border-primary">
-      <p className={`text-2xl font-extrabold ${accent || 'text-text-primary'}`}>{value}</p>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className={`text-2xl font-extrabold ${accent || 'text-text-primary'}`}>{value}</p>
+        <Delta pct={delta} />
+      </div>
       <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">{label}</p>
+      {delta != null && deltaHint && <p className="text-[9px] text-text-muted mt-0.5">{deltaHint}</p>}
     </div>
   );
 }
 
-function BarRow({ label, sub, value, max, hint }: { label: React.ReactNode; sub?: string; value: number; max: number; hint?: string }) {
+function BarRow({ label, value, max, hint, share }: { label: React.ReactNode; value: number; max: number; hint?: string; share?: number }) {
   const pct = max > 0 ? Math.max(2, Math.round((value / max) * 100)) : 0;
   return (
     <div className="py-1.5">
       <div className="flex items-center justify-between gap-3 mb-1">
-        <span className="text-sm text-text-secondary truncate flex items-center gap-2">{label}{sub && <span className="text-text-muted text-xs">{sub}</span>}</span>
-        <span className="text-sm font-semibold text-text-primary flex-shrink-0">{fmt(value)}{hint && <span className="text-text-muted text-xs font-normal ml-1">{hint}</span>}</span>
+        <span className="text-sm text-text-secondary truncate flex items-center gap-2 min-w-0">{label}</span>
+        <span className="text-sm font-semibold text-text-primary flex-shrink-0 flex items-baseline gap-1.5">
+          {fmt(value)}{hint && <span className="text-text-muted text-xs font-normal">{hint}</span>}
+          {share != null && <span className="text-accent-primary/80 text-[11px] font-medium w-9 text-right">{share}%</span>}
+        </span>
       </div>
       <div className="h-2 bg-bg-tertiary rounded-full overflow-hidden">
         <div className="h-full bg-gradient-to-r from-accent-primary to-purple-500 rounded-full" style={{ width: `${pct}%` }} />
@@ -84,16 +112,49 @@ function BarRow({ label, sub, value, max, hint }: { label: React.ReactNode; sub?
   );
 }
 
-function Sparkline({ data }: { data: number[] }) {
-  if (data.length === 0) return null;
+// DAU chart with area fill, hover points (native tooltip) and value labels.
+function DauChart({ rows }: { rows: TrendRow[] }) {
+  if (rows.length === 0) return <p className="text-xs text-text-muted py-6 text-center">No activity yet.</p>;
+  const data = rows.map(r => r.dau);
   const max = Math.max(...data, 1);
-  const W = 100, H = 32;
+  const W = 100, H = 44;
   const step = data.length > 1 ? W / (data.length - 1) : W;
-  const pts = data.map((v, i) => `${(i * step).toFixed(1)},${(H - (v / max) * H).toFixed(1)}`).join(' ');
+  const xy = (v: number, i: number) => [i * step, H - (v / max) * (H - 6) - 3] as [number, number];
+  const pts = data.map((v, i) => xy(v, i));
+  const line = pts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const area = `0,${H} ${line} ${W},${H}`;
+  const last = data[data.length - 1];
+  const peak = Math.max(...data);
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-10">
-      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-primary" vectorEffect="non-scaling-stroke" />
-    </svg>
+    <div className="relative">
+      <div className="flex items-end justify-between mb-1">
+        <div>
+          <span className="text-3xl font-extrabold text-text-primary">{fmt(last)}</span>
+          <span className="text-xs text-text-muted ml-2">today</span>
+        </div>
+        <span className="text-[11px] text-text-muted">peak {fmt(peak)}</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-24">
+        <defs>
+          <linearGradient id="dauFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.25" className="text-accent-primary" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0" className="text-accent-primary" />
+          </linearGradient>
+        </defs>
+        <polygon points={area} fill="url(#dauFill)" className="text-accent-primary" />
+        <polyline points={line} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-primary" vectorEffect="non-scaling-stroke" />
+        {pts.map((p, i) => (
+          <circle key={i} cx={p[0]} cy={p[1]} r="1.6" className="text-accent-primary" fill="currentColor" vectorEffect="non-scaling-stroke">
+            <title>{rows[i].day}: {rows[i].dau} active</title>
+          </circle>
+        ))}
+      </svg>
+      <div className="flex justify-between text-[10px] text-text-muted mt-1">
+        <span>{rows[0]?.day || ''}</span>
+        <span>{rows[rows.length - 1]?.day || ''}</span>
+      </div>
+    </div>
   );
 }
 
@@ -123,7 +184,6 @@ export default function AnalyticsAdminPage() {
     setLoading(false);
   }, []);
 
-  // On mount: recompute today's rollups then load.
   useEffect(() => {
     if (!verified) return;
     (async () => {
@@ -131,7 +191,6 @@ export default function AnalyticsAdminPage() {
       await fetch('/api/admin/analytics', { method: 'POST' }).catch(() => {});
       await load(range);
     })();
-    // Live numbers refresh every 30s.
     const t = setInterval(() => load(range), 30000);
     return () => clearInterval(t);
   }, [verified, range, load]);
@@ -155,11 +214,15 @@ export default function AnalyticsAdminPage() {
 
   const live = data?.live || {};
   const trend = data?.trend || [];
+  const deltas = data?.deltas;
   const newUsers = trend.reduce((s, r) => s + (r.new_users || 0), 0);
   const sessions = trend.reduce((s, r) => s + (r.sessions || 0), 0);
   const avgSession = trend.length ? Math.round(trend.reduce((s, r) => s + (r.avg_session_sec || 0), 0) / trend.length) : 0;
   const pagesMax = Math.max(1, ...(data?.pages || []).map(p => p.views));
+  const featMax = Math.max(1, ...(data?.features || []).map(f => f.opens));
+  const geoTotal = (data?.geo || []).reduce((s, g) => s + g.users, 0) || 1;
   const geoMax = Math.max(1, ...(data?.geo || []).map(g => g.users));
+  const locTotal = (data?.locale || []).reduce((s, l) => s + l.users, 0) || 1;
   const locMax = Math.max(1, ...(data?.locale || []).map(l => l.users));
   const platTotal = (data?.platforms.web || 0) + (data?.platforms.ios || 0) + (data?.platforms.android || 0);
 
@@ -218,29 +281,26 @@ export default function AnalyticsAdminPage() {
             </div>
           </div>
 
-          {/* Headline stats */}
+          {/* Headline stats with deltas */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Stat label="Active today (DAU)" value={fmt(live.dau)} accent="text-accent-primary" />
+            <Stat label="Active today (DAU)" value={fmt(live.dau)} accent="text-accent-primary" delta={deltas?.dauToday} deltaHint="vs yesterday" />
             <Stat label="This week (WAU)" value={fmt(live.wau)} />
             <Stat label="This month (MAU)" value={fmt(live.mau)} />
             <Stat label="Total members" value={fmt(live.total_members)} />
-            <Stat label={`New (${range}d)`} value={fmt(newUsers)} accent="text-green-400" />
-            <Stat label={`Sessions (${range}d)`} value={fmt(sessions)} />
+            <Stat label={`New (${range}d)`} value={fmt(newUsers)} accent="text-green-400" delta={deltas?.newUsers} deltaHint={`vs prior ${range}d`} />
+            <Stat label={`Sessions (${range}d)`} value={fmt(sessions)} delta={deltas?.sessions} deltaHint={`vs prior ${range}d`} />
             <Stat label="Avg session" value={avgSession ? `${Math.floor(avgSession / 60)}m ${avgSession % 60}s` : '—'} />
             <Stat label="Stickiness (DAU/MAU)" value={live.mau ? `${Math.round(((live.dau || 0) / live.mau) * 100)}%` : '—'} />
           </div>
 
           {/* DAU trend */}
           <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-accent-primary" />
               <h2 className="text-sm font-bold text-text-primary">Daily active users — last {range} days</h2>
+              <Delta pct={deltas?.dauAvg} />
             </div>
-            <Sparkline data={trend.map(t => t.dau)} />
-            <div className="flex justify-between text-[10px] text-text-muted mt-1">
-              <span>{trend[0]?.day || ''}</span>
-              <span>{trend[trend.length - 1]?.day || ''}</span>
-            </div>
+            <DauChart rows={trend} />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -251,13 +311,26 @@ export default function AnalyticsAdminPage() {
                 <h2 className="text-sm font-bold text-text-primary">Top pages & screens</h2>
               </div>
               {(data?.pages || []).length === 0 ? (
-                <p className="text-xs text-text-muted py-4">No page views recorded yet.</p>
+                <p className="text-xs text-text-muted py-4">No page views in this range yet — they’ll appear as people browse.</p>
               ) : (
-                <div>
-                  {(data?.pages || []).slice(0, 12).map(p => (
-                    <BarRow key={p.path} label={<span className="font-mono text-xs">{p.path}</span>} value={p.views} max={pagesMax} hint="views" />
-                  ))}
-                </div>
+                <div>{(data?.pages || []).slice(0, 12).map(p => (
+                  <BarRow key={p.path} label={<span className="font-mono text-xs truncate">{p.path}</span>} value={p.views} max={pagesMax} hint="views" />
+                ))}</div>
+              )}
+            </div>
+
+            {/* Top features */}
+            <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-accent-primary" />
+                <h2 className="text-sm font-bold text-text-primary">Top features used</h2>
+              </div>
+              {(data?.features || []).length === 0 ? (
+                <p className="text-xs text-text-muted py-4">No feature events yet. Features tracked as users open charts, readings, chat, etc.</p>
+              ) : (
+                <div>{(data?.features || []).slice(0, 12).map(f => (
+                  <BarRow key={f.feature} label={<span className="capitalize truncate">{f.feature.replace(/[-_]/g, ' ')}</span>} value={f.opens} max={featMax} hint="opens" />
+                ))}</div>
               )}
             </div>
 
@@ -268,13 +341,11 @@ export default function AnalyticsAdminPage() {
                 <h2 className="text-sm font-bold text-text-primary">Countries</h2>
               </div>
               {(data?.geo || []).length === 0 ? (
-                <p className="text-xs text-text-muted py-4">No geography recorded yet.</p>
+                <p className="text-xs text-text-muted py-4">No geography yet — country is read from IP (never stored).</p>
               ) : (
-                <div>
-                  {(data?.geo || []).slice(0, 12).map(g => (
-                    <BarRow key={g.country} label={<span>{flagEmoji(g.country)} {countryName(g.country)}</span>} value={g.users} max={geoMax} hint="users" />
-                  ))}
-                </div>
+                <div>{(data?.geo || []).slice(0, 12).map(g => (
+                  <BarRow key={g.country} label={<span className="truncate">{flagEmoji(g.country)} {countryName(g.country)}</span>} value={g.users} max={geoMax} hint="users" share={Math.round((g.users / geoTotal) * 100)} />
+                ))}</div>
               )}
             </div>
 
@@ -287,16 +358,14 @@ export default function AnalyticsAdminPage() {
               {(data?.locale || []).length === 0 ? (
                 <p className="text-xs text-text-muted py-4">No language data yet.</p>
               ) : (
-                <div>
-                  {(data?.locale || []).slice(0, 12).map(l => (
-                    <BarRow key={l.locale} label={langName(l.locale)} value={l.users} max={locMax} hint="users" />
-                  ))}
-                </div>
+                <div>{(data?.locale || []).slice(0, 12).map(l => (
+                  <BarRow key={l.locale} label={<span className="capitalize truncate">{langName(l.locale)}</span>} value={l.users} max={locMax} hint="users" share={Math.round((l.users / locTotal) * 100)} />
+                ))}</div>
               )}
             </div>
 
             {/* Platform split */}
-            <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+            <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary md:col-span-2">
               <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-accent-primary" />
                 <h2 className="text-sm font-bold text-text-primary">Platform ({range}d sessions)</h2>
@@ -305,16 +374,16 @@ export default function AnalyticsAdminPage() {
                 <p className="text-xs text-text-muted py-4">No sessions recorded yet.</p>
               ) : (
                 <div>
-                  <BarRow label="🌐 Web" value={data!.platforms.web} max={platTotal} />
-                  <BarRow label="📱 iOS" value={data!.platforms.ios} max={platTotal} />
-                  <BarRow label="🤖 Android" value={data!.platforms.android} max={platTotal} />
+                  <BarRow label="🌐 Web" value={data!.platforms.web} max={platTotal} share={Math.round((data!.platforms.web / platTotal) * 100)} />
+                  <BarRow label="📱 iOS" value={data!.platforms.ios} max={platTotal} share={Math.round((data!.platforms.ios / platTotal) * 100)} />
+                  <BarRow label="🤖 Android" value={data!.platforms.android} max={platTotal} share={Math.round((data!.platforms.android / platTotal) * 100)} />
                 </div>
               )}
             </div>
           </div>
 
           <p className="text-[11px] text-text-muted text-center">
-            Country from IP (never stored) · groups under {data?.kAnon ?? 10} folded into “Other” · live = active in last 5 min
+            Updated {timeAgo(data?.generatedAt)} · auto-refreshes every 30s · country from IP (never stored) · live = active in last 5 min
           </p>
         </div>
       )}
