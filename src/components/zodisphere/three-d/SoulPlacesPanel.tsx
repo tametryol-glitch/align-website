@@ -16,7 +16,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Heart, X, Loader2, MapPin, Sparkles, User, PenLine, Users } from 'lucide-react';
+import { Heart, X, Loader2, MapPin, Sparkles, User, PenLine, Users, Search } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { createClient } from '@/lib/supabase';
 import { getFriends } from '@/lib/friendService';
@@ -95,6 +95,7 @@ export default function SoulPlacesPanel({
   // Friend picker.
   const [friends, setFriends] = useState<SoulFriend[] | null>(null);
   const [friendsLoading, setFriendsLoading] = useState(false);
+  const [friendQuery, setFriendQuery] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -273,31 +274,53 @@ export default function SoulPlacesPanel({
         )}
 
         {/* Friend picker */}
-        {source === 'friend' && (
-          <div className="space-y-1.5">
-            {friendsLoading && <div className="flex items-center gap-2 text-[12px] text-white/50 py-2"><Loader2 className="w-4 h-4 animate-spin" /> Loading friends…</div>}
-            {friends && friends.length === 0 && (
-              <p className="text-[12px] text-white/55 py-2">No friends yet. Add friends, or use “Enter details.”</p>
-            )}
-            {friends && friends.length > 0 && (
-              <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
-                {friends.map((f) => (
-                  <button
-                    key={f.friend_id}
-                    onClick={() => selectFriend(f)}
-                    disabled={loading}
-                    className="w-full flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left hover:bg-white/10 disabled:opacity-50"
-                  >
-                    {f.avatar_url
-                      ? <img src={f.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
-                      : <span className="w-7 h-7 rounded-full bg-violet-500/25 flex items-center justify-center shrink-0"><User className="w-3.5 h-3.5 text-violet-200" /></span>}
-                    <span className="text-[13px] text-white truncate">{f.display_name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+        {source === 'friend' && (() => {
+          const q = friendQuery.trim().toLowerCase();
+          const shown = (friends || [])
+            .slice()
+            .sort((a, b) => (a.display_name || '').localeCompare(b.display_name || '', undefined, { sensitivity: 'base' }))
+            .filter((f) => !q || (f.display_name || '').toLowerCase().includes(q));
+          return (
+            <div className="space-y-1.5">
+              {friendsLoading && <div className="flex items-center gap-2 text-[12px] text-white/50 py-2"><Loader2 className="w-4 h-4 animate-spin" /> Loading friends…</div>}
+              {friends && friends.length === 0 && (
+                <p className="text-[12px] text-white/55 py-2">No friends yet. Add friends, or use “Enter details.”</p>
+              )}
+              {friends && friends.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5">
+                    <Search className="w-3.5 h-3.5 text-white/40 shrink-0" />
+                    <input
+                      value={friendQuery}
+                      onChange={(e) => setFriendQuery(e.target.value)}
+                      placeholder="Search friends…"
+                      className="bg-transparent outline-none text-[13px] text-white w-full placeholder:text-white/30"
+                    />
+                    {friendQuery && <button onClick={() => setFriendQuery('')} aria-label="Clear"><X className="w-3.5 h-3.5 text-white/40 hover:text-white" /></button>}
+                  </div>
+                  <div className="space-y-1 max-h-[240px] overflow-y-auto pr-1">
+                    {shown.map((f) => (
+                      <button
+                        key={f.friend_id}
+                        onClick={() => selectFriend(f)}
+                        disabled={loading}
+                        className="w-full flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left hover:bg-white/10 disabled:opacity-50"
+                      >
+                        {f.avatar_url
+                          ? <img src={f.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                          : <span className="w-7 h-7 rounded-full bg-violet-500/25 flex items-center justify-center shrink-0"><User className="w-3.5 h-3.5 text-violet-200" /></span>}
+                        <span className="text-[13px] text-white truncate">{f.display_name}</span>
+                      </button>
+                    ))}
+                    {shown.length === 0 && (
+                      <p className="text-[12px] text-white/45 py-2 px-1">No friends match “{friendQuery}”.</p>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {err && <div className="rounded-lg bg-rose-500/10 border border-rose-400/25 px-3 py-2 text-[11px] text-rose-100">{err}</div>}
         {loading && source === 'friend' && !err && (
