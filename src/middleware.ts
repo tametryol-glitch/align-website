@@ -31,7 +31,10 @@ function checkRateLimit(request: NextRequest): NextResponse | null {
 }
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/api')) {
+  // /api/track is the analytics beacon: high-frequency heartbeats from many
+  // users who may share one IP (carrier / corporate NAT) would trip the per-IP
+  // limiter, so it's exempt here and self-limits via client-side batching.
+  if (request.nextUrl.pathname.startsWith('/api') && !request.nextUrl.pathname.startsWith('/api/track')) {
     const limited = checkRateLimit(request);
     if (limited) return limited;
   }
@@ -62,7 +65,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe'];
+  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track'];
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));

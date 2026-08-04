@@ -4,6 +4,7 @@ import { AuthProvider } from '@/components/layout/AuthProvider';
 import { GlobalCallListener } from '@/components/GlobalCallListener';
 import I18nProvider from '@/i18n/I18nProvider';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { BadgeEarnedPopup } from '@/components/ui/BadgeEarnedPopup';
 import { FounderIntroModal } from '@/components/FounderIntroModal';
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen font-sans">
         <GoogleAnalytics />
+        <AnalyticsTracker />
         <CookieConsent />
         <I18nProvider>
           <AuthProvider>
