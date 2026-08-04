@@ -24,6 +24,7 @@ const ANON_KEY = 'align_anon_id';
 const EPHEMERAL_KEY = 'align_anon_ephemeral';
 const SESSION_KEY = 'align_session_id';
 const SESSION_TS_KEY = 'align_session_ts';
+const UTM_KEY = 'align_utm'; // first-touch UTM for this session
 
 type QueuedEvent = {
   event_name: string;
@@ -104,6 +105,24 @@ function getSessionId(): string {
   }
 }
 
+// First-touch UTM: read utm_* from the landing URL once, keep for the session.
+function getUtm(): { source?: string; medium?: string; campaign?: string } {
+  try {
+    const stored = sessionStorage.getItem(UTM_KEY);
+    if (stored) return JSON.parse(stored);
+    const p = new URLSearchParams(location.search);
+    const source = p.get('utm_source') || undefined;
+    const medium = p.get('utm_medium') || undefined;
+    const campaign = p.get('utm_campaign') || undefined;
+    const utm = { source, medium, campaign };
+    // Only persist if there's actually a source, so we don't pin "no campaign".
+    if (source) sessionStorage.setItem(UTM_KEY, JSON.stringify(utm));
+    return utm;
+  } catch {
+    return {};
+  }
+}
+
 function getLocale(): string {
   try {
     return (
@@ -123,6 +142,7 @@ function buildPayload() {
       ? document.referrer
       : undefined;
   referrerSent = true;
+  const utm = getUtm();
   return {
     session_id: getSessionId(),
     anon_id: getAnonId(),
@@ -130,6 +150,9 @@ function buildPayload() {
     app_version: process.env.NEXT_PUBLIC_APP_VERSION || undefined,
     locale: getLocale(),
     referrer,
+    utm_source: utm.source,
+    utm_medium: utm.medium,
+    utm_campaign: utm.campaign,
     user_id: currentUserId || undefined,
     events: queue,
   };

@@ -74,6 +74,9 @@ export async function POST(req: NextRequest) {
     const appVersion = clip(body.app_version, 32);
     const locale = clip(body.locale, 32);
     const referrer = cleanPath(body.referrer);
+    const utmSource = clip(body.utm_source, 128);
+    const utmMedium = clip(body.utm_medium, 128);
+    const utmCampaign = clip(body.utm_campaign, 128);
 
     // user_id must be a real UUID or NULL (the FK + logged-out visitors).
     const userIdIn = clip(body.user_id, 64);
@@ -134,6 +137,9 @@ export async function POST(req: NextRequest) {
             p_country: country,
             p_locale: locale,
             p_referrer: referrer,
+            p_utm_source: utmSource,
+            p_utm_medium: utmMedium,
+            p_utm_campaign: utmCampaign,
             p_n: rows.length,
           })
         : Promise.resolve(),

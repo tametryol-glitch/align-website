@@ -8,7 +8,7 @@ import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
   Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
   ArrowUpRight, ArrowDownRight, Minus, Filter, Repeat, UserPlus,
-  DollarSign, Share2,
+  DollarSign, Share2, Megaphone, Link2, Copy, Check,
 } from 'lucide-react';
 
 interface TrendRow {
@@ -37,6 +37,7 @@ interface AnalyticsData {
   revenue: { total: number; paid: number; free: number; mrr: number; arpu: number; conversionPct: number; price: number };
   traffic: { source: string; sessions: number; users: number }[];
   affiliates: { signups: number; conversions: number };
+  campaigns: { source: string; medium: string; campaign: string; sessions: number; users: number; signups: number; subscribers: number }[];
   generatedAt: string;
 }
 
@@ -316,6 +317,104 @@ function TrafficCard({ traffic, affiliates }: { traffic: AnalyticsData['traffic'
   );
 }
 
+function CampaignsCard({ campaigns }: { campaigns: AnalyticsData['campaigns'] }) {
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <Megaphone className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Campaigns (UTM)</h2>
+      </div>
+      {(campaigns || []).length === 0 ? (
+        <p className="text-xs text-text-muted py-3">
+          No tagged links yet. Build one below, share it, and traffic + signups from it will show here.
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[520px]">
+            <thead>
+              <tr className="text-[10px] text-text-muted uppercase tracking-wider text-left border-b border-border-primary">
+                <th className="py-2 pr-3 font-medium">Source / Medium / Campaign</th>
+                <th className="py-2 px-2 font-medium text-right">Sessions</th>
+                <th className="py-2 px-2 font-medium text-right">Signups</th>
+                <th className="py-2 pl-2 font-medium text-right">Subs</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campaigns.slice(0, 15).map((c, i) => (
+                <tr key={i} className="border-b border-border-primary/50">
+                  <td className="py-2 pr-3">
+                    <span className="text-text-primary font-medium">{c.source}</span>
+                    <span className="text-text-muted"> · {c.medium} · {c.campaign}</span>
+                  </td>
+                  <td className="py-2 px-2 text-right text-text-secondary">{fmt(c.sessions)}</td>
+                  <td className="py-2 px-2 text-right text-text-secondary">{fmt(c.signups)}</td>
+                  <td className="py-2 pl-2 text-right font-semibold text-green-400">{fmt(c.subscribers)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="text-[10px] text-text-muted mt-3">Sessions = this range · signups &amp; subscribers = all-time, first-touch attributed.</p>
+    </div>
+  );
+}
+
+function UtmBuilder() {
+  const [source, setSource] = useState('');
+  const [medium, setMedium] = useState('');
+  const [campaign, setCampaign] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const base = 'https://aligncosmic.com';
+  const params = new URLSearchParams();
+  if (source) params.set('utm_source', source.trim().toLowerCase().replace(/\s+/g, '_'));
+  if (medium) params.set('utm_medium', medium.trim().toLowerCase().replace(/\s+/g, '_'));
+  if (campaign) params.set('utm_campaign', campaign.trim().toLowerCase().replace(/\s+/g, '_'));
+  const url = source ? `${base}/?${params.toString()}` : base;
+
+  function copy() {
+    try {
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  }
+
+  const field = 'w-full px-3 py-2 rounded-lg bg-bg-primary border border-border-primary text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors';
+
+  return (
+    <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
+      <div className="flex items-center gap-2 mb-3">
+        <Link2 className="w-4 h-4 text-accent-primary" />
+        <h2 className="text-sm font-bold text-text-primary">Campaign link builder</h2>
+      </div>
+      <p className="text-[11px] text-text-muted mb-3">Tag a link before you post it, so the campaign shows up in the table above.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+        <div>
+          <label className="block text-[10px] text-text-muted uppercase tracking-wider mb-1">Source *</label>
+          <input className={field} value={source} onChange={e => setSource(e.target.value)} placeholder="tiktok" />
+        </div>
+        <div>
+          <label className="block text-[10px] text-text-muted uppercase tracking-wider mb-1">Medium</label>
+          <input className={field} value={medium} onChange={e => setMedium(e.target.value)} placeholder="video" />
+        </div>
+        <div>
+          <label className="block text-[10px] text-text-muted uppercase tracking-wider mb-1">Campaign</label>
+          <input className={field} value={campaign} onChange={e => setCampaign(e.target.value)} placeholder="july_launch" />
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <code className="flex-1 px-3 py-2 rounded-lg bg-bg-primary border border-border-primary text-xs text-accent-primary break-all">{url}</code>
+        <button onClick={copy} disabled={!source}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent-primary/15 border border-accent-primary/30 text-accent-primary text-xs font-medium hover:bg-accent-primary/25 transition-colors disabled:opacity-40 flex-shrink-0">
+          {copied ? <><Check className="w-3.5 h-3.5" /> Copied</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AnalyticsAdminPage() {
   const { profile } = useAuthStore();
   const [verified, setVerified] = useState(false);
@@ -466,6 +565,10 @@ export default function AnalyticsAdminPage() {
             {data?.revenue && <RevenueCard rev={data.revenue} />}
             {data?.traffic && <TrafficCard traffic={data.traffic} affiliates={data.affiliates} />}
           </div>
+
+          {/* Campaigns + link builder */}
+          {data?.campaigns && <CampaignsCard campaigns={data.campaigns} />}
+          <UtmBuilder />
 
           {/* Growth: funnel + retention */}
           <div className="grid md:grid-cols-2 gap-6">

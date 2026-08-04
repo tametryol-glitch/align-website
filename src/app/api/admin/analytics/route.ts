@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     const fromPrev = startDay(range * 2); // for period-over-period deltas
     const db = getAdminClient();
 
-    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes, retRes, engRes, funnelRes, revRes, trafRes, affRes] = await Promise.all([
+    const [liveRes, trendAllRes, pagesRes, geoRes, localeRes, featRes, retRes, engRes, funnelRes, revRes, trafRes, affRes, campRes] = await Promise.all([
       db.rpc('analytics_live_metrics'),
       // Pull 2× the range so we can compare this period vs the previous one.
       db.from('analytics_daily_overview').select('*').gte('day', fromPrev).order('day', { ascending: true }),
@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
       db.rpc('analytics_revenue_metrics'),
       db.rpc('analytics_traffic_sources', { range_days: range }),
       db.from('affiliates').select('total_signups, total_conversions'),
+      db.rpc('analytics_campaigns', { range_days: range }),
     ]);
 
     const allRows = trendAllRes.data || [];
@@ -201,6 +202,7 @@ export async function GET(req: NextRequest) {
       revenue,
       traffic: trafRes.data || [],
       affiliates,
+      campaigns: campRes.data || [],
       generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {
