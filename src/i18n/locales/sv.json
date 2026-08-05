@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}} har ingen exakt födelsetid sparad.",
       "chartGone": "Det horoskopet är inte längre sparat på ditt konto.",
       "saveFailed": "Kunde inte spara detta resultat."
-    }
+    },
+    "saveImage": "Spara bild · TikTok / Stories",
+    "savingImage": "Sparar bild…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Sök efter namn eller stjärntecken",

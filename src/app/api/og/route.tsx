@@ -124,15 +124,39 @@ export async function GET(request: NextRequest) {
     const earthAge = (searchParams.get('eAge') || '').slice(0, 40);
     const earthCount = (searchParams.get('eCount') || '0').slice(0, 20);
 
+    // format=story → 1080×1920 portrait for TikTok / Reels / Stories and photo
+    // downloads. Default → 1200×630 landscape for link-preview cards.
+    const portrait = searchParams.get('format') === 'story';
+    const W = portrait ? 1080 : 1200;
+    const H = portrait ? 1920 : 630;
+
+    // The Align logo, fetched from the same origin at render time. It is the
+    // brand mark on every shared card — keep it prominent.
+    const logoUrl = new URL('/logo.png', request.url).toString();
+    const logoSize = portrait ? 190 : 96;
+
     const column = (heading: string, count: string, age: string) => (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '480px' }}>
-        <span style={{ fontSize: '18px', letterSpacing: '2px', color: '#7B849A', textTransform: 'uppercase' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: portrait ? '860px' : '480px',
+        }}
+      >
+        <span style={{ fontSize: portrait ? 30 : 18, letterSpacing: '2px', color: '#7B849A', textTransform: 'uppercase' }}>
           {heading}
         </span>
-        <span style={{ fontSize: '68px', fontWeight: 'bold', color: '#FFFFFF', marginTop: '8px' }}>{count}</span>
-        <span style={{ fontSize: '26px', color: '#B8A0FA', marginTop: '6px' }}>{age}</span>
+        <span style={{ fontSize: portrait ? 132 : 68, fontWeight: 'bold', color: '#FFFFFF', marginTop: portrait ? 10 : 8 }}>
+          {count}
+        </span>
+        <span style={{ fontSize: portrait ? 42 : 26, color: '#B8A0FA', marginTop: portrait ? 10 : 6 }}>{age}</span>
       </div>
     );
+
+    const divider = portrait
+      ? <div style={{ display: 'flex', width: '520px', height: '1px', background: '#3A2F63', margin: '54px 0' }} />
+      : <div style={{ display: 'flex', width: '1px', height: '150px', background: '#3A2F63' }} />;
 
     return new ImageResponse(
       (
@@ -143,28 +167,48 @@ export async function GET(request: NextRequest) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: portrait ? 'space-between' : 'center',
+            padding: portrait ? '150px 0 120px' : '0',
             background: 'linear-gradient(135deg, #1B1436 0%, #131829 60%, #0a0a14 100%)',
             fontFamily: 'sans-serif',
           }}
         >
-          <span style={{ fontSize: '20px', letterSpacing: '6px', color: '#9B6FF6', fontWeight: 'bold' }}>
-            SOUL AGE CALCULATOR
-          </span>
-          <span style={{ fontSize: '38px', color: '#FFFFFF', marginTop: '10px' }}>{label}</span>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '44px' }}>
-            {column('Universal Lifetimes', universalCount, universalAge)}
-            <div style={{ display: 'flex', width: '1px', height: '150px', background: '#3A2F63' }} />
-            {column('Earth Lifetimes', earthCount, earthAge)}
+          {/* Brand lockup: logo + wordmark */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoUrl}
+              width={logoSize}
+              height={logoSize}
+              style={{ borderRadius: portrait ? 44 : 22 }}
+              alt="Align"
+            />
+            <span style={{ fontSize: portrait ? 30 : 20, letterSpacing: '6px', color: '#9B6FF6', fontWeight: 'bold', marginTop: portrait ? 26 : 14 }}>
+              SOUL AGE CALCULATOR
+            </span>
+            <span style={{ fontSize: portrait ? 58 : 38, color: '#FFFFFF', marginTop: portrait ? 16 : 10 }}>{label}</span>
           </div>
 
-          <span style={{ fontSize: '20px', color: '#7B849A', marginTop: '52px' }}>
+          {portrait ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {column('Universal Lifetimes', universalCount, universalAge)}
+              {divider}
+              {column('Earth Lifetimes', earthCount, earthAge)}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '40px' }}>
+              {column('Universal Lifetimes', universalCount, universalAge)}
+              {divider}
+              {column('Earth Lifetimes', earthCount, earthAge)}
+            </div>
+          )}
+
+          <span style={{ fontSize: portrait ? 30 : 20, color: '#7B849A', marginTop: portrait ? 0 : 48 }}>
             AlignCosmic · aligncosmic.com
           </span>
         </div>
       ),
-      { width: 1200, height: 630 }
+      { width: W, height: H }
     );
   }
 

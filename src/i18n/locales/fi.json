@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}} ei ole tallennettu tarkkaa syntymäkellonaikaa.",
       "chartGone": "Tuota karttaa ei ole enää tallennettu tilillesi.",
       "saveFailed": "Tämän tuloksen tallentaminen epäonnistui."
-    }
+    },
+    "saveImage": "Tallenna kuva · TikTok / Stories",
+    "savingImage": "Tallennetaan kuvaa…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Hae nimellä tai tähtimerkillä",

@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}} has no exact birth time saved.",
       "chartGone": "That chart is no longer saved to your account.",
       "saveFailed": "Could not save this result."
-    }
+    },
+    "saveImage": "Save image · TikTok / Stories",
+    "savingImage": "Saving image…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Search by name or sign",

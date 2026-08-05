@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}} har ikke noe nøyaktig fødselstidspunkt lagret.",
       "chartGone": "Det horoskopet er ikke lenger lagret på kontoen din.",
       "saveFailed": "Kunne ikke lagre dette resultatet."
-    }
+    },
+    "saveImage": "Lagre bilde · TikTok / Stories",
+    "savingImage": "Lagrer bilde…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Søk etter navn eller stjernetegn",

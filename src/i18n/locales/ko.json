@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}}에는 정확한 출생 시각이 저장되어 있지 않습니다.",
       "chartGone": "해당 차트는 더 이상 계정에 저장되어 있지 않습니다.",
       "saveFailed": "이 결과를 저장할 수 없습니다."
-    }
+    },
+    "saveImage": "이미지 저장 · TikTok / 스토리",
+    "savingImage": "이미지 저장 중…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "이름 또는 별자리로 검색",

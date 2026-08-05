@@ -376,6 +376,22 @@ export function SoulAgeClient() {
     }
   }
 
+  /**
+   * Download the portrait (9:16) card for TikTok / Reels / Stories — media-first
+   * platforms don't render link previews, so a saved image is the only way in.
+   * Same-origin, so the anchor download works without CORS.
+   */
+  function downloadStory() {
+    const url = shareUrl();
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = `${url}&format=story`;
+    a.download = `soul-age-${(subjectLabel || label || 'card').replace(/[^\w-]+/g, '-')}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   async function share() {
     const url = shareUrl();
     if (!url) return;
@@ -627,6 +643,9 @@ export function SoulAgeClient() {
             ) : null}
             <button type="button" onClick={share} className="btn-ghost px-6 py-2.5 text-sm w-full sm:w-auto">
               {copied ? t('soulAge.linkCopied') : t('soulAge.shareCard')}
+            </button>
+            <button type="button" onClick={downloadStory} className="btn-ghost px-6 py-2.5 text-sm w-full sm:w-auto">
+              {t('soulAge.saveImage')}
             </button>
             <span className="text-[11px] text-text-muted">
               {t('soulAge.shareNote')}

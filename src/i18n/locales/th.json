@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}}ไม่มีการบันทึกเวลาเกิดที่แน่นอน",
       "chartGone": "ดวงนั้นไม่ได้บันทึกอยู่ในบัญชีของคุณอีกต่อไป",
       "saveFailed": "ไม่สามารถบันทึกผลลัพธ์นี้ได้"
-    }
+    },
+    "saveImage": "บันทึกรูปภาพ · TikTok / Stories",
+    "savingImage": "กำลังบันทึกรูปภาพ…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "ค้นหาด้วยชื่อหรือราศี",

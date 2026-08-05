@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "{{name}} non ha un'ora di nascita esatta salvata.",
       "chartGone": "Quel tema non è più salvato nel tuo account.",
       "saveFailed": "Impossibile salvare questo risultato."
-    }
+    },
+    "saveImage": "Salva immagine · TikTok / Stories",
+    "savingImage": "Salvataggio…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Cerca per nome o segno",

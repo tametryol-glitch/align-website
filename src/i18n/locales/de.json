@@ -3028,7 +3028,9 @@
       "savedNoBirthTime": "Für {{name}} ist keine genaue Geburtszeit gespeichert.",
       "chartGone": "Dieses Horoskop ist nicht mehr in deinem Konto gespeichert.",
       "saveFailed": "Dieses Ergebnis konnte nicht gespeichert werden."
-    }
+    },
+    "saveImage": "Bild speichern · TikTok / Stories",
+    "savingImage": "Bild wird gespeichert…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Nach Name oder Sternzeichen suchen",

@@ -3031,7 +3031,9 @@
       "savedNoBirthTime": "{{name}} का कोई सटीक जन्म समय सहेजा नहीं गया है।",
       "chartGone": "वह कुंडली अब आपके खाते में सहेजी नहीं गई है।",
       "saveFailed": "यह परिणाम सहेजा नहीं जा सका।"
-    }
+    },
+    "saveImage": "छवि सहेजें · TikTok / Stories",
+    "savingImage": "छवि सहेजी जा रही है…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "नाम या राशि से खोजें",
