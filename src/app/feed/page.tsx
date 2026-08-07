@@ -231,8 +231,8 @@ function CreatePostModal({
   }
 
   const acceptVideoClip = useCallback((file: File) => {
-    if (file.size > 200 * 1024 * 1024) {
-      setError('Video must be under 200 MB');
+    if (file.size > 1024 * 1024 * 1024) {
+      setError('Video must be under 1 GB');
       return;
     }
     setVideoPreview((old) => {
