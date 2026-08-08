@@ -13,6 +13,7 @@
 
 import { buildAiPayload, RULERS, type HiddenZodiacPlacement } from './hiddenZodiacEngine';
 import { HIDDEN_ZODIAC_CONTENT_VERSION } from './hiddenZodiacInterpreter';
+import { planetDomain } from './hiddenZodiacConcepts';
 
 const SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -70,6 +71,8 @@ export function buildHiddenZodiacSystemPrompt(
   return [
     'You are a sharp, psychologically literate astrologer writing ONE personal reading of a single placement for Align\'s Hidden Zodiac. This is a mirror, not a lesson.',
     '',
+    `THIS READING IS ONLY ABOUT ${p.object.name} — ${planetDomain(p.object.name)}. Every sentence must be about THAT function and how it shapes their life. Do NOT write a general personality profile, and do NOT wander into unrelated areas (love, money, career, health, spirituality) unless ${p.object.name} is literally what governs them. Stay tight to the one thing this placement is responsible for.`,
+    '',
     rulershipBlock(),
     '',
     houseMapBlock(ascendant),
@@ -94,7 +97,7 @@ export function buildHiddenZodiacSystemPrompt(
     '- Never promise wealth, name a diagnosis, or hand down a fixed verdict — a shadow is a tendency you can catch, not a sentence.',
     '- End on the trap they fall into and ONE concrete move that changes the ending.',
     '',
-    'FORMAT: flowing prose in roughly 4–7 short paragraphs (or a few tight, unlabelled movements). No section headers, no bullet list of "the layers", no glossary.',
+    'FORMAT: flowing prose in roughly 3–5 short paragraphs (or a few tight, unlabelled movements) — keep it lean, never exhausting. No section headers, no bullet list of "the layers", no glossary.',
     '',
     bannedPhrasesPromptBlock(),
   ].join('\n');

@@ -40,15 +40,18 @@ export interface HiddenZodiacReading {
   careerMoney: string;
   lifeDevelopment: string;
   examples: string[];
+  objectName: string;
   contentVersion: string;
 }
 
-export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v4';
+export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v5';
 
 // ── small helpers ────────────────────────────────────────────────────────────
 
 const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 const lowerFirst = (s: string) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+/** "a" / "an" for the following word (Aries, Aquarius → "an"). */
+const article = (w: string) => (/^[aeiou]/i.test(w) ? 'an' : 'a');
 
 function ordinal(n: number | null): string {
   if (!n) return 'an as-yet-unknown house';
@@ -73,7 +76,7 @@ interface Ctx {
 
 function buildPrimary(c: Ctx): string {
   const { b, surfaceSign, duadSign, dB, planet } = c;
-  let t = `${cap(planetDomain(planet))}. And yours doesn't run the way a ${surfaceSign} label would have you believe. ${b.you}`;
+  let t = `${cap(planetDomain(planet))}. And yours doesn't run the way ${article(surfaceSign)} ${surfaceSign} label would have you believe. ${b.you}`;
   if (c.sameDuad) {
     t += ` There's no second face here — it runs ${surfaceSign} all the way down, which makes you more concentrated than complicated and almost impossible to misread once someone's actually paying attention.`;
   } else {
@@ -159,7 +162,7 @@ function richRulerGroup(members: { rulerName: string | null }[], sign: string | 
   }
   const th = SIGN_THEMES[sign];
   let s = `Follow this all the way down and it answers to ${who}, sitting in ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `;
-  s += `So everything here is ultimately in service of a ${sign} drive ${th?.drive ?? 'of its own'}`;
+  s += `So everything here is ultimately in service of ${article(sign)} ${sign} drive ${th?.drive ?? 'of its own'}`;
   s += house ? `, aimed squarely at ${arena(house)}. ` : `. `;
   s += `At your best that shows up as ${th?.gift ?? 'real strength'}; running on fear, it curdles into ${th?.shadow ?? 'its own excess'}. This is the hand on the wheel you don't usually notice.`;
   return s;
@@ -338,6 +341,7 @@ export function interpretHiddenZodiac(placement: HiddenZodiacPlacement): HiddenZ
       primarySummary: stub, duadLayer: stub, compendiumLayer: stub, threeHouseSynthesis: stub,
       rulerSynthesis: stub, operates: stub, strengths: stub, shadow: stub, emotionalPattern: stub,
       relationships: null, careerMoney: stub, lifeDevelopment: stub, examples: [],
+      objectName: placement.object.name,
       contentVersion: HIDDEN_ZODIAC_CONTENT_VERSION,
     };
   }
@@ -368,6 +372,7 @@ export function interpretHiddenZodiac(placement: HiddenZodiacPlacement): HiddenZ
     careerMoney: buildCareerMoney(c),
     lifeDevelopment: buildDevelopment(c),
     examples: buildExamples(c),
+    objectName: placement.object.name,
     contentVersion: HIDDEN_ZODIAC_CONTENT_VERSION,
   };
   return polishReading(reading);
@@ -379,25 +384,54 @@ export interface ReadingSection {
   body: string;
 }
 
+/**
+ * The lead section's title is the SELECTED body's function — so a Mercury
+ * reading opens on the mind, a North Node reading opens on growth direction,
+ * never a generic "Who you are". Everything after it is scoped to that same
+ * function, so the old life-domain boxes (love, money, strengths) are dropped:
+ * once the whole reading is about, say, Venus, love is already the subject.
+ */
+const PLANET_HEADLINE: Record<string, string> = {
+  Sun: 'Your purpose — what you\'re here to do',
+  Earth: 'Your inner ground — who you are at rest',
+  Moon: 'How you feel, and what makes you feel safe',
+  Mercury: 'How your mind actually works',
+  Venus: 'How you love, and what you\'re drawn to',
+  Mars: 'How you go after what you want',
+  Jupiter: 'Where you reach, grow, and gamble',
+  Saturn: 'Where you\'re tested — and where you build',
+  Uranus: 'Where you break the mould',
+  Neptune: 'Where you dream, and where you lose yourself',
+  Pluto: 'Where you\'re broken down and remade',
+  Vesta: 'What you quietly devote yourself to',
+  Juno: 'What you truly need in a partnership',
+  Chiron: 'Your deep wound — and where you heal others',
+  Ceres: 'How you nurture, and what you keep losing',
+  Pallas: 'How you strategise and solve',
+  'North Node': 'Where you\'re growing toward',
+  'South Node': 'What comes too easily to you',
+  Ascendant: 'The face you lead with',
+  Descendant: 'What you look for in other people',
+  Midheaven: 'Your public role and calling',
+  'Imum Coeli': 'Your roots and private self',
+};
+
+function headlineFor(name: string): string {
+  return PLANET_HEADLINE[name] ?? 'What this part of you is really about';
+}
+
 export function readingSections(reading: HiddenZodiacReading): ReadingSection[] {
-  const defs: { key: keyof HiddenZodiacReading; title: string }[] = [
-    { key: 'primarySummary', title: 'Who you are' },
-    { key: 'operates', title: 'Why you operate the way you do' },
-    { key: 'threeHouseSynthesis', title: 'What keeps happening to you' },
-    { key: 'duadLayer', title: 'What actually drives you' },
-    { key: 'compendiumLayer', title: 'The instinct you fall back on' },
-    { key: 'emotionalPattern', title: 'What you secretly need' },
-    { key: 'shadow', title: 'Where you trip yourself up' },
-    { key: 'strengths', title: 'Your real strengths' },
-    { key: 'relationships', title: 'In love and closeness' },
-    { key: 'careerMoney', title: 'Work, money, and purpose' },
-    { key: 'rulerSynthesis', title: 'The force underneath it all' },
-    { key: 'lifeDevelopment', title: 'How you grow into it' },
-  ];
   const out: ReadingSection[] = [];
-  for (const d of defs) {
-    const body = reading[d.key];
-    if (typeof body === 'string' && body.trim()) out.push({ key: d.key, title: d.title, body });
-  }
+  const push = (key: keyof HiddenZodiacReading, title: string, body: string) => {
+    if (typeof body === 'string' && body.trim()) out.push({ key, title, body });
+  };
+  // A lean, function-scoped spine — the whole reading is about this one body.
+  push('primarySummary', headlineFor(reading.objectName), reading.primarySummary);
+  push('duadLayer', 'What\'s really underneath it', reading.duadLayer);
+  push('compendiumLayer', 'What takes over under pressure', reading.compendiumLayer);
+  push('threeHouseSynthesis', 'How it plays out in your life', reading.threeHouseSynthesis);
+  push('rulerSynthesis', 'What\'s really steering it', reading.rulerSynthesis);
+  const grow = [reading.shadow, reading.lifeDevelopment].filter((s) => s && s.trim()).join(' ');
+  push('lifeDevelopment', 'Where it trips you — and how to grow it', grow);
   return out;
 }
