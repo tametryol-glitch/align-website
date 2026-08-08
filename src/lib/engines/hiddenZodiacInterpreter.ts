@@ -1,15 +1,22 @@
 /**
- * Hidden Zodiac — structured interpretation synthesizer (v2, personal voice).
+ * Hidden Zodiac — structured interpretation synthesizer (v3, predictive voice).
  *
  * Deterministic and offline. The job of this module is to make a person feel
- * SEEN: it speaks in the second person, makes specific, bold, behavioural
- * claims, and traces cause and effect — who you are, why you operate the way
- * you do, the pattern that keeps repeating, and why life lands the way it does.
- * It reads the calculated layers (surface sign, Duad, Compendium, three houses,
- * ruler chain) and weaves them into a portrait, not a textbook entry.
+ * SEEN and slightly exposed — not to teach them how the calculation works. It
+ * speaks in the second person, present and near-future tense, and makes bold,
+ * specific, behavioural, PREDICTIVE claims: who you are, what will keep
+ * happening, what you'll catch yourself doing, and what to expect from yourself
+ * under pressure. It reads the calculated layers (surface sign, deeper sign
+ * textures, three houses, ruling bodies) and metabolises them into a portrait —
+ * never a textbook entry. It NEVER names the machinery (no "Duad", "Compendium",
+ * "layer", "engine", "mechanism", "three layers"); the reader only ever meets
+ * themselves.
  *
- * It never recalculates the placement, never stacks adjectives in place of
- * meaning, and stays clear of the repo's BANNED_PHRASES (asserted in tests).
+ * Each sign-data field has ONE home builder so no phrase repeats verbatim across
+ * sections; polishReading is a deterministic safety net that drops any sentence
+ * already used earlier (covers the same-sign edge cases). It never recalculates
+ * the placement, never stacks adjectives, and stays clear of the repo's
+ * BANNED_PHRASES (asserted in tests).
  */
 
 import type { HiddenZodiacPlacement } from './hiddenZodiacEngine';
@@ -36,7 +43,7 @@ export interface HiddenZodiacReading {
   contentVersion: string;
 }
 
-export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v3';
+export const HIDDEN_ZODIAC_CONTENT_VERSION = 'hz-content-v4';
 
 // ── small helpers ────────────────────────────────────────────────────────────
 
@@ -66,58 +73,65 @@ interface Ctx {
 
 function buildPrimary(c: Ctx): string {
   const { b, surfaceSign, duadSign, dB, planet } = c;
-  let t = `This is ${planetDomain(planet)}. In ${surfaceSign}, here's how that actually shows up: ${b.you}`;
+  let t = `${cap(planetDomain(planet))}. And yours doesn't run the way a ${surfaceSign} label would have you believe. ${b.you}`;
   if (c.sameDuad) {
-    t += ` And there's no second face — it runs ${surfaceSign} all the way down, concentrated and impossible to miss.`;
+    t += ` There's no second face here — it runs ${surfaceSign} all the way down, which makes you more concentrated than complicated and almost impossible to misread once someone's actually paying attention.`;
   } else {
-    t += ` Here's the part most people miss: under that ${surfaceSign} surface, you're really driven by ${duadSign} — ${dB.drive}. You come across as ${surfaceSign}, but you move for ${duadSign} reasons, and that gap is where the real you lives.`;
+    t += ` Here's what most people never get to see. Under the ${surfaceSign} surface, a quieter ${duadSign} runs the show: ${lowerFirst(dB.you)} You present ${surfaceSign} and you mean ${duadSign}, and everyone who only gets the ${surfaceSign} version keeps misreading why you do what you do. Some days, so do you.`;
   }
   return t;
 }
 
 function buildOperates(c: Ctx): string {
-  const { b, dB, cB, surfaceSign, duadSign, compSign, planet } = c;
-  return (
-    `Think of yourself in three layers. On the surface you run a ${surfaceSign} strategy — it's how you meet the world. ` +
-    `The engine underneath is ${duadSign}: ${dB.drive}. ` +
-    `And at the very bottom sits a ${compSign} instinct — ${cB.drive} — the one that takes over when it truly counts. ` +
-    `${b.others} That mismatch between your ${surfaceSign} face and your ${duadSign}-and-${compSign} wiring is exactly why two people with the same ${planet} in ${surfaceSign} can be nothing alike.`
-  );
+  const { b, dB, cB, surfaceSign, duadSign, compSign } = c;
+  const duadComp = duadSign === compSign; // deeper textures collapse to one sign
+  let t = `Why you do what you do: from the outside it reads as ${surfaceSign}, but the reason underneath is ${duadSign} — ${dB.drive}. ${b.others} `;
+  if (duadComp) {
+    t += `And that same ${duadSign} pull only gets more absolute when the stakes turn real — it stops being a preference and becomes the thing you'll burn everything else down to protect. `;
+  } else {
+    t += `And when the stakes turn real, something colder and more ${compSign} takes the wheel — ${cB.drive} — the part of you that only comes out when it counts. `;
+  }
+  t += `That gap is why two people born with this exact placement can be nothing alike: most of them live on the ${surfaceSign} version and never catch the ${duadSign} reason${duadComp ? '' : ` or the ${compSign} reflex`} running the whole show. You'll catch it now — probably the next time you surprise yourself.`;
+  return t;
 }
 
 function buildDuad(c: Ctx): string {
   const { dB, surfaceSign, duadSign, duadHouse } = c;
   if (c.sameDuad) {
-    return `Your hidden layer doubles down on ${surfaceSign} — the undertone matches the surface, which makes you more concentrated rather than more complicated. What you see really is what's underneath.`;
+    return `What drives you is exactly what you show — there's no quieter second want tugging the other way. That's rarer than you think, and it makes you relentless: what you're after is never a mystery, least of all to whoever's on the receiving end of it.`;
   }
-  let t = `${duadSign} is the part of you that only shows up close — under pressure, in private, with people who've earned it. ${dB.pattern} ${dB.secret}`;
+  let t = `What you're really chasing runs ${duadSign}, and it rarely matches the ${surfaceSign} story you tell about yourself. ${dB.pattern} It's the want you almost never say out loud: ${dB.secret}`;
   if (duadHouse) {
-    t += ` Because ${duadSign} sits in your ${ordinal(duadHouse)} (${houseFunction(duadHouse)}), that's the area of life where this hidden engine keeps showing its hand.`;
+    t += ` You'll notice it most around ${arena(duadHouse)} — that's where you catch yourself wanting something you'd never quite admit to.`;
   }
   return t;
 }
 
 function buildCompendium(c: Ctx): string {
-  const { cB, compSign, compHouse } = c;
-  let t = `Deeper still is a ${compSign} mechanism — the instinct that takes over when everything else fails. ${cB.secret} ${cB.trap}`;
+  const { cB, compSign, compHouse, duadSign } = c;
+  let t: string;
+  if (compSign === duadSign) {
+    // Same sign as the driver — don't restate its psychology; describe the escalation.
+    t = `Push it to the edge and that same ${compSign} need stops negotiating — it stops being something you manage and becomes something that manages you. You'll only clock how far it took you once the pressure drops.`;
+  } else {
+    t = `And when you're truly cornered — past the point of managing it — a colder ${compSign} reflex takes over. ${cB.secret} ${cB.pattern} You won't see it coming in the moment; you'll recognise it afterward, in what you did when the pressure peaked.`;
+  }
   if (compHouse) {
-    t += ` It chases its results in your ${ordinal(compHouse)} (${houseFunction(compHouse)}) — that's where this deepest part of you is quietly trying to win.`;
+    t += ` It goes hunting for its win in ${arena(compHouse)} — that's where your extremes tend to play out.`;
   }
   return t;
 }
 
 function buildThreeHouse(c: Ctx): string {
   const { b, primaryHouse, duadHouse, compHouse } = c;
-  let t = `Here's the loop you'll recognise. ${b.pattern}`;
+  let t = `Here's what keeps happening, and will keep happening until you catch it live. ${b.pattern}`;
   if (primaryHouse && duadHouse && compHouse) {
     t +=
-      ` Watch where it lives: it tends to start in your ${ordinal(primaryHouse)} (${houseFunction(primaryHouse)}), ` +
-      `get worked out through your ${ordinal(duadHouse)} (${houseFunction(duadHouse)}), ` +
-      `and finally land in your ${ordinal(compHouse)} (${houseFunction(compHouse)}). ` +
-      `So the same kind of situation keeps finding you — it fires off around ${arena(primaryHouse)}, you handle it through ${arena(duadHouse)}, and it pays off or costs you around ${arena(compHouse)}. ` +
-      `That isn't bad luck. It's the shape of your wiring meeting the world, again and again, until you can see it and change the ending.`;
+      ` It runs the same route every time: it ignites around ${arena(primaryHouse)}, you scramble to handle it through ${arena(duadHouse)}, and it finally lands on ${arena(compHouse)} — for better or worse. ` +
+      `Watch the next time it fires. Same setup, same three moves, same ending. ` +
+      `That's not bad luck and it's not other people — it's the shape of you meeting the world on repeat. The day you can name the loop while it's happening is the day you get to change how it ends.`;
   } else {
-    t += ` Add your exact Ascendant and this pattern locks onto three specific areas of your life — where it starts, how you handle it, and where it finally lands.`;
+    t += ` Add your exact birth time and this locks onto three specific arenas — where it ignites, how you scramble, and where it always lands. Even without it, you already know the shape: it's been running the same way for years.`;
   }
   return t;
 }
@@ -128,48 +142,75 @@ function joinLabels(labels: string[]): string {
   return `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`;
 }
 
-/** Describe a placement that one or more layers' rulers share — once, never twice. */
-function describeRulerGroup(members: { label: string; rulerName: string | null }[], sign: string | null, house: number | null): string {
-  const labelList = members.map((m) => `${m.label} (${m.rulerName ?? 'its ruler'})`);
-  const who = `Your ${joinLabels(labelList)}`;
-  const plural = members.length > 1;
+/** Join ruler clauses (which already contain commas) with semicolons. */
+function joinRulerClauses(items: string[]): string {
+  if (items.length === 1) return items[0];
+  if (items.length === 2) return `${items[0]}; and ${items[1]}`;
+  return `${items.slice(0, -1).join('; ')}; and ${items[items.length - 1]}`;
+}
+
+/** Full, single-focus description used when every layer answers to one place. */
+function richRulerGroup(members: { rulerName: string | null }[], sign: string | null, house: number | null): string {
+  const rulerNames = Array.from(new Set(members.map((m) => m.rulerName).filter(Boolean))) as string[];
+  const who = rulerNames.length ? joinLabels(rulerNames) : 'its ruler';
+  const many = rulerNames.length > 1;
   if (!sign) {
-    return `${who} ${plural ? 'point' : 'points'} to ${plural ? 'rulers' : 'a ruler'} whose chart position isn't set — add where they sit to see how this lands.`;
+    return `Follow this all the way down and it answers to ${who} — but where ${many ? 'they sit' : 'it sits'} in your chart isn't set yet. Add where ${many ? 'they sit' : 'it sits'} and you'll see exactly what your whole pattern has been quietly working toward.`;
   }
   const th = SIGN_THEMES[sign];
-  let s = plural
-    ? `${who} all point to ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `
-    : `${who} answers to ${members[0].rulerName ?? 'its ruler'}, sitting in ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `;
-  s += `So ${plural ? 'those layers' : 'that layer'} ultimately serve a ${sign} drive ${th?.drive ?? 'of its own'}`;
+  let s = `Follow this all the way down and it answers to ${who}, sitting in ${sign}${house ? ` in your ${ordinal(house)} (${houseFunction(house)})` : ''}. `;
+  s += `So everything here is ultimately in service of a ${sign} drive ${th?.drive ?? 'of its own'}`;
   s += house ? `, aimed squarely at ${arena(house)}. ` : `. `;
-  s += `At its best that shows up in you as ${th?.gift ?? 'real strength'}; under strain it tips into ${th?.shadow ?? 'its own excess'}.`;
+  s += `At your best that shows up as ${th?.gift ?? 'real strength'}; running on fear, it curdles into ${th?.shadow ?? 'its own excess'}. This is the hand on the wheel you don't usually notice.`;
   return s;
 }
 
+/** Short clause used when the layers pull toward different places. */
+function shortRulerClause(members: { rulerName: string | null }[], sign: string | null, house: number | null): string {
+  const rulerNames = Array.from(new Set(members.map((m) => m.rulerName).filter(Boolean))) as string[];
+  const who = rulerNames.length ? joinLabels(rulerNames) : 'its ruler';
+  const many = rulerNames.length > 1;
+  if (!sign) {
+    return `${who}, wherever ${many ? 'they sit' : 'it sits'} in your chart — add that to see what it's steering you toward`;
+  }
+  const th = SIGN_THEMES[sign];
+  return `${who} in ${sign}${house ? `, in your ${ordinal(house)} (${arena(house)})` : ''}, aimed at one thing — ${th?.drive ?? 'something all its own'}`;
+}
+
 function buildRuler(c: Ctx): string {
-  const { p, surfaceSign, duadSign, compSign } = c;
+  const { p } = c;
   const rc = p.rulerChain;
-  const layers: { label: string; link: RulerLink }[] = [
-    { label: `${surfaceSign} surface`, link: rc.mainRuler },
-    { label: `${duadSign} Duad`, link: rc.duadRuler },
-    { label: `${compSign} Compendium`, link: rc.compendiumRuler },
+  const layers: { link: RulerLink }[] = [
+    { link: rc.mainRuler },
+    { link: rc.duadRuler },
+    { link: rc.compendiumRuler },
   ];
 
   // Group layers whose rulers share the same sign + house so the same placement
   // is never described twice (e.g. two rulers both in Sagittarius, 5th house).
-  const groups = new Map<string, { sign: string | null; house: number | null; members: { label: string; rulerName: string | null }[] }>();
-  for (const { label, link } of layers) {
+  const groups = new Map<string, { sign: string | null; house: number | null; members: { rulerName: string | null }[] }>();
+  for (const { link } of layers) {
     const sign = link.position?.sign ?? null;
     const house = link.house ?? null;
     // Unplaced rulers stay separate (keyed by ruler) so each prompts individually.
     const key = sign ? `${sign}|${house ?? 'x'}` : `unplaced|${link.ruler ?? ''}`;
     if (!groups.has(key)) groups.set(key, { sign, house, members: [] });
-    groups.get(key)!.members.push({ label, rulerName: link.ruler });
+    groups.get(key)!.members.push({ rulerName: link.ruler });
   }
 
-  let t = Array.from(groups.values()).map((g) => describeRulerGroup(g.members, g.sign, g.house)).join(' ');
+  const gs = Array.from(groups.values());
+  let t: string;
+  if (gs.length === 1) {
+    // Everything reports to one place — give it the full, focused treatment.
+    t = richRulerGroup(gs[0].members, gs[0].sign, gs[0].house);
+  } else {
+    // Different pulls — lead with one framing, then list them once each.
+    const clauses = gs.map((g) => shortRulerClause(g.members, g.sign, g.house));
+    t = `Follow this all the way down and it doesn't report to one master — it splits: ${joinRulerClauses(clauses)}. ` +
+      `Those are the hands on the wheel you rarely notice, and they pull in slightly different directions — which is why you can feel like more than one person inside a single decision.`;
+  }
   if (rc.mainDispositorChain?.closedCircuit) {
-    t += ` These rulers also answer only to one another in a closed loop, which is why this pattern reinforces itself and is hard to argue your way out of.`;
+    t += ` And these answer only to each other, a closed loop with no exit — which is exactly why this runs so deep and is so hard to argue yourself out of.`;
   }
   return t;
 }
@@ -177,27 +218,27 @@ function buildRuler(c: Ctx): string {
 function buildStrengths(c: Ctx): string {
   const { b, cB, surfaceSign, compSign } = c;
   if (c.sameComp) {
-    return `Your ${surfaceSign} wiring runs clean through every layer, which makes this strength unusually concentrated and dependable: ${b.power}`;
+    return `Your strength here is unusually clean — the same force runs through all of it, with no contradiction to dilute it: ${b.power} People will lean on this in you before they can explain why.`;
   }
   return (
-    `Here's the gift no single-sign horoscope will name, because it only exists in your exact blend: ${b.power} ` +
-    `And because of the ${compSign} layer underneath, you've got a second gear most people with your ${surfaceSign} surface never build — ${lowerFirst(cB.power)}`
+    `Here's the edge no sun-sign paragraph will ever hand you, because it only exists in your exact mix: ${b.power} ` +
+    `And because of that colder ${compSign} thread, you've got a second gear most ${surfaceSign} people never build — ${lowerFirst(cB.power)} You reach for it in the moments that actually decide things.`
   );
 }
 
 function buildShadow(c: Ctx): string {
   const { b, cB, compSign } = c;
   return (
-    `${b.trap} And when the ${compSign} layer underneath gets scared, it pushes further: ${lowerFirst(cB.trap)} ` +
-    `None of this is fixed — most of it loosens the moment you catch it happening and name it out loud instead of acting it out.`
+    `${b.trap} And when that colder ${compSign} part of you gets scared, it doesn't back off — it doubles down: ${lowerFirst(cB.trap)} ` +
+    `You'll do it under stress before you notice you're doing it. None of it is fixed, though — it loosens the moment you catch it live and say it out loud instead of acting it out. You've got a real shot at that now, because you finally know where to look.`
   );
 }
 
 function buildEmotional(c: Ctx): string {
-  const { b, dB, surfaceSign } = c;
+  const { b, surfaceSign } = c;
   return (
-    `${b.secret} ${dB.secret} The thing you actually need — and almost never ask for straight — is to have that met head-on rather than performed around. ` +
-    `You steady when someone gives it to you directly; you spin out when your ${surfaceSign} surface is left carrying feelings the deeper layers really own.`
+    `${b.secret} What you actually need — and almost never ask for straight — is to have exactly that met head-on instead of performed around. ` +
+    `You'll keep hinting and testing for it and calling that "fine." You settle the instant someone gives it to you directly; you come apart when you're left holding feelings the ${surfaceSign} face of you was never built to carry.`
   );
 }
 
@@ -205,8 +246,8 @@ function buildRelationships(c: Ctx): string | null {
   if (!planetFunction(c.planet).relational) return null;
   const { b, dB, surfaceSign, duadSign } = c;
   return (
-    `${b.love} But remember the engine underneath: what you actually want in closeness leans ${duadSign}. ${dB.secret} ` +
-    `The people who get you are the ones who clock the ${duadSign} need beneath the ${surfaceSign} signals — and that's the same place your attraction and your friction both come from.`
+    `${b.love} But don't fully trust the signals you send — what you actually want up close leans ${duadSign}: ${lowerFirst(dB.love)} ` +
+    `The ones who get you are the rare few who read that ${duadSign} need under the ${surfaceSign} noise; everyone else falls for the version you perform, and you'll quietly resent them for believing it. Your attraction and your friction come from the same spot — expect both from anyone who gets in deep.`
   );
 }
 
@@ -215,52 +256,67 @@ function buildCareerMoney(c: Ctx): string {
   let t = b.work;
   if (compHouse) {
     const payoff = [2, 8, 10].includes(compHouse) ? 'real money, recognition, or earned authority' : 'lasting results you can point to';
-    t += ` Your deeper drive points straight at ${ordinal(compHouse)} matters — ${houseFunction(compHouse)} — so over the years your ${compSign} method tends to turn into something concrete there: ${payoff}.`;
+    t += ` Your deeper drive keeps pointing at ${arena(compHouse)} — ${houseFunction(compHouse)} — so over years, not weeks, your ${compSign} way of working tends to harden into something concrete there: ${payoff}. Bet on the long version of yourself, not the quick one.`;
   }
-  t += ` No placement hands you success; this is the route, not the receipt.`;
+  t += ` No chart hands you the win — this is the road, not the receipt.`;
   return t;
 }
 
 function buildDevelopment(c: Ctx): string {
   const { b, surfaceSign, duadSign, compSign } = c;
   return (
-    `${b.mature} The specific work for you is to stop treating your ${surfaceSign} surface and your ${duadSign}-and-${compSign} depths as a contradiction, and start running them in order — lead with ${surfaceSign}, let ${duadSign} steer, let ${compSign} decide what actually matters. ` +
-    `It usually takes people years, or one hard reckoning, to do this on purpose. You're ahead of that just by being able to see it laid out.`
+    `${b.mature} The real work is to stop treating how you come across and what actually drives you as a contradiction you have to hide, and start running them on purpose — let ${surfaceSign} open the door, let ${duadSign} pick the direction, let ${compSign} decide what's worth the fight. ` +
+    `Most people take years, or one brutal reckoning, to do this deliberately; you're already ahead just by seeing it laid out. So here's the move: next time the pattern fires, catch it on the second beat instead of the last. That's the whole game.`
   );
 }
 
 function buildExamples(c: Ctx): string[] {
-  const { b, surfaceSign, duadSign, primaryHouse, duadHouse, compHouse } = c;
+  const { b, dB, surfaceSign, duadSign, primaryHouse, duadHouse, compHouse } = c;
+  // Example #2 uses the deeper trap so it never echoes the shadow section's surface trap.
+  const trap = c.sameDuad ? b.trap : dB.trap;
   const out = [
-    `Something goes wrong: on the outside you go full ${surfaceSign}, but inside, the ${duadSign} part of you is already running a different script — and the people closest to you have learned to read that gap.`,
-    `You'll catch yourself doing this: ${lowerFirst(b.trap)} It feels like protecting yourself in the moment, and it's usually costing you the exact thing you wanted.`,
+    `Watch the next time something goes sideways: outwardly you'll go full ${surfaceSign}, but inside, the ${duadSign} part of you is already running a different script — and the people closest to you read that gap even when you're sure you're hiding it.`,
+    `You'll catch yourself doing this: ${lowerFirst(trap)} It feels like protecting yourself in the moment. It's usually costing you the exact thing you were reaching for.`,
   ];
   if (primaryHouse && duadHouse && compHouse) {
     out.push(
-      `The scene repeats: a ${arena(primaryHouse)} situation pulls you in, you work it out through ${arena(duadHouse)}, and it lands — for better or worse — around ${arena(compHouse)}. Once you can see the loop, you get to change the ending.`,
+      `The scene repeats on schedule: ${arena(primaryHouse)} pulls you in, you work it through ${arena(duadHouse)}, and it lands on ${arena(compHouse)}. Once you can see the loop coming, you get to break it before it finishes.`,
     );
   }
   return out;
 }
 
-// ── anti-repetition: dedupe identical adjacent sentences (deterministic) ─────
+// ── anti-repetition: drop any sentence already used earlier (deterministic) ──
 
 const PROSE_KEYS: (keyof HiddenZodiacReading)[] = [
-  'primarySummary', 'duadLayer', 'compendiumLayer', 'threeHouseSynthesis',
-  'rulerSynthesis', 'operates', 'strengths', 'shadow', 'emotionalPattern',
-  'relationships', 'careerMoney', 'lifeDevelopment',
+  'primarySummary', 'operates', 'threeHouseSynthesis', 'duadLayer', 'compendiumLayer',
+  'emotionalPattern', 'shadow', 'strengths', 'relationships', 'careerMoney',
+  'rulerSynthesis', 'lifeDevelopment',
 ];
 
+const normSentence = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+
+/**
+ * Remove any sentence that has already appeared in an earlier section (or
+ * earlier in the same section). Processed in reading order so the first, most
+ * natural home for a phrase keeps it. A safety net for same-sign placements
+ * where the surface and a deeper layer resolve to identical sign data.
+ */
 export function polishReading(reading: HiddenZodiacReading): HiddenZodiacReading {
+  const seen = new Set<string>();
   for (const key of PROSE_KEYS) {
     const value = reading[key];
     if (typeof value !== 'string' || !value) continue;
     const sentences = value.split(/(?<=[.!?])\s+/);
-    const deduped: string[] = [];
+    const kept: string[] = [];
     for (const s of sentences) {
-      if (deduped.length === 0 || deduped[deduped.length - 1].trim() !== s.trim()) deduped.push(s);
+      const n = normSentence(s);
+      if (!n) continue;
+      if (seen.has(n)) continue;
+      seen.add(n);
+      kept.push(s);
     }
-    (reading[key] as unknown as string) = deduped.join(' ');
+    (reading[key] as unknown as string) = kept.join(' ');
   }
   return reading;
 }
@@ -327,15 +383,15 @@ export function readingSections(reading: HiddenZodiacReading): ReadingSection[] 
   const defs: { key: keyof HiddenZodiacReading; title: string }[] = [
     { key: 'primarySummary', title: 'Who you are' },
     { key: 'operates', title: 'Why you operate the way you do' },
-    { key: 'threeHouseSynthesis', title: 'The pattern that keeps repeating' },
-    { key: 'duadLayer', title: 'The hidden second engine' },
-    { key: 'compendiumLayer', title: 'The deepest driver' },
+    { key: 'threeHouseSynthesis', title: 'What keeps happening to you' },
+    { key: 'duadLayer', title: 'What actually drives you' },
+    { key: 'compendiumLayer', title: 'The instinct you fall back on' },
     { key: 'emotionalPattern', title: 'What you secretly need' },
     { key: 'shadow', title: 'Where you trip yourself up' },
     { key: 'strengths', title: 'Your real strengths' },
     { key: 'relationships', title: 'In love and closeness' },
     { key: 'careerMoney', title: 'Work, money, and purpose' },
-    { key: 'rulerSynthesis', title: "Who's really steering" },
+    { key: 'rulerSynthesis', title: 'The force underneath it all' },
     { key: 'lifeDevelopment', title: 'How you grow into it' },
   ];
   const out: ReadingSection[] = [];

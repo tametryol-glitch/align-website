@@ -440,6 +440,9 @@ function Result({ placement, rulerSigns, setRulerSigns }: {
         <RulerRow label={t('hiddenZodiac.result.compendiumRulerLabel', { sign: compendium.sign })} ruler={rulerChain.compendiumRuler.ruler} sign={rulerChain.compendiumRuler.position?.sign ?? null} house={rulerChain.compendiumRuler.house} />
       </Card>
 
+      {/* Personal AI reading — predictive, written for the exact degree */}
+      <AiReading placement={placement} />
+
       {/* Reading — progressive disclosure */}
       {sections.map((sec, i) => (
         <details key={sec.key} open={i < 2} className="bg-bg-card border border-border-primary rounded-xl px-5 group">
@@ -457,6 +460,86 @@ function Result({ placement, rulerSigns, setRulerSigns }: {
             {reading.examples.map((e, i) => <li key={i}>• {e}</li>)}
           </ul>
         </details>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Personal AI reading — streams a predictive, second-person portrait written for
+ * the exact degree. Uses the existing /api/ai/interpret chat mode (paid, so it
+ * only fires for signed-in premium users); caches in localStorage keyed by the
+ * placement + content version. On any error, unpaid access, or a response that
+ * fails validation against the calculation, it hides itself and the structured
+ * reading below remains the complete, accurate fallback.
+ */
+function AiReading({ placement }: { placement: HiddenZodiacPlacement }) {
+  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  const [text, setText] = useState('');
+
+  async function generate() {
+    setState('loading');
+    setText('');
+    try {
+      const {
+        buildHiddenZodiacSystemPrompt,
+        buildHiddenZodiacUserPrompt,
+        validateAiResponseAgainstPlacement,
+        hiddenZodiacCacheKey,
+      } = await import('@/lib/engines/hiddenZodiacAiPrompt');
+
+      const ascendant = placement.primaryHouse != null
+        ? SIGNS[(placement.position.signIndex - (placement.primaryHouse - 1) + 12) % 12]
+        : null;
+
+      const cacheKey = 'hz_ai_web_v1:' + hiddenZodiacCacheKey(placement, 'en');
+      const cached = typeof window !== 'undefined' ? window.localStorage.getItem(cacheKey) : null;
+      if (cached) { setText(cached); setState('done'); return; }
+
+      const system = buildHiddenZodiacSystemPrompt(placement, ascendant);
+      const user = buildHiddenZodiacUserPrompt(placement, ascendant);
+      let full = '';
+      await new Promise<void>((resolve, reject) => {
+        api.streamAIInterpretation(
+          { type: 'astrologer_chat', chart_data_text: system, messages: [{ role: 'user', content: user }], language: 'en' },
+          (chunk: string) => { full += chunk; setText(full); },
+          () => resolve(),
+        ).catch(reject);
+      });
+
+      const { valid } = validateAiResponseAgainstPlacement(full, placement);
+      if (!valid || !full.trim()) { setState('error'); setText(''); return; }
+      try { window.localStorage.setItem(cacheKey, full); } catch { /* ignore quota */ }
+      setState('done');
+    } catch {
+      setState('error');
+      setText('');
+    }
+  }
+
+  return (
+    <div className="rounded-2xl p-6 border border-accent-primary/30" style={{ background: 'linear-gradient(135deg, rgba(155,111,246,0.12), rgba(155,111,246,0.02))' }}>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h4 className="text-lg font-display font-semibold text-text-primary">Your Hidden Zodiac reading</h4>
+          <p className="text-sm text-text-tertiary mt-0.5">A personal, predictive read — written for your exact degree, not your Sun sign.</p>
+        </div>
+        {state !== 'done' && (
+          <button
+            onClick={generate}
+            disabled={state === 'loading'}
+            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #9B6FF6, #7C5CE6)' }}
+          >
+            {state === 'loading' ? 'Writing…' : 'Generate AI reading'}
+          </button>
+        )}
+      </div>
+      {text ? <p className="text-[15px] text-text-secondary leading-relaxed mt-4 whitespace-pre-wrap">{text}</p> : null}
+      {state === 'error' && (
+        <p className="text-sm text-text-tertiary mt-4">
+          The AI reading isn’t available right now — the structured reading below is complete and accurate.
+        </p>
       )}
     </div>
   );
