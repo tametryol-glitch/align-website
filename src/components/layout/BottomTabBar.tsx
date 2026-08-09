@@ -21,7 +21,7 @@ const TABS = [
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Sun },
   { href: '/messages', labelKey: 'components.sidebar.chat', icon: MessageCircle },
-  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
+  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '#more', labelKey: 'components.sidebar.more', icon: Menu },
 ];
 
@@ -31,7 +31,7 @@ const MORE_ITEMS = [
   { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
   { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
   { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
-  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
+  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
   { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
   { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
