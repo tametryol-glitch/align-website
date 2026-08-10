@@ -9,6 +9,15 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 // ─── Helpers matching mobile app ─────────────────────────────────
 
+const FEATURE_KIND_LABELS: Record<string, string> = {
+  aspect: 'Aspect',
+  midpoint: 'Midpoint',
+  category_midpoint: 'Asteroid',
+  star: 'Fixed star',
+  duad: 'Duad',
+  named_pattern: 'Pattern',
+};
+
 const HOUSE_CONF_LABELS: Record<string, string> = {
   exact: 'Exact chart',
   approximate: 'Approx. time',
@@ -115,6 +124,7 @@ export default function WorldEchoPage() {
   const [showHow, setShowHow] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [localization, setLocalization] = useState<any[] | null>(null);
+  const [themes, setThemes] = useState<any>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -154,9 +164,13 @@ export default function WorldEchoPage() {
     if (!date) return;
     let cancelled = false;
     setLocalization(null);
+    setThemes(null);
     api.getWorldEchoLocalize(date, 10)
       .then((r: any) => { if (!cancelled) setLocalization(r?.country_localization || []); })
       .catch(() => { /* localization is optional; leave the rest of the page intact */ });
+    api.getWorldEchoThemes(date, 25)
+      .then((r: any) => { if (!cancelled) setThemes(r); })
+      .catch(() => { /* themes are optional */ });
     return () => { cancelled = true; };
   }, [scan?.scan_date]);
 
@@ -300,6 +314,27 @@ export default function WorldEchoPage() {
                     )}
                     <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
                   </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Layer C — Recurring themes */}
+          {themes && themes.recurring_features && themes.recurring_features.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-3 mt-2">Recurring themes</h3>
+              <div className="card border-accent-primary/40 mb-2">
+                <p className="text-sm text-text-primary leading-relaxed">{themes.narrative}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {themes.recurring_features.slice(0, 6).map((f: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-bg-tertiary rounded-lg border border-border-primary max-w-full">
+                    <span className="text-[10px] uppercase font-bold text-accent-primary whitespace-nowrap">
+                      {FEATURE_KIND_LABELS[f.kind] || f.kind}
+                    </span>
+                    <span className="text-xs text-text-primary truncate">{f.label}</span>
+                    <span className="text-[10px] text-text-muted whitespace-nowrap">{f.count}/{themes.sample_size}</span>
+                  </div>
                 ))}
               </div>
             </div>

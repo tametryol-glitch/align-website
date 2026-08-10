@@ -486,6 +486,11 @@ class AlignAPI {
     return this.request(`/world-echo/localize/${encodeURIComponent(date)}?top_n=${topN}`, {}, 30000);
   }
 
+  // Layer C — recurring themes across today's top echoes.
+  async getWorldEchoThemes(date: string, topK = 25) {
+    return this.request(`/world-echo/themes/${encodeURIComponent(date)}?top_k=${topK}`, {}, 30000);
+  }
+
   // Cosmic Videos
   async renderCosmicVideo(data: any) {
     return this.request('/videos/render', { method: 'POST', body: JSON.stringify(data) });
