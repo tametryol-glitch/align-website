@@ -9,6 +9,23 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 
 // ─── Helpers matching mobile app ─────────────────────────────────
 
+const HOUSE_CONF_LABELS: Record<string, string> = {
+  exact: 'Exact chart',
+  approximate: 'Approx. time',
+  rectified: 'Rectified',
+  symbolic: 'Symbolic time',
+};
+
+function capitalize(s: string): string {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 function prettyCategory(cat: string): string {
   return cat.split('_').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 }
@@ -97,6 +114,7 @@ export default function WorldEchoPage() {
   const [error, setError] = useState('');
   const [showHow, setShowHow] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [localization, setLocalization] = useState<any[] | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -129,6 +147,18 @@ export default function WorldEchoPage() {
   }
 
   useEffect(() => { loadToday(); }, []);
+
+  // Layer B — "where it lands." Loads after the scan resolves; non-blocking.
+  useEffect(() => {
+    const date = scan?.scan_date;
+    if (!date) return;
+    let cancelled = false;
+    setLocalization(null);
+    api.getWorldEchoLocalize(date, 10)
+      .then((r: any) => { if (!cancelled) setLocalization(r?.country_localization || []); })
+      .catch(() => { /* localization is optional; leave the rest of the page intact */ });
+    return () => { cancelled = true; };
+  }, [scan?.scan_date]);
 
   const allHits = scan?.possible_hits_json || [];
   const filteredHits = useMemo(() => {
@@ -271,6 +301,54 @@ export default function WorldEchoPage() {
                     <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
                   </Link>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Layer B — Where it's landing */}
+          {localization && localization.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-text-primary mb-1 mt-2">Where it&apos;s landing</h3>
+              <p className="text-xs text-text-muted mb-3">
+                The countries whose national charts today&apos;s sky activates most — and where these historical echoes actually happened.
+              </p>
+              <div className="space-y-2">
+                {localization.map((c: any, idx: number) => {
+                  const place = (c.placements || []).find((p: any) => !!p.house);
+                  const echo = (c.echo_events || [])[0];
+                  const weak = c.house_confidence === 'symbolic';
+                  const confLabel = HOUSE_CONF_LABELS[c.house_confidence] || '';
+                  return (
+                    <div key={c.iso} className="card">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-text-muted w-5">{idx + 1}</span>
+                        <span className="text-lg">{c.flag}</span>
+                        <span className="text-sm font-semibold text-text-primary flex-1 truncate">{c.name}</span>
+                        {c.labels?.energy && (
+                          <span className="text-xs font-semibold text-accent-primary">{c.labels.energy}</span>
+                        )}
+                      </div>
+                      {echo && (
+                        <p className="text-xs text-text-secondary italic mt-1 truncate">Echoes &ldquo;{echo.title}&rdquo;</p>
+                      )}
+                      {place && (
+                        <div className="flex items-center justify-between gap-2 mt-2">
+                          <p className="text-xs text-text-primary">
+                            {capitalize(place.body)} &rarr; {ordinal(place.house)} house &middot; {place.domain}
+                            {place.duad_ruler && place.ruler_house
+                              ? ` · duad ruler ${place.duad_ruler} → ${ordinal(place.ruler_house)}`
+                              : ''}
+                          </p>
+                          {confLabel && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap border ${weak ? 'border-border-primary text-text-muted' : 'border-accent-primary/50 text-accent-primary'}`}>
+                              {confLabel}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

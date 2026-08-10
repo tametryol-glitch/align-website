@@ -481,6 +481,11 @@ class AlignAPI {
     return this.request(`/world-echo/pattern/${encodeURIComponent(scanId)}/${encodeURIComponent(patternName)}`);
   }
 
+  // Layer B — where today's echo lands (per-country activation + houses).
+  async getWorldEchoLocalize(date: string, topN = 12) {
+    return this.request(`/world-echo/localize/${encodeURIComponent(date)}?top_n=${topN}`, {}, 30000);
+  }
+
   // Cosmic Videos
   async renderCosmicVideo(data: any) {
     return this.request('/videos/render', { method: 'POST', body: JSON.stringify(data) });
