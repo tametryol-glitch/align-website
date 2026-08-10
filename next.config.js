@@ -37,7 +37,12 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(self), camera=(self)' },
+          // Delegate the media features the embedded YouTube player needs to the
+          // youtube.com origin. Without this, a present Permissions-Policy makes
+          // these default to "self only", so the cross-origin YouTube iframe is
+          // denied encrypted-media/autoplay/etc. and fails with "Video player
+          // configuration error (153)".
+          { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(self), camera=(self), autoplay=(self "https://www.youtube.com"), encrypted-media=(self "https://www.youtube.com"), fullscreen=(self "https://www.youtube.com"), picture-in-picture=(self "https://www.youtube.com")' },
           { key: 'X-DNS-Prefetch-Control', value: 'on' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           {
