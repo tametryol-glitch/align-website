@@ -605,8 +605,33 @@ export async function deleteComment(commentId: string) {
 
 export async function deletePost(postId: string): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
-  const { error } = await supabase.from('posts').update({ is_deleted: true }).eq('id', postId);
-  if (error) return { success: false, error: error.message };
+  const { data: { user } } = await supabase.auth.getUser();
+  const myId = user?.id;
+  if (!myId) return { success: false, error: 'Not signed in.' };
+
+  // Try a hard delete first (scoped to owner). .select() returns the affected
+  // rows: under RLS a delete no policy permits affects 0 rows and returns NO
+  // error, so we MUST check the row count — otherwise we'd report success and
+  // the post would reappear on the next feed load.
+  const { data: hardDeleted, error: hardErr } = await supabase
+    .from('posts').delete().eq('id', postId).eq('user_id', myId).select('id');
+  if (!hardErr && hardDeleted && hardDeleted.length > 0) return { success: true };
+
+  // Fallback: soft delete (used when a hard delete is blocked by a FK to
+  // reactions/comments). NOTE: once is_deleted flips true the row is no longer
+  // visible under the SELECT policy, so the update's returned representation
+  // comes back empty even on success — so we can't trust a row count here.
+  // Instead, run the update and then verify the post is no longer active.
+  const { error: softErr } = await supabase
+    .from('posts').update({ is_deleted: true }).eq('id', postId).eq('user_id', myId);
+  if (softErr) return { success: false, error: softErr.message };
+
+  const { data: stillActive } = await supabase
+    .from('posts').select('id').eq('id', postId).eq('is_deleted', false).maybeSingle();
+  if (stillActive) {
+    // Row is still active → nothing actually changed (RLS blocked the write).
+    return { success: false, error: 'Delete was blocked — please try again.' };
+  }
   return { success: true };
 }
 
