@@ -2057,12 +2057,45 @@
         "totalClicks": "Total Clicks",
         "signups": "Signups",
         "conversions": "Conversions",
-        "conversionRate": "Conversion Rate"
+        "conversionRate": "Conversion Rate",
+        "epc": "Per Click"
       },
       "earnings": {
         "totalEarned": "Total Earned",
         "paidOut": "Paid Out",
         "unpaidBalance": "Unpaid Balance"
+      },
+      "payout": {
+        "title": "Payout Progress",
+        "toGo": "{{amount}} to go until your {{threshold}} payout",
+        "ready": "You've cleared the {{threshold}} minimum — you'll be paid on {{date}}.",
+        "nextPayout": "Next payout",
+        "estimatedNext": "Est. next payout",
+        "pending": "Pending approval",
+        "reversed": "Reversed (refunds)",
+        "reversedNote": "Commission is reversed when a referred payment is refunded or charged back."
+      },
+      "referrals": {
+        "title": "Your Referrals",
+        "active": "Active subscribers",
+        "lifetime": "Lifetime customers",
+        "mrr": "Est. monthly income",
+        "churned": "Churned",
+        "note": "Estimated from recurring payments in the last 35 days."
+      },
+      "trend": {
+        "title": "Last 30 days",
+        "clicks": "Clicks",
+        "conversions": "Conversions"
+      },
+      "promote": {
+        "codeTitle": "Your Referral Code",
+        "codeHint": "Share your link, or give this code to anyone who asks.",
+        "swipeTitle": "Ready-to-Post Copy",
+        "swipeHint": "Click to copy, then paste into a post, story, or DM.",
+        "swipe1": "I've been using Align for my astrology — natal chart, transits, and an AI astrologer that actually gets specific. Get 10% off your first 2 months with my link: {{link}}",
+        "swipe2": "If you're into astrology, Align is the most beautiful, in-depth app I've found — 26+ readings and a real cosmic community. 10% off with my link 👇 {{link}}",
+        "swipe3": "Your birth chart holds way more than your sun sign. Align breaks it all down — houses, transits, synastry, and more. Try it (10% off): {{link}}"
       },
       "last30Days": "Last 30 days:",
       "clicksWord": "clicks",
@@ -2071,7 +2104,8 @@
         "overview": "Overview",
         "conversions": "Conversions",
         "clicks": "Clicks",
-        "payouts": "Payouts"
+        "payouts": "Payouts",
+        "promote": "Promote"
       },
       "recentConversions": "Recent Conversions",
       "noConversionsShare": "No conversions yet. Share your link to get started!",
@@ -3030,7 +3064,9 @@
       "saveFailed": "Could not save this result."
     },
     "saveImage": "Save image · TikTok / Stories",
-    "savingImage": "Saving image…"
+    "savingImage": "Saving image…",
+    "createVideo": "Create video · TikTok / Reels",
+    "creatingVideo": "Creating video…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Search by name or sign",

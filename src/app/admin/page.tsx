@@ -9,6 +9,12 @@ import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
 import { useTranslation } from 'react-i18next';
+import AffiliateDashboardView, {
+  type AffiliateData as AffiliateDashData,
+  type Conversion as AffiliateConversionData,
+  type Click as AffiliateClickData,
+  type Payout as AffiliatePayoutData,
+} from '@/components/AffiliateDashboardView';
 
 interface Report {
   id: string;
@@ -973,6 +979,17 @@ function AffiliatesPanel() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
+  // View-as-affiliate modal state (shows exactly what the affiliate sees)
+  const [viewAff, setViewAff] = useState<AffiliateRow | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [viewError, setViewError] = useState('');
+  const [viewData, setViewData] = useState<{
+    affiliate: AffiliateDashData;
+    conversions: AffiliateConversionData[];
+    clicks: AffiliateClickData[];
+    payouts: AffiliatePayoutData[];
+  } | null>(null);
+
   // Payout modal state
   const [payoutAff, setPayoutAff] = useState<AffiliateRow | null>(null);
   const [payoutAmount, setPayoutAmount] = useState('');
@@ -1053,6 +1070,25 @@ function AffiliatesPanel() {
       setPayoutError(err.message || 'Network error');
     }
     setPayoutSubmitting(false);
+  }
+
+  async function openDashboard(aff: AffiliateRow) {
+    setViewAff(aff);
+    setViewData(null);
+    setViewError('');
+    setViewLoading(true);
+    try {
+      const res = await fetch(`/api/admin/affiliates/${aff.id}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setViewError(data.error || 'Failed to load dashboard');
+      } else {
+        setViewData(data);
+      }
+    } catch (err: any) {
+      setViewError(err.message || 'Network error');
+    }
+    setViewLoading(false);
   }
 
   function openPayoutModal(aff: AffiliateRow) {
@@ -1183,6 +1219,12 @@ function AffiliatesPanel() {
 
               {/* Action buttons */}
               <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => openDashboard(aff)}
+                  className="px-3 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-xs font-medium transition-colors flex items-center gap-1"
+                >
+                  <Eye className="w-3.5 h-3.5" /> View Dashboard
+                </button>
                 {aff.status === 'pending' && (
                   <>
                     <button
@@ -1276,6 +1318,60 @@ function AffiliatesPanel() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* View-as-affiliate Modal — shows exactly what the affiliate sees */}
+      {viewAff && (
+        <div className="fixed inset-0 z-50 bg-black/70 overflow-y-auto p-4 sm:p-8" onClick={() => setViewAff(null)}>
+          <div
+            className="bg-bg-primary border border-border-primary rounded-2xl max-w-6xl w-full mx-auto my-4 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-6 py-4 border-b border-border-primary bg-bg-primary/95 backdrop-blur rounded-t-2xl">
+              <div className="flex items-center gap-3 min-w-0">
+                <Eye className="w-5 h-5 text-accent-primary flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-text-primary truncate">
+                    {viewAff.name} <span className="text-text-muted font-normal">· affiliate view</span>
+                  </p>
+                  <p className="text-xs text-text-muted truncate">{viewAff.email}</p>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase flex-shrink-0 ${statusColor(viewAff.status)}`}>
+                  {viewAff.status}
+                </span>
+              </div>
+              <button
+                onClick={() => setViewAff(null)}
+                className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-colors flex-shrink-0"
+                aria-label="Close"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="px-6 py-6">
+              {viewLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-6 h-6 text-accent-primary animate-spin" />
+                </div>
+              ) : viewError ? (
+                <div className="text-center py-20">
+                  <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-3" />
+                  <p className="text-sm text-red-400">{viewError}</p>
+                </div>
+              ) : viewData ? (
+                <AffiliateDashboardView
+                  affiliate={viewData.affiliate}
+                  conversions={viewData.conversions}
+                  clicks={viewData.clicks}
+                  payouts={viewData.payouts}
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
       )}
 
