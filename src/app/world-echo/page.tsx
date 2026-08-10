@@ -381,6 +381,11 @@ export default function WorldEchoPage() {
                           )}
                         </div>
                       )}
+                      {place?.duad_meaning && (
+                        <p className="text-[11px] text-text-tertiary italic mt-1">
+                          {capitalize(place.duad_sign)}: {place.duad_meaning}
+                        </p>
+                      )}
                     </div>
                   );
                 })}
