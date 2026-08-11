@@ -375,19 +375,14 @@ export default function WorldEchoPage() {
                         )}
                         <p className="text-[11px] text-accent-primary/70 mt-1 select-none">Tap for the chart behind it &darr;</p>
                       </summary>
-                      <div className="mt-3 pt-3 border-t border-border-primary space-y-2">
+                      <div className="mt-3 pt-3 border-t border-border-primary space-y-1.5">
                         {echo && (
-                          <p className="text-xs text-text-secondary italic">Echoes &ldquo;{echo.title}&rdquo;</p>
+                          <p className="text-xs text-text-secondary italic">Historical echo: &ldquo;{echo.title}&rdquo;</p>
                         )}
+                        <p className="text-[10px] uppercase tracking-wider text-text-muted mt-1">The chart behind it</p>
                         {places.map((p: any, pi: number) => (
-                          <div key={pi} className="text-xs text-text-primary">
-                            <span className="font-semibold">{capitalize(p.body)}</span> &rarr; {ordinal(p.house)} house &middot; {p.domain}
-                            {p.duad_ruler && p.ruler_house && (
-                              <span className="text-text-muted"> &middot; duad ruler {p.duad_ruler} &rarr; {ordinal(p.ruler_house)}</span>
-                            )}
-                            {p.duad_meaning && (
-                              <span className="block text-[11px] text-text-tertiary italic">{capitalize(p.duad_sign)}: {p.duad_meaning}</span>
-                            )}
+                          <div key={pi} className="text-xs text-text-muted">
+                            <span className="text-text-secondary font-medium">{capitalize(p.body)}</span> in the {ordinal(p.house)} house &middot; {p.domain}
                           </div>
                         ))}
                       </div>
