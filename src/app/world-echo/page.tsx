@@ -353,40 +353,45 @@ export default function WorldEchoPage() {
                   const echo = (c.echo_events || [])[0];
                   const weak = c.house_confidence === 'symbolic';
                   const confLabel = HOUSE_CONF_LABELS[c.house_confidence] || '';
+                  const places = (c.placements || []).filter((p: any) => !!p.house);
                   return (
-                    <div key={c.iso} className="card">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-text-muted w-5">{idx + 1}</span>
-                        <span className="text-lg">{c.flag}</span>
-                        <span className="text-sm font-semibold text-text-primary flex-1 truncate">{c.name}</span>
-                        {c.labels?.energy && (
-                          <span className="text-xs font-semibold text-accent-primary">{c.labels.energy}</span>
-                        )}
-                      </div>
-                      {echo && (
-                        <p className="text-xs text-text-secondary italic mt-1 truncate">Echoes &ldquo;{echo.title}&rdquo;</p>
-                      )}
-                      {place && (
-                        <div className="flex items-center justify-between gap-2 mt-2">
-                          <p className="text-xs text-text-primary">
-                            {capitalize(place.body)} &rarr; {ordinal(place.house)} house &middot; {place.domain}
-                            {place.duad_ruler && place.ruler_house
-                              ? ` · duad ruler ${place.duad_ruler} → ${ordinal(place.ruler_house)}`
-                              : ''}
-                          </p>
+                    <details key={c.iso} className="card">
+                      <summary className="cursor-pointer list-none">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-text-muted w-5">{idx + 1}</span>
+                          <span className="text-lg">{c.flag}</span>
+                          <span className="text-sm font-semibold text-text-primary flex-1 truncate">{c.name}</span>
+                          {c.labels?.energy && (
+                            <span className="text-xs font-semibold text-accent-primary">{c.labels.energy}</span>
+                          )}
                           {confLabel && (
                             <span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap border ${weak ? 'border-border-primary text-text-muted' : 'border-accent-primary/50 text-accent-primary'}`}>
                               {confLabel}
                             </span>
                           )}
                         </div>
-                      )}
-                      {place?.duad_meaning && (
-                        <p className="text-[11px] text-text-tertiary italic mt-1">
-                          {capitalize(place.duad_sign)}: {place.duad_meaning}
-                        </p>
-                      )}
-                    </div>
+                        {c.prediction && (
+                          <p className="text-sm text-text-primary leading-relaxed mt-2">{c.prediction}</p>
+                        )}
+                        <p className="text-[11px] text-accent-primary/70 mt-1 select-none">Tap for the chart behind it &darr;</p>
+                      </summary>
+                      <div className="mt-3 pt-3 border-t border-border-primary space-y-2">
+                        {echo && (
+                          <p className="text-xs text-text-secondary italic">Echoes &ldquo;{echo.title}&rdquo;</p>
+                        )}
+                        {places.map((p: any, pi: number) => (
+                          <div key={pi} className="text-xs text-text-primary">
+                            <span className="font-semibold">{capitalize(p.body)}</span> &rarr; {ordinal(p.house)} house &middot; {p.domain}
+                            {p.duad_ruler && p.ruler_house && (
+                              <span className="text-text-muted"> &middot; duad ruler {p.duad_ruler} &rarr; {ordinal(p.ruler_house)}</span>
+                            )}
+                            {p.duad_meaning && (
+                              <span className="block text-[11px] text-text-tertiary italic">{capitalize(p.duad_sign)}: {p.duad_meaning}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
                   );
                 })}
               </div>
