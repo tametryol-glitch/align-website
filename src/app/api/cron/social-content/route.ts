@@ -1,6 +1,7 @@
-// Cron endpoint — posts one fresh, deterministic piece of content per day for
-// each official content account (Align Daily, Cosmic Weather) into the social
-// feed. Idempotent: skips an account if it already posted today (UTC).
+// Cron endpoint — posts fresh, deterministic content for each official content
+// account (Align Daily, Cosmic Weather) into the social feed. The cron runs
+// daily, but the rotation posts fire once every 3rd day (gated by a 3-day
+// window); the Align Daily "Earn" promo still posts every day. Idempotent.
 //
 // Authorized with CRON_SECRET, same as /api/cron/send-emails:
 //   GET /api/cron/social-content  (header Authorization: Bearer <CRON_SECRET>)
@@ -151,6 +152,14 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     const doy = dayOfYearUTC(now);
     const dayStart = startOfUTCDay(now);
+    // Rotation posts (Align Daily, Cosmic Weather) run once every 3rd day, not
+    // daily. Gate on a 3-calendar-day window (today + the two prior days): if the
+    // account posted anywhere in that window, skip. This survives missed cron
+    // runs — the next run still sees an empty window and posts.
+    const ROTATION_WINDOW_DAYS = 3;
+    const rotationWindowStart = new Date(
+      new Date(dayStart).getTime() - (ROTATION_WINDOW_DAYS - 1) * 86400000,
+    ).toISOString();
 
     const results: Array<{ account: string; status: 'posted' | 'skipped' | 'error'; content?: string; reason?: string }> = [];
 
@@ -161,19 +170,19 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      // Idempotency: skip if this account already posted today (UTC).
+      // Cadence: skip if this account already posted within the last 3 days.
       const { count, error: countErr } = await admin
         .from('posts')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', account.id)
-        .gte('created_at', dayStart);
+        .gte('created_at', rotationWindowStart);
 
       if (countErr) {
         results.push({ account: account.name, status: 'error', reason: countErr.message });
         continue;
       }
       if ((count ?? 0) > 0) {
-        results.push({ account: account.name, status: 'skipped', reason: 'Already posted today' });
+        results.push({ account: account.name, status: 'skipped', reason: 'Posted within last 3 days' });
         continue;
       }
 
