@@ -14,7 +14,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import {
   FlaskConical, ShieldCheck, Loader2, CheckCircle2, XCircle, Orbit,
-  Table2, Search, Calculator, AlertTriangle, Lock, Database, Play, Plus,
+  Table2, Search, Calculator, AlertTriangle, Lock, Database, Play, Plus, FileText,
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
@@ -569,11 +569,33 @@ function Experiments() {
   const [job, setJob] = useState<{ jobId: string; expId: string } | null>(null);
   const [jobStatus, setJobStatus] = useState('');
   const [jobProg, setJobProg] = useState<any>(null);
+  const [expId, setExpId] = useState<string | null>(null);
+  const [report, setReport] = useState<any>(null);
 
   useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
 
+  const loadReport = async () => {
+    if (!expId) return;
+    try { setReport(await researchFetch(`/experiments/${expId}/report`)); } catch (e: any) { setErr(e.message); }
+  };
+
+  const downloadExport = async (fmt: string) => {
+    if (!expId) return;
+    const supabase = createClient();
+    const { data } = await supabase.auth.getSession();
+    const res = await fetch(`${API_BASE}/research/experiments/${expId}/export?format=${fmt}`, {
+      headers: { Authorization: `Bearer ${data.session?.access_token}` },
+    });
+    if (!res.ok) { setErr(`Export failed (${res.status})`); return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `experiment.${fmt}`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const run = async () => {
-    setBusy(true); setErr(null); setOut(null); setJob(null);
+    setBusy(true); setErr(null); setOut(null); setJob(null); setReport(null); setExpId(null);
     try {
       const r = await researchFetch('/experiments/run', {
         method: 'POST',
@@ -582,7 +604,7 @@ function Experiments() {
           max_definitions: Number(f.maxDefs), min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
         }),
       });
-      setOut(r);
+      setOut(r); setExpId(r.experiment_id);
     } catch (e: any) { setErr(e.message || 'Failed'); }
     finally { setBusy(false); }
   };
@@ -610,7 +632,8 @@ function Experiments() {
         setJobStatus(s.status); setJobProg(s.progress);
         if (s.status === 'COMPLETED') {
           const res = await researchFetch(`/experiments/${job.expId}/results?limit=300`);
-          setOut({ summary: s.progress, results: res.results }); setJob(null);
+          setOut({ summary: s.progress, results: res.results });
+          setExpId(job.expId); setReport(null); setJob(null);
         } else if (s.status === 'FAILED') {
           setErr(s.error || 'Job failed'); setJob(null);
         }
@@ -701,6 +724,26 @@ function Experiments() {
               </div>
             ))}
           </div>
+
+          {expId && (
+            <div className="flex flex-wrap items-center gap-2">
+              <button onClick={loadReport} className="px-3 py-1.5 text-sm rounded-lg border border-accent-primary text-accent-primary flex items-center gap-1.5"><FileText className="w-4 h-4" />View report</button>
+              <span className="text-text-muted text-xs">Export:</span>
+              {['csv', 'json', 'xlsx'].map((fmt) => (
+                <button key={fmt} onClick={() => downloadExport(fmt)} className="px-2.5 py-1.5 text-xs rounded-lg border border-border-primary text-text-secondary uppercase hover:border-accent-primary">{fmt}</button>
+              ))}
+            </div>
+          )}
+
+          {report && (
+            <div className="bg-bg-card border border-border-primary rounded-xl p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-text-primary font-medium">Research Report</h3>
+                <button onClick={() => setReport(null)} className="text-text-muted text-xs hover:text-text-secondary">close</button>
+              </div>
+              <pre className="whitespace-pre-wrap text-text-secondary text-xs font-mono leading-relaxed max-h-[420px] overflow-y-auto">{report.markdown}</pre>
+            </div>
+          )}
 
           <div className="overflow-x-auto bg-bg-card border border-border-primary rounded-xl">
             <table className="w-full text-sm min-w-[720px]">
