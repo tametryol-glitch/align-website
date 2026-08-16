@@ -520,6 +520,8 @@ const SUBJECT_COLMAP: Record<string, string> = {
   category: 'case_category', crime: 'case_category', case_category: 'case_category',
   source: 'source_reference', source_reference: 'source_reference',
   quality: 'data_quality', data_quality: 'data_quality', notes: 'notes',
+  lat: 'birth_lat', latitude: 'birth_lat', birth_lat: 'birth_lat',
+  lon: 'birth_lon', lng: 'birth_lon', longitude: 'birth_lon', birth_lon: 'birth_lon',
 };
 
 function parseCsvLine(line: string): string[] {
