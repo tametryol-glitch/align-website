@@ -430,6 +430,44 @@ function Inspector() {
 
 const INPUT = 'bg-bg-card border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary';
 
+// Column-mapped subject CSV import (header row → subject fields).
+const SUBJECT_COLMAP: Record<string, string> = {
+  name: 'subject_name', 'subject name': 'subject_name', subject_name: 'subject_name',
+  date: 'birth_date', 'birth date': 'birth_date', birth_date: 'birth_date', dob: 'birth_date',
+  time: 'birth_time', 'birth time': 'birth_time', birth_time: 'birth_time',
+  place: 'birthplace', birthplace: 'birthplace', 'birth place': 'birthplace',
+  country: 'birth_country', birth_country: 'birth_country',
+  region: 'birth_region', state: 'birth_region', birth_region: 'birth_region',
+  category: 'case_category', crime: 'case_category', case_category: 'case_category',
+  source: 'source_reference', source_reference: 'source_reference',
+  quality: 'data_quality', data_quality: 'data_quality', notes: 'notes',
+};
+
+function parseCsvLine(line: string): string[] {
+  const out: string[] = []; let cur = ''; let q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { out.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out.map((s) => s.trim());
+}
+
+function parseSubjectCsv(text: string): any[] | null {
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return null;
+  const mapped = parseCsvLine(lines[0]).map((h) => SUBJECT_COLMAP[h.toLowerCase()]);
+  if (!mapped.includes('birth_date')) return null;   // not a mapped file → treat as date list
+  return lines.slice(1).map((line) => {
+    const cells = parseCsvLine(line); const obj: any = {};
+    mapped.forEach((key, i) => { if (key && cells[i]) obj[key] = cells[i]; });
+    return obj;
+  }).filter((o) => o.birth_date);
+}
+
 function Card({ title, children }: { title: string; children: any }) {
   return (
     <div className="bg-bg-card border border-border-primary rounded-xl p-5">
@@ -478,8 +516,19 @@ function Datasets() {
   const handleCsv = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
-      let lines = String(reader.result || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-      // Drop a header row if the first line isn't a date (doesn't start with a year).
+      const text = String(reader.result || '');
+      const mapped = parseSubjectCsv(text);
+      if (mapped && mapped.length) {
+        // Structured CSV (has a birth_date header) → import names/time/place directly.
+        if (!selDs) { setMsg('Choose a dataset first, then upload the CSV.'); return; }
+        act(async () => {
+          const r = await researchFetch(`/datasets/${selDs}/subjects`, { method: 'POST', body: JSON.stringify({ subjects: mapped }) });
+          setMsg(`Imported ${r.written} subjects (with names/times/places where present).`);
+        }, `Imported ${mapped.length} rows.`);
+        return;
+      }
+      // Plain date list → drop a non-date header, fill the textarea.
+      let lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
       if (lines[0] && !/^\d{4}/.test(lines[0])) lines = lines.slice(1);
       setDates(lines.join('\n'));
     };
@@ -546,13 +595,16 @@ function Datasets() {
             <option value="">— choose dataset —</option>
             {list.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.cohort_type})</option>)}
           </select>
-          <span className="text-text-muted text-xs">One per line: <code>1975-04-12</code> or <code>1975-04-12,category</code></span>
+          <span className="text-text-muted text-xs">Paste dates: <code>1975-04-12</code> or <code>1975-04-12,category</code></span>
           <label className="ml-auto text-xs text-accent-primary cursor-pointer flex items-center gap-1.5 hover:underline">
             <Upload className="w-3.5 h-3.5" /> Upload CSV
             <input type="file" accept=".csv,text/csv" className="hidden"
               onChange={(e) => e.target.files?.[0] && handleCsv(e.target.files[0])} />
           </label>
         </div>
+        <p className="text-text-muted text-[11px] mb-2">
+          CSV with a header row imports full records — columns: <code>name, birth_date, birth_time, birthplace, birth_country, category, source, quality, notes</code> (only <code>birth_date</code> is required). Select the dataset first.
+        </p>
         <textarea value={dates} onChange={(e) => setDates(e.target.value)} rows={5}
           placeholder={"1975-04-12\n1968-11-03,homicide"} className={`${INPUT} w-full font-mono`} />
         <button onClick={addSubjects} disabled={!selDs || !dates.trim() || busy} className="mt-2 px-3 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50">Add subjects</button>
@@ -593,8 +645,21 @@ function Experiments() {
   const [blind, setBlind] = useState(false);
   const [perm, setPerm] = useState<any>(null);
   const [permBusy, setPermBusy] = useState(false);
+  const [drill, setDrill] = useState<any>(null);
+  const [drillBusy, setDrillBusy] = useState(false);
 
   useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
+
+  const drillSignature = async (signature: string) => {
+    if (!f.caseId) return;
+    setDrillBusy(true); setDrill({ signature, subjects: null }); setErr(null);
+    try {
+      const r = await researchFetch(`/datasets/${f.caseId}/subjects-with-signature`, {
+        method: 'POST', body: JSON.stringify({ signature, axis_mode: f.axis }),
+      });
+      setDrill({ signature, subjects: r.subjects, count: r.count });
+    } catch (e: any) { setErr(e.message); setDrill(null); } finally { setDrillBusy(false); }
+  };
 
   const runPermutation = async () => {
     const sigs = (out?.results || []).filter((r: any) => r.significant).map((r: any) => r.signature_id).slice(0, 20);
@@ -818,7 +883,9 @@ function Experiments() {
               <tbody>
                 {out.results.map((r: any) => (
                   <tr key={r.signature_id} className="border-b border-border-primary/40 last:border-0">
-                    <td className="px-4 py-2 text-text-primary font-mono text-xs">{r.signature_id}</td>
+                    <td className="px-4 py-2 font-mono text-xs">
+                      <button onClick={() => drillSignature(r.signature_id)} className="text-accent-primary hover:underline text-left" title="Show cohort members who carry this signature">{r.signature_id}</button>
+                    </td>
                     <td className="px-4 py-2 text-right text-text-secondary">{(r.case_prevalence * 100).toFixed(1)}</td>
                     <td className="px-4 py-2 text-right text-text-secondary">{(r.control_prevalence * 100).toFixed(1)}</td>
                     <td className="px-4 py-2 text-right text-text-secondary">{r.odds_ratio?.toFixed(2)}</td>
@@ -835,7 +902,49 @@ function Experiments() {
           </div>
           <p className="text-text-muted text-xs">
             Population-level statistical association only — never an individual risk or prediction.
+            Click any signature to see which cohort members carry it.
           </p>
+
+          {drill && (
+            <div className="bg-bg-card border border-border-primary rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="text-text-primary text-sm font-medium">Case-file review</h4>
+                <button onClick={() => setDrill(null)} className="ml-auto text-text-muted text-xs hover:text-text-secondary">close</button>
+              </div>
+              <p className="text-text-muted text-xs mb-3">
+                Case-cohort members whose birth date carries <span className="font-mono text-accent-primary">{drill.signature}</span>. Documented history for review — not a prediction.
+              </p>
+              {drillBusy || drill.subjects === null ? (
+                <Loader2 className="w-5 h-5 animate-spin text-text-muted" />
+              ) : drill.subjects.length === 0 ? (
+                <p className="text-text-muted text-sm">No named case-cohort members carry this signature.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <div className="text-text-tertiary text-xs mb-2">{drill.count} member{drill.count === 1 ? '' : 's'}</div>
+                  <table className="w-full text-sm min-w-[520px]">
+                    <thead>
+                      <tr className="text-text-muted text-xs border-b border-border-primary">
+                        <th className="text-left font-medium px-3 py-2">Name</th>
+                        <th className="text-left font-medium px-3 py-2">Birth date</th>
+                        <th className="text-left font-medium px-3 py-2">Place</th>
+                        <th className="text-left font-medium px-3 py-2">Category</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {drill.subjects.map((s: any) => (
+                        <tr key={s.id} className="border-b border-border-primary/40 last:border-0">
+                          <td className="px-3 py-2 text-text-primary">{s.subject_name || <span className="text-text-muted">(unnamed)</span>}</td>
+                          <td className="px-3 py-2 text-text-secondary font-mono text-xs">{s.birth_date}{s.birth_time ? ` ${s.birth_time}` : ''}</td>
+                          <td className="px-3 py-2 text-text-tertiary text-xs">{s.birthplace || s.birth_country || '—'}</td>
+                          <td className="px-3 py-2 text-text-tertiary text-xs">{s.case_category || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
