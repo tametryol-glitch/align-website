@@ -776,9 +776,13 @@ function Experiments() {
   const run = async () => {
     setBusy(true); setErr(null); setOut(null); setJob(null); setReport(null); setExpId(null);
     try {
-      const r = await researchFetch('/experiments/run', {
+      const timed = f.featureSet === 'houses';
+      const r = await researchFetch(timed ? '/experiments/run-timed' : '/experiments/run', {
         method: 'POST',
-        body: JSON.stringify({
+        body: JSON.stringify(timed ? {
+          name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
+          house_system: 'P', min_odds_ratio: Number(f.minOR),
+        } : {
           name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
           max_definitions: Number(f.maxDefs), min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
           feature_set: f.featureSet,
@@ -847,7 +851,8 @@ function Experiments() {
             <select value={f.featureSet} onChange={(e) => setF({ ...f, featureSet: e.target.value })} className={`${INPUT} w-full mt-1`}>
               <option value="midpoints">Midpoints</option>
               <option value="duads">Duads (2.5° micro-signs)</option>
-              <option value="both">Both</option>
+              <option value="both">Midpoints + duads</option>
+              <option value="houses">Houses / angles (timed only)</option>
             </select>
           </label>
           <label className="text-xs text-text-muted">Midpoints scanned (top-N by rank)
