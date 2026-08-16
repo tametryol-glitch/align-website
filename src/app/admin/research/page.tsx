@@ -343,9 +343,11 @@ function Inspector() {
   const [report, setReport] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [profileBusy, setProfileBusy] = useState(false);
 
   const run = async () => {
-    setBusy(true); setErr(null); setReport(null);
+    setBusy(true); setErr(null); setReport(null); setProfile(null);
     try {
       const r = await researchFetch('/chart-inspector', {
         method: 'POST',
@@ -355,6 +357,17 @@ function Inspector() {
     } catch (e: any) {
       setErr(e.message || 'Failed');
     } finally { setBusy(false); }
+  };
+
+  const loadProfile = async () => {
+    setProfileBusy(true); setErr(null); setProfile(null);
+    try {
+      const r = await researchFetch('/chart-profile', {
+        method: 'POST',
+        body: JSON.stringify({ birth_date: date, axis_mode: axis, timezone_uncertain: true }),
+      });
+      setProfile(r.profile);
+    } catch (e: any) { setErr(e.message || 'Failed'); } finally { setProfileBusy(false); }
   };
 
   return (
@@ -378,13 +391,79 @@ function Inspector() {
           Midpoint-axis mode
         </label>
         <button onClick={run} disabled={!date || busy}
-                className="px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+                className="px-4 py-2 rounded-lg border border-accent-primary text-accent-primary text-sm disabled:opacity-50 flex items-center gap-2">
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
           Inspect
+        </button>
+        <button onClick={loadProfile} disabled={!date || profileBusy}
+                className="px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+          {profileBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+          Research profile
         </button>
       </div>
 
       {err && <p className="text-elements-fire text-sm">{err}</p>}
+
+      {profile && (
+        <div className="space-y-4">
+          {profile.cohort_lean?.length > 0 && (
+            <div className="bg-bg-card border border-border-primary rounded-xl p-4">
+              <div className="text-text-muted text-xs mb-2">This chart's signatures are over-represented in (from your experiments):</div>
+              <div className="flex flex-wrap gap-2">
+                {profile.cohort_lean.map((c: any) => (
+                  <span key={c.cohort} className="text-xs bg-accent-muted text-accent-primary rounded-lg px-2.5 py-1">
+                    {c.cohort} · {c.signatures_overrepresented} signature{c.signatures_overrepresented === 1 ? '' : 's'}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="text-text-tertiary text-sm">
+            <span className="text-text-primary font-medium">{profile.signature_count}</span> research signature{profile.signature_count === 1 ? '' : 's'} present, ranked by research strength.
+          </div>
+
+          {profile.signatures.map((s: any) => (
+            <div key={s.signature_id} className="bg-bg-card border border-border-primary rounded-xl p-4">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <span className="font-mono text-xs text-text-primary">{s.signature_id}</span>
+                <span className="text-[10px] uppercase text-text-muted">{s.band} · {s.stability}</span>
+                <span className="ml-auto text-xs text-text-muted">orb {s.orb}</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2 mb-3">
+                {[['Theoretical', s.t_score], ['Empirical', s.e_score], ['Replication', s.r_score], ['Strength', s.research_strength]].map(([lbl, val]: any) => (
+                  <div key={lbl}>
+                    <div className="text-[10px] uppercase text-text-muted mb-1">{lbl}</div>
+                    <div className="text-text-primary font-semibold text-sm tabular-nums">{val ?? '—'}<span className="text-text-muted text-xs">/10</span></div>
+                    <div className="h-1 bg-border-primary rounded mt-1 overflow-hidden"><div className="h-full bg-accent-primary" style={{ width: `${Math.min(100, (val || 0) * 10)}%` }} /></div>
+                  </div>
+                ))}
+              </div>
+              {s.associations.length === 0 ? (
+                <p className="text-text-muted text-xs">No measured associations yet — run experiments containing this signature to populate its evidence.</p>
+              ) : (
+                <div className="space-y-1">
+                  {s.associations.map((a: any, i: number) => (
+                    <div key={i} className="flex items-center gap-2 text-xs">
+                      <span className="text-text-secondary flex-1">{a.cohort}</span>
+                      <span className="text-text-muted tabular-nums">{(a.case_prevalence * 100).toFixed(0)}% vs {(a.control_prevalence * 100).toFixed(0)}%</span>
+                      <span className="text-text-primary tabular-nums">OR {a.odds_ratio?.toFixed(2)}</span>
+                      {a.significant
+                        ? <span className="text-elements-earth">✓</span>
+                        : <span className="text-text-muted">ns</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div className="bg-gold-muted border border-gold-primary/40 rounded-xl p-3 flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-gold-primary shrink-0 mt-0.5" />
+            <p className="text-text-secondary text-xs leading-relaxed">{profile.disclaimer}</p>
+          </div>
+        </div>
+      )}
 
       {report && (
         <div className="space-y-4">
