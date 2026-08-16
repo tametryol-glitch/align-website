@@ -14,7 +14,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import {
   FlaskConical, ShieldCheck, Loader2, CheckCircle2, XCircle, Orbit,
-  Table2, Search, Calculator, AlertTriangle, Lock,
+  Table2, Search, Calculator, AlertTriangle, Lock, Database, Play, Plus,
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
@@ -45,10 +45,12 @@ async function researchFetch(path: string, options: RequestInit = {}) {
   return res.json();
 }
 
-type Tab = 'dashboard' | 'bodies' | 'midpoints' | 'inspector';
+type Tab = 'dashboard' | 'datasets' | 'experiments' | 'bodies' | 'midpoints' | 'inspector';
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: FlaskConical },
+  { id: 'datasets', label: 'Datasets', icon: Database },
+  { id: 'experiments', label: 'Experiments', icon: Play },
   { id: 'bodies', label: 'Research Bodies', icon: Orbit },
   { id: 'midpoints', label: 'Midpoint Definitions', icon: Table2 },
   { id: 'inspector', label: 'Chart Inspector', icon: Calculator },
@@ -120,6 +122,8 @@ export default function ResearchLabPage() {
       </div>
 
       {tab === 'dashboard' && <Dashboard health={health} />}
+      {tab === 'datasets' && <Datasets />}
+      {tab === 'experiments' && <Experiments />}
       {tab === 'bodies' && <Bodies />}
       {tab === 'midpoints' && <Midpoints />}
       {tab === 'inspector' && <Inspector />}
@@ -412,6 +416,268 @@ function Inspector() {
             </div>
           )}
         </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Datasets
+// ═══════════════════════════════════════════════════════════════════
+
+const INPUT = 'bg-bg-card border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary';
+
+function Card({ title, children }: { title: string; children: any }) {
+  return (
+    <div className="bg-bg-card border border-border-primary rounded-xl p-5">
+      <h3 className="text-text-primary font-medium mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Datasets() {
+  const [list, setList] = useState<any[]>([]);
+  const [name, setName] = useState('');
+  const [ctype, setCtype] = useState('case');
+  const [selDs, setSelDs] = useState('');
+  const [dates, setDates] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [ctrl, setCtrl] = useState({ name: '', mode: 'uniform', n: 500, seed: 1, start: '1950-01-01', end: '2000-12-31', caseId: '' });
+
+  const load = useCallback(async () => {
+    try { const r = await researchFetch('/datasets'); setList(r.datasets || []); } catch {}
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const act = async (fn: () => Promise<any>, ok: string) => {
+    setBusy(true); setMsg(null);
+    try { await fn(); setMsg(ok); await load(); }
+    catch (e: any) { setMsg(e.message || 'Failed'); }
+    finally { setBusy(false); }
+  };
+
+  const createDs = () => act(async () => {
+    await researchFetch('/datasets', { method: 'POST', body: JSON.stringify({ name, cohort_type: ctype }) });
+    setName('');
+  }, 'Dataset created.');
+
+  const addSubjects = () => act(async () => {
+    const subjects = dates.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+      const [d, cat] = l.split(',').map((x) => x.trim());
+      return cat ? { birth_date: d, case_category: cat } : { birth_date: d };
+    });
+    const r = await researchFetch(`/datasets/${selDs}/subjects`, { method: 'POST', body: JSON.stringify({ subjects }) });
+    setDates(''); setMsg(`Added ${r.written} subjects.`);
+  }, 'Subjects added.');
+
+  const genControls = () => act(async () => {
+    await researchFetch('/datasets/generate-controls', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: ctrl.name, mode: ctrl.mode, n: Number(ctrl.n), seed: Number(ctrl.seed),
+        date_start: ctrl.start, date_end: ctrl.end,
+        case_dataset_id: ctrl.caseId || undefined,
+      }),
+    });
+  }, 'Controls generated.');
+
+  return (
+    <div className="space-y-5">
+      {msg && <div className="text-sm text-accent-secondary">{msg}</div>}
+
+      <div className="grid lg:grid-cols-2 gap-5">
+        <Card title="Create dataset">
+          <div className="flex flex-wrap gap-2 items-end">
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dataset name" className={INPUT} />
+            <select value={ctype} onChange={(e) => setCtype(e.target.value)} className={INPUT}>
+              <option value="case">case</option>
+              <option value="control">control</option>
+            </select>
+            <button onClick={createDs} disabled={!name || busy} className="px-3 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-1.5"><Plus className="w-4 h-4" />Create</button>
+          </div>
+        </Card>
+
+        <Card title="Generate synthetic controls">
+          <div className="grid grid-cols-2 gap-2">
+            <input value={ctrl.name} onChange={(e) => setCtrl({ ...ctrl, name: e.target.value })} placeholder="Control set name" className={INPUT} />
+            <select value={ctrl.mode} onChange={(e) => setCtrl({ ...ctrl, mode: e.target.value })} className={INPUT}>
+              <option value="uniform">uniform</option>
+              <option value="matched_year">matched_year</option>
+              <option value="matched_decade">matched_decade</option>
+              <option value="matched_range">matched_range</option>
+            </select>
+            <input type="number" value={ctrl.n} onChange={(e) => setCtrl({ ...ctrl, n: +e.target.value })} placeholder="count" className={INPUT} />
+            <input type="number" value={ctrl.seed} onChange={(e) => setCtrl({ ...ctrl, seed: +e.target.value })} placeholder="seed" className={INPUT} />
+            {ctrl.mode === 'uniform' ? (
+              <>
+                <input type="date" value={ctrl.start} onChange={(e) => setCtrl({ ...ctrl, start: e.target.value })} className={INPUT} />
+                <input type="date" value={ctrl.end} onChange={(e) => setCtrl({ ...ctrl, end: e.target.value })} className={INPUT} />
+              </>
+            ) : (
+              <select value={ctrl.caseId} onChange={(e) => setCtrl({ ...ctrl, caseId: e.target.value })} className={`${INPUT} col-span-2`}>
+                <option value="">— match to case dataset —</option>
+                {list.filter((d) => d.cohort_type === 'case').map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            )}
+          </div>
+          <button onClick={genControls} disabled={!ctrl.name || busy} className="mt-3 px-3 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50">Generate</button>
+        </Card>
+      </div>
+
+      <Card title="Add subjects (birth dates)">
+        <div className="flex flex-wrap gap-2 items-center mb-2">
+          <select value={selDs} onChange={(e) => setSelDs(e.target.value)} className={INPUT}>
+            <option value="">— choose dataset —</option>
+            {list.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.cohort_type})</option>)}
+          </select>
+          <span className="text-text-muted text-xs">One per line: <code>1975-04-12</code> or <code>1975-04-12,category</code></span>
+        </div>
+        <textarea value={dates} onChange={(e) => setDates(e.target.value)} rows={5}
+          placeholder={"1975-04-12\n1968-11-03,homicide"} className={`${INPUT} w-full font-mono`} />
+        <button onClick={addSubjects} disabled={!selDs || !dates.trim() || busy} className="mt-2 px-3 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50">Add subjects</button>
+      </Card>
+
+      <Card title="Datasets">
+        {list.length === 0 ? <p className="text-text-muted text-sm">No datasets yet.</p> : (
+          <div className="space-y-1.5">
+            {list.map((d) => (
+              <div key={d.id} className="flex items-center gap-3 text-sm py-1.5 border-b border-border-primary/40 last:border-0">
+                <span className={`text-[10px] uppercase px-2 py-0.5 rounded ${d.cohort_type === 'case' ? 'bg-accent-muted text-accent-primary' : 'bg-gold-muted text-gold-primary'}`}>{d.cohort_type}</span>
+                <span className="text-text-primary flex-1">{d.name}</span>
+                <span className="text-text-muted">{d.record_count} subjects</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Experiments
+// ═══════════════════════════════════════════════════════════════════
+
+function Experiments() {
+  const [ds, setDs] = useState<any[]>([]);
+  const [f, setF] = useState({ name: '', caseId: '', ctrlId: '', maxDefs: 120, minOR: 1.5, axis: false });
+  const [busy, setBusy] = useState(false);
+  const [out, setOut] = useState<any>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
+
+  const run = async () => {
+    setBusy(true); setErr(null); setOut(null);
+    try {
+      const r = await researchFetch('/experiments/run', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
+          max_definitions: Number(f.maxDefs), min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
+        }),
+      });
+      setOut(r);
+    } catch (e: any) { setErr(e.message || 'Failed'); }
+    finally { setBusy(false); }
+  };
+
+  const cases = ds.filter((d) => d.cohort_type === 'case');
+  const controls = ds.filter((d) => d.cohort_type === 'control');
+
+  return (
+    <div className="space-y-5">
+      <Card title="Run case-vs-control study">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="Experiment name" className={INPUT} />
+          <div />
+          <label className="text-xs text-text-muted">Case dataset
+            <select value={f.caseId} onChange={(e) => setF({ ...f, caseId: e.target.value })} className={`${INPUT} w-full mt-1`}>
+              <option value="">—</option>
+              {cases.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.record_count})</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-text-muted">Control dataset
+            <select value={f.ctrlId} onChange={(e) => setF({ ...f, ctrlId: e.target.value })} className={`${INPUT} w-full mt-1`}>
+              <option value="">—</option>
+              {controls.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.record_count})</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-text-muted">Midpoints scanned (top-N by rank)
+            <input type="number" value={f.maxDefs} onChange={(e) => setF({ ...f, maxDefs: +e.target.value })} className={`${INPUT} w-full mt-1`} />
+          </label>
+          <label className="text-xs text-text-muted">Min odds ratio
+            <input type="number" step="0.1" value={f.minOR} onChange={(e) => setF({ ...f, minOR: +e.target.value })} className={`${INPUT} w-full mt-1`} />
+          </label>
+        </div>
+        <div className="flex items-center gap-4 mt-3">
+          <label className="flex items-center gap-2 text-sm text-text-secondary">
+            <input type="checkbox" checked={f.axis} onChange={(e) => setF({ ...f, axis: e.target.checked })} /> Axis mode
+          </label>
+          <button onClick={run} disabled={!f.caseId || !f.ctrlId || busy} className="ml-auto px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Run study
+          </button>
+        </div>
+        <p className="text-text-muted text-xs mt-3">
+          Bounded synchronous run over the top-N midpoints (max 300). Results survive multiple-testing
+          correction (Benjamini–Hochberg FDR) and an effect-size gate before being marked significant.
+        </p>
+      </Card>
+
+      {err && <p className="text-elements-fire text-sm">{err}</p>}
+
+      {out && (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              ['Cases', out.summary.case_total],
+              ['Controls', out.summary.control_total],
+              ['Tested', out.summary.signatures_tested],
+              ['Survive FDR', out.summary.signatures_significant],
+            ].map(([label, val]) => (
+              <div key={label} className="bg-bg-card border border-border-primary rounded-xl p-4">
+                <div className="text-text-muted text-xs mb-1">{label}</div>
+                <div className="text-lg font-semibold text-text-primary">{val}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="overflow-x-auto bg-bg-card border border-border-primary rounded-xl">
+            <table className="w-full text-sm min-w-[720px]">
+              <thead>
+                <tr className="text-text-muted text-xs border-b border-border-primary">
+                  <th className="text-left font-medium px-4 py-2.5">Signature</th>
+                  <th className="text-right font-medium px-4 py-2.5">Case %</th>
+                  <th className="text-right font-medium px-4 py-2.5">Ctrl %</th>
+                  <th className="text-right font-medium px-4 py-2.5">OR</th>
+                  <th className="text-right font-medium px-4 py-2.5">FDR q</th>
+                  <th className="text-left font-medium px-4 py-2.5">Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                {out.results.map((r: any) => (
+                  <tr key={r.signature_id} className="border-b border-border-primary/40 last:border-0">
+                    <td className="px-4 py-2 text-text-primary font-mono text-xs">{r.signature_id}</td>
+                    <td className="px-4 py-2 text-right text-text-secondary">{(r.case_prevalence * 100).toFixed(1)}</td>
+                    <td className="px-4 py-2 text-right text-text-secondary">{(r.control_prevalence * 100).toFixed(1)}</td>
+                    <td className="px-4 py-2 text-right text-text-secondary">{r.odds_ratio?.toFixed(2)}</td>
+                    <td className="px-4 py-2 text-right text-text-tertiary">{r.fdr_q < 0.001 ? r.fdr_q.toExponential(1) : r.fdr_q.toFixed(3)}</td>
+                    <td className="px-4 py-2">
+                      {r.significant
+                        ? <span className="text-elements-earth text-xs">✓ significant</span>
+                        : <span className="text-text-muted text-xs">{(r.warnings || [])[0] || 'ns'}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-text-muted text-xs">
+            Population-level statistical association only — never an individual risk or prediction.
+          </p>
+        </>
       )}
     </div>
   );
