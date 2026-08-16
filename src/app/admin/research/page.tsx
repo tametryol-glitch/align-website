@@ -712,7 +712,7 @@ function Datasets() {
 
 function Experiments() {
   const [ds, setDs] = useState<any[]>([]);
-  const [f, setF] = useState({ name: '', caseId: '', ctrlId: '', maxDefs: 120, minOR: 1.5, axis: false });
+  const [f, setF] = useState({ name: '', caseId: '', ctrlId: '', maxDefs: 120, minOR: 1.5, axis: false, featureSet: 'midpoints' });
   const [busy, setBusy] = useState(false);
   const [out, setOut] = useState<any>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -781,6 +781,7 @@ function Experiments() {
         body: JSON.stringify({
           name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
           max_definitions: Number(f.maxDefs), min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
+          feature_set: f.featureSet,
         }),
       });
       setOut(r); setExpId(r.experiment_id);
@@ -795,7 +796,7 @@ function Experiments() {
         method: 'POST',
         body: JSON.stringify({
           name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
-          min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
+          min_odds_ratio: Number(f.minOR), axis_mode: f.axis, feature_set: f.featureSet,
         }),
       });
       setJob({ jobId: r.job_id, expId: r.experiment_id }); setJobStatus('QUEUED'); setJobProg(null);
@@ -840,6 +841,13 @@ function Experiments() {
             <select value={f.ctrlId} onChange={(e) => setF({ ...f, ctrlId: e.target.value })} className={`${INPUT} w-full mt-1`}>
               <option value="">—</option>
               {controls.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.record_count})</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-text-muted">Feature set
+            <select value={f.featureSet} onChange={(e) => setF({ ...f, featureSet: e.target.value })} className={`${INPUT} w-full mt-1`}>
+              <option value="midpoints">Midpoints</option>
+              <option value="duads">Duads (2.5° micro-signs)</option>
+              <option value="both">Both</option>
             </select>
           </label>
           <label className="text-xs text-text-muted">Midpoints scanned (top-N by rank)
