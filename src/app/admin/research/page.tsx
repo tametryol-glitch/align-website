@@ -566,11 +566,14 @@ function Experiments() {
   const [busy, setBusy] = useState(false);
   const [out, setOut] = useState<any>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [job, setJob] = useState<{ jobId: string; expId: string } | null>(null);
+  const [jobStatus, setJobStatus] = useState('');
+  const [jobProg, setJobProg] = useState<any>(null);
 
   useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
 
   const run = async () => {
-    setBusy(true); setErr(null); setOut(null);
+    setBusy(true); setErr(null); setOut(null); setJob(null);
     try {
       const r = await researchFetch('/experiments/run', {
         method: 'POST',
@@ -583,6 +586,38 @@ function Experiments() {
     } catch (e: any) { setErr(e.message || 'Failed'); }
     finally { setBusy(false); }
   };
+
+  const runFull = async () => {
+    setErr(null); setOut(null);
+    try {
+      const r = await researchFetch('/experiments/run-full', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: f.name || 'Untitled', case_dataset_id: f.caseId, control_dataset_id: f.ctrlId,
+          min_odds_ratio: Number(f.minOR), axis_mode: f.axis,
+        }),
+      });
+      setJob({ jobId: r.job_id, expId: r.experiment_id }); setJobStatus('QUEUED'); setJobProg(null);
+    } catch (e: any) { setErr(e.message || 'Failed'); }
+  };
+
+  // Poll a running background job until it completes, then load its results.
+  useEffect(() => {
+    if (!job || jobStatus === 'COMPLETED' || jobStatus === 'FAILED') return;
+    const t = setTimeout(async () => {
+      try {
+        const s = await researchFetch(`/experiments/jobs/${job.jobId}`);
+        setJobStatus(s.status); setJobProg(s.progress);
+        if (s.status === 'COMPLETED') {
+          const res = await researchFetch(`/experiments/${job.expId}/results?limit=300`);
+          setOut({ summary: s.progress, results: res.results }); setJob(null);
+        } else if (s.status === 'FAILED') {
+          setErr(s.error || 'Job failed'); setJob(null);
+        }
+      } catch (e: any) { setErr(e.message || 'Poll failed'); setJob(null); }
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [job, jobStatus]);
 
   const cases = ds.filter((d) => d.cohort_type === 'case');
   const controls = ds.filter((d) => d.cohort_type === 'control');
@@ -616,14 +651,37 @@ function Experiments() {
           <label className="flex items-center gap-2 text-sm text-text-secondary">
             <input type="checkbox" checked={f.axis} onChange={(e) => setF({ ...f, axis: e.target.checked })} /> Axis mode
           </label>
-          <button onClick={run} disabled={!f.caseId || !f.ctrlId || busy} className="ml-auto px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
-            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Run study
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={run} disabled={!f.caseId || !f.ctrlId || busy || !!job} className="px-4 py-2 rounded-lg border border-accent-primary text-accent-primary text-sm disabled:opacity-50 flex items-center gap-2">
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Quick run
+            </button>
+            <button onClick={runFull} disabled={!f.caseId || !f.ctrlId || busy || !!job} className="px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+              <Play className="w-4 h-4" /> Run full study
+            </button>
+          </div>
         </div>
         <p className="text-text-muted text-xs mt-3">
-          Bounded synchronous run over the top-N midpoints (max 300). Results survive multiple-testing
-          correction (Benjamini–Hochberg FDR) and an effect-size gate before being marked significant.
+          <strong>Quick run</strong>: bounded, synchronous, top-N midpoints — instant.
+          <strong> Run full study</strong>: all enabled midpoints across the whole cohort, in the
+          background. Both apply Benjamini–Hochberg FDR + an effect-size gate before marking significance.
         </p>
+
+        {job && (
+          <div className="mt-4 bg-bg-primary border border-border-primary rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
+              <Loader2 className="w-4 h-4 animate-spin text-accent-primary" />
+              Background run — <span className="text-accent-secondary">{jobStatus}</span>
+              {jobProg?.total_dates ? (
+                <span className="text-text-muted ml-auto">
+                  {jobProg.processed_dates}/{jobProg.total_dates} dates ({jobProg.pct ?? 0}%)
+                </span>
+              ) : null}
+            </div>
+            <div className="h-1.5 bg-border-primary rounded-full overflow-hidden">
+              <div className="h-full bg-accent-primary transition-all" style={{ width: `${jobProg?.pct ?? 3}%` }} />
+            </div>
+          </div>
+        )}
       </Card>
 
       {err && <p className="text-elements-fire text-sm">{err}</p>}
