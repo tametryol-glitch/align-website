@@ -15,6 +15,7 @@ import { createClient } from '@/lib/supabase';
 import {
   FlaskConical, ShieldCheck, Loader2, CheckCircle2, XCircle, Orbit,
   Table2, Search, Calculator, AlertTriangle, Lock, Database, Play, Plus, FileText,
+  Layers, Upload, Shuffle,
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
@@ -45,12 +46,13 @@ async function researchFetch(path: string, options: RequestInit = {}) {
   return res.json();
 }
 
-type Tab = 'dashboard' | 'datasets' | 'experiments' | 'bodies' | 'midpoints' | 'inspector';
+type Tab = 'dashboard' | 'datasets' | 'experiments' | 'clusters' | 'bodies' | 'midpoints' | 'inspector';
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: FlaskConical },
   { id: 'datasets', label: 'Datasets', icon: Database },
   { id: 'experiments', label: 'Experiments', icon: Play },
+  { id: 'clusters', label: 'Cluster Lab', icon: Layers },
   { id: 'bodies', label: 'Research Bodies', icon: Orbit },
   { id: 'midpoints', label: 'Midpoint Definitions', icon: Table2 },
   { id: 'inspector', label: 'Chart Inspector', icon: Calculator },
@@ -124,6 +126,7 @@ export default function ResearchLabPage() {
       {tab === 'dashboard' && <Dashboard health={health} />}
       {tab === 'datasets' && <Datasets />}
       {tab === 'experiments' && <Experiments />}
+      {tab === 'clusters' && <ClusterLab />}
       {tab === 'bodies' && <Bodies />}
       {tab === 'midpoints' && <Midpoints />}
       {tab === 'inspector' && <Inspector />}
@@ -472,6 +475,17 @@ function Datasets() {
     setDates(''); setMsg(`Added ${r.written} subjects.`);
   }, 'Subjects added.');
 
+  const handleCsv = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      let lines = String(reader.result || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      // Drop a header row if the first line isn't a date (doesn't start with a year).
+      if (lines[0] && !/^\d{4}/.test(lines[0])) lines = lines.slice(1);
+      setDates(lines.join('\n'));
+    };
+    reader.readAsText(file);
+  };
+
   const genControls = () => act(async () => {
     await researchFetch('/datasets/generate-controls', {
       method: 'POST',
@@ -533,6 +547,11 @@ function Datasets() {
             {list.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.cohort_type})</option>)}
           </select>
           <span className="text-text-muted text-xs">One per line: <code>1975-04-12</code> or <code>1975-04-12,category</code></span>
+          <label className="ml-auto text-xs text-accent-primary cursor-pointer flex items-center gap-1.5 hover:underline">
+            <Upload className="w-3.5 h-3.5" /> Upload CSV
+            <input type="file" accept=".csv,text/csv" className="hidden"
+              onChange={(e) => e.target.files?.[0] && handleCsv(e.target.files[0])} />
+          </label>
         </div>
         <textarea value={dates} onChange={(e) => setDates(e.target.value)} rows={5}
           placeholder={"1975-04-12\n1968-11-03,homicide"} className={`${INPUT} w-full font-mono`} />
@@ -571,8 +590,24 @@ function Experiments() {
   const [jobProg, setJobProg] = useState<any>(null);
   const [expId, setExpId] = useState<string | null>(null);
   const [report, setReport] = useState<any>(null);
+  const [blind, setBlind] = useState(false);
+  const [perm, setPerm] = useState<any>(null);
+  const [permBusy, setPermBusy] = useState(false);
 
   useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
+
+  const runPermutation = async () => {
+    const sigs = (out?.results || []).filter((r: any) => r.significant).map((r: any) => r.signature_id).slice(0, 20);
+    if (!sigs.length) { setErr('No significant signatures to permutation-test.'); return; }
+    setPermBusy(true); setErr(null);
+    try {
+      const r = await researchFetch('/experiments/permutation', {
+        method: 'POST',
+        body: JSON.stringify({ case_dataset_id: f.caseId, control_dataset_id: f.ctrlId, signatures: sigs, n_perm: 1000, axis_mode: f.axis }),
+      });
+      setPerm(r.results);
+    } catch (e: any) { setErr(e.message); } finally { setPermBusy(false); }
+  };
 
   const loadReport = async () => {
     if (!expId) return;
@@ -713,8 +748,8 @@ function Experiments() {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              ['Cases', out.summary.case_total],
-              ['Controls', out.summary.control_total],
+              [blind ? 'Group A' : 'Cases', out.summary.case_total],
+              [blind ? 'Group B' : 'Controls', out.summary.control_total],
               ['Tested', out.summary.signatures_tested],
               ['Survive FDR', out.summary.signatures_significant],
             ].map(([label, val]) => (
@@ -725,13 +760,36 @@ function Experiments() {
             ))}
           </div>
 
-          {expId && (
-            <div className="flex flex-wrap items-center gap-2">
-              <button onClick={loadReport} className="px-3 py-1.5 text-sm rounded-lg border border-accent-primary text-accent-primary flex items-center gap-1.5"><FileText className="w-4 h-4" />View report</button>
-              <span className="text-text-muted text-xs">Export:</span>
-              {['csv', 'json', 'xlsx'].map((fmt) => (
-                <button key={fmt} onClick={() => downloadExport(fmt)} className="px-2.5 py-1.5 text-xs rounded-lg border border-border-primary text-text-secondary uppercase hover:border-accent-primary">{fmt}</button>
-              ))}
+          <div className="flex flex-wrap items-center gap-2">
+            {expId && (
+              <>
+                <button onClick={loadReport} className="px-3 py-1.5 text-sm rounded-lg border border-accent-primary text-accent-primary flex items-center gap-1.5"><FileText className="w-4 h-4" />View report</button>
+                <span className="text-text-muted text-xs">Export:</span>
+                {['csv', 'json', 'xlsx'].map((fmt) => (
+                  <button key={fmt} onClick={() => downloadExport(fmt)} className="px-2.5 py-1.5 text-xs rounded-lg border border-border-primary text-text-secondary uppercase hover:border-accent-primary">{fmt}</button>
+                ))}
+              </>
+            )}
+            <button onClick={runPermutation} disabled={permBusy} className="px-3 py-1.5 text-sm rounded-lg border border-border-primary text-text-secondary flex items-center gap-1.5 hover:border-accent-primary disabled:opacity-50">
+              {permBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shuffle className="w-4 h-4" />}Permutation test
+            </button>
+            <label className="ml-auto flex items-center gap-2 text-xs text-text-tertiary">
+              <input type="checkbox" checked={blind} onChange={(e) => setBlind(e.target.checked)} /> Blind labels
+            </label>
+          </div>
+
+          {perm && (
+            <div className="bg-bg-card border border-border-primary rounded-xl p-4">
+              <h4 className="text-text-primary text-sm font-medium mb-2 flex items-center gap-2"><Shuffle className="w-4 h-4" />Permutation null test (1,000 shuffles)</h4>
+              <div className="space-y-1">
+                {Object.values(perm).map((p: any) => (
+                  <div key={p.signature_id} className="flex items-center gap-3 text-xs">
+                    <span className="font-mono text-text-secondary flex-1">{p.signature_id}</span>
+                    <span className="text-text-muted">null≈{p.null_mean}</span>
+                    <span className={p.p_value < 0.05 ? 'text-elements-earth' : 'text-text-muted'}>p={p.p_value < 0.001 ? '<0.001' : p.p_value.toFixed(3)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -780,6 +838,97 @@ function Experiments() {
           </p>
         </>
       )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Cluster Lab
+// ═══════════════════════════════════════════════════════════════════
+
+function ClusterLab() {
+  const [ds, setDs] = useState<any[]>([]);
+  const [caseId, setCaseId] = useState('');
+  const [ctrlId, setCtrlId] = useState('');
+  const [minCount, setMinCount] = useState(50);
+  const [maxSize, setMaxSize] = useState(3);
+  const [busy, setBusy] = useState(false);
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => { researchFetch('/datasets').then((r) => setDs(r.datasets || [])).catch(() => {}); }, []);
+
+  const run = async () => {
+    setBusy(true); setErr(null); setRows(null);
+    try {
+      const r = await researchFetch('/experiments/clusters', {
+        method: 'POST',
+        body: JSON.stringify({ case_dataset_id: caseId, control_dataset_id: ctrlId, min_case_count: Number(minCount), max_cluster_size: Number(maxSize) }),
+      });
+      setRows(r.clusters);
+    } catch (e: any) { setErr(e.message || 'Failed'); } finally { setBusy(false); }
+  };
+
+  const cases = ds.filter((d) => d.cohort_type === 'case');
+  const controls = ds.filter((d) => d.cohort_type === 'control');
+
+  return (
+    <div className="space-y-5">
+      <Card title="Mine multi-signature clusters">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <label className="text-xs text-text-muted">Case dataset
+            <select value={caseId} onChange={(e) => setCaseId(e.target.value)} className={`${INPUT} w-full mt-1`}>
+              <option value="">—</option>{cases.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.record_count})</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-text-muted">Control dataset
+            <select value={ctrlId} onChange={(e) => setCtrlId(e.target.value)} className={`${INPUT} w-full mt-1`}>
+              <option value="">—</option>{controls.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.record_count})</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-text-muted">Min support (case count)
+            <input type="number" value={minCount} onChange={(e) => setMinCount(+e.target.value)} className={`${INPUT} w-full mt-1`} />
+          </label>
+          <label className="text-xs text-text-muted">Max cluster size
+            <input type="number" value={maxSize} min={2} max={4} onChange={(e) => setMaxSize(+e.target.value)} className={`${INPUT} w-full mt-1`} />
+          </label>
+        </div>
+        <button onClick={run} disabled={!caseId || !ctrlId || busy} className="mt-3 px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Layers className="w-4 h-4" />} Mine clusters
+        </button>
+        <p className="text-text-muted text-xs mt-3">
+          Frequent co-occurring signature sets, FDR-corrected. Clusters whose members share bodies are
+          flagged as statistically dependent (not independent evidence).
+        </p>
+      </Card>
+
+      {err && <p className="text-elements-fire text-sm">{err}</p>}
+
+      {rows && (rows.length === 0 ? <p className="text-text-muted text-sm">No clusters met the support threshold.</p> : (
+        <div className="space-y-2">
+          {rows.map((c, i) => (
+            <div key={i} className="bg-bg-card border border-border-primary rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                {c.significant ? <span className="text-elements-earth text-xs">✓ significant</span> : <span className="text-text-muted text-xs">ns</span>}
+                <span className="text-text-muted text-xs ml-auto">OR {c.odds_ratio?.toFixed(2)} · q {c.fdr_q < 0.001 ? c.fdr_q.toExponential(1) : c.fdr_q?.toFixed(3)}</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {c.signatures.map((s: string) => <span key={s} className="font-mono text-xs bg-bg-primary border border-border-primary rounded px-2 py-0.5 text-text-secondary">{s}</span>)}
+              </div>
+              <div className="text-xs text-text-tertiary">
+                Case {c.case_count}/{c.case_total} ({(c.case_prevalence * 100).toFixed(1)}%) vs Control {c.control_count}/{c.control_total} ({(c.control_prevalence * 100).toFixed(1)}%)
+              </div>
+              {(c.warnings || []).length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {c.warnings.map((w: string, j: number) => (
+                    <span key={j} className="text-[10px] bg-gold-muted text-gold-primary rounded px-1.5 py-0.5">{w}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
