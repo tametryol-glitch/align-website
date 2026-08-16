@@ -15,7 +15,7 @@ import { createClient } from '@/lib/supabase';
 import {
   FlaskConical, ShieldCheck, Loader2, CheckCircle2, XCircle, Orbit,
   Table2, Search, Calculator, AlertTriangle, Lock, Database, Play, Plus, FileText,
-  Layers, Upload, Shuffle,
+  Layers, Upload, Shuffle, MapPin, UserPlus, CheckCircle2 as Check2,
 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
@@ -567,6 +567,9 @@ function Datasets() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ctrl, setCtrl] = useState({ name: '', mode: 'uniform', n: 500, seed: 1, start: '1950-01-01', end: '2000-12-31', caseId: '' });
+  const [one, setOne] = useState({ ds: '', name: '', date: '', time: '', place: '', category: '', quality: '' });
+  const [oneGeo, setOneGeo] = useState<any>(undefined);   // undefined=unchecked, null=not found, obj=found
+  const [oneCount, setOneCount] = useState(0);
 
   const load = useCallback(async () => {
     try { const r = await researchFetch('/datasets'); setList(r.datasets || []); } catch {}
@@ -615,6 +618,26 @@ function Datasets() {
     };
     reader.readAsText(file);
   };
+
+  const checkGeo = async () => {
+    if (!one.place.trim()) { setOneGeo(undefined); return; }
+    try {
+      const r = await researchFetch(`/geocode?place=${encodeURIComponent(one.place)}`);
+      setOneGeo(r.match);
+    } catch { setOneGeo(null); }
+  };
+
+  const addOne = () => act(async () => {
+    const subj: any = {
+      subject_name: one.name || undefined, birth_date: one.date,
+      birth_time: one.time || undefined, birthplace: one.place || undefined,
+      case_category: one.category || undefined, data_quality: one.quality || undefined,
+    };
+    const r = await researchFetch(`/datasets/${one.ds}/subjects`, { method: 'POST', body: JSON.stringify({ subjects: [subj] }) });
+    setOneCount((c) => c + (r.written || 0));
+    // Keep dataset + category for rapid entry; clear the person fields.
+    setOne({ ...one, name: '', date: '', time: '', place: '' }); setOneGeo(undefined);
+  }, 'Record added.');
 
   const genControls = () => act(async () => {
     await researchFetch('/datasets/generate-controls', {
@@ -689,6 +712,49 @@ function Datasets() {
         <textarea value={dates} onChange={(e) => setDates(e.target.value)} rows={5}
           placeholder={"1975-04-12\n1968-11-03,homicide"} className={`${INPUT} w-full font-mono`} />
         <button onClick={addSubjects} disabled={!selDs || !dates.trim() || busy} className="mt-2 px-3 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50">Add subjects</button>
+      </Card>
+
+      <Card title="Add one record (manual entry)">
+        <p className="text-text-muted text-[11px] mb-3">
+          Enter charts one at a time — e.g. AA/A-rated records from Astro-Databank. Add a birth time and place for the timed (houses) study. The birthplace is geocoded so you can confirm it resolved before saving.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-2">
+          <select value={one.ds} onChange={(e) => setOne({ ...one, ds: e.target.value })} className={INPUT}>
+            <option value="">— choose dataset —</option>
+            {list.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.cohort_type})</option>)}
+          </select>
+          <input value={one.name} onChange={(e) => setOne({ ...one, name: e.target.value })} placeholder="Full name" className={INPUT} />
+          <label className="text-xs text-text-muted">Birth date
+            <input type="date" value={one.date} onChange={(e) => setOne({ ...one, date: e.target.value })} className={`${INPUT} w-full mt-1`} />
+          </label>
+          <label className="text-xs text-text-muted">Birth time (for houses)
+            <input type="time" value={one.time} onChange={(e) => setOne({ ...one, time: e.target.value })} className={`${INPUT} w-full mt-1`} />
+          </label>
+          <input value={one.place} onChange={(e) => { setOne({ ...one, place: e.target.value }); setOneGeo(undefined); }} onBlur={checkGeo}
+            placeholder="Birthplace — City, Country" className={INPUT} />
+          <input value={one.category} onChange={(e) => setOne({ ...one, category: e.target.value })} placeholder="Category (optional)" className={INPUT} />
+          <select value={one.quality} onChange={(e) => setOne({ ...one, quality: e.target.value })} className={INPUT}>
+            <option value="">Data quality…</option>
+            <option value="A">A — birth certificate</option>
+            <option value="B">B — reliable source</option>
+            <option value="C">C — unverified</option>
+            <option value="D">D — uncertain</option>
+          </select>
+        </div>
+
+        {oneGeo !== undefined && (
+          oneGeo
+            ? <div className="mt-2 text-xs text-elements-earth flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Resolved to {oneGeo.matched} ({oneGeo.lat}, {oneGeo.lon}) · {oneGeo.country}</div>
+            : <div className="mt-2 text-xs text-gold-primary flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5" /> Place not found — houses can’t be computed. Try “City, Country” or check spelling.</div>
+        )}
+
+        <div className="flex items-center gap-3 mt-3">
+          <button onClick={addOne} disabled={!one.ds || !one.date || busy}
+            className="px-4 py-2 rounded-lg bg-accent-primary text-white text-sm disabled:opacity-50 flex items-center gap-2">
+            <UserPlus className="w-4 h-4" /> Add record
+          </button>
+          {oneCount > 0 && <span className="text-text-tertiary text-xs flex items-center gap-1.5"><Check2 className="w-3.5 h-3.5 text-elements-earth" />{oneCount} added this session</span>}
+        </div>
       </Card>
 
       <Card title="Datasets">
