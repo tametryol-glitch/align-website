@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { TrendingUp, Sun, Moon, Heart, Save } from 'lucide-react';
 import { getPlacementInterpretation, getAspectInterpretation, getHouseInterpretation } from '@/lib/interpretations';
 import { MarkdownText } from '@/components/ui/MarkdownText';
+import { getLearnMorePath } from '@/data/cosmicBodies/routes';
 import { detectAspectPatterns, detectChartShape, interpretPatterns } from '@/lib/interpretations';
 import type { ChartPlanet, ChartAspect } from '@/lib/interpretations';
 import { useTranslation } from 'react-i18next';
@@ -322,6 +323,20 @@ export default function ChartPage() {
                     {expandedPositions.has(planet.name) && (
                       <div className="px-4 pb-4 pt-1 text-sm text-text-secondary leading-relaxed whitespace-pre-line border-l-2 border-accent-primary/20 ml-4">
                         <MarkdownText text={getPlacementInterpretation(planet.name, planet.sign, planet.house, planet.sign_degree)} />
+                        {(() => {
+                          // Null when no page exists, so we never render a link
+                          // into the 404 page rather than an explanation.
+                          const learnPath = getLearnMorePath(planet.name, planet.sign);
+                          if (!learnPath) return null;
+                          return (
+                            <Link
+                              href={learnPath}
+                              className="mt-4 inline-flex items-center gap-2 rounded-xl border border-accent-primary/30 bg-accent-primary/10 px-4 py-2 text-sm font-medium text-accent-primary hover:border-accent-primary/60 transition-colors"
+                            >
+                              &#128214; Learn More About {planet.name} in {planet.sign}
+                            </Link>
+                          );
+                        })()}
                       </div>
                     )}
                   </div>

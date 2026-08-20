@@ -1,5 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { COSMIC_BODY_SLUGS } from '@/data/cosmicBodies/slugs';
+
+// Asteroid / angle / Arabic-part SEO routes (/ceres-in/scorpio,
+// /descendant-in/leo, …). These are crawler-facing and must never
+// redirect to /auth/login — the chart's "Learn More" links point here.
+const COSMIC_BODY_PREFIXES = COSMIC_BODY_SLUGS.map((s) => `/${s}`);
 
 const RATE_WINDOW = 60_000;
 const RATE_MAX = 60;
@@ -111,7 +117,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/north-node-in') ||
     pathname.startsWith('/south-node-in') ||
     pathname.startsWith('/planets-in-houses') ||
-    pathname.startsWith('/synastry-aspects');
+    pathname.startsWith('/synastry-aspects') ||
+    COSMIC_BODY_PREFIXES.some(p => pathname === p || pathname.startsWith(`${p}/`));
   const isProtected = !isPublicPage && !isPublicApi;
 
   if (!user && isProtected) {

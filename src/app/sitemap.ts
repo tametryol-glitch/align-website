@@ -6,6 +6,7 @@ import { getAllSlugs as getAllHouseSlugs } from '@/data/planetsInHousesContent';
 import { getAllSynastrySlug } from '@/data/synastryContent';
 import { getAllBlogSlugs } from '@/data/blogContent';
 import { getAllSeasonalSlugs } from '@/data/seasonalContent';
+import { COSMIC_BODY_SLUGS } from '@/data/cosmicBodies/slugs';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://aligncosmic.com';
@@ -119,6 +120,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ]);
 
+  /* Asteroid / angle / Arabic-part pages (65 bodies x 12 signs) */
+  const cosmicBodyPages = COSMIC_BODY_SLUGS.flatMap((slug) => [
+    { url: `${base}/${slug}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.6 },
+    ...ALL_SIGN_KEYS.map((sign) => ({
+      url: `${base}/${slug}/${sign}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  ]);
+
   /* Planets in Houses (120 placements) */
   const houseSlugs = getAllHouseSlugs();
   const housePages = [
@@ -178,6 +190,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
     ...planetPages,
+    ...cosmicBodyPages,
     ...housePages,
     ...synastryPages,
     /* Blog posts */

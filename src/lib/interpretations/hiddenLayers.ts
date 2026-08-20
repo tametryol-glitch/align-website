@@ -170,4 +170,10 @@ export const PLANET_LEADS: Record<string, string> = {
   Psyche: 'This is where being hurt made you fluent in other people\'s insides.',
   'Part of Fortune': 'This is your sweet spot — where being fully yourself and doing well in the world stop being different things.',
   Vertex: 'This is where fate keeps scheduling meetings you didn\'t book — the encounters that rearrange your timeline.',
+  Ascendant: 'This is the door people walk through to get to you — the version of you that arrives before you decide to show up.',
+  Descendant: 'This is the type you keep ending up with — the qualities you handed to other people instead of building in yourself.',
+  MC: 'This is what strangers think you are — the reputation that walks into rooms without you.',
+  IC: 'This is the room inside you nobody gets shown — where the family you came from is still setting the temperature.',
+  'Anti-Vertex': 'This is the part of fate you actually author — where you walk into the encounter instead of waiting to be found by it.',
+  'Part of Spirit': 'This is where you aim your will on purpose — the meaning you reach for rather than the one handed to you.',
 };
