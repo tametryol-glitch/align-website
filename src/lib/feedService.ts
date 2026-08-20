@@ -1,5 +1,6 @@
 import { createClient } from './supabase';
 import { rankFeedPosts, type RankablePost } from './feedRankingEngine';
+import { getSeenCounts } from './impressionService';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type ReactionEmoji = '✨' | '🔥' | '💜' | '🌙' | '⚡' | '😂';
@@ -103,6 +104,37 @@ export async function recordPostVideoView(postId: string, userId: string): Promi
   } catch { /* best effort */ }
 }
 
+/**
+ * Accepted friendships for a user, as a set of the OTHER person's id.
+ *
+ * Feeds the ranker's social score. Mobile already did this; on web the
+ * social term was dead weight because is_friend was never populated, so
+ * 17% of the ranking weight was permanently zero.
+ *
+ * Best effort — an empty set just means no social boost this page.
+ */
+async function getFriendIdSet(userId: string): Promise<Set<string>> {
+  if (!userId) return new Set();
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('friendships')
+      .select('user_id, friend_id')
+      .eq('status', 'accepted')
+      .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+
+    if (error || !data) return new Set();
+
+    const ids = new Set<string>();
+    for (const f of data as Array<{ user_id: string; friend_id: string }>) {
+      ids.add(f.user_id === userId ? f.friend_id : f.user_id);
+    }
+    return ids;
+  } catch {
+    return new Set();
+  }
+}
+
 export async function getFeed(userId: string, before?: string): Promise<FeedPost[]> {
   const supabase = createClient();
   const PAGE = 30;
@@ -122,6 +154,13 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   if (!rawPosts?.length) return [];
 
   const postIds = rawPosts.map((p: any) => p.id);
+
+  // Ranking inputs fetched alongside the page. Both are best-effort: if
+  // either fails the feed still renders, just ranked less well.
+  const [seenCounts, friendIds] = await Promise.all([
+    getSeenCounts(userId, postIds),
+    getFriendIdSet(userId),
+  ]);
 
   // Batch-fetch reactions and comments
   const [reactionsRes, commentsRes] = await Promise.all([
@@ -225,6 +264,11 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   // Algorithmic ranking (flip ALGORITHMIC_FEED_ENABLED to true to activate)
   const ALGORITHMIC_FEED_ENABLED = true;
   if (ALGORITHMIC_FEED_ENABLED) {
+    // likes_count stays 0 by design: reactions replaced the legacy like
+    // model on this surface, and reposts are not counted on posts rows.
+    const impressionsById = new Map<string, number>(
+      rawPosts.map((p: any) => [p.id, p.impressions_count || 0]),
+    );
     const rankable: RankablePost[] = feedPosts.map((fp) => ({
       id: fp.id,
       user_id: fp.userId,
@@ -234,10 +278,15 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       reactions_count: fp.reactions.reduce((sum: number, r: PostReaction) => sum + r.count, 0),
       reposts_count: 0,
       visibility: fp.visibility,
+      is_friend: friendIds.has(fp.userId),
+      seen_count: seenCounts[fp.id] || 0,
+      impressions_count: impressionsById.get(fp.id) || 0,
     }));
     const ranked = rankFeedPosts(rankable, userId);
-    const idOrder = ranked.map((r) => r.id);
-    return feedPosts.sort((a, b) => idOrder.indexOf(a.id) - idOrder.indexOf(b.id));
+    const rankById = new Map(ranked.map((r, i) => [r.id, i]));
+    return feedPosts.sort(
+      (a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0),
+    );
   }
 
   return feedPosts;

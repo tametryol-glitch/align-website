@@ -11,6 +11,8 @@ import {
   POST_STYLE_PRESETS,
 } from '@/lib/feedService';
 import { FeedCard } from '@/components/feed/FeedCard';
+import { ImpressionSlot } from '@/components/feed/ImpressionSlot';
+import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { MentionInput } from '@/components/feed/MentionInput';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2 } from 'lucide-react';
@@ -807,6 +809,18 @@ export default function FeedPage() {
 
   useEffect(() => { loadFeed(); }, [loadFeed]);
 
+  // Impressions batch on a timer, so send whatever is still buffered when the
+  // tab is hidden or the user navigates away — otherwise the last few seconds
+  // of a session never get recorded and those posts keep resurfacing.
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === 'hidden') flushImpressions(); };
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      flushImpressions();
+    };
+  }, []);
+
   // Returning from the video editor: /feed?editedVideoUrl=<url> opens the
   // composer with the finished render already attached. Same window.location
   // approach as the deep-link effect below — no Suspense boundary needed.
@@ -850,8 +864,16 @@ export default function FeedPage() {
     if (loadingMore || !hasMore || posts.length === 0) return;
     setLoadingMore(true);
     try {
-      const lastPost = posts[posts.length - 1];
-      const more = await getFeed(userId, lastPost.createdAt);
+      // The cursor pages on created_at, so it must be the OLDEST timestamp
+      // loaded — not the last post on screen. Ranking reorders the page
+      // (author-diversity overflow in particular pushes recent posts to the
+      // tail), so using the last rendered card as the cursor would skip
+      // everything between it and the true oldest post.
+      const oldestCreatedAt = posts.reduce(
+        (min, p) => (new Date(p.createdAt).getTime() < new Date(min).getTime() ? p.createdAt : min),
+        posts[0].createdAt,
+      );
+      const more = await getFeed(userId, oldestCreatedAt);
       // Dedupe by id: the cursor pages on created_at only, so posts sharing
       // a timestamp can appear in overlapping pages — don't render them twice.
       setPosts((prev) => {
@@ -1137,7 +1159,7 @@ export default function FeedPage() {
           }
 
           return filteredPosts.map((post) => (
-            <div key={post.id} id={`post-${post.id}`}>
+            <ImpressionSlot key={post.id} postId={post.id} id={`post-${post.id}`}>
             <FeedCard
               post={post}
               currentUserId={userId}
@@ -1149,7 +1171,7 @@ export default function FeedPage() {
               isBookmarked={bookmarkedIds.has(post.id)}
               onBookmark={handleBookmark}
             />
-            </div>
+            </ImpressionSlot>
           ));
         })()}
       </div>
