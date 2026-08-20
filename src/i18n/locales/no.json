@@ -3030,7 +3030,9 @@
       "saveFailed": "Kunne ikke lagre dette resultatet."
     },
     "saveImage": "Lagre bilde · TikTok / Stories",
-    "savingImage": "Lagrer bilde…"
+    "savingImage": "Lagrer bilde…",
+    "createVideo": "Lag video · TikTok / Reels",
+    "creatingVideo": "Lager video…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Søk etter navn eller stjernetegn",

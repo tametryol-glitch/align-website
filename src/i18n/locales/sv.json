@@ -3030,7 +3030,9 @@
       "saveFailed": "Kunde inte spara detta resultat."
     },
     "saveImage": "Spara bild · TikTok / Stories",
-    "savingImage": "Sparar bild…"
+    "savingImage": "Sparar bild…",
+    "createVideo": "Skapa video · TikTok / Reels",
+    "creatingVideo": "Skapar video…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Sök efter namn eller stjärntecken",

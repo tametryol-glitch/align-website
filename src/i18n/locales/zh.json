@@ -3033,7 +3033,9 @@
       "saveFailed": "无法保存此结果。"
     },
     "saveImage": "保存图片 · TikTok / 快拍",
-    "savingImage": "正在保存图片…"
+    "savingImage": "正在保存图片…",
+    "createVideo": "生成视频 · TikTok / Reels",
+    "creatingVideo": "正在生成视频…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "按姓名或星座搜索",

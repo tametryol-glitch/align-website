@@ -3030,7 +3030,9 @@
       "saveFailed": "Tämän tuloksen tallentaminen epäonnistui."
     },
     "saveImage": "Tallenna kuva · TikTok / Stories",
-    "savingImage": "Tallennetaan kuvaa…"
+    "savingImage": "Tallennetaan kuvaa…",
+    "createVideo": "Luo video · TikTok / Reels",
+    "creatingVideo": "Luodaan videota…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Hae nimellä tai tähtimerkillä",

@@ -3030,7 +3030,9 @@
       "saveFailed": "ไม่สามารถบันทึกผลลัพธ์นี้ได้"
     },
     "saveImage": "บันทึกรูปภาพ · TikTok / Stories",
-    "savingImage": "กำลังบันทึกรูปภาพ…"
+    "savingImage": "กำลังบันทึกรูปภาพ…",
+    "createVideo": "สร้างวิดีโอ · TikTok / Reels",
+    "creatingVideo": "กำลังสร้างวิดีโอ…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "ค้นหาด้วยชื่อหรือราศี",

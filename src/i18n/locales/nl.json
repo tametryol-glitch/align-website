@@ -3030,7 +3030,9 @@
       "saveFailed": "Dit resultaat kon niet worden opgeslagen."
     },
     "saveImage": "Afbeelding opslaan · TikTok / Stories",
-    "savingImage": "Afbeelding opslaan…"
+    "savingImage": "Afbeelding opslaan…",
+    "createVideo": "Video maken · TikTok / Reels",
+    "creatingVideo": "Video maken…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Zoek op naam of sterrenbeeld",

@@ -3030,7 +3030,9 @@
       "saveFailed": "Не удалось сохранить этот результат."
     },
     "saveImage": "Сохранить изображение · TikTok / Stories",
-    "savingImage": "Сохранение…"
+    "savingImage": "Сохранение…",
+    "createVideo": "Создать видео · TikTok / Reels",
+    "creatingVideo": "Создание видео…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "Поиск по имени или знаку",

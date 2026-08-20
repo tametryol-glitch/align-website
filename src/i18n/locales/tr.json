@@ -3030,7 +3030,9 @@
       "saveFailed": "Bu sonuç kaydedilemedi."
     },
     "saveImage": "Görseli kaydet · TikTok / Stories",
-    "savingImage": "Görsel kaydediliyor…"
+    "savingImage": "Görsel kaydediliyor…",
+    "createVideo": "Video oluştur · TikTok / Reels",
+    "creatingVideo": "Video oluşturuluyor…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "İsme veya burca göre ara",

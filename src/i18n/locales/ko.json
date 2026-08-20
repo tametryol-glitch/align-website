@@ -3030,7 +3030,9 @@
       "saveFailed": "이 결과를 저장할 수 없습니다."
     },
     "saveImage": "이미지 저장 · TikTok / 스토리",
-    "savingImage": "이미지 저장 중…"
+    "savingImage": "이미지 저장 중…",
+    "createVideo": "동영상 만들기 · TikTok / 릴스",
+    "creatingVideo": "동영상 만드는 중…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "이름 또는 별자리로 검색",

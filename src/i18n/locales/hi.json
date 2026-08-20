@@ -3033,7 +3033,9 @@
       "saveFailed": "यह परिणाम सहेजा नहीं जा सका।"
     },
     "saveImage": "छवि सहेजें · TikTok / Stories",
-    "savingImage": "छवि सहेजी जा रही है…"
+    "savingImage": "छवि सहेजी जा रही है…",
+    "createVideo": "वीडियो बनाएं · TikTok / Reels",
+    "creatingVideo": "वीडियो बनाया जा रहा है…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "नाम या राशि से खोजें",

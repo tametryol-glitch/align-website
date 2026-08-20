@@ -3030,7 +3030,9 @@
       "saveFailed": "تعذر حفظ هذه النتيجة."
     },
     "saveImage": "حفظ الصورة · TikTok / Stories",
-    "savingImage": "جارٍ حفظ الصورة…"
+    "savingImage": "جارٍ حفظ الصورة…",
+    "createVideo": "إنشاء فيديو · TikTok / Reels",
+    "creatingVideo": "جارٍ إنشاء الفيديو…"
   },
   "cosmicMatch": {
     "searchPlaceholder": "ابحث بالاسم أو البرج",
