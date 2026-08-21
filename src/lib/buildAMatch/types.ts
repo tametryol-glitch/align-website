@@ -18,11 +18,26 @@
  */
 export type Priority = 'must' | 'preferred' | 'any' | 'avoid';
 
+/** Re-exported from Align's existing preference engine — not redefined. */
+import type { PreferenceBreakdown } from '@/lib/preferenceMatchingEngine';
+export type { PreferenceBreakdown };
+
 /** Priorities that actually reach the database. */
 export type StoredPriority = Exclude<Priority, 'any'>;
 
 /** How hard the search enforces the MUST-HAVEs (§13). */
 export type SearchMode = 'exact' | 'close' | 'cosmic';
+
+/**
+ * How the signup preferences are applied.
+ *
+ * Gender / orientation compatibility is enforced in EVERY mode — it is not
+ * a tuning knob. This only controls the rest:
+ *   soft   — preferences rank and are shown, but never exclude
+ *   strict — also exclude explicit dealbreaker contradictions
+ *            (monogamous vs polyamorous, wants children vs doesn't, …)
+ */
+export type PreferenceMode = 'soft' | 'strict';
 
 /** How the build was authored (§16). Phase 1 ships `manual`. */
 export type BuildMode = 'manual' | 'smart' | 'cosmic' | 'friend' | 'surprise';
@@ -97,6 +112,18 @@ export interface BuildMatchResult {
   /** 0–100: how well the VIEWER fits THEIR build. Null when they have none. */
   reciprocalFit: number | null;
 
+  /**
+   * 0–100 from Align's existing preferenceMatchingEngine — the signup
+   * answers (intent, style, dealbreakers, pace, spirituality, …).
+   * Deliberately a THIRD score: never folded into Build Fit or Cosmic
+   * Compatibility, which measure different things.
+   */
+  preferenceMatch: number | null;
+  /** Per-category detail so the card can explain the number. */
+  preferenceBreakdown: PreferenceBreakdown[] | null;
+  /** True when an explicit dealbreaker contradiction was detected. */
+  hasPreferenceConflict: boolean;
+
   /** Derived labels (§31, §32, §33). */
   isPerfectBuild: boolean;
   isMutualBuild: boolean;
@@ -113,6 +140,7 @@ export type DiscoveryCategory =
   | 'perfect'
   | 'mutual'
   | 'cosmically_strong'
+  | 'aligned_on_paper'
   | 'wild_cards'
   | 'close'
   | 'new'

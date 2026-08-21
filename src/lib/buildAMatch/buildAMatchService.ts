@@ -11,6 +11,8 @@
 
 import { createClient } from '@/lib/supabase';
 import { computeAdvancedCompatibility } from '@/lib/engines/advancedCompatibility';
+import { computePreferenceMatch } from '@/lib/preferenceMatchingEngine';
+import type { RelationshipProfile } from '@/lib/relationshipProfileService';
 import { computeCanonicalOverall, bandTextForOverall } from '@/lib/cosmicMatchService';
 import {
   scoreBuildFit, explainFit, countsFromOutcomes,
@@ -21,9 +23,27 @@ import {
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
   DiscoverySection, PoolCount, RelaxationOption, SavedBuild, SearchMode, BuildMode,
+  PreferenceMode, PreferenceBreakdown,
 } from './types';
 
 const SHORTLIST_SIZE = 40;
+
+/** Strong agreement on the signup answers, out of 100. */
+export const STRONG_PREFERENCE_MATCH = 75;
+
+/** The profile fields Align's preference engine reads. */
+const PREFERENCE_FIELDS =
+  'relationship_style, relationship_primary_intent, relationship_secondary_intents, ' +
+  'relationship_preferences, connection_type_wanted, energetic_pace, ' +
+  'spiritual_openness, sexual_orientation';
+
+type PreferenceProfile = Partial<RelationshipProfile> & { user_id: string };
+
+interface PreferenceScore {
+  score: number;
+  breakdown: PreferenceBreakdown[];
+  conflict: boolean;
+}
 
 export interface IndexedRow {
   user_id: string;
@@ -42,6 +62,7 @@ export async function countMatches(
   criteria: BuildCriterion[],
   searchMode: SearchMode = 'exact',
   datingOnly = false,
+  preferenceMode: PreferenceMode = 'soft',
 ): Promise<PoolCount> {
   const empty: PoolCount = {
     count: 0, suppressed: false, eligiblePool: 0, minPool: MIN_POOL_FOR_EXACT_COUNT,
@@ -53,6 +74,7 @@ export async function countMatches(
       p_search_mode: searchMode,
       p_dating_only: datingOnly,
       p_min_pool: MIN_POOL_FOR_EXACT_COUNT,
+      p_preference_mode: preferenceMode,
     });
     if (error || !data) return empty;
     const row = typeof data === 'string' ? JSON.parse(data) : data;
@@ -71,8 +93,9 @@ export async function getBuildRarity(
   criteria: BuildCriterion[],
   searchMode: SearchMode = 'exact',
   datingOnly = false,
+  preferenceMode: PreferenceMode = 'soft',
 ): Promise<BuildRarity> {
-  const pool = await countMatches(criteria, searchMode, datingOnly);
+  const pool = await countMatches(criteria, searchMode, datingOnly, preferenceMode);
   return computeBuildRarity(pool.count, pool.eligiblePool);
 }
 
@@ -145,13 +168,14 @@ export async function searchBuild(opts: {
   criteria: BuildCriterion[];
   searchMode?: SearchMode;
   datingOnly?: boolean;
+  preferenceMode?: PreferenceMode;
   limit?: number;
   offset?: number;
   enrich?: boolean;
 }): Promise<BuildMatchResult[]> {
   const {
     userId, criteria, searchMode = 'exact', datingOnly = false,
-    limit = 30, offset = 0, enrich = true,
+    preferenceMode = 'soft', limit = 30, offset = 0, enrich = true,
   } = opts;
   if (!userId) return [];
 
@@ -165,6 +189,7 @@ export async function searchBuild(opts: {
       p_dating_only: datingOnly,
       p_limit: Math.min(limit, SHORTLIST_SIZE),
       p_offset: offset,
+      p_preference_mode: preferenceMode,
     });
     if (error || !data) return [];
     rows = data as RawMatchRow[];
@@ -190,6 +215,7 @@ export async function searchBuild(opts: {
 
   const compatibility = new Map<string, { overall: number; band: string }>();
   const reciprocal = new Map<string, number>();
+  const preferences = new Map<string, PreferenceScore>();
 
   if (enrich) {
     // Read-through the existing pair cache first (§42).
@@ -234,6 +260,33 @@ export async function searchBuild(opts: {
         if (typeof row.their_fit_of_me === 'number') reciprocal.set(row.user_id, row.their_fit_of_me);
       }
     } catch { /* no reciprocal data is a normal state */ }
+
+    // Signup-answer agreement, scored by Align's EXISTING engine. Gender is
+    // NOT scored here — it is a hard SQL filter applied before this point.
+    try {
+      const [mineRes, theirsRes] = await Promise.all([
+        supabase.from('profiles').select(PREFERENCE_FIELDS).eq('id', userId).single(),
+        supabase.rpc('bam_preference_profiles', {
+          p_user_ids: candidateIds,
+          p_dating_only: datingOnly,
+          p_preference_mode: preferenceMode,
+        }),
+      ]);
+      const me = mineRes.data as Partial<RelationshipProfile> | null;
+      const theirs = theirsRes.data as PreferenceProfile[] | null;
+      if (me && theirs) {
+        for (const row of theirs) {
+          const result = computePreferenceMatch(me, row);
+          const conflict = result.breakdown.some(
+            b => (b.category === 'Dealbreakers' || b.category === 'Style')
+              && b.alignment === 'conflict',
+          );
+          preferences.set(row.user_id, {
+            score: result.score, breakdown: result.breakdown, conflict,
+          });
+        }
+      }
+    } catch { /* preferences are a tuning layer — never break a search */ }
   }
 
   return rows.map(r => {
@@ -252,6 +305,7 @@ export async function searchBuild(opts: {
     const fit = typeof r.fit_score === 'number' ? r.fit_score : scoreBuildFit(counts);
     const compat = compatibility.get(r.user_id) ?? null;
     const recip = reciprocal.has(r.user_id) ? reciprocal.get(r.user_id)! : null;
+    const pref = preferences.get(r.user_id) ?? null;
 
     return {
       userId: r.user_id,
@@ -266,6 +320,9 @@ export async function searchBuild(opts: {
       cosmicCompatibility: compat ? compat.overall : null,
       compatibilityBand: compat ? compat.band : null,
       reciprocalFit: recip,
+      preferenceMatch: pref ? pref.score : null,
+      preferenceBreakdown: pref ? pref.breakdown : null,
+      hasPreferenceConflict: pref ? pref.conflict : false,
       isPerfectBuild: isPerfectBuild(counts),
       isCloseBuild: isCloseBuild(counts),
       isWildCard: isWildCard(fit, compat ? compat.overall : null),
@@ -273,6 +330,28 @@ export async function searchBuild(opts: {
       birthTimeKnown: theirRows.some(p => p.birth_time_known),
     } satisfies BuildMatchResult;
   });
+}
+
+/**
+ * Has the viewer told us their gender AND who they're interested in?
+ * bam_gender_compatible() is permissive when either side is unset, so a
+ * viewer who hasn't answered gets no filtering — the UI must say so.
+ */
+export async function hasOrientationPreferences(userId: string): Promise<boolean> {
+  if (!userId) return false;
+  try {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('gender_identity, interested_in_genders')
+      .eq('id', userId)
+      .single();
+    return !!data?.gender_identity
+      && Array.isArray(data?.interested_in_genders)
+      && data.interested_in_genders.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 async function getMyIndexedRows(userId: string): Promise<IndexedRow[]> {
@@ -293,12 +372,14 @@ async function getMyIndexedRows(userId: string): Promise<IndexedRow[]> {
 export async function getRelaxationOptions(
   criteria: BuildCriterion[],
   datingOnly = false,
+  preferenceMode: PreferenceMode = 'soft',
 ): Promise<RelaxationOption[]> {
   try {
     const supabase = createClient();
     const { data, error } = await supabase.rpc('bam_relaxation_impact', {
       p_criteria: criteria,
       p_dating_only: datingOnly,
+      p_preference_mode: preferenceMode,
     });
     if (error || !data) return [];
     return rankRelaxationOptions(
@@ -318,6 +399,7 @@ const SECTION_COPY: Record<DiscoveryCategory, { title: string; subtitle: string 
   perfect:           { title: 'Perfect Build',           subtitle: 'Every must-have satisfied' },
   mutual:            { title: 'Mutual Build',            subtitle: 'You both independently built something very close to each other' },
   cosmically_strong: { title: 'Cosmically Strong',       subtitle: 'Exceptional compatibility from your actual charts' },
+  aligned_on_paper:  { title: 'Aligned On Paper',        subtitle: 'They want the same kind of relationship you do' },
   wild_cards:        { title: 'Wild Cards',              subtitle: "You wouldn't have built them. Your charts say you should look twice." },
   close:             { title: 'Close Builds',            subtitle: 'Missing only one or two of your criteria' },
   new:               { title: 'New Matches',             subtitle: 'Recently eligible members who fit this build' },
@@ -329,12 +411,16 @@ export async function getDiscoverySections(opts: {
   criteria: BuildCriterion[];
   searchMode?: SearchMode;
   datingOnly?: boolean;
+  preferenceMode?: PreferenceMode;
 }): Promise<DiscoverySection[]> {
-  const { userId, criteria, searchMode = 'exact', datingOnly = false } = opts;
+  const {
+    userId, criteria, searchMode = 'exact', datingOnly = false,
+    preferenceMode = 'soft',
+  } = opts;
   const wideMode: SearchMode = searchMode === 'exact' ? 'close' : searchMode;
 
   const results = await searchBuild({
-    userId, criteria, searchMode: wideMode, datingOnly,
+    userId, criteria, searchMode: wideMode, datingOnly, preferenceMode,
     limit: SHORTLIST_SIZE, enrich: true,
   });
   if (results.length === 0) return [];
@@ -342,6 +428,9 @@ export async function getDiscoverySections(opts: {
   const byFit = [...results].sort((a, b) => b.buildFit - a.buildFit);
   const byCompat = [...results].sort(
     (a, b) => (b.cosmicCompatibility ?? -1) - (a.cosmicCompatibility ?? -1),
+  );
+  const byPreference = [...results].sort(
+    (a, b) => (b.preferenceMatch ?? -1) - (a.preferenceMatch ?? -1),
   );
 
   const mk = (key: DiscoveryCategory, rs: BuildMatchResult[]): DiscoverySection =>
@@ -352,6 +441,9 @@ export async function getDiscoverySections(opts: {
     mk('perfect', byFit.filter(r => r.isPerfectBuild)),
     mk('mutual', byFit.filter(r => r.isMutualBuild)),
     mk('cosmically_strong', byCompat.filter(r => isCosmicallyStrong(r.cosmicCompatibility) && !r.isWildCard)),
+    mk('aligned_on_paper', byPreference.filter(
+      r => (r.preferenceMatch ?? 0) >= STRONG_PREFERENCE_MATCH && !r.hasPreferenceConflict,
+    )),
     mk('wild_cards', byCompat.filter(r => r.isWildCard)),
     mk('close', byFit.filter(r => r.isCloseBuild)),
   ].filter(s => s.results.length > 0);

@@ -20,7 +20,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { SIGNS, SIGN_EMOJIS, PLANET_EMOJIS } from '@/lib/cosmicIndexService';
 import {
   countMatches, getDiscoverySections, getRelaxationOptions,
-  getMyBuilds, saveBuild, deleteBuild,
+  getMyBuilds, saveBuild, deleteBuild, hasOrientationPreferences,
 } from '@/lib/buildAMatch/buildAMatchService';
 import {
   toCriteria, formatPoolCount, computeBuildRarity, requiresBirthTime,
@@ -28,6 +28,7 @@ import {
 import type {
   Priority, SearchMode, BuildCriterion, SavedBuild,
   DiscoverySection, PoolCount, RelaxationOption, BuildMatchResult,
+  PreferenceMode,
 } from '@/lib/buildAMatch/types';
 
 const ESSENTIAL_BODIES = ['Moon', 'Venus', 'Mars', 'Mercury', 'Juno', 'Sun'];
@@ -66,6 +67,10 @@ export default function BuildAMatchPage() {
   const [showDeeper, setShowDeeper] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('exact');
   const [datingOnly, setDatingOnly] = useState(false);
+  /** 'strict' also drops explicit dealbreaker clashes. Orientation is
+   *  filtered in BOTH modes — it is never a toggle. */
+  const [preferenceMode, setPreferenceMode] = useState<PreferenceMode>('soft');
+  const [myPrefsIncomplete, setMyPrefsIncomplete] = useState(false);
 
   const [pool, setPool] = useState<PoolCount | null>(null);
   const [poolLoading, setPoolLoading] = useState(false);
@@ -111,10 +116,12 @@ export default function BuildAMatchPage() {
             .eq('id', user.id)
             .single(),
         ]);
+        const prefsSet = await hasOrientationPreferences(user.id);
         if (!cancelled) {
           setMyPlacements(data || []);
           setIndexed((data || []).length > 0);
           setViewerBirthTimeUnknown(!profileRow?.birth_time);
+          setMyPrefsIncomplete(!prefsSet);
         }
       } finally {
         if (!cancelled) setBooting(false);
@@ -129,19 +136,19 @@ export default function BuildAMatchPage() {
     const seq = ++poolSeq.current;
     setPoolLoading(true);
     const timer = setTimeout(async () => {
-      const result = await countMatches(criteria, searchMode, datingOnly);
+      const result = await countMatches(criteria, searchMode, datingOnly, preferenceMode);
       if (seq === poolSeq.current) { setPool(result); setPoolLoading(false); }
     }, 350);
     return () => clearTimeout(timer);
-  }, [criteria, searchMode, datingOnly, indexed]);
+  }, [criteria, searchMode, datingOnly, preferenceMode, indexed]);
 
   useEffect(() => {
     if (!pool || pool.count > 0 || criteriaCount === 0) { setRelaxation([]); return; }
     let cancelled = false;
-    getRelaxationOptions(criteria, datingOnly).then(o => { if (!cancelled) setRelaxation(o); });
+    getRelaxationOptions(criteria, datingOnly, preferenceMode).then(o => { if (!cancelled) setRelaxation(o); });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool?.count, criteriaCount, datingOnly]);
+  }, [pool?.count, criteriaCount, datingOnly, preferenceMode]);
 
   useEffect(() => {
     if (tab === 'saved' && user?.id) getMyBuilds(user.id).then(setBuilds);
@@ -161,7 +168,9 @@ export default function BuildAMatchPage() {
     setSearchError(null);
     setSearched(true);
     try {
-      setSections(await getDiscoverySections({ userId: user.id, criteria, searchMode, datingOnly }));
+      setSections(await getDiscoverySections({
+        userId: user.id, criteria, searchMode, datingOnly, preferenceMode,
+      }));
     } catch {
       setSearchError('Search failed. Try again.');
       setSections([]);
@@ -361,6 +370,51 @@ export default function BuildAMatchPage() {
               ))}
             </div>
 
+          </section>
+
+          {/* WHO CAN MATCH YOU (§37) */}
+          <section>
+            <h2 className="text-[11px] font-bold tracking-widest text-text-secondary mb-2">
+              WHO CAN MATCH YOU
+            </h2>
+
+            <div className="rounded-xl border border-emerald-500/35 bg-emerald-500/10 p-4 flex gap-3">
+              <span aria-hidden="true">🔒</span>
+              <div>
+                <p className="text-sm font-bold text-emerald-300">Orientation is always respected</p>
+                <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                  Only people whose gender you&apos;re interested in — and who are interested in
+                  yours — are ever searched. This is not a filter you can turn off.
+                </p>
+              </div>
+            </div>
+
+            {myPrefsIncomplete && (
+              <Link
+                href="/profile/edit"
+                className="block rounded-xl border border-orange-500/35 bg-orange-500/10 p-4 mt-2 text-xs text-orange-300 leading-relaxed"
+              >
+                ⓘ You haven&apos;t set your gender and who you&apos;re interested in, so nobody can be
+                filtered out for you yet. Tap to set them.
+              </Link>
+            )}
+
+            <label className="card p-4 mt-2 flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={preferenceMode === 'strict'}
+                onChange={e => setPreferenceMode(e.target.checked ? 'strict' : 'soft')}
+                className="w-4 h-4 accent-[var(--accent-primary,#9B6FF6)]"
+              />
+              <span>
+                <span className="block text-sm text-text-primary font-medium">Hide preference clashes</span>
+                <span className="block text-xs text-text-muted">
+                  Drops people who explicitly want the opposite thing — monogamous vs polyamorous,
+                  wants children vs doesn&apos;t. Everything else still just ranks.
+                </span>
+              </span>
+            </label>
+
             <label className="card p-4 mt-2 flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -371,7 +425,8 @@ export default function BuildAMatchPage() {
               <span>
                 <span className="block text-sm text-text-primary font-medium">Dating-eligible members only</span>
                 <span className="block text-xs text-text-muted">
-                  Applies Align&apos;s dating rules before any astrology.
+                  Also requires dating to be switched on, and skips people you&apos;ve already
+                  passed on or matched with.
                 </span>
               </span>
             </label>
@@ -585,6 +640,7 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
 
   const tags: Array<{ label: string; cls: string }> = [];
   if (r.isMutualBuild) tags.push({ label: '★ Mutual Build', cls: 'border-amber-400 text-amber-400' });
+  if (r.hasPreferenceConflict) tags.push({ label: '⚠ Preference clash', cls: 'border-orange-400 text-orange-400' });
   if (r.isPerfectBuild) tags.push({ label: '✦ Perfect Build', cls: 'border-accent-primary text-accent-primary' });
   if (r.isWildCard) tags.push({ label: '↯ Wild Card', cls: 'border-pink-400 text-pink-400' });
   if (!r.isPerfectBuild && r.isCloseBuild) tags.push({ label: '◐ Close Build', cls: 'border-blue-400 text-blue-400' });
@@ -612,30 +668,52 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      {/* Three scores, deliberately separate — never blended (§11) */}
+      <div className="grid grid-cols-3 gap-3 mt-4">
         <div>
-          <p className="text-2xl font-extrabold text-accent-primary">{r.buildFit}%</p>
+          <p className="text-xl font-extrabold text-accent-primary">{r.buildFit}%</p>
           <p className="text-[10px] font-bold tracking-wide text-text-secondary">BUILD MATCH</p>
-          <p className="text-[11px] text-text-muted mt-0.5">How closely they match what you asked for</p>
         </div>
-        <div className="border-l border-border-primary pl-4">
-          {r.cosmicCompatibility !== null ? (
-            <>
-              <p className="text-2xl font-extrabold text-blue-400">{r.cosmicCompatibility}%</p>
-              <p className="text-[10px] font-bold tracking-wide text-text-secondary">COSMIC COMPATIBILITY</p>
-              <p className="text-[11px] text-text-muted mt-0.5 line-clamp-2">
-                {r.compatibilityBand || 'From your actual charts'}
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-2xl font-extrabold text-text-muted">—</p>
-              <p className="text-[10px] font-bold tracking-wide text-text-secondary">COSMIC COMPATIBILITY</p>
-              <p className="text-[11px] text-text-muted mt-0.5">Not enough chart data to score honestly</p>
-            </>
-          )}
+        <div className="border-l border-border-primary pl-3">
+          <p className={`text-xl font-extrabold ${r.cosmicCompatibility !== null ? 'text-blue-400' : 'text-text-muted'}`}>
+            {r.cosmicCompatibility !== null ? `${r.cosmicCompatibility}%` : '—'}
+          </p>
+          <p className="text-[10px] font-bold tracking-wide text-text-secondary">COSMIC</p>
+        </div>
+        <div className="border-l border-border-primary pl-3">
+          <p className={`text-xl font-extrabold ${r.preferenceMatch !== null ? 'text-emerald-400' : 'text-text-muted'}`}>
+            {r.preferenceMatch !== null ? `${r.preferenceMatch}%` : '—'}
+          </p>
+          <p className="text-[10px] font-bold tracking-wide text-text-secondary">PREFERENCES</p>
         </div>
       </div>
+
+      <p className="text-[11px] text-text-muted mt-2">
+        Build = what you asked for · Cosmic ={' '}
+        {r.compatibilityBand
+          ? r.compatibilityBand.toLowerCase()
+          : 'not enough chart data to score honestly'}
+      </p>
+
+      {r.preferenceBreakdown && r.preferenceBreakdown.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {r.preferenceBreakdown
+            .filter(b => b.alignment === 'strong' || b.alignment === 'conflict')
+            .slice(0, 4)
+            .map(b => (
+              <span
+                key={b.category}
+                className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                  b.alignment === 'conflict'
+                    ? 'bg-orange-500/15 text-orange-300'
+                    : 'bg-emerald-500/12 text-emerald-300'
+                }`}
+              >
+                {b.alignment === 'conflict' ? '✕' : '✓'} {b.label}
+              </span>
+            ))}
+        </div>
+      )}
 
       {r.outcomes.length > 0 && (
         <div className="mt-4 pt-3 border-t border-border-primary">
