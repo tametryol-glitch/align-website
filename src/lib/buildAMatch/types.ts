@@ -132,6 +132,9 @@ export interface BuildMatchResult {
 
   /** True when this candidate's time-dependent points are unreliable (§38). */
   birthTimeKnown: boolean;
+
+  /** When they joined Align. Powers the "New Matches" section (§10). */
+  joinedAt: string | null;
 }
 
 /** Discovery categories (§10). */

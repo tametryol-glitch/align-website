@@ -256,6 +256,42 @@ export function activeCriteriaCount(criteria: BuildCriterion[]): number {
 }
 
 /**
+ * How many of the preference questions a profile actually answered.
+ *
+ * The preference engine substitutes a neutral 60% for anything unset, so a
+ * profile that answered nothing still produces a confident-looking ~60.
+ * That number would be describing our own defaults, not two people. Count
+ * the real answers so the caller can decide whether the score means
+ * anything at all.
+ */
+export function answeredPreferenceCount(p: {
+  relationship_style?: string | null;
+  relationship_primary_intent?: string | null;
+  relationship_secondary_intents?: string[] | null;
+  relationship_preferences?: string[] | null;
+  connection_type_wanted?: string | null;
+  energetic_pace?: string | null;
+  spiritual_openness?: string | null;
+} | null | undefined): number {
+  if (!p) return 0;
+  let n = 0;
+  if (p.relationship_style) n++;
+  if (p.relationship_primary_intent) n++;
+  if (p.connection_type_wanted) n++;
+  if (p.energetic_pace) n++;
+  if (p.spiritual_openness) n++;
+  if (p.relationship_secondary_intents?.length) n++;
+  if (p.relationship_preferences?.length) n++;
+  return n;
+}
+
+/**
+ * Below this many answers on EITHER side, the preference score is padding
+ * rather than signal and must be reported as unknown instead of a number.
+ */
+export const MIN_PREFERENCE_ANSWERS = 2;
+
+/**
  * Time-dependent points are only meaningful with a reliable birth time
  * (§38). The list matches what the Whole-Sign indexer can and cannot
  * stand behind when birth_time is NULL.
@@ -273,4 +309,22 @@ export function unreliableCriteria(
 ): BuildCriterion[] {
   if (candidateBirthTimeKnown) return [];
   return criteria.filter(c => requiresBirthTime(c.body));
+}
+
+// ─── New members (§10) ──────────────────────────────────────────────
+
+/** Members who joined within this window count as "new" (§10). */
+export const NEW_MEMBER_WINDOW_DAYS = 30;
+
+/**
+ * Did this person join recently? Returns false for an unknown join date —
+ * a missing timestamp is not evidence of anything, and calling someone new
+ * because we don't know would make the section meaningless.
+ */
+export function isNewMember(joinedAt: string | null, now = Date.now()): boolean {
+  if (!joinedAt) return false;
+  const t = Date.parse(joinedAt);
+  if (Number.isNaN(t)) return false;
+  const ageDays = (now - t) / 86_400_000;
+  return ageDays >= 0 && ageDays <= NEW_MEMBER_WINDOW_DAYS;
 }

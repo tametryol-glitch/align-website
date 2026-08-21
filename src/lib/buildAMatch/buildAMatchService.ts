@@ -18,7 +18,8 @@ import {
   scoreBuildFit, explainFit, countsFromOutcomes,
   isPerfectBuild, isCloseBuild, isWildCard, isMutualBuild, isCosmicallyStrong,
   computeBuildRarity, rankRelaxationOptions,
-  MIN_POOL_FOR_EXACT_COUNT,
+  answeredPreferenceCount, MIN_PREFERENCE_ANSWERS,
+  isNewMember, MIN_POOL_FOR_EXACT_COUNT,
 } from './buildFitEngine';
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
@@ -161,6 +162,7 @@ interface RawMatchRow {
   must_total: number;
   pref_total: number;
   fit_score: number;
+  joined_at: string | null;
 }
 
 export async function searchBuild(opts: {
@@ -274,8 +276,11 @@ export async function searchBuild(opts: {
       ]);
       const me = mineRes.data as Partial<RelationshipProfile> | null;
       const theirs = theirsRes.data as PreferenceProfile[] | null;
-      if (me && theirs) {
+      // If either side has barely answered, the engine's neutral defaults
+      // dominate and the score describes our padding, not two people.
+      if (me && theirs && answeredPreferenceCount(me) >= MIN_PREFERENCE_ANSWERS) {
         for (const row of theirs) {
+          if (answeredPreferenceCount(row) < MIN_PREFERENCE_ANSWERS) continue;
           const result = computePreferenceMatch(me, row);
           const conflict = result.breakdown.some(
             b => (b.category === 'Dealbreakers' || b.category === 'Style')
@@ -328,6 +333,7 @@ export async function searchBuild(opts: {
       isWildCard: isWildCard(fit, compat ? compat.overall : null),
       isMutualBuild: isMutualBuild(fit, recip),
       birthTimeKnown: theirRows.some(p => p.birth_time_known),
+      joinedAt: r.joined_at ?? null,
     } satisfies BuildMatchResult;
   });
 }
@@ -402,7 +408,7 @@ const SECTION_COPY: Record<DiscoveryCategory, { title: string; subtitle: string 
   aligned_on_paper:  { title: 'Aligned On Paper',        subtitle: 'They want the same kind of relationship you do' },
   wild_cards:        { title: 'Wild Cards',              subtitle: "You wouldn't have built them. Your charts say you should look twice." },
   close:             { title: 'Close Builds',            subtitle: 'Missing only one or two of your criteria' },
-  new:               { title: 'New Matches',             subtitle: 'Recently eligible members who fit this build' },
+  new:               { title: 'New Matches',             subtitle: 'They joined recently and already fit this build' },
   rare:              { title: 'Rare Matches',            subtitle: 'Uncommon combinations that closely satisfy your build' },
 };
 
@@ -445,6 +451,7 @@ export async function getDiscoverySections(opts: {
       r => (r.preferenceMatch ?? 0) >= STRONG_PREFERENCE_MATCH && !r.hasPreferenceConflict,
     )),
     mk('wild_cards', byCompat.filter(r => r.isWildCard)),
+    mk('new', byFit.filter(r => isNewMember(r.joinedAt))),
     mk('close', byFit.filter(r => r.isCloseBuild)),
   ].filter(s => s.results.length > 0);
 }
