@@ -56,8 +56,10 @@ export const featureFlags = {
   /** Master switch. When false nothing renders and no BAM query ever runs. */
   build_a_match_enabled: true,
 
-  /** Founder-only soak, same pattern as derived ACG. */
-  build_a_match_dev_only: true,
+  /** Founder soak COMPLETE — open to everyone as of 2026-08-21.
+   *  Kept in sync with align-app. NEXT_PUBLIC_BUILD_A_MATCH=off still kills
+   *  it without a redeploy if anything goes wrong. */
+  build_a_match_dev_only: false,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {
