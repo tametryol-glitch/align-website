@@ -48,6 +48,16 @@ export const featureFlags = {
   /** OPEN to everyone (founder soak complete 2026-07-29). Flip back to true to
    *  re-restrict Soul Places to SOUL_PLACES_DEV_ALLOWLIST. */
   zodisphere_soul_places_dev_only: false,
+
+  // ── Build-A-Match ──
+  // "Build your type. Let Align find them."
+  // Mirrors align-app/src/config/featureFlags.ts — keep values in sync.
+
+  /** Master switch. When false nothing renders and no BAM query ever runs. */
+  build_a_match_enabled: true,
+
+  /** Founder-only soak, same pattern as derived ACG. */
+  build_a_match_dev_only: true,
 } as const;
 
 export function isFeatureEnabled(flag: keyof typeof featureFlags): boolean {
@@ -125,6 +135,30 @@ export function isSoulPlacesEnabled(userEmail?: string | null): boolean {
   if (featureFlags.zodisphere_soul_places_dev_only) {
     const email = (userEmail || '').toLowerCase();
     if (!email || !SOUL_PLACES_DEV_ALLOWLIST.has(email)) return false;
+  }
+  return true;
+}
+
+
+// ── Build-A-Match access ────────────────────────────────────────────
+
+export const BUILD_A_MATCH_ALLOWLIST = new Set<string>(['tametryol@gmail.com']);
+
+/**
+ * Resolve Build-A-Match availability. Fail-safe: with the master flag off, or
+ * a non-allowlisted user during the founder soak, the entry point does not
+ * render and no Build-A-Match query is ever issued.
+ * NEXT_PUBLIC_BUILD_A_MATCH ('on'/'off') overrides the static flag so it can
+ * be enabled or killed without a redeploy.
+ */
+export function isBuildAMatchEnabled(userEmail?: string | null): boolean {
+  const env = (process.env.NEXT_PUBLIC_BUILD_A_MATCH || '').toLowerCase();
+  if (env === 'off') return false;
+  const masterOn = env === 'on' || featureFlags.build_a_match_enabled;
+  if (!masterOn) return false;
+  if (featureFlags.build_a_match_dev_only) {
+    const email = (userEmail || '').toLowerCase();
+    if (!email || !BUILD_A_MATCH_ALLOWLIST.has(email)) return false;
   }
   return true;
 }

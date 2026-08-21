@@ -171,10 +171,17 @@ async function fetchChartPositions(profile: any): Promise<{
  * toxicity, same band text). This is what stops web-first matches from leaving
  * the advanced columns null (displayed as 0).
  */
-function resultToRow(result: AdvancedCompatibilityResult, profileA: any, profileB: any): Record<string, any> {
-  // Recompute overall from ALL 9 displayed categories so list and detail match.
-  // The base engine only blends 5 (Attraction, Emotional, Mental, Stability, Karmic),
-  // ignoring Passion, Marriage, Spiritual, Physical which are computed by advanced modules.
+/**
+ * The canonical Align compatibility overall, blended from ALL 9 displayed
+ * categories. The base engine only blends 5 (Attraction, Emotional, Mental,
+ * Stability, Karmic), ignoring Passion, Marriage, Spiritual and Physical
+ * which the advanced modules compute.
+ *
+ * Exported so every surface showing "Cosmic Compatibility" — the match page,
+ * dating, Build-A-Match — reads the same number from the same formula.
+ * Mirrors computeCanonicalOverall() in align-app/src/services/cosmicMatchService.ts.
+ */
+export function computeCanonicalOverall(result: AdvancedCompatibilityResult): number {
   const emotional  = result.emotional_score ?? 0;
   const attraction = result.scores?.Attraction ?? 0;
   const passion    = result.passion?.score ?? 0;
@@ -196,25 +203,32 @@ function resultToRow(result: AdvancedCompatibilityResult, profileA: any, profile
     spiritual  * 0.08 +
     physical   * 0.12
   );
-  const clampedOverall = Math.max(0, Math.min(100, fullOverall));
+  return Math.max(0, Math.min(100, fullOverall));
+}
+
+const OVERALL_BANDS: Array<[number, string]> = [
+  [90, 'Rare compatibility — very strong bond, high attraction and support'],
+  [80, 'Very strong relationship potential'],
+  [70, 'Good compatibility with some friction'],
+  [60, 'Mixed but workable if mature'],
+  [50, 'Strong pull but inconsistent harmony'],
+  [40, 'Difficult, unstable, karmically heavy'],
+  [0,  'More lesson than peace'],
+];
+
+/** Band text for a canonical overall. Same wording everywhere in Align. */
+export function bandTextForOverall(overall: number, fallback = 'Unknown'): string {
+  for (const [threshold, text] of OVERALL_BANDS) {
+    if (overall >= threshold) return text;
+  }
+  return fallback;
+}
+
+function resultToRow(result: AdvancedCompatibilityResult, profileA: any, profileB: any): Record<string, any> {
+  const clampedOverall = computeCanonicalOverall(result);
 
   // Re-derive band text from the corrected overall
-  const OVERALL_BANDS: Array<[number, string]> = [
-    [90, 'Rare compatibility — very strong bond, high attraction and support'],
-    [80, 'Very strong relationship potential'],
-    [70, 'Good compatibility with some friction'],
-    [60, 'Mixed but workable if mature'],
-    [50, 'Strong pull but inconsistent harmony'],
-    [40, 'Difficult, unstable, karmically heavy'],
-    [0,  'More lesson than peace'],
-  ];
-  let bandText = result.band_text || 'Unknown';
-  for (const [threshold, text] of OVERALL_BANDS) {
-    if (clampedOverall >= threshold) {
-      bandText = text;
-      break;
-    }
-  }
+  const bandText = bandTextForOverall(clampedOverall, result.band_text || 'Unknown');
 
   return {
     status: 'ready' as const,

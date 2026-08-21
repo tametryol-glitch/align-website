@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { isBuildAMatchEnabled } from '@/config/featureFlags';
 import { getSuggestedFriends, type SuggestedUser } from '@/lib/discoveryService';
 import Link from 'next/link';
 import { Search, ChevronRight, Shield } from 'lucide-react';
@@ -133,6 +134,9 @@ export default function DiscoverPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, profile } = useAuthStore();
+  // Founder-gated during the soak: with the flag off nothing renders and no
+  // Build-A-Match code runs at all.
+  const buildAMatchEnabled = isBuildAMatchEnabled(user?.email);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [trendingPosts, setTrendingPosts] = useState<any[]>([]);
@@ -245,6 +249,20 @@ export default function DiscoverPage() {
 
       {/* ── Feature Banners (5 gradient cards matching mobile) ── */}
       <div className="space-y-3 mb-8">
+        {/* Build-A-Match — gated; renders nothing while the flag is off */}
+        {buildAMatchEnabled && (
+          <Link
+            href="/build-a-match"
+            className="flex items-center gap-4 rounded-2xl p-5 bg-gradient-to-r from-[#9B6FF6] to-[#7C3AED] hover:opacity-90 transition-opacity"
+          >
+            <span className="text-3xl">✧</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-white">Build-A-Match</p>
+              <p className="text-sm text-white/80">Build your type. Let Align find them.</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-white/60 flex-shrink-0" />
+          </Link>
+        )}
         {FEATURE_BANNERS.map((b) => (
           <Link
             key={b.href}
