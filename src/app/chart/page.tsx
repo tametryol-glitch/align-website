@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { syncProfileSignsFromChart } from '@/lib/profileSigns';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
@@ -109,6 +110,17 @@ export default function ChartPage() {
         house_system: hsMap[houseSystem] || 'Whole Sign',
       });
       setChart(data);
+
+      // Keep the profile's Sun / Moon / Rising in step with the chart the
+      // user is looking at — this is their own natal chart, and nothing else
+      // in the app writes those columns.
+      if (profile?.id) {
+        syncProfileSignsFromChart(profile.id, data, profile)
+          .then((written) => {
+            if (written) useAuthStore.getState().setProfile({ ...profile, ...written } as any);
+          })
+          .catch(() => {});
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

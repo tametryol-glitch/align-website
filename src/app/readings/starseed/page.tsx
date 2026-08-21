@@ -29,8 +29,28 @@ export default function StarseedPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await api.getStarseedAnalysis(buildBirthData(profile));
+      // Pin Whole Sign: the mobile app always scores starseed under Whole
+      // Sign, and roughly half the rules are house-based. Letting this page
+      // follow the user's house-system preference made the same birth data
+      // rank different lineages on web than in the app.
+      const data = await api.getStarseedAnalysis(
+        buildBirthData(profile, { house_system: 'Whole Sign' }),
+      );
       setReading(data);
+
+      // Mirror the dominant origin into profiles.starseed, exactly as the
+      // app does, so the profile chip matches the reading no matter which
+      // surface the user last opened. Best effort — never breaks the page.
+      const top = (data?.ranked || []).filter((r: any) => r.score > 0)[0];
+      if (top?.category && profile?.id) {
+        try {
+          const { createClient } = await import('@/lib/supabase');
+          await createClient()
+            .from('profiles')
+            .update({ starseed: top.category })
+            .eq('id', profile.id);
+        } catch { /* best effort */ }
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

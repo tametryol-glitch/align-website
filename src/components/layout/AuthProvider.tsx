@@ -7,6 +7,7 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { api } from '@/lib/api';
 import { initRevenueCat, tierFromEntitlements, resetRevenueCat } from '@/lib/revenuecat';
+import { backfillProfileSigns } from '@/lib/profileSigns';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setSession, setProfile, setLoading } = useAuthStore();
@@ -65,6 +66,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (data) {
         setProfile(data);
+
+        // Back-fill Sun / Moon / Rising if they were never stored. Nothing in
+        // the app ever wrote these columns, so accounts show no zodiac chips
+        // on their profile until they are populated once from the chart.
+        // Fire-and-forget: the profile is already rendered by then.
+        backfillProfileSigns(data)
+          .then((written) => {
+            if (written) setProfile({ ...data, ...written });
+          })
+          .catch(() => {});
       }
     } catch (err) {
       console.warn('[AuthProvider] Could not load profile:', err);
