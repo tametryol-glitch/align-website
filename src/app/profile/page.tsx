@@ -19,11 +19,24 @@ import {
 import { getFollowerProfiles, getFollowingProfiles } from '@/lib/followService';
 import { FeedCard } from '@/components/feed/FeedCard';
 import { CommentSheet } from '@/components/feed/CommentSheet';
+import { PhotoLightbox } from '@/components/ui/PhotoLightbox';
+import {
+  batchGetPhotoReactions, profilePhotoTarget, photoTargetId,
+  type PhotoTarget, type PhotoReaction,
+} from '@/lib/photoReactionService';
 import { XPProgressBar } from '@/components/ui/XPProgressBar';
 import { BadgeGrid } from '@/components/ui/BadgeGrid';
 import { useGamificationStore } from '@/stores/gamificationStore';
 
 type ProfileTab = 'posts' | 'photos' | 'reels' | 'about';
+
+/** One photo in the gallery, with the target its reactions key on. */
+interface ProfilePhoto {
+  id: string;
+  image_url: string;
+  target: PhotoTarget;
+  label?: string;
+}
 
 const HD_TYPE_EMOJI: Record<string, string> = {
   Generator: '⚙️',
@@ -59,7 +72,12 @@ export default function ProfilePage() {
   // Tabs
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   const [posts, setPosts] = useState<FeedPost[]>([]);
-  const [photos, setPhotos] = useState<Array<{ id: string; image_url: string }>>([]);
+  const [photos, setPhotos] = useState<ProfilePhoto[]>([]);
+
+  // Photo viewer - click any photo to open it full-screen and see reactions.
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightboxPhotos, setLightboxPhotos] = useState<Array<{ target: PhotoTarget; label?: string }>>([]);
+  const [photoReactions, setPhotoReactions] = useState<Map<string, PhotoReaction[]>>(new Map());
   const [reels, setReels] = useState<Array<{ id: string; video_url: string; thumbnail_url: string | null; views_count: number }>>([]);
   const [postsLoading, setPostsLoading] = useState(false);
   const [photosLoading, setPhotosLoading] = useState(false);
@@ -173,6 +191,47 @@ export default function ProfilePage() {
     setPhotosLoading(true);
     try {
       const supabase = createClient();
+
+      // 1. Profile photos (avatar, cover, dating photos) - no post behind
+      //    them, so they react against photo_reactions.
+      const profilePhotos: ProfilePhoto[] = [];
+      try {
+        const { data: row } = await supabase
+          .from('profiles')
+          .select('avatar_url, cover_photo_url, photo_urls')
+          .eq('id', userId)
+          .single();
+        if (row) {
+          if (row.avatar_url) {
+            profilePhotos.push({
+              id: `avatar-${userId}`,
+              image_url: row.avatar_url,
+              target: profilePhotoTarget(row.avatar_url, userId),
+              label: 'Profile photo',
+            });
+          }
+          if (row.cover_photo_url && row.cover_photo_url !== row.avatar_url) {
+            profilePhotos.push({
+              id: `cover-${userId}`,
+              image_url: row.cover_photo_url,
+              target: profilePhotoTarget(row.cover_photo_url, userId),
+              label: 'Cover photo',
+            });
+          }
+          const datingPhotos: string[] = row.photo_urls || [];
+          datingPhotos.forEach((url, i) => {
+            if (url && url !== row.avatar_url) {
+              profilePhotos.push({
+                id: `dating-photo-${i}`,
+                image_url: url,
+                target: profilePhotoTarget(url, userId),
+              });
+            }
+          });
+        }
+      } catch { /* profile photos are optional */ }
+
+      // 2. Post photos
       const { data } = await supabase
         .from('posts')
         .select('id, image_url')
@@ -182,9 +241,47 @@ export default function ProfilePage() {
         .is('video_url', null)
         .order('created_at', { ascending: false })
         .limit(50);
-      if (data) setPhotos(data.filter((p: any) => p.image_url));
+
+      const postPhotos: ProfilePhoto[] = (data || [])
+        .filter((p: { image_url: string | null }) => p.image_url)
+        .map((p: { id: string; image_url: string }) => ({
+          id: p.id,
+          image_url: p.image_url,
+          target: { kind: 'post' as const, postId: p.id, imageUrl: p.image_url },
+        }));
+
+      const merged = [...profilePhotos, ...postPhotos];
+      setPhotos(merged);
+
+      // 3. Prefetch reaction counts for the grid badges.
+      try {
+        setPhotoReactions(await batchGetPhotoReactions(merged.map(m => m.target), userId));
+      } catch { /* badges are optional */ }
     } catch { /* */ }
     setPhotosLoading(false);
+  }
+
+  function openPhotoAt(index: number) {
+    setLightboxPhotos(photos.map(p => ({ target: p.target, label: p.label })));
+    setLightboxIndex(index);
+  }
+
+  /** Open a header photo (avatar / cover), even before the gallery loads. */
+  function openHeaderPhoto(url: string | null | undefined, label: string) {
+    if (!url || !userId) return;
+    const existing = photos.findIndex(p => p.image_url === url);
+    if (existing >= 0) {
+      setLightboxPhotos(photos.map(p => ({ target: p.target, label: p.label })));
+      setLightboxIndex(existing);
+    } else {
+      setLightboxPhotos([{ target: profilePhotoTarget(url, userId), label }]);
+      setLightboxIndex(0);
+    }
+  }
+
+  function photoReactionCount(photo: ProfilePhoto): number {
+    const list = photoReactions.get(photoTargetId(photo.target));
+    return list ? list.reduce((sum, r) => sum + r.count, 0) : 0;
   }
 
   async function loadReels() {
@@ -303,7 +400,14 @@ export default function ProfilePage() {
       <div className="relative mb-6">
         <div className="h-[140px] sm:h-[180px] rounded-t-2xl overflow-hidden relative">
           {profile.cover_photo_url ? (
-            <Image src={profile.cover_photo_url} alt="Cover photo" fill className="object-cover" unoptimized />
+            <button
+              type="button"
+              onClick={() => openHeaderPhoto(profile.cover_photo_url, 'Cover photo')}
+              className="absolute inset-0 w-full h-full"
+              aria-label="Open cover photo"
+            >
+              <Image src={profile.cover_photo_url} alt="Cover photo" fill className="object-cover" unoptimized />
+            </button>
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#1E1440] via-[#2D1B69] to-[#1A1035]" />
           )}
@@ -311,11 +415,19 @@ export default function ProfilePage() {
         <div className="card rounded-t-none -mt-12 pt-16 text-center pb-6">
           {/* Avatar */}
           <div className="absolute left-1/2 -translate-x-1/2 top-[100px] sm:top-[140px]">
-            <UserAvatar
-              displayName={profile.display_name || '?'}
-              avatarUrl={profile.avatar_url}
-              size="xl"
-            />
+            <button
+              type="button"
+              onClick={() => openHeaderPhoto(profile.avatar_url, 'Profile photo')}
+              disabled={!profile.avatar_url}
+              className={profile.avatar_url ? 'cursor-pointer' : 'cursor-default'}
+              aria-label="Open profile photo"
+            >
+              <UserAvatar
+                displayName={profile.display_name || '?'}
+                avatarUrl={profile.avatar_url}
+                size="xl"
+              />
+            </button>
           </div>
 
           {/* Name + Username */}
@@ -562,17 +674,31 @@ export default function ProfilePage() {
             <LoadingCosmic label={t('common.loading')} />
           ) : photos.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
-              {photos.map(photo => (
-                <div key={photo.id} className="relative aspect-square">
-                  <Image
-                    src={photo.image_url}
-                    alt="Post photo"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-              ))}
+              {photos.map((photo, idx) => {
+                const count = photoReactionCount(photo);
+                return (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    onClick={() => openPhotoAt(idx)}
+                    className="relative aspect-square group"
+                    aria-label={photo.label || 'Open photo'}
+                  >
+                    <Image
+                      src={photo.image_url}
+                      alt={photo.label || 'Photo'}
+                      fill
+                      className="object-cover group-hover:opacity-90 transition"
+                      unoptimized
+                    />
+                    {count > 0 && (
+                      <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-black/60 text-white text-[11px] font-semibold">
+                        ✨ {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <div className="card p-8 text-center">
@@ -820,6 +946,24 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Photo viewer - click any photo to open it full-screen and react. */}
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={lightboxPhotos}
+          initialIndex={lightboxIndex}
+          userId={userId || null}
+          onClose={() => setLightboxIndex(null)}
+          seedReactions={photoReactions}
+          onReactionsChanged={(targetId, reactions) => {
+            setPhotoReactions(prev => {
+              const next = new Map(prev);
+              next.set(targetId, reactions);
+              return next;
+            });
+          }}
+        />
       )}
     </div>
   );
