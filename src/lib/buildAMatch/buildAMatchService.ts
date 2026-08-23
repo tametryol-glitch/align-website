@@ -21,6 +21,9 @@ import {
   answeredPreferenceCount, MIN_PREFERENCE_ANSWERS,
   isNewMember, MIN_POOL_FOR_EXACT_COUNT,
 } from './buildFitEngine';
+import {
+  overlaysFor, outcomeHits, outcomeById, signForHouse,
+} from './houseSystem';
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
   DiscoverySection, PoolCount, RelaxationOption, SavedBuild, SearchMode, BuildMode,
@@ -174,10 +177,15 @@ export async function searchBuild(opts: {
   limit?: number;
   offset?: number;
   enrich?: boolean;
+  /** The viewer's rising sign — required to read results back as houses. */
+  risingSign?: string | null;
+  /** Which outcomes the viewer picked, so the card can say what landed. */
+  outcomeIds?: string[];
 }): Promise<BuildMatchResult[]> {
   const {
     userId, criteria, searchMode = 'exact', datingOnly = false,
     preferenceMode = 'soft', limit = 30, offset = 0, enrich = true,
+    risingSign = null, outcomeIds = [],
   } = opts;
   if (!userId) return [];
 
@@ -334,6 +342,18 @@ export async function searchBuild(opts: {
       isMutualBuild: isMutualBuild(fit, recip),
       birthTimeKnown: theirRows.some(p => p.birth_time_known),
       joinedAt: r.joined_at ?? null,
+
+      // Read their placements back as houses of MINE. Empty without a
+      // rising sign — we will not guess an Ascendant.
+      houseOverlays: risingSign ? overlaysFor(signMap, risingSign) : [],
+      outcomeResults: risingSign
+        ? outcomeIds.flatMap(id => {
+            const outcome = outcomeById(id);
+            if (!outcome) return [];
+            const { hit, missed } = outcomeHits(outcome, signMap, risingSign);
+            return [{ outcomeId: id, label: outcome.label, hit, missed }];
+          })
+        : [],
     } satisfies BuildMatchResult;
   });
 }
@@ -418,15 +438,18 @@ export async function getDiscoverySections(opts: {
   searchMode?: SearchMode;
   datingOnly?: boolean;
   preferenceMode?: PreferenceMode;
+  risingSign?: string | null;
+  outcomeIds?: string[];
 }): Promise<DiscoverySection[]> {
   const {
     userId, criteria, searchMode = 'exact', datingOnly = false,
-    preferenceMode = 'soft',
+    preferenceMode = 'soft', risingSign = null, outcomeIds = [],
   } = opts;
   const wideMode: SearchMode = searchMode === 'exact' ? 'close' : searchMode;
 
   const results = await searchBuild({
     userId, criteria, searchMode: wideMode, datingOnly, preferenceMode,
+    risingSign, outcomeIds,
     limit: SHORTLIST_SIZE, enrich: true,
   });
   if (results.length === 0) return [];

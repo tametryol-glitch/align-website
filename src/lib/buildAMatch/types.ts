@@ -2,8 +2,6 @@
 // Build-A-Match — shared types (web)
 //
 // EXACT MIRROR of align-app/src/services/buildAMatch/types.ts.
-// Keep the two byte-identical below this header, or the two platforms will
-// disagree about what a build means.
 //
 // "Build your type. Let Align find them."
 //
@@ -135,6 +133,22 @@ export interface BuildMatchResult {
 
   /** When they joined Align. Powers the "New Matches" section (§10). */
   joinedAt: string | null;
+
+  /**
+   * Which of the VIEWER's houses each of their bodies lands in.
+   * Empty when the viewer has no reliable birth time — houses need a real
+   * Ascendant, and a substituted noon is not one.
+   */
+  houseOverlays: Array<{ body: string; sign: string; house: number }>;
+
+  /** Per selected outcome: which bodies actually delivered it. */
+  outcomeResults: Array<{
+    outcomeId: string;
+    label: string;
+    hit: string[];
+    missed: string[];
+  }>;
+
 }
 
 /** Discovery categories (§10). */

@@ -25,6 +25,13 @@ import {
 import {
   toCriteria, formatPoolCount, computeBuildRarity, requiresBirthTime,
 } from '@/lib/buildAMatch/buildFitEngine';
+import {
+  OUTCOMES, HOUSES, signForHouse, outcomeToCriteria, outcomeById,
+  dedupeCriteria, type HouseNumber,
+} from '@/lib/buildAMatch/houseSystem';
+import {
+  readingFor, ordinal, outcomeCarriesShadow,
+} from '@/lib/buildAMatch/houseInterpretations';
 import type {
   Priority, SearchMode, BuildCriterion, SavedBuild,
   DiscoverySection, PoolCount, RelaxationOption, BuildMatchResult,
@@ -64,7 +71,11 @@ export default function BuildAMatchPage() {
   const [indexed, setIndexed] = useState(false);
 
   const [selections, setSelections] = useState<Record<string, Selection>>({});
+  /** outcomeId → priority. The plain-language layer. */
+  const [outcomes, setOutcomes] = useState<Record<string, Priority>>({});
   const [showDeeper, setShowDeeper] = useState(false);
+  /** Sign-picking is the advanced mode now; outcomes are the front door. */
+  const [showSignPicker, setShowSignPicker] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('exact');
   const [datingOnly, setDatingOnly] = useState(false);
   /** 'strict' also drops explicit dealbreaker clashes. Orientation is
@@ -86,17 +97,47 @@ export default function BuildAMatchPage() {
   const [saveName, setSaveName] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const criteria: BuildCriterion[] = useMemo(() => toCriteria(selections), [selections]);
+  // Cannot be inferred from the presence of an Ascendant row — the indexer
+  // substitutes noon when birth_time is NULL, so an Ascendant is ALWAYS
+  // indexed. The profile column is the only honest source (§38).
+  const [viewerBirthTimeUnknown, setViewerBirthTimeUnknown] = useState(false);
+
+  /**
+   * The viewer's rising sign, from their own indexed Ascendant. Only
+   * trustworthy with a real birth time — the indexer substitutes noon, so
+   * an Ascendant always exists but may be fiction.
+   */
+  const risingSign = useMemo(
+    () => myPlacements.find(p => p.planet_name === 'Ascendant')?.sign_name ?? null,
+    [myPlacements],
+  );
+
+  const selectedOutcomeIds = useMemo(
+    () => Object.entries(outcomes).filter(([, p]) => p !== 'any').map(([id]) => id),
+    [outcomes],
+  );
+
+  /**
+   * Outcomes and hand-picked signs merge into ONE criteria list. An outcome
+   * expands to several bodies on the same house — which is the same sign for
+   * this viewer — so the existing search needs no changes at all.
+   */
+  const criteria: BuildCriterion[] = useMemo(() => {
+    const direct = toCriteria(selections);
+    if (!risingSign || viewerBirthTimeUnknown) return direct;
+    const fromOutcomes = Object.entries(outcomes).flatMap(([id, priority]) => {
+      const o = outcomeById(id);
+      return o ? outcomeToCriteria(o, risingSign, priority) : [];
+    });
+    return dedupeCriteria([...fromOutcomes, ...direct]);
+  }, [selections, outcomes, risingSign, viewerBirthTimeUnknown]);
+
   const criteriaCount = criteria.length;
 
   const mySignFor = useCallback(
     (body: string) => myPlacements.find(p => p.planet_name === body)?.sign_name ?? null,
     [myPlacements],
   );
-  // Cannot be inferred from the presence of an Ascendant row — the indexer
-  // substitutes noon when birth_time is NULL, so an Ascendant is ALWAYS
-  // indexed. The profile column is the only honest source (§38).
-  const [viewerBirthTimeUnknown, setViewerBirthTimeUnknown] = useState(false);
 
   // ─── Boot: read the caller's own indexed chart ───
   useEffect(() => {
@@ -170,6 +211,7 @@ export default function BuildAMatchPage() {
     try {
       setSections(await getDiscoverySections({
         userId: user.id, criteria, searchMode, datingOnly, preferenceMode,
+        risingSign, outcomeIds: selectedOutcomeIds,
       }));
     } catch {
       setSearchError('Search failed. Try again.');
@@ -270,8 +312,97 @@ export default function BuildAMatchPage() {
             </div>
           </section>
 
-          {/* BUILD YOUR MATCH */}
+          {/* WHAT DO YOU WANT FROM THEM — the plain-language front door */}
           <section>
+            <h2 className="text-[11px] font-bold tracking-widest text-text-secondary mb-1">
+              WHAT DO YOU WANT FROM THEM
+            </h2>
+            <p className="text-sm text-text-tertiary mb-3">
+              No astrology needed. Answer about your own life — we&apos;ll work out the chart.
+            </p>
+
+            {viewerBirthTimeUnknown || !risingSign ? (
+              <Link
+                href="/profile/edit"
+                className="block rounded-xl border border-orange-500/35 bg-orange-500/10 p-4"
+              >
+                <p className="text-sm font-bold text-orange-300">
+                  Add your birth time to search this way
+                </p>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                  Searching by what someone brings to your life depends on your houses, and
+                  your houses depend on the exact time you were born. Without it we would be
+                  guessing, and a guessed Ascendant puts every result in the wrong place.
+                </p>
+                <p className="text-xs font-bold text-accent-primary mt-2">Add my birth time ›</p>
+              </Link>
+            ) : (
+              <div className="space-y-6">
+                {Array.from(new Set(OUTCOMES.map(o => o.houses[0])))
+                  .sort((a, b) => a - b)
+                  .map(house => {
+                    const def = HOUSES[house as HouseNumber];
+                    const sign = signForHouse(house as HouseNumber, risingSign);
+                    return (
+                      <div key={house}>
+                        <h3 className="text-sm font-extrabold text-text-primary">{def.title}</h3>
+                        <p className="text-[11px] text-text-muted mb-2 tracking-wide">
+                          your {ordinal(house)} house{sign ? ` · ${sign}` : ''}
+                        </p>
+                        <div className="space-y-1.5">
+                          {OUTCOMES.filter(o => o.houses[0] === house).map(o => {
+                            const current = outcomes[o.id] ?? 'any';
+                            const active = current !== 'any';
+                            const heavy = outcomeCarriesShadow(o.bodies);
+                            return (
+                              <div
+                                key={o.id}
+                                className={`card p-4 ${active ? 'border-accent-primary' : ''}`}
+                              >
+                                <p className="text-sm font-medium text-text-primary">{o.label}</p>
+                                <p className="text-xs text-text-muted mt-0.5">{o.hint}</p>
+                                {active && heavy && (
+                                  <p className="text-[11px] text-orange-300 mt-1.5 leading-relaxed">
+                                    ⚠ This one carries weight. What you&apos;re asking for has a
+                                    shadow — you&apos;ll see it on every match.
+                                  </p>
+                                )}
+                                <div className="flex gap-1.5 mt-2.5">
+                                  {(['must', 'preferred', 'any'] as Priority[]).map(st => (
+                                    <button
+                                      key={st}
+                                      onClick={() => setOutcomes(prev => ({ ...prev, [o.id]: st }))}
+                                      aria-pressed={current === st}
+                                      className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border transition ${
+                                        current === st
+                                          ? 'border-accent-primary text-accent-primary bg-accent-primary/15'
+                                          : 'border-border-primary text-text-muted hover:text-text-secondary'
+                                      }`}
+                                    >
+                                      {st === 'must' ? 'MUST' : st === 'preferred' ? 'PREFER' : 'ANY'}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowSignPicker(v => !v)}
+              className="w-full mt-4 py-3 rounded-xl border border-dashed border-border-primary text-accent-primary text-xs font-bold tracking-wide hover:bg-bg-secondary transition"
+            >
+              {showSignPicker ? 'HIDE SIGN PICKER' : 'PICK SIGNS MYSELF — advanced'}
+            </button>
+          </section>
+
+          {/* BUILD YOUR MATCH — advanced sign picker */}
+          <section className={showSignPicker ? '' : 'hidden'}>
             <h2 className="text-[11px] font-bold tracking-widest text-text-secondary mb-1">BUILD YOUR MATCH</h2>
             <p className="text-sm text-text-tertiary mb-3">
               Pick only what matters to you. Everything you leave on ANY stays wide open.
@@ -731,6 +862,49 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
               {o.actualSign && o.priority !== 'avoid' ? ` · they have ${o.actualSign}` : ''}
             </p>
           ))}
+        </div>
+      )}
+
+      {/* What they actually bring to your life — house overlays */}
+      {r.outcomeResults.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-border-primary">
+          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
+            WHAT THEY BRING TO YOUR LIFE
+          </p>
+          {r.outcomeResults.map(o => {
+            const delivered = o.hit.length;
+            const total = o.hit.length + o.missed.length;
+            const body = o.hit[0];
+            const overlay = body ? r.houseOverlays.find(h => h.body === body) : undefined;
+            const reading = overlay ? readingFor(body, overlay.house as HouseNumber) : null;
+            const houseDef = overlay ? HOUSES[overlay.house as HouseNumber] : null;
+            return (
+              <div key={o.outcomeId} className="mb-3">
+                <p className={`text-[13px] ${delivered > 0 ? 'text-emerald-400' : 'text-text-muted'}`}>
+                  {delivered > 0 ? '✓' : '✕'} {o.label}
+                  <span className="text-[11px] text-text-muted"> · {delivered} of {total}</span>
+                </p>
+                {overlay && (
+                  <div className="mt-1 pl-3 border-l-2 border-border-primary">
+                    <p className="text-[11px] font-bold tracking-wide text-text-secondary">
+                      Their {body} lands in your {ordinal(overlay.house)}
+                      {houseDef ? ` — ${houseDef.title.toLowerCase()}` : ''}
+                    </p>
+                    {reading && (
+                      <>
+                        <p className="text-[13px] text-text-primary leading-relaxed mt-0.5">
+                          {reading.light}
+                        </p>
+                        <p className="text-xs text-orange-300 italic leading-relaxed mt-1">
+                          {reading.shadow}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
