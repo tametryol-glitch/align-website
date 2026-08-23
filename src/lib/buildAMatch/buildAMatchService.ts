@@ -27,6 +27,7 @@ import {
 import {
   computeAllMidpoints, findActivations,
 } from './midpointBridge';
+import { evaluateGolden } from './goldenMatch';
 import { rankAspects, type SynastryAspect } from './aspectInterpretations';
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
@@ -363,6 +364,14 @@ export async function searchBuild(opts: {
       preferenceMatch: pref ? pref.score : null,
       preferenceBreakdown: pref ? pref.breakdown : null,
       hasPreferenceConflict: pref ? pref.conflict : false,
+      isGoldenMatch: evaluateGolden({
+        buildFit: fit,
+        cosmicCompatibility: compat ? compat.overall : null,
+        reciprocalFit: recip,
+        preferenceMatch: pref ? pref.score : null,
+        hasPreferenceConflict: pref ? pref.conflict : false,
+      }).isGolden,
+
       isPerfectBuild: isPerfectBuild(counts),
       isCloseBuild: isCloseBuild(counts),
       isWildCard: isWildCard(fit, compat ? compat.overall : null),
@@ -474,6 +483,7 @@ export async function getRelaxationOptions(
 // ─── Discovery sections (§10) ───────────────────────────────────────
 
 const SECTION_COPY: Record<DiscoveryCategory, { title: string; subtitle: string }> = {
+  golden:            { title: 'Golden Match', subtitle: 'They fit what you asked for, your charts agree, and they want someone like you' },
   best:              { title: 'Your Best Build Matches', subtitle: 'Closest to what you asked for' },
   perfect:           { title: 'Perfect Build',           subtitle: 'Every must-have satisfied' },
   mutual:            { title: 'Mutual Build',            subtitle: 'You both independently built something very close to each other' },
@@ -519,6 +529,8 @@ export async function getDiscoverySections(opts: {
     ({ key, ...SECTION_COPY[key], results: rs });
 
   return [
+    // Golden first — the rarest thing Align can say.
+    mk('golden', byFit.filter(r => r.isGoldenMatch)),
     mk('best', byFit.filter(r => r.buildFit > 0).slice(0, 12)),
     mk('perfect', byFit.filter(r => r.isPerfectBuild)),
     mk('mutual', byFit.filter(r => r.isMutualBuild)),

@@ -122,6 +122,13 @@ export interface BuildMatchResult {
   /** True when an explicit dealbreaker contradiction was detected. */
   hasPreferenceConflict: boolean;
 
+  /**
+   * The overlap of everything Align knows (§35). Genuinely rare by
+   * design — every gate must pass on real data, and an unknown dimension
+   * fails rather than passing.
+   */
+  isGoldenMatch: boolean;
+
   /** Derived labels (§31, §32, §33). */
   isPerfectBuild: boolean;
   isMutualBuild: boolean;
@@ -179,7 +186,6 @@ export interface BuildMatchResult {
     light: string | null;
     shadow: string | null;
   }>;
-
 }
 
 /** Discovery categories (§10). */
@@ -187,6 +193,7 @@ export type DiscoveryCategory =
   | 'best'
   | 'perfect'
   | 'mutual'
+  | 'golden'
   | 'cosmically_strong'
   | 'aligned_on_paper'
   | 'wild_cards'

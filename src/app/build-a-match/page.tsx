@@ -29,6 +29,8 @@ import {
   OUTCOMES, HOUSES, signForHouse, outcomeToCriteria, outcomeById,
   dedupeCriteria, type HouseNumber,
 } from '@/lib/buildAMatch/houseSystem';
+import { cosmicBuild, surpriseBuild } from '@/lib/buildAMatch/goldenMatch';
+import { encodeBuild, describeBuild } from '@/lib/buildAMatch/buildShareCode';
 import {
   readingFor, ordinal, outcomeCarriesShadow,
 } from '@/lib/buildAMatch/houseInterpretations';
@@ -61,6 +63,9 @@ const SEARCH_MODES: Array<{ key: SearchMode; label: string; hint: string }> = [
   { key: 'cosmic', label: 'COSMIC BUILD', hint: 'Your picks guide it; compatibility widens it' },
 ];
 
+/** Newline, kept as a constant so string edits cannot mangle it. */
+const NL = String.fromCharCode(10);
+
 type Tab = 'build' | 'discovery' | 'saved';
 interface Selection { sign: string | null; priority: Priority }
 
@@ -79,6 +84,8 @@ export default function BuildAMatchPage() {
   const [showDeeper, setShowDeeper] = useState(false);
   /** Sign-picking is the advanced mode now; outcomes are the front door. */
   const [showSignPicker, setShowSignPicker] = useState(false);
+  const [suggestionNote, setSuggestionNote] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('exact');
   const [datingOnly, setDatingOnly] = useState(false);
   /** 'strict' also drops explicit dealbreaker clashes. Orientation is
@@ -204,6 +211,49 @@ export default function BuildAMatchPage() {
 
   const setPriority = (body: string, priority: Priority) =>
     setSelections(prev => ({ ...prev, [body]: { ...(prev[body] || { sign: null }), priority } }));
+
+  /**
+   * Cosmic Build and Surprise Build (§16). Align proposes; the user still
+   * decides. Everything lands as PREFERRED and can be changed.
+   */
+  function applySuggested(kind: 'cosmic' | 'surprise') {
+    const myChart: Record<string, string> = {};
+    for (const p of myPlacements) myChart[p.planet_name] = p.sign_name;
+
+    const suggestions = kind === 'cosmic' ? cosmicBuild(myChart) : surpriseBuild(myChart);
+    if (suggestions.length === 0) {
+      setSuggestionNote('We need your chart indexed before we can suggest a build.');
+      return;
+    }
+
+    const next: Record<string, Selection> = {};
+    for (const sg of suggestions) next[sg.body] = { sign: sg.sign, priority: sg.priority };
+    setSelections(next);
+    setOutcomes({});
+    setShowSignPicker(true);
+    setSuggestionNote(
+      suggestions.map(sg => `${sg.sign} ${sg.body} — ${sg.reason}`).join(NL + NL)
+      + NL + NL
+      + 'Change anything you disagree with — this is only our reading.',
+    );
+  }
+
+  /** Share My Build (§29) — the criteria travel in the link. */
+  async function handleShare() {
+    const code = encodeBuild(criteria);
+    if (!code) return;
+    const url = `${window.location.origin}/b/${code}`;
+    try {
+      const text = 'I built my type on Align.' + NL + describeBuild(criteria)
+        + NL + NL + 'How close are you?' + NL + url;
+      if (navigator.share) await navigator.share({ title: 'My Build-A-Match', text, url });
+      else {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2500);
+      }
+    } catch { /* dismissing the share sheet is not an error */ }
+  }
 
   async function runSearch() {
     if (!user?.id) return;
@@ -393,6 +443,39 @@ export default function BuildAMatchPage() {
                       </div>
                     );
                   })}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              <button
+                onClick={() => applySuggested('cosmic')}
+                className="card p-4 text-left hover:border-accent-primary transition"
+              >
+                <span className="block text-xs font-extrabold tracking-wide text-accent-primary">
+                  COSMIC BUILD
+                </span>
+                <span className="block text-[11px] text-text-muted mt-1">
+                  What your chart runs well with
+                </span>
+              </button>
+              <button
+                onClick={() => applySuggested('surprise')}
+                className="card p-4 text-left hover:border-accent-primary transition"
+              >
+                <span className="block text-xs font-extrabold tracking-wide text-accent-primary">
+                  SURPRISE ME
+                </span>
+                <span className="block text-[11px] text-text-muted mt-1">
+                  The one you would not have built
+                </span>
+              </button>
+            </div>
+
+            {suggestionNote && (
+              <div className="card p-4 mt-2 border-accent-primary">
+                <p className="text-xs text-text-muted whitespace-pre-line leading-relaxed">
+                  {suggestionNote}
+                </p>
               </div>
             )}
 
@@ -662,6 +745,14 @@ export default function BuildAMatchPage() {
                 {saving ? '…' : 'SAVE'}
               </button>
             </div>
+
+            <button
+              onClick={handleShare}
+              disabled={criteriaCount === 0}
+              className="w-full mt-2 py-3.5 rounded-xl border border-accent-primary text-accent-primary text-xs font-extrabold tracking-wide disabled:opacity-45 hover:bg-accent-primary/10 transition"
+            >
+              {shareCopied ? 'LINK COPIED' : '↗  SHARE MY BUILD — "How close are you?"'}
+            </button>
           </section>
         </div>
       )}
@@ -773,6 +864,7 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
   const missed = r.outcomes.filter(o => !o.matched);
 
   const tags: Array<{ label: string; cls: string }> = [];
+  if (r.isGoldenMatch) tags.push({ label: '◆ GOLDEN MATCH', cls: 'border-yellow-400 text-yellow-400' });
   if (r.isMutualBuild) tags.push({ label: '★ Mutual Build', cls: 'border-amber-400 text-amber-400' });
   if (r.hasPreferenceConflict) tags.push({ label: '⚠ Preference clash', cls: 'border-orange-400 text-orange-400' });
   if (r.isPerfectBuild) tags.push({ label: '✦ Perfect Build', cls: 'border-accent-primary text-accent-primary' });
