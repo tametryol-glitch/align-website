@@ -101,6 +101,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/hidden-zodiac') ||
     pathname.startsWith('/soul-age') ||   // free for everyone, no account required
     pathname.startsWith('/share') ||
+    pathname.startsWith('/b/') ||               // shared Build-A-Match build — the whole point is that a stranger can open it; the build travels in the URL, so no private data is read or exposed
+
     pathname.startsWith('/moon-sign') ||
     pathname.startsWith('/rising-sign') ||
     pathname.startsWith('/mars-in') ||
