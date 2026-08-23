@@ -163,6 +163,23 @@ export interface BuildMatchResult {
     supportive: boolean;
   }>;
 
+  /**
+   * Their bodies landing on YOUR midpoints, within 1°. Strongest first,
+   * already named. Empty when there was not enough indexed data.
+   */
+  midpointActivations: Array<{
+    activatingBody: string;
+    a: string;
+    b: string;
+    aspect: string;
+    orb: number;
+    strength: number;
+    isShadow: boolean;
+    name: string | null;
+    light: string | null;
+    shadow: string | null;
+  }>;
+
 }
 
 /** Discovery categories (§10). */

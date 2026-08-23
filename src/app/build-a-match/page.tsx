@@ -905,6 +905,31 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
         </div>
       )}
 
+      {/* Their bodies on your midpoints */}
+      {r.midpointActivations.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-border-primary">
+          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
+            WHERE THEY LAND IN YOU
+          </p>
+          {r.midpointActivations.map(m => (
+            <div key={`${m.activatingBody}-${m.a}-${m.b}`} className="mb-3">
+              <p className="text-[13px] font-bold text-text-primary">
+                {m.name || `${m.a}/${m.b}`}
+                <span className="text-[11px] font-normal text-text-muted">
+                  {'  '}· their {m.activatingBody} {m.aspect.toLowerCase()} your {m.a}/{m.b} {m.orb.toFixed(1)}°
+                </span>
+              </p>
+              {m.light && (
+                <div className="mt-1 pl-3 border-l-2 border-border-primary">
+                  <p className="text-[13px] text-text-primary leading-relaxed">{m.light}</p>
+                  <p className="text-xs text-orange-300 italic leading-relaxed mt-1">{m.shadow}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* What they actually bring to your life — house overlays */}
       {r.outcomeResults.length > 0 && (
         <div className="mt-4 pt-3 border-t border-border-primary">

@@ -24,6 +24,9 @@ import {
 import {
   overlaysFor, outcomeHits, outcomeById, signForHouse,
 } from './houseSystem';
+import {
+  computeAllMidpoints, findActivations,
+} from './midpointBridge';
 import { rankAspects, type SynastryAspect } from './aspectInterpretations';
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
@@ -232,6 +235,7 @@ export async function searchBuild(opts: {
   const compatibility = new Map<string, { overall: number; band: string; aspects: SynastryAspect[] }>();
   const reciprocal = new Map<string, number>();
   const preferences = new Map<string, PreferenceScore>();
+  let myMidpoints: ReturnType<typeof computeAllMidpoints> = [];
 
   if (enrich) {
     // Read-through the existing pair cache first (§42).
@@ -265,6 +269,11 @@ export async function searchBuild(opts: {
     // compute the grid locally and merge — the readings appear without the
     // number drifting from the rest of Align.
     const mine = await getMyIndexedRows(userId);
+
+    // My 230 midpoints, computed ONCE for the whole shortlist.
+    myMidpoints = computeAllMidpoints(
+      mine.map(p => ({ name: p.planet_name, longitude: Number(p.zodiac_longitude) })),
+    );
     for (const id of candidateIds) {
       const theirs = placementsByUser.get(id);
       if (!theirs) continue;
@@ -364,6 +373,28 @@ export async function searchBuild(opts: {
       // The named cross-aspects, strongest first. The engine already
       // computed these; until now they were thrown away.
       aspects: compat ? rankAspects(compat.aspects, 3) : [],
+
+      // Their bodies landing on my midpoints, within 1°.
+      midpointActivations: myMidpoints.length
+        ? findActivations(
+            myMidpoints,
+            theirRows.map(p => ({
+              name: p.planet_name, longitude: Number(p.zodiac_longitude),
+            })),
+            3,
+          ).map(m => ({
+            activatingBody: m.activatingBody,
+            a: m.a,
+            b: m.b,
+            aspect: m.aspect,
+            orb: m.orb,
+            strength: m.strength,
+            isShadow: m.isShadow,
+            name: m.reading?.name ?? null,
+            light: m.reading?.light ?? null,
+            shadow: m.reading?.shadow ?? null,
+          }))
+        : [],
 
       // Read their placements back as houses of MINE. Empty without a
       // rising sign — we will not guess an Ascendant.
