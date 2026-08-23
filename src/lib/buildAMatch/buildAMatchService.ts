@@ -24,6 +24,7 @@ import {
 import {
   overlaysFor, outcomeHits, outcomeById, signForHouse,
 } from './houseSystem';
+import { rankAspects, type SynastryAspect } from './aspectInterpretations';
 import type {
   BuildCriterion, BuildMatchResult, BuildRarity, DiscoveryCategory,
   DiscoverySection, PoolCount, RelaxationOption, SavedBuild, SearchMode, BuildMode,
@@ -131,7 +132,7 @@ function toPositions(rows: IndexedRow[]) {
 export function scorePairFromIndex(
   mine: IndexedRow[],
   theirs: IndexedRow[],
-): { overall: number; band: string } | null {
+): { overall: number; band: string; aspects: SynastryAspect[] } | null {
   if (!mine?.length || !theirs?.length) return null;
   if (mine.length < 5 || theirs.length < 5) return null;
   try {
@@ -144,7 +145,12 @@ export function scorePairFromIndex(
       toPositions(mine), toPositions(theirs), myCusps, theirCusps,
     );
     const overall = computeCanonicalOverall(result);
-    return { overall, band: bandTextForOverall(overall, result.band_text || '') };
+    return {
+      overall,
+      band: bandTextForOverall(overall, result.band_text || ''),
+      // The engine already computed the grid; keeping it costs nothing.
+      aspects: (result.aspects || []) as SynastryAspect[],
+    };
   } catch {
     return null;
   }
@@ -223,7 +229,7 @@ export async function searchBuild(opts: {
     }
   } catch { /* fit detail degrades gracefully */ }
 
-  const compatibility = new Map<string, { overall: number; band: string }>();
+  const compatibility = new Map<string, { overall: number; band: string; aspects: SynastryAspect[] }>();
   const reciprocal = new Map<string, number>();
   const preferences = new Map<string, PreferenceScore>();
 
@@ -247,17 +253,29 @@ export async function searchBuild(opts: {
           compatibility.set(otherId, {
             overall: row.overall_score,
             band: row.band_text || bandTextForOverall(row.overall_score),
+            // cosmic_matches stores scores, not the grid. Filled in below.
+            aspects: [],
           });
         }
       }
     } catch { /* a cache miss is normal */ }
 
     // Local synastry from the index for whatever the cache did not cover.
+    // A cache hit keeps its authoritative SCORE but has no aspect grid, so
+    // compute the grid locally and merge — the readings appear without the
+    // number drifting from the rest of Align.
     const mine = await getMyIndexedRows(userId);
     for (const id of candidateIds) {
-      if (compatibility.has(id)) continue;
       const theirs = placementsByUser.get(id);
       if (!theirs) continue;
+      const hit = compatibility.get(id);
+      if (hit) {
+        if (hit.aspects.length === 0) {
+          const local = scorePairFromIndex(mine, theirs);
+          if (local) compatibility.set(id, { ...hit, aspects: local.aspects });
+        }
+        continue;
+      }
       const local = scorePairFromIndex(mine, theirs);
       if (local) compatibility.set(id, local);
     }
@@ -342,6 +360,10 @@ export async function searchBuild(opts: {
       isMutualBuild: isMutualBuild(fit, recip),
       birthTimeKnown: theirRows.some(p => p.birth_time_known),
       joinedAt: r.joined_at ?? null,
+
+      // The named cross-aspects, strongest first. The engine already
+      // computed these; until now they were thrown away.
+      aspects: compat ? rankAspects(compat.aspects, 3) : [],
 
       // Read their placements back as houses of MINE. Empty without a
       // rising sign — we will not guess an Ascendant.

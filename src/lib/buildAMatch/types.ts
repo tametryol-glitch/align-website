@@ -149,6 +149,20 @@ export interface BuildMatchResult {
     missed: string[];
   }>;
 
+  /**
+   * The strongest cross-aspects between the two charts, already named.
+   * `inner` is the viewer's body, `outer` is theirs. Empty when there was
+   * not enough indexed data to run the grid.
+   */
+  aspects: Array<{
+    inner: string;
+    outer: string;
+    aspect: string;
+    orb: number;
+    strength: number;
+    supportive: boolean;
+  }>;
+
 }
 
 /** Discovery categories (§10). */

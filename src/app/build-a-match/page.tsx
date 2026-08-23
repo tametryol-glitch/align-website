@@ -32,6 +32,9 @@ import {
 import {
   readingFor, ordinal, outcomeCarriesShadow,
 } from '@/lib/buildAMatch/houseInterpretations';
+import {
+  readingForAspect, describeAspect, aspectIsHeavy,
+} from '@/lib/buildAMatch/aspectInterpretations';
 import type {
   Priority, SearchMode, BuildCriterion, SavedBuild,
   DiscoverySection, PoolCount, RelaxationOption, BuildMatchResult,
@@ -862,6 +865,43 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
               {o.actualSign && o.priority !== 'avoid' ? ` · they have ${o.actualSign}` : ''}
             </p>
           ))}
+        </div>
+      )}
+
+      {/* What your charts do to each other — named aspects */}
+      {r.aspects.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-border-primary">
+          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
+            WHAT YOUR CHARTS DO TO EACH OTHER
+          </p>
+          {r.aspects.map(a => {
+            const reading = readingForAspect(a);
+            return (
+              <div key={`${a.inner}-${a.outer}-${a.aspect}`} className="mb-3">
+                <p className="text-[13px] font-bold text-text-primary">
+                  {reading ? reading.name : describeAspect(a)}
+                  <span className="text-[11px] font-normal text-text-muted">
+                    {'  '}· {a.outer}/{a.inner} {a.aspect.toLowerCase()} {Math.abs(a.orb).toFixed(1)}°
+                  </span>
+                </p>
+                {reading ? (
+                  <div className="mt-1 pl-3 border-l-2 border-border-primary">
+                    <p className="text-[13px] text-text-primary leading-relaxed">{reading.light}</p>
+                    <p className="text-xs text-orange-300 italic leading-relaxed mt-1">
+                      {reading.shadow}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-text-muted mt-0.5">{describeAspect(a)}.</p>
+                )}
+                {!reading && aspectIsHeavy(a) && (
+                  <p className="text-xs text-orange-300 italic mt-1">
+                    This one involves a heavy body. Whatever it brings, it brings weight with it.
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
