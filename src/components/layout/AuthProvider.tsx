@@ -8,6 +8,7 @@ import { useAstrologySettings } from '@/stores/astrologySettingsStore';
 import { api } from '@/lib/api';
 import { initRevenueCat, tierFromEntitlements, resetRevenueCat } from '@/lib/revenuecat';
 import { backfillProfileSigns } from '@/lib/profileSigns';
+import { ensurePlacementsIndexed } from '@/lib/cosmicIndexService';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setSession, setProfile, setLoading } = useAuthStore();
@@ -76,6 +77,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (written) setProfile({ ...data, ...written });
           })
           .catch(() => {});
+
+        // Index this chart into planet_placement_index if it is not there
+        // already. Every feature built on that index — Cosmic Index and all
+        // of Build-A-Match — can only see members who have been indexed, and
+        // indexing used to happen only when someone opened Cosmic Index.
+        //
+        // Skips on a local marker when there is nothing to do, so the usual
+        // case costs no query. Fire-and-forget: never blocks the profile.
+        if (data.birth_date && data.latitude != null && data.longitude != null) {
+          ensurePlacementsIndexed(userId).catch(() => {});
+        }
       }
     } catch (err) {
       console.warn('[AuthProvider] Could not load profile:', err);

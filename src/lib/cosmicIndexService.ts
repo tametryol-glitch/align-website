@@ -294,6 +294,96 @@ export async function indexMyPlacements(): Promise<boolean> {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// Automatic indexing (web)
+//
+// Mirror of ensurePlacementsIndexed() in align-app. Indexing used to
+// happen only when someone opened Cosmic Index, leaving members with
+// perfectly good birth data invisible to every feature built on the
+// index. This runs once per session instead.
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Bump when the SHAPE of an index row changes, so existing rows get
+ * rewritten on each user's next visit. Must match align-app.
+ *
+ * v2 — added birth_time_known, duad_sign and compendium_sign.
+ */
+export const INDEX_VERSION = 2;
+
+const INDEX_STATE_KEY = 'align.placement_index_state';
+const RETRY_AFTER_MS = 24 * 60 * 60 * 1000;
+
+interface IndexState {
+  version: number;
+  lastAttemptAt: number;
+  lastSuccessAt: number | null;
+  userId: string | null;
+}
+
+function readIndexState(): IndexState | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(INDEX_STATE_KEY);
+    return raw ? (JSON.parse(raw) as IndexState) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeIndexState(next: IndexState): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(INDEX_STATE_KEY, JSON.stringify(next));
+  } catch { /* a lost marker only costs one extra check */ }
+}
+
+/**
+ * Make sure this user's chart is indexed. Safe to call on every page load.
+ * Never throws, never blocks. True only when a fresh index was written.
+ */
+export async function ensurePlacementsIndexed(
+  userId: string,
+  opts: { force?: boolean } = {},
+): Promise<boolean> {
+  try {
+    if (!userId) return false;
+
+    const state = readIndexState();
+    const now = Date.now();
+
+    if (!opts.force && state && state.userId === userId) {
+      if (state.version === INDEX_VERSION && state.lastSuccessAt) return false;
+      if (now - state.lastAttemptAt < RETRY_AFTER_MS) return false;
+    }
+
+    // Another device may have done it. Only trust that at the current
+    // version — older rows predate the columns this version writes.
+    if (!opts.force && state?.version === INDEX_VERSION) {
+      const already = await hasIndexedPlacements();
+      if (already) {
+        writeIndexState({
+          version: INDEX_VERSION, lastAttemptAt: now, lastSuccessAt: now, userId,
+        });
+        return false;
+      }
+    }
+
+    const ok = await indexMyPlacements();
+
+    writeIndexState({
+      version: INDEX_VERSION,
+      lastAttemptAt: now,
+      lastSuccessAt: ok ? now : (state?.userId === userId ? state.lastSuccessAt : null),
+      userId,
+    });
+
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Check if the current user already has indexed placements.
  */
