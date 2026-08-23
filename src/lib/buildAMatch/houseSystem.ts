@@ -2,8 +2,6 @@
 // Build-A-Match — House Overlay System (web)
 //
 // EXACT MIRROR of align-app/src/services/buildAMatch/houseSystem.ts.
-// The Whole Sign offset must stay identical or the two platforms would
-// place the same planet in different houses.
 //
 // "What do you want this person to DO in your life?"
 //
@@ -321,6 +319,32 @@ export function dedupeCriteria(criteria: BuildCriterion[]): BuildCriterion[] {
     if (!existing || rank[c.priority] > rank[existing.priority]) map.set(key, c);
   }
   return Array.from(map.values());
+}
+
+/**
+ * Restoring a saved build: what should the UI actually show?
+ *
+ * Phase 3a made the outcome picker the front door and put the sign picker
+ * behind a collapsed toggle. Loading a build that was built from hand-picked
+ * signs therefore restored it into state and rendered it NOWHERE — the user
+ * saw an empty-looking Build tab and reasonably concluded nothing loaded.
+ *
+ * A restored build must be visible in whichever surface actually holds it.
+ */
+export function restoredBuildView(saved: {
+  criteria: BuildCriterion[];
+  outcomes: Record<string, Priority>;
+}): { openSignPicker: boolean; hasAnything: boolean } {
+  const activeOutcomes = Object.values(saved.outcomes || {})
+    .filter(p => p && p !== 'any').length;
+  const directCriteria = (saved.criteria || []).length;
+
+  return {
+    // Sign criteria only exist in the sign picker, so if there are any it
+    // has to be open or they are invisible.
+    openSignPicker: directCriteria > 0,
+    hasAnything: directCriteria > 0 || activeOutcomes > 0,
+  };
 }
 
 /** A direct house pick, for users who do know the astrology. */

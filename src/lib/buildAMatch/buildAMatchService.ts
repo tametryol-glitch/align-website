@@ -569,6 +569,8 @@ export async function saveBuild(input: {
   searchMode?: SearchMode;
   mode?: BuildMode;
   datingOnly?: boolean;
+  /** e.g. { outcomes: { helps_me_heal: 'must' } } — the house layer. */
+  advancedCriteria?: Record<string, unknown>;
 }): Promise<SavedBuild | null> {
   if (!input.userId) return null;
   try {
@@ -582,6 +584,9 @@ export async function saveBuild(input: {
         search_mode: input.searchMode || 'exact',
         mode: input.mode || 'manual',
         dating_only: input.datingOnly ?? false,
+        // Without this the plain-language outcomes were silently dropped at
+        // save time, so a build made from outcomes reloaded as empty.
+        advanced_criteria: input.advancedCriteria ?? {},
       })
       .select()
       .single();

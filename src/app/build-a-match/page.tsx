@@ -27,7 +27,7 @@ import {
 } from '@/lib/buildAMatch/buildFitEngine';
 import {
   OUTCOMES, HOUSES, signForHouse, outcomeToCriteria, outcomeById,
-  dedupeCriteria, type HouseNumber,
+  dedupeCriteria, restoredBuildView, type HouseNumber,
 } from '@/lib/buildAMatch/houseSystem';
 import { cosmicBuild, surpriseBuild } from '@/lib/buildAMatch/goldenMatch';
 import { encodeBuild, describeBuild } from '@/lib/buildAMatch/buildShareCode';
@@ -279,6 +279,7 @@ export default function BuildAMatchPage() {
     setSaving(true);
     const saved = await saveBuild({
       userId: user.id, name: saveName || 'My Build', criteria, searchMode, datingOnly,
+      advancedCriteria: { outcomes },
     });
     setSaving(false);
     if (saved) { setSaveName(''); setBuilds(await getMyBuilds(user.id)); }
@@ -288,8 +289,30 @@ export default function BuildAMatchPage() {
     const next: Record<string, Selection> = {};
     for (const c of b.criteria) next[c.body] = { sign: c.sign, priority: c.priority };
     setSelections(next);
+
+    // Outcomes are stored separately so the plain-language intent survives
+    // a reload rather than decaying into a pile of sign criteria.
+    const savedOutcomes = (b.advanced_criteria as Record<string, unknown>)?.outcomes;
+    const outcomesToRestore =
+      savedOutcomes && typeof savedOutcomes === 'object'
+        ? (savedOutcomes as Record<string, Priority>)
+        : {};
+    setOutcomes(outcomesToRestore);
+
     setSearchMode(b.search_mode);
     setDatingOnly(b.dating_only);
+
+    // Sign criteria live ONLY in the sign picker, which is collapsed by
+    // default. Without this the build restores into state and renders
+    // nowhere, which reads as "load did nothing".
+    const view = restoredBuildView({ criteria: b.criteria, outcomes: outcomesToRestore });
+    if (view.openSignPicker) setShowSignPicker(true);
+
+    setSuggestionNote(
+      view.hasAnything
+        ? `Loaded "${b.name}".`
+        : `"${b.name}" was saved without any placements.`,
+    );
     setTab('build');
   }
 
