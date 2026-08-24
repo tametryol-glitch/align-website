@@ -10,7 +10,7 @@ import { InlineBold } from '@/components/ui/InlineBold';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { getPlanetGlyph } from '@/lib/utils';
-import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
+import { WORLD_CITIES_ALL, searchCities, type CityData } from '@/data/worldCitiesAll';
 import { isDestinationCity, isIconicCity } from '@/data/destinationCities';
 import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
 import { getDerivedAcgAccess } from '@/config/featureFlags';
@@ -983,11 +983,7 @@ export default function ACGPage() {
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
     if (text.length < 2) { setSearchResults([]); return; }
-    const lower = text.toLowerCase();
-    const matches = WORLD_CITIES_ALL.filter(c =>
-      c.name.toLowerCase().includes(lower) || c.country.toLowerCase().includes(lower)
-    ).slice(0, 10);
-    setSearchResults(matches);
+    setSearchResults(searchCities(text, 10));
   }, []);
 
   const handleSelectCity = useCallback((city: CityData) => {
@@ -1168,7 +1164,7 @@ export default function ACGPage() {
                   onClick={() => handleSelectCity(city)}
                 >
                   <span className="text-sm font-semibold text-text-primary">{city.name}</span>
-                  <span className="text-xs text-text-muted">{city.country}</span>
+                  <span className="text-xs text-text-muted">{city.region ? `${city.region}, ${city.country}` : city.country}</span>
                 </button>
               ))}
             </div>
@@ -1335,7 +1331,12 @@ export default function ACGPage() {
             {showParanList && (
               <div className="mt-3 space-y-3">
                 {nearbyParans.map((p, i) => {
-                  const nearbyCities = WORLD_CITIES_ALL.filter(c => Math.abs(c.lat - p.latitude) <= 2).slice(0, 3);
+                  // Most populous first: the list now holds every US town
+                  // and CDP, so taking whatever sits at the front of the
+                  // database would name three places nobody recognises.
+                  const nearbyCities = WORLD_CITIES_ALL.filter(c => Math.abs(c.lat - p.latitude) <= 2)
+                    .sort((a, b) => (b.population || 0) - (a.population || 0))
+                    .slice(0, 3);
                   const color1 = PLANET_COLORS[p.planet1] || '#FFFFFF';
                   const color2 = PLANET_COLORS[p.planet2] || '#FFFFFF';
                   return (

@@ -18,6 +18,7 @@ DATA_FILES = [
 ]
 
 PAIR_RE = re.compile(r"name:\s*'((?:[^'\\]|\\.)*)'\s*,\s*country:\s*'((?:[^'\\]|\\.)*)'")
+PACKED_RE = re.compile(r'const PACKED = `([\s\S]*?)`;')
 CURATED_RE = re.compile(r"\['((?:[^'\\]|\\.)*)',\s*'((?:[^'\\]|\\.)*)'\]")
 
 
@@ -27,10 +28,22 @@ def unescape(s: str) -> str:
 
 db = set()
 db_names = {}
+def packed_pairs(text):
+    """usCities.ts ships its rows packed into one string, not as literals."""
+    m = PACKED_RE.search(text)
+    if not m:
+        return
+    for block in m.group(1).splitlines():
+        sep = block.index('^')
+        for row in block[sep + 1:].split('|'):
+            yield row.split('~')[0], 'United States'
+
+
 for f in DATA_FILES:
     text = io.open(f, encoding='utf-8').read()
-    for m in PAIR_RE.finditer(text):
-        name, country = unescape(m.group(1)), unescape(m.group(2))
+    pairs = [(unescape(m.group(1)), unescape(m.group(2))) for m in PAIR_RE.finditer(text)]
+    pairs.extend(packed_pairs(text))
+    for name, country in pairs:
         db.add((name.lower(), country.lower()))
         db_names.setdefault(name.lower(), set()).add(country)
 

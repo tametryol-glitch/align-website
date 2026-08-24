@@ -4,15 +4,6 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import { lookupTimezone } from '@/lib/timezoneOffset';
 
-interface CityData {
-  name: string;
-  country: string;
-  region?: string;
-  lat: number;
-  lon: number;
-  population?: number;
-}
-
 interface CityResult {
   display: string;
   lat: number;
@@ -30,18 +21,13 @@ function estimateTimezone(lat: number, lon: number): string {
   return lookupTimezone(lat, lon);
 }
 
-// Lazy-load the city database to avoid blocking initial render
-let citiesPromise: Promise<CityData[]> | null = null;
-let citiesCache: CityData[] | null = null;
+// Lazy-load the city database to avoid blocking initial render. The module
+// owns the ranking, so the whole thing is cached rather than just the array.
+type CityModule = typeof import('@/data/worldCitiesAll');
+let citiesPromise: Promise<CityModule> | null = null;
 
-function loadCities(): Promise<CityData[]> {
-  if (citiesCache) return Promise.resolve(citiesCache);
-  if (!citiesPromise) {
-    citiesPromise = import('@/data/worldCitiesAll').then((mod) => {
-      citiesCache = mod.WORLD_CITIES_ALL;
-      return citiesCache;
-    });
-  }
+function loadCities(): Promise<CityModule> {
+  if (!citiesPromise) citiesPromise = import('@/data/worldCitiesAll');
   return citiesPromise;
 }
 
@@ -82,27 +68,11 @@ export function CitySearch({ value, onChange, placeholder = 'Search city...', cl
 
     setIsSearching(true);
     try {
+      // Ranking (exact name → prefix → substring, then population) lives
+      // with the data so web and mobile order the same list the same way.
       const cities = await loadCities();
-      const searchText = text.toLowerCase().trim();
-
-      const matches = cities.filter(c =>
-        c.name.toLowerCase().includes(searchText) ||
-        (c.region && c.region.toLowerCase().includes(searchText)) ||
-        c.country.toLowerCase().includes(searchText)
-      );
-
-      // Sort: exact name → startsWith → substring, then by population
-      matches.sort((a, b) => {
-        const aName = a.name.toLowerCase();
-        const bName = b.name.toLowerCase();
-        const aExact = aName === searchText ? 0 : aName.startsWith(searchText) ? 1 : 2;
-        const bExact = bName === searchText ? 0 : bName.startsWith(searchText) ? 1 : 2;
-        if (aExact !== bExact) return aExact - bExact;
-        return (b.population || 0) - (a.population || 0);
-      });
-
-      const localResults = matches.slice(0, 10).map(c => ({
-        display: c.region ? `${c.name}, ${c.region}, ${c.country}` : `${c.name}, ${c.country}`,
+      const localResults = cities.searchCities(text, 10).map(c => ({
+        display: cities.formatCityLabel(c),
         lat: c.lat,
         lon: c.lon,
       }));
