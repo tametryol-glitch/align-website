@@ -83,15 +83,17 @@ async function getSection(
     }
 
     case 'social': {
-      const [graph, messaging, dating] = await Promise.all([
+      const [graph, messaging, dating, isolation] = await Promise.all([
         db.rpc('analytics_social_graph', { range_days: range }),
         db.rpc('analytics_messaging', { range_days: range }),
         db.rpc('analytics_dating_funnel', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_isolation_trend'),
       ]);
       return {
         graph: unwrap(graph),
         messaging: unwrap(messaging),
         dating: unwrap(dating),
+        isolation: unwrap(isolation),
       };
     }
 

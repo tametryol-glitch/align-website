@@ -22,6 +22,11 @@ interface SocialData {
     messages?: number; senders?: number; conversations_active?: number; two_sided?: number;
     reply_rate_pct?: number; median_minutes_to_reply?: number;
   };
+  isolation?: {
+    members?: number; isolated?: number; isolated_pct?: number;
+    isolated_last_30d?: number; joined_last_30d?: number;
+    isolated_pct_last_30d?: number; median_connections?: number;
+  };
   dating: {
     dating_enabled?: number; likes?: number; cosmic_roses?: number; passes?: number;
     active_likers?: number; like_rate_pct?: number; matches?: number; match_rate_pct?: number;
@@ -83,6 +88,30 @@ export default function SocialAnalyticsPage() {
                 )}
               </div>
             </div>
+          </Card>
+
+          <Card
+            title="Is it improving?"
+            hint="Overall isolation moves slowly because it includes every member ever. The last-30-days figure is the one that responds to changes — if suggested connections works, new members should land better than the historical base."
+          >
+            <StatGrid>
+              <Stat
+                label="Isolated (all time)"
+                value={pct(data?.isolation?.isolated_pct)}
+                sub={`${fmt(data?.isolation?.isolated)} of ${fmt(data?.isolation?.members)}`}
+                tone={(data?.isolation?.isolated_pct ?? 0) > 40 ? 'bad' : 'warn'}
+              />
+              <Stat
+                label="Isolated — joined last 30d"
+                value={pct(data?.isolation?.isolated_pct_last_30d)}
+                sub={`${fmt(data?.isolation?.isolated_last_30d)} of ${fmt(data?.isolation?.joined_last_30d)}`}
+                tone={
+                  (data?.isolation?.isolated_pct_last_30d ?? 100) <
+                  (data?.isolation?.isolated_pct ?? 0) ? 'good' : 'bad'
+                }
+              />
+              <Stat label="Median connections" value={data?.isolation?.median_connections ?? '—'} />
+            </StatGrid>
           </Card>
 
           <div className="grid md:grid-cols-2 gap-4">

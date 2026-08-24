@@ -53,6 +53,28 @@ export interface FriendActionResult {
   error?: string;
 }
 
+/** One row as returned by public.suggested_connections(). */
+interface SuggestedRow {
+  user_id: string;
+  display_name: string;
+  username: string | null;
+  avatar_url: string | null;
+  sun_sign: string | null;
+  mutual_count: number | null;
+  compatibility: number | null;
+  affinity: number | null;
+  is_active: boolean | null;
+  score: number | null;
+  reason: string | null;
+}
+
+/** A suggestion carries everything a search result does, plus why we picked it. */
+export interface SuggestedUser extends SearchUserResult {
+  mutual_count: number;
+  compatibility: number | null;
+  reason: string | null;
+}
+
 export interface SearchUserResult {
   id: string;
   display_name: string;
@@ -548,46 +570,37 @@ export async function getMutualFriends(targetUserId: string): Promise<FriendProf
 }
 
 // ── Get Suggested Friends ──
-export async function getSuggestedFriends(limit = 5): Promise<SearchUserResult[]> {
+// Ranked by /api/connections/suggested: mutual connections, real computed
+// compatibility from cosmic_matches, element affinity from the actual
+// planet_placement_index, and recent activity.
+//
+// The previous implementation returned the first N arbitrary profiles with no
+// ranking at all, and read sun/moon/rising from `profiles` — columns populated
+// for only 45 of 770 members, so most suggestions rendered with no signs and
+// no reason to act on them.
+export async function getSuggestedFriends(limit = 5): Promise<SuggestedUser[]> {
   try {
-    const supabase = createClient();
-    const myId = getMyId();
-    if (!myId) return [];
-
-    // Get existing friend/pending IDs to exclude
-    const { data: existing } = await supabase
-      .from('friendships')
-      .select('user_id, friend_id')
-      .or(`user_id.eq.${myId},friend_id.eq.${myId}`)
-      .in('status', ['accepted', 'pending']);
-
-    const excludeIds = new Set<string>([myId]);
-    (existing || []).forEach((row: any) => {
-      excludeIds.add(row.user_id);
-      excludeIds.add(row.friend_id);
+    const res = await fetch(`/api/connections/suggested?limit=${limit}`, {
+      credentials: 'include',
     });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const rows: SuggestedRow[] = json.suggestions || [];
 
-    // Get blocked user IDs
-    const { data: blocks } = await supabase
-      .from('blocks')
-      .select('blocker_id, blocked_id')
-      .or(`blocker_id.eq.${myId},blocked_id.eq.${myId}`);
-
-    (blocks || []).forEach((row: any) => {
-      excludeIds.add(row.blocker_id);
-      excludeIds.add(row.blocked_id);
-    });
-
-    const excludeArr = Array.from(excludeIds);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, display_name, username, avatar_url, sun_sign, moon_sign, rising_sign, bio, align_code')
-      .not('id', 'in', `(${excludeArr.join(',')})`)
-      .not('display_name', 'is', null)
-      .limit(limit);
-
-    if (error || !data) return [];
-    return data;
+    return rows.map((r) => ({
+      id: r.user_id,
+      display_name: r.display_name,
+      username: r.username || null,
+      avatar_url: r.avatar_url || null,
+      align_code: null,
+      bio: null,
+      sun_sign: r.sun_sign || null,
+      moon_sign: null,
+      rising_sign: null,
+      mutual_count: r.mutual_count ?? 0,
+      compatibility: r.compatibility ?? null,
+      reason: r.reason || null,
+    }));
   } catch {
     return [];
   }

@@ -22,6 +22,7 @@ import {
   type FriendProfile,
   type FriendRequest,
   type SearchUserResult,
+  type SuggestedUser,
 } from '@/lib/friendService';
 import { triggerCosmicMatchCalculation } from '@/lib/cosmicMatchService';
 import { getOrCreateConversation } from '@/lib/messagingService';
@@ -57,7 +58,7 @@ export default function FriendsPage() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [suggestions, setSuggestions] = useState<SearchUserResult[]>([]);
+  const [suggestions, setSuggestions] = useState<SuggestedUser[]>([]);
 
   // Profile preview modal state
   const [previewUser, setPreviewUser] = useState<SearchUserResult | null>(null);
@@ -405,12 +406,25 @@ export default function FriendsPage() {
                     <p className="text-xs font-semibold text-text-primary mt-2 text-center truncate w-full">
                       {s.display_name}
                     </p>
-                    {(s as any).reason && (
+                    {s.compatibility != null && (
+                      <span
+                        className="mt-1 rounded-full"
+                        style={{
+                          fontSize: 9,
+                          padding: '1px 6px',
+                          backgroundColor: 'rgba(139,92,246,0.18)',
+                          color: '#B79CFF',
+                        }}
+                      >
+                        {s.compatibility}% match
+                      </span>
+                    )}
+                    {s.reason && (
                       <p className="text-text-muted text-center truncate w-full" style={{ fontSize: 9, marginTop: 2 }}>
-                        {(s as any).reason}
+                        {s.reason}
                       </p>
                     )}
-                    {s.sun_sign && !(s as any).reason && (
+                    {s.sun_sign && !s.reason && (
                       <p className="text-text-muted mt-0.5 text-center" style={{ fontSize: 9 }}>
                         {getZodiacGlyph(s.sun_sign)} {s.sun_sign}
                       </p>
