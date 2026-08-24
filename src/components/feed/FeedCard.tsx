@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
@@ -229,35 +229,150 @@ function stripTikTokUrls(text: string): string {
   return text.replace(TIKTOK_ANY_REGEX, '').replace(/\s{2,}/g, ' ').trim();
 }
 
+// Unlike YouTube, a TikTok thumbnail can't be derived from the URL, and the
+// share links TikTok's own app produces are short links with no video ID in
+// them at all. Both are resolved server-side by /api/tiktok-oembed; this cache
+// keeps a feed full of TikTok posts from re-fetching the same link on scroll.
+const tiktokPreviewCache = new Map<string, TikTokPreview | null>();
+
+interface TikTokPreview {
+  videoId: string | null;
+  thumbnail: string | null;
+  title: string | null;
+  authorName: string | null;
+}
+
+function useTikTokPreview(url: string, knownVideoId: string | null) {
+  const [preview, setPreview] = useState<TikTokPreview | null>(
+    () => tiktokPreviewCache.get(url) ?? null,
+  );
+  const [loading, setLoading] = useState(() => !tiktokPreviewCache.has(url));
+
+  useEffect(() => {
+    if (tiktokPreviewCache.has(url)) {
+      setPreview(tiktokPreviewCache.get(url) ?? null);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    fetch(`/api/tiktok-oembed?url=${encodeURIComponent(url)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const result: TikTokPreview | null = data && !data.error
+          ? {
+              videoId: data.videoId ?? knownVideoId,
+              thumbnail: data.thumbnail ?? null,
+              title: data.title ?? null,
+              authorName: data.authorName ?? null,
+            }
+          : null;
+        tiktokPreviewCache.set(url, result);
+        if (!cancelled) setPreview(result);
+      })
+      .catch(() => {
+        tiktokPreviewCache.set(url, null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [url, knownVideoId]);
+
+  return { preview, loading };
+}
+
 function TikTokEmbed({ videoId, url }: { videoId: string | null; url: string }) {
   const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+  const { preview, loading } = useTikTokPreview(fullUrl, videoId);
+  const [playing, setPlaying] = useState(false);
 
-  if (!videoId) {
+  // The resolver can recover an ID from a short link that the regex could not.
+  const resolvedId = preview?.videoId ?? videoId;
+
+  if (playing && resolvedId) {
     return (
-      <a
-        href={fullUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full rounded-xl overflow-hidden bg-black text-center py-12"
-        style={{ aspectRatio: '9/16', maxHeight: 400 }}
-      >
-        <span className="text-xs font-bold text-white bg-black/60 px-2 py-1 rounded">TikTok</span>
-        <span className="block text-3xl text-[#FE2C55] mt-4">▶</span>
-        <span className="block text-xs text-white/60 mt-2">Tap to watch on TikTok</span>
-      </a>
+      <div className="relative w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '9/16', maxHeight: 500 }}>
+        <iframe
+          src={`https://www.tiktok.com/embed/v2/${resolvedId}?autoplay=1`}
+          title={preview?.title || 'TikTok video'}
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+          className="absolute inset-0 w-full h-full border-0"
+        />
+      </div>
+    );
+  }
+
+  const cardClass = 'relative block w-full rounded-xl overflow-hidden bg-black text-left';
+  const cardStyle: CSSProperties = { aspectRatio: '9/16', maxHeight: 500 };
+
+  const cardInner = (
+    <>
+      {preview?.thumbnail ? (
+        <img
+          src={preview.thumbnail}
+          alt={preview.title || 'TikTok video'}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <span className="absolute inset-0 bg-[#010101]" />
+      )}
+
+      <span className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+
+      <span className="absolute top-3 left-3 text-xs font-bold text-white bg-black/60 px-2 py-1 rounded">
+        TikTok
+      </span>
+
+      <span className="absolute inset-0 flex items-center justify-center">
+        {loading ? (
+          <Loader2 className="w-8 h-8 text-white/70 animate-spin" />
+        ) : (
+          <span className="w-16 h-16 rounded-full bg-[#FE2C55]/90 flex items-center justify-center text-2xl text-white pl-1">
+            ▶
+          </span>
+        )}
+      </span>
+
+      {(preview?.authorName || preview?.title) ? (
+        <span className="absolute bottom-0 left-0 right-0 p-3">
+          {preview?.authorName && (
+            <span className="block text-sm font-semibold text-white truncate">
+              @{preview.authorName}
+            </span>
+          )}
+          {preview?.title && (
+            <span className="block text-xs text-white/70 line-clamp-2 mt-0.5">
+              {preview.title}
+            </span>
+          )}
+        </span>
+      ) : (
+        !loading && (
+          <span className="absolute bottom-3 left-0 right-0 text-center text-xs text-white/60">
+            {resolvedId ? 'Tap to play' : 'Tap to watch on TikTok'}
+          </span>
+        )
+      )}
+    </>
+  );
+
+  // With a resolved ID we can play inline; without one (private / removed /
+  // unresolvable link) the card is just a link out to TikTok.
+  if (resolvedId) {
+    return (
+      <button type="button" onClick={() => setPlaying(true)} className={cardClass} style={cardStyle}>
+        {cardInner}
+      </button>
     );
   }
 
   return (
-    <div className="relative w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '9/16', maxHeight: 500 }}>
-      <iframe
-        src={`https://www.tiktok.com/embed/v2/${videoId}`}
-        title="TikTok video"
-        allow="autoplay; encrypted-media"
-        allowFullScreen
-        className="absolute inset-0 w-full h-full border-0"
-      />
-    </div>
+    <a href={fullUrl} target="_blank" rel="noopener noreferrer" className={cardClass} style={cardStyle}>
+      {cardInner}
+    </a>
   );
 }
 
