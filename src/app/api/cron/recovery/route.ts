@@ -31,13 +31,26 @@ export const dynamic = 'force-dynamic';
 
 const SITE = 'https://aligncosmic.com';
 
-// Per-run caps. Deliberately conservative — a bug here emails real users.
-const MAX_DUNNING = 50;
-const MAX_NUDGES = 100;
-const MAX_CONFIRM = 50;
+// Per-run caps. Deliberately conservative — a bug here emails real users, and
+// a large blast from a domain that has been sending little is a deliverability
+// risk in its own right.
+const MAX_DUNNING = 50;   // only ~8 candidates exist; the cap is a safety rail
+const MAX_NUDGES = 25;    // was 100 — a 100-email blast is too big for this list
+const MAX_CONFIRM = 25;
 
 // Don't re-nudge the same person about the same thing inside this window.
 const COOLDOWN_DAYS = 14;
+
+// Only nudge requests inside this age band. Younger than MIN and the in-app
+// badge has not had a fair chance; older than MAX and the email reads as
+// archaeology rather than a reminder (the oldest pending request here dates
+// from 2026-04-01). The stale backlog is surfaced in the admin panel instead.
+const NUDGE_MIN_AGE_DAYS = 3;
+const NUDGE_MAX_AGE_DAYS = 30;
+
+// Re-sending a signup confirmation to someone who registered months ago looks
+// like phishing. Only chase recent signups who plausibly just missed it.
+const CONFIRM_MAX_AGE_DAYS = 30;
 
 function admin(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -96,7 +109,7 @@ async function logSend(db: SupabaseClient, userId: string, reason: string) {
 
 // ── 1. Dunning ───────────────────────────────────────────────────────────────
 
-async function runDunning(db: SupabaseClient) {
+async function runDunning(db: SupabaseClient, dry: boolean) {
   const since = new Date(Date.now() - 30 * 86400_000).toISOString();
 
   const { data: issues } = await db
@@ -150,27 +163,29 @@ async function runDunning(db: SupabaseClient) {
       { label: 'Update payment method', href: `${SITE}/settings/subscription` },
     );
 
+    if (dry) { emailed++; continue; }
     const res = await sendEmail(profile.email, 'Your Align payment needs attention', html);
     if (res.success) { emailed++; await logSend(db, userId, 'dunning'); }
   }
 
-  return { candidates: latest.size, emailed, skipped };
+  return { candidates: latest.size, [dry ? 'would_email' : 'emailed']: emailed, skipped };
 }
 
 // ── 2. Pending friend requests ───────────────────────────────────────────────
 
-async function runConnections(db: SupabaseClient) {
-  // Pending requests older than 3 days — long enough that the in-app badge
-  // clearly did not do the job.
-  const cutoff = new Date(Date.now() - 3 * 86400_000).toISOString();
+async function runConnections(db: SupabaseClient, dry: boolean) {
+  // Age band, not just "older than N". See NUDGE_*_AGE_DAYS above.
+  const newest = new Date(Date.now() - NUDGE_MIN_AGE_DAYS * 86400_000).toISOString();
+  const oldest = new Date(Date.now() - NUDGE_MAX_AGE_DAYS * 86400_000).toISOString();
 
   const { data: pending } = await db
     .from('friendships')
     .select('id, user_id, friend_id, initiated_by, created_at')
     .eq('status', 'pending')
-    .lt('created_at', cutoff)
+    .lt('created_at', newest)
+    .gte('created_at', oldest)
     .order('created_at', { ascending: true })
-    .limit(MAX_NUDGES * 2);
+    .limit(MAX_NUDGES * 4);
 
   if (!pending?.length) return { candidates: 0, emailed: 0 };
 
@@ -205,27 +220,37 @@ async function runConnections(db: SupabaseClient) {
       { label: `View ${plural}`, href: `${SITE}/friends` },
     );
 
+    if (dry) { emailed++; continue; }
     const res = await sendEmail(profile.email, `${count} connection ${plural} waiting on Align`, html);
     if (res.success) { emailed++; await logSend(db, userId, 'pending_requests'); }
   }
 
-  return { candidates: recipients.size, emailed, skipped };
+  return { candidates: recipients.size, [dry ? 'would_email' : 'emailed']: emailed, skipped };
 }
 
 // ── 3. Unconfirmed emails ────────────────────────────────────────────────────
 
-async function runConfirm(db: SupabaseClient) {
+async function runConfirm(db: SupabaseClient, dry: boolean) {
   // auth.admin.listUsers is paginated; one page is plenty at current scale.
   const { data, error } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (error || !data?.users) return { candidates: 0, emailed: 0, error: error?.message };
 
-  const unconfirmed = data.users.filter((u) => !u.email_confirmed_at && u.email);
+  const confirmCutoff = Date.now() - CONFIRM_MAX_AGE_DAYS * 86400_000;
+  const unconfirmed = data.users.filter(
+    (u) =>
+      !u.email_confirmed_at &&
+      u.email &&
+      u.created_at &&
+      new Date(u.created_at).getTime() >= confirmCutoff,
+  );
   let emailed = 0;
   let skipped = 0;
 
   for (const u of unconfirmed) {
     if (emailed >= MAX_CONFIRM) break;
     if (await recentlySent(db, u.id, 'email_confirm')) { skipped++; continue; }
+
+    if (dry) { emailed++; continue; }
 
     // resend() re-triggers Supabase's own confirmation email for an existing
     // unconfirmed signup. generateLink({type:'signup'}) is the wrong call here
@@ -238,7 +263,7 @@ async function runConfirm(db: SupabaseClient) {
     else skipped++;
   }
 
-  return { candidates: unconfirmed.length, emailed, skipped };
+  return { candidates: unconfirmed.length, [dry ? 'would_email' : 'emailed']: emailed, skipped };
 }
 
 // ── Route ────────────────────────────────────────────────────────────────────
@@ -253,16 +278,20 @@ export async function GET(request: NextRequest) {
   }
 
   const mode = request.nextUrl.searchParams.get('mode') || 'all';
+  // ?dry=1 reports exactly who WOULD be contacted and sends nothing.
+  const dry = ['1', 'true', 'yes'].includes(
+    (request.nextUrl.searchParams.get('dry') || '').toLowerCase(),
+  );
 
   try {
     const db = admin();
     const result: Record<string, unknown> = { mode };
 
-    if (mode === 'dunning' || mode === 'all') result.dunning = await runDunning(db);
-    if (mode === 'connections' || mode === 'all') result.connections = await runConnections(db);
-    if (mode === 'confirm' || mode === 'all') result.confirm = await runConfirm(db);
+    if (mode === 'dunning' || mode === 'all') result.dunning = await runDunning(db, dry);
+    if (mode === 'connections' || mode === 'all') result.connections = await runConnections(db, dry);
+    if (mode === 'confirm' || mode === 'all') result.confirm = await runConfirm(db, dry);
 
-    return NextResponse.json({ ok: true, ...result, processedAt: new Date().toISOString() });
+    return NextResponse.json({ ok: true, dry, ...result, processedAt: new Date().toISOString() });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[Cron] recovery failed:', message);
