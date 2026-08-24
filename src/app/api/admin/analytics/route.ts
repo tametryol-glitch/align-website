@@ -51,6 +51,123 @@ function startDay(rangeDays: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/**
+ * Sectioned payloads (Phases 5–7). The default/overview response is unchanged
+ * so the existing dashboard keeps working; each new tab asks for its own
+ * section instead of everything loading in one slow request.
+ */
+async function getSection(
+  db: ReturnType<typeof getAdminClient>,
+  section: string,
+  range: number,
+): Promise<Record<string, unknown>> {
+  const unwrap = (r: { data: unknown; error: unknown }) =>
+    (r.error ? { error: (r.error as { message?: string }).message } : r.data) ?? {};
+
+  switch (section) {
+    case 'content': {
+      const [content, creators, feed, reels, topPosts] = await Promise.all([
+        db.rpc('analytics_content_metrics', { range_days: range }),
+        db.rpc('analytics_creator_health', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_feed_quality', { range_days: range }),
+        db.rpc('analytics_reel_metrics', { range_days: range }),
+        db.rpc('analytics_top_posts', { range_days: range, lim: 20 }),
+      ]);
+      return {
+        content: unwrap(content),
+        creators: unwrap(creators),
+        feed: unwrap(feed),
+        reels: unwrap(reels),
+        topPosts: topPosts.data || [],
+      };
+    }
+
+    case 'social': {
+      const [graph, messaging, dating] = await Promise.all([
+        db.rpc('analytics_social_graph', { range_days: range }),
+        db.rpc('analytics_messaging', { range_days: range }),
+        db.rpc('analytics_dating_funnel', { range_days: Math.max(range, 30) }),
+      ]);
+      return {
+        graph: unwrap(graph),
+        messaging: unwrap(messaging),
+        dating: unwrap(dating),
+      };
+    }
+
+    case 'money': {
+      const [exact, mrr, paywall, unit, risk] = await Promise.all([
+        db.rpc('analytics_revenue_exact', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_mrr_trend', { months: 6 }),
+        db.rpc('analytics_paywall_funnel', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_unit_economics', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_churn_risk', { lim: 50 }),
+      ]);
+      return {
+        exact: unwrap(exact),
+        mrrTrend: mrr.data || [],
+        paywall: unwrap(paywall),
+        unitEconomics: unwrap(unit),
+        churnRisk: risk.data || [],
+      };
+    }
+
+    case 'safety': {
+      const [metrics, queue] = await Promise.all([
+        db.rpc('analytics_safety_metrics', { range_days: Math.max(range, 30) }),
+        db.rpc('analytics_reports_queue', { lim: 50 }),
+      ]);
+      return { metrics: unwrap(metrics), queue: queue.data || [] };
+    }
+
+    case 'tech': {
+      const [health, versions, push] = await Promise.all([
+        db.rpc('analytics_tech_health', { range_days: range }),
+        db.rpc('analytics_version_adoption', { range_days: range }),
+        db.rpc('analytics_push_metrics', { range_days: range }),
+      ]);
+      return {
+        health: unwrap(health),
+        versions: versions.data || [],
+        push: unwrap(push),
+      };
+    }
+
+    case 'growth': {
+      const [power, lifecycle, activation, cohorts] = await Promise.all([
+        db.rpc('analytics_power_users'),
+        db.rpc('analytics_lifecycle', { range_days: range }),
+        db.rpc('analytics_activation'),
+        db.rpc('analytics_cohort_grid', { weeks: 12 }),
+      ]);
+      return {
+        power: unwrap(power),
+        lifecycle: unwrap(lifecycle),
+        activation: unwrap(activation),
+        cohorts: cohorts.data || [],
+      };
+    }
+
+    case 'systems': {
+      const [flags, experiments, rules, alerts] = await Promise.all([
+        db.from('feature_flags').select('*').order('is_kill_switch', { ascending: false }).order('key'),
+        db.from('experiments').select('*').order('created_at', { ascending: false }),
+        db.from('analytics_alert_rules').select('*').order('name'),
+        db.from('analytics_alert_events').select('*').order('created_at', { ascending: false }).limit(50),
+      ]);
+      return {
+        flags: flags.data || [],
+        experiments: experiments.data || [],
+        alertRules: rules.data || [],
+        alertEvents: alerts.data || [],
+      };
+    }
+
+    default:
+      return { error: `Unknown section: ${section}` };
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     if (!(await verifyAdmin(req))) {
@@ -59,6 +176,14 @@ export async function GET(req: NextRequest) {
 
     const rangeParam = parseInt(req.nextUrl.searchParams.get('range') || '7', 10);
     const range = rangeParam === 30 ? 30 : 7;
+
+    // Sectioned request → return just that slice.
+    const section = req.nextUrl.searchParams.get('section');
+    if (section) {
+      const db = getAdminClient();
+      const data = await getSection(db, section, range);
+      return NextResponse.json({ section, range, ...data, generatedAt: new Date().toISOString() });
+    }
     const from = startDay(range);
     const fromPrev = startDay(range * 2); // for period-over-period deltas
     const db = getAdminClient();

@@ -7,6 +7,11 @@ import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ArrowLeft, Check, Crown, Sparkles, Star, Zap, Flame, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import {
+  trackCheckoutStarted,
+  trackPurchaseCompleted,
+  trackPurchaseFailed,
+} from '@/lib/firstPartyAnalytics';
 
 const plans = [
   {
@@ -136,6 +141,9 @@ function SubscriptionContent() {
   // Handle URL params from Stripe redirects
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
+      // Closes the web paywall funnel. Exact revenue still comes from the
+      // Stripe/RevenueCat webhook — this event is for conversion rates.
+      trackPurchaseCompleted(searchParams.get('plan') || 'unknown', 'settings_subscription');
       setBanner({ type: 'success', message: t('subscription.paymentSuccess') });
       // Clean URL params
       window.history.replaceState({}, '', '/settings/subscription');
@@ -147,6 +155,7 @@ function SubscriptionContent() {
       window.history.replaceState({}, '', '/settings/subscription');
     } else if (searchParams.get('error')) {
       const code = searchParams.get('error');
+      trackPurchaseFailed(searchParams.get('plan') || 'unknown', code || 'unknown');
       const message =
         code === 'payment_unavailable'
           ? t('subscription.paymentUnavailable', 'We had trouble reaching our payment provider. Please try again in a moment.')
@@ -166,6 +175,7 @@ function SubscriptionContent() {
       window.location.href = '/api/stripe/portal';
       return;
     }
+    trackCheckoutStarted(planId, 'settings_subscription');
     const checkoutUrl = `/api/stripe/checkout?plan=${planId}&email=${encodeURIComponent(user?.email || '')}`;
     window.location.href = checkoutUrl;
   }

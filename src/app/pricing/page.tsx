@@ -8,6 +8,7 @@ import { PLANS } from '@/lib/plans';
 import { Check, Sparkles, Star, Zap, Crown, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { trackPaywallShown, trackCheckoutStarted } from '@/lib/firstPartyAnalytics';
 
 type BillingPeriod = 'monthly' | 'annual';
 
@@ -42,6 +43,12 @@ export default function PricingPage() {
     }
   }, []);
 
+  // Pricing is the web paywall — count the impression so the funnel on the
+  // Money tab covers web as well as app.
+  useEffect(() => {
+    trackPaywallShown('pricing_page');
+  }, []);
+
   async function handleSubscribe(planKey: string) {
     // Logged-out visitors: create the free account first, remembering plan intent
     if (!isAuthenticated) {
@@ -51,6 +58,8 @@ export default function PricingPage() {
       return;
     }
     if (planKey === 'free' || planKey === tier) return;
+
+    trackCheckoutStarted(planKey, 'pricing_page');
 
     // Affiliate-referred users go through Stripe Checkout to get their 10% discount
     if (isAffiliate && ['light', 'premium', 'pro'].includes(planKey)) {

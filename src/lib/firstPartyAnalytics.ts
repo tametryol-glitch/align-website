@@ -225,3 +225,86 @@ export function flushAnalytics(useBeacon = false) {
   }
   send(useBeacon);
 }
+
+// ── Monetization ─────────────────────────────────────────────────────────────
+// Mirrors the mobile paywall vocabulary so analytics_paywall_funnel() sees one
+// funnel across both platforms rather than two half-funnels.
+
+export function trackPaywallShown(feature: string, requiredTier?: string) {
+  track('paywall_shown', { props: { feature, required_tier: requiredTier } });
+}
+
+export function trackCheckoutStarted(productId: string, feature?: string) {
+  track('checkout_started', { props: { product_id: productId, feature } });
+}
+
+export function trackPurchaseCompleted(productId: string, feature?: string) {
+  track('purchase_completed', { props: { product_id: productId, feature } });
+}
+
+export function trackPurchaseFailed(productId: string, reason: string) {
+  track('purchase_failed', { props: { product_id: productId, reason } });
+}
+
+// ── Sharing & virality ───────────────────────────────────────────────────────
+
+export function trackShared(kind: string, destination?: string) {
+  track('content_shared', { props: { kind, destination } });
+}
+
+export function trackInviteSent(channel: string) {
+  track('invite_sent', { props: { channel } });
+}
+
+// ── Search & empty states ────────────────────────────────────────────────────
+
+export function trackSearch(surface: string, term: string, resultCount: number) {
+  track('search_performed', {
+    props: {
+      surface,
+      term: term.slice(0, 80),
+      result_count: resultCount,
+      zero_results: resultCount === 0,
+    },
+  });
+}
+
+export function trackEmptyState(surface: string, reason?: string) {
+  track('empty_state', { props: { surface, reason } });
+}
+
+// ── Reliability ──────────────────────────────────────────────────────────────
+
+export function trackClientError(message: string, context?: Record<string, unknown>) {
+  track('client_error', {
+    props: { message: String(message).slice(0, 300), ...(context || {}) },
+  });
+}
+
+export function trackApiError(endpoint: string, status: number, message?: string) {
+  track('api_error', {
+    props: {
+      endpoint,
+      status,
+      message: message ? String(message).slice(0, 300) : undefined,
+    },
+  });
+}
+
+// ── Web vitals ───────────────────────────────────────────────────────────────
+// Emitted as perf_timing so they land in the same p50/p95/p99 rollup as the
+// mobile traces (analytics_tech_health reads event_data.name + .ms).
+
+export function trackWebVital(name: string, ms: number) {
+  track('perf_timing', { props: { name, ms: Math.round(ms) } });
+}
+
+// ── Frustration signals ──────────────────────────────────────────────────────
+
+export function trackRageClick(selector: string, count: number) {
+  track('rage_click', { props: { selector: selector.slice(0, 120), count } });
+}
+
+export function trackScrollDepth(path: string, pct: number) {
+  track('scroll_depth', { path, props: { pct } });
+}
