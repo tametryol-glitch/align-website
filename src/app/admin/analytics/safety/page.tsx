@@ -1,13 +1,15 @@
 'use client';
 
 // Trust & safety. Reports were being collected into three separate tables with
-// no queue view, no SLA and no time-to-resolution anywhere in the admin panel.
-// With a dating surface and 20 locales this is an obligation, not a nice-to-have.
+// no way to act on them — the oldest open report was 34 days old and nothing
+// had ever been resolved, because no button existed that could.
 
+import { useState } from 'react';
 import {
   useAdminSection, AccessDenied, SectionHeader, Loading, Card, Stat, StatGrid,
   BarRow, Table, MigrationNotice, fmt, pct,
 } from '../_shared';
+import { Check, X, Eye, Loader2 } from 'lucide-react';
 
 interface SafetyData {
   metrics: {
@@ -23,16 +25,38 @@ interface SafetyData {
     source: string; report_id: string; category: string; status: string;
     created_at: string; age_hours: number; target_name: string;
   }[];
+  suspectBirthDates?: {
+    user_id: string; display_name: string; birth_date: string; reason: string;
+  }[];
 }
 
 export default function SafetyAnalyticsPage() {
   const { allowed, data, range, setRange, loading, refreshing, refresh } =
     useAdminSection<SafetyData>('safety');
+  const [busy, setBusy] = useState<string | null>(null);
+  const [done, setDone] = useState<Set<string>>(new Set());
 
   if (!allowed) return <AccessDenied />;
 
   const m = data?.metrics || {};
   const catMax = Math.max(1, ...(m.reports_by_category || []).map((c) => c.count));
+
+  async function act(source: string, reportId: string, action: 'resolve' | 'dismiss' | 'reviewing') {
+    setBusy(reportId);
+    try {
+      const res = await fetch('/api/admin/moderation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source, report_id: reportId, action }),
+      });
+      if (res.ok && action !== 'reviewing') {
+        setDone((prev) => new Set(prev).add(reportId));
+      }
+      await refresh();
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto pb-16">
@@ -92,7 +116,7 @@ export default function SafetyAnalyticsPage() {
 
             <Card
               title="Age signals"
-              hint="Birth dates are collected, so this is exact rather than inferred. With dating and messaging in the product, minors on the platform are a regulatory issue — not a metric footnote."
+              hint="Birth dates are collected, so this is exact. Note that a birth year in the future is a data-entry artifact, not a real minor — the review list below separates the two."
             >
               <StatGrid>
                 <Stat
@@ -114,21 +138,91 @@ export default function SafetyAnalyticsPage() {
 
           <Card
             title="Work queue"
-            hint="Oldest unhandled reports first. This is the actual list to work through."
+            hint="Oldest unhandled reports first. Resolve marks it handled; dismiss marks it not actionable. Both are recorded in the admin audit log."
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-text-muted">
+                    {['Age', 'Source', 'Category', 'Status', 'Reported user', 'Action'].map((h) => (
+                      <th key={h} className="font-medium uppercase tracking-wider text-[10px] pb-2 pr-3 whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="text-text-primary">
+                  {(data?.queue || []).map((r) => {
+                    const handled = done.has(r.report_id);
+                    return (
+                      <tr key={r.report_id} className={`border-t border-border-primary/60 ${handled ? 'opacity-40' : ''}`}>
+                        <td className={`py-2 pr-3 tabular-nums whitespace-nowrap ${r.age_hours > 48 ? 'text-red-400' : r.age_hours > 24 ? 'text-amber-400' : ''}`}>
+                          {Math.round(r.age_hours)}h
+                        </td>
+                        <td className="py-2 pr-3 whitespace-nowrap">{r.source}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap">{r.category || '—'}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap">{handled ? 'resolved' : r.status}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap">{r.target_name || '—'}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap">
+                          {handled ? (
+                            <span className="text-emerald-400">done</span>
+                          ) : busy === r.report_id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-text-muted" />
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <button
+                                onClick={() => act(r.source, r.report_id, 'reviewing')}
+                                className="p-1 rounded text-text-muted hover:text-accent-primary transition-colors"
+                                title="Mark as under review"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => act(r.source, r.report_id, 'resolve')}
+                                className="p-1 rounded text-text-muted hover:text-emerald-400 transition-colors"
+                                title="Resolve — action taken"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => act(r.source, r.report_id, 'dismiss')}
+                                className="p-1 rounded text-text-muted hover:text-red-400 transition-colors"
+                                title="Dismiss — not actionable"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {!(data?.queue || []).length && (
+                <p className="text-xs text-text-muted py-4 text-center">Queue is clear.</p>
+              )}
+            </div>
+          </Card>
+
+          <Card
+            title="Birth dates to review"
+            hint="Accounts whose birth date implies a minor, or is impossible. A future birth year is bad data, not a child — new signups can no longer save one."
           >
             <Table
-              headers={['Age', 'Source', 'Category', 'Status', 'Reported user', 'Filed']}
-              rows={(data?.queue || []).map((r) => [
-                <span key="a" className={r.age_hours > 48 ? 'text-red-400' : r.age_hours > 24 ? 'text-amber-400' : ''}>
-                  {Math.round(r.age_hours)}h
+              headers={['Member', 'Birth date', 'Why flagged']}
+              rows={(data?.suspectBirthDates || []).map((s) => [
+                s.display_name || '—',
+                s.birth_date,
+                <span
+                  key="r"
+                  className={
+                    s.reason === 'future date' ? 'text-text-muted'
+                      : s.reason === 'implies under 13' ? 'text-red-400' : 'text-amber-400'
+                  }
+                >
+                  {s.reason}
                 </span>,
-                r.source,
-                r.category || '—',
-                r.status,
-                r.target_name || '—',
-                new Date(r.created_at).toLocaleDateString(),
               ])}
-              empty="Queue is clear."
+              empty="Nothing to review."
             />
           </Card>
         </div>

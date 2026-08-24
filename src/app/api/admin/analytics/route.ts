@@ -113,11 +113,16 @@ async function getSection(
     }
 
     case 'safety': {
-      const [metrics, queue] = await Promise.all([
+      const [metrics, queue, suspect] = await Promise.all([
         db.rpc('analytics_safety_metrics', { range_days: Math.max(range, 30) }),
         db.rpc('analytics_reports_queue', { lim: 50 }),
+        db.rpc('analytics_suspect_birth_dates'),
       ]);
-      return { metrics: unwrap(metrics), queue: queue.data || [] };
+      return {
+        metrics: unwrap(metrics),
+        queue: queue.data || [],
+        suspectBirthDates: suspect.data || [],
+      };
     }
 
     case 'tech': {
