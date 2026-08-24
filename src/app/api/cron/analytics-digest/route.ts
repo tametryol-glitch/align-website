@@ -24,7 +24,8 @@ import { sendEmail } from '@/lib/emailService';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const SITE = 'https://aligncosmic.com';
+// Apex redirects to www; link straight to www so emails don't take an extra hop.
+const SITE = 'https://www.aligncosmic.com';
 
 function admin(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -29,7 +29,8 @@ import { sendEmail } from '@/lib/emailService';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const SITE = 'https://aligncosmic.com';
+// Apex redirects to www; link straight to www so emails don't take an extra hop.
+const SITE = 'https://www.aligncosmic.com';
 
 // Per-run caps. Deliberately conservative — a bug here emails real users, and
 // a large blast from a domain that has been sending little is a deliverability
