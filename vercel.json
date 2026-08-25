@@ -21,10 +21,6 @@
       "schedule": "30 13 * * *"
     },
     {
-      "path": "/api/cron/analytics-digest?mode=alerts",
-      "schedule": "0 */2 * * *"
-    },
-    {
       "path": "/api/cron/recovery",
       "schedule": "0 15 * * *"
     }
