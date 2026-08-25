@@ -161,13 +161,22 @@ export function AnalyticsTracker() {
 
     const report = () => {
       try {
-        if (lcp > 0) trackWebVital('web_vital_lcp', lcp);
-        if (inp > 0) trackWebVital('web_vital_inp', inp);
+        let queued = false;
+        if (lcp > 0) { trackWebVital('web_vital_lcp', lcp); queued = true; }
+        if (inp > 0) { trackWebVital('web_vital_inp', inp); queued = true; }
         // CLS is unitless; ×1000 keeps it an integer in the same ms column.
-        if (cls > 0) trackWebVital('web_vital_cls', cls * 1000);
+        if (cls > 0) { trackWebVital('web_vital_cls', cls * 1000); queued = true; }
         lcp = 0;
         inp = 0;
         cls = 0;
+
+        // MUST flush here. Effects register listeners in declaration order, so
+        // the heartbeat effect's visibilitychange/pagehide handler runs its
+        // flush BEFORE this one queues anything. Without this the vitals sit
+        // in the 4s debounce while the page unloads and are silently lost —
+        // which is exactly what happened: perf_timing was 0 across 81
+        // sessions. sendBeacon survives unload; a debounced fetch does not.
+        if (queued) flushAnalytics(true);
       } catch {
         /* swallow */
       }
@@ -228,13 +237,31 @@ export function AnalyticsTracker() {
   useEffect(() => {
     let ticking = false;
 
+    // The document is not always the scroller. App-shell layouts commonly
+    // scroll an inner div, in which case window.scrollY stays 0 and
+    // documentElement.scrollHeight - innerHeight is <= 0 — so the original
+    // version returned early every time and never fired once.
+    let lastTarget: EventTarget | null = null;
+
+    const measureFrom = (target: EventTarget | null) => {
+      const el =
+        target && target !== document && target !== window
+          ? (target as HTMLElement)
+          : null;
+
+      const top    = el ? el.scrollTop    : window.scrollY || 0;
+      const height = el ? el.scrollHeight : document.documentElement.scrollHeight;
+      const view   = el ? el.clientHeight : window.innerHeight;
+      const scrollable = height - view;
+      if (scrollable <= 40) return null;   // ignore incidental overflow
+      return Math.min(100, Math.round((top / scrollable) * 100));
+    };
+
     const measure = () => {
       ticking = false;
       try {
-        const doc = document.documentElement;
-        const scrollable = doc.scrollHeight - window.innerHeight;
-        if (scrollable <= 0) return;
-        const pct = Math.min(100, Math.round(((window.scrollY || 0) / scrollable) * 100));
+        const pct = measureFrom(lastTarget);
+        if (pct === null) return;
         for (const m of SCROLL_MILESTONES) {
           if (pct >= m && !milestonesRef.current.has(m)) {
             milestonesRef.current.add(m);
@@ -246,14 +273,18 @@ export function AnalyticsTracker() {
       }
     };
 
-    const onScroll = () => {
+    const onScroll = (e: Event) => {
+      lastTarget = e.target;
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(measure);
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    // Capture phase so scrolls inside nested containers are seen too — those
+    // do not bubble to window.
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    return () =>
+      document.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
   }, [pathname]);
 
   return null;
