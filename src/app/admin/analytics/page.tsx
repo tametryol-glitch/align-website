@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
+import { AnalyticsTabs } from './_shared';
 import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
   Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
@@ -510,6 +511,13 @@ export default function AnalyticsAdminPage() {
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </button>
         </div>
+      </div>
+
+      {/* Tabs — Overview is this page; the rest are the Phase 5-7 sections.
+          These were previously only rendered by SectionHeader, which this
+          page does not use, so the new tabs were unreachable from here. */}
+      <div className="mb-6">
+        <AnalyticsTabs />
       </div>
 
       {loading ? (
