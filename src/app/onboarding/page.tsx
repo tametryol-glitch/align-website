@@ -223,6 +223,10 @@ export default function OnboardingPage() {
     if (step > 0) setStep(step - 1);
   }
 
+  // Step 6 estimates the Sun sign from the date alone. Step 7 replaces it with
+  // the real ephemeris sign, so prefer that one if the chart already came back.
+  const previewSunSign = sunSign || getSunSign(birthDate);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className={`w-full ${step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
@@ -462,11 +466,11 @@ export default function OnboardingPage() {
             <div className="py-8">
               <div className="text-4xl mb-4">✨</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">You&apos;re all set!</h2>
-              {birthDate && (
+              {previewSunSign && (
                 <div className="bg-gradient-cosmic rounded-xl p-4 border border-accent-muted mb-4">
                   <p className="text-xs text-accent-tertiary uppercase tracking-wider mb-1">Your Sun Sign</p>
                   <p className="text-2xl font-display font-bold text-text-primary">
-                    {getSignGlyph(getSunSign(birthDate))} {getSunSign(birthDate)}
+                    {getSignGlyph(previewSunSign)} {previewSunSign}
                   </p>
                   <p className="text-xs text-text-tertiary mt-1">Complete your chart to discover your Moon &amp; Rising</p>
                 </div>
@@ -668,8 +672,15 @@ export default function OnboardingPage() {
 }
 
 function getSunSign(dateStr: string): string {
-  const d = new Date(dateStr);
-  const m = d.getMonth(), day = d.getDate();
+  // Read the parts off the string. `new Date('1992-03-20')` is parsed as UTC
+  // midnight, so getMonth()/getDate() in any negative-offset timezone hand back
+  // the 19th — which flips every cusp birthday in the Americas to the sign
+  // before. Splitting the string keeps the date the user actually picked.
+  const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr || '');
+  if (!parts) return '';
+  const m = Number(parts[2]) - 1;
+  const day = Number(parts[3]);
+  if (m < 0 || m > 11) return '';
   const signs = ['Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius'];
   const cutoffs = [20,19,20,20,21,21,22,23,23,23,22,22];
   return day < cutoffs[m] ? signs[m] : signs[(m + 1) % 12];
