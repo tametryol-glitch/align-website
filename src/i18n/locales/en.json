@@ -1037,7 +1037,9 @@
       },
       "quickPost": "Quick Post",
       "viewReadings": "View Readings",
-      "viewCommunities": "Browse Communities"
+      "viewCommunities": "Browse Communities",
+      "addBirthData": "Add your birth date, time and place to have these pull straight from your chart.",
+      "addBirthDataLink": "Add birth details"
     },
     "trending": {
       "title": "Trending",

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, type UserProfile } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { useTranslation } from 'react-i18next';
 import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
+import { buildShareTemplatePost, canPersonalize, signGlyph, type ShareTemplateId } from '@/lib/feedCosmicTemplates';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
 
@@ -71,7 +72,7 @@ function getDynamicTags(): string[] {
 
 // ── Share Your Reading CTA ────────────────────────────────────────
 
-const QUICK_TEMPLATES = [
+const QUICK_TEMPLATES: { id: ShareTemplateId; emoji: string; chip: string; labelKey: string }[] = [
   { id: 'aura', emoji: '🔮', chip: 'Aura Reading', labelKey: 'feed.shareReading.templates.aura' },
   { id: 'transit', emoji: '🪐', chip: 'Transit', labelKey: 'feed.shareReading.templates.transit' },
   { id: 'moon', emoji: '🌙', chip: 'Moon Check-in', labelKey: 'feed.shareReading.templates.moon' },
@@ -80,18 +81,36 @@ const QUICK_TEMPLATES = [
 ];
 
 function ShareReadingCTA({
-  sunSign,
+  profile,
   onQuickPost,
 }: {
-  sunSign: string | null;
+  profile: UserProfile | null;
   onQuickPost: (content: string) => void;
 }) {
   const { t } = useTranslation();
   const moon = getFeedMoonPhase();
+  const [building, setBuilding] = useState<ShareTemplateId | null>(null);
+  const sunSign = profile?.sun_sign || null;
+  const personalizable = canPersonalize(profile);
 
-  function handleTemplate(tpl: typeof QUICK_TEMPLATES[number]) {
-    let text = t(tpl.labelKey, { moonPhase: moon.name, sign: sunSign || 'Scorpio' });
-    onQuickPost(text);
+  async function handleTemplate(tpl: typeof QUICK_TEMPLATES[number]) {
+    if (building) return;
+    // Static i18n sentence is the floor; the engine replaces it with the
+    // user's own chart whenever birth data is available.
+    const fallback = t(tpl.labelKey, { moonPhase: moon.name, sign: sunSign || 'Scorpio' });
+
+    if (!personalizable) {
+      onQuickPost(fallback);
+      return;
+    }
+
+    setBuilding(tpl.id);
+    try {
+      const result = await buildShareTemplatePost(tpl.id, profile, fallback);
+      onQuickPost(result.content);
+    } finally {
+      setBuilding(null);
+    }
   }
 
   return (
@@ -112,13 +131,30 @@ function ShareReadingCTA({
           <button
             key={tpl.id}
             onClick={() => handleTemplate(tpl)}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bg-tertiary border border-border-primary text-xs text-text-secondary hover:border-accent-primary/40 hover:text-text-primary transition-colors"
+            disabled={!!building}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bg-tertiary border border-border-primary text-xs text-text-secondary hover:border-accent-primary/40 hover:text-text-primary transition-colors disabled:opacity-60"
           >
-            <span>{tpl.emoji}</span>
+            {building === tpl.id ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-primary" />
+            ) : (
+              <span>{tpl.id === 'zodiac' ? signGlyph(sunSign) || tpl.emoji : tpl.emoji}</span>
+            )}
             <span className="whitespace-nowrap">{tpl.chip}</span>
           </button>
         ))}
       </div>
+
+      {!personalizable && (
+        <p className="text-[11px] text-text-tertiary mb-3">
+          {t(
+            'feed.shareReading.addBirthData',
+            'Add your birth date, time and place to have these pull straight from your chart.',
+          )}{' '}
+          <Link href="/profile/edit" className="text-accent-primary hover:underline">
+            {t('feed.shareReading.addBirthDataLink', 'Add birth details')}
+          </Link>
+        </p>
+      )}
 
       {/* Quick links */}
       <div className="flex items-center gap-3">
@@ -1040,7 +1076,7 @@ export default function FeedPage() {
 
       {/* Share Your Reading CTA */}
       <ShareReadingCTA
-        sunSign={profile?.sun_sign || null}
+        profile={profile}
         onQuickPost={(content) => {
           setPrefillContent(content);
           setShowCreate(true);

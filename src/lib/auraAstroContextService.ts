@@ -123,11 +123,16 @@ function transitActivityScore(
 /**
  * Extract the full astrology context from existing app state.
  * Everything is optional-chained so it never crashes on missing data.
+ *
+ * @param chartOverride - a natal chart to use instead of the one in chartStore.
+ *   Callers that already hold a freshly fetched chart (e.g. the feed's
+ *   chart-driven share templates) pass it here so the aura is scored against
+ *   real placements rather than falling back to profile-level signs.
  */
-export function getAuraAstroContext(): AuraAstroContext {
+export function getAuraAstroContext(chartOverride?: any): AuraAstroContext {
   const profile = useAuthStore.getState().profile;
   const chartState = useChartStore.getState();
-  const natalChart = chartState.natalChart;
+  const natalChart = chartOverride || chartState.natalChart;
   const birthData = chartState.birthData;
 
   const hasBirthTime = !!(profile?.birth_time || birthData?.time);

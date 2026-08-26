@@ -179,3 +179,25 @@ export function drawCards(spreadType: string, positionLabels: string[]): DrawnCa
     };
   });
 }
+
+/**
+ * Look one specific card up by name instead of shuffling for it.
+ * Used when the card is chosen deliberately — e.g. the feed's chart-driven
+ * tarot pull, where the planet/sign attribution picks the card.
+ * Returns null for an unknown name so callers can degrade gracefully.
+ */
+export function getTarotCardByName(name: string, reversed = false, position = ''): DrawnCard | null {
+  if (!name) return null;
+  const card = FULL_DECK.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  if (!card) return null;
+  return {
+    name: card.name,
+    position: position || card.name,
+    reversed,
+    arcana: card.arcana,
+    number: card.number,
+    suit: card.suit,
+    keywords: reversed ? card.keywords_reversed : card.keywords_upright,
+    imagery: card.imagery,
+  };
+}
