@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { Sparkles, MapPin, Clock, User, ChevronRight, ChevronLeft, HelpCircle, FileText, Search, Heart, Share2, Copy, Check } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { BirthDateSelect, isValidBirthDate } from '@/components/ui/BirthDateSelect';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
 import { saveRelationshipProfile } from '@/lib/relationshipProfileService';
 import { api, buildBirthData } from '@/lib/api';
@@ -209,11 +210,7 @@ export default function OnboardingPage() {
 
   function canAdvance(): boolean {
     switch (step) {
-      case 2: {
-        if (!birthDate) return false;
-        const [y, m, d] = birthDate.split('-').map(Number);
-        return y >= 1900 && y <= 2026 && m >= 1 && m <= 12 && d >= 1 && d <= 31;
-      }
+      case 2: return isValidBirthDate(birthDate);
       case 4: return latitude != null && longitude != null && !!timezone;
       default: return true;
     }
@@ -299,28 +296,14 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-text-muted mb-3">Select your birth date from the calendar</p>
               <div className="mb-6">
-                <input
-                  type="date"
-                  min="1900-01-01"
-                  max={new Date().toISOString().split('T')[0]}
-                  value={birthDate || ''}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="input w-full text-center text-base cursor-pointer"
-                  style={{ colorScheme: 'dark' }}
-                />
-                {birthDate && (
-                  <p className="text-center text-sm text-accent-primary mt-2 font-medium">
-                    {new Date(birthDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                  </p>
-                )}
+                <BirthDateSelect value={birthDate} onChange={setBirthDate} />
               </div>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={next} disabled={!birthDate} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
+                <button onClick={next} disabled={!canAdvance()} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
                   Next <ChevronRight className="w-4 h-4" />
                 </button>
               </div>

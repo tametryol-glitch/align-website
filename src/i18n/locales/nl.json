@@ -3154,5 +3154,13 @@
       "11": "gemeenschap, vriendschappen, toekomstvisie",
       "12": "afzondering, spiritualiteit, verborgen patronen"
     }
+  },
+  "birthDateSelect": {
+    "month": "Maand",
+    "day": "Dag",
+    "year": "Jaar",
+    "helper": "Kies de maand, de dag en daarna het jaar waarin je geboren bent",
+    "ageLabel": "{{age}} jaar oud",
+    "tooYoung": "Je moet {{age}} jaar of ouder zijn om Align te gebruiken."
   }
 }

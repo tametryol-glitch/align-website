@@ -3154,5 +3154,13 @@
       "11": "fellesskap, vennskap, fremtidsvisjon",
       "12": "ensomhet, spiritualitet, skjulte mønstre"
     }
+  },
+  "birthDateSelect": {
+    "month": "Måned",
+    "day": "Dag",
+    "year": "År",
+    "helper": "Velg måneden, dagen og deretter året du ble født",
+    "ageLabel": "{{age}} år gammel",
+    "tooYoung": "Du må være {{age}} år eller eldre for å bruke Align."
   }
 }

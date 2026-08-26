@@ -3154,5 +3154,13 @@
       "11": "topluluk, dostluklar, gelecek vizyonu",
       "12": "yalnızlık, maneviyat, gizli örüntüler"
     }
+  },
+  "birthDateSelect": {
+    "month": "Ay",
+    "day": "Gün",
+    "year": "Yıl",
+    "helper": "Doğduğunuz ayı, günü ve ardından yılı seçin",
+    "ageLabel": "{{age}} yaşında",
+    "tooYoung": "Align'ı kullanmak için {{age}} yaşında veya daha büyük olmalısınız."
   }
 }

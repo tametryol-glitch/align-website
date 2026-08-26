@@ -3154,5 +3154,13 @@
       "11": "yhteisö, ystävyyssuhteet, tulevaisuudennäkymä",
       "12": "yksinäisyys, henkisyys, piilotetut kaavat"
     }
+  },
+  "birthDateSelect": {
+    "month": "Kuukausi",
+    "day": "Päivä",
+    "year": "Vuosi",
+    "helper": "Valitse syntymäkuukausi, -päivä ja sitten -vuosi",
+    "ageLabel": "{{age}}-vuotias",
+    "tooYoung": "Sinun on oltava vähintään {{age}}-vuotias käyttääksesi Alignia."
   }
 }

@@ -3188,5 +3188,13 @@
       "11": "community, friendships, future vision",
       "12": "solitude, spirituality, hidden patterns"
     }
+  },
+  "birthDateSelect": {
+    "month": "Month",
+    "day": "Day",
+    "year": "Year",
+    "helper": "Pick the month, the day, then the year you were born",
+    "ageLabel": "{{age}} years old",
+    "tooYoung": "You must be {{age}} or older to use Align."
   }
 }

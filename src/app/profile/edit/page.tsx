@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Camera, ImageIcon } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
+import { BirthDateSelect, isValidBirthDate } from '@/components/ui/BirthDateSelect';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
 import { useTranslation } from 'react-i18next';
 
@@ -201,15 +202,13 @@ export default function EditProfilePage() {
         {/* Birth Data */}
         <div className="border-t border-border-primary pt-5">
           <h3 className="text-sm font-semibold text-text-primary mb-3">{t('editProfile.birthData')}</h3>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label className="text-xs text-text-muted block mb-1">{t('editProfile.date')}</label>
-              <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="input" />
-            </div>
-            <div>
-              <label className="text-xs text-text-muted block mb-1">{t('editProfile.time')}</label>
-              <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="input" />
-            </div>
+          <div className="mb-3">
+            <label className="text-xs text-text-muted block mb-1">{t('editProfile.date')}</label>
+            <BirthDateSelect value={birthDate} onChange={setBirthDate} showHelper={false} />
+          </div>
+          <div className="mb-3">
+            <label className="text-xs text-text-muted block mb-1">{t('editProfile.time')}</label>
+            <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="input" />
           </div>
           <div className="mb-3">
             <label className="text-xs text-text-muted block mb-1">{t('editProfile.location')}</label>
@@ -230,7 +229,7 @@ export default function EditProfilePage() {
 
         <button
           onClick={handleSave}
-          disabled={saving || !displayName.trim()}
+          disabled={saving || !displayName.trim() || (!!birthDate && !isValidBirthDate(birthDate))}
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           <Save className="w-4 h-4" /> {saving ? t('editProfile.saving') : t('editProfile.saveChanges')}

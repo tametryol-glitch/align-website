@@ -3154,5 +3154,13 @@
       "11": "comunidade, amizades, visão de futuro",
       "12": "solidão, espiritualidade, padrões ocultos"
     }
+  },
+  "birthDateSelect": {
+    "month": "Mês",
+    "day": "Dia",
+    "year": "Ano",
+    "helper": "Escolha o mês, o dia e depois o ano em que você nasceu",
+    "ageLabel": "{{age}} anos",
+    "tooYoung": "Você precisa ter {{age}} anos ou mais para usar o Align."
   }
 }

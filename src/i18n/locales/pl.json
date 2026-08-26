@@ -3154,5 +3154,13 @@
       "11": "wspólnota, przyjaźnie, wizja przyszłości",
       "12": "samotność, duchowość, ukryte wzorce"
     }
+  },
+  "birthDateSelect": {
+    "month": "Miesiąc",
+    "day": "Dzień",
+    "year": "Rok",
+    "helper": "Wybierz miesiąc, dzień, a następnie rok urodzenia",
+    "ageLabel": "{{age}} lat",
+    "tooYoung": "Musisz mieć ukończone {{age}} lat, aby korzystać z Align."
   }
 }

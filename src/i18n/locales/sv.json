@@ -3154,5 +3154,13 @@
       "11": "gemenskap, vänskaper, framtidsvision",
       "12": "ensamhet, andlighet, dolda mönster"
     }
+  },
+  "birthDateSelect": {
+    "month": "Månad",
+    "day": "Dag",
+    "year": "År",
+    "helper": "Välj månad, dag och sedan året du föddes",
+    "ageLabel": "{{age}} år gammal",
+    "tooYoung": "Du måste vara {{age}} år eller äldre för att använda Align."
   }
 }
