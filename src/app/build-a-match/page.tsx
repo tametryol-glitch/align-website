@@ -10,7 +10,7 @@
  * See align-app/BUILD_A_MATCH_DISCOVERY.md.
  */
 
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
@@ -879,6 +879,39 @@ export default function BuildAMatchPage() {
 }
 
 /**
+ * A breakdown block that starts folded.
+ *
+ * A build with many criteria produces a very long card, and the user should
+ * be able to scroll the result list before being forced through every
+ * reading. Nothing is removed (§45 still holds) — it is only folded.
+ *
+ * The card itself is a link, so the toggle has to swallow the click.
+ */
+function Section({
+  title, items, collapsedCount,
+}: { title: string; items: ReactNode[]; collapsedCount: number }) {
+  const [open, setOpen] = useState(false);
+  const hidden = items.length - collapsedCount;
+  const shown = open ? items : items.slice(0, collapsedCount);
+  return (
+    <div className="mt-4 pt-3 border-t border-border-primary">
+      <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">{title}</p>
+      {shown}
+      {hidden > 0 && (
+        <button
+          type="button"
+          onClick={e => { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); }}
+          className="mt-1 text-xs font-bold text-accent-primary hover:underline"
+          aria-expanded={open}
+        >
+          {open ? 'Show less ▲' : `Read more · ${hidden} more ▼`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/**
  * The two scores stay separate (§11) and every result carries its real
  * per-criterion outcome (§45).
  */
@@ -965,31 +998,31 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
       )}
 
       {r.outcomes.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-border-primary">
-          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-1.5">
-            WHY THEY MATCH YOUR BUILD
-          </p>
-          {matched.map(o => (
-            <p key={`m-${o.body}`} className="text-[13px] text-emerald-400 leading-relaxed">
-              ✓ {o.priority === 'avoid' ? `No ${o.sign} ${o.body}` : `${o.sign} ${o.body}`}
-            </p>
-          ))}
-          {missed.map(o => (
-            <p key={`x-${o.body}`} className="text-[13px] text-text-muted leading-relaxed">
-              ✕ {o.priority === 'avoid' ? `Has ${o.sign} ${o.body}` : `${o.sign} ${o.body}`}
-              {o.actualSign && o.priority !== 'avoid' ? ` · they have ${o.actualSign}` : ''}
-            </p>
-          ))}
-        </div>
+        <Section
+          title="WHY THEY MATCH YOUR BUILD"
+          collapsedCount={4}
+          items={[
+            ...matched.map(o => (
+              <p key={`m-${o.body}`} className="text-[13px] text-emerald-400 leading-relaxed">
+                ✓ {o.priority === 'avoid' ? `No ${o.sign} ${o.body}` : `${o.sign} ${o.body}`}
+              </p>
+            )),
+            ...missed.map(o => (
+              <p key={`x-${o.body}`} className="text-[13px] text-text-muted leading-relaxed">
+                ✕ {o.priority === 'avoid' ? `Has ${o.sign} ${o.body}` : `${o.sign} ${o.body}`}
+                {o.actualSign && o.priority !== 'avoid' ? ` · they have ${o.actualSign}` : ''}
+              </p>
+            )),
+          ]}
+        />
       )}
 
       {/* What your charts do to each other — named aspects */}
       {r.aspects.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-border-primary">
-          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
-            WHAT YOUR CHARTS DO TO EACH OTHER
-          </p>
-          {r.aspects.map(a => {
+        <Section
+          title="WHAT YOUR CHARTS DO TO EACH OTHER"
+          collapsedCount={2}
+          items={r.aspects.map(a => {
             const reading = readingForAspect(a);
             return (
               <div key={`${a.inner}-${a.outer}-${a.aspect}`} className="mb-3">
@@ -1017,16 +1050,15 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
               </div>
             );
           })}
-        </div>
+        />
       )}
 
       {/* Their bodies on your midpoints */}
       {r.midpointActivations.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-border-primary">
-          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
-            WHERE THEY LAND IN YOU
-          </p>
-          {r.midpointActivations.map(m => (
+        <Section
+          title="WHERE THEY LAND IN YOU"
+          collapsedCount={2}
+          items={r.midpointActivations.map(m => (
             <div key={`${m.activatingBody}-${m.a}-${m.b}`} className="mb-3">
               <p className="text-[13px] font-bold text-text-primary">
                 {m.name || `${m.a}/${m.b}`}
@@ -1042,16 +1074,15 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
               )}
             </div>
           ))}
-        </div>
+        />
       )}
 
       {/* What they actually bring to your life — house overlays */}
       {r.outcomeResults.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-border-primary">
-          <p className="text-[10px] font-bold tracking-wide text-text-secondary mb-2">
-            WHAT THEY BRING TO YOUR LIFE
-          </p>
-          {r.outcomeResults.map(o => {
+        <Section
+          title="WHAT THEY BRING TO YOUR LIFE"
+          collapsedCount={2}
+          items={r.outcomeResults.map(o => {
             const delivered = o.hit.length;
             const total = o.hit.length + o.missed.length;
             const body = o.hit[0];
@@ -1085,7 +1116,7 @@ function MatchCard({ r }: { r: BuildMatchResult }) {
               </div>
             );
           })}
-        </div>
+        />
       )}
 
       {!r.birthTimeKnown && (
