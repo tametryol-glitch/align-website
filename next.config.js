@@ -21,6 +21,18 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
   },
+  async rewrites() {
+    return [
+      // iOS fetches this exact well-known path to validate Universal Links.
+      // Serving it from a route handler guarantees the application/json
+      // content type Apple requires (an extensionless file in /public is not
+      // reliably typed by the CDN).
+      {
+        source: '/.well-known/apple-app-site-association',
+        destination: '/api/aasa',
+      },
+    ];
+  },
   async headers() {
     return [
       // COOP/COEP for the video editor route (enables SharedArrayBuffer for FFmpeg-wasm)

@@ -71,12 +71,13 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed'];
+  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed', '/api/aasa'];
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
   const isPublicPage = pathname === '/' ||
     pathname === '/robots.txt' ||    // crawlers must read these unauthenticated
+    pathname.startsWith('/.well-known/') ||     // Apple/Android app-link association files — the OS fetches these with no cookies, so a login gate silently breaks Universal Links
     pathname === '/sitemap.xml' ||
     pathname.startsWith('/auth') ||
     pathname.startsWith('/privacy') ||
