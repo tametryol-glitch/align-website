@@ -26,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog',
     '/founder',
     '/affiliates',
+    '/support',
   ];
 
   const readingRoutes = [

@@ -82,6 +82,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/auth') ||
     pathname.startsWith('/privacy') ||
     pathname.startsWith('/terms') ||
+    pathname.startsWith('/support') ||   // App Store Connect requires a reachable Support URL; a login gate here fails review
     pathname.startsWith('/zodisphere/embed') || // chromeless globe renderer for the mobile WebView — holds no data or tokens; the app injects aggregates via postMessage
     pathname.startsWith('/zodisphere/globe3d/embed') || // chromeless 3D globe for the mobile WebView — same token-free pattern; the app injects birth details via postMessage
     pathname.startsWith('/geo/') ||             // public map assets (country GeoJSON) — must load unauthenticated for the embed globe
