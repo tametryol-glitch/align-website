@@ -8,6 +8,7 @@ import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { BadgeEarnedPopup } from '@/components/ui/BadgeEarnedPopup';
 import { FounderIntroModal } from '@/components/FounderIntroModal';
+import { PushEnablePrompt } from '@/components/ui/PushEnablePrompt';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aligncosmic.com'),
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <GlobalCallListener />
             <BadgeEarnedPopup />
             <FounderIntroModal />
+            <PushEnablePrompt />
             {children}
           </AuthProvider>
         </I18nProvider>

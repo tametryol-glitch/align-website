@@ -70,6 +70,65 @@ export async function registerPushSubscription(userId: string): Promise<boolean>
 }
 
 /**
+ * Subscribe WITHOUT ever prompting.
+ *
+ * Only does anything when the browser has already granted permission — for
+ * everyone else it returns false and leaves the decision alone. That makes it
+ * safe to call automatically on every load, which is the point: a user who
+ * granted permission once should not have to visit Settings and press Enable
+ * again on a new device, after clearing site data, or after the push service
+ * expires their subscription.
+ *
+ * registerPushSubscription() is the opposite: it prompts, so it may only be
+ * called from a user gesture.
+ */
+export async function ensurePushSubscribed(userId: string): Promise<boolean> {
+  if (!isPushSupported()) return false;
+  if (Notification.permission !== 'granted') return false;
+
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!vapidPublicKey) return false;
+
+  try {
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+
+    // Reuse the existing subscription when there is one; permission is already
+    // granted, so subscribing fresh shows no prompt either.
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
+      });
+    }
+
+    const subscriptionJSON = subscription.toJSON();
+    const endpoint = subscriptionJSON.endpoint!;
+
+    const supabase = createClient();
+    const { error } = await supabase.from('push_subscriptions').upsert(
+      {
+        user_id: userId,
+        endpoint,
+        p256dh: subscriptionJSON.keys!.p256dh,
+        auth: subscriptionJSON.keys!.auth,
+      },
+      { onConflict: 'user_id,endpoint' }
+    );
+
+    if (error) {
+      console.error('[PushService] Failed to sync subscription:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[PushService] Silent subscribe failed:', err);
+    return false;
+  }
+}
+
+/**
  * Unregister push notifications and remove the subscription from Supabase.
  */
 export async function unregisterPush(userId: string): Promise<boolean> {
