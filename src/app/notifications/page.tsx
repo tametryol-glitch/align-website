@@ -15,6 +15,7 @@ import {
 } from '@/lib/notificationPriorityEngine';
 import { getUserEngagementPattern, shouldSendNow } from '@/lib/smartNotificationScheduler';
 import { CosmicMatchShareModal } from '@/components/feed/CosmicMatchShareModal';
+import { getNotificationLink } from '@/lib/notificationLinks';
 
 interface Notification {
   id: string;
@@ -218,56 +219,6 @@ function getGroupTitle(group: NotificationGroup): string {
     return `${uniqueActors.join(' and ')} — ${group.notifications[0].title}`;
   }
   return `${uniqueActors[0]}, ${uniqueActors[1]}, and ${uniqueActors.length - 2} others`;
-}
-
-function getNotificationLink(n: Notification): string {
-  switch (n.type) {
-    case 'friend_request':
-    case 'friend_accepted':
-      return n.actor_id ? `/user/${n.actor_id}` : '/friends';
-    case 'follow':
-      return n.actor_id ? `/user/${n.actor_id}` : '/friends';
-    case 'reaction':
-    case 'like':
-    case 'comment':
-    case 'mention':
-    case 'story_reaction': {
-      // Deep-link to the exact post (and comment) the notification is about.
-      const postId = n.data?.post_id;
-      if (!postId) return '/feed';
-      const commentId = n.type === 'comment' || n.type === 'mention' ? n.data?.comment_id : undefined;
-      return commentId
-        ? `/feed?postId=${postId}&commentId=${commentId}`
-        : `/feed?postId=${postId}`;
-    }
-    case 'message':
-    case 'new_message':
-      return n.data?.conversation_id ? `/messages/${n.data.conversation_id}` : '/messages';
-    case 'cosmic_alert':
-    case 'transit':
-    case 'transit_alert':
-    case 'moon_phase':
-    case 'retrograde':
-    case 'eclipse':
-      return '/readings';
-    case 'cosmic_match_ready':
-      // /compatibility/[signs] is the public sign-pair guide, not this user's
-      // match — deep-link into the Cosmic Match list and auto-open the card.
-      return n.data?.match_id ? `/matches?matchId=${n.data.match_id}` : '/matches';
-    case 'cosmic_match_published':
-      return '/feed';
-    case 'cosmic_match_share_invite':
-      return '#'; // intercepted — opens the share modal instead of navigating
-    case 'system':
-      return '/dashboard';
-    case 'announcement':
-      return '/settings';
-    case 'account':
-    case 'subscription':
-      return '/settings/account';
-    default:
-      return '/dashboard';
-  }
 }
 
 export default function NotificationsPage() {
