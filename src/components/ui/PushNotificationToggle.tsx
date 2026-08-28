@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, BellRing } from 'lucide-react';
+import { Bell, BellOff, BellRing, Share } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   isPushSupported,
   getPermissionStatus,
+  needsIosInstallForPush,
   registerPushSubscription,
   unregisterPush,
 } from '@/lib/pushService';
@@ -13,6 +14,7 @@ import {
 export function PushNotificationToggle() {
   const { user } = useAuthStore();
   const [supported, setSupported] = useState(false);
+  const [iosInstall, setIosInstall] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('unsupported');
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,7 @@ export function PushNotificationToggle() {
   useEffect(() => {
     const isSupported = isPushSupported();
     setSupported(isSupported);
+    setIosInstall(needsIosInstallForPush());
     if (isSupported) {
       const status = getPermissionStatus();
       setPermission(status);
@@ -57,6 +60,30 @@ export function PushNotificationToggle() {
     setEnabled(false);
     setLoading(false);
   }, [user]);
+
+  // iPhone/iPad can receive push, but only once Align is on the Home Screen.
+  // Saying "not supported" here would be misleading — they are one Share-sheet
+  // away from it working.
+  if (iosInstall) {
+    return (
+      <div className="card">
+        <div className="flex items-start gap-3 px-1 py-2">
+          <Share className="w-5 h-5 text-accent-primary shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-text-primary">Push Notifications</p>
+            <p className="text-xs text-text-muted mt-0.5">
+              On iPhone and iPad, notifications work once Align is added to your Home
+              Screen. Tap <span className="text-text-primary">Share</span>, then{' '}
+              <span className="text-text-primary">Add to Home Screen</span> — open Align from
+              that icon and you can turn notifications on here. Safari is the most reliable;
+              switching to another iPhone browser will not help, as they all run on Safari
+              underneath.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!supported) {
     return (

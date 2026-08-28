@@ -9,6 +9,32 @@ export function isPushSupported(): boolean {
 }
 
 /**
+ * iOS can do web push — but ONLY once the site has been added to the Home
+ * Screen. In a normal Safari tab window.PushManager does not exist at all, so
+ * isPushSupported() is false and the user is told "not supported in this
+ * browser", which is both useless and not quite true: they are one Share-sheet
+ * away from it working.
+ *
+ * Returns true for "this is an iPhone/iPad that could receive push if the user
+ * installed us". iPadOS 13+ reports a Macintosh UA, hence the touch check.
+ */
+export function needsIosInstallForPush(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (isPushSupported()) return false;   // already installed, or not iOS at all
+
+  const ua = navigator.userAgent || '';
+  const isIos =
+    /iPhone|iPad|iPod/.test(ua) ||
+    (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  if (!isIos) return false;
+
+  const standalone =
+    (window.navigator as any).standalone === true ||
+    window.matchMedia?.('(display-mode: standalone)').matches === true;
+  return !standalone;
+}
+
+/**
  * Get the current notification permission status.
  */
 export function getPermissionStatus(): NotificationPermission | 'unsupported' {

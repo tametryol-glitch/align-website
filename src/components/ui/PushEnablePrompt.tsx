@@ -16,17 +16,22 @@
 //      browser prompt, and only from that click, so the one irreversible
 //      answer is only ever requested from someone who just said yes to us.
 //
+//   3. iPhone/iPad in a Safari tab → there is no prompt to reach at all;
+//      window.PushManager does not exist until Align is on the Home Screen.
+//      Those users get instructions rather than a button that cannot work.
+//
 // Anyone who wants out uses the same Settings → Notifications toggle as
 // before; this only handles getting them switched on in the first place.
 // =============================================================================
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bell, X } from 'lucide-react';
+import { Bell, Share, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   isPushSupported,
   getPermissionStatus,
+  needsIosInstallForPush,
   ensurePushSubscribed,
   registerPushSubscription,
 } from '@/lib/pushService';
@@ -42,7 +47,9 @@ const FALLBACK_MS = 90_000; // only for people who never hit a real moment
 
 export function PushEnablePrompt() {
   const { user } = useAuthStore();
-  const [visible, setVisible] = useState(false);
+  // 'ask'  → we can reach the browser prompt
+  // 'ios'  → iPhone/iPad that must add Align to the Home Screen first
+  const [mode, setMode] = useState<'ask' | 'ios' | null>(null);
   const [busy, setBusy] = useState(false);
   const syncedFor = useRef<string | null>(null);
 
@@ -79,23 +86,40 @@ export function PushEnablePrompt() {
     return true;
   }
 
+  // Same snooze and decline budget, different obstacle: on iOS there is no
+  // browser prompt to reach until they install us, so the card explains that
+  // instead of offering a button that cannot work.
+  function eligibleIos(): boolean {
+    if (!user?.id || suppressed) return false;
+    if (!needsIosInstallForPush()) return false;
+    try {
+      if (Number(localStorage.getItem(DECLINE_KEY) || 0) >= MAX_DECLINES) return false;
+      const snoozedUntil = Number(localStorage.getItem(SNOOZE_KEY) || 0);
+      if (snoozedUntil && Date.now() < snoozedUntil) return false;
+    } catch {
+      return false;
+    }
+    return true;
+  }
+
   useEffect(() => {
-    if (!eligible()) return;
+    const next: 'ask' | 'ios' | null = eligible() ? 'ask' : eligibleIos() ? 'ios' : null;
+    if (!next) return;
 
     let momentTimer: ReturnType<typeof setTimeout> | undefined;
 
     // Someone who never hits one of those moments should still be asked once,
     // but late enough that it does not interrupt what they came to do.
     const fallback = setTimeout(() => {
-      if (eligible()) setVisible(true);
+      if (next === 'ask' ? eligible() : eligibleIos()) setMode(next);
     }, FALLBACK_MS);
 
     // The moment that actually earns the question: they just messaged someone
     // or accepted a friend request, so wanting to hear back is self-evident.
     const onMoment = () => {
-      if (!eligible()) return;
+      if (!(next === 'ask' ? eligible() : eligibleIos())) return;
       clearTimeout(fallback);
-      momentTimer = setTimeout(() => setVisible(true), MOMENT_MS);
+      momentTimer = setTimeout(() => setMode(next), MOMENT_MS);
     };
     window.addEventListener(PUSH_MOMENT_EVENT, onMoment);
 
@@ -114,7 +138,7 @@ export function PushEnablePrompt() {
     // legal in Safari and Firefox.
     const ok = await registerPushSubscription(user.id);
     setBusy(false);
-    setVisible(false);
+    setMode(null);
     if (!ok) {
       // Denied or failed. Don't come back — the browser prompt is spent and
       // only their browser settings can undo it now.
@@ -134,39 +158,71 @@ export function PushEnablePrompt() {
     } catch {
       // ignore write failures
     }
-    setVisible(false);
+    setMode(null);
   }
 
-  if (!visible) return null;
+  if (!mode) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-20 md:bottom-6 z-[60] px-4 pointer-events-none">
       <div className="card mx-auto max-w-md pointer-events-auto shadow-xl border border-white/10">
         <div className="flex items-start gap-3 px-1 py-2">
-          <Bell className="w-5 h-5 text-accent-primary shrink-0 mt-0.5" />
+          {mode === 'ios' ? (
+            <Share className="w-5 h-5 text-accent-primary shrink-0 mt-0.5" />
+          ) : (
+            <Bell className="w-5 h-5 text-accent-primary shrink-0 mt-0.5" />
+          )}
+
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-text-primary">Stay in the loop</p>
-            <p className="text-xs text-text-muted mt-0.5">
-              Get notified about friend requests, messages and cosmic events — even
-              when Align is closed. You can turn this off any time in Settings.
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <button
-                onClick={enable}
-                disabled={busy}
-                className="px-4 py-2 text-sm rounded-lg bg-accent-primary hover:bg-accent-primary/80 text-white font-medium transition-colors disabled:opacity-50"
-              >
-                {busy ? 'Turning on...' : 'Turn on'}
-              </button>
-              <button
-                onClick={notNow}
-                disabled={busy}
-                className="px-3 py-2 text-sm rounded-lg text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
-              >
-                Not now
-              </button>
-            </div>
+            {mode === 'ios' ? (
+              <>
+                <p className="text-sm font-medium text-text-primary">
+                  Add Align to your Home Screen
+                </p>
+                <p className="text-xs text-text-muted mt-0.5">
+                  iPhone and iPad only deliver notifications to apps on the Home Screen.
+                  Tap <span className="text-text-primary">Share</span>, choose{' '}
+                  <span className="text-text-primary">Add to Home Screen</span>, then open
+                  Align from that icon to turn notifications on. Safari is the most
+                  reliable — other iPhone browsers all run on Safari underneath, so none
+                  of them can do this from a normal tab.
+                </p>
+                <div className="flex items-center gap-2 mt-3">
+                  <button
+                    onClick={notNow}
+                    className="px-4 py-2 text-sm rounded-lg bg-accent-primary hover:bg-accent-primary/80 text-white font-medium transition-colors"
+                  >
+                    Got it
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium text-text-primary">Stay in the loop</p>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Get notified about friend requests, messages and cosmic events — even
+                  when Align is closed. You can turn this off any time in Settings.
+                </p>
+                <div className="flex items-center gap-2 mt-3">
+                  <button
+                    onClick={enable}
+                    disabled={busy}
+                    className="px-4 py-2 text-sm rounded-lg bg-accent-primary hover:bg-accent-primary/80 text-white font-medium transition-colors disabled:opacity-50"
+                  >
+                    {busy ? 'Turning on...' : 'Turn on'}
+                  </button>
+                  <button
+                    onClick={notNow}
+                    disabled={busy}
+                    className="px-3 py-2 text-sm rounded-lg text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+                  >
+                    Not now
+                  </button>
+                </div>
+              </>
+            )}
           </div>
+
           <button
             onClick={notNow}
             aria-label="Dismiss"
