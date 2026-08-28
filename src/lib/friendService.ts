@@ -260,6 +260,11 @@ export async function sendFriendRequest(targetUserId: string): Promise<FriendAct
       return { success: false, error: error.message };
     }
 
+    // The strongest moment of all: you send a request precisely because you
+    // want to know when they say yes, and that answer arrives later, when the
+    // tab is long closed.
+    notifyPushMoment('friend_requested');
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to send request.' };
