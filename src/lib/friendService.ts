@@ -6,6 +6,7 @@ import { sanitizeSearchInput } from './sanitize';
 
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { notifyPushMoment } from '@/lib/pushMoments';
 
 // ── Types ──
 
@@ -280,6 +281,11 @@ export async function acceptFriendRequest(friendshipId: string): Promise<FriendA
       .neq('initiated_by', myId); // Can only accept requests from others
 
     if (error) return { success: false, error: error.message };
+
+    // Just accepted someone — they are about to become a source of messages
+    // and activity, so this is a moment where notifications obviously matter.
+    notifyPushMoment('friend_accepted');
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to accept request.' };

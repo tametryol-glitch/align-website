@@ -7,6 +7,7 @@ import { sanitizeSearchInput, validateUpload } from './sanitize';
 
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { notifyPushMoment } from '@/lib/pushMoments';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -274,6 +275,10 @@ export async function sendMessage(
       .single();
 
     if (error) return { success: false, error: error.message };
+
+    // Just messaged someone — the best moment to ask about notifications,
+    // since wanting to know when they reply is self-evident right now.
+    notifyPushMoment('message_sent');
 
     return {
       success: true,

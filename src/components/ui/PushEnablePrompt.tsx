@@ -30,13 +30,15 @@ import {
   ensurePushSubscribed,
   registerPushSubscription,
 } from '@/lib/pushService';
+import { PUSH_MOMENT_EVENT } from '@/lib/pushMoments';
 
 const SNOOZE_KEY = 'align_push_prompt_snooze';   // timestamp of the last "Not now"
 const DECLINE_KEY = 'align_push_prompt_declines'; // how many times they've said it
 
 const SNOOZE_DAYS = 7;
-const MAX_DECLINES = 3;   // after this we stop asking and leave it to Settings
-const SETTLE_MS = 15_000; // let them actually look at the page first
+const MAX_DECLINES = 3;    // after this we stop asking and leave it to Settings
+const MOMENT_MS = 1_500;   // let their action finish landing before we ask
+const FALLBACK_MS = 90_000; // only for people who never hit a real moment
 
 export function PushEnablePrompt() {
   const { user } = useAuthStore();
@@ -62,23 +64,47 @@ export function PushEnablePrompt() {
   }, [user?.id, suppressed]);
 
   // ── 2. Soft ask: permission never requested ───────────────────────────────
-  useEffect(() => {
-    if (!user?.id || suppressed) return;
-    if (!isPushSupported() || getPermissionStatus() !== 'default') return;
-
-    let snoozedUntil = 0;
-    let declines = 0;
+  // Re-checked at fire time, not once on mount: permission and the snooze can
+  // both change between page load and the moment we actually want to ask.
+  function eligible(): boolean {
+    if (!user?.id || suppressed) return false;
+    if (!isPushSupported() || getPermissionStatus() !== 'default') return false;
     try {
-      snoozedUntil = Number(localStorage.getItem(SNOOZE_KEY) || 0);
-      declines = Number(localStorage.getItem(DECLINE_KEY) || 0);
+      if (Number(localStorage.getItem(DECLINE_KEY) || 0) >= MAX_DECLINES) return false;
+      const snoozedUntil = Number(localStorage.getItem(SNOOZE_KEY) || 0);
+      if (snoozedUntil && Date.now() < snoozedUntil) return false;
     } catch {
-      return; // localStorage unavailable (private mode) — don't nag
+      return false; // localStorage unavailable (private mode) — don't nag
     }
-    if (declines >= MAX_DECLINES) return;
-    if (snoozedUntil && Date.now() < snoozedUntil) return;
+    return true;
+  }
 
-    const timer = setTimeout(() => setVisible(true), SETTLE_MS);
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    if (!eligible()) return;
+
+    let momentTimer: ReturnType<typeof setTimeout> | undefined;
+
+    // Someone who never hits one of those moments should still be asked once,
+    // but late enough that it does not interrupt what they came to do.
+    const fallback = setTimeout(() => {
+      if (eligible()) setVisible(true);
+    }, FALLBACK_MS);
+
+    // The moment that actually earns the question: they just messaged someone
+    // or accepted a friend request, so wanting to hear back is self-evident.
+    const onMoment = () => {
+      if (!eligible()) return;
+      clearTimeout(fallback);
+      momentTimer = setTimeout(() => setVisible(true), MOMENT_MS);
+    };
+    window.addEventListener(PUSH_MOMENT_EVENT, onMoment);
+
+    return () => {
+      window.removeEventListener(PUSH_MOMENT_EVENT, onMoment);
+      clearTimeout(fallback);
+      if (momentTimer) clearTimeout(momentTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, suppressed]);
 
   async function enable() {
