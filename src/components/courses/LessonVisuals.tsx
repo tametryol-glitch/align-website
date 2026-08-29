@@ -93,14 +93,27 @@ function ElementGrid() {
   );
 }
 
+/**
+ * Every ruler in the Align system, in zodiacal order of the sign it rules.
+ *
+ * Not the classical seven. Showing only the traditional planets while the
+ * lessons teach that Vesta rules Virgo and Juno rules Libra taught the old
+ * system in pictures and the Align system in words. `align: true` marks the
+ * five that replace the conventional assignments.
+ */
 const PLANETS = [
-  { name: 'Sun',     glyph: '☉', meaning: 'Identity', color: '#F59E0B' },
-  { name: 'Moon',    glyph: '☽', meaning: 'Emotions', color: '#C4B5FD' },
-  { name: 'Mercury', glyph: '☿', meaning: 'Mind',     color: '#6EE7B7' },
-  { name: 'Venus',   glyph: '♀', meaning: 'Love',     color: '#F472B6' },
-  { name: 'Mars',    glyph: '♂', meaning: 'Drive',    color: '#EF4444' },
-  { name: 'Jupiter', glyph: '♃', meaning: 'Growth',   color: '#818CF8' },
-  { name: 'Saturn',  glyph: '♄', meaning: 'Lessons',  color: '#9CA3AF' },
+  { name: 'Mars',    glyph: '♂', rules: 'Aries',       color: '#EF4444' },
+  { name: 'Venus',   glyph: '♀', rules: 'Taurus',      color: '#F472B6' },
+  { name: 'Mercury', glyph: '☿', rules: 'Gemini',      color: '#6EE7B7' },
+  { name: 'Moon',    glyph: '☽', rules: 'Cancer',      color: '#C4B5FD' },
+  { name: 'Sun',     glyph: '☉', rules: 'Leo',         color: '#F59E0B' },
+  { name: 'Vesta',   glyph: '⚶', rules: 'Virgo',       color: '#A3E635', align: true },
+  { name: 'Juno',    glyph: '⚵', rules: 'Libra',       color: '#FDE047', align: true },
+  { name: 'Pluto',   glyph: '♇', rules: 'Scorpio',     color: '#A855F7', align: true },
+  { name: 'Jupiter', glyph: '♃', rules: 'Sagittarius', color: '#818CF8' },
+  { name: 'Saturn',  glyph: '♄', rules: 'Capricorn',   color: '#9CA3AF' },
+  { name: 'Uranus',  glyph: '♅', rules: 'Aquarius',    color: '#22D3EE', align: true },
+  { name: 'Neptune', glyph: '♆', rules: 'Pisces',      color: '#60A5FA', align: true },
 ];
 
 function PlanetRow() {
@@ -116,7 +129,14 @@ function PlanetRow() {
               <span className="text-lg" style={{ color: p.color }}>{p.glyph}</span>
             </div>
             <span className="text-[11px] text-text-secondary mt-1">{p.name}</span>
-            <span className="text-[10px] text-text-muted">{p.meaning}</span>
+            {/* The five Align replacements carry their sign in colour, so the
+                signature of the system is visible at a glance. */}
+            <span
+              className="text-[10px]"
+              style={p.align ? { color: p.color } : undefined}
+            >
+              <span className={p.align ? '' : 'text-text-muted'}>{p.rules}</span>
+            </span>
           </div>
         ))}
       </div>
