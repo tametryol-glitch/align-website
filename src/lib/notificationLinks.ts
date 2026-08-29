@@ -47,6 +47,9 @@ export function getNotificationLink(n: LinkableNotification): string {
       // distinguished by data.kind, so it has to be checked before the
       // generic /readings fallback.
       if (n.data?.kind === 'cosmic_frequency') return '/readings/cosmic-frequencies';
+      // The purpose check-in rides on the same type; the conversation card
+      // lives on the dashboard, not in /readings.
+      if (n.data?.kind === 'purpose_checkin') return '/dashboard';
       return '/readings';
     case 'cosmic_match_ready':
       // /compatibility/[signs] is the public sign-pair guide, not this user's
