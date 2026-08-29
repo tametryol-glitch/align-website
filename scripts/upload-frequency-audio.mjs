@@ -26,6 +26,23 @@ const BUCKET = 'frequency-audio';
 // Generated, immutable, content-addressed by id: cache hard.
 const CACHE_CONTROL = '31536000';
 
+/**
+ * Ambient beds. Chosen from the app's existing assets for length (all 60s+,
+ * so the loop seam is not obvious over a 15-minute session) and consistent
+ * loudness (mean -14.8 to -17.0 dB, a ~3 dB spread, so one bed volume works
+ * for all of them without a normalisation pass).
+ *
+ * Descriptive names only. No "432 Hz", no "binaural", nothing that turns an
+ * ambient track into a therapeutic claim.
+ */
+const BEDS = [
+  { id: 'cosmic-hum', file: 'ambient_cosmic_hum.mp3' },
+  { id: 'soft-strings', file: 'ambient_soft_strings.mp3' },
+  { id: 'choir-pad', file: 'ambient_choir_pad.mp3' },
+  { id: 'crystal-bells', file: 'ambient_crystal_bells.mp3' },
+  { id: 'rain', file: 'ambient_rain_light.mp3' },
+];
+
 function loadEnv() {
   const envPath = path.join(__dirname, '..', '.env.local');
   if (!fs.existsSync(envPath)) return;
@@ -132,6 +149,38 @@ async function main() {
         console.log(`  ${uploaded + skipped}/${clips.length} ...`);
       }
     }
+  }
+
+  // ── ambient beds ──
+  // Sourced from the mobile app's existing asset folder rather than new
+  // downloads: these already ship in the app, so the licence position is
+  // unchanged. Five beds are reused under all 259 clips — the bed is never
+  // per-frequency, which is the whole reason the music budget is near zero.
+  const bedsDir = path.join(
+    __dirname, '..', '..', 'align-app', 'assets', 'audio',
+  );
+  let bedsUploaded = 0;
+  if (fs.existsSync(bedsDir)) {
+    for (const bed of BEDS) {
+      const local = path.join(bedsDir, bed.file);
+      if (!fs.existsSync(local)) {
+        failures.push(`bed ${bed.id}: missing ${local}`);
+        failed++;
+        continue;
+      }
+      const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(`beds/${bed.file}`, fs.readFileSync(local), {
+          contentType: 'audio/mpeg',
+          cacheControl: CACHE_CONTROL,
+          upsert: true,
+        });
+      if (error) { failed++; failures.push(`bed ${bed.id}: ${error.message}`); }
+      else bedsUploaded++;
+    }
+    console.log(`beds uploaded: ${bedsUploaded}/${BEDS.length}`);
+  } else {
+    console.warn(`beds source not found: ${bedsDir}`);
   }
 
   // ── manifest last, so it never points at clips that are not there yet ──

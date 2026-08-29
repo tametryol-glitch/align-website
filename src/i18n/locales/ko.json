@@ -3203,6 +3203,15 @@
       "slow": "느리게",
       "medium": "보통",
       "fast": "빠르게"
+    },
+    "soundLabel": "사운드",
+    "beds": {
+      "none": "없음",
+      "cosmic-hum": "코스믹 험",
+      "soft-strings": "부드러운 현악",
+      "choir-pad": "합창",
+      "crystal-bells": "벨",
+      "rain": "빗소리"
     }
   }
 }

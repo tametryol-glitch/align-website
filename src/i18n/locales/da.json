@@ -3203,6 +3203,15 @@
       "slow": "Langsom",
       "medium": "Mellem",
       "fast": "Hurtig"
+    },
+    "soundLabel": "Lyd",
+    "beds": {
+      "none": "Ingen",
+      "cosmic-hum": "Kosmisk summen",
+      "soft-strings": "Bløde strygere",
+      "choir-pad": "Kor",
+      "crystal-bells": "Klokker",
+      "rain": "Regn"
     }
   }
 }

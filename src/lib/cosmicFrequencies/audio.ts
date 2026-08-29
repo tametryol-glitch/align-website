@@ -20,6 +20,43 @@ export function getClipUrl(frequencyId: string): string | null {
   return `${AUDIO_BASE}/clips/${frequencyId}.mp3`;
 }
 
+/* ── Ambient beds ────────────────────────────────────────────────
+   One bed plays under any frequency — never per-code, which is what
+   keeps the music budget at five files instead of 259.
+
+   Descriptive names only. No "432 Hz", no "binaural": that wording
+   turns an ambient track into a therapeutic claim.
+   ────────────────────────────────────────────────────────────── */
+
+export interface AmbientBed {
+  id: string;
+  file: string;
+  /** English fallback; the UI prefers the i18n key cosmicFrequencies.beds.<id>. */
+  label: string;
+}
+
+export const BEDS: AmbientBed[] = [
+  { id: 'cosmic-hum', file: 'ambient_cosmic_hum.mp3', label: 'Cosmic hum' },
+  { id: 'soft-strings', file: 'ambient_soft_strings.mp3', label: 'Soft strings' },
+  { id: 'choir-pad', file: 'ambient_choir_pad.mp3', label: 'Choir' },
+  { id: 'crystal-bells', file: 'ambient_crystal_bells.mp3', label: 'Bells' },
+  { id: 'rain', file: 'ambient_rain_light.mp3', label: 'Rain' },
+];
+
+export function getBedUrl(file: string): string | null {
+  if (!AUDIO_BASE) return null;
+  return `${AUDIO_BASE}/beds/${file}`;
+}
+
+/**
+ * Bed sits well under the voice. The beds measure -14.8 to -17.0 dB mean, a
+ * ~3 dB spread, so a single value works for all of them.
+ */
+export const BED_VOLUME = 0.35;
+
+/** Default is silence: some people want dry digits, and forcing music loses them. */
+export const DEFAULT_BED: string | null = null;
+
 export type Tempo = 'slow' | 'medium' | 'fast';
 
 /** Milliseconds of silence between recitations. */

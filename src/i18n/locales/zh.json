@@ -3206,6 +3206,15 @@
       "slow": "慢",
       "medium": "中",
       "fast": "快"
+    },
+    "soundLabel": "声音",
+    "beds": {
+      "none": "无",
+      "cosmic-hum": "宇宙嗡鸣",
+      "soft-strings": "轻柔弦乐",
+      "choir-pad": "人声和声",
+      "crystal-bells": "铃声",
+      "rain": "雨声"
     }
   }
 }

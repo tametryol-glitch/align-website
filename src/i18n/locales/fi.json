@@ -3203,6 +3203,15 @@
       "slow": "Hidas",
       "medium": "Keskitaso",
       "fast": "Nopea"
+    },
+    "soundLabel": "Ääni",
+    "beds": {
+      "none": "Ei mitään",
+      "cosmic-hum": "Kosminen humina",
+      "soft-strings": "Pehmeät jouset",
+      "choir-pad": "Kuoro",
+      "crystal-bells": "Kellot",
+      "rain": "Sade"
     }
   }
 }

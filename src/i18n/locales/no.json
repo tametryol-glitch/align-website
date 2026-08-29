@@ -3203,6 +3203,15 @@
       "slow": "Sakte",
       "medium": "Middels",
       "fast": "Rask"
+    },
+    "soundLabel": "Lyd",
+    "beds": {
+      "none": "Ingen",
+      "cosmic-hum": "Kosmisk summing",
+      "soft-strings": "Myke strykere",
+      "choir-pad": "Kor",
+      "crystal-bells": "Klokker",
+      "rain": "Regn"
     }
   }
 }

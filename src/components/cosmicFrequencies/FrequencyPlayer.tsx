@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Headphones, Loader2, Pause, Play } from 'lucide-react';
 import {
+  BEDS,
+  BED_VOLUME,
+  DEFAULT_BED,
   DEFAULT_MINUTES,
   DEFAULT_TEMPO,
   SESSION_MINUTES,
   TEMPO_GAP_MS,
   TEMPO_ORDER,
   formatClock,
+  getBedUrl,
   getClipUrl,
   type SessionMinutes,
   type Tempo,
@@ -39,8 +43,10 @@ export function FrequencyPlayer({ frequency }: Props) {
   const [tempo, setTempo] = useState<Tempo>(DEFAULT_TEMPO);
   const [minutes, setMinutes] = useState<SessionMinutes>(DEFAULT_MINUTES);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [bedId, setBedId] = useState<string | null>(DEFAULT_BED);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const bedRef = useRef<HTMLAudioElement | null>(null);
   const gapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
   // Read inside the 'ended' handler, so changing tempo mid-session takes
@@ -55,6 +61,8 @@ export function FrequencyPlayer({ frequency }: Props) {
     if (tick.current) { clearInterval(tick.current); tick.current = null; }
     const a = audioRef.current;
     if (a) { a.pause(); a.currentTime = 0; }
+    const b = bedRef.current;
+    if (b) { b.pause(); b.currentTime = 0; }
     setPlaying(false);
     setRemaining(null);
   }, []);
@@ -92,6 +100,22 @@ export function FrequencyPlayer({ frequency }: Props) {
       return;
     }
 
+    // The bed loops natively — it is continuous, so it needs no gap logic.
+    // A bed that fails to load must not take the session down with it.
+    const bed = BEDS.find((x) => x.id === bedId);
+    const bedUrl = bed ? getBedUrl(bed.file) : null;
+    if (bedUrl) {
+      let b = bedRef.current;
+      if (!b || b.src !== bedUrl) {
+        b?.pause();
+        b = new Audio(bedUrl);
+        b.loop = true;
+        bedRef.current = b;
+      }
+      b.volume = BED_VOLUME;
+      b.play().catch(() => { /* voice continues without it */ });
+    }
+
     setLoading(false);
     setPlaying(true);
 
@@ -104,7 +128,7 @@ export function FrequencyPlayer({ frequency }: Props) {
         return r - 1;
       });
     }, 1000);
-  }, [url, minutes, stop]);
+  }, [url, minutes, bedId, stop]);
 
   if (!url) return null;
 
@@ -149,6 +173,36 @@ export function FrequencyPlayer({ frequency }: Props) {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Sound — silence first, because forcing music loses people */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="text-[11px] text-text-muted w-12">
+          {t('cosmicFrequencies.soundLabel', 'Sound')}
+        </span>
+        <button
+          onClick={() => setBedId(null)}
+          className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+            bedId === null
+              ? 'bg-accent-primary text-white'
+              : 'bg-white/5 text-text-muted hover:bg-white/10'
+          }`}
+        >
+          {t('cosmicFrequencies.beds.none', 'None')}
+        </button>
+        {BEDS.map((b) => (
+          <button
+            key={b.id}
+            onClick={() => setBedId(b.id)}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+              bedId === b.id
+                ? 'bg-accent-primary text-white'
+                : 'bg-white/5 text-text-muted hover:bg-white/10'
+            }`}
+          >
+            {t(`cosmicFrequencies.beds.${b.id}`, b.label)}
+          </button>
+        ))}
       </div>
 
       {/* Tempo */}

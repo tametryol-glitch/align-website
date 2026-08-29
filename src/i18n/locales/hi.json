@@ -3206,6 +3206,15 @@
       "slow": "धीमा",
       "medium": "मध्यम",
       "fast": "तेज़"
+    },
+    "soundLabel": "ध्वनि",
+    "beds": {
+      "none": "कोई नहीं",
+      "cosmic-hum": "कॉस्मिक गुंजन",
+      "soft-strings": "मृदु तार",
+      "choir-pad": "कोरस",
+      "crystal-bells": "घंटियाँ",
+      "rain": "वर्षा"
     }
   }
 }

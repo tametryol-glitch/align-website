@@ -3203,6 +3203,15 @@
       "slow": "بطيء",
       "medium": "متوسط",
       "fast": "سريع"
+    },
+    "soundLabel": "الصوت",
+    "beds": {
+      "none": "بدون",
+      "cosmic-hum": "أزيز كوني",
+      "soft-strings": "أوتار ناعمة",
+      "choir-pad": "جوقة",
+      "crystal-bells": "أجراس",
+      "rain": "مطر"
     }
   }
 }

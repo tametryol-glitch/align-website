@@ -3239,6 +3239,15 @@
       "slow": "Slow",
       "medium": "Medium",
       "fast": "Fast"
+    },
+    "soundLabel": "Sound",
+    "beds": {
+      "none": "None",
+      "cosmic-hum": "Cosmic hum",
+      "soft-strings": "Soft strings",
+      "choir-pad": "Choir",
+      "crystal-bells": "Bells",
+      "rain": "Rain"
     }
   }
 }

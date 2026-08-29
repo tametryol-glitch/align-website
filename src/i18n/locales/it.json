@@ -3203,6 +3203,15 @@
       "slow": "Lento",
       "medium": "Medio",
       "fast": "Veloce"
+    },
+    "soundLabel": "Suono",
+    "beds": {
+      "none": "Nessuno",
+      "cosmic-hum": "Ronzio cosmico",
+      "soft-strings": "Archi delicati",
+      "choir-pad": "Coro",
+      "crystal-bells": "Campane",
+      "rain": "Pioggia"
     }
   }
 }

@@ -3203,6 +3203,15 @@
       "slow": "ช้า",
       "medium": "ปานกลาง",
       "fast": "เร็ว"
+    },
+    "soundLabel": "เสียง",
+    "beds": {
+      "none": "ไม่มี",
+      "cosmic-hum": "เสียงหึ่งจักรวาล",
+      "soft-strings": "เครื่องสายนุ่ม",
+      "choir-pad": "เสียงประสาน",
+      "crystal-bells": "ระฆัง",
+      "rain": "เสียงฝน"
     }
   }
 }

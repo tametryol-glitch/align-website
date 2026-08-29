@@ -3203,6 +3203,15 @@
       "slow": "Langzaam",
       "medium": "Gemiddeld",
       "fast": "Snel"
+    },
+    "soundLabel": "Geluid",
+    "beds": {
+      "none": "Geen",
+      "cosmic-hum": "Kosmische bromtoon",
+      "soft-strings": "Zachte strijkers",
+      "choir-pad": "Koor",
+      "crystal-bells": "Klokken",
+      "rain": "Regen"
     }
   }
 }

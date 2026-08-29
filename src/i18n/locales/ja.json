@@ -3203,6 +3203,15 @@
       "slow": "ゆっくり",
       "medium": "ふつう",
       "fast": "はやい"
+    },
+    "soundLabel": "サウンド",
+    "beds": {
+      "none": "なし",
+      "cosmic-hum": "宇宙のハム",
+      "soft-strings": "やわらかな弦",
+      "choir-pad": "コーラス",
+      "crystal-bells": "ベル",
+      "rain": "雨"
     }
   }
 }

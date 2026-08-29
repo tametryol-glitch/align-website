@@ -3203,6 +3203,15 @@
       "slow": "Yavaş",
       "medium": "Orta",
       "fast": "Hızlı"
+    },
+    "soundLabel": "Ses",
+    "beds": {
+      "none": "Yok",
+      "cosmic-hum": "Kozmik uğultu",
+      "soft-strings": "Yumuşak yaylılar",
+      "choir-pad": "Koro",
+      "crystal-bells": "Çanlar",
+      "rain": "Yağmur"
     }
   }
 }

@@ -3203,6 +3203,15 @@
       "slow": "Langsam",
       "medium": "Mittel",
       "fast": "Schnell"
+    },
+    "soundLabel": "Klang",
+    "beds": {
+      "none": "Keiner",
+      "cosmic-hum": "Kosmisches Summen",
+      "soft-strings": "Sanfte Streicher",
+      "choir-pad": "Chor",
+      "crystal-bells": "Glocken",
+      "rain": "Regen"
     }
   }
 }

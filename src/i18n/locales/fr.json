@@ -3203,6 +3203,15 @@
       "slow": "Lent",
       "medium": "Moyen",
       "fast": "Rapide"
+    },
+    "soundLabel": "Son",
+    "beds": {
+      "none": "Aucun",
+      "cosmic-hum": "Bourdon cosmique",
+      "soft-strings": "Cordes douces",
+      "choir-pad": "Chœur",
+      "crystal-bells": "Cloches",
+      "rain": "Pluie"
     }
   }
 }

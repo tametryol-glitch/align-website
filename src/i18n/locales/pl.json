@@ -3203,6 +3203,15 @@
       "slow": "Wolno",
       "medium": "Średnio",
       "fast": "Szybko"
+    },
+    "soundLabel": "Dźwięk",
+    "beds": {
+      "none": "Brak",
+      "cosmic-hum": "Kosmiczny szum",
+      "soft-strings": "Miękkie smyczki",
+      "choir-pad": "Chór",
+      "crystal-bells": "Dzwonki",
+      "rain": "Deszcz"
     }
   }
 }
