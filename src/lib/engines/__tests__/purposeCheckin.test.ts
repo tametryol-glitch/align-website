@@ -20,6 +20,8 @@ import {
   learnRegister,
   nextCadenceDays,
   nextStatus,
+  isDue,
+  composeOpener,
   nextTrack,
   pointsToArchive,
   scorePoint,
@@ -232,5 +234,74 @@ describe('register — chart sets the opening, behaviour overrides it', () => {
 
   it('falls back to the chart prior before there is enough behaviour to learn from', () => {
     expect(learnRegister('collaborative', [])).toEqual({ register: 'collaborative', source: 'chart' });
+  });
+});
+
+describe('isDue — a paused reader is never chased', () => {
+  it('is due when there has never been a check-in', () => {
+    expect(isDue({ nextDueAt: null, paused: false }, NOW)).toBe(true);
+  });
+
+  it('is not due before the next date', () => {
+    expect(isDue({ nextDueAt: daysAgo(-3), paused: false }, NOW)).toBe(false);
+  });
+
+  it('is due once the date has passed', () => {
+    expect(isDue({ nextDueAt: daysAgo(1), paused: false }, NOW)).toBe(true);
+  });
+
+  it('is never due while paused, however overdue', () => {
+    expect(isDue({ nextDueAt: daysAgo(90), paused: true }, NOW)).toBe(false);
+  });
+});
+
+describe('composeOpener — friend, not scheduler', () => {
+  const selection = {
+    point: HOUSE,
+    state: null as PurposePointState | null,
+    score: 100,
+    alternatives: [SIGN, FILLER],
+  };
+
+  it('quotes the reader back when we have their words', () => {
+    const o = composeOpener({
+      register: 'collaborative',
+      selection,
+      lastNote: 'writing at night when the house goes quiet',
+      isFirstEver: false,
+    });
+    expect(o.recall).toContain('writing at night when the house goes quiet');
+  });
+
+  it('has nothing to recall on a first meeting, and explains the rhythm', () => {
+    const o = composeOpener({ register: 'collaborative', selection, lastNote: null, isFirstEver: true });
+    expect(o.recall).toBeNull();
+    expect(o.lead).toMatch(/every couple of weeks/i);
+  });
+
+  it('hands a directive reader one clear thing, with no menu', () => {
+    const o = composeOpener({ register: 'directive', selection, lastNote: null, isFirstEver: false });
+    expect(o.alternatives).toEqual([]);
+    expect(o.point).toBe(HOUSE);
+  });
+
+  it('asks an autonomous reader to choose, and shows them the options', () => {
+    const o = composeOpener({ register: 'autonomous', selection, lastNote: null, isFirstEver: false });
+    expect(o.lead).toMatch(/\?$/);
+    expect(o.alternatives.length).toBeGreaterThan(0);
+  });
+
+  it('follows up rather than re-introducing a point already live', () => {
+    const live = { ...selection, state: state({ pointKey: HOUSE.key, status: 'live' }) };
+    const o = composeOpener({ register: 'directive', selection: live, lastNote: null, isFirstEver: false });
+    expect(o.lead).toMatch(/where we left off/i);
+  });
+
+  it('always offers an honest way out', () => {
+    const o = composeOpener({ register: 'directive', selection, lastNote: null, isFirstEver: false });
+    const outcomes = o.replies.map((r) => r.outcome);
+    expect(outcomes).toContain('confirmed');
+    expect(outcomes).toContain('declined');
+    expect(outcomes).toContain('deferred');
   });
 });

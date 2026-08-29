@@ -304,3 +304,81 @@ export function learnRegister(prior: Register, history: CheckinRecord[]): Learne
   if (tookLead >= 2) return { register: 'directive', source: 'observed' };
   return { register: prior, source: 'chart' };
 }
+
+// ── Scheduling ───────────────────────────────────────────────────────────────
+
+/** Whether a check-in is owed. A paused reader is never due. */
+export function isDue(prefs: { nextDueAt: string | null; paused: boolean }, now: Date): boolean {
+  if (prefs.paused) return false;
+  if (!prefs.nextDueAt) return true; // never checked in
+  return new Date(prefs.nextDueAt).getTime() <= now.getTime();
+}
+
+// ── The opener ───────────────────────────────────────────────────────────────
+
+export interface QuickReply {
+  label: string;
+  outcome: CheckinOutcome;
+}
+
+export interface CheckinOpener {
+  /** Their own words from last time, quoted back. Null on a first meeting. */
+  recall: string | null;
+  /** The lead-in, shaped by register. */
+  lead: string;
+  point: PurposePoint;
+  /** Offered when the register says this reader wants the call to be theirs. */
+  alternatives: PurposePoint[];
+  replies: QuickReply[];
+}
+
+const REPLIES: QuickReply[] = [
+  { label: "I've been on this", outcome: 'confirmed' },
+  { label: 'Not this one', outcome: 'declined' },
+  { label: 'Not right now', outcome: 'deferred' },
+];
+
+/**
+ * Compose what the bot opens with.
+ *
+ * Two rules do most of the work here. First, quoting the reader's own words
+ * back is what separates a friend from a scheduler — so `recall` leads whenever
+ * we have it. Second, the register decides whether the point is TOLD, OFFERED,
+ * or ASKED: a reader who wants the call to be theirs gets the alternatives up
+ * front, and one who wants a clear single thing is not handed a menu.
+ *
+ * Deliberately deterministic. An AI pass can warm the phrasing later, but the
+ * structure — recall, one lead point, an honest way out — is the contract.
+ */
+export function composeOpener(input: {
+  register: Register;
+  selection: Selection;
+  lastNote: string | null;
+  isFirstEver: boolean;
+}): CheckinOpener {
+  const { register, selection, lastNote, isFirstEver } = input;
+  const followingUp = selection.state?.status === 'live' || selection.state?.status === 'lived';
+
+  const recall = lastNote ? `Last time you told me: "${lastNote}"` : null;
+
+  let lead: string;
+  if (isFirstEver) {
+    lead = 'There are a handful of things your chart keeps pointing at. I want to check in on one of them every couple of weeks — not to nag, just so they do not stay theoretical.';
+  } else if (followingUp) {
+    lead = 'Picking up where we left off.';
+  } else if (register === 'directive') {
+    lead = 'The one I keep coming back to for you is this.';
+  } else if (register === 'autonomous') {
+    lead = 'Which of these is actually alive for you right now?';
+  } else {
+    lead = 'This is the one that stands out — but you know your life better than I do.';
+  }
+
+  return {
+    recall,
+    lead,
+    point: selection.point,
+    alternatives: register === 'directive' ? [] : selection.alternatives,
+    replies: REPLIES,
+  };
+}

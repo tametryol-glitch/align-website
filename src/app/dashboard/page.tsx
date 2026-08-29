@@ -18,6 +18,7 @@ import { useWhatsNew } from '@/hooks/useWhatsNew';
 import { WhatsNewModal } from '@/components/ui/WhatsNewModal';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { GettingStartedChecklist } from '@/components/ui/GettingStartedChecklist';
+import { PurposeCheckinCard } from '@/components/PurposeCheckinCard';
 import { EarthlyPurposeCard } from '@/components/EarthlyPurposeCard';
 import { SoulPurposeCard } from '@/components/SoulPurposeCard';
 import { useCoachmarks } from '@/hooks/useCoachmarks';
@@ -462,6 +463,9 @@ export default function DashboardPage() {
       )}
 
       {/* Your Earthly Purpose — Earth (opposite the Sun) read on open */}
+      {/* Biweekly purpose check-in — renders only when one is due. */}
+      <PurposeCheckinCard profile={profile} />
+
       <EarthlyPurposeCard profile={profile} />
 
       {/* Your Soul Purpose — North Node (evolutionary direction) read on open */}
