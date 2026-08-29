@@ -79,6 +79,8 @@ export async function middleware(request: NextRequest) {
     pathname === '/robots.txt' ||    // crawlers must read these unauthenticated
     pathname.startsWith('/.well-known/') ||     // Apple/Android app-link association files — the OS fetches these with no cookies, so a login gate silently breaks Universal Links
     pathname === '/sitemap.xml' ||
+    pathname === '/manifest.webmanifest' || // fetched with credentials OMITTED per spec, so even a signed-in user's manifest request arrives cookie-less; gating it turns "Add to Home Screen" into a plain Safari bookmark and silently makes iOS web push impossible
+    pathname === '/sw.js' ||         // the browser re-fetches the service worker on its own schedule; a redirect here returns HTML and kills the push subscription
     pathname.startsWith('/auth') ||
     pathname.startsWith('/privacy') ||
     pathname.startsWith('/terms') ||

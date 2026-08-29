@@ -31,6 +31,15 @@ export const metadata: Metadata = {
     title: 'Align — AI Astrology & Cosmic Compatibility',
     description: 'Natal charts, compatibility, 26+ AI readings, and a cosmic community. Free to start.',
   },
+  manifest: '/manifest.webmanifest',
+  // Apple gates Web Push on the site being a Home Screen web app. The manifest
+  // is what makes it one on modern iOS; this meta tag is the legacy equivalent
+  // and still respected, so both are declared.
+  appleWebApp: {
+    capable: true,
+    title: 'Align',
+    statusBarStyle: 'black-translucent',
+  },
   icons: {
     icon: '/favicon.png',
     apple: '/apple-touch-icon.png',
