@@ -696,7 +696,8 @@
       "refreshesDaily": "Uppdateras dagligen.",
       "otherLineages": "Andra övervägda linjer",
       "disclaimer": "Starseed-ursprung är en tolkande lins på själsnivå – en spegel för reflektion, inte ett bokstavligt påstående om var du föddes."
-    }
+    },
+    "cosmicFrequencies": "Kosmiska Frekvenser"
   },
   "interpretation": {
     "aiInterpret": "AI-tolkning",
@@ -3162,5 +3163,29 @@
     "helper": "Välj månad, dag och sedan året du föddes",
     "ageLabel": "{{age}} år gammal",
     "tooYoung": "Du måste vara {{age}} år eller äldre för att använda Align."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmiska Frekvenser",
+    "intro": "Talföljder att hålla tillsammans med en bestämd intention. Bläddra i biblioteket, eller arbeta med den som ditt horoskop pekar på den här veckan.",
+    "searchPlaceholder": "Sök på intention eller siffror",
+    "noResults": "Inget matchar ännu.",
+    "thisWeek": "DENNA VECKA",
+    "domain": {
+      "all": "Alla",
+      "health": "Hälsa",
+      "money": "Pengar",
+      "love": "Kärlek",
+      "career": "Karriär",
+      "protection": "Skydd",
+      "spiritual": "Andlig"
+    },
+    "disclaimer": {
+      "title": "Innan du fortsätter",
+      "body": "Kosmiska Frekvenser är en andlig reflektionspraktik, inte medicin. Inget här är medicinsk rådgivning, diagnos eller behandling, och ingen talföljd är ett recept eller en ersättning för professionell vård. Om du har symtom, eller överväger att ändra din behandling eller medicinering, kontakta en legitimerad läkare. Ring det lokala nödnumret vid en nödsituation.",
+      "accept": "Jag förstår",
+      "cancel": "Inte nu"
+    },
+    "needsBirthData": "Lägg till ditt födelsedatum, din födelsetid och födelseort för att se frekvensen som ditt horoskop pekar på den här veckan.",
+    "pointsTo": "Ditt horoskop pekar på {{pressure}}."
   }
 }

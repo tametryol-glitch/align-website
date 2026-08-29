@@ -42,6 +42,11 @@ export function getNotificationLink(n: LinkableNotification): string {
     case 'moon_phase':
     case 'retrograde':
     case 'eclipse':
+      // Cosmic Frequencies rides on the 'transit_alert' type (the only type
+      // valid under every version of notifications_type_check) and is
+      // distinguished by data.kind, so it has to be checked before the
+      // generic /readings fallback.
+      if (n.data?.kind === 'cosmic_frequency') return '/readings/cosmic-frequencies';
       return '/readings';
     case 'cosmic_match_ready':
       // /compatibility/[signs] is the public sign-pair guide, not this user's

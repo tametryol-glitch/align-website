@@ -696,7 +696,8 @@
       "refreshesDaily": "Refreshes daily.",
       "otherLineages": "Other lineages considered",
       "disclaimer": "Starseed origin is an interpretive, soul-level lens — a mirror for reflection, not a literal claim about where you were born."
-    }
+    },
+    "cosmicFrequencies": "Cosmic Frequencies"
   },
   "interpretation": {
     "aiInterpret": "AI Interpretation",
@@ -3198,5 +3199,29 @@
     "helper": "Pick the month, the day, then the year you were born",
     "ageLabel": "{{age}} years old",
     "tooYoung": "You must be {{age}} or older to use Align."
+  },
+  "cosmicFrequencies": {
+    "title": "Cosmic Frequencies",
+    "intro": "Numeric sequences to hold alongside a specific intention. Browse the library, or work with the one your chart is pointing at this week.",
+    "searchPlaceholder": "Search by intention or by number",
+    "noResults": "Nothing matches that yet.",
+    "thisWeek": "THIS WEEK",
+    "domain": {
+      "all": "All",
+      "health": "Health",
+      "money": "Money",
+      "love": "Love",
+      "career": "Career",
+      "protection": "Protection",
+      "spiritual": "Spiritual"
+    },
+    "disclaimer": {
+      "title": "Before you continue",
+      "body": "Cosmic Frequencies are a reflective spiritual practice, not medicine. Nothing here is medical advice, diagnosis, or treatment, and no sequence is a prescription or a substitute for professional care. If you are experiencing symptoms, or considering any change to treatment or medication, contact a licensed physician. In an emergency, call your local emergency number.",
+      "accept": "I understand",
+      "cancel": "Not now"
+    },
+    "needsBirthData": "Add your birth date, time and place to see the frequency your chart points at this week.",
+    "pointsTo": "Your chart points to {{pressure}}."
   }
 }

@@ -696,7 +696,8 @@
       "refreshesDaily": "Opdateres dagligt.",
       "otherLineages": "Andre overvejede linjer",
       "disclaimer": "Starseed-oprindelse er en fortolkende linse på sjæleniveau – et spejl til refleksion, ikke en bogstavelig påstand om, hvor du blev født."
-    }
+    },
+    "cosmicFrequencies": "Kosmiske Frekvenser"
   },
   "interpretation": {
     "aiInterpret": "AI-fortolkning",
@@ -3162,5 +3163,29 @@
     "helper": "Vælg måneden, dagen og derefter året, du blev født",
     "ageLabel": "{{age}} år gammel",
     "tooYoung": "Du skal være {{age}} år eller derover for at bruge Align."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmiske Frekvenser",
+    "intro": "Talrækker, du kan holde sammen med en bestemt intention. Gennemse biblioteket, eller arbejd med den, dit horoskop peger på i denne uge.",
+    "searchPlaceholder": "Søg på intention eller tal",
+    "noResults": "Der er ikke noget, der matcher endnu.",
+    "thisWeek": "DENNE UGE",
+    "domain": {
+      "all": "Alle",
+      "health": "Helbred",
+      "money": "Penge",
+      "love": "Kærlighed",
+      "career": "Karriere",
+      "protection": "Beskyttelse",
+      "spiritual": "Spirituel"
+    },
+    "disclaimer": {
+      "title": "Før du fortsætter",
+      "body": "Kosmiske Frekvenser er en spirituel refleksionspraksis, ikke medicin. Intet her er lægelig rådgivning, diagnose eller behandling, og ingen talrække er en recept eller en erstatning for professionel behandling. Hvis du har symptomer, eller overvejer at ændre din behandling eller medicin, så kontakt en autoriseret læge. Ring til det lokale alarmnummer i en nødsituation.",
+      "accept": "Jeg forstår",
+      "cancel": "Ikke nu"
+    },
+    "needsBirthData": "Tilføj din fødselsdato, -tid og -sted for at se den frekvens, dit horoskop peger på i denne uge.",
+    "pointsTo": "Dit horoskop peger på {{pressure}}."
   }
 }

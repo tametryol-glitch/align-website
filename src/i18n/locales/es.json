@@ -696,7 +696,8 @@
       "refreshesDaily": "Se actualiza a diario.",
       "otherLineages": "Otros linajes considerados",
       "disclaimer": "El origen starseed es una lente interpretativa a nivel del alma: un espejo para la reflexión, no una afirmación literal sobre dónde naciste."
-    }
+    },
+    "cosmicFrequencies": "Frecuencias Cósmicas"
   },
   "interpretation": {
     "aiInterpret": "Interpretacion IA",
@@ -3162,5 +3163,29 @@
     "helper": "Elige el mes, el día y luego el año en que naciste",
     "ageLabel": "{{age}} años",
     "tooYoung": "Debes tener {{age}} años o más para usar Align."
+  },
+  "cosmicFrequencies": {
+    "title": "Frecuencias Cósmicas",
+    "intro": "Secuencias numéricas para acompañar una intención concreta. Explora la biblioteca o trabaja con la que tu carta señala esta semana.",
+    "searchPlaceholder": "Busca por intención o por número",
+    "noResults": "Todavía no hay coincidencias.",
+    "thisWeek": "ESTA SEMANA",
+    "domain": {
+      "all": "Todas",
+      "health": "Salud",
+      "money": "Dinero",
+      "love": "Amor",
+      "career": "Carrera",
+      "protection": "Protección",
+      "spiritual": "Espiritual"
+    },
+    "disclaimer": {
+      "title": "Antes de continuar",
+      "body": "Las Frecuencias Cósmicas son una práctica espiritual de reflexión, no medicina. Nada de esto constituye consejo médico, diagnóstico ni tratamiento, y ninguna secuencia es una receta ni un sustituto de la atención profesional. Si presentas síntomas, o estás considerando cualquier cambio en tu tratamiento o medicación, consulta a un médico colegiado. En caso de emergencia, llama al número de emergencias de tu zona.",
+      "accept": "Entiendo",
+      "cancel": "Ahora no"
+    },
+    "needsBirthData": "Añade tu fecha, hora y lugar de nacimiento para ver la frecuencia que tu carta señala esta semana.",
+    "pointsTo": "Tu carta señala {{pressure}}."
   }
 }

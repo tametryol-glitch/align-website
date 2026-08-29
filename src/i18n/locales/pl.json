@@ -696,7 +696,8 @@
       "refreshesDaily": "Odświeża się codziennie.",
       "otherLineages": "Inne rozważane linie",
       "disclaimer": "Pochodzenie gwiezdnego nasienia to interpretacyjny obiektyw na poziomie duszy — lustro do refleksji, a nie dosłowne twierdzenie o tym, gdzie się urodziłeś."
-    }
+    },
+    "cosmicFrequencies": "Kosmiczne Częstotliwości"
   },
   "interpretation": {
     "aiInterpret": "Interpretacja AI",
@@ -3162,5 +3163,29 @@
     "helper": "Wybierz miesiąc, dzień, a następnie rok urodzenia",
     "ageLabel": "{{age}} lat",
     "tooYoung": "Musisz mieć ukończone {{age}} lat, aby korzystać z Align."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmiczne Częstotliwości",
+    "intro": "Sekwencje liczb, które możesz trzymać przy konkretnej intencji. Przeglądaj bibliotekę albo pracuj z tą, na którą wskazuje twój horoskop w tym tygodniu.",
+    "searchPlaceholder": "Szukaj według intencji lub liczby",
+    "noResults": "Nic jeszcze nie pasuje.",
+    "thisWeek": "W TYM TYGODNIU",
+    "domain": {
+      "all": "Wszystkie",
+      "health": "Zdrowie",
+      "money": "Pieniądze",
+      "love": "Miłość",
+      "career": "Kariera",
+      "protection": "Ochrona",
+      "spiritual": "Duchowe"
+    },
+    "disclaimer": {
+      "title": "Zanim przejdziesz dalej",
+      "body": "Kosmiczne Częstotliwości to duchowa praktyka refleksji, a nie medycyna. Nic tutaj nie stanowi porady medycznej, diagnozy ani leczenia, a żadna sekwencja nie jest receptą ani zamiennikiem profesjonalnej opieki. Jeśli masz objawy lub rozważasz zmianę leczenia albo leków, skontaktuj się z lekarzem z uprawnieniami. W nagłym wypadku zadzwoń na lokalny numer alarmowy.",
+      "accept": "Rozumiem",
+      "cancel": "Nie teraz"
+    },
+    "needsBirthData": "Dodaj datę, godzinę i miejsce urodzenia, aby zobaczyć częstotliwość, na którą wskazuje twój horoskop w tym tygodniu.",
+    "pointsTo": "Twój horoskop wskazuje na {{pressure}}."
   }
 }

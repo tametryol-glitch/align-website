@@ -696,7 +696,8 @@
       "refreshesDaily": "Her gün yenilenir.",
       "otherLineages": "Değerlendirilen diğer soylar",
       "disclaimer": "Starseed kökeni yorumsal, ruh düzeyinde bir mercektir — nerede doğduğunuza dair gerçek bir iddia değil, üzerine düşünmek için bir ayna."
-    }
+    },
+    "cosmicFrequencies": "Kozmik Frekanslar"
   },
   "interpretation": {
     "aiInterpret": "Yapay Zeka Yorumu",
@@ -3162,5 +3163,29 @@
     "helper": "Doğduğunuz ayı, günü ve ardından yılı seçin",
     "ageLabel": "{{age}} yaşında",
     "tooYoung": "Align'ı kullanmak için {{age}} yaşında veya daha büyük olmalısınız."
+  },
+  "cosmicFrequencies": {
+    "title": "Kozmik Frekanslar",
+    "intro": "Belirli bir niyetle birlikte tutabileceğin sayı dizileri. Kütüphaneye göz at ya da haritanın bu hafta işaret ettiğiyle çalış.",
+    "searchPlaceholder": "Niyete veya sayıya göre ara",
+    "noResults": "Henüz eşleşen bir şey yok.",
+    "thisWeek": "BU HAFTA",
+    "domain": {
+      "all": "Tümü",
+      "health": "Sağlık",
+      "money": "Para",
+      "love": "Aşk",
+      "career": "Kariyer",
+      "protection": "Korunma",
+      "spiritual": "Ruhsal"
+    },
+    "disclaimer": {
+      "title": "Devam etmeden önce",
+      "body": "Kozmik Frekanslar tıbbi bir uygulama değil, düşünmeye dayalı ruhsal bir pratiktir. Buradaki hiçbir şey tıbbi tavsiye, teşhis veya tedavi değildir ve hiçbir dizi reçete ya da profesyonel bakımın yerine geçen bir şey değildir. Belirtiler yaşıyorsan ya da tedavinde veya ilaçlarında bir değişiklik düşünüyorsan, lisanslı bir hekime başvur. Acil durumda yerel acil yardım numarasını ara.",
+      "accept": "Anlıyorum",
+      "cancel": "Şimdi değil"
+    },
+    "needsBirthData": "Bu hafta haritanın işaret ettiği frekansı görmek için doğum tarihini, saatini ve yerini ekle.",
+    "pointsTo": "Haritan şuna işaret ediyor: {{pressure}}."
   }
 }

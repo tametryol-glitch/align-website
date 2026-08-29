@@ -696,7 +696,8 @@
       "refreshesDaily": "每日刷新。",
       "otherLineages": "考量的其他血脉",
       "disclaimer": "星籽起源是一种解读性的、灵魂层面的视角——是供反思的镜子，而非对你出生地的字面主张。"
-    }
+    },
+    "cosmicFrequencies": "宇宙频率"
   },
   "interpretation": {
     "aiInterpret": "AI 解读",
@@ -3165,5 +3166,29 @@
     "helper": "请依次选择出生的月、日和年份",
     "ageLabel": "{{age}} 岁",
     "tooYoung": "您必须年满 {{age}} 周岁才能使用 Align。"
+  },
+  "cosmicFrequencies": {
+    "title": "宇宙频率",
+    "intro": "与特定意图一同持守的数字序列。浏览资料库，或使用本周你的星盘所指向的那一组。",
+    "searchPlaceholder": "按意图或数字搜索",
+    "noResults": "暂时没有匹配的内容。",
+    "thisWeek": "本周",
+    "domain": {
+      "all": "全部",
+      "health": "健康",
+      "money": "财富",
+      "love": "爱情",
+      "career": "事业",
+      "protection": "守护",
+      "spiritual": "灵性"
+    },
+    "disclaimer": {
+      "title": "在继续之前",
+      "body": "宇宙频率是一种内省的灵性练习，而非医疗。这里的任何内容都不构成医疗建议、诊断或治疗，任何序列都不是处方，也不能替代专业医疗照护。如果你出现症状，或正在考虑更改治疗或用药，请联系有执业资格的医生。紧急情况下，请拨打当地急救电话。",
+      "accept": "我明白了",
+      "cancel": "暂不"
+    },
+    "needsBirthData": "添加你的出生日期、时间和地点，即可查看本周星盘所指向的频率。",
+    "pointsTo": "你的星盘指向{{pressure}}。"
   }
 }

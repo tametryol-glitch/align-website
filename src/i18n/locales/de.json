@@ -696,7 +696,8 @@
       "refreshesDaily": "Wird täglich aktualisiert.",
       "otherLineages": "Weitere betrachtete Linien",
       "disclaimer": "Der Starseed-Ursprung ist eine deutende Linse auf Seelenebene — ein Spiegel zur Reflexion, keine wörtliche Aussage darüber, wo du geboren wurdest."
-    }
+    },
+    "cosmicFrequencies": "Kosmische Frequenzen"
   },
   "interpretation": {
     "aiInterpret": "KI-Interpretation",
@@ -3162,5 +3163,29 @@
     "helper": "Wähle den Monat, den Tag und dann das Jahr deiner Geburt",
     "ageLabel": "{{age}} Jahre alt",
     "tooYoung": "Du musst {{age}} Jahre oder älter sein, um Align zu nutzen."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmische Frequenzen",
+    "intro": "Zahlenfolgen, die du mit einer bestimmten Absicht halten kannst. Durchstöbere die Bibliothek oder arbeite mit der, auf die dein Horoskop diese Woche zeigt.",
+    "searchPlaceholder": "Nach Absicht oder Zahl suchen",
+    "noResults": "Dazu gibt es noch nichts.",
+    "thisWeek": "DIESE WOCHE",
+    "domain": {
+      "all": "Alle",
+      "health": "Gesundheit",
+      "money": "Geld",
+      "love": "Liebe",
+      "career": "Karriere",
+      "protection": "Schutz",
+      "spiritual": "Spirituell"
+    },
+    "disclaimer": {
+      "title": "Bevor du fortfährst",
+      "body": "Kosmische Frequenzen sind eine spirituelle Reflexionspraxis, keine Medizin. Nichts hiervon ist medizinischer Rat, Diagnose oder Behandlung, und keine Zahlenfolge ist ein Rezept oder ein Ersatz für professionelle Versorgung. Wenn du Symptome hast oder eine Änderung deiner Behandlung oder Medikation erwägst, wende dich an eine zugelassene Ärztin oder einen zugelassenen Arzt. Rufe im Notfall den örtlichen Notruf an.",
+      "accept": "Ich verstehe",
+      "cancel": "Jetzt nicht"
+    },
+    "needsBirthData": "Füge Geburtsdatum, -zeit und -ort hinzu, um die Frequenz zu sehen, auf die dein Horoskop diese Woche zeigt.",
+    "pointsTo": "Dein Horoskop zeigt auf {{pressure}}."
   }
 }

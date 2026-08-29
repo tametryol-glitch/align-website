@@ -16,6 +16,7 @@ interface ReadingItem {
 }
 
 const READINGS: ReadingItem[] = [
+  { key: 'Cosmic Frequencies', href: '/readings/cosmic-frequencies', glyph: '∿', tier: 'free' },
   { key: 'Aura Mirror', href: '/readings/aura', glyph: '🪞', tier: 'free' },
   { key: 'Soul Ascension', href: '/readings/soul-ascension', glyph: 'SA', tier: 'starter' },
   { key: 'Transits', href: '/readings/transits', glyph: '♄', tier: 'free' },
@@ -79,6 +80,7 @@ const READING_I18N_KEYS: Record<string, string> = {
   'Pathway': 'readings.pathway',
   'Rectification': 'readings.rectification',
   'Chart Adjuster': 'readings.chartAdjuster',
+  'Cosmic Frequencies': 'readings.cosmicFrequencies',
 };
 
 const TIER_RANK: Record<TierLevel, number> = { free: 0, starter: 1, light: 2, premium: 3, pro: 4 };

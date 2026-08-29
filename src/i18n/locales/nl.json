@@ -696,7 +696,8 @@
       "refreshesDaily": "Wordt dagelijks ververst.",
       "otherLineages": "Andere overwogen lijnen",
       "disclaimer": "Zielsoorsprong is een interpretatieve lens op zielsniveau — een spiegel voor reflectie, geen letterlijke bewering over waar je bent geboren."
-    }
+    },
+    "cosmicFrequencies": "Kosmische Frequenties"
   },
   "interpretation": {
     "aiInterpret": "AI-interpretatie",
@@ -3162,5 +3163,29 @@
     "helper": "Kies de maand, de dag en daarna het jaar waarin je geboren bent",
     "ageLabel": "{{age}} jaar oud",
     "tooYoung": "Je moet {{age}} jaar of ouder zijn om Align te gebruiken."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmische Frequenties",
+    "intro": "Getallenreeksen om bij een specifieke intentie te houden. Blader door de bibliotheek, of werk met degene waar je horoscoop deze week naar wijst.",
+    "searchPlaceholder": "Zoek op intentie of op nummer",
+    "noResults": "Hier is nog niets voor.",
+    "thisWeek": "DEZE WEEK",
+    "domain": {
+      "all": "Alle",
+      "health": "Gezondheid",
+      "money": "Geld",
+      "love": "Liefde",
+      "career": "Carrière",
+      "protection": "Bescherming",
+      "spiritual": "Spiritueel"
+    },
+    "disclaimer": {
+      "title": "Voordat je verdergaat",
+      "body": "Kosmische Frequenties zijn een spirituele reflectiepraktijk, geen geneeskunde. Niets hiervan is medisch advies, een diagnose of een behandeling, en geen enkele reeks is een recept of een vervanging voor professionele zorg. Heb je klachten, of overweeg je een verandering in je behandeling of medicatie, neem dan contact op met een bevoegde arts. Bel bij een noodgeval het lokale alarmnummer.",
+      "accept": "Ik begrijp het",
+      "cancel": "Niet nu"
+    },
+    "needsBirthData": "Voeg je geboortedatum, -tijd en -plaats toe om de frequentie te zien waar je horoscoop deze week naar wijst.",
+    "pointsTo": "Je horoscoop wijst naar {{pressure}}."
   }
 }

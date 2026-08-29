@@ -696,7 +696,8 @@
       "refreshesDaily": "Päivittyy päivittäin.",
       "otherLineages": "Muut harkitut suvut",
       "disclaimer": "Starseed-alkuperä on tulkinnallinen, sielutason linssi — peili pohdintaan, ei kirjaimellinen väite siitä, missä synnyit."
-    }
+    },
+    "cosmicFrequencies": "Kosmiset Taajuudet"
   },
   "interpretation": {
     "aiInterpret": "Tekoalytulkinta",
@@ -3162,5 +3163,29 @@
     "helper": "Valitse syntymäkuukausi, -päivä ja sitten -vuosi",
     "ageLabel": "{{age}}-vuotias",
     "tooYoung": "Sinun on oltava vähintään {{age}}-vuotias käyttääksesi Alignia."
+  },
+  "cosmicFrequencies": {
+    "title": "Kosmiset Taajuudet",
+    "intro": "Numerosarjoja, joita voit pitää mielessä tietyn aikomuksen kanssa. Selaa kirjastoa tai työskentele sen kanssa, johon karttasi tällä viikolla osoittaa.",
+    "searchPlaceholder": "Hae aikomuksen tai numeron mukaan",
+    "noResults": "Ei vielä osumia.",
+    "thisWeek": "TÄLLÄ VIIKOLLA",
+    "domain": {
+      "all": "Kaikki",
+      "health": "Terveys",
+      "money": "Raha",
+      "love": "Rakkaus",
+      "career": "Ura",
+      "protection": "Suojelu",
+      "spiritual": "Henkinen"
+    },
+    "disclaimer": {
+      "title": "Ennen kuin jatkat",
+      "body": "Kosmiset Taajuudet ovat henkinen pohdinnan käytäntö, eivät lääketiedettä. Mikään tässä ei ole lääketieteellistä neuvontaa, diagnoosia tai hoitoa, eikä mikään numerosarja ole resepti tai korvaa ammattilaisen hoitoa. Jos sinulla on oireita tai harkitset muutosta hoitoon tai lääkitykseen, ota yhteyttä laillistettuun lääkäriin. Hätätilanteessa soita paikalliseen hätänumeroon.",
+      "accept": "Ymmärrän",
+      "cancel": "Ei nyt"
+    },
+    "needsBirthData": "Lisää syntymäaikasi, -kellonaikasi ja -paikkasi nähdäksesi taajuuden, johon karttasi tällä viikolla osoittaa.",
+    "pointsTo": "Karttasi osoittaa: {{pressure}}."
   }
 }
