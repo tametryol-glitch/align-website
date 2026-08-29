@@ -41,6 +41,8 @@ const BEDS = [
   { id: 'choir-pad', file: 'ambient_choir_pad.mp3' },
   { id: 'crystal-bells', file: 'ambient_crystal_bells.mp3' },
   { id: 'rain', file: 'ambient_rain_light.mp3' },
+  // Beat-aligned: trimmed to exactly 36 bars at 59.956 BPM.
+  { id: 'still-waters', file: 'ambient_still_waters.mp3' },
 ];
 
 function loadEnv() {

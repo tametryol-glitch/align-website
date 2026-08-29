@@ -33,6 +33,16 @@ export interface AmbientBed {
   file: string;
   /** English fallback; the UI prefers the i18n key cosmicFrequencies.beds.<id>. */
   label: string;
+  /**
+   * Measured tempo, present only on beds trimmed to a whole number of bars.
+   * A bed with a bpm can drive beat-synced recitation; one without is a plain
+   * ambient wash. Measured with scripts/analyze-bed.py, never assumed from
+   * what Suno was asked for — this track was requested at 60 and came back at
+   * 59.956, which is 0.66s of drift across a 15-minute session.
+   */
+  bpm?: number;
+  /** Bars the trimmed file contains, so the loop point is on a bar line. */
+  bars?: number;
 }
 
 export const BEDS: AmbientBed[] = [
@@ -41,6 +51,13 @@ export const BEDS: AmbientBed[] = [
   { id: 'choir-pad', file: 'ambient_choir_pad.mp3', label: 'Choir' },
   { id: 'crystal-bells', file: 'ambient_crystal_bells.mp3', label: 'Bells' },
   { id: 'rain', file: 'ambient_rain_light.mp3', label: 'Rain' },
+  {
+    id: 'still-waters',
+    file: 'ambient_still_waters.mp3',
+    label: 'Still waters',
+    bpm: 59.956,
+    bars: 36,
+  },
 ];
 
 export function getBedUrl(file: string): string | null {
@@ -53,6 +70,34 @@ export function getBedUrl(file: string): string | null {
  * ~3 dB spread, so a single value works for all of them.
  */
 export const BED_VOLUME = 0.35;
+
+/** Seconds per 4/4 bar for a bed's measured tempo. */
+export function barSeconds(bpm: number): number {
+  return (4 * 60) / bpm;
+}
+
+/**
+ * When the next bar line falls, given where the bed actually is right now.
+ *
+ * Reading the bed's own playback position each repetition is what makes the
+ * sync hold: any tempo-estimate error is corrected on the next bar instead of
+ * accumulating. It only has to be right over ~4 seconds, where a 0.07% error
+ * is 3ms — inaudible. Scheduling against a wall clock instead would compound
+ * that same error into most of a second over a long session.
+ *
+ * `minLeadSeconds` skips a boundary that is too close to hit cleanly.
+ */
+export function secondsToNextBar(
+  bedPosition: number,
+  bpm: number,
+  minLeadSeconds = 0.12,
+): number {
+  const bar = barSeconds(bpm);
+  const intoBar = bedPosition % bar;
+  let wait = bar - intoBar;
+  if (wait < minLeadSeconds) wait += bar;
+  return wait;
+}
 
 /** Default is silence: some people want dry digits, and forcing music loses them. */
 export const DEFAULT_BED: string | null = null;

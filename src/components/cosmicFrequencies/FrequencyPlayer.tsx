@@ -15,6 +15,7 @@ import {
   formatClock,
   getBedUrl,
   getClipUrl,
+  secondsToNextBar,
   type SessionMinutes,
   type Tempo,
 } from '@/lib/cosmicFrequencies/audio';
@@ -53,6 +54,9 @@ export function FrequencyPlayer({ frequency }: Props) {
   // effect on the next loop without re-binding the listener.
   const tempoRef = useRef<Tempo>(tempo);
   tempoRef.current = tempo;
+  // Tempo of the bed currently playing, or null when the bed is a plain wash
+  // (or silence). Set at start, cleared on stop.
+  const syncBpmRef = useRef<number | null>(null);
 
   const url = getClipUrl(frequency.id);
 
@@ -63,6 +67,7 @@ export function FrequencyPlayer({ frequency }: Props) {
     if (a) { a.pause(); a.currentTime = 0; }
     const b = bedRef.current;
     if (b) { b.pause(); b.currentTime = 0; }
+    syncBpmRef.current = null;
     setPlaying(false);
     setRemaining(null);
   }, []);
@@ -82,12 +87,24 @@ export function FrequencyPlayer({ frequency }: Props) {
       a.preload = 'auto';
       audioRef.current = a;
       a.addEventListener('ended', () => {
+        // With a beat-aligned bed, the next recitation starts on the bed's
+        // next bar line rather than after a fixed gap, so the phrase always
+        // begins on a downbeat. Reading the bed's real position each time is
+        // self-correcting: a tempo-estimate error is absorbed every bar
+        // instead of accumulating across the session.
+        const bed = bedRef.current;
+        const bpm = syncBpmRef.current;
+        const waitMs =
+          bpm && bed && !bed.paused
+            ? secondsToNextBar(bed.currentTime, bpm) * 1000
+            : TEMPO_GAP_MS[tempoRef.current];
+
         gapTimer.current = setTimeout(() => {
           const el = audioRef.current;
           if (!el) return;
           el.currentTime = 0;
           el.play().catch(() => setError(true));
-        }, TEMPO_GAP_MS[tempoRef.current]);
+        }, waitMs);
       });
       a.addEventListener('error', () => { setError(true); setLoading(false); });
     }
@@ -114,6 +131,7 @@ export function FrequencyPlayer({ frequency }: Props) {
       }
       b.volume = BED_VOLUME;
       b.play().catch(() => { /* voice continues without it */ });
+      syncBpmRef.current = bed?.bpm ?? null;
     }
 
     setLoading(false);
