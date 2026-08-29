@@ -8,6 +8,31 @@
  * the same theme never appears twice.
  */
 
+// ── Stable identity ──────────────────────────────────────────────────────────
+
+/** Where a point came from — also decides whether birth time can move it. */
+export type PurposePointSource = 'house' | 'sign' | 'filler';
+
+export interface PurposePoint {
+  /**
+   * Stable identity, safe to persist for months: derived from the chart fact
+   * that produced the line, never from its text or its position in the list.
+   * Format `${kind}:${source}:${anchor}` — e.g. "earthly:house:10". Rewriting
+   * a point's copy, reordering the list, or adding fillers never changes it.
+   */
+  key: string;
+  text: string;
+  source: PurposePointSource;
+  /** House number for 'house', sign name for 'sign', slug for 'filler'. */
+  anchor: number | string;
+  /**
+   * True when a wrong birth time would move this point. Houses here are
+   * Whole-Sign, resolved from the Ascendant SIGN, so a wrong rising sign
+   * shifts every house point together; sign and filler points never move.
+   */
+  timeSensitive: boolean;
+}
+
 // What you're here to BUILD / DO (Earth), by house — bold and concrete.
 const EARTHLY_HOUSE: Record<number, string> = {
   1: 'Put your own name and face on your work — lead as yourself, not hidden behind someone else’s brand or boss.',
@@ -56,18 +81,18 @@ const SIGN_POINT: Record<string, string> = {
   Pisces: 'Turn what you feel into art, healing, or spirit — you sense what others miss, so use it, don’t drown in it.',
 };
 
-const FILLERS_EARTHLY = [
-  'Pick ONE lane and go deep — your power is mastery, not keeping every option open.',
-  'Charge what you’re actually worth — undercharging is the fastest way to bury this whole purpose.',
-  'Turn the exact thing you struggled with into the thing you help other people through.',
-  'Build something with your name on it that keeps working when you’re not in the room.',
+const FILLERS_EARTHLY: ReadonlyArray<{ slug: string; text: string }> = [
+  { slug: 'one-lane', text: 'Pick ONE lane and go deep — your power is mastery, not keeping every option open.' },
+  { slug: 'charge-worth', text: 'Charge what you’re actually worth — undercharging is the fastest way to bury this whole purpose.' },
+  { slug: 'wound-to-work', text: 'Turn the exact thing you struggled with into the thing you help other people through.' },
+  { slug: 'name-on-it', text: 'Build something with your name on it that keeps working when you’re not in the room.' },
 ];
 
-const FILLERS_SOUL = [
-  'Say the honest thing out loud, even when staying quiet would be easier.',
-  'Walk away from the comfortable situation that’s quietly keeping you small.',
-  'Let someone help you — carrying it all alone is the old pattern, not the growth.',
-  'Follow the pull that scares you a little; that’s the direction, not the detour.',
+const FILLERS_SOUL: ReadonlyArray<{ slug: string; text: string }> = [
+  { slug: 'say-it-out-loud', text: 'Say the honest thing out loud, even when staying quiet would be easier.' },
+  { slug: 'leave-the-comfortable', text: 'Walk away from the comfortable situation that’s quietly keeping you small.' },
+  { slug: 'let-someone-help', text: 'Let someone help you — carrying it all alone is the old pattern, not the growth.' },
+  { slug: 'follow-the-pull', text: 'Follow the pull that scares you a little; that’s the direction, not the detour.' },
 ];
 
 /** The header shown above the list, per reading type. */
@@ -76,14 +101,27 @@ export function purposePointsHeader(kind: 'earthly' | 'soul'): string {
 }
 
 /**
- * Build exactly 10 bold, specific, DEDUPED points from a placement. Houses
- * (most concrete) are interleaved with sign truths, then padded with
- * type-appropriate bold items so the list is always complete and non-repeating.
+ * Build up to 10 bold, specific, DEDUPED points from a placement. Houses (most
+ * concrete) are interleaved with sign truths, then padded with type-appropriate
+ * bold items. Each point carries a stable `key` so callers can persist state
+ * against it across copy edits and reorderings.
+ *
+ * Deduping is by `key`, which is equivalent to the previous dedupe by text:
+ * every house line and every sign line is distinct, and one key always maps to
+ * exactly one string.
  */
-export function buildPurposePoints(p: any, kind: 'earthly' | 'soul'): string[] {
+export function buildPurposePoints(p: any, kind: 'earthly' | 'soul'): PurposePoint[] {
   const soul = kind === 'soul';
   const HOUSE = soul ? SOUL_HOUSE : EARTHLY_HOUSE;
   const rc = p?.rulerChain || {};
+
+  const mk = (source: PurposePointSource, anchor: number | string, text: string): PurposePoint => ({
+    key: `${kind}:${source}:${anchor}`,
+    text,
+    source,
+    anchor,
+    timeSensitive: source === 'house',
+  });
 
   const houseNums = [
     p?.primaryHouse,
@@ -100,20 +138,20 @@ export function buildPurposePoints(p: any, kind: 'earthly' | 'soul'): string[] {
     rc.compendiumRuler?.position?.sign,
   ];
 
-  const houseLines: string[] = [];
+  const houseLines: PurposePoint[] = [];
   const usedHouses = new Set<number>();
   for (const n of houseNums) {
-    if (n && HOUSE[n] && !usedHouses.has(n)) { usedHouses.add(n); houseLines.push(HOUSE[n]); }
+    if (n && HOUSE[n] && !usedHouses.has(n)) { usedHouses.add(n); houseLines.push(mk('house', n, HOUSE[n])); }
   }
-  const signLines: string[] = [];
+  const signLines: PurposePoint[] = [];
   const usedSigns = new Set<string>();
   for (const sg of signNames) {
-    if (sg && SIGN_POINT[sg] && !usedSigns.has(sg)) { usedSigns.add(sg); signLines.push(SIGN_POINT[sg]); }
+    if (sg && SIGN_POINT[sg] && !usedSigns.has(sg)) { usedSigns.add(sg); signLines.push(mk('sign', sg, SIGN_POINT[sg])); }
   }
 
   const seen = new Set<string>();
-  const items: string[] = [];
-  const push = (v?: string) => { if (v && !seen.has(v)) { seen.add(v); items.push(v); } };
+  const items: PurposePoint[] = [];
+  const push = (v?: PurposePoint) => { if (v && !seen.has(v.key)) { seen.add(v.key); items.push(v); } };
 
   // Interleave houses (most concrete) with sign truths for variety.
   const maxLen = Math.max(houseLines.length, signLines.length);
@@ -121,8 +159,83 @@ export function buildPurposePoints(p: any, kind: 'earthly' | 'soul'): string[] {
 
   for (const f of (soul ? FILLERS_SOUL : FILLERS_EARTHLY)) {
     if (items.length >= 10) break;
-    push(f);
+    push(mk('filler', f.slug, f.text));
   }
 
   return items.slice(0, 10);
+}
+
+// ── AI reconciliation ──────────────────────────────────────────────
+
+/** The canonical points, numbered, ready to drop into an AI prompt. */
+export function purposePointsPromptBlock(points: PurposePoint[]): string {
+  return points.map((pt, i) => `${i + 1}. ${pt.text}`).join('\n');
+}
+
+/**
+ * The list instruction appended to a purpose mandate. The AI must return OUR
+ * points, in OUR order, in its own sharper voice — never invent its own list —
+ * so item N of the response always carries point N's stable key.
+ */
+export function purposePointsListInstruction(kind: 'earthly' | 'soul', points: PurposePoint[]): string {
+  const n = points.length;
+  const noun = kind === 'soul'
+    ? 'thing their soul is here to grow toward'
+    : 'thing this Earth placement could point to in their real life';
+  return [
+    `THEN, after that purpose paragraph, on a new line add the EXACT header "${purposePointsHeader(kind)}" followed by EXACTLY ${n} numbered items (1. through ${n}.).`,
+    `The ${n} items listed below are FIXED and come from their chart. Rewrite EACH one in your own bolder, sharper voice, keeping its meaning and its position. Do NOT add, drop, merge, reorder, or invent items — return exactly ${n}, one per line, no extra explanation.`,
+    `Each stays ONE short, concrete, specific ${noun}. Be BOLD, DIRECT, and SPECIFIC — name the actual thing, never a vague category or abstract theme-dump.`,
+    '',
+    'THE ITEMS TO REWRITE, IN ORDER:',
+    purposePointsPromptBlock(points),
+  ].join('\n');
+}
+
+export interface ReconciledPurposePoints {
+  /** Canonical keys, carrying the AI's wording when it complied. */
+  points: PurposePoint[];
+  /** The reading, with its list normalised to exactly `points`. */
+  text: string;
+  /** True when the AI returned a usable rewrite; false when we fell back. */
+  rephrased: boolean;
+}
+
+const NUMBERED_ITEM = /^\s*\d{1,2}[.)]\s+(.+?)\s*$/;
+
+/**
+ * Reconcile a generated reading against the canonical keyed points.
+ *
+ * The AI writes the prose and may rephrase the list, but identity stays ours:
+ * when its list matches the canonical count, item N adopts point N's key and
+ * the AI wording is kept. Otherwise the list is replaced with the canonical
+ * one — so the reader always sees exactly the points we can address months
+ * later, and a non-compliant response degrades instead of breaking.
+ */
+export function reconcilePurposePoints(
+  text: string,
+  kind: 'earthly' | 'soul',
+  canonical: PurposePoint[],
+): ReconciledPurposePoints {
+  const header = purposePointsHeader(kind);
+  const idx = text.lastIndexOf(header);
+  const prose = (idx >= 0 ? text.slice(0, idx) : text).trimEnd();
+  const render = (pts: PurposePoint[]) =>
+    [prose, '', header, ...pts.map((pt, i) => `${i + 1}. ${pt.text}`)].join('\n');
+
+  if (idx < 0 || canonical.length === 0) {
+    return { points: canonical, text: render(canonical), rephrased: false };
+  }
+
+  const items: string[] = [];
+  for (const line of text.slice(idx + header.length).split('\n')) {
+    const m = NUMBERED_ITEM.exec(line);
+    if (m) items.push(m[1]);
+  }
+  if (items.length !== canonical.length) {
+    return { points: canonical, text: render(canonical), rephrased: false };
+  }
+
+  const points = canonical.map((pt, i) => ({ ...pt, text: items[i] }));
+  return { points, text: render(points), rephrased: true };
 }

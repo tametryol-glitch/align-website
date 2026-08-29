@@ -16,7 +16,7 @@ import {
 } from './hiddenZodiacEngine';
 import { findSupportedObject } from './hiddenZodiacSupportedObjects';
 import { interpretHiddenZodiac } from './hiddenZodiacInterpreter';
-import { buildPurposePoints, purposePointsHeader } from './purposePoints';
+import { buildPurposePoints, purposePointsHeader, purposePointsListInstruction } from './purposePoints';
 
 const SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -33,7 +33,6 @@ export const SOUL_PURPOSE_MANDATE = [
   '- Be direct and confident. No hedging, no flattery, no "this is a powerful placement", no vague reassurance. Naming an uncomfortable truth is good. Use the ruler signs/houses/conjunctions as the REASONS behind their growth path, never as definitions.',
   'FORMAT: one flowing reading in the second person, about 4 to 6 short paragraphs, no bullet points or section labels.',
   'The flowing prose reading MUST include a clear final paragraph that gives a CLEAR, DESCRIPTIVE statement of their soul purpose. Begin that paragraph with "Your soul purpose:" and then, in 2 to 4 sentences, state plainly and specifically what their soul is here to grow into, become, and fulfil in this life — concrete enough that they could repeat it back as their mission. Do not be vague, poetic, or hedged here; name the actual soul purpose.',
-  'THEN, after that soul-purpose paragraph, on a new line add the EXACT header "What your soul is here to grow toward:" followed by EXACTLY 10 numbered items (1. through 10.). Each item is ONE short, concrete, specific thing their soul is here to grow toward, develop, or experience in this life — a quality to build, an arena to step into, a pattern to move beyond, an experience to have, a way of relating, or a contribution. Be BOLD, DIRECT, and SPECIFIC — name the actual quality, arena, experience, or pattern to move beyond (say "let people help you instead of doing it all alone", never "growth and connection"). Every item distinct, no repeats, NO vague categories or abstract theme-dumps, one per line, no extra explanation.',
 ].join('\n');
 
 export interface SoulPurposeContext {
@@ -141,7 +140,7 @@ export function deriveSoulPurpose(rawChart: any): SoulPurposeContext | null {
 export function deterministicSoulPurpose(ctx: SoulPurposeContext): string {
   const r = interpretHiddenZodiac(ctx.placement);
   const points = buildPurposePoints(ctx.placement, 'soul');
-  const list = [purposePointsHeader('soul'), ...points.map((t, i) => `${i + 1}. ${t}`)].join('\n');
+  const list = [purposePointsHeader('soul'), ...points.map((pt, i) => `${i + 1}. ${pt.text}`)].join('\n');
   return [r.primarySummary, r.threeHouseSynthesis, r.rulerSynthesis, r.operates, list]
     .filter(Boolean)
     .join('\n\n');
@@ -191,6 +190,8 @@ export function buildSoulPurposeSystemPrompt(ctx: SoulPurposeContext): string {
     rulerFacts(ctx),
     '',
     SOUL_PURPOSE_MANDATE,
+    '',
+    purposePointsListInstruction('soul', buildPurposePoints(ctx.placement, 'soul')),
   ].join('\n');
 }
 

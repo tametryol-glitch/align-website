@@ -19,6 +19,7 @@ import {
   buildEarthlyPurposeSystemPrompt,
   buildEarthlyPurposeUserPrompt,
 } from '@/lib/engines/earthlyPurpose';
+import { buildPurposePoints, reconcilePurposePoints } from '@/lib/engines/purposePoints';
 
 const TEASER = 260;
 
@@ -32,7 +33,7 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
   useEffect(() => {
     if (!hasBirth) { setLoading(false); return; }
     let cancelled = false;
-    const cacheKey = `hz_ep_web_v4:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
+    const cacheKey = `hz_ep_web_v5:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
 
     (async () => {
       try {
@@ -68,6 +69,8 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
           /* fall through to deterministic */
         }
         if (!reading) reading = deterministicEarthlyPurpose(ctx);
+        // Identity stays ours: the AI may rephrase the list, never replace it.
+        reading = reconcilePurposePoints(reading, 'earthly', buildPurposePoints(ctx.placement, 'earthly')).text;
         if (cancelled) return;
         setText(reading);
         try { window.localStorage.setItem(cacheKey, reading); } catch { /* ignore */ }

@@ -18,6 +18,7 @@ import {
   buildSoulPurposeSystemPrompt,
   buildSoulPurposeUserPrompt,
 } from '@/lib/engines/soulPurpose';
+import { buildPurposePoints, reconcilePurposePoints } from '@/lib/engines/purposePoints';
 
 const TEASER = 260;
 
@@ -31,7 +32,7 @@ export function SoulPurposeCard({ profile }: { profile: any }) {
   useEffect(() => {
     if (!hasBirth) { setLoading(false); return; }
     let cancelled = false;
-    const cacheKey = `hz_sp_web_v3:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
+    const cacheKey = `hz_sp_web_v4:${profile.birth_date}:${profile.latitude}:${profile.longitude}`;
 
     (async () => {
       try {
@@ -67,6 +68,8 @@ export function SoulPurposeCard({ profile }: { profile: any }) {
           /* fall through to deterministic */
         }
         if (!reading) reading = deterministicSoulPurpose(ctx);
+        // Identity stays ours: the AI may rephrase the list, never replace it.
+        reading = reconcilePurposePoints(reading, 'soul', buildPurposePoints(ctx.placement, 'soul')).text;
         if (cancelled) return;
         setText(reading);
         try { window.localStorage.setItem(cacheKey, reading); } catch { /* ignore */ }
