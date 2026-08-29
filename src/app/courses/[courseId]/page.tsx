@@ -15,6 +15,7 @@ export default function CourseDetailPage() {
   const courseId = params.courseId as string;
   const { user } = useAuthStore();
   const [course, setCourse] = useState<any>(null);
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -23,6 +24,13 @@ export default function CourseDetailPage() {
       try {
         const data = await api.getCourse(courseId);
         setCourse(data);
+        // Progress lives in lesson_completions, not on the course row — without
+        // this the page read a `completed` flag nothing ever sets, so every
+        // lesson stayed unticked no matter how many were finished.
+        if (user?.id) {
+          const prog = await api.getCourseProgress(user.id).catch(() => null);
+          if (prog?.completed_lessons) setCompleted(new Set<string>(prog.completed_lessons));
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -30,7 +38,7 @@ export default function CourseDetailPage() {
       }
     }
     if (courseId) load();
-  }, [courseId]);
+  }, [courseId, user?.id]);
 
   if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('common.loading')} /></div>;
 
@@ -46,7 +54,7 @@ export default function CourseDetailPage() {
   }
 
   const lessons = course.lessons || [];
-  const completedCount = lessons.filter((l: any) => l.completed).length;
+  const completedCount = lessons.filter((l: any) => completed.has(l.id)).length;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -88,7 +96,7 @@ export default function CourseDetailPage() {
             href={`/courses/${courseId}/${lesson.id || i}`}
             className="card flex items-center gap-4 py-4 hover:border-accent-primary/30 transition-colors"
           >
-            {lesson.completed ? (
+            {completed.has(lesson.id) ? (
               <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
             ) : (
               <Circle className="w-6 h-6 text-text-muted flex-shrink-0" />
