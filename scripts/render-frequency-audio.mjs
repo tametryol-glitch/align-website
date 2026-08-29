@@ -170,12 +170,21 @@ async function kokoroHealth() {
 /** Apply the room to a rendered clip, in place. */
 function applyReverb(file) {
   const tmp = `${file}.tmp.mp3`;
-  execFileSync('ffmpeg', [
-    '-y', '-v', 'error', '-i', file,
-    '-af', REVERB_FILTER,
-    '-c:a', 'libmp3lame', '-q:a', '4', tmp,
-  ]);
-  fs.renameSync(tmp, file);
+  try {
+    execFileSync('ffmpeg', [
+      '-y', '-v', 'error', '-i', file,
+      '-af', REVERB_FILTER,
+      '-c:a', 'libmp3lame', '-q:a', '4', tmp,
+    ]);
+    fs.renameSync(tmp, file);
+  } finally {
+    // A failed ffmpeg or interrupted rename would otherwise strand a
+    // <id>.mp3.tmp.mp3 next to the real clip, which a disk scan then
+    // uploads as if it were a frequency.
+    if (fs.existsSync(tmp)) {
+      try { fs.unlinkSync(tmp); } catch { /* nothing more to do */ }
+    }
+  }
 }
 
 async function renderClip(text, voice, speed) {

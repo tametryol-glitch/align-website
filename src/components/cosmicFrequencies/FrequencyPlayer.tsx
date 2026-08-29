@@ -18,6 +18,8 @@ import {
   getPreferredVoice,
   setPreferredVoice,
   VOICES,
+  bedsForVoice,
+  isBedAllowed,
   secondsToNextBar,
   type SessionMinutes,
   type Tempo,
@@ -52,6 +54,15 @@ export function FrequencyPlayer({ frequency }: Props) {
   // mismatch the server-rendered markup.
   const [voiceId, setVoiceId] = useState<string>(VOICES[0].id);
   useEffect(() => setVoiceId(getPreferredVoice()), []);
+
+  const availableBeds = bedsForVoice(voiceId);
+
+  // Switching voice can invalidate the chosen bed (Still Waters is Heart
+  // only). Fall back to silence rather than silently starting a pairing the
+  // rules forbid.
+  useEffect(() => {
+    if (!isBedAllowed(bedId, voiceId)) setBedId(null);
+  }, [voiceId, bedId]);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const bedRef = useRef<HTMLAudioElement | null>(null);
@@ -246,7 +257,7 @@ export function FrequencyPlayer({ frequency }: Props) {
         >
           {t('cosmicFrequencies.beds.none', 'None')}
         </button>
-        {BEDS.map((b) => (
+        {availableBeds.map((b) => (
           <button
             key={b.id}
             onClick={() => setBedId(b.id)}

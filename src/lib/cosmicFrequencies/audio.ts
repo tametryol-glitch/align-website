@@ -85,6 +85,14 @@ export interface AmbientBed {
   bpm?: number;
   /** Bars the trimmed file contains, so the loop point is on a bar line. */
   bars?: number;
+  /**
+   * Voices this bed may be paired with. Omitted means any voice.
+   *
+   * Still Waters is reserved to Heart: it is the beat-aligned track, and the
+   * pairing was chosen and checked as a pair. Every other bed is open to
+   * every voice, Heart included.
+   */
+  voices?: string[];
 }
 
 export const BEDS: AmbientBed[] = [
@@ -99,6 +107,7 @@ export const BEDS: AmbientBed[] = [
     label: 'Still waters',
     bpm: 59.956,
     bars: 36,
+    voices: ['af_heart'],
   },
 ];
 
@@ -112,6 +121,18 @@ export function getBedUrl(file: string): string | null {
  * ~3 dB spread, so a single value works for all of them.
  */
 export const BED_VOLUME = 0.35;
+
+/** Beds a given voice is allowed to play under. */
+export function bedsForVoice(voiceId: string): AmbientBed[] {
+  return BEDS.filter((b) => !b.voices || b.voices.includes(voiceId));
+}
+
+/** Whether a bed choice is still valid after switching voice. */
+export function isBedAllowed(bedId: string | null, voiceId: string): boolean {
+  if (!bedId) return true; // silence is always allowed
+  const bed = BEDS.find((b) => b.id === bedId);
+  return !!bed && (!bed.voices || bed.voices.includes(voiceId));
+}
 
 /** Seconds per 4/4 bar for a bed's measured tempo. */
 export function barSeconds(bpm: number): number {
