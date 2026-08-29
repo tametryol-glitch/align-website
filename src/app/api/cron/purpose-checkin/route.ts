@@ -13,8 +13,9 @@
 //
 // Three behaviours worth knowing before this looks broken:
 //
-//   1. Founder allowlist, matching the soak the rest of the feature is in.
-//      Widen PURPOSE_CHECKIN_ALLOWLIST to launch.
+//   1. Paid tiers only. The check-in CARD is free to everyone; this reminder is
+//      a subscriber benefit, so a free reader sees the card when they open the
+//      app but is never pushed.
 //   2. Silence WIDENS the cadence. If the previous check-in was never answered
 //      the reader waits longer for the next one, not less — the app gets
 //      quieter when ignored, which is the whole reason this can sit on a
@@ -38,8 +39,19 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Founder soak. Widen (or replace with a tier check) at launch.
-const PURPOSE_CHECKIN_ALLOWLIST = new Set<string>(['tametryol@gmail.com']);
+/**
+ * Most pushes per run. The cron runs daily but a reader is only due every 14+
+ * days, so a bounded batch drains comfortably — this exists to keep one run
+ * from timing out as the subscriber base grows, not to ration reminders.
+ * Anything deferred is reported, never silently dropped.
+ */
+const MAX_PER_RUN = 200;
+
+/** Matches the convention used elsewhere: anything not empty and not "free". */
+function isPaid(tier: string | null | undefined): boolean {
+  const t = (tier || '').toLowerCase();
+  return t !== '' && t !== 'free';
+}
 
 /**
  * Question-shaped, never an instruction. "Time to work on your purpose!" gets
@@ -74,6 +86,7 @@ export async function GET(request: NextRequest) {
   let skippedPaused = 0;
   let skippedAlreadySent = 0;
   let widened = 0;
+  let deferred = 0;
   let failed = 0;
   const failures: string[] = [];
 
@@ -82,16 +95,14 @@ export async function GET(request: NextRequest) {
 
     const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('id, email, birth_date, latitude, longitude')
+      .select('id, email, subscription_tier, birth_date, latitude, longitude')
       .not('birth_date', 'is', null)
       .not('latitude', 'is', null)
       .not('longitude', 'is', null);
 
     if (error) throw error;
 
-    const eligible = (profiles ?? []).filter((p) =>
-      PURPOSE_CHECKIN_ALLOWLIST.has((p.email || '').toLowerCase()),
-    );
+    const eligible = (profiles ?? []).filter((p) => isPaid(p.subscription_tier));
     if (!eligible.length) {
       return NextResponse.json({ ok: true, considered: 0, sent: 0, processedAt: now.toISOString() });
     }
@@ -116,6 +127,7 @@ export async function GET(request: NextRequest) {
 
         if (prefs.paused) { skippedPaused++; continue; }
         if (!isDue(prefs, now)) { skippedNotDue++; continue; }
+        if (sent >= MAX_PER_RUN) { deferred++; continue; }
 
         const dayAgo = new Date(now.getTime() - 86_400_000).toISOString();
         const { data: recent } = await supabase
@@ -203,6 +215,7 @@ export async function GET(request: NextRequest) {
       skippedPaused,
       skippedAlreadySent,
       widened,
+      deferred,
       failed,
       failures: failures.slice(0, 10),
       processedAt: new Date().toISOString(),
