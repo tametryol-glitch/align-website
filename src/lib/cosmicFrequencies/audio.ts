@@ -26,11 +26,12 @@ export interface FrequencyVoice {
   label: string;
 }
 
-// TEMPORARY: only af_heart is uploaded. The other seven are mid-render, and
-// offering a voice whose clips 404 is worse than offering one voice. Restore
-// the full list the moment the render finishes and uploads.
+// Voices are listed only once their clips are uploaded. The remaining six are
+// still rendering; each joins this list as it is published, because offering a
+// voice whose clips 404 is worse than offering fewer.
 export const VOICES: FrequencyVoice[] = [
   { id: 'af_heart', label: 'Heart' },
+  { id: 'af_nicole', label: 'Nicole' },
 ];
 
 export const DEFAULT_VOICE = 'af_heart';
