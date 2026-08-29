@@ -79,6 +79,11 @@ export function PushNotificationToggle() {
               switching to another iPhone browser will not help, as they all run on Safari
               underneath.
             </p>
+            <p className="text-xs text-text-muted mt-2">
+              Already added Align to your Home Screen and still got nothing? That was a bug
+              on our side, now fixed — delete that icon and add it again for it to take
+              effect.
+            </p>
           </div>
         </div>
       </div>

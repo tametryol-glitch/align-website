@@ -40,16 +40,25 @@ import { PUSH_MOMENT_EVENT } from '@/lib/pushMoments';
 const SNOOZE_KEY = 'align_push_prompt_snooze';   // timestamp of the last "Not now"
 const DECLINE_KEY = 'align_push_prompt_declines'; // how many times they've said it
 
+// Set once per browser, the first time an iOS user loads the app after the
+// missing-manifest fix. Value records whether they had already been told to
+// add Align to their Home Screen back when doing so silently could not work:
+//   'readd' → they followed broken instructions and own a dead bookmark
+//   'fresh' → never asked before, the normal install copy is correct
+const IOS_FIX_KEY = 'align_push_ios_fix_v1';
+
 const SNOOZE_DAYS = 7;
 const MAX_DECLINES = 3;    // after this we stop asking and leave it to Settings
 const MOMENT_MS = 1_500;   // let their action finish landing before we ask
 const FALLBACK_MS = 90_000; // only for people who never hit a real moment
+const READD_MS = 8_000;    // the re-add correction is owed to them, not sold
 
 export function PushEnablePrompt() {
   const { user } = useAuthStore();
   // 'ask'  → we can reach the browser prompt
   // 'ios'  → iPhone/iPad that must add Align to the Home Screen first
   const [mode, setMode] = useState<'ask' | 'ios' | null>(null);
+  const [iosReadd, setIosReadd] = useState(false);
   const [busy, setBusy] = useState(false);
   const syncedFor = useRef<string | null>(null);
 
@@ -69,6 +78,36 @@ export function PushEnablePrompt() {
     syncedFor.current = user.id;
     ensurePushSubscribed(user.id).catch(() => {});
   }, [user?.id, suppressed]);
+
+  // ── 1b. One-time amnesty for iPhone users we sent on a fool's errand ──────
+  // Until the web app manifest landed, "Add to Home Screen" on iOS produced a
+  // Safari bookmark, not a web app — so anyone who followed our instructions
+  // got nothing and had no way to know why. Those users are identifiable: on
+  // iOS the only card that can ever have shown is the install one, so a
+  // non-zero decline count means they were told, and it did not work.
+  //
+  // They are also exactly the users most likely to have dismissed it three
+  // times and silenced themselves for good, so the decline budget is reset
+  // once — the corrected message deserves one clean shot at them.
+  useEffect(() => {
+    if (!needsIosInstallForPush()) return;
+    try {
+      const existing = localStorage.getItem(IOS_FIX_KEY);
+      if (existing) {
+        setIosReadd(existing === 'readd');
+        return;
+      }
+      const toldBefore = Number(localStorage.getItem(DECLINE_KEY) || 0) > 0;
+      localStorage.setItem(IOS_FIX_KEY, toldBefore ? 'readd' : 'fresh');
+      if (toldBefore) {
+        localStorage.removeItem(SNOOZE_KEY);
+        localStorage.setItem(DECLINE_KEY, '0');
+        setIosReadd(true);
+      }
+    } catch {
+      // localStorage unavailable — fall back to the normal install copy
+    }
+  }, []);
 
   // ── 2. Soft ask: permission never requested ───────────────────────────────
   // Re-checked at fire time, not once on mount: permission and the snooze can
@@ -110,9 +149,14 @@ export function PushEnablePrompt() {
 
     // Someone who never hits one of those moments should still be asked once,
     // but late enough that it does not interrupt what they came to do.
+    // Read straight from storage rather than the iosReadd state, which the
+    // amnesty effect may not have flushed into a render yet.
+    let readd = false;
+    try { readd = localStorage.getItem(IOS_FIX_KEY) === 'readd'; } catch { /* default */ }
+
     const fallback = setTimeout(() => {
       if (next === 'ask' ? eligible() : eligibleIos()) setMode(next);
-    }, FALLBACK_MS);
+    }, next === 'ios' && readd ? READD_MS : FALLBACK_MS);
 
     // The moment that actually earns the question: they just messaged someone
     // or accepted a friend request, so wanting to hear back is self-evident.
@@ -176,17 +220,37 @@ export function PushEnablePrompt() {
           <div className="flex-1 min-w-0">
             {mode === 'ios' ? (
               <>
-                <p className="text-sm font-medium text-text-primary">
-                  Add Align to your Home Screen
-                </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  iPhone and iPad only deliver notifications to apps on the Home Screen.
-                  Tap <span className="text-text-primary">Share</span>, choose{' '}
-                  <span className="text-text-primary">Add to Home Screen</span>, then open
-                  Align from that icon to turn notifications on. Safari is the most
-                  reliable — other iPhone browsers all run on Safari underneath, so none
-                  of them can do this from a normal tab.
-                </p>
+                {iosReadd ? (
+                  <>
+                    <p className="text-sm font-medium text-text-primary">
+                      Sorry — please add Align again
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      A bug on our side meant adding Align to your Home Screen didn&apos;t
+                      actually enable notifications, even if you followed the steps exactly.
+                      It&apos;s fixed now. Please{' '}
+                      <span className="text-text-primary">delete the Align icon</span> you
+                      already have (press and hold → Remove), then in Safari tap{' '}
+                      <span className="text-text-primary">Share</span> →{' '}
+                      <span className="text-text-primary">Add to Home Screen</span> again.
+                      Open Align from the new icon and notifications will work.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-text-primary">
+                      Add Align to your Home Screen
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      iPhone and iPad only deliver notifications to apps on the Home Screen.
+                      Tap <span className="text-text-primary">Share</span>, choose{' '}
+                      <span className="text-text-primary">Add to Home Screen</span>, then open
+                      Align from that icon to turn notifications on. Safari is the most
+                      reliable — other iPhone browsers all run on Safari underneath, so none
+                      of them can do this from a normal tab.
+                    </p>
+                  </>
+                )}
                 <div className="flex items-center gap-2 mt-3">
                   <button
                     onClick={notNow}
