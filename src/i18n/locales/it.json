@@ -3186,6 +3186,11 @@
       "cancel": "Non ora"
     },
     "needsBirthData": "Aggiungi data, ora e luogo di nascita per vedere la frequenza che il tuo tema indica questa settimana.",
-    "pointsTo": "Il tuo tema indica {{pressure}}."
+    "pointsTo": "Il tuo tema indica {{pressure}}.",
+    "howToUse": "Come lavorarci",
+    "whatItIsFor": "A cosa serve questa",
+    "count": "{{count}} sequenze",
+    "copy": "Copia la sequenza",
+    "healthPracticeNote": "Le sequenze legate alla salute riguardano il periodo che stai attraversando — la fatica, la stanchezza, la ripresa — non una patologia o una diagnosi. Continua a prendere ciò che ti è stato prescritto, mantieni gli appuntamenti fissati e considera questo come qualcosa che affianca le cure, mai un sostituto."
   }
 }

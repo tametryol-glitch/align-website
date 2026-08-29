@@ -3186,6 +3186,11 @@
       "cancel": "Pas maintenant"
     },
     "needsBirthData": "Ajoutez votre date, heure et lieu de naissance pour voir la fréquence que votre thème désigne cette semaine.",
-    "pointsTo": "Votre thème indique {{pressure}}."
+    "pointsTo": "Votre thème indique {{pressure}}.",
+    "howToUse": "Comment l'utiliser",
+    "whatItIsFor": "À quoi celle-ci sert",
+    "count": "{{count}} séquences",
+    "copy": "Copier la séquence",
+    "healthPracticeNote": "Les séquences de santé concernent la période que vous traversez — la tension, la fatigue, la convalescence — et non une pathologie ou un diagnostic. Continuez à prendre ce qui vous a été prescrit, gardez vos rendez-vous et considérez ceci comme un complément aux soins, jamais comme un remplacement."
   }
 }

@@ -3,13 +3,16 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Check, Copy, Search, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Search, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   COSMIC_FREQUENCIES,
   FREQUENCY_DOMAINS,
-  FREQUENCY_THEMES,
+  PRACTICE_NOTES,
+  PRACTICE_STEPS,
+  getAlphabetical,
   getFrequenciesByDomain,
+  groupByLetter,
   requiresDisclaimer,
   searchFrequencies,
   type CosmicFrequency,
@@ -21,6 +24,7 @@ import {
   hasAcknowledged,
 } from '@/lib/cosmicFrequencies/disclaimer';
 import { HealthDisclaimerModal } from '@/components/cosmicFrequencies/HealthDisclaimerModal';
+import { FrequencyDetailModal } from '@/components/cosmicFrequencies/FrequencyDetailModal';
 import { WeeklyFrequencyCard } from '@/components/cosmicFrequencies/WeeklyFrequencyCard';
 
 const DOMAIN_META: Record<FrequencyDomain, { label: string; glyph: string }> = {
@@ -32,28 +36,6 @@ const DOMAIN_META: Record<FrequencyDomain, { label: string; glyph: string }> = {
   spiritual: { label: 'Spiritual', glyph: '✦' },
 };
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      onClick={() => {
-        navigator.clipboard.writeText(text).catch(() => {});
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }}
-      className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
-      title={copied ? 'Copied' : 'Copy'}
-      aria-label={copied ? 'Copied' : 'Copy frequency'}
-    >
-      {copied ? (
-        <Check className="w-4 h-4 text-green-400" />
-      ) : (
-        <Copy className="w-4 h-4 text-text-muted" />
-      )}
-    </button>
-  );
-}
-
 export default function CosmicFrequenciesPage() {
   const { t } = useTranslation();
   const userId = useAuthStore((s) => s.user?.id) ?? null;
@@ -62,9 +44,10 @@ export default function CosmicFrequenciesPage() {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<CosmicFrequency | null>(null);
   const [pendingGated, setPendingGated] = useState<CosmicFrequency | null>(null);
+  const [howToOpen, setHowToOpen] = useState(true);
 
   const visible = useMemo(() => {
-    const base =
+    let base =
       query.trim().length > 0
         ? searchFrequencies(query)
         : domain === 'all'
@@ -72,10 +55,12 @@ export default function CosmicFrequenciesPage() {
           : getFrequenciesByDomain(domain);
 
     if (query.trim().length > 0 && domain !== 'all') {
-      return base.filter((f) => f.domain === domain);
+      base = base.filter((f) => f.domain === domain);
     }
-    return base;
+    return getAlphabetical(base);
   }, [domain, query]);
+
+  const groups = useMemo(() => groupByLetter(visible), [visible]);
 
   /** Health frequencies open only after the disclaimer has been acknowledged. */
   const openFrequency = (freq: CosmicFrequency) => {
@@ -113,8 +98,49 @@ export default function CosmicFrequenciesPage() {
         )}
       </p>
 
-      {/* Section-level notice. The blocking acknowledgement is separate and
-          fires on first entry to any health frequency. */}
+      {/* How to use — open by default. Someone landing on a wall of numbers
+          needs the method before the catalog is worth anything. */}
+      <div className="rounded-xl border border-border-primary bg-white/5 mb-6 overflow-hidden">
+        <button
+          onClick={() => setHowToOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
+          aria-expanded={howToOpen}
+        >
+          <span className="text-sm font-semibold text-text-primary">
+            {t('cosmicFrequencies.howToUse', 'How to work with it')}
+          </span>
+          <ChevronDown
+            className={`w-4 h-4 text-text-muted transition-transform ${howToOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {howToOpen && (
+          <div className="px-4 pb-4">
+            <ol className="space-y-3 mb-4">
+              {PRACTICE_STEPS.map((step, i) => (
+                <li key={step.title} className="flex gap-3">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary/20 text-accent-primary text-[11px] font-semibold flex items-center justify-center mt-0.5">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-text-primary">{step.title}</p>
+                    <p className="text-xs leading-relaxed text-text-muted mt-0.5">{step.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <ul className="space-y-1.5">
+              {PRACTICE_NOTES.map((note) => (
+                <li key={note} className="text-xs leading-relaxed text-text-muted flex gap-2">
+                  <span aria-hidden className="text-accent-primary">·</span>
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
       <div className="flex gap-3 p-4 rounded-xl border border-border-primary bg-white/5 mb-6">
         <ShieldAlert className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
         <p className="text-xs leading-relaxed text-text-muted">
@@ -122,8 +148,6 @@ export default function CosmicFrequenciesPage() {
         </p>
       </div>
 
-      {/* This week's frequency — routed through openFrequency so the health
-          gate applies here exactly as it does in the grid. */}
       <WeeklyFrequencyCard onOpen={openFrequency} />
 
       {/* Search */}
@@ -141,7 +165,7 @@ export default function CosmicFrequenciesPage() {
       </div>
 
       {/* Domain filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
         <button
           onClick={() => setDomain('all')}
           className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
@@ -168,90 +192,77 @@ export default function CosmicFrequenciesPage() {
         ))}
       </div>
 
-      {/* Grid */}
+      {/* A-Z jump index */}
+      {groups.length > 1 && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {groups.map((g) => (
+            <a
+              key={g.letter}
+              href={`#cf-letter-${g.letter}`}
+              className="w-7 h-7 rounded-md bg-white/5 hover:bg-white/10 text-xs font-semibold text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+            >
+              {g.letter}
+            </a>
+          ))}
+        </div>
+      )}
+
+      <p className="text-xs text-text-muted mb-3">
+        {t('cosmicFrequencies.count', {
+          count: visible.length,
+          defaultValue: '{{count}} sequences',
+        })}
+      </p>
+
+      {/* Codex */}
       {visible.length === 0 ? (
         <p className="text-sm text-text-muted py-8 text-center">
           {t('cosmicFrequencies.noResults', 'Nothing matches that yet.')}
         </p>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((freq) => (
-            <button
-              key={freq.id}
-              onClick={() => openFrequency(freq)}
-              className="text-left p-4 rounded-xl border border-border-primary bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-text-muted">
-                  <span className="mr-1" aria-hidden>{DOMAIN_META[freq.domain].glyph}</span>
-                  {t(`cosmicFrequencies.domain.${freq.domain}`, DOMAIN_META[freq.domain].label)}
-                </span>
-                {requiresDisclaimer(freq) && (
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" aria-label="Requires acknowledgement" />
-                )}
+        <div className="rounded-xl border border-border-primary overflow-hidden">
+          {groups.map((group) => (
+            <div key={group.letter}>
+              <div
+                id={`cf-letter-${group.letter}`}
+                className="px-4 py-1.5 bg-white/[0.07] text-xs font-bold text-text-muted sticky top-0 scroll-mt-4"
+              >
+                {group.letter}
               </div>
-              <h3 className="text-sm font-semibold text-text-primary mb-1">{freq.title}</h3>
-              <p className="font-mono text-base text-accent-primary tracking-wide">{freq.code}</p>
-            </button>
+              {group.items.map((freq) => (
+                <button
+                  key={freq.id}
+                  onClick={() => openFrequency(freq)}
+                  className="w-full text-left px-4 py-3 flex items-center gap-3 border-t border-border-primary/40 hover:bg-white/5 transition-colors"
+                >
+                  <span className="flex-1 min-w-0">
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-sm font-medium text-text-primary truncate">
+                        {freq.title}
+                      </span>
+                      {requiresDisclaimer(freq) && (
+                        <ShieldAlert className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                      )}
+                    </span>
+                    <span className="block text-[11px] text-text-muted truncate">
+                      <span aria-hidden>{DOMAIN_META[freq.domain].glyph}</span>{' '}
+                      {t(
+                        `cosmicFrequencies.domain.${freq.domain}`,
+                        DOMAIN_META[freq.domain].label,
+                      )}
+                    </span>
+                  </span>
+                  <span className="font-mono text-sm text-accent-primary tracking-wide flex-shrink-0">
+                    {freq.code}
+                  </span>
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       )}
 
-      {/* Detail */}
-      {selected && (
-        <div className="mt-8 p-5 rounded-2xl border border-border-primary bg-white/5">
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div>
-              <p className="text-xs text-text-muted mb-1">
-                <span className="mr-1" aria-hidden>{DOMAIN_META[selected.domain].glyph}</span>
-                {t(
-                  `cosmicFrequencies.domain.${selected.domain}`,
-                  DOMAIN_META[selected.domain].label,
-                )}
-              </p>
-              <h2 className="text-xl font-display font-bold text-text-primary">
-                {selected.title}
-              </h2>
-            </div>
-            <button
-              onClick={() => setSelected(null)}
-              className="text-xs text-text-muted hover:text-text-primary transition-colors"
-            >
-              {t('common.close', 'Close')}
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 mb-4">
-            <p className="font-mono text-2xl text-accent-primary tracking-wider">
-              {selected.code}
-            </p>
-            <CopyButton text={selected.code} />
-          </div>
-
-          <p className="text-sm leading-relaxed text-text-secondary mb-4">{selected.intent}</p>
-
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {selected.themes.map((th) => (
-              <span
-                key={th}
-                className="px-2 py-1 rounded-md text-[11px] bg-white/5 text-text-muted"
-              >
-                {FREQUENCY_THEMES[th].label}
-              </span>
-            ))}
-          </div>
-
-          {/* Persistent footer on every gated frequency — not a buried link. */}
-          {requiresDisclaimer(selected) && (
-            <div className="flex gap-2 pt-3 border-t border-border-primary">
-              <ShieldAlert className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-              <p className="text-[11px] leading-relaxed text-text-muted">
-                {t('cosmicFrequencies.disclaimer.body', HEALTH_DISCLAIMER)}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+      <FrequencyDetailModal frequency={selected} onClose={() => setSelected(null)} />
 
       <HealthDisclaimerModal
         visible={pendingGated !== null}

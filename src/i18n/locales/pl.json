@@ -3186,6 +3186,11 @@
       "cancel": "Nie teraz"
     },
     "needsBirthData": "Dodaj datę, godzinę i miejsce urodzenia, aby zobaczyć częstotliwość, na którą wskazuje twój horoskop w tym tygodniu.",
-    "pointsTo": "Twój horoskop wskazuje na {{pressure}}."
+    "pointsTo": "Twój horoskop wskazuje na {{pressure}}.",
+    "howToUse": "Jak z niej korzystać",
+    "whatItIsFor": "Do czego służy ta",
+    "count": "{{count}} sekwencji",
+    "copy": "Kopiuj sekwencję",
+    "healthPracticeNote": "Sekwencje związane ze zdrowiem dotyczą okresu, w którym się znajdujesz — obciążenia, zmęczenia, powrotu do sił — a nie choroby czy diagnozy. Nadal przyjmuj to, co ci przepisano, nie odwołuj umówionych wizyt i traktuj to jako coś, co robisz obok leczenia, nigdy zamiast niego."
   }
 }

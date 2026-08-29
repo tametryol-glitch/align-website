@@ -26,6 +26,12 @@ import { SPIRITUAL_FREQUENCIES } from './spiritual';
 
 export * from './types';
 export { FREQUENCY_THEMES, ALL_THEME_KEYS, getThemesForDomain, isFrequencyTheme } from './themes';
+export {
+  PRACTICE_STEPS,
+  PRACTICE_NOTES,
+  HEALTH_PRACTICE_NOTE,
+  type PracticeStep,
+} from './practice';
 
 export const COSMIC_FREQUENCIES: CosmicFrequency[] = [
   ...HEALTH_FREQUENCIES,
@@ -121,6 +127,38 @@ export function getPushEligible(
  */
 export function getPushSafeText(theme: FrequencyTheme): string {
   return FREQUENCY_THEMES[theme].pressure;
+}
+
+/* ── Codex ordering ─────────────────────────────────────────── */
+
+const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+/** Every frequency, A-Z by title. The codex's default order. */
+export function getAlphabetical(list: CosmicFrequency[] = COSMIC_FREQUENCIES): CosmicFrequency[] {
+  return [...list].sort((a, b) => collator.compare(a.title, b.title));
+}
+
+/**
+ * A-Z buckets for the codex jump index. Titles that do not start with a
+ * letter are grouped under '#' so nothing silently disappears from the
+ * index as the catalog grows.
+ */
+export function groupByLetter(
+  list: CosmicFrequency[] = COSMIC_FREQUENCIES,
+): { letter: string; items: CosmicFrequency[] }[] {
+  const buckets = new Map<string, CosmicFrequency[]>();
+
+  for (const f of getAlphabetical(list)) {
+    const first = f.title.trim().charAt(0).toUpperCase();
+    const letter = /[A-Z]/.test(first) ? first : '#';
+    if (!buckets.has(letter)) buckets.set(letter, []);
+    buckets.get(letter)!.push(f);
+  }
+
+  // Array.from rather than spread: the build target predates downlevelIteration.
+  return Array.from(buckets.entries())
+    .sort((a, b) => (a[0] === '#' ? 1 : b[0] === '#' ? -1 : collator.compare(a[0], b[0])))
+    .map(([letter, items]) => ({ letter, items }));
 }
 
 /* ── Search ─────────────────────────────────────────────────── */

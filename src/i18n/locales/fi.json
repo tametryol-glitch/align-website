@@ -3186,6 +3186,11 @@
       "cancel": "Ei nyt"
     },
     "needsBirthData": "Lisää syntymäaikasi, -kellonaikasi ja -paikkasi nähdäksesi taajuuden, johon karttasi tällä viikolla osoittaa.",
-    "pointsTo": "Karttasi osoittaa: {{pressure}}."
+    "pointsTo": "Karttasi osoittaa: {{pressure}}.",
+    "howToUse": "Näin työskentelet sen kanssa",
+    "whatItIsFor": "Mihin tämä on tarkoitettu",
+    "count": "{{count}} sarjaa",
+    "copy": "Kopioi sarja",
+    "healthPracticeNote": "Terveyteen liittyvät sarjat koskevat sitä jaksoa, jossa olet — kuormitusta, väsymystä, toipumista — eivät sairautta tai diagnoosia. Jatka määrättyjen lääkkeiden ottamista, pidä sovitut vastaanottoajat ja pidä tätä hoidon rinnalla tehtävänä asiana, ei koskaan sen korvaajana."
   }
 }

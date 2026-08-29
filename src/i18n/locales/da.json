@@ -3186,6 +3186,11 @@
       "cancel": "Ikke nu"
     },
     "needsBirthData": "Tilføj din fødselsdato, -tid og -sted for at se den frekvens, dit horoskop peger på i denne uge.",
-    "pointsTo": "Dit horoskop peger på {{pressure}}."
+    "pointsTo": "Dit horoskop peger på {{pressure}}.",
+    "howToUse": "Sådan arbejder du med den",
+    "whatItIsFor": "Hvad denne er til",
+    "count": "{{count}} sekvenser",
+    "copy": "Kopiér sekvens",
+    "healthPracticeNote": "Helbredssekvenser handler om den periode, du er i — belastningen, trætheden, bedringen — ikke om en lidelse eller en diagnose. Bliv ved med at tage det, du har fået ordineret, hold dine aftaler, og betragt dette som noget, du gør ved siden af behandlingen, aldrig i stedet for."
   }
 }

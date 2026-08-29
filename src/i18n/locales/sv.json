@@ -3186,6 +3186,11 @@
       "cancel": "Inte nu"
     },
     "needsBirthData": "Lägg till ditt födelsedatum, din födelsetid och födelseort för att se frekvensen som ditt horoskop pekar på den här veckan.",
-    "pointsTo": "Ditt horoskop pekar på {{pressure}}."
+    "pointsTo": "Ditt horoskop pekar på {{pressure}}.",
+    "howToUse": "Så arbetar du med den",
+    "whatItIsFor": "Vad den här är till för",
+    "count": "{{count}} sekvenser",
+    "copy": "Kopiera sekvens",
+    "healthPracticeNote": "Hälsosekvenser handlar om den period du befinner dig i — påfrestningen, tröttheten, återhämtningen — inte om ett tillstånd eller en diagnos. Fortsätt ta det du har blivit ordinerad, behåll dina inbokade tider och se det här som något du gör vid sidan av vården, aldrig i stället för den."
   }
 }

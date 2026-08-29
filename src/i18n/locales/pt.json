@@ -3186,6 +3186,11 @@
       "cancel": "Agora não"
     },
     "needsBirthData": "Adicione a sua data, hora e local de nascimento para ver a frequência que o seu mapa aponta esta semana.",
-    "pointsTo": "O seu mapa aponta para {{pressure}}."
+    "pointsTo": "O seu mapa aponta para {{pressure}}.",
+    "howToUse": "Como trabalhar com ela",
+    "whatItIsFor": "Para que serve esta",
+    "count": "{{count}} sequências",
+    "copy": "Copiar sequência",
+    "healthPracticeNote": "As sequências de saúde referem-se ao período que está a atravessar — o esforço, o cansaço, a recuperação — e não a uma doença ou diagnóstico. Continue a tomar o que lhe foi receitado, mantenha as consultas marcadas e encare isto como algo que faz a par dos cuidados médicos, nunca em vez deles."
   }
 }

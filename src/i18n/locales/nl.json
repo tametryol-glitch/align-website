@@ -3186,6 +3186,11 @@
       "cancel": "Niet nu"
     },
     "needsBirthData": "Voeg je geboortedatum, -tijd en -plaats toe om de frequentie te zien waar je horoscoop deze week naar wijst.",
-    "pointsTo": "Je horoscoop wijst naar {{pressure}}."
+    "pointsTo": "Je horoscoop wijst naar {{pressure}}.",
+    "howToUse": "Hoe je ermee werkt",
+    "whatItIsFor": "Waarvoor deze is",
+    "count": "{{count}} reeksen",
+    "copy": "Reeks kopiëren",
+    "healthPracticeNote": "Gezondheidsreeksen gaan over de periode waarin je zit — de belasting, de vermoeidheid, het herstel — niet over een aandoening of diagnose. Blijf innemen wat je is voorgeschreven, houd je afspraken aan en zie dit als iets dat je náást de zorg doet, nooit in plaats daarvan."
   }
 }

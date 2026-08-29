@@ -3222,6 +3222,11 @@
       "cancel": "Not now"
     },
     "needsBirthData": "Add your birth date, time and place to see the frequency your chart points at this week.",
-    "pointsTo": "Your chart points to {{pressure}}."
+    "pointsTo": "Your chart points to {{pressure}}.",
+    "howToUse": "How to work with it",
+    "whatItIsFor": "What this one is for",
+    "count": "{{count}} sequences",
+    "copy": "Copy sequence",
+    "healthPracticeNote": "Health sequences are for the stretch of time you are in — the strain, the tiredness, the recovery — not for a condition or a diagnosis. Keep taking what you have been prescribed, keep the appointments you have made, and treat this as something you do alongside care, never instead of it."
   }
 }

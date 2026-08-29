@@ -3186,6 +3186,11 @@
       "cancel": "Jetzt nicht"
     },
     "needsBirthData": "Füge Geburtsdatum, -zeit und -ort hinzu, um die Frequenz zu sehen, auf die dein Horoskop diese Woche zeigt.",
-    "pointsTo": "Dein Horoskop zeigt auf {{pressure}}."
+    "pointsTo": "Dein Horoskop zeigt auf {{pressure}}.",
+    "howToUse": "So arbeitest du damit",
+    "whatItIsFor": "Wofür diese gedacht ist",
+    "count": "{{count}} Sequenzen",
+    "copy": "Sequenz kopieren",
+    "healthPracticeNote": "Gesundheitssequenzen beziehen sich auf den Zeitraum, in dem du gerade steckst — die Belastung, die Müdigkeit, die Erholung — nicht auf eine Erkrankung oder Diagnose. Nimm weiter ein, was dir verschrieben wurde, halte deine Termine ein und verstehe das hier als etwas, das du begleitend zur Behandlung tust, niemals anstelle davon."
   }
 }

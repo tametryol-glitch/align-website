@@ -3186,6 +3186,11 @@
       "cancel": "Şimdi değil"
     },
     "needsBirthData": "Bu hafta haritanın işaret ettiği frekansı görmek için doğum tarihini, saatini ve yerini ekle.",
-    "pointsTo": "Haritan şuna işaret ediyor: {{pressure}}."
+    "pointsTo": "Haritan şuna işaret ediyor: {{pressure}}.",
+    "howToUse": "Nasıl çalışılır",
+    "whatItIsFor": "Bu ne için",
+    "count": "{{count}} dizi",
+    "copy": "Diziyi kopyala",
+    "healthPracticeNote": "Sağlıkla ilgili diziler, içinde bulunduğun döneme ilişkindir — zorlanmaya, yorgunluğa, iyileşmeye — bir hastalığa ya da teşhise değil. Sana reçete edilenleri almayı sürdür, randevularına git ve bunu tedavinin yerine değil, yanında yaptığın bir şey olarak gör."
   }
 }
