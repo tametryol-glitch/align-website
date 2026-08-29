@@ -2431,7 +2431,9 @@
     "upload": "Upload",
     "noResults": "No results found",
     "tryAgain": "Try again",
-    "clear": "Clear"
+    "clear": "Clear",
+    "play": "Play",
+    "pause": "Pause"
   },
   "zodiac": {
     "aries": "Aries",
@@ -3227,6 +3229,16 @@
     "whatItIsFor": "What this one is for",
     "count": "{{count}} sequences",
     "copy": "Copy sequence",
-    "healthPracticeNote": "Health sequences are for the stretch of time you are in — the strain, the tiredness, the recovery — not for a condition or a diagnosis. Keep taking what you have been prescribed, keep the appointments you have made, and treat this as something you do alongside care, never instead of it."
+    "healthPracticeNote": "Health sequences are for the stretch of time you are in — the strain, the tiredness, the recovery — not for a condition or a diagnosis. Keep taking what you have been prescribed, keep the appointments you have made, and treat this as something you do alongside care, never instead of it.",
+    "listen": "Listening session",
+    "listenHint": "Earbuds in. The sequence repeats, one digit at a time.",
+    "listenError": "Audio could not load. Try again.",
+    "tempoLabel": "Pace",
+    "lengthLabel": "Length",
+    "tempo": {
+      "slow": "Slow",
+      "medium": "Medium",
+      "fast": "Fast"
+    }
   }
 }

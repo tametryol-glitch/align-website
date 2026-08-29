@@ -2185,7 +2185,9 @@
     "upload": "Yukle",
     "noResults": "Sonuc bulunamadi",
     "tryAgain": "Tekrar dene",
-    "clear": "Temizle"
+    "clear": "Temizle",
+    "play": "Oynat",
+    "pause": "Duraklat"
   },
   "zodiac": {
     "aries": "Koc",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Bu ne için",
     "count": "{{count}} dizi",
     "copy": "Diziyi kopyala",
-    "healthPracticeNote": "Sağlıkla ilgili diziler, içinde bulunduğun döneme ilişkindir — zorlanmaya, yorgunluğa, iyileşmeye — bir hastalığa ya da teşhise değil. Sana reçete edilenleri almayı sürdür, randevularına git ve bunu tedavinin yerine değil, yanında yaptığın bir şey olarak gör."
+    "healthPracticeNote": "Sağlıkla ilgili diziler, içinde bulunduğun döneme ilişkindir — zorlanmaya, yorgunluğa, iyileşmeye — bir hastalığa ya da teşhise değil. Sana reçete edilenleri almayı sürdür, randevularına git ve bunu tedavinin yerine değil, yanında yaptığın bir şey olarak gör.",
+    "listen": "Dinleme seansı",
+    "listenHint": "Kulaklığını tak. Dizi, her seferinde bir rakam olarak tekrarlanır.",
+    "listenError": "Ses yüklenemedi. Tekrar dene.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Süre",
+    "tempo": {
+      "slow": "Yavaş",
+      "medium": "Orta",
+      "fast": "Hızlı"
+    }
   }
 }

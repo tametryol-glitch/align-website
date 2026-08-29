@@ -2185,7 +2185,9 @@
     "upload": "Subir",
     "noResults": "Sin resultados",
     "tryAgain": "Intentar de nuevo",
-    "clear": "Borrar"
+    "clear": "Borrar",
+    "play": "Reproducir",
+    "pause": "Pausar"
   },
   "zodiac": {
     "aries": "Aries",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Para qué sirve esta",
     "count": "{{count}} secuencias",
     "copy": "Copiar secuencia",
-    "healthPracticeNote": "Las secuencias de salud son para el periodo que estás atravesando — la tensión, el cansancio, la recuperación — no para una afección ni un diagnóstico. Sigue tomando lo que te han recetado, mantén tus citas médicas y trata esto como algo que haces junto a la atención médica, nunca en lugar de ella."
+    "healthPracticeNote": "Las secuencias de salud son para el periodo que estás atravesando — la tensión, el cansancio, la recuperación — no para una afección ni un diagnóstico. Sigue tomando lo que te han recetado, mantén tus citas médicas y trata esto como algo que haces junto a la atención médica, nunca en lugar de ella.",
+    "listen": "Sesión de escucha",
+    "listenHint": "Ponte los auriculares. La secuencia se repite, dígito a dígito.",
+    "listenError": "No se pudo cargar el audio. Inténtalo de nuevo.",
+    "tempoLabel": "Ritmo",
+    "lengthLabel": "Duración",
+    "tempo": {
+      "slow": "Lento",
+      "medium": "Medio",
+      "fast": "Rápido"
+    }
   }
 }

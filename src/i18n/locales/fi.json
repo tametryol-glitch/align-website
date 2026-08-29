@@ -2185,7 +2185,9 @@
     "upload": "Lataa",
     "noResults": "Tuloksia ei loytynyt",
     "tryAgain": "Yrita uudelleen",
-    "clear": "Tyhjennä"
+    "clear": "Tyhjennä",
+    "play": "Toista",
+    "pause": "Keskeytä"
   },
   "zodiac": {
     "aries": "Oinas",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Mihin tämä on tarkoitettu",
     "count": "{{count}} sarjaa",
     "copy": "Kopioi sarja",
-    "healthPracticeNote": "Terveyteen liittyvät sarjat koskevat sitä jaksoa, jossa olet — kuormitusta, väsymystä, toipumista — eivät sairautta tai diagnoosia. Jatka määrättyjen lääkkeiden ottamista, pidä sovitut vastaanottoajat ja pidä tätä hoidon rinnalla tehtävänä asiana, ei koskaan sen korvaajana."
+    "healthPracticeNote": "Terveyteen liittyvät sarjat koskevat sitä jaksoa, jossa olet — kuormitusta, väsymystä, toipumista — eivät sairautta tai diagnoosia. Jatka määrättyjen lääkkeiden ottamista, pidä sovitut vastaanottoajat ja pidä tätä hoidon rinnalla tehtävänä asiana, ei koskaan sen korvaajana.",
+    "listen": "Kuuntelujakso",
+    "listenHint": "Laita kuulokkeet. Sarja toistuu, yksi numero kerrallaan.",
+    "listenError": "Ääntä ei voitu ladata. Yritä uudelleen.",
+    "tempoLabel": "Tahti",
+    "lengthLabel": "Kesto",
+    "tempo": {
+      "slow": "Hidas",
+      "medium": "Keskitaso",
+      "fast": "Nopea"
+    }
   }
 }

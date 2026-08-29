@@ -2185,7 +2185,9 @@
     "upload": "Hochladen",
     "noResults": "Keine Ergebnisse gefunden",
     "tryAgain": "Erneut versuchen",
-    "clear": "Löschen"
+    "clear": "Löschen",
+    "play": "Abspielen",
+    "pause": "Pause"
   },
   "zodiac": {
     "aries": "Widder",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Wofür diese gedacht ist",
     "count": "{{count}} Sequenzen",
     "copy": "Sequenz kopieren",
-    "healthPracticeNote": "Gesundheitssequenzen beziehen sich auf den Zeitraum, in dem du gerade steckst — die Belastung, die Müdigkeit, die Erholung — nicht auf eine Erkrankung oder Diagnose. Nimm weiter ein, was dir verschrieben wurde, halte deine Termine ein und verstehe das hier als etwas, das du begleitend zur Behandlung tust, niemals anstelle davon."
+    "healthPracticeNote": "Gesundheitssequenzen beziehen sich auf den Zeitraum, in dem du gerade steckst — die Belastung, die Müdigkeit, die Erholung — nicht auf eine Erkrankung oder Diagnose. Nimm weiter ein, was dir verschrieben wurde, halte deine Termine ein und verstehe das hier als etwas, das du begleitend zur Behandlung tust, niemals anstelle davon.",
+    "listen": "Hörsitzung",
+    "listenHint": "Kopfhörer rein. Die Folge wiederholt sich, Ziffer für Ziffer.",
+    "listenError": "Audio konnte nicht geladen werden. Versuche es erneut.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Dauer",
+    "tempo": {
+      "slow": "Langsam",
+      "medium": "Mittel",
+      "fast": "Schnell"
+    }
   }
 }

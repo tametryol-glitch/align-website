@@ -2185,7 +2185,9 @@
     "upload": "Prześlij",
     "noResults": "Brak wyników",
     "tryAgain": "Spróbuj ponownie",
-    "clear": "Wyczyść"
+    "clear": "Wyczyść",
+    "play": "Odtwórz",
+    "pause": "Pauza"
   },
   "zodiac": {
     "aries": "Baran",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Do czego służy ta",
     "count": "{{count}} sekwencji",
     "copy": "Kopiuj sekwencję",
-    "healthPracticeNote": "Sekwencje związane ze zdrowiem dotyczą okresu, w którym się znajdujesz — obciążenia, zmęczenia, powrotu do sił — a nie choroby czy diagnozy. Nadal przyjmuj to, co ci przepisano, nie odwołuj umówionych wizyt i traktuj to jako coś, co robisz obok leczenia, nigdy zamiast niego."
+    "healthPracticeNote": "Sekwencje związane ze zdrowiem dotyczą okresu, w którym się znajdujesz — obciążenia, zmęczenia, powrotu do sił — a nie choroby czy diagnozy. Nadal przyjmuj to, co ci przepisano, nie odwołuj umówionych wizyt i traktuj to jako coś, co robisz obok leczenia, nigdy zamiast niego.",
+    "listen": "Sesja słuchania",
+    "listenHint": "Załóż słuchawki. Sekwencja powtarza się, cyfra po cyfrze.",
+    "listenError": "Nie udało się wczytać dźwięku. Spróbuj ponownie.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Długość",
+    "tempo": {
+      "slow": "Wolno",
+      "medium": "Średnio",
+      "fast": "Szybko"
+    }
   }
 }

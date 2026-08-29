@@ -2185,7 +2185,9 @@
     "upload": "Ladda upp",
     "noResults": "Inga resultat hittade",
     "tryAgain": "Försök igen",
-    "clear": "Rensa"
+    "clear": "Rensa",
+    "play": "Spela",
+    "pause": "Pausa"
   },
   "zodiac": {
     "aries": "Väduren",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Vad den här är till för",
     "count": "{{count}} sekvenser",
     "copy": "Kopiera sekvens",
-    "healthPracticeNote": "Hälsosekvenser handlar om den period du befinner dig i — påfrestningen, tröttheten, återhämtningen — inte om ett tillstånd eller en diagnos. Fortsätt ta det du har blivit ordinerad, behåll dina inbokade tider och se det här som något du gör vid sidan av vården, aldrig i stället för den."
+    "healthPracticeNote": "Hälsosekvenser handlar om den period du befinner dig i — påfrestningen, tröttheten, återhämtningen — inte om ett tillstånd eller en diagnos. Fortsätt ta det du har blivit ordinerad, behåll dina inbokade tider och se det här som något du gör vid sidan av vården, aldrig i stället för den.",
+    "listen": "Lyssningspass",
+    "listenHint": "Sätt i hörlurarna. Sekvensen upprepas, en siffra i taget.",
+    "listenError": "Ljudet kunde inte laddas. Försök igen.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Längd",
+    "tempo": {
+      "slow": "Långsam",
+      "medium": "Medel",
+      "fast": "Snabb"
+    }
   }
 }

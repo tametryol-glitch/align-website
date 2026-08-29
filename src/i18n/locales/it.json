@@ -2185,7 +2185,9 @@
     "upload": "Carica",
     "noResults": "Nessun risultato trovato",
     "tryAgain": "Riprova",
-    "clear": "Cancella"
+    "clear": "Cancella",
+    "play": "Riproduci",
+    "pause": "Pausa"
   },
   "zodiac": {
     "aries": "Ariete",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "A cosa serve questa",
     "count": "{{count}} sequenze",
     "copy": "Copia la sequenza",
-    "healthPracticeNote": "Le sequenze legate alla salute riguardano il periodo che stai attraversando — la fatica, la stanchezza, la ripresa — non una patologia o una diagnosi. Continua a prendere ciò che ti è stato prescritto, mantieni gli appuntamenti fissati e considera questo come qualcosa che affianca le cure, mai un sostituto."
+    "healthPracticeNote": "Le sequenze legate alla salute riguardano il periodo che stai attraversando — la fatica, la stanchezza, la ripresa — non una patologia o una diagnosi. Continua a prendere ciò che ti è stato prescritto, mantieni gli appuntamenti fissati e considera questo come qualcosa che affianca le cure, mai un sostituto.",
+    "listen": "Sessione di ascolto",
+    "listenHint": "Metti gli auricolari. La sequenza si ripete, una cifra alla volta.",
+    "listenError": "Impossibile caricare l'audio. Riprova.",
+    "tempoLabel": "Ritmo",
+    "lengthLabel": "Durata",
+    "tempo": {
+      "slow": "Lento",
+      "medium": "Medio",
+      "fast": "Veloce"
+    }
   }
 }

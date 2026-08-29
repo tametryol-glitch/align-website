@@ -12,6 +12,7 @@ import {
   type CosmicFrequency,
 } from '@/data/cosmicFrequencies';
 import { HEALTH_DISCLAIMER } from '@/lib/cosmicFrequencies/disclaimer';
+import { FrequencyPlayer } from './FrequencyPlayer';
 
 interface Props {
   frequency: CosmicFrequency | null;
@@ -121,6 +122,10 @@ export function FrequencyDetailModal({ frequency, onClose }: Props) {
               )}
             </button>
           </div>
+
+          {/* Listening session. Above the written guidance because the audio
+              is the practice; the text explains it. */}
+          <FrequencyPlayer frequency={frequency} />
 
           {/* What it is for */}
           <section className="mb-5">

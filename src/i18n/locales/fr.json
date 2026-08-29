@@ -2185,7 +2185,9 @@
     "upload": "Telecharger",
     "noResults": "Aucun resultat",
     "tryAgain": "Reessayer",
-    "clear": "Effacer"
+    "clear": "Effacer",
+    "play": "Lire",
+    "pause": "Pause"
   },
   "zodiac": {
     "aries": "Belier",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "À quoi celle-ci sert",
     "count": "{{count}} séquences",
     "copy": "Copier la séquence",
-    "healthPracticeNote": "Les séquences de santé concernent la période que vous traversez — la tension, la fatigue, la convalescence — et non une pathologie ou un diagnostic. Continuez à prendre ce qui vous a été prescrit, gardez vos rendez-vous et considérez ceci comme un complément aux soins, jamais comme un remplacement."
+    "healthPracticeNote": "Les séquences de santé concernent la période que vous traversez — la tension, la fatigue, la convalescence — et non une pathologie ou un diagnostic. Continuez à prendre ce qui vous a été prescrit, gardez vos rendez-vous et considérez ceci comme un complément aux soins, jamais comme un remplacement.",
+    "listen": "Séance d'écoute",
+    "listenHint": "Mettez vos écouteurs. La séquence se répète, chiffre par chiffre.",
+    "listenError": "L'audio n'a pas pu être chargé. Réessayez.",
+    "tempoLabel": "Rythme",
+    "lengthLabel": "Durée",
+    "tempo": {
+      "slow": "Lent",
+      "medium": "Moyen",
+      "fast": "Rapide"
+    }
   }
 }

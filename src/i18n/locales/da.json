@@ -2185,7 +2185,9 @@
     "upload": "Upload",
     "noResults": "Ingen resultater fundet",
     "tryAgain": "Proev igen",
-    "clear": "Ryd"
+    "clear": "Ryd",
+    "play": "Afspil",
+    "pause": "Pause"
   },
   "zodiac": {
     "aries": "Vaedderen",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Hvad denne er til",
     "count": "{{count}} sekvenser",
     "copy": "Kopiér sekvens",
-    "healthPracticeNote": "Helbredssekvenser handler om den periode, du er i — belastningen, trætheden, bedringen — ikke om en lidelse eller en diagnose. Bliv ved med at tage det, du har fået ordineret, hold dine aftaler, og betragt dette som noget, du gør ved siden af behandlingen, aldrig i stedet for."
+    "healthPracticeNote": "Helbredssekvenser handler om den periode, du er i — belastningen, trætheden, bedringen — ikke om en lidelse eller en diagnose. Bliv ved med at tage det, du har fået ordineret, hold dine aftaler, og betragt dette som noget, du gør ved siden af behandlingen, aldrig i stedet for.",
+    "listen": "Lyttesession",
+    "listenHint": "Sæt høretelefonerne i. Rækken gentages, ét ciffer ad gangen.",
+    "listenError": "Lyden kunne ikke indlæses. Prøv igen.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Længde",
+    "tempo": {
+      "slow": "Langsom",
+      "medium": "Mellem",
+      "fast": "Hurtig"
+    }
   }
 }

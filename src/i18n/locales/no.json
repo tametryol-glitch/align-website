@@ -2185,7 +2185,9 @@
     "upload": "Last opp",
     "noResults": "Ingen resultater funnet",
     "tryAgain": "Prøv igjen",
-    "clear": "Tøm"
+    "clear": "Tøm",
+    "play": "Spill av",
+    "pause": "Pause"
   },
   "zodiac": {
     "aries": "Væren",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Hva denne er for",
     "count": "{{count}} sekvenser",
     "copy": "Kopier sekvens",
-    "healthPracticeNote": "Helsesekvenser handler om perioden du er i — belastningen, trettheten, bedringen — ikke om en tilstand eller en diagnose. Fortsett å ta det du har fått foreskrevet, hold avtalene dine, og se på dette som noe du gjør ved siden av behandlingen, aldri i stedet for."
+    "healthPracticeNote": "Helsesekvenser handler om perioden du er i — belastningen, trettheten, bedringen — ikke om en tilstand eller en diagnose. Fortsett å ta det du har fått foreskrevet, hold avtalene dine, og se på dette som noe du gjør ved siden av behandlingen, aldri i stedet for.",
+    "listen": "Lytteøkt",
+    "listenHint": "Sett inn øreproppene. Rekken gjentas, ett siffer om gangen.",
+    "listenError": "Lyden kunne ikke lastes. Prøv igjen.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Lengde",
+    "tempo": {
+      "slow": "Sakte",
+      "medium": "Middels",
+      "fast": "Rask"
+    }
   }
 }

@@ -2233,7 +2233,9 @@
     "upload": "Enviar",
     "noResults": "Nenhum resultado encontrado",
     "tryAgain": "Tente novamente",
-    "clear": "Limpar"
+    "clear": "Limpar",
+    "play": "Reproduzir",
+    "pause": "Pausar"
   },
   "elements": {
     "fire": "Fogo",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Para que serve esta",
     "count": "{{count}} sequências",
     "copy": "Copiar sequência",
-    "healthPracticeNote": "As sequências de saúde referem-se ao período que está a atravessar — o esforço, o cansaço, a recuperação — e não a uma doença ou diagnóstico. Continue a tomar o que lhe foi receitado, mantenha as consultas marcadas e encare isto como algo que faz a par dos cuidados médicos, nunca em vez deles."
+    "healthPracticeNote": "As sequências de saúde referem-se ao período que está a atravessar — o esforço, o cansaço, a recuperação — e não a uma doença ou diagnóstico. Continue a tomar o que lhe foi receitado, mantenha as consultas marcadas e encare isto como algo que faz a par dos cuidados médicos, nunca em vez deles.",
+    "listen": "Sessão de escuta",
+    "listenHint": "Coloque os fones. A sequência repete-se, um dígito de cada vez.",
+    "listenError": "Não foi possível carregar o áudio. Tente novamente.",
+    "tempoLabel": "Ritmo",
+    "lengthLabel": "Duração",
+    "tempo": {
+      "slow": "Lento",
+      "medium": "Médio",
+      "fast": "Rápido"
+    }
   }
 }

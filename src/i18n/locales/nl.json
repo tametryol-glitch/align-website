@@ -2185,7 +2185,9 @@
     "upload": "Uploaden",
     "noResults": "Geen resultaten gevonden",
     "tryAgain": "Probeer opnieuw",
-    "clear": "Wissen"
+    "clear": "Wissen",
+    "play": "Afspelen",
+    "pause": "Pauzeren"
   },
   "zodiac": {
     "aries": "Ram",
@@ -3191,6 +3193,16 @@
     "whatItIsFor": "Waarvoor deze is",
     "count": "{{count}} reeksen",
     "copy": "Reeks kopiëren",
-    "healthPracticeNote": "Gezondheidsreeksen gaan over de periode waarin je zit — de belasting, de vermoeidheid, het herstel — niet over een aandoening of diagnose. Blijf innemen wat je is voorgeschreven, houd je afspraken aan en zie dit als iets dat je náást de zorg doet, nooit in plaats daarvan."
+    "healthPracticeNote": "Gezondheidsreeksen gaan over de periode waarin je zit — de belasting, de vermoeidheid, het herstel — niet over een aandoening of diagnose. Blijf innemen wat je is voorgeschreven, houd je afspraken aan en zie dit als iets dat je náást de zorg doet, nooit in plaats daarvan.",
+    "listen": "Luistersessie",
+    "listenHint": "Oordopjes in. De reeks herhaalt zich, cijfer voor cijfer.",
+    "listenError": "Audio kon niet worden geladen. Probeer opnieuw.",
+    "tempoLabel": "Tempo",
+    "lengthLabel": "Duur",
+    "tempo": {
+      "slow": "Langzaam",
+      "medium": "Gemiddeld",
+      "fast": "Snel"
+    }
   }
 }
