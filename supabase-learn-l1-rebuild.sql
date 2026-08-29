@@ -1,4 +1,4 @@
--- Level 1, lessons 2-7 rebuilt to the Learn Loop standard.
+-- Level 1 rebuilt to the Learn Loop standard: all seven lessons.
 --
 -- Same shape as l1-1: five dual-coded slides of roughly 40 words each against
 -- a live visual, and four retrieval questions whose explanations say why the
@@ -10,6 +10,112 @@
 -- they are already real, and they only show when a lesson has no slides.
 --
 -- Every visual named renders with no visualData. Safe to re-run.
+
+UPDATE public.learn_lessons SET
+  duration_minutes = 6,
+  objectives = ARRAY['Read your chart as one moment of sky, not a personality label','Say why birth time moves your houses and birth place moves your horizon','Explain what Whole Sign houses do to your 1st house'],
+  key_terms  = ARRAY['whole-sign-houses','ascendant'],
+  content = 'Your birth chart is the sky over one spot on Earth at one moment, the moment you arrived. Astrology reads where the Sun, Moon and planets stood along the **zodiac**, a 360-degree band cut into twelve equal signs of 30 degrees each.
+
+Two things make that chart yours rather than anyone else''s.
+
+**Your birth time** fixes where the planets were. The Moon is the giveaway: it covers about 13 degrees a day, so an hour of error moves it half a degree, and a few hours can carry it into a different sign entirely. The Sun only moves about a degree a day, which is why a rough birth time still gets your Sun sign right, and why people who know only their Sun sign are reading a twelfth of themselves.
+
+**Your birth place** fixes the horizon. It decides which sign was climbing in the east at that moment: your **Ascendant**, or rising sign. In Align we build the houses straight from it using **Whole Sign houses**, so the rising sign becomes your entire 1st house, all thirty degrees of it, and the eleven signs after it become houses 2 through 12 in order.
+
+That is the whole reason two people born on the same day live such different lives. They share a Sun. They rarely share a horizon.
+
+Look at your wheel now. Outer ring: the twelve signs. Dots inside: the planets. Everything else in this level is learning to read those two things against each other.',
+  slides = $json$[
+  {
+    "title": "Four minutes decided this",
+    "visual": "zodiac_wheel",
+    "content": "Move your birth time by four minutes and this whole wheel turns about a degree. Move it by two hours and your rising sign changes, and every house in your chart moves with it. That is how sharp the instrument is."
+  },
+  {
+    "title": "The wheel is a photograph",
+    "visual": "zodiac_wheel",
+    "content": "Your chart is the sky from one spot on Earth at one moment: yours. The outer ring is the zodiac, 360 degrees cut into twelve equal signs of 30. The dots inside are where the planets actually stood."
+  },
+  {
+    "title": "Time fixes the planets",
+    "visual": "planet_row",
+    "content": "The Moon moves about 13 degrees a day, half a degree an hour. The Sun moves about one degree a day. So a wrong hour on your birth certificate almost never moves your Sun sign. It moves your Moon regularly."
+  },
+  {
+    "title": "Place fixes the horizon",
+    "visual": "house_circle",
+    "content": "Born the same minute in Nassau and in Oslo, you get a different sky overhead. Your birth place decides which sign was climbing the eastern horizon, your Ascendant. In Align, that entire sign becomes your 1st house."
+  },
+  {
+    "title": "Why nobody else has your chart",
+    "visual": "element_grid",
+    "content": "Two people born the same day share a Sun sign and very little else. A different minute gives a different rising sign. A different rising sign redraws all twelve houses. Same planets, a completely different life."
+  }
+]$json$::jsonb,
+  quiz   = $json$[
+  {
+    "q": "You were told you were born at 3pm, but your mother now thinks it was closer to 5pm. Which part of your chart is most at risk?",
+    "choices": [
+      "Your rising sign, and every house built from it",
+      "Your Sun sign",
+      "The element balance of the whole chart"
+    ],
+    "answer": 0,
+    "explain": "Two hours turns the horizon roughly thirty degrees, a whole sign. Your Sun barely moves in two hours and the element balance shifts only as much as the fastest bodies do. The Ascendant can change outright, and in Whole Sign that redraws all twelve houses at once."
+  },
+  {
+    "q": "A friend was born the same day as you, in the same city, six hours apart. What do you almost certainly still share?",
+    "choices": [
+      "Your Sun sign",
+      "Your rising sign",
+      "Your Moon sign"
+    ],
+    "answer": 0,
+    "explain": "The Sun moves about a degree a day, so six hours barely touches it. The Moon covers roughly three degrees in that time, enough to cross a sign boundary if it started near one, and the Ascendant moves through about three whole signs. The Sun is the only safe answer."
+  },
+  {
+    "q": "In the Align system, your entire 1st house is...",
+    "choices": [
+      "The whole sign that was rising at your birth",
+      "The 30 degrees starting from your exact Ascendant degree",
+      "Whichever sign your Sun is in"
+    ],
+    "answer": 0,
+    "explain": "That is Whole Sign: the rising sign becomes the 1st house entire, zero to thirty degrees. The second answer describes Equal House, a real system but a different one, and it would hand you different rulers for every house in the chart."
+  },
+  {
+    "q": "Someone says they do not believe in astrology because they are nothing like a Gemini. Using only this lesson, what is worth checking first?",
+    "choices": [
+      "Their birth time, since their rising sign and Moon may look nothing like their Sun",
+      "Whether they were born on a cusp",
+      "Their birth year"
+    ],
+    "answer": 0,
+    "explain": "The Sun is one moving part out of dozens. With no birth time there is no Ascendant and no houses, so a Sun sign reading is a twelfth of the chart passed off as the whole person. Cusps and birth years change far less than a missing birth time does."
+  },
+  {
+    "q": "Two charts are cast for the same minute, one in Nassau and one in Tokyo. What differs most?",
+    "choices": [
+      "The rising sign, and therefore every house",
+      "The Moon sign",
+      "The aspects between the planets"
+    ],
+    "answer": 0,
+    "explain": "At a given instant the planets sit at the same zodiacal degrees for everyone alive, so the Moon sign and the aspects between planets are effectively identical. What location changes is which degree was on the eastern horizon, and in Whole Sign that redraws all twelve houses."
+  },
+  {
+    "q": "If the planets are at the same zodiac positions everywhere, why does a chart need a birth place at all?",
+    "choices": [
+      "Because place decides which part of that zodiac was on the eastern horizon",
+      "Because planets appear in different signs from different countries",
+      "Because time zones change the date"
+    ],
+    "answer": 0,
+    "explain": "Place does not move the planets, it decides which degree was rising, and that is what anchors the houses. Time zones matter for pinning down the right moment, but that is a clock problem rather than the reason place is needed."
+  }
+]$json$::jsonb
+WHERE id = 'l1-1-what-astrology-is';
 
 UPDATE public.learn_lessons SET
   duration_minutes = 6,
@@ -82,6 +188,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "Those four sit at the equinoxes and solstices, the moments the light actually turns. The second set is fixed, holding the middle of each season, and the third is mutable, handing over into the next."
+  },
+  {
+    "q": "Which of these pairings is impossible?",
+    "choices": [
+      "A fixed cardinal sign",
+      "A fixed water sign",
+      "A mutable earth sign"
+    ],
+    "answer": 0,
+    "explain": "Every sign is exactly one element and exactly one mode, so nothing can be two modes at once. Fixed water is Scorpio and mutable earth is Virgo, and both are perfectly ordinary signs."
+  },
+  {
+    "q": "Two signs are both cardinal. What is guaranteed to differ between them?",
+    "choices": [
+      "Their element, and so what fuels them",
+      "Their mode",
+      "How much of the year each occupies"
+    ],
+    "answer": 0,
+    "explain": "There are four cardinal signs and four elements, one of each, so two cardinal signs never share an element. Mode is the thing they do share, and every sign occupies the same thirty degrees."
   }
 ]$json$::jsonb
 WHERE id = 'l1-2-the-signs';
@@ -157,6 +283,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "The Moon is the baseline you return to, not the face you present, which is nearer the Ascendant, and not the direction of growth, which is the Sun. Calling it moods throws away the part that predicts behaviour under stress."
+  },
+  {
+    "q": "Which body moves fastest through the zodiac, and why does that matter for you?",
+    "choices": [
+      "The Moon, crossing a sign in about two and a half days, so it needs an accurate birth time",
+      "Saturn, because it defines the generation",
+      "Pluto, because it moves fastest through the houses"
+    ],
+    "answer": 0,
+    "explain": "The Moon covers roughly thirteen degrees a day, so a vague birth time puts it at real risk of landing in the wrong sign. Saturn takes years to cross a sign and Pluto is the slowest body in the chart."
+  },
+  {
+    "q": "In Align, Juno is not a minor asteroid. What makes it first-class?",
+    "choices": [
+      "It rules Libra, so it rules every Libra house in every chart",
+      "It moves faster than the Moon",
+      "It is one of the two lights"
+    ],
+    "answer": 0,
+    "explain": "Rulership is what promotes a body from decorative to structural. Because Juno rules Libra, any chart with Libra on a house has Juno as that house ruler and the whole chain runs through it. Its speed is unremarkable, and the lights are the Sun and Moon."
   }
 ]$json$::jsonb
 WHERE id = 'l1-3-the-planets';
@@ -232,6 +378,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "Career and calling is the 10th. Without the rising sign you cannot say which sign occupies it and so cannot name its ruler. The 6th is daily work and health, a different question, and the 2nd is resources."
+  },
+  {
+    "q": "Pisces is rising. Which house is Cancer on?",
+    "choices": [
+      "The 5th",
+      "The 4th",
+      "The 11th"
+    ],
+    "answer": 0,
+    "explain": "Count from the rising sign itself: 1st Pisces, 2nd Aries, 3rd Taurus, 4th Gemini, 5th Cancer. The usual slip is counting the sign after the Ascendant as the 1st, which puts every house out by one."
+  },
+  {
+    "q": "Which pair of houses would you read together for a question about shared money?",
+    "choices": [
+      "The 2nd and the 8th, your own resources against resources held jointly",
+      "The 1st and the 7th",
+      "The 5th and the 11th"
+    ],
+    "answer": 0,
+    "explain": "The 2nd is what you hold and the 8th is what is held with someone else, so shared money is the axis between them. The 1st and 7th is the self and other axis, and the 5th and 11th sets personal creativity against collective hopes."
   }
 ]$json$::jsonb
 WHERE id = 'l1-4-whole-sign-houses';
@@ -307,6 +473,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "The Moon is the automatic default, the thing you do without deciding. The Sun takes deliberate energy to express, which is what is missing when someone is depleted, and a presented Ascendant style tends to drop under strain."
+  },
+  {
+    "q": "Leo is rising and the Sun is in Scorpio. Which planet rules the chart?",
+    "choices": [
+      "The Sun, because it rules Leo, and you then read it in Scorpio and its house",
+      "Pluto, because the Sun is in Scorpio",
+      "The Moon, because it moves fastest"
+    ],
+    "answer": 0,
+    "explain": "The chart ruler is always the ruler of the rising sign, so Leo rising means the Sun rules no matter which sign it occupies. Where it sits tells you how that ruler operates, not who the ruler is."
+  },
+  {
+    "q": "You know someone Sun and Moon but not their birth time. What can you genuinely not say?",
+    "choices": [
+      "Anything about their houses, or which planet rules their chart",
+      "Anything about their Sun sign",
+      "Anything about aspects between the outer planets"
+    ],
+    "answer": 0,
+    "explain": "Houses are built from the Ascendant and the Ascendant needs a time, so without one there are no houses and no chart ruler. A Sun sign is safe on the date alone, and the outer planets barely move against each other within a day."
   }
 ]$json$::jsonb
 WHERE id = 'l1-5-big-three';
@@ -382,6 +568,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "One sign per house means one unambiguous ruler. In degree-based systems a house can straddle two signs and two rulers, leaving you to decide which to trust. The planet count is identical either way."
+  },
+  {
+    "q": "Vesta is in Pisces. What is its condition, and why?",
+    "choices": [
+      "Detriment, because Pisces is opposite Virgo, the sign Vesta rules",
+      "Domicile, because Pisces is a devotional sign",
+      "Exaltation, because Vesta is honoured in water"
+    ],
+    "answer": 0,
+    "explain": "Detriment is always the sign opposite a planet domicile, and Virgo opposes Pisces. The thematic fit between Pisces and devotion is the trap here: dignity is decided by geometry, not by mood."
+  },
+  {
+    "q": "Your 4th house is Aquarius and Uranus sits in your 10th. What is the reading?",
+    "choices": [
+      "Home and roots run through career and public life",
+      "Career runs through home",
+      "There is no connection, since the houses are not adjacent"
+    ],
+    "answer": 0,
+    "explain": "The chain runs one way: you asked about the 4th, its sign is Aquarius, its Align ruler is Uranus, and that ruler lives in the 10th. So home is routed through public life. Reversing it answers a different question, and adjacency has nothing to do with rulership."
   }
 ]$json$::jsonb
 WHERE id = 'l1-6-rulership-align-system';
@@ -457,6 +663,26 @@ UPDATE public.learn_lessons SET
     ],
     "answer": 0,
     "explain": "Closeness to exact governs how constantly the contact is felt, so it measures strength rather than speed or timing. Planet speed changes how often an aspect recurs by transit, which is a separate question entirely."
+  },
+  {
+    "q": "Trine and sextile are both flowing. How do they differ?",
+    "choices": [
+      "The trine is stronger and more automatic, while the sextile is an opening you still have to take",
+      "One is internal and one is external",
+      "The trine is hard and the sextile is easy"
+    ],
+    "answer": 0,
+    "explain": "A hundred and twenty degrees is the more powerful and the more effortless of the two, where sixty degrees offers a chance that goes nowhere unless you act on it. Neither is a hard aspect, which is the squares and the opposition."
+  },
+  {
+    "q": "Two planets are 12 degrees apart. Are they conjunct?",
+    "choices": [
+      "No, twelve degrees falls outside the roughly eight-degree orb for a major aspect",
+      "Yes, anything under thirty degrees is a conjunction",
+      "Yes, but only if both are outer planets"
+    ],
+    "answer": 0,
+    "explain": "A conjunction is zero degrees plus an orb of about eight, so twelve is outside it and the two are simply not in aspect. Sharing a sign is not the same as being conjunct, and orb does not widen for the outer planets."
   }
 ]$json$::jsonb
 WHERE id = 'l1-7-aspects-101';
