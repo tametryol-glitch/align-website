@@ -155,7 +155,10 @@ export async function GET(request: NextRequest) {
           type: 'transit_alert',
           title,
           body,
-          data: { kind: 'purpose_checkin', track, link: '/dashboard' },
+          // Web resolves the route via getNotificationLink; the mobile
+          // notifications screen reads data.deep_link. Both are set so the tap
+          // lands on the check-in card whichever device opens it.
+          data: { kind: 'purpose_checkin', track, link: '/dashboard', deep_link: '/(tabs)' },
         });
 
         if (insertError) {
