@@ -76,6 +76,7 @@ export function PurposeCheckinCard({ profile }: { profile: any }) {
   const [register, setRegister] = useState<Register>('collaborative');
   const [subject, setSubject] = useState<PurposePoint | null>(null);
   const [chosenKey, setChosenKey] = useState<string | null>(null);
+  const [firstEver, setFirstEver] = useState(false);
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -138,6 +139,7 @@ export function PurposeCheckinCard({ profile }: { profile: any }) {
         // silent than to hold a conversation we cannot save.
         if (!id || cancelled) return;
 
+        setFirstEver(prefs.lastKind === null);
         setKind(track);
         setRegister(reg);
         setCheckinId(id);
@@ -170,9 +172,12 @@ export function PurposeCheckinCard({ profile }: { profile: any }) {
     setSaving(false);
     if (!ok) { setError('That did not save — mind trying once more?'); return; }
 
-    const needsTimeQuestion = !profile?.time_confidence && subject.timeSensitive;
+    // Asked on the first check-in even when the point is not time-sensitive:
+    // an unverified time demotes house points, so gating the question on one
+    // appearing would mean it rarely gets asked and they stay demoted forever.
+    const needsTimeQuestion = !profile?.time_confidence && (subject.timeSensitive || firstEver);
     setPhase(needsTimeQuestion ? 'time-question' : 'done');
-  }, [userId, checkinId, subject, kind, opener, chosenKey, register, profile]);
+  }, [userId, checkinId, subject, kind, opener, chosenKey, register, profile, firstEver]);
 
   const answerTime = useCallback(async (value: TimeConfidence) => {
     if (userId) await saveTimeConfidence(userId, value);
