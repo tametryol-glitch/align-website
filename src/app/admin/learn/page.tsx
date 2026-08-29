@@ -8,6 +8,7 @@ import {
   Layers, Wand2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { LessonGenerator } from '@/components/courses/LessonGenerator';
 
 type SlideVisual =
   | 'custom'
@@ -942,6 +943,21 @@ function LessonEditor({
               className="w-full bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary resize-y"
             />
           </div>
+          <LessonGenerator
+            lessonId={lesson.id}
+            title={lesson.title}
+            keyTerms={lesson.key_terms || []}
+            onApply={(draft) => {
+              onChange({
+                objectives: draft.objectives,
+                slides: draft.slides as Slide[],
+                quiz: draft.quiz,
+              });
+              setMessage(
+                `Draft applied${draft.attempts && draft.attempts > 1 ? ` (${draft.attempts} attempts)` : ''} — review it, then Save.`,
+              );
+            }}
+          />
           <ImageField
             url={lesson.image_url}
             onChange={(u) => onChange({ image_url: u })}
