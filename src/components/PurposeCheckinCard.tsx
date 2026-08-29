@@ -36,6 +36,11 @@ import {
   type TimeConfidence,
 } from '@/lib/engines/purposeCheckin';
 import {
+  applyOpenerVoice,
+  buildOpenerVoicePrompt,
+  parseOpenerVoice,
+} from '@/lib/engines/purposeCheckinVoice';
+import {
   loadPointStates,
   loadPrefs,
   openCheckin,
@@ -144,13 +149,36 @@ export function PurposeCheckinCard({ profile }: { profile: any }) {
         setRegister(reg);
         setCheckinId(id);
         setSubject(selection.point);
-        setOpener(composeOpener({
-          register: reg,
-          selection,
-          lastNote: selection.state?.userNote ?? null,
-          isFirstEver: prefs.lastKind === null,
-        }));
+        const lastNote = selection.state?.userNote ?? null;
+        const isFirstEver = prefs.lastKind === null;
+        const built = composeOpener({ register: reg, selection, lastNote, isFirstEver });
+        setOpener(built);
         setPhase('asking');
+
+        // Warm the wording afterwards. The deterministic opener is already on
+        // screen, so latency costs nothing and a failure simply leaves it there.
+        try {
+          const { system, user } = buildOpenerVoicePrompt({
+            register: reg,
+            kind: track,
+            pointText: built.point.text,
+            lastNote,
+            isFirstEver,
+            followingUp: selection.state?.status === 'live' || selection.state?.status === 'lived',
+          });
+          let full = '';
+          await new Promise<void>((resolve, reject) => {
+            api.streamAIInterpretation(
+              { type: 'astrologer_chat', chart_data_text: system, messages: [{ role: 'user', content: user }], language: 'en' },
+              (chunk: string) => { full += chunk; },
+              () => resolve(),
+            ).catch(reject);
+          });
+          if (cancelled) return;
+          setOpener((prev) => (prev ? applyOpenerVoice(prev, parseOpenerVoice(full), lastNote) : prev));
+        } catch {
+          /* the deterministic opener stands */
+        }
       } catch {
         /* a failed check-in stays invisible rather than showing a broken card */
       }
