@@ -27,9 +27,17 @@ const SIGN_DATA = [
   { name: 'Pisces',      glyph: '♓', dates: 'Feb 19 – Mar 20', element: 'Water', color: '#3B82F6', emoji: '🐟', keywords: 'Dreamy, Empathic, Spiritual' },
 ];
 
-/** Absolute placement on a circle, measured from the container's centre. */
-function radial(indexFromTop: number, radius: number): React.CSSProperties {
-  const angle = (indexFromTop * 30 - 90) * (Math.PI / 180);
+/**
+ * Absolute placement on a chart wheel, measured from the container's centre.
+ *
+ * Chart convention, not clock convention: index 0 sits at 9 o'clock and the
+ * sequence runs counterclockwise, so on the house circle the 1st house is the
+ * Ascendant on the left, the 4th is the IC at the bottom, the 7th is the
+ * Descendant on the right and the 10th is the MC at the top. Starting at 12
+ * and running clockwise draws a wheel no astrologer can read.
+ */
+function radial(index: number, radius: number): React.CSSProperties {
+  const angle = (180 - index * 30) * (Math.PI / 180);
   return {
     position: 'absolute',
     left: '50%',
