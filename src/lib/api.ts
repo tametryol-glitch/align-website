@@ -156,7 +156,7 @@ class AlignAPI {
       if (supabase) {
         const { data, error } = await supabase
           .from('learn_courses')
-          .select('id, title, description, level, level_order, level_label, is_free, image_emoji, image_url, prerequisite_id, sort_order, learn_lessons(id, title, duration_minutes, sort_order)')
+          .select('*, learn_lessons(id, title, duration_minutes, sort_order)')
           .order('level_order', { ascending: true })
           .order('sort_order', { ascending: true });
 
@@ -177,6 +177,7 @@ class AlignAPI {
               image_emoji: c.image_emoji,
               image_url: c.image_url,
               prerequisite_id: c.prerequisite_id,
+              coming_soon: !!c.coming_soon,
               lesson_count: lessons.length,
               lessons,
             };
@@ -193,7 +194,7 @@ class AlignAPI {
       if (supabase) {
         const { data, error } = await supabase
           .from('learn_courses')
-          .select('id, title, description, level, level_order, level_label, is_free, image_emoji, image_url, prerequisite_id, sort_order, learn_lessons(id, title, duration_minutes, sort_order)')
+          .select('*, learn_lessons(id, title, duration_minutes, sort_order)')
           .eq('id', courseId)
           .single();
 
@@ -214,6 +215,7 @@ class AlignAPI {
             image_emoji: c.image_emoji,
             image_url: c.image_url,
             prerequisite_id: c.prerequisite_id,
+            coming_soon: !!c.coming_soon,
             lesson_count: lessons.length,
             lessons,
           };
@@ -229,7 +231,7 @@ class AlignAPI {
       if (supabase) {
         const { data, error } = await supabase
           .from('learn_lessons')
-          .select('id, title, duration_minutes, content, course_id, objectives, key_terms, chart_focus, quiz, image_url, learn_courses(title)')
+          .select('*, learn_courses(title)')
           .eq('id', lessonId)
           .eq('course_id', courseId)
           .single();
@@ -251,6 +253,7 @@ class AlignAPI {
             chart_focus: l.chart_focus,
             quiz: l.quiz || [],
             image_url: l.image_url,
+            slides: Array.isArray(l.slides) ? l.slides : [],
           };
         }
       }

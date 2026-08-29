@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { awardXP } from '@/lib/gamificationService';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function LessonPage() {
   const [error, setError] = useState('');
   const [slideIndex, setSlideIndex] = useState(0);
   const [glossary, setGlossary] = useState<Record<string, string>>({});
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -33,6 +35,12 @@ export default function LessonPage() {
         setLesson(data);
         setSlideIndex(0);
         api.getCoursesMeta().then((m: any) => setGlossary(m?.glossary || {})).catch(() => {});
+        // Needed so a re-read of a finished lesson does not award XP twice.
+        if (user?.id) {
+          api.getCourseProgress(user.id)
+            .then((p: any) => setAlreadyCompleted(!!p?.completed_lessons?.includes(lessonId)))
+            .catch(() => {});
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -40,13 +48,16 @@ export default function LessonPage() {
       }
     }
     if (courseId && lessonId) load();
-  }, [courseId, lessonId]);
+  }, [courseId, lessonId, user?.id]);
 
   async function markComplete() {
     if (!user) return;
     setCompleting(true);
     try {
       await api.completeLesson(courseId, lessonId, user.id);
+      if (!alreadyCompleted) {
+        awardXP(user.id, 'lesson_completed').catch(() => {});
+      }
       router.push(`/courses/${courseId}`);
     } catch (err: any) {
       setError(err.message);
@@ -57,9 +68,16 @@ export default function LessonPage() {
 
   if (loading) return <div className="max-w-3xl mx-auto"><LoadingCosmic label={t('common.loading')} /></div>;
 
-  const slides = lesson?.slides || lesson?.content ? [lesson] : [];
+  // Authored decks (from the Learn CMS) win; otherwise the lesson body is a
+  // single slide. The previous expression parsed as `(a || b) ? [lesson] : []`,
+  // so an authored deck could never produce more than one slide.
+  const authoredSlides = Array.isArray(lesson?.slides) ? lesson.slides : [];
+  const slides = authoredSlides.length > 0
+    ? authoredSlides
+    : (lesson?.content ? [lesson] : []);
   const totalSlides = slides.length;
   const currentSlide = slides[slideIndex] || lesson;
+  const isLastSlide = slideIndex >= totalSlides - 1;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -83,7 +101,11 @@ export default function LessonPage() {
 
         {/* Lesson content */}
         <div className="flex-1">
-          <LessonObjectives objectives={lesson?.objectives} />
+          {slideIndex === 0 && <LessonObjectives objectives={lesson?.objectives} />}
+
+          {authoredSlides.length > 0 && currentSlide?.title && (
+            <h2 className="text-base font-semibold text-text-primary mb-2">{currentSlide.title}</h2>
+          )}
 
           {typeof currentSlide?.content === 'string' ? (
             <LessonBody content={currentSlide.content} />
@@ -97,9 +119,13 @@ export default function LessonPage() {
             </div>
           )}
 
-          <ChartFocusCard chartFocus={lesson?.chart_focus} />
-          <KeyTerms terms={lesson?.key_terms} glossary={glossary} />
-          <LessonQuiz quiz={lesson?.quiz} />
+          {isLastSlide && (
+            <>
+              <ChartFocusCard chartFocus={lesson?.chart_focus} />
+              <KeyTerms terms={lesson?.key_terms} glossary={glossary} />
+              <LessonQuiz quiz={lesson?.quiz} />
+            </>
+          )}
         </div>
 
         {/* Navigation */}

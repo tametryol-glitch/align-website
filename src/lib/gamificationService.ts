@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase';
 // ── XP awarded per action ──────────────────────────────────────────────
 export const XP_ACTIONS: Record<string, number> = {
   reading_completed: 50,
+  lesson_completed: 30,
   post_created: 10,
   comment_added: 5,
   friend_added: 20,
@@ -36,6 +37,7 @@ export interface BadgeDefinition {
 
 export const BADGES: Record<string, BadgeDefinition> = {
   first_reading:     { name: 'First Reading',     description: 'Completed your first reading',       icon: '\u{1F4D6}' },
+  first_lesson:      { name: 'First Lesson',      description: 'Completed your first lesson',        icon: '\u{1F393}' },
   social_butterfly:  { name: 'Social Butterfly',   description: 'Added 10 friends',                   icon: '\u{1F98B}' },
   cosmic_explorer:   { name: 'Cosmic Explorer',    description: 'Tried 5 different reading types',    icon: '\u{1F52D}' },
   streak_master:     { name: 'Streak Master',      description: '7-day check-in streak',              icon: '\u{1F525}' },
@@ -188,6 +190,11 @@ export async function checkAndAwardBadges(
         const exp = await tryAwardBadge(userId, 'cosmic_explorer');
         if (exp) return 'cosmic_explorer';
       }
+      break;
+    }
+    case 'lesson_completed': {
+      const awarded = await tryAwardBadge(userId, 'first_lesson');
+      if (awarded) return 'first_lesson';
       break;
     }
     case 'friend_added': {

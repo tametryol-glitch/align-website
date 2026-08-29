@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public.learn_courses (
   image_emoji     text NOT NULL DEFAULT '',
   image_url       text,                             -- NEW: course cover image
   prerequisite_id text,
+  coming_soon     boolean NOT NULL DEFAULT false,  -- NEW: show as "Coming soon", not a paid lock
   sort_order      int  NOT NULL DEFAULT 0,
   created_at      timestamptz DEFAULT now(),
   updated_at      timestamptz DEFAULT now()
@@ -32,10 +33,15 @@ CREATE TABLE IF NOT EXISTS public.learn_lessons (
   chart_focus      text,
   quiz             jsonb  NOT NULL DEFAULT '[]',
   image_url        text,                            -- NEW: lesson image
+  slides           jsonb  NOT NULL DEFAULT '[]',    -- NEW: hand-authored slide deck
   sort_order       int  NOT NULL DEFAULT 0,
   created_at       timestamptz DEFAULT now(),
   updated_at       timestamptz DEFAULT now()
 );
+
+-- Idempotent top-ups for installs created before these columns existed.
+ALTER TABLE public.learn_lessons ADD COLUMN IF NOT EXISTS slides jsonb NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE public.learn_courses ADD COLUMN IF NOT EXISTS coming_soon boolean NOT NULL DEFAULT false;
 
 CREATE INDEX IF NOT EXISTS idx_learn_courses_order ON public.learn_courses(level_order, sort_order);
 CREATE INDEX IF NOT EXISTS idx_learn_lessons_course ON public.learn_lessons(course_id, sort_order);

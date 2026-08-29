@@ -19,6 +19,7 @@ interface ApiCourse {
   is_free: boolean;
   image_emoji: string;
   prerequisite_id: string | null;
+  coming_soon?: boolean;
   lesson_count: number;
   lessons: ApiLesson[];
 }
@@ -89,7 +90,9 @@ export default function CoursesPage() {
                       <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-accent-secondary/10 text-accent-secondary">
                         {course.level_label || course.level}
                       </span>
-                      {!course.is_free && (
+                      {course.coming_soon ? (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-bg-tertiary text-text-tertiary">Coming soon</span>
+                      ) : !course.is_free && (
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Premium</span>
                       )}
                     </div>
@@ -105,7 +108,11 @@ export default function CoursesPage() {
                   <span className="text-xs text-text-muted whitespace-nowrap">{done}/{course.lesson_count} lessons</span>
                 </div>
 
-                {locked ? (
+                {course.coming_soon ? (
+                  <div className="w-full py-3 text-sm rounded-xl border border-border text-text-muted flex items-center justify-center">
+                    In writing — we&apos;ll tell you the moment it opens
+                  </div>
+                ) : locked ? (
                   <div className="w-full py-3 text-sm rounded-xl border border-border text-text-muted flex items-center justify-center gap-2">
                     <Lock className="w-4 h-4" /> Complete {prereq?.level_label || 'the previous level'} to unlock
                   </div>

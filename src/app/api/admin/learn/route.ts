@@ -48,7 +48,9 @@ export async function GET(req: NextRequest) {
     const admin = getAdminClient();
     const { data, error } = await admin
       .from('learn_courses')
-      .select('*, learn_lessons(*, slides)')
+      // `*` already covers slides; naming it explicitly made the whole query
+      // fail whenever the column had not been added yet.
+      .select('*, learn_lessons(*)')
       .order('level_order', { ascending: true })
       .order('sort_order', { ascending: true });
 
