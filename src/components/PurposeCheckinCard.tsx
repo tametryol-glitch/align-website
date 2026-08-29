@@ -73,6 +73,22 @@ function resolveConfidence(profile: any): TimeConfidence {
   return 'approximate';
 }
 
+
+/**
+ * The AI-warmed opener is a subscriber perk — not behind a prompt, behind
+ * silence. Free readers get the deterministic opener, which still quotes their
+ * own words back; what they lose is warmth of phrasing, not the relationship.
+ *
+ * The point is to protect their scarce monthly AI allowance for readings they
+ * actually asked for. A paywall modal here would be worse than no AI at all:
+ * this is the one moment engineered to feel like a friend, and an upsell in the
+ * middle of it poisons the premise.
+ */
+function canWarmOpener(profile: any): boolean {
+  const tier = (profile?.subscription_tier || '').toLowerCase();
+  return tier !== '' && tier !== 'free';
+}
+
 export function PurposeCheckinCard({ profile }: { profile: any }) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [opener, setOpener] = useState<CheckinOpener | null>(null);
@@ -157,6 +173,7 @@ export function PurposeCheckinCard({ profile }: { profile: any }) {
 
         // Warm the wording afterwards. The deterministic opener is already on
         // screen, so latency costs nothing and a failure simply leaves it there.
+        if (!canWarmOpener(profile)) return;
         try {
           const { system, user } = buildOpenerVoicePrompt({
             register: reg,
