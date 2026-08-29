@@ -14,10 +14,56 @@ export const AUDIO_BASE = SUPABASE_URL
   ? `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}`
   : '';
 
+/* ── Voices ──────────────────────────────────────────────────────
+   Every voice carries the whole catalog, so adding one costs a render
+   and a verification pass but nothing at request time — a listener
+   only ever downloads their own voice's clip.
+   ────────────────────────────────────────────────────────────── */
+
+export interface FrequencyVoice {
+  id: string;
+  /** English fallback; the UI prefers cosmicFrequencies.voices.<id>. */
+  label: string;
+}
+
+export const VOICES: FrequencyVoice[] = [
+  { id: 'af_heart', label: 'Heart' },
+  { id: 'af_nicole', label: 'Nicole' },
+  { id: 'af_bella', label: 'Bella' },
+  { id: 'af_sarah', label: 'Sarah' },
+  { id: 'af_river', label: 'River' },
+  { id: 'bf_emma', label: 'Emma' },
+  { id: 'bf_lily', label: 'Lily' },
+  { id: 'af_sky', label: 'Sky' },
+];
+
+export const DEFAULT_VOICE = 'af_heart';
+
+const VOICE_KEY = 'align_cf_voice';
+
+/** Remembered voice, falling back to the default when storage is unavailable. */
+export function getPreferredVoice(): string {
+  if (typeof window === 'undefined') return DEFAULT_VOICE;
+  try {
+    const v = window.localStorage.getItem(VOICE_KEY);
+    return v && VOICES.some((x) => x.id === v) ? v : DEFAULT_VOICE;
+  } catch {
+    return DEFAULT_VOICE;
+  }
+}
+
+export function setPreferredVoice(voiceId: string): void {
+  try {
+    window.localStorage.setItem(VOICE_KEY, voiceId);
+  } catch {
+    /* private mode — the choice just does not persist */
+  }
+}
+
 /** Public URL for a frequency's recitation, or null if storage is unconfigured. */
-export function getClipUrl(frequencyId: string): string | null {
+export function getClipUrl(frequencyId: string, voiceId: string = DEFAULT_VOICE): string | null {
   if (!AUDIO_BASE) return null;
-  return `${AUDIO_BASE}/clips/${frequencyId}.mp3`;
+  return `${AUDIO_BASE}/clips/${voiceId}/${frequencyId}.mp3`;
 }
 
 /* ── Ambient beds ────────────────────────────────────────────────

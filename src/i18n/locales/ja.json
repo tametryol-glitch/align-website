@@ -3213,6 +3213,17 @@
       "crystal-bells": "ベル",
       "rain": "雨",
       "still-waters": "静かな水面"
+    },
+    "voiceLabel": "声",
+    "voices": {
+      "af_heart": "Heart",
+      "af_nicole": "Nicole",
+      "af_bella": "Bella",
+      "af_sarah": "Sarah",
+      "af_river": "River",
+      "bf_emma": "Emma",
+      "bf_lily": "Lily",
+      "af_sky": "Sky"
     }
   }
 }

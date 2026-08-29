@@ -80,11 +80,26 @@ async function main() {
     process.exit(1);
   }
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const clips = Object.entries(manifest.clips ?? {});
+
+  // Manifest v2 is clips[voice][frequencyId]; v1 was a flat clips[id] with a
+  // single voice. Flatten either into {voice, id, meta} so a stale manifest
+  // does not silently upload nothing.
+  const clips = [];
+  if (manifest.version >= 2) {
+    for (const [voice, byId] of Object.entries(manifest.clips ?? {})) {
+      for (const [id, meta] of Object.entries(byId)) clips.push({ voice, id, meta });
+    }
+  } else {
+    for (const [id, meta] of Object.entries(manifest.clips ?? {})) {
+      clips.push({ voice: manifest.voice ?? 'af_heart', id, meta });
+    }
+  }
   if (!clips.length) {
     console.error('manifest has no clips');
     process.exit(1);
   }
+  console.log(`manifest v${manifest.version ?? 1}: ${clips.length} clip(s) across `
+    + `${new Set(clips.map((c) => c.voice)).size} voice(s)`);
 
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
@@ -107,15 +122,17 @@ async function main() {
   // ── existing objects ──
   const existing = new Set();
   if (!force) {
-    let offset = 0;
-    for (;;) {
-      const { data, error } = await supabase.storage
-        .from(BUCKET)
-        .list('clips', { limit: 1000, offset });
-      if (error) throw error;
-      data.forEach((o) => existing.add(o.name));
-      if (data.length < 1000) break;
-      offset += data.length;
+    for (const voice of new Set(clips.map((c) => c.voice))) {
+      let offset = 0;
+      for (;;) {
+        const { data, error } = await supabase.storage
+          .from(BUCKET)
+          .list(`clips/${voice}`, { limit: 1000, offset });
+        if (error) throw error;
+        data.forEach((o) => existing.add(`${voice}/${o.name}`));
+        if (data.length < 1000) break;
+        offset += data.length;
+      }
     }
     if (existing.size) console.log(`${existing.size} clip(s) already uploaded`);
   }
@@ -124,19 +141,20 @@ async function main() {
   let uploaded = 0, skipped = 0, failed = 0;
   const failures = [];
 
-  for (const [id, meta] of clips) {
-    if (!force && existing.has(meta.file)) { skipped++; continue; }
+  for (const { voice, id, meta } of clips) {
+    const key = `${voice}/${meta.file}`;
+    if (!force && existing.has(key)) { skipped++; continue; }
 
-    const local = path.join(dir, meta.file);
+    const local = path.join(dir, voice, meta.file);
     if (!fs.existsSync(local)) {
       failed++;
-      failures.push(`${id}: missing local file ${meta.file}`);
+      failures.push(`${voice}/${id}: missing local file ${meta.file}`);
       continue;
     }
 
     const { error } = await supabase.storage
       .from(BUCKET)
-      .upload(`clips/${meta.file}`, fs.readFileSync(local), {
+      .upload(`clips/${key}`, fs.readFileSync(local), {
         contentType: 'audio/mpeg',
         cacheControl: CACHE_CONTROL,
         upsert: true,
@@ -144,10 +162,10 @@ async function main() {
 
     if (error) {
       failed++;
-      failures.push(`${id}: ${error.message}`);
+      failures.push(`${voice}/${id}: ${error.message}`);
     } else {
       uploaded++;
-      if ((uploaded + skipped) % 25 === 0) {
+      if ((uploaded + skipped) % 100 === 0) {
         console.log(`  ${uploaded + skipped}/${clips.length} ...`);
       }
     }
@@ -203,7 +221,7 @@ async function main() {
   console.log(`skipped  : ${skipped} (already there — use --force to replace)`);
   console.log(`failed   : ${failed}`);
   console.log(`\npublic base: ${base}`);
-  console.log(`sample     : ${base}/clips/${clips[0][1].file}`);
+  console.log(`sample     : ${base}/clips/${clips[0].voice}/${clips[0].meta.file}`);
 
   if (failures.length) {
     console.log('\nfailures:');

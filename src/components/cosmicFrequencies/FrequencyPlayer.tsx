@@ -15,6 +15,9 @@ import {
   formatClock,
   getBedUrl,
   getClipUrl,
+  getPreferredVoice,
+  setPreferredVoice,
+  VOICES,
   secondsToNextBar,
   type SessionMinutes,
   type Tempo,
@@ -45,6 +48,10 @@ export function FrequencyPlayer({ frequency }: Props) {
   const [minutes, setMinutes] = useState<SessionMinutes>(DEFAULT_MINUTES);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [bedId, setBedId] = useState<string | null>(DEFAULT_BED);
+  // Read from storage after mount: touching localStorage during render would
+  // mismatch the server-rendered markup.
+  const [voiceId, setVoiceId] = useState<string>(VOICES[0].id);
+  useEffect(() => setVoiceId(getPreferredVoice()), []);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const bedRef = useRef<HTMLAudioElement | null>(null);
@@ -58,7 +65,7 @@ export function FrequencyPlayer({ frequency }: Props) {
   // (or silence). Set at start, cleared on stop.
   const syncBpmRef = useRef<number | null>(null);
 
-  const url = getClipUrl(frequency.id);
+  const url = getClipUrl(frequency.id, voiceId);
 
   const stop = useCallback(() => {
     if (gapTimer.current) { clearTimeout(gapTimer.current); gapTimer.current = null; }
@@ -82,6 +89,13 @@ export function FrequencyPlayer({ frequency }: Props) {
     setLoading(true);
 
     let a = audioRef.current;
+    if (a && a.src !== url) {
+      // Voice changed since this element was made — rebuild it, or the old
+      // voice keeps playing.
+      a.pause();
+      a = null;
+      audioRef.current = null;
+    }
     if (!a) {
       a = new Audio(url);
       a.preload = 'auto';
@@ -191,6 +205,30 @@ export function FrequencyPlayer({ frequency }: Props) {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Voice — remembered across sessions */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="text-[11px] text-text-muted w-12">
+          {t('cosmicFrequencies.voiceLabel', 'Voice')}
+        </span>
+        {VOICES.map((v) => (
+          <button
+            key={v.id}
+            onClick={() => {
+              setVoiceId(v.id);
+              setPreferredVoice(v.id);
+            }}
+            disabled={playing}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors disabled:opacity-40 ${
+              voiceId === v.id
+                ? 'bg-accent-primary text-white'
+                : 'bg-white/5 text-text-muted hover:bg-white/10'
+            }`}
+          >
+            {t(`cosmicFrequencies.voices.${v.id}`, v.label)}
+          </button>
+        ))}
       </div>
 
       {/* Sound — silence first, because forcing music loses people */}

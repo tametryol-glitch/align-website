@@ -3216,6 +3216,17 @@
       "crystal-bells": "घंटियाँ",
       "rain": "वर्षा",
       "still-waters": "शांत जल"
+    },
+    "voiceLabel": "आवाज़",
+    "voices": {
+      "af_heart": "Heart",
+      "af_nicole": "Nicole",
+      "af_bella": "Bella",
+      "af_sarah": "Sarah",
+      "af_river": "River",
+      "bf_emma": "Emma",
+      "bf_lily": "Lily",
+      "af_sky": "Sky"
     }
   }
 }

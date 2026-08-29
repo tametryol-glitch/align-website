@@ -63,6 +63,8 @@ def main() -> int:
     ap.add_argument('--limit', type=int, default=0, help='verify only the first N clips')
     ap.add_argument('--ids', default='',
                     help='comma-separated frequency ids to re-check in isolation')
+    ap.add_argument('--voice', default='',
+                    help='verify only one voice folder')
     ap.add_argument('--beam', type=int, default=1,
                     help='whisper beam size; raise it when re-checking mismatches')
     args = ap.parse_args()
@@ -75,11 +77,23 @@ def main() -> int:
     with open(manifest_path, encoding='utf-8') as fh:
         manifest = json.load(fh)
 
-    clips = manifest.get('clips', {})
-    items = list(clips.items())
+    # v2 is clips[voice][id]; v1 was flat clips[id]. Flatten to
+    # (display key, meta, relative path) so both verify identically.
+    raw = manifest.get('clips', {})
+    items = []
+    if manifest.get('version', 1) >= 2:
+        for voice, by_id in raw.items():
+            for fid, meta in by_id.items():
+                items.append((f'{voice}/{fid}', meta, os.path.join(voice, meta['file'])))
+    else:
+        for fid, meta in raw.items():
+            items.append((fid, meta, meta['file']))
+
+    if args.voice:
+        items = [i for i in items if i[0].startswith(args.voice + '/')]
     if args.ids:
         wanted = {s.strip() for s in args.ids.split(',') if s.strip()}
-        items = [(k, v) for k, v in items if k in wanted]
+        items = [i for i in items if i[0] in wanted or i[0].split('/')[-1] in wanted]
     if args.limit:
         items = items[:args.limit]
 
@@ -96,8 +110,8 @@ def main() -> int:
     warnings = []
     missing = []
 
-    for i, (freq_id, meta) in enumerate(items, 1):
-        path = os.path.join(args.dir, meta['file'])
+    for i, (freq_id, meta, rel) in enumerate(items, 1):
+        path = os.path.join(args.dir, rel)
         if not os.path.exists(path):
             missing.append(freq_id)
             continue

@@ -27,6 +27,7 @@
  * are effectively free.
  */
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,6 +36,23 @@ const DATA_DIR = path.join(__dirname, '..', 'src', 'data', 'cosmicFrequencies');
 
 const KOKORO_URL = (process.env.KOKORO_URL || 'http://127.0.0.1:8080').replace(/\/$/, '');
 const KOKORO_TOKEN = (process.env.KOKORO_TOKEN || '').trim();
+
+/**
+ * Voices offered to users. Each renders the full catalog, so adding one costs
+ * a render pass and a verification pass but nothing at request time — a
+ * listener only ever downloads their own voice's clip.
+ */
+const SHIPPING_VOICES = [
+  'af_heart', 'af_nicole', 'af_bella', 'af_sarah',
+  'af_river', 'bf_emma', 'bf_lily', 'af_sky',
+];
+
+/**
+ * Subtle room. Dry TTS sitting flat in the centre is a large part of what
+ * reads as robotic; a little space around it does more than swapping voices.
+ */
+const REVERB_FILTER =
+  'aecho=0.85:0.75:35|55|85:0.20|0.13|0.08,highpass=f=70,lowpass=f=9000,volume=1.15';
 
 const SOURCE_FILES = [
   'imported', 'health', 'money', 'love', 'career', 'protection', 'spiritual',
@@ -45,8 +63,9 @@ const SOURCE_FILES = [
 function parseArgs(argv) {
   const o = {
     out: path.join(__dirname, 'data', 'audio'),
-    voice: 'af_heart',
-    speed: 0.95,
+    voices: [],
+    speed: 0.85,
+    reverb: true,
     only: [],
     limit: Infinity,
     force: false,
@@ -55,7 +74,8 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--out') o.out = path.resolve(argv[++i]);
-    else if (a === '--voice') o.voice = argv[++i];
+    else if (a === '--voice') o.voices.push(argv[++i]);
+    else if (a === '--no-reverb') o.reverb = false;
     else if (a === '--speed') o.speed = Number(argv[++i]);
     else if (a === '--only') o.only.push(argv[++i]);
     else if (a === '--limit') o.limit = Number(argv[++i]);
@@ -66,6 +86,7 @@ function parseArgs(argv) {
       process.exit(1);
     }
   }
+  if (o.voices.length === 0) o.voices = [...SHIPPING_VOICES];
   if (!(o.speed >= 0.5 && o.speed <= 2)) {
     console.error('--speed must be between 0.5 and 2.0');
     process.exit(1);
@@ -124,9 +145,16 @@ function loadCatalog() {
   return entries;
 }
 
-/** "520 741 8" -> "5, 2, 0, 7, 4, 1, 8." — one digit at a time, unhurried. */
+/**
+ * "520 741 8" -> "5 ... 2 ... 0 ... 7 ... 4 ... 1 ... 8"
+ *
+ * Ellipsis rather than commas, deliberately. Comma-separated digits make the
+ * model read a LIST, and list intonation is uniform and clipped — that is
+ * most of what read as robotic. Ellipsis gives each digit a settled contour
+ * and room to breathe.
+ */
 function toSpokenDigits(digits) {
-  return digits.split('').join(', ') + '.';
+  return digits.split('').join(' ... ');
 }
 
 /* ── kokoro ───────────────────────────────────────────────────────── */
@@ -137,6 +165,17 @@ async function kokoroHealth() {
   });
   if (!res.ok) throw new Error(`health check failed: HTTP ${res.status}`);
   return res.json();
+}
+
+/** Apply the room to a rendered clip, in place. */
+function applyReverb(file) {
+  const tmp = `${file}.tmp.mp3`;
+  execFileSync('ffmpeg', [
+    '-y', '-v', 'error', '-i', file,
+    '-af', REVERB_FILTER,
+    '-c:a', 'libmp3lame', '-q:a', '4', tmp,
+  ]);
+  fs.renameSync(tmp, file);
 }
 
 async function renderClip(text, voice, speed) {
@@ -176,7 +215,9 @@ async function main() {
 
   console.log(`catalog: ${catalog.length} frequencies`);
   console.log(`kokoro : ${KOKORO_URL}`);
-  console.log(`voice  : ${opts.voice} @ speed ${opts.speed}`);
+  console.log(`voices : ${opts.voices.join(', ')}`);
+  console.log(`speed  : ${opts.speed}   reverb: ${opts.reverb ? 'on' : 'off'}`);
+  console.log(`total  : ${catalog.length * opts.voices.length} clips`);
   console.log(`out    : ${opts.out}\n`);
 
   if (opts.dryRun) {
@@ -215,14 +256,21 @@ async function main() {
   let rendered = 0, skipped = 0, cached = 0, failed = 0;
   const failures = [];
 
+  for (const voice of opts.voices) {
+  const voiceDir = path.join(opts.out, voice);
+  fs.mkdirSync(voiceDir, { recursive: true });
+  if (!clips[voice]) clips[voice] = {};
+
+  let doneThisVoice = 0;
   for (const entry of catalog) {
-    if (rendered + skipped >= opts.limit) break;
+    if (doneThisVoice >= opts.limit) break;
+    doneThisVoice++;
 
     const filename = `${entry.id}.mp3`;
-    const dest = path.join(opts.out, filename);
+    const dest = path.join(voiceDir, filename);
 
     if (!opts.force && fs.existsSync(dest)) {
-      clips[entry.id] = {
+      clips[voice][entry.id] = {
         file: filename,
         digits: entry.digits,
         bytes: fs.statSync(dest).size,
@@ -233,7 +281,7 @@ async function main() {
 
     const text = toSpokenDigits(entry.digits);
     try {
-      const { buffer, cache, seconds } = await renderClip(text, opts.voice, opts.speed);
+      const { buffer, cache, seconds } = await renderClip(text, voice, opts.speed);
 
       // A clip far shorter than its digit count means the model swallowed
       // something. Better to fail loudly than ship a truncated code.
@@ -245,31 +293,38 @@ async function main() {
       }
 
       fs.writeFileSync(dest, buffer);
+      if (opts.reverb) applyReverb(dest);
+
       // speed is per-clip: a clip re-rendered slower must not be described by
       // the run-level default, or the manifest lies about what shipped.
-      clips[entry.id] = {
+      clips[voice][entry.id] = {
         file: filename,
         digits: entry.digits,
-        bytes: buffer.length,
+        bytes: fs.statSync(dest).size,
         speed: opts.speed,
       };
       rendered++;
       if (cache === 'HIT') cached++;
 
       const n = rendered + skipped;
-      if (n % 25 === 0 || n === catalog.length) {
-        console.log(`  ${n}/${catalog.length} ...`);
+      if (n % 50 === 0) {
+        console.log(`  ${n}/${catalog.length * opts.voices.length} ...`);
       }
     } catch (err) {
       failed++;
-      failures.push(`${entry.id} (${entry.code}): ${err.message}`);
+      failures.push(`${voice}/${entry.id} (${entry.code}): ${err.message}`);
     }
+  }
+  console.log(`  ${voice} complete`);
   }
 
   const manifest = {
-    version: 1,
-    voice: opts.voice,
+    version: 2,
+    voices: opts.voices,
     defaultSpeed: opts.speed,
+    prosody: 'ellipsis',
+    reverb: opts.reverb,
+    // clips[voice][frequencyId]
     clips,
   };
   fs.writeFileSync(
@@ -278,11 +333,12 @@ async function main() {
     'utf8',
   );
 
-  const totalBytes = Object.values(clips).reduce((n, c) => n + c.bytes, 0);
+  const allClips = Object.values(clips).flatMap((byId) => Object.values(byId));
+  const totalBytes = allClips.reduce((n, c) => n + c.bytes, 0);
   console.log(`\nrendered : ${rendered}${cached ? ` (${cached} from Kokoro cache)` : ''}`);
   console.log(`skipped  : ${skipped} (already on disk — use --force to redo)`);
   console.log(`failed   : ${failed}`);
-  console.log(`clips    : ${Object.keys(clips).length}`);
+  console.log(`clips    : ${allClips.length} across ${Object.keys(clips).length} voice(s)`);
   console.log(`total    : ${(totalBytes / 1024 / 1024).toFixed(2)} MB`);
   console.log(`manifest : ${path.join(opts.out, 'manifest.json')}`);
 

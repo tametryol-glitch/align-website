@@ -3249,6 +3249,17 @@
       "crystal-bells": "Bells",
       "rain": "Rain",
       "still-waters": "Still waters"
+    },
+    "voiceLabel": "Voice",
+    "voices": {
+      "af_heart": "Heart",
+      "af_nicole": "Nicole",
+      "af_bella": "Bella",
+      "af_sarah": "Sarah",
+      "af_river": "River",
+      "bf_emma": "Emma",
+      "bf_lily": "Lily",
+      "af_sky": "Sky"
     }
   }
 }
