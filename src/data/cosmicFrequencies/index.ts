@@ -23,6 +23,7 @@ import { LOVE_FREQUENCIES } from './love';
 import { CAREER_FREQUENCIES } from './career';
 import { PROTECTION_FREQUENCIES } from './protection';
 import { SPIRITUAL_FREQUENCIES } from './spiritual';
+import { IMPORTED_FREQUENCIES } from './imported';
 
 export * from './types';
 export { FREQUENCY_THEMES, ALL_THEME_KEYS, getThemesForDomain, isFrequencyTheme } from './themes';
@@ -33,13 +34,32 @@ export {
   type PracticeStep,
 } from './practice';
 
-export const COSMIC_FREQUENCIES: CosmicFrequency[] = [
+/** Hand-authored entries: the original seed set, written before a source existed. */
+const HANDWRITTEN: CosmicFrequency[] = [
   ...HEALTH_FREQUENCIES,
   ...MONEY_FREQUENCIES,
   ...LOVE_FREQUENCIES,
   ...CAREER_FREQUENCIES,
   ...PROTECTION_FREQUENCIES,
   ...SPIRITUAL_FREQUENCIES,
+];
+
+const digitsOf = (code: string) => code.replace(/\D/g, '');
+const importedDigits = new Set(IMPORTED_FREQUENCIES.map((f) => digitsOf(f.code)));
+
+/**
+ * Imported entries win on a code collision.
+ *
+ * The seed set was written before a source list existed, so several of its
+ * sequences were Align-originals standing in for codes we did not have. Now
+ * that the same codes arrive with real provenance, the sourced record is the
+ * one to keep — a hand-written entry only survives where nothing in the
+ * import covers its sequence, which is also what keeps every theme in the
+ * closed vocabulary backed (see the coverage test).
+ */
+export const COSMIC_FREQUENCIES: CosmicFrequency[] = [
+  ...IMPORTED_FREQUENCIES,
+  ...HANDWRITTEN.filter((f) => !importedDigits.has(digitsOf(f.code))),
 ];
 
 export const FREQUENCY_DOMAINS: FrequencyDomain[] = [

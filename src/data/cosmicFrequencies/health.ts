@@ -6,11 +6,16 @@
    push carries the theme's `pressure` string only — never this
    file's `intent` text and never the code itself.
 
-   Voice rule, non-negotiable: these describe a STRETCH OF TIME
-   that taxes a system. They do not name conditions, do not
-   diagnose, and do not predict illness. "A period that can run
-   your nervous system hot" is in scope. "You may develop X" is
-   not, and no disclaimer makes it in scope.
+   Voice rule for THIS file: these describe a STRETCH OF TIME that
+   taxes a system, rather than naming a condition. "A period that
+   can run your nervous system hot" is in scope.
+
+   Entries in imported.ts DO name conditions, because that file is a
+   sourced lookup index and someone has to be able to search
+   "pneumonia" and find the row. What is banned everywhere, in both
+   files, is the efficacy claim — that a sequence cures, treats, or
+   substitutes for care — and every health intent must carry the
+   alongside-care framing. Both are enforced by tests.
 
    Sourcing: `community` entries are sequences in broad public
    circulation. `derived` entries are Align-original, minted for
@@ -29,7 +34,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['vitality-depletion', 'recovery-convalescence'],
     intent:
-      'The broad-spectrum one. Use it in stretches where nothing is acutely wrong but everything is running at eighty percent and you cannot point at why.',
+      'The broad-spectrum one. Use it in stretches where nothing is acutely wrong but everything is running at eighty percent and you cannot point at why. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'community',
     verified: false,
@@ -41,7 +46,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['vitality-depletion', 'immune-resilience'],
     intent:
-      'For the weeks where your reserves are visibly draining faster than they refill and you keep spending them anyway.',
+      'For the weeks where your reserves are visibly draining faster than they refill and you keep spending them anyway. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'community',
     verified: false,
@@ -53,7 +58,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['nervous-system-strain', 'sleep-disruption'],
     intent:
-      'For periods when your system will not come down off high alert — when rest is available and your body refuses to take it.',
+      'For periods when your system will not come down off high alert — when rest is available and your body refuses to take it. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -65,7 +70,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['sleep-disruption'],
     intent:
-      'For windows where sleep goes shallow and the nights run long. Work with it at the same hour each evening rather than only on the bad nights.',
+      'For windows where sleep goes shallow and the nights run long. Work with it at the same hour each evening rather than only on the bad nights. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -77,7 +82,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['immune-resilience'],
     intent:
-      'A shoring-up frequency for seasons that ask you to bank resilience rather than spend it.',
+      'A shoring-up frequency for seasons that ask you to bank resilience rather than spend it. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -89,7 +94,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['structural-strain'],
     intent:
-      'For stretches where the parts of you that carry weight start asking for support — the load-bearing places you normally ignore until they complain.',
+      'For stretches where the parts of you that carry weight start asking for support — the load-bearing places you normally ignore until they complain. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -101,7 +106,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['inflammation-heat'],
     intent:
-      'For periods running hot in both senses — the physical heat and the shortened fuse that tends to arrive with it.',
+      'For periods running hot in both senses — the physical heat and the shortened fuse that tends to arrive with it. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -113,7 +118,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['digestive-sensitivity'],
     intent:
-      'For windows where what you consume needs more care than usual — food, but also everything else you are absorbing.',
+      'For windows where what you consume needs more care than usual — food, but also everything else you are absorbing. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -125,7 +130,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['hormonal-fluctuation'],
     intent:
-      'For stretches where your internal rhythms swing wider than baseline and the swing itself is the thing to work with.',
+      'For stretches where your internal rhythms swing wider than baseline and the swing itself is the thing to work with. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'derived',
     verified: false,
@@ -137,7 +142,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['recovery-convalescence'],
     intent:
-      'For the period after the hard part, when the temptation is to resume at full speed and the season is asking you not to.',
+      'For the period after the hard part, when the temptation is to resume at full speed and the season is asking you not to. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'community',
     verified: false,
@@ -149,7 +154,7 @@ export const HEALTH_FREQUENCIES: CosmicFrequency[] = [
     domain: 'health',
     themes: ['chronic-pattern-relief'],
     intent:
-      'For windows where something long-running in your body surfaces and asks to be addressed rather than managed around again.',
+      'For windows where something long-running in your body surfaces and asks to be addressed rather than managed around again. Work with it alongside medical care, never instead of it.',
     severity: 3,
     source: 'community',
     verified: false,

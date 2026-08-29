@@ -108,12 +108,34 @@ describe('health safety rules', () => {
     }
   });
 
-  it('no health intent names a condition or predicts illness', () => {
-    // Guards the voice rule in health.ts. Pressure register only.
-    const banned = /\b(diagnos|cure|cures|treat|treatment|prescri|disease|illness|cancer|tumou?r|diabet|thyroid|depression|anxiety disorder)\b/i;
+  it('no health entry makes an efficacy claim', () => {
+    // Condition names are ALLOWED here, deliberately. The catalog is a
+    // lookup index sourced from a published compilation: someone has to be
+    // able to search "pneumonia" and find the entry, and banning the word in
+    // the intent while the title carries it would be incoherent.
+    //
+    // What stays banned is the claim - that a sequence cures, treats, or
+    // stands in for medical care. That is the sentence that causes harm and
+    // that no disclaimer repairs. Note "treatment" alone is not banned: the
+    // source has legitimate index rows like "Right to Medical Treatment".
+    const claims =
+      /\b(cures?|curing|heals?\s+your|treats\b|guaranteed|replaces?\s+(medicine|medication|treatment|your\s+doctor)|instead\s+of\s+(medical|a\s+doctor|treatment)|no\s+need\s+(for|to\s+see)\s+a\s+doctor)\b/i;
+
     for (const f of getFrequenciesByDomain('health')) {
-      expect(banned.test(f.intent), `${f.id}: ${f.intent}`).toBe(false);
-      expect(banned.test(f.title), f.id).toBe(false);
+      expect(claims.test(f.intent), `${f.id}: ${f.intent}`).toBe(false);
+      expect(claims.test(f.title), `${f.id}: ${f.title}`).toBe(false);
+    }
+  });
+
+  it('every health intent carries the alongside-care framing', () => {
+    // Stronger than a blacklist: a positive assertion that the safety
+    // sentence is actually present on every health entry, so a future import
+    // that drops it fails here rather than shipping silently.
+    for (const f of getFrequenciesByDomain('health')) {
+      expect(
+        /alongside/i.test(f.intent),
+        `${f.id} is missing the alongside-care framing: ${f.intent}`,
+      ).toBe(true);
     }
   });
 
