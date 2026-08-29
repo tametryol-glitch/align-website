@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { LessonBody, LessonObjectives, ChartFocusCard, KeyTerms, LessonQuiz } from '@/components/courses/LessonExtras';
+import { LessonVisual } from '@/components/courses/LessonVisuals';
 
 export default function LessonPage() {
   const { t } = useTranslation();
@@ -86,9 +87,16 @@ export default function LessonPage() {
           <ArrowLeft className="w-4 h-4" /> {t('common.back')}
         </Link>
         {totalSlides > 1 && (
-          <span className="text-xs text-text-muted">
-            Slide {slideIndex + 1} of {totalSlides}
-          </span>
+          <div className="flex items-center gap-1.5" aria-label={`Slide ${slideIndex + 1} of ${totalSlides}`}>
+            {slides.map((_: any, i: number) => (
+              <span
+                key={i}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === slideIndex ? 'w-5 bg-accent-primary' : 'w-1.5 bg-bg-tertiary'
+                }`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -103,8 +111,13 @@ export default function LessonPage() {
         <div className="flex-1">
           {slideIndex === 0 && <LessonObjectives objectives={lesson?.objectives} />}
 
-          {authoredSlides.length > 0 && currentSlide?.title && (
-            <h2 className="text-base font-semibold text-text-primary mb-2">{currentSlide.title}</h2>
+          {authoredSlides.length > 0 && (
+            <>
+              <LessonVisual visual={currentSlide?.visual} data={currentSlide?.visualData} />
+              {currentSlide?.title && (
+                <h2 className="text-base font-semibold text-text-primary mb-2 mt-2">{currentSlide.title}</h2>
+              )}
+            </>
           )}
 
           {typeof currentSlide?.content === 'string' ? (
