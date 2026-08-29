@@ -108,7 +108,7 @@ export default function CoursesPage() {
                   <span className="text-xs text-text-muted whitespace-nowrap">{done}/{course.lesson_count} lessons</span>
                 </div>
 
-                {course.coming_soon ? (
+                {course.coming_soon && !isAdmin ? (
                   <div className="w-full py-3 text-sm rounded-xl border border-border text-text-muted flex items-center justify-center">
                     In writing — we&apos;ll tell you the moment it opens
                   </div>
