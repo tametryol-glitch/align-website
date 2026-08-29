@@ -154,7 +154,12 @@ function loadCatalog() {
  * and room to breathe.
  */
 function toSpokenDigits(digits) {
-  return digits.split('').join(' ... ');
+  // The trailing period matters. Without a sentence terminator the model
+  // trails off on the last digit and clips it — measurably, about 0.3s of
+  // missing articulation — which is why transcription kept losing the final
+  // digit of long codes. It is the last digit of every code, so it is worth
+  // a full re-render.
+  return `${digits.split('').join(' ... ')}.`;
 }
 
 /* ── kokoro ───────────────────────────────────────────────────────── */
@@ -176,7 +181,23 @@ function applyReverb(file) {
       '-af', REVERB_FILTER,
       '-c:a', 'libmp3lame', '-q:a', '4', tmp,
     ]);
-    fs.renameSync(tmp, file);
+    // OneDrive briefly locks a file it is syncing, which surfaces as EPERM on
+    // rename. It clears in well under a second, and without a retry the dry
+    // clip silently survives while the reverbed one is discarded — the clip
+    // still exists, so a count check passes and the defect ships.
+    let lastErr;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        fs.renameSync(tmp, file);
+        lastErr = null;
+        break;
+      } catch (err) {
+        lastErr = err;
+        if (err.code !== 'EPERM' && err.code !== 'EBUSY') throw err;
+        execFileSync(process.execPath, ['-e', 'setTimeout(()=>{},250)']);
+      }
+    }
+    if (lastErr) throw lastErr;
   } finally {
     // A failed ffmpeg or interrupted rename would otherwise strand a
     // <id>.mp3.tmp.mp3 next to the real clip, which a disk scan then

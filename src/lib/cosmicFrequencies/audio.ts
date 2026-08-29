@@ -26,12 +26,17 @@ export interface FrequencyVoice {
   label: string;
 }
 
-// Voices are listed only once their clips are uploaded. The remaining six are
-// still rendering; each joins this list as it is published, because offering a
-// voice whose clips 404 is worse than offering fewer.
+// All eight are rendered, uploaded and verified. A voice is only listed once
+// its clips exist — offering one whose clips 404 is worse than offering fewer.
 export const VOICES: FrequencyVoice[] = [
   { id: 'af_heart', label: 'Heart' },
   { id: 'af_nicole', label: 'Nicole' },
+  { id: 'af_bella', label: 'Bella' },
+  { id: 'af_sarah', label: 'Sarah' },
+  { id: 'af_river', label: 'River' },
+  { id: 'bf_emma', label: 'Emma' },
+  { id: 'bf_lily', label: 'Lily' },
+  { id: 'af_sky', label: 'Sky' },
 ];
 
 export const DEFAULT_VOICE = 'af_heart';

@@ -36,17 +36,28 @@ WORDS = {
 }
 
 
+_TOKEN = re.compile(r'\d+|[a-z]+')
+
+
 def transcript_to_digits(text: str) -> str:
-    """Pull an ordered digit string out of a transcript."""
+    """Pull an ordered digit string out of a transcript.
+
+    Scans for digit runs and number words in order rather than splitting into
+    whole tokens. Whisper emits things like "4989s" and "3194-1", and a
+    whole-token test discards "4989s" entirely — which reads as "heard
+    nothing" and looks exactly like a clip that failed to render.
+    """
     out = []
-    # Split on anything that is not a letter or digit so "5," and "five," both work.
-    for tok in re.split(r'[^A-Za-z0-9]+', text.lower()):
-        if not tok:
-            continue
+    for tok in _TOKEN.findall(text.lower()):
         if tok.isdigit():
             out.append(tok)          # Whisper sometimes groups: "520"
         elif tok in WORDS:
             out.append(WORDS[tok])
+        elif tok.endswith('s') and tok[:-1] in WORDS:
+            # Whisper pluralises a spoken digit now and then ("twos" for
+            # "two"). Dropping the token loses a digit and makes a correct
+            # clip look truncated.
+            out.append(WORDS[tok[:-1]])
     return ''.join(out)
 
 
@@ -65,6 +76,8 @@ def main() -> int:
                     help='comma-separated frequency ids to re-check in isolation')
     ap.add_argument('--voice', default='',
                     help='verify only one voice folder')
+    ap.add_argument('--report', default='',
+                    help='write every mismatch id to this file, one per line')
     ap.add_argument('--beam', type=int, default=1,
                     help='whisper beam size; raise it when re-checking mismatches')
     args = ap.parse_args()
@@ -168,13 +181,19 @@ def main() -> int:
 
     if mismatches:
         print('\nmismatches (re-render these, or check the transcript is just ASR noise):')
-        for m in mismatches[:25]:
+        for m in mismatches[:200]:
             print(f"  {m['id']}")
             print(f"      expected {m['expected']}")
             print(f"      heard    {m['heard']}")
             print(f"      asr      {m['transcript']!r}")
-        if len(mismatches) > 25:
-            print(f'  ...and {len(mismatches) - 25} more')
+        if len(mismatches) > 200:
+            print(f'  ...and {len(mismatches) - 200} more')
+
+    if args.report:
+        with open(args.report, 'w', encoding='utf-8') as fh:
+            for m in mismatches:
+                fh.write(m['id'] + '\n')
+        print(f'\nmismatch ids -> {args.report}')
 
     return 1 if (mismatches or missing) else 0
 
