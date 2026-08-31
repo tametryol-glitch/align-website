@@ -134,7 +134,7 @@ function SignupPageInner() {
     const emailRedirectUrl = effectiveRef
       ? `${window.location.origin}/auth/callback?ref=${effectiveRef}`
       : `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -146,9 +146,32 @@ function SignupPageInner() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
-      setSuccess(true);
+      return;
     }
+
+    // Email confirmation is currently OFF in Supabase, so signUp hands back a
+    // session and no email is ever sent. Telling these users to "check your
+    // email" left them waiting for a link that does not exist — send them
+    // straight into onboarding instead. If confirmation is switched back on
+    // there is no session here, and the check-your-email screen still shows.
+    if (data.session) {
+      // Referral rewards + welcome emails normally run in /auth/callback,
+      // which this path skips. Best-effort — never block getting into the app.
+      try {
+        await fetch('/api/auth/post-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: effectiveRef || undefined }),
+        });
+      } catch {
+        // ignore — provisioning is not worth stalling the signup for
+      }
+      router.push('/onboarding');
+      router.refresh();
+      return;
+    }
+
+    setSuccess(true);
   }
 
   async function handleResend() {
@@ -260,8 +283,8 @@ function SignupPageInner() {
               {t('auth.continueWithGoogle')}
             </button>
             <p className="text-[11px] text-text-muted text-center mt-2 leading-relaxed">
-              <span className="font-semibold text-green-400">Recommended</span> — you&apos;re in straight away, with
-              {' '}<span className="text-text-secondary">no confirmation email to wait for</span> and no password to remember.
+              <span className="font-semibold text-green-400">Recommended</span> — one tap and you&apos;re in.
+              {' '}<span className="text-text-secondary">No password to create, nothing to confirm.</span>
             </p>
           </div>
 
@@ -304,7 +327,7 @@ function SignupPageInner() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); if (passwordErrors.length) setPasswordErrors([]); }}
                 className="input"
-                placeholder="•••••••���"
+                placeholder="••••••••"
                 minLength={8}
                 required
               />
@@ -379,9 +402,6 @@ function SignupPageInner() {
             <button type="submit" disabled={loading} className="btn-secondary w-full">
               {loading ? t('common.loading') : t('auth.signup')}
             </button>
-            <p className="text-[11px] text-text-muted text-center">
-              We&apos;ll email you a confirmation link — it can take a few minutes and sometimes lands in spam.
-            </p>
           </form>
 
           <p className="text-center text-sm text-text-muted mt-6">
