@@ -26,6 +26,11 @@ import { SPIRITUAL_FREQUENCIES } from './spiritual';
 import { IMPORTED_FREQUENCIES } from './imported';
 
 export * from './types';
+export {
+  ENTRAINMENT_SESSIONS,
+  type EntrainmentSession,
+  type EntrainmentVariant,
+} from './sessions';
 export { FREQUENCY_THEMES, ALL_THEME_KEYS, getThemesForDomain, isFrequencyTheme } from './themes';
 export {
   PRACTICE_STEPS,

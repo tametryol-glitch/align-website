@@ -7,6 +7,7 @@ import { ArrowLeft, ChevronDown, Search, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   COSMIC_FREQUENCIES,
+  ENTRAINMENT_SESSIONS,
   FREQUENCY_DOMAINS,
   PRACTICE_NOTES,
   PRACTICE_STEPS,
@@ -26,6 +27,7 @@ import {
 import { HealthDisclaimerModal } from '@/components/cosmicFrequencies/HealthDisclaimerModal';
 import { FrequencyDetailModal } from '@/components/cosmicFrequencies/FrequencyDetailModal';
 import { WeeklyFrequencyCard } from '@/components/cosmicFrequencies/WeeklyFrequencyCard';
+import { SessionPlayer } from '@/components/cosmicFrequencies/SessionPlayer';
 
 const DOMAIN_META: Record<FrequencyDomain, { label: string; glyph: string }> = {
   health: { label: 'Health', glyph: '⚕' },
@@ -149,6 +151,13 @@ export default function CosmicFrequenciesPage() {
       </div>
 
       <WeeklyFrequencyCard onOpen={openFrequency} />
+
+      {/* Entrainment sessions. A different content type from the codex --
+          long-form audio with no numeric code and nothing for the theme
+          scorer to match - so it sits above the library rather than in it. */}
+      {ENTRAINMENT_SESSIONS.map((session) => (
+        <SessionPlayer key={session.id} session={session} />
+      ))}
 
       {/* Search */}
       <div className="relative mb-4">

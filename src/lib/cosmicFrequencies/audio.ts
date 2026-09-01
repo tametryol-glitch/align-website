@@ -155,6 +155,20 @@ export function getBedUrl(file: string): string | null {
 }
 
 /**
+ * Public URL for an entrainment session.
+ *
+ * These are long-form single files (~28 MB for 30 minutes), so they stream
+ * rather than ship in the bundle. Encoded FULL stereo, not joint stereo:
+ * joint stereo codes the pair as mid/side and narrows the ear-to-ear swing
+ * this session is built on. The bucket only accepts mpeg audio, which is why
+ * this is mp3 and not the smaller AAC the format would otherwise favour.
+ */
+export function getSessionUrl(file: string): string | null {
+  if (!AUDIO_BASE) return null;
+  return `${AUDIO_BASE}/sessions/${file}`;
+}
+
+/**
  * Bed sits well under the voice. The beds measure -14.8 to -17.0 dB mean, a
  * ~3 dB spread, so a single value works for all of them.
  */
