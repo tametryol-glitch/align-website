@@ -10,17 +10,16 @@ import {
   DEFAULT_MINUTES,
   DEFAULT_TEMPO,
   SESSION_MINUTES,
-  TEMPO_GAP_MS,
   TEMPO_ORDER,
   formatClock,
   getBedUrl,
-  getClipUrl,
+  getLoopUrl,
+  resolveLoopPace,
   getPreferredVoice,
   setPreferredVoice,
   VOICES,
   bedsForVoice,
   isBedAllowed,
-  secondsToNextBar,
   type SessionMinutes,
   type Tempo,
 } from '@/lib/cosmicFrequencies/audio';
@@ -66,26 +65,23 @@ export function FrequencyPlayer({ frequency }: Props) {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const bedRef = useRef<HTMLAudioElement | null>(null);
-  const gapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
   // Read inside the 'ended' handler, so changing tempo mid-session takes
   // effect on the next loop without re-binding the listener.
-  const tempoRef = useRef<Tempo>(tempo);
-  tempoRef.current = tempo;
-  // Tempo of the bed currently playing, or null when the bed is a plain wash
-  // (or silence). Set at start, cleared on stop.
-  const syncBpmRef = useRef<number | null>(null);
 
-  const url = getClipUrl(frequency.id, voiceId);
+  // The pacing gap is baked into the file so the element can loop natively.
+  // A JS timer only survives while the tab is foregrounded — browsers throttle
+  // background timers exactly like React Native suspends them — which left the
+  // recitation silent while the bed carried on.
+  const activeBed = BEDS.find((b) => b.id === bedId) ?? null;
+  const url = getLoopUrl(frequency.id, voiceId, resolveLoopPace(tempo, activeBed));
 
   const stop = useCallback(() => {
-    if (gapTimer.current) { clearTimeout(gapTimer.current); gapTimer.current = null; }
     if (tick.current) { clearInterval(tick.current); tick.current = null; }
     const a = audioRef.current;
     if (a) { a.pause(); a.currentTime = 0; }
     const b = bedRef.current;
     if (b) { b.pause(); b.currentTime = 0; }
-    syncBpmRef.current = null;
     setPlaying(false);
     setRemaining(null);
   }, []);
@@ -101,8 +97,8 @@ export function FrequencyPlayer({ frequency }: Props) {
 
     let a = audioRef.current;
     if (a && a.src !== url) {
-      // Voice changed since this element was made — rebuild it, or the old
-      // voice keeps playing.
+      // Voice or pace changed since this element was made — rebuild it, or
+      // the old file keeps playing.
       a.pause();
       a = null;
       audioRef.current = null;
@@ -110,27 +106,8 @@ export function FrequencyPlayer({ frequency }: Props) {
     if (!a) {
       a = new Audio(url);
       a.preload = 'auto';
+      a.loop = true;
       audioRef.current = a;
-      a.addEventListener('ended', () => {
-        // With a beat-aligned bed, the next recitation starts on the bed's
-        // next bar line rather than after a fixed gap, so the phrase always
-        // begins on a downbeat. Reading the bed's real position each time is
-        // self-correcting: a tempo-estimate error is absorbed every bar
-        // instead of accumulating across the session.
-        const bed = bedRef.current;
-        const bpm = syncBpmRef.current;
-        const waitMs =
-          bpm && bed && !bed.paused
-            ? secondsToNextBar(bed.currentTime, bpm) * 1000
-            : TEMPO_GAP_MS[tempoRef.current];
-
-        gapTimer.current = setTimeout(() => {
-          const el = audioRef.current;
-          if (!el) return;
-          el.currentTime = 0;
-          el.play().catch(() => setError(true));
-        }, waitMs);
-      });
       a.addEventListener('error', () => { setError(true); setLoading(false); });
     }
 
@@ -156,7 +133,6 @@ export function FrequencyPlayer({ frequency }: Props) {
       }
       b.volume = BED_VOLUME;
       b.play().catch(() => { /* voice continues without it */ });
-      syncBpmRef.current = bed?.bpm ?? null;
     }
 
     setLoading(false);
@@ -281,7 +257,8 @@ export function FrequencyPlayer({ frequency }: Props) {
           <button
             key={tp}
             onClick={() => setTempo(tp)}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+            disabled={playing}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors disabled:opacity-40 ${
               tempo === tp
                 ? 'bg-accent-primary text-white'
                 : 'bg-white/5 text-text-muted hover:bg-white/10'

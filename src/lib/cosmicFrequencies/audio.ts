@@ -68,6 +68,38 @@ export function getClipUrl(frequencyId: string, voiceId: string = DEFAULT_VOICE)
   return `${AUDIO_BASE}/clips/${voiceId}/${frequencyId}.mp3`;
 }
 
+/**
+ * The looping clip for a recitation: the pacing gap is baked in, so the audio
+ * player can repeat it with `isLooping` and the OS drives the loop.
+ *
+ * This is not a cosmetic choice. Driving the repeat from a JS timer only works
+ * while the app is foregrounded — React Native suspends the JS thread in the
+ * background, the timer never fires, and the recitation goes silent while the
+ * bed (which always looped natively) keeps playing. Baking the gap in removes
+ * JavaScript from the loop entirely.
+ *
+ * `bar60` pads to whole bars instead of a fixed gap, so a natively-looping
+ * recitation stays locked to a natively-looping beat-aligned bed with nothing
+ * scheduling either of them.
+ */
+export function getLoopUrl(
+  frequencyId: string,
+  voiceId: string,
+  pace: LoopPace,
+): string {
+  return `${AUDIO_BASE}/loops/${voiceId}/${pace}/${frequencyId}.mp3`;
+}
+
+export type LoopPace = Tempo | 'bar60';
+
+/**
+ * Which padded variant to play: the bar-aligned one when a beat-aligned bed
+ * is selected, otherwise the chosen pace.
+ */
+export function resolveLoopPace(tempo: Tempo, bed: AmbientBed | null): LoopPace {
+  return bed?.bpm ? 'bar60' : tempo;
+}
+
 /* ── Ambient beds ────────────────────────────────────────────────
    One bed plays under any frequency — never per-code, which is what
    keeps the music budget at five files instead of 259.
