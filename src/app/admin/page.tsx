@@ -39,7 +39,29 @@ interface UserRow {
   birth_date: string | null;
   birth_time: string | null;
   birth_location: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  timezone: string | null;
 }
+
+// The stat pills double as filters for the user list below them.
+type UserCohort = 'all' | 'noBirthDate' | 'noBirthTime' | 'missingLocation';
+
+const COHORT_FILTERS: Record<UserCohort, (u: UserRow) => boolean> = {
+  all: () => true,
+  noBirthDate: (u) => !u.birth_date,
+  noBirthTime: (u) => !!u.birth_date && !u.birth_time,
+  // Entered a birth date but the location was never geocoded.
+  missingLocation: (u) =>
+    !!u.birth_date && (u.latitude == null || u.longitude == null || !u.timezone),
+};
+
+const COHORT_LABELS: Record<UserCohort, string> = {
+  all: 'All members',
+  noBirthDate: 'No birth date',
+  noBirthTime: 'No birth time',
+  missingLocation: 'Missing location (backfill)',
+};
 
 // Shape returned by GET /api/admin/send-birth-reminder — the reminder ledger
 // report: who fixed their birth data after being emailed, and who is still due.
@@ -299,8 +321,34 @@ function UsersPanel() {
   const [reminderResult, setReminderResult] = useState<{ sent: number; errors: number; total: number; eligible: number; skippedNote: string } | null>(null);
   const [dbCounts, setDbCounts] = useState<{ total: number; noBirthDate: number; noBirthTime: number; incomplete: number } | null>(null);
   const [reminderReport, setReminderReport] = useState<ReminderReport | null>(null);
+  const [cohort, setCohort] = useState<UserCohort>('all');
+  const [visibleCount, setVisibleCount] = useState(50);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => { loadUsers(); loadCounts(); loadReminderReport(); }, []);
+
+  // The list below the pills = search results narrowed to the selected cohort.
+  const visible = filtered.filter(COHORT_FILTERS[cohort]);
+
+  function selectCohort(next: UserCohort) {
+    setCohort((current) => (current === next ? 'all' : next));
+    setVisibleCount(50);
+    setCopied(false);
+  }
+
+  // Every email in the current cohort, in one clipboard paste — the whole point
+  // is not having to scroll 800 rows to find the 145 that matter.
+  async function copyCohortEmails() {
+    const emails = visible.map((u) => u.email).filter(Boolean);
+    if (emails.length === 0) return;
+    try {
+      await navigator.clipboard.writeText(emails.join(', '));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   // Who is already fixed vs who is actually due for an email. Comes from the
   // birth_reminder_state ledger via the API (service key — the browser client
@@ -319,7 +367,7 @@ function UsersPanel() {
     const supabase = createClient();
     const { data } = await supabase
       .from('profiles')
-      .select('id, email, display_name, align_code, created_at, is_admin, sun_sign, birth_date, birth_time, birth_location')
+      .select('id, email, display_name, align_code, created_at, is_admin, sun_sign, birth_date, birth_time, birth_location, latitude, longitude, timezone')
       .order('created_at', { ascending: false })
       .range(0, 4999);
 
@@ -351,6 +399,7 @@ function UsersPanel() {
 
   function handleSearch(q: string) {
     setSearch(q);
+    setVisibleCount(50);
     if (!q.trim()) {
       setFiltered(users);
       return;
@@ -400,25 +449,24 @@ function UsersPanel() {
 
   return (
     <div className="space-y-4">
-      {/* Real-time stats from DB */}
+      {/* Real-time stats from DB — each pill filters the list below it */}
       {dbCounts && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <div className="bg-bg-secondary rounded-lg p-3 border border-border-primary">
-            <p className="text-lg font-bold text-text-primary">{dbCounts.total}</p>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider">Total Members</p>
-          </div>
-          <div className="bg-bg-secondary rounded-lg p-3 border border-red-500/20">
-            <p className="text-lg font-bold text-red-400">{dbCounts.noBirthDate}</p>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider">No Birth Date</p>
-          </div>
-          <div className="bg-bg-secondary rounded-lg p-3 border border-amber-500/20">
-            <p className="text-lg font-bold text-amber-400">{dbCounts.noBirthTime}</p>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider">No Birth Time</p>
-          </div>
-          <div className="bg-bg-secondary rounded-lg p-3 border border-orange-500/20">
-            <p className="text-lg font-bold text-orange-400">{dbCounts.incomplete}</p>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider">Missing Location (backfill)</p>
-          </div>
+          {([
+            { key: 'all' as UserCohort, count: dbCounts.total, label: 'Total Members', border: 'border-border-primary', text: 'text-text-primary', ring: 'ring-white/40' },
+            { key: 'noBirthDate' as UserCohort, count: dbCounts.noBirthDate, label: 'No Birth Date', border: 'border-red-500/20', text: 'text-red-400', ring: 'ring-red-400/70' },
+            { key: 'noBirthTime' as UserCohort, count: dbCounts.noBirthTime, label: 'No Birth Time', border: 'border-amber-500/20', text: 'text-amber-400', ring: 'ring-amber-400/70' },
+            { key: 'missingLocation' as UserCohort, count: dbCounts.incomplete, label: 'Missing Location (backfill)', border: 'border-orange-500/20', text: 'text-orange-400', ring: 'ring-orange-400/70' },
+          ]).map((pill) => (
+            <button
+              key={pill.key}
+              onClick={() => selectCohort(pill.key)}
+              className={`text-left bg-bg-secondary rounded-lg p-3 border ${pill.border} hover:bg-white/5 transition-colors ${cohort === pill.key ? `ring-2 ${pill.ring}` : ''}`}
+            >
+              <p className={`text-lg font-bold ${pill.text}`}>{pill.count}</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-wider">{pill.label}</p>
+            </button>
+          ))}
         </div>
       )}
 
@@ -476,9 +524,29 @@ function UsersPanel() {
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-text-muted">{filtered.length} users shown{dbCounts ? ` of ${dbCounts.total}` : ''}</p>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <p className="text-xs text-text-muted">
+          {cohort === 'all'
+            ? `${visible.length} users shown${dbCounts ? ` of ${dbCounts.total}` : ''}`
+            : `${visible.length} in ${COHORT_LABELS[cohort]}`}
+        </p>
+        <div className="flex items-center gap-2 flex-wrap">
+          {cohort !== 'all' && (
+            <button
+              onClick={() => selectCohort('all')}
+              className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
+            >
+              Clear filter
+            </button>
+          )}
+          <button
+            onClick={copyCohortEmails}
+            disabled={visible.length === 0}
+            className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+          >
+            <Copy className="w-3 h-3" />
+            {copied ? 'Copied!' : `Copy ${visible.length} email${visible.length === 1 ? '' : 's'}`}
+          </button>
           <button
             onClick={() => { loadCounts(); loadUsers(); loadReminderReport(); }}
             className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
@@ -506,7 +574,10 @@ function UsersPanel() {
 
       {/* User list */}
       <div className="space-y-2">
-        {filtered.slice(0, 50).map((user) => (
+        {visible.length === 0 && (
+          <p className="text-xs text-text-muted py-6 text-center">No users in {COHORT_LABELS[cohort]}.</p>
+        )}
+        {visible.slice(0, visibleCount).map((user) => (
           <div key={user.id} className="card py-3 px-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-accent-muted flex items-center justify-center text-sm font-bold text-accent-primary flex-shrink-0">
@@ -520,23 +591,51 @@ function UsersPanel() {
                   )}
                   {user.sun_sign && <span className="text-xs text-text-tertiary flex-shrink-0">☉ {user.sun_sign}</span>}
                 </div>
-                <p className="text-xs text-text-muted">{user.email}</p>
+                {user.email ? (
+                  <a href={`mailto:${user.email}`} className="text-xs text-text-muted hover:text-accent-primary transition-colors break-all">
+                    {user.email}
+                  </a>
+                ) : (
+                  <p className="text-xs text-red-400">No email on file</p>
+                )}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-[11px] text-text-secondary">
                   {user.birth_date ? (
                     <span>Born {user.birth_date}</span>
                   ) : (
-                    <span className="text-amber-400 font-medium"><AlertTriangle className="w-3 h-3 inline mr-0.5" />No birth date</span>
+                    <span className="text-red-400 font-medium"><AlertTriangle className="w-3 h-3 inline mr-0.5" />No birth date</span>
                   )}
-                  {user.birth_time && <span>at {user.birth_time.slice(0, 5)}</span>}
+                  {user.birth_date && (user.birth_time
+                    ? <span>at {user.birth_time.slice(0, 5)}</span>
+                    : <span className="text-amber-400 font-medium">No birth time</span>
+                  )}
                   {user.birth_location && <span className="truncate max-w-[200px]">{user.birth_location}</span>}
+                  {user.birth_date && (user.latitude == null || user.longitude == null || !user.timezone) && (
+                    <span className="text-orange-400 font-medium">Not geocoded</span>
+                  )}
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right flex-shrink-0 space-y-1">
                 <p className="text-[10px] text-text-muted">Joined {new Date(user.created_at).toLocaleDateString()}</p>
+                {user.email && (
+                  <a
+                    href={`mailto:${user.email}?subject=${encodeURIComponent('Your Align birth details')}`}
+                    className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
+                  >
+                    <Mail className="w-3 h-3" /> Email
+                  </a>
+                )}
               </div>
             </div>
           </div>
         ))}
+        {visible.length > visibleCount && (
+          <button
+            onClick={() => setVisibleCount((n) => n + 100)}
+            className="w-full text-xs font-medium px-3 py-2 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            Show {Math.min(100, visible.length - visibleCount)} more ({visible.length - visibleCount} remaining)
+          </button>
+        )}
       </div>
     </div>
   );
