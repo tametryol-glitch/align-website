@@ -41,6 +41,31 @@ interface UserRow {
   birth_location: string | null;
 }
 
+// Shape returned by GET /api/admin/send-birth-reminder — the reminder ledger
+// report: who fixed their birth data after being emailed, and who is still due.
+interface ReminderReport {
+  ledgerReady: boolean;
+  warning?: string;
+  policy?: { maxReminders: number; cooldownDays: number };
+  totals: {
+    profiles: number;
+    complete: number;
+    missingBirthDate: number;
+    needsCoordinateBackfill: number;
+  };
+  ledger?: {
+    tracked: number;
+    fixedAfterReminder: number;
+    stillMissingAfterReminder: number;
+    eligibleNow: number;
+    coolingDown: number;
+    maxedOut: number;
+    optedOut: number;
+    clearedAfterCompletion: number;
+    noEmail: number;
+  };
+}
+
 type Tab = 'moderation' | 'users' | 'verifications' | 'cosmic-index' | 'affiliates';
 
 export default function AdminPage() {
@@ -271,10 +296,24 @@ function UsersPanel() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [sendingReminders, setSendingReminders] = useState(false);
-  const [reminderResult, setReminderResult] = useState<{ sent: number; errors: number; total: number } | null>(null);
+  const [reminderResult, setReminderResult] = useState<{ sent: number; errors: number; total: number; eligible: number; skippedNote: string } | null>(null);
   const [dbCounts, setDbCounts] = useState<{ total: number; noBirthDate: number; noBirthTime: number; incomplete: number } | null>(null);
+  const [reminderReport, setReminderReport] = useState<ReminderReport | null>(null);
 
-  useEffect(() => { loadUsers(); loadCounts(); }, []);
+  useEffect(() => { loadUsers(); loadCounts(); loadReminderReport(); }, []);
+
+  // Who is already fixed vs who is actually due for an email. Comes from the
+  // birth_reminder_state ledger via the API (service key — the browser client
+  // can't read the ledger).
+  async function loadReminderReport() {
+    try {
+      const res = await fetch('/api/admin/send-birth-reminder');
+      if (!res.ok) return;
+      setReminderReport(await res.json());
+    } catch {
+      // Report is a nice-to-have; the panel still works without it.
+    }
+  }
 
   async function loadUsers() {
     const supabase = createClient();
@@ -331,12 +370,27 @@ function UsersPanel() {
       const res = await fetch('/api/admin/send-birth-reminder', { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
-        setReminderResult({ sent: data.sent || 0, errors: data.errors || 0, total: data.totalIncomplete || 0 });
+        const s = data.skipped || {};
+        const skippedParts = [
+          s.coolingDown ? `${s.coolingDown} in cooldown` : '',
+          s.maxedOut ? `${s.maxedOut} at reminder limit` : '',
+          s.optedOut ? `${s.optedOut} opted out` : '',
+          s.clearedAfterCompletion ? `${s.clearedAfterCompletion} cleared their own data` : '',
+          s.noEmail ? `${s.noEmail} with no email` : '',
+        ].filter(Boolean);
+        setReminderResult({
+          sent: data.sent || 0,
+          errors: data.errors || 0,
+          total: data.totalIncomplete || 0,
+          eligible: data.eligible || 0,
+          skippedNote: skippedParts.length ? `skipped ${skippedParts.join(', ')}` : '',
+        });
+        loadReminderReport();
       } else {
-        setReminderResult({ sent: 0, errors: 1, total: 0 });
+        setReminderResult({ sent: 0, errors: 1, total: 0, eligible: 0, skippedNote: '' });
       }
     } catch {
-      setReminderResult({ sent: 0, errors: 1, total: 0 });
+      setReminderResult({ sent: 0, errors: 1, total: 0, eligible: 0, skippedNote: '' });
     } finally {
       setSendingReminders(false);
     }
@@ -368,6 +422,48 @@ function UsersPanel() {
         </div>
       )}
 
+      {/* Reminder ledger — fixed vs still pending, so nobody gets emailed twice */}
+      {reminderReport?.ledgerReady && reminderReport.ledger && (
+        <div className="bg-bg-secondary rounded-lg p-3 border border-border-primary space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Birth Reminder Ledger</p>
+            <p className="text-[10px] text-text-muted">
+              max {reminderReport.policy?.maxReminders} emails · {reminderReport.policy?.cooldownDays}-day cooldown
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <p className="text-lg font-bold text-green-400">{reminderReport.ledger.fixedAfterReminder}</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-wider">Fixed After Reminder</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold text-amber-400">{reminderReport.ledger.eligibleNow}</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-wider">Due Now</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold text-text-secondary">{reminderReport.ledger.coolingDown}</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-wider">In Cooldown</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold text-text-secondary">{reminderReport.ledger.maxedOut}</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-wider">Hit Reminder Limit</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-text-muted">
+            {reminderReport.ledger.stillMissingAfterReminder} emailed and still missing a birth date ·{' '}
+            {reminderReport.ledger.noEmail} with no email address
+            {reminderReport.ledger.optedOut > 0 && ` · ${reminderReport.ledger.optedOut} opted out`}
+          </p>
+        </div>
+      )}
+
+      {reminderReport && !reminderReport.ledgerReady && (
+        <div className="text-xs px-3 py-2 rounded-lg bg-amber-500/10 text-amber-400">
+          Reminder de-duplication is off — run <code>supabase-migration-birth-reminder-ledger.sql</code> in Supabase.
+          Until then every send emails all {reminderReport.totals.missingBirthDate} users missing a birth date.
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -384,7 +480,7 @@ function UsersPanel() {
         <p className="text-xs text-text-muted">{filtered.length} users shown{dbCounts ? ` of ${dbCounts.total}` : ''}</p>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => { loadCounts(); loadUsers(); }}
+            onClick={() => { loadCounts(); loadUsers(); loadReminderReport(); }}
             className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 text-text-secondary border border-white/10 hover:bg-white/10 transition-colors"
           >
             Refresh
@@ -394,14 +490,17 @@ function UsersPanel() {
             disabled={sendingReminders}
             className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors disabled:opacity-50"
           >
-            {sendingReminders ? 'Sending...' : `Email ${dbCounts?.noBirthDate ?? '...'} (No Birth Date)`}
+            {sendingReminders
+              ? 'Sending...'
+              : `Email ${(reminderReport?.ledgerReady ? reminderReport.ledger?.eligibleNow : dbCounts?.noBirthDate) ?? '...'} Due for Reminder`}
           </button>
         </div>
       </div>
 
       {reminderResult && (
         <div className={`text-xs px-3 py-2 rounded-lg ${reminderResult.errors > 0 ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-          Sent {reminderResult.sent} reminder emails ({reminderResult.total} with no birth date, {reminderResult.errors} errors)
+          Sent {reminderResult.sent} of {reminderResult.eligible} due reminders ({reminderResult.total} still have no birth date, {reminderResult.errors} errors)
+          {reminderResult.skippedNote && ` — ${reminderResult.skippedNote}`}
         </div>
       )}
 
