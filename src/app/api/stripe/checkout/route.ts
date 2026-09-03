@@ -110,12 +110,22 @@ async function createCheckout(req: NextRequest) {
     //     double-bill the customer). New subscribers fall through to checkout.
     const targetPriceId = priceIdForPlan(plan);
 
+    // Statuses that mean "this customer already HAS a subscription". Listing
+    // with status:'active' alone misses past_due / unpaid / trialing — and a
+    // customer in one of those states who upgrades falls through to
+    // checkout.sessions.create, which opens a SECOND subscription billed at
+    // FULL price on top of the one they already have. 'incomplete' is
+    // deliberately excluded: that initial payment never succeeded, so there is
+    // nothing to prorate against and they should go through checkout.
+    const LIVE_STATUSES = ['active', 'trialing', 'past_due', 'unpaid'];
+
     const existing = await stripe.subscriptions.list({
       customer: customerId,
-      status: 'active',
-      limit: 1,
+      status: 'all',
+      limit: 20,
     });
-    const currentSub = existing.data[0];
+    // list() returns newest-first, so this picks the most recent live one.
+    const currentSub = existing.data.find((s) => LIVE_STATUSES.includes(s.status));
 
     if (currentSub) {
       const currentItem = currentSub.items.data[0];
