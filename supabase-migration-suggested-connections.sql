@@ -44,6 +44,16 @@ FROM public.planet_placement_index
 WHERE planet_name IN ('Sun', 'Moon', 'Ascendant', 'Venus', 'Mars')
 GROUP BY user_id;
 
+-- A view runs with its OWNER's privileges by default, which for a migration
+-- means postgres -- so it bypasses RLS on planet_placement_index entirely.
+-- security_invoker makes it honour the caller's RLS instead. Without this the
+-- anon role could read every user's placements with no login at all, since the
+-- base table only grants SELECT to authenticated.
+ALTER VIEW public.user_big_five SET (security_invoker = on);
+
+-- Supabase's default privileges on the public schema hand anon/authenticated a
+-- SELECT on anything created here; only the RPC below needs this view.
+REVOKE ALL ON public.user_big_five FROM anon, authenticated;
 GRANT SELECT ON public.user_big_five TO service_role;
 
 
