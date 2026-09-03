@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
+import type { CityData } from '../data/worldCities';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
 
@@ -521,6 +522,24 @@ class AlignAPI {
 
   async updateProfile(userId: string, data: any) {
     return this.request(`/profiles/${userId}`, { method: 'PATCH', body: JSON.stringify(data) });
+  }
+
+  // Full-world city search (birth-place autocomplete) — backed by the
+  // `cities` table (GeoNames-derived, pg_trgm indexed) in align-api-v2.
+  // Short timeout: this is a live-typing UX, a slow response should fail
+  // fast so the caller can fall back to the bundled local dataset rather
+  // than hang the input.
+  async searchCitiesRemote(query: string, limit = 10): Promise<CityData[]> {
+    const params = new URLSearchParams({ q: query, limit: String(limit) });
+    const res = await this.request(`/cities/search?${params.toString()}`, { method: 'GET' }, 8000);
+    return (res.results || []).map((r: any) => ({
+      name: r.name,
+      country: r.country,
+      region: r.region ?? undefined,
+      lat: r.lat,
+      lon: r.lon,
+      population: r.population || undefined,
+    }));
   }
 }
 

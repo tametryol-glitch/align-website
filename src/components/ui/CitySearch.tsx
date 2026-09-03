@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import { lookupTimezone } from '@/lib/timezoneOffset';
+import { api } from '@/lib/api';
 
 interface CityResult {
   display: string;
@@ -78,8 +79,29 @@ export function CitySearch({ value, onChange, placeholder = 'Search city...', cl
       }));
 
       if (localResults.length > 0) {
+        // Bundled fallback (population >= 5000) shows instantly, then the
+        // full-world server-backed search upgrades it below.
         setSuggestions(localResults);
         setShowDropdown(true);
+      }
+
+      try {
+        const remote = await api.searchCitiesRemote(text, 10);
+        if (remote.length > 0) {
+          setSuggestions(remote.map((c: any) => ({
+            display: cities.formatCityLabel(c),
+            lat: c.lat,
+            lon: c.lon,
+          })));
+          setShowDropdown(true);
+          setIsSearching(false);
+          return;
+        }
+      } catch {
+        // Network/server failure — fall through to local results, if any.
+      }
+
+      if (localResults.length > 0) {
         setIsSearching(false);
         return;
       }

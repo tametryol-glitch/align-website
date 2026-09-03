@@ -10,7 +10,8 @@ import { InlineBold } from '@/components/ui/InlineBold';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { getPlanetGlyph } from '@/lib/utils';
-import { WORLD_CITIES_ALL, searchCities, type CityData } from '@/data/worldCitiesAll';
+import { WORLD_CITIES_ALL, type CityData } from '@/data/worldCitiesAll';
+import { useCitySearch } from '@/hooks/useCitySearch';
 import { isDestinationCity, isIconicCity } from '@/data/destinationCities';
 import { generateDerivedAcgLines, type DerivedACGLine } from '@/lib/engines/derivedAcgLines';
 import { getDerivedAcgAccess } from '@/config/featureFlags';
@@ -887,7 +888,12 @@ export default function ACGPage() {
     return m;
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<CityData[]>([]);
+  const { results: searchResults } = useCitySearch(searchQuery, 10);
+  // Suppresses the dropdown after a selection — searchResults is now
+  // derived reactively from searchQuery (debounced), and setting the
+  // query to the picked city's own name would otherwise re-show a
+  // (self-matching) dropdown a moment later.
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState<CityData | null>(null);
   const [showTogglePanel, setShowTogglePanel] = useState(false);
   const [showBest20, setShowBest20] = useState(false);
@@ -982,14 +988,13 @@ export default function ACGPage() {
 
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
-    if (text.length < 2) { setSearchResults([]); return; }
-    setSearchResults(searchCities(text, 10));
+    setDropdownOpen(true);
   }, []);
 
   const handleSelectCity = useCallback((city: CityData) => {
     setSelectedCity(city);
     setSearchQuery(city.name);
-    setSearchResults([]);
+    setDropdownOpen(false);
     setMapCenter({ lat: city.lat, lon: city.lon });
     setMapZoom(5);
     setReadingText('');
@@ -1150,12 +1155,12 @@ export default function ACGPage() {
               onChange={(e) => handleSearch(e.target.value)}
             />
             {searchQuery.length > 0 && (
-              <button onClick={() => { setSearchQuery(''); setSearchResults([]); }}>
+              <button onClick={() => { setSearchQuery(''); setDropdownOpen(false); }}>
                 <X className="w-4 h-4 text-text-muted hover:text-text-primary" />
               </button>
             )}
           </div>
-          {searchResults.length > 0 && (
+          {dropdownOpen && searchResults.length > 0 && (
             <div className="absolute top-14 left-0 right-0 bg-bg-secondary border border-border-primary rounded-xl overflow-hidden shadow-xl z-[200]">
               {searchResults.map((city, i) => (
                 <button
