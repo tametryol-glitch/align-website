@@ -13,12 +13,13 @@
  *   2. Both hosts are cross-origin and CSP-blocked from the browser, and short
  *      links (fb.watch/x, instagram.com/share/…) carry no post ID at all.
  *
- * Playback is separate and needs no token: Instagram's /embed/captioned/ page and
+ * Playback is separate and needs no token: Instagram's /embed/ page and
  * Facebook's plugins/video.php still render publicly, so the embedUrl we hand
  * back can be dropped straight into an iframe / WebView.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { readMeta, CRAWLER_UA } from '@/lib/openGraph';
 
 export const runtime = 'edge';
 
@@ -50,9 +51,6 @@ const IG_SHORTCODE_RE = /instagram\.com\/(?:[\w.]+\/)?(?:p|reel|reels|tv)\/([\w-
 // /videos/<id>, /videos/<slug>/<id>, /reel/<id>, /watch/?v=<id>, /posts/<id>.
 const FB_VIDEO_ID_RE = /facebook\.com\/(?:reel\/(\d+)|watch\/?\?v=(\d+)|[^/]+\/videos\/(?:[^/]+\/)?(\d+)|video\.php\?v=(\d+))/i;
 
-// Meta's own unfurler agent. Instagram strips og tags for anything that looks
-// like a browser, so this is not cosmetic — a browser UA returns zero metadata.
-const CRAWLER_UA = 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)';
 
 type Platform = 'instagram' | 'facebook';
 
@@ -67,34 +65,6 @@ function classify(urlString: string): { url: URL; platform: Platform } | null {
   } catch {
     return null;
   }
-}
-
-/** Minimal entity decode — og content arrives HTML-escaped (`&amp;` in every CDN URL). */
-function decodeEntities(value: string): string {
-  return value
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
-}
-
-/** Pull one <meta property="og:x"> / <meta name="twitter:x"> value out of raw HTML. */
-function readMeta(html: string, key: string): string | null {
-  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const patterns = [
-    new RegExp(`<meta[^>]+(?:property|name)=["']${escaped}["'][^>]+content=["']([^"']*)["']`, 'i'),
-    new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${escaped}["']`, 'i'),
-  ];
-  for (const re of patterns) {
-    const match = re.exec(html);
-    if (match?.[1]) return decodeEntities(match[1]).trim();
-  }
-  return null;
 }
 
 /**

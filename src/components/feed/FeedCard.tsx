@@ -15,6 +15,7 @@ import { isPlatformAdmin } from '@/lib/admin';
 import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creatorScoreEngine';
 import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
 import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
+import { extractHttpUrls } from '@/lib/linkify';
 
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
@@ -604,6 +605,125 @@ function MetaEmbed({ platform, url }: { platform: keyof typeof META_BRANDS; url:
   );
 }
 
+// ── Generic link unfurl ───────────────────────────────────────────
+// The four video platforms get real players above. Every other link used to
+// render as bare blue text; this turns it into a card too. Nothing about a
+// preview is stored on the post, so old posts pick this up on their next
+// render — there is nothing to backfill.
+
+interface LinkPreview {
+  domain: string;
+  siteName: string | null;
+  title: string | null;
+  description: string | null;
+  image: string | null;
+}
+
+const linkPreviewCache = new Map<string, LinkPreview | null>();
+
+/** Best-effort domain straight from the URL, so the card has a label before the fetch lands. */
+function domainOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./i, '');
+  } catch {
+    return url.replace(/^https?:\/\//i, '').split('/')[0];
+  }
+}
+
+// A link straight to a media file is already rendered by the post's own image
+// or video slot — unfurling it would just duplicate it.
+const DIRECT_MEDIA_RE = /\.(jpe?g|png|gif|webp|avif|bmp|svg|mp4|mov|webm|m4v|mp3|wav|m4a|pdf)(\?\S*)?$/i;
+
+/**
+ * True when the post body is nothing but this one link. Compared scheme- and
+ * trailing-slash-insensitively, because the extracted URL is normalised
+ * ("www.foo.com" in the text becomes "https://www.foo.com").
+ */
+function isOnlyThisUrl(text: string, url: string): boolean {
+  const bare = (s: string) => s.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase();
+  return bare(text) === bare(url);
+}
+
+function useLinkPreview(url: string) {
+  const [preview, setPreview] = useState<LinkPreview | null>(
+    () => linkPreviewCache.get(url) ?? null,
+  );
+  const [loading, setLoading] = useState(() => !linkPreviewCache.has(url));
+
+  useEffect(() => {
+    if (linkPreviewCache.has(url)) {
+      setPreview(linkPreviewCache.get(url) ?? null);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    fetch(`/api/link-preview?url=${encodeURIComponent(url)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const result: LinkPreview | null = data && !data.error
+          ? {
+              domain: data.domain ?? domainOf(url),
+              siteName: data.siteName ?? null,
+              title: data.title ?? null,
+              description: data.description ?? null,
+              image: data.image ?? null,
+            }
+          : null;
+        linkPreviewCache.set(url, result);
+        if (!cancelled) setPreview(result);
+      })
+      .catch(() => {
+        linkPreviewCache.set(url, null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [url]);
+
+  return { preview, loading };
+}
+
+function LinkPreviewCard({ url }: { url: string }) {
+  const { preview, loading } = useLinkPreview(url);
+  const domain = preview?.domain || domainOf(url);
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="block rounded-xl overflow-hidden border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
+    >
+      {preview?.image && (
+        <span className="block relative w-full bg-black" style={{ aspectRatio: '1.91/1' }}>
+          <img
+            src={preview.image}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+        </span>
+      )}
+      <span className="block px-3 py-2.5">
+        <span className="block text-[11px] uppercase tracking-wide text-text-muted truncate">
+          {preview?.siteName || domain}
+        </span>
+        <span className="block text-sm font-semibold text-text-primary line-clamp-2 mt-0.5">
+          {preview?.title || (loading ? 'Loading preview…' : domain)}
+        </span>
+        {preview?.description && (
+          <span className="block text-xs text-text-muted line-clamp-2 mt-1">
+            {preview.description}
+          </span>
+        )}
+      </span>
+    </a>
+  );
+}
+
 export function isGifOrStickerUrl(text: string): boolean {
   const trimmed = text.trim();
   return (
@@ -854,6 +974,13 @@ export function FeedCard({
         if (instagramUrls.length > 0) displayText = stripInstagramUrls(displayText);
         if (facebookUrls.length > 0) displayText = stripFacebookUrls(displayText);
 
+        // Whatever link is left over gets a generic unfurl card. Only the first
+        // one — a post pasting five links shouldn't become five cards. The URL
+        // stays in the text unless it IS the whole post, where repeating it
+        // above the card would just be noise.
+        const unfurlUrl = extractHttpUrls(displayText).find((u) => !DIRECT_MEDIA_RE.test(u)) ?? null;
+        if (unfurlUrl && isOnlyThisUrl(displayText, unfurlUrl)) displayText = '';
+
         return (
           <>
             {displayText && (
@@ -883,6 +1010,11 @@ export function FeedCard({
                 <MetaEmbed platform="facebook" url={fb} />
               </div>
             ))}
+            {unfurlUrl && (
+              <div className="px-5 pb-3">
+                <LinkPreviewCard url={unfurlUrl} />
+              </div>
+            )}
           </>
         );
       })()}

@@ -30,6 +30,26 @@ function isSafeScheme(url: string): boolean {
   return lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('mailto:');
 }
 
+/**
+ * Every distinct http(s) URL in the text, normalised and de-duplicated.
+ *
+ * Shares URL_RE with the renderer above so a link the feed unfurls into a card
+ * is exactly a link this file would have made clickable — the two can't drift.
+ * mailto:/tel: are skipped: there is nothing to preview behind them.
+ */
+export function extractHttpUrls(text: string): string[] {
+  if (!text) return [];
+  const urls: string[] = [];
+  const re = new RegExp(URL_RE.source, 'gi');
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const url = normalizeUrl(m[0]);
+    if (!/^https?:\/\//i.test(url)) continue;
+    if (!urls.includes(url)) urls.push(url);
+  }
+  return urls;
+}
+
 /** Split text into plain segments and <a> elements for any URLs found. */
 export function renderTextWithLinks(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
