@@ -42,7 +42,7 @@ type Stage = 'setup' | 'starting' | 'live' | 'ended';
 
 export default function GoLivePage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, profile, isAuthenticated } = useAuthStore();
 
   const [stage, setStage] = useState<Stage>('setup');
   const [title, setTitle] = useState('');
@@ -67,8 +67,15 @@ export default function GoLivePage() {
 
   // ── Guards ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isAuthenticated) router.replace('/auth/login?next=/live/go');
-  }, [isAuthenticated, router]);
+    if (!isAuthenticated) {
+      router.replace('/auth/login?next=/live/go');
+      return;
+    }
+    // Phase 1 is founder-only. This is the courtesy redirect; the
+    // enforceable gate is the RLS policy on live_sessions, because a
+    // client-side check is only ever a suggestion.
+    if (profile && !profile.is_admin) router.replace('/feed');
+  }, [isAuthenticated, profile, router]);
 
   // ── Elapsed timer ────────────────────────────────────────────────
   useEffect(() => {

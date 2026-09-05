@@ -16,7 +16,7 @@ import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { LiveRail } from '@/components/feed/LiveRail';
 import { MentionInput } from '@/components/feed/MentionInput';
-import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2 } from 'lucide-react';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
@@ -1064,12 +1064,25 @@ export default function FeedPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-display font-bold text-text-primary">{t('feed.title')}</h1>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="w-10 h-10 rounded-full bg-gradient-accent flex items-center justify-center hover:scale-105 transition-transform"
-        >
-          <Plus className="w-5 h-5 text-white" />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Phase 1 is founder-only. The real gate is the RLS policy on
+              live_sessions; this just keeps the button out of sight. */}
+          {profile?.is_admin && (
+            <Link
+              href="/live/go"
+              className="flex items-center gap-1.5 h-10 px-3.5 rounded-full bg-red-600 hover:bg-red-500 transition-colors"
+            >
+              <Radio className="w-4 h-4 text-white" />
+              <span className="text-sm font-medium text-white">Go live</span>
+            </Link>
+          )}
+          <button
+            onClick={() => setShowCreate(true)}
+            className="w-10 h-10 rounded-full bg-gradient-accent flex items-center justify-center hover:scale-105 transition-transform"
+          >
+            <Plus className="w-5 h-5 text-white" />
+          </button>
+        </div>
       </div>
 
       {/* Renders nothing unless someone is actually broadcasting. */}
