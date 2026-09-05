@@ -173,6 +173,51 @@ export async function getMyPayouts(token: string) {
   return res.json();
 }
 
+// ── Vanity codes ──────────────────────────────────────────────────
+
+/** Client-side mirror of the API's code rules, for instant feedback. */
+export const AFFILIATE_CODE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]{1,22}[A-Za-z0-9]$/;
+
+export async function checkAffiliateCodeAvailable(
+  code: string,
+  signal?: AbortSignal,
+): Promise<{ code: string; available: boolean; reason?: string | null }> {
+  try {
+    const res = await fetch(
+      `${API_BASE}/affiliates/code-available?code=${encodeURIComponent(code)}`,
+      { signal },
+    );
+    return await res.json();
+  } catch {
+    return { code, available: false, reason: null };
+  }
+}
+
+export async function updateMyAffiliateCode(
+  token: string,
+  code: string,
+): Promise<{
+  ok: boolean;
+  affiliate_code?: string;
+  affiliate_link?: string;
+  previous_code?: string;
+  code_changes_remaining?: number;
+  detail?: string;
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/affiliates/me/code`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ code }),
+    });
+    const json = await res.json();
+    if (!res.ok) return { ok: false, detail: json?.detail || 'Could not save that code' };
+    return json;
+  } catch {
+    return { ok: false, detail: 'Network error' };
+  }
+}
+
 // ── Visitor ID (anonymous, for click dedup) ───────────────────────
 
 function getOrCreateVisitorId(): string {

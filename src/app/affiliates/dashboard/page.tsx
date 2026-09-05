@@ -18,6 +18,7 @@ import {
   getMyConversions,
   getMyClicks,
   getMyPayouts,
+  updateMyAffiliateCode,
 } from '@/lib/affiliateService';
 import AffiliateDashboardView, {
   type AffiliateData,
@@ -66,6 +67,24 @@ export default function AffiliateDashboardPage() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const saveCode = useCallback(async (code: string) => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return { ok: false, detail: 'Session expired — sign in again.' };
+
+    const res = await updateMyAffiliateCode(session.access_token, code);
+    if (res.ok) {
+      // Refresh so the link, code and remaining-changes count all update.
+      setAffiliate((prev) => (prev ? {
+        ...prev,
+        affiliate_code: res.affiliate_code || prev.affiliate_code,
+        affiliate_link: res.affiliate_link || prev.affiliate_link,
+        code_changes_remaining: res.code_changes_remaining ?? prev.code_changes_remaining,
+      } : prev));
+    }
+    return res;
+  }, []);
 
   if (loading) {
     return (
@@ -143,6 +162,7 @@ export default function AffiliateDashboardPage() {
           conversions={conversions}
           clicks={clicks}
           payouts={payouts}
+          onSaveCode={saveCode}
         />
       </div>
     </div>

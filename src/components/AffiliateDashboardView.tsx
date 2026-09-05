@@ -12,8 +12,9 @@
  * the parent. Copy buttons still work (harmless for an admin previewing).
  */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AFFILIATE_CODE_PATTERN, checkAffiliateCodeAvailable } from '@/lib/affiliateService';
 
 export interface AffiliateData {
   id: string;
@@ -45,6 +46,8 @@ export interface AffiliateData {
   lifetime_customers?: number;
   churned_customers?: number;
   est_mrr_cents?: number;
+  code_changes_used?: number;
+  code_changes_remaining?: number;
 }
 
 export interface Conversion {
@@ -82,11 +85,15 @@ export default function AffiliateDashboardView({
   conversions,
   clicks,
   payouts,
+  onSaveCode,
 }: {
   affiliate: AffiliateData;
   conversions: Conversion[];
   clicks: Click[];
   payouts: Payout[];
+  /** Supplied only by the affiliate's own dashboard. When absent (admin
+   *  preview) the code is shown read-only, exactly as before. */
+  onSaveCode?: (code: string) => Promise<{ ok: boolean; detail?: string }>;
 }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<'overview' | 'conversions' | 'clicks' | 'payouts' | 'promote'>('overview');
@@ -515,6 +522,13 @@ export default function AffiliateDashboardView({
                 {copiedIdx === -1 ? t('common.copied') : t('affiliates.dashboard.copyLink')}
               </button>
             </div>
+            {onSaveCode && (
+              <VanityCodeEditor
+                currentCode={affiliate.affiliate_code}
+                changesRemaining={affiliate.code_changes_remaining ?? 3}
+                onSave={onSaveCode}
+              />
+            )}
           </div>
 
           {/* Swipe copy */}
@@ -543,6 +557,155 @@ export default function AffiliateDashboardView({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Lets an affiliate swap their generated code for a memorable one
+ * (e.g. "RaedeiantLife"). Availability is checked live against the API,
+ * which is the single source of truth — this only avoids obviously bad
+ * requests. Old codes keep working after a change, so nothing they've
+ * already shared breaks.
+ */
+function VanityCodeEditor({
+  currentCode,
+  changesRemaining,
+  onSave,
+}: {
+  currentCode: string;
+  changesRemaining: number;
+  onSave: (code: string) => Promise<{ ok: boolean; detail?: string }>;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(currentCode);
+  const [checking, setChecking] = useState(false);
+  const [status, setStatus] = useState<{ available: boolean; reason?: string | null } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const trimmed = value.trim();
+  const unchanged = trimmed.toLowerCase() === currentCode.toLowerCase();
+  const wellFormed = AFFILIATE_CODE_PATTERN.test(trimmed);
+  const exhausted = changesRemaining <= 0;
+
+  useEffect(() => {
+    abortRef.current?.abort();
+    setSaveError(null);
+
+    if (!open || unchanged || !wellFormed) {
+      setStatus(null);
+      setChecking(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setChecking(true);
+
+    const timer = setTimeout(async () => {
+      const res = await checkAffiliateCodeAvailable(trimmed, controller.signal);
+      if (controller.signal.aborted) return;
+      setStatus({ available: res.available, reason: res.reason });
+      setChecking(false);
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [trimmed, open, unchanged, wellFormed]);
+
+  async function save() {
+    setSaving(true);
+    setSaveError(null);
+    const res = await onSave(trimmed);
+    setSaving(false);
+    if (res.ok) {
+      setOpen(false);
+    } else {
+      setSaveError(res.detail || t('affiliates.dashboard.promote.codeSaveFailed'));
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => { setValue(currentCode); setOpen(true); }}
+        className="mt-3 text-sm text-accent-primary hover:underline"
+        disabled={exhausted}
+      >
+        {exhausted
+          ? t('affiliates.dashboard.promote.codeNoChangesLeft')
+          : t('affiliates.dashboard.promote.codeCustomize')}
+      </button>
+    );
+  }
+
+  const canSave = wellFormed && !unchanged && status?.available === true && !saving;
+
+  return (
+    <div className="mt-4 bg-bg-card border border-border-primary rounded-xl p-4">
+      <p className="text-sm text-text-secondary mb-1">
+        {t('affiliates.dashboard.promote.codeCustomizeTitle')}
+      </p>
+      <p className="text-xs text-text-muted mb-3">
+        {t('affiliates.dashboard.promote.codeCustomizeHint', { count: changesRemaining })}
+      </p>
+
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-text-muted whitespace-nowrap">aligncosmic.com/ref/</span>
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          maxLength={24}
+          spellCheck={false}
+          autoComplete="off"
+          className="flex-1 min-w-0 bg-bg-primary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary focus:border-accent-primary outline-none"
+          placeholder="RaedeiantLife"
+        />
+      </div>
+
+      <div className="min-h-[20px] mt-2 text-xs">
+        {trimmed && !wellFormed && (
+          <span className="text-red-400">{t('affiliates.dashboard.promote.codeRules')}</span>
+        )}
+        {wellFormed && unchanged && (
+          <span className="text-text-muted">{t('affiliates.dashboard.promote.codeUnchanged')}</span>
+        )}
+        {wellFormed && !unchanged && checking && (
+          <span className="text-text-muted">{t('affiliates.dashboard.promote.codeChecking')}</span>
+        )}
+        {wellFormed && !unchanged && !checking && status?.available === true && (
+          <span className="text-green-400">
+            {t('affiliates.dashboard.promote.codeAvailable', { code: trimmed })}
+          </span>
+        )}
+        {wellFormed && !unchanged && !checking && status?.available === false && (
+          <span className="text-red-400">
+            {status.reason || t('affiliates.dashboard.promote.codeTaken')}
+          </span>
+        )}
+        {saveError && <span className="text-red-400 block mt-1">{saveError}</span>}
+      </div>
+
+      <div className="flex items-center gap-2 mt-3">
+        <button onClick={save} disabled={!canSave} className="btn-primary px-4 py-2 text-sm disabled:opacity-40">
+          {saving ? t('affiliates.dashboard.promote.codeSaving') : t('affiliates.dashboard.promote.codeSave')}
+        </button>
+        <button
+          onClick={() => setOpen(false)}
+          className="px-4 py-2 text-sm text-text-muted hover:text-text-primary"
+        >
+          {t('common.cancel')}
+        </button>
+      </div>
+
+      <p className="text-xs text-text-muted mt-3">
+        {t('affiliates.dashboard.promote.codeOldLinksNote')}
+      </p>
     </div>
   );
 }
