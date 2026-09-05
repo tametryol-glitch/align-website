@@ -340,16 +340,24 @@ python -u scripts/run_world_echo_efficacy.py --stage publish`}
 
 // ── Ledger ─────────────────────────────────────────────────────────────
 
-const OUTCOMES: { id: string; label: string; icon: any; cls: string; help: string }[] = [
+const OUTCOMES: {
+  id: string; label: string; icon: any; cls: string; help: string;
+  needsClosedWindow?: boolean;
+}[] = [
   { id: 'hit', label: 'Hit', icon: CheckCircle2, cls: 'text-emerald-500 border-emerald-500/40 hover:bg-emerald-500/10',
-    help: 'The named outcome happened in the window.' },
+    help: 'What the forecast text actually named happened, in this country, in the window.' },
   { id: 'partial', label: 'Partial', icon: MinusCircle, cls: 'text-amber-500 border-amber-500/40 hover:bg-amber-500/10',
     help: 'Right pressure and place, wrong specifics. Scores as half credit.' },
   { id: 'miss', label: 'Miss', icon: XCircle, cls: 'text-red-500 border-red-500/40 hover:bg-red-500/10',
-    help: 'Nothing matching occurred.' },
+    help: 'The window closed and nothing matching the forecast occurred.',
+    needsClosedWindow: true },
   { id: 'unresolvable', label: 'Unresolvable', icon: CircleSlash, cls: 'text-text-muted border-border-primary hover:bg-bg-secondary',
-    help: 'Too vague to check. Excluded from the hit rate and counted separately.' },
+    help: 'Too vague to check either way. Excluded from the hit rate and counted separately.',
+    needsClosedWindow: true },
 ];
+
+const windowOpen = (resolvesOn?: string) =>
+  !!resolvesOn && new Date(`${resolvesOn}T23:59:59Z`) > new Date();
 
 function LedgerPanel() {
   const [entries, setEntries] = useState<any[]>([]);
@@ -439,6 +447,19 @@ function LedgerPanel() {
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm text-red-500">{err}</div>
       )}
 
+      {/* The scoring standard, stated where the scoring happens. Judging an
+          entry against its historical echo rather than its forecast text is
+          the one mistake that would quietly make this whole record worthless. */}
+      <div className="bg-bg-card border-l-2 border-accent-primary rounded-r-lg px-4 py-3">
+        <p className="text-xs text-text-tertiary leading-relaxed">
+          <span className="text-text-secondary font-medium">Score against the forecast text, not the echo.</span>{' '}
+          The historical echo is what the engine matched on — it is the input, not the claim. A hit means
+          the thing the forecast <em>named</em> happened, in that country, inside the window. If an event
+          only rhymes with the echo, that is not a hit; if the wording is too vague to be wrong, that is
+          Unresolvable, which is a finding about the forecast rather than a failure to judge it.
+        </p>
+      </div>
+
       {loading ? (
         <div className="grid place-items-center py-16 text-text-muted"><Loader2 className="w-5 h-5 animate-spin" /></div>
       ) : entries.length === 0 ? (
@@ -461,7 +482,13 @@ function LedgerPanel() {
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 text-xs text-text-muted mb-1.5 flex-wrap">
-                    <span className="font-semibold text-text-primary text-sm">{e.country_iso || 'GLOBAL'}</span>
+                    <span className="font-semibold text-text-primary text-sm">
+                      {e.country_flag ? `${e.country_flag} ` : ''}
+                      {e.country_name || e.country_iso || 'Global'}
+                    </span>
+                    {e.country_name && e.country_iso && (
+                      <span className="text-text-muted">{e.country_iso}</span>
+                    )}
                     <span>scanned {e.scan_date}</span>
                     <span>· resolves {e.resolves_on}</span>
                     <span className={`px-1.5 py-0.5 rounded border ${
@@ -510,17 +537,34 @@ function LedgerPanel() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex gap-2 flex-wrap">
-                      {OUTCOMES.map(({ id, label, icon: Icon, cls, help }) => (
-                        <button
-                          key={id}
-                          title={help}
-                          onClick={() => setConfirming({ id: e.id, outcome: id })}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${cls}`}
-                        >
-                          <Icon className="w-3.5 h-3.5 inline mr-1" /> {label}
-                        </button>
-                      ))}
+                    <div className="flex gap-2 flex-wrap items-center">
+                      {OUTCOMES.map(({ id, label, icon: Icon, cls, help, needsClosedWindow }) => {
+                        // Absence can only be judged once the window has closed;
+                        // a hit or partial rests on something that already happened.
+                        const locked = !!needsClosedWindow && windowOpen(e.resolves_on);
+                        return (
+                          <button
+                            key={id}
+                            disabled={locked}
+                            title={locked
+                              ? `Runs until ${e.resolves_on}. A ${label.toLowerCase()} cannot be established while the window is still open.`
+                              : help}
+                            onClick={() => setConfirming({ id: e.id, outcome: id })}
+                            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+                              locked
+                                ? 'text-text-muted border-border-primary opacity-40 cursor-not-allowed'
+                                : cls
+                            }`}
+                          >
+                            <Icon className="w-3.5 h-3.5 inline mr-1" /> {label}
+                          </button>
+                        );
+                      })}
+                      {windowOpen(e.resolves_on) && (
+                        <span className="text-[11px] text-text-muted">
+                          window open until {e.resolves_on}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
