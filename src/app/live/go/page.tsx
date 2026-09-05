@@ -88,6 +88,16 @@ export default function GoLivePage() {
     });
     const offSession = subscribeLiveSession(sessionId, (s) => {
       setPeakViewers(s.peak_viewers);
+
+      // A moderator can end this stream from the admin panel. Without
+      // this the host's browser keeps publishing into a dead session —
+      // the viewers are gone but the Agora meter is still running.
+      if (s.status !== 'live') {
+        setNotice('This stream was ended by a moderator.');
+        clientRef.current?.stop().catch(() => {});
+        clientRef.current = null;
+        setStage('ended');
+      }
     });
 
     return () => {
