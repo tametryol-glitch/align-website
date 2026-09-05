@@ -21,6 +21,9 @@ import {
   subscribeLiveMessages,
   subscribeLiveSession,
   type LiveSession,
+  fetchLiveAuthors,
+  authorName,
+  type LiveAuthor,
   type LiveMessage,
   type LiveViewerClient,
 } from '@/lib/liveService';
@@ -41,6 +44,7 @@ export default function LiveViewerPage() {
 
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
+  const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveViewerClient | null>(null);
@@ -131,6 +135,19 @@ export default function LiveViewerPage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Realtime inserts arrive without an author, so resolve any sender we
+  // have not seen yet and cache it. Without this, chat shows UUIDs.
+  useEffect(() => {
+    const missing = messages
+      .filter((m) => !m.profile?.display_name && !authors[m.sender_id])
+      .map((m) => m.sender_id);
+    if (missing.length === 0) return;
+    fetchLiveAuthors(missing).then((found) => {
+      if (Object.keys(found).length > 0) setAuthors((prev) => ({ ...prev, ...found }));
+    });
+  }, [messages, authors]);
+
 
   const handleSend = useCallback(async () => {
     const body = draft.trim();
@@ -232,9 +249,7 @@ export default function LiveViewerPage() {
           {messages.length === 0 && <p className="text-sm text-white/35">Say hello.</p>}
           {messages.map((m) => (
             <div key={m.id} className="text-sm leading-snug">
-              <span className="text-white/45">
-                {m.sender_id === user?.id ? 'You' : m.sender_id.slice(0, 8)}
-              </span>{' '}
+              <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
               <span className="text-white/90">{m.body}</span>
             </div>
           ))}

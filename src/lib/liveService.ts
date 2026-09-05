@@ -40,6 +40,12 @@ export interface LiveSession {
   hearts_count: number;
 }
 
+export interface LiveAuthor {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
 export interface LiveMessage {
   id: string;
   session_id: string;
@@ -48,6 +54,8 @@ export interface LiveMessage {
   kind: 'chat' | 'join' | 'gift' | 'system' | 'pinned';
   is_pinned: boolean;
   created_at: string;
+  // Present on history loaded via the join; absent on realtime inserts.
+  profile?: { display_name: string | null; avatar_url: string | null } | null;
 }
 
 export interface LiveTokenResult {
@@ -249,13 +257,52 @@ export async function loadRecentMessages(sessionId: string, limit = 50): Promise
   const supabase = createClient();
   const { data, error } = await supabase
     .from('live_messages')
-    .select('*')
+    .select('*, profile:profiles!live_messages_sender_id_fkey(display_name, avatar_url)')
     .eq('session_id', sessionId)
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw new Error(error.message);
   // Query descending for the index, render ascending.
   return ((data as LiveMessage[]) || []).reverse();
+}
+
+/**
+ * Resolve display names for chat authors.
+ *
+ * Realtime INSERT payloads carry the raw row and nothing else — no
+ * joins — so a message arriving over the socket has no author attached.
+ * Callers keep a cache and ask for the ids they have not seen yet;
+ * without this, live chat renders raw UUID fragments at people.
+ */
+export async function fetchLiveAuthors(ids: string[]): Promise<Record<string, LiveAuthor>> {
+  const unique = Array.from(new Set(ids.filter(Boolean)));
+  if (unique.length === 0) return {};
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, display_name, avatar_url')
+    .in('id', unique);
+
+  if (error) return {};
+
+  const map: Record<string, LiveAuthor> = {};
+  for (const row of (data as LiveAuthor[]) || []) map[row.id] = row;
+  return map;
+}
+
+/** Best display name for a chat line, falling back only as a last resort. */
+export function authorName(
+  msg: LiveMessage,
+  authors: Record<string, LiveAuthor>,
+  selfId?: string | null,
+): string {
+  if (selfId && msg.sender_id === selfId) return 'You';
+  return (
+    msg.profile?.display_name ||
+    authors[msg.sender_id]?.display_name ||
+    'Guest'
+  );
 }
 
 /** Subscribe to new chat messages. Returns an unsubscribe function. */
