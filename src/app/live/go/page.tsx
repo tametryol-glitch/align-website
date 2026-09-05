@@ -32,7 +32,17 @@ import {
   type LiveVisibility,
   type LiveDevices,
 } from '@/lib/liveService';
-import type { LiveBackgroundOptions, LiveBackgroundMode } from '@/lib/liveBackground';
+import {
+  PIP_SCALE_MIN,
+  PIP_SCALE_MAX,
+  SPLIT_RATIO_MIN,
+  SPLIT_RATIO_MAX,
+  screenShareSupported,
+  type LiveBackgroundOptions,
+  type LiveBackgroundMode,
+  type LiveLayout,
+  type PipCorner,
+} from '@/lib/liveBackground';
 import {
   Mic,
   MicOff,
@@ -46,6 +56,13 @@ import {
   Radio,
   ImagePlus,
   Sparkles,
+  MonitorUp,
+  Camera,
+  Columns2,
+  PictureInPicture2,
+  Repeat,
+  Square,
+  X,
 } from 'lucide-react';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
@@ -78,6 +95,15 @@ export default function GoLivePage() {
   const [bgImageUrl, setBgImageUrl] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+
+  // Multi-source stage
+  const [hasSecond, setHasSecond] = useState(false);
+  const [layout, setLayout] = useState<LiveLayout>('solo');
+  const [pipScale, setPipScale] = useState(0.28);
+  const [pipCorner, setPipCorner] = useState<PipCorner>('br');
+  const [splitRatio, setSplitRatio] = useState(0.5);
+  const [showStage, setShowStage] = useState(false);
+  const [busySource, setBusySource] = useState(false);
 
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
@@ -126,16 +152,30 @@ export default function GoLivePage() {
   }, [stage]);
 
   // ── Local preview ────────────────────────────────────────────────
-  // Attach here rather than at publish time. The stage container only
-  // exists once stage === 'live', so playing the track any earlier is a
-  // no-op against a null ref — which shows the host a black rectangle
-  // while their camera is in fact publishing perfectly well.
-  // Re-runs on cameraOff so toggling the camera back on re-attaches.
+  // Every path that can change what is being published funnels through
+  // here. The preview binds to a specific track object, so switching
+  // camera, changing background, or altering the layout all replace it
+  // — and without a re-attach the element keeps rendering a dead track,
+  // which looks exactly like a broken camera.
+  const attachPreview = useCallback((track?: any | null) => {
+    const el = videoRef.current;
+    if (!el) return;
+    const t = track ?? clientRef.current?.getLocalVideoTrack();
+    if (!t) return;
+    el.innerHTML = '';
+    try {
+      t.play(el);
+    } catch {
+      /* a track mid-swap can refuse; the next change re-attaches */
+    }
+  }, []);
+
+  // The stage container only exists once stage === 'live', so attaching
+  // any earlier is a no-op against a null ref.
   useEffect(() => {
     if (stage !== 'live' || cameraOff) return;
-    const track = clientRef.current?.getLocalVideoTrack();
-    if (track && videoRef.current) track.play(videoRef.current);
-  }, [stage, cameraOff]);
+    attachPreview();
+  }, [stage, cameraOff, attachPreview]);
 
   // ── Chat + session subscriptions ─────────────────────────────────
   useEffect(() => {
@@ -216,6 +256,8 @@ export default function GoLivePage() {
         microphoneId: micId || null,
         background,
       });
+      // Re-bind the preview whenever the published track is replaced.
+      client.onVideoTrackChanged((track) => attachPreview(track));
       client.onError((message) => setNotice(message));
       clientRef.current = client;
 
@@ -243,7 +285,7 @@ export default function GoLivePage() {
       await clientRef.current?.stop().catch(() => {});
       clientRef.current = null;
     }
-  }, [title, visibility, coverUrl, cameraId, micId, bgMode, bgImageUrl]);
+  }, [title, visibility, coverUrl, cameraId, micId, bgMode, bgImageUrl, attachPreview]);
 
   // ── End ──────────────────────────────────────────────────────────
   const handleEnd = useCallback(async () => {
@@ -311,6 +353,57 @@ export default function GoLivePage() {
     [stage, bgImageUrl],
   );
 
+  // ── Stage controls ───────────────────────────────────────────────
+  const pushStage = useCallback(
+    async (next: Partial<{
+      layout: LiveLayout;
+      pipScale: number;
+      pipCorner: PipCorner;
+      splitRatio: number;
+      swapped: boolean;
+    }>) => {
+      try {
+        await clientRef.current?.setStage(next);
+      } catch (err: any) {
+        setNotice(err?.message || 'Could not change the layout.');
+      }
+    },
+    [],
+  );
+
+  const addSource = useCallback(
+    async (kind: 'camera' | 'screen') => {
+      setBusySource(true);
+      setNotice(null);
+      try {
+        // Prefer a camera that is not the one already live, so the two
+        // views are actually different.
+        const secondCam = devices.cameras.find((d) => d.deviceId !== cameraId);
+        await clientRef.current?.addSecondarySource(
+          kind,
+          kind === 'camera' ? secondCam?.deviceId : undefined,
+        );
+        const nowHas = clientRef.current?.hasSecondarySource() ?? false;
+        setHasSecond(nowHas);
+        if (nowHas) setLayout('pip');
+      } finally {
+        setBusySource(false);
+      }
+    },
+    [devices.cameras, cameraId],
+  );
+
+  const dropSource = useCallback(async () => {
+    setBusySource(true);
+    try {
+      await clientRef.current?.removeSecondarySource();
+      setHasSecond(false);
+      setLayout('solo');
+    } finally {
+      setBusySource(false);
+    }
+  }, []);
+
   const fmt = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
@@ -339,7 +432,7 @@ export default function GoLivePage() {
             value={visibility}
             onChange={(e) => setVisibility(e.target.value as LiveVisibility)}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 mb-6
-                       text-white focus:outline-none focus:border-red-500/60"
+                       text-white focus:outline-none focus:border-red-500/60 [&>option]:bg-neutral-900 [&>option]:text-white"
           >
             <option value="public">Everyone</option>
             <option value="followers">Friends only</option>
@@ -389,7 +482,7 @@ export default function GoLivePage() {
             value={cameraId}
             onChange={(e) => setCameraId(e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 mb-5
-                       text-white focus:outline-none focus:border-red-500/60"
+                       text-white focus:outline-none focus:border-red-500/60 [&>option]:bg-neutral-900 [&>option]:text-white"
           >
             {devices.cameras.length === 0 && <option value="">No camera found</option>}
             {devices.cameras.map((d) => (
@@ -405,7 +498,7 @@ export default function GoLivePage() {
             value={micId}
             onChange={(e) => setMicId(e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 mb-5
-                       text-white focus:outline-none focus:border-red-500/60"
+                       text-white focus:outline-none focus:border-red-500/60 [&>option]:bg-neutral-900 [&>option]:text-white"
           >
             {devices.microphones.length === 0 && <option value="">No microphone found</option>}
             {devices.microphones.map((d) => (
@@ -559,6 +652,167 @@ export default function GoLivePage() {
           </div>
         )}
 
+        {/* Views & layout */}
+        {showStage && (
+          <div className="absolute bottom-24 inset-x-0 px-5">
+            <div className="mx-auto max-w-md bg-black/80 backdrop-blur border border-white/10
+                            rounded-xl p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-white/80">Views</span>
+                <button
+                  onClick={() => setShowStage(false)}
+                  aria-label="Close"
+                  className="text-white/40 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Second source */}
+              {!hasSecond ? (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => addSource('camera')}
+                    disabled={busySource || devices.cameras.length < 2}
+                    title={
+                      devices.cameras.length < 2
+                        ? 'Only one camera detected'
+                        : 'Add a second camera'
+                    }
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm
+                               bg-white/10 hover:bg-white/20 disabled:opacity-40"
+                  >
+                    <Camera className="w-4 h-4" /> 2nd camera
+                  </button>
+                  <button
+                    onClick={() => addSource('screen')}
+                    disabled={busySource || !screenShareSupported()}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm
+                               bg-white/10 hover:bg-white/20 disabled:opacity-40"
+                  >
+                    <MonitorUp className="w-4 h-4" /> Share screen
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Layout */}
+                  <div className="flex gap-2">
+                    {([
+                      { key: 'solo', label: 'Single', Icon: Square },
+                      { key: 'pip', label: 'Inset', Icon: PictureInPicture2 },
+                      { key: 'split', label: 'Split', Icon: Columns2 },
+                    ] as const).map(({ key, label, Icon }) => (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          setLayout(key);
+                          pushStage({ layout: key });
+                        }}
+                        className={`flex-1 flex flex-col items-center gap-1 rounded-lg py-2.5 text-xs border ${
+                          layout === key
+                            ? 'bg-white/20 border-white/30 text-white'
+                            : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Size */}
+                  {layout === 'pip' && (
+                    <div>
+                      <div className="flex justify-between text-xs text-white/50 mb-1">
+                        <span>Inset size</span>
+                        <span className="tabular-nums">{Math.round(pipScale * 100)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={PIP_SCALE_MIN * 100}
+                        max={PIP_SCALE_MAX * 100}
+                        value={Math.round(pipScale * 100)}
+                        onChange={(e) => {
+                          const v = Number(e.target.value) / 100;
+                          setPipScale(v);
+                          pushStage({ pipScale: v });
+                        }}
+                        className="w-full accent-red-500"
+                      />
+                      <div className="flex gap-1.5 mt-2">
+                        {([
+                          { key: 'tl', label: 'Top left' },
+                          { key: 'tr', label: 'Top right' },
+                          { key: 'bl', label: 'Bottom left' },
+                          { key: 'br', label: 'Bottom right' },
+                        ] as const).map((c) => (
+                          <button
+                            key={c.key}
+                            onClick={() => {
+                              setPipCorner(c.key);
+                              pushStage({ pipCorner: c.key });
+                            }}
+                            className={`flex-1 rounded py-1.5 text-[11px] ${
+                              pipCorner === c.key
+                                ? 'bg-white/20 text-white'
+                                : 'bg-white/5 text-white/50 hover:text-white'
+                            }`}
+                          >
+                            {c.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {layout === 'split' && (
+                    <div>
+                      <div className="flex justify-between text-xs text-white/50 mb-1">
+                        <span>Balance</span>
+                        <span className="tabular-nums">
+                          {Math.round(splitRatio * 100)} / {100 - Math.round(splitRatio * 100)}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={SPLIT_RATIO_MIN * 100}
+                        max={SPLIT_RATIO_MAX * 100}
+                        value={Math.round(splitRatio * 100)}
+                        onChange={(e) => {
+                          const v = Number(e.target.value) / 100;
+                          setSplitRatio(v);
+                          pushStage({ splitRatio: v });
+                        }}
+                        className="w-full accent-red-500"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() =>
+                        pushStage({ swapped: !(clientRef.current?.getStage().swapped ?? false) })
+                      }
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm
+                                 bg-white/10 hover:bg-white/20"
+                    >
+                      <Repeat className="w-4 h-4" /> Swap
+                    </button>
+                    <button
+                      onClick={dropSource}
+                      disabled={busySource}
+                      className="flex-1 rounded-lg py-2.5 text-sm bg-white/10 hover:bg-white/20
+                                 text-red-300 disabled:opacity-40"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Controls */}
         <div className="absolute bottom-0 inset-x-0 p-5 flex items-center justify-center gap-3
                         bg-gradient-to-t from-black/70 to-transparent">
@@ -597,6 +851,16 @@ export default function GoLivePage() {
             }`}
           >
             <Sparkles className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setShowStage((v) => !v)}
+            aria-label="Views and layout"
+            title="Views and layout"
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              hasSecond ? 'bg-white/25 hover:bg-white/35' : 'bg-white/10 hover:bg-white/20'
+            }`}
+          >
+            <Columns2 className="w-5 h-5" />
           </button>
         </div>
       </div>

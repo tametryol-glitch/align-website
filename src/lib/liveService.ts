@@ -15,8 +15,10 @@
 
 import { createClient } from '@/lib/supabase';
 import {
-  LiveBackgroundProcessor,
+  LiveStageCompositor,
+  DEFAULT_STAGE,
   type LiveBackgroundOptions,
+  type LiveStageOptions,
 } from '@/lib/liveBackground';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -447,6 +449,8 @@ export interface LiveHostOptions {
   background?: LiveBackgroundOptions;
 }
 
+export type SecondarySourceKind = 'camera' | 'screen';
+
 export interface LiveHostClient {
   start(sessionId: string): Promise<void>;
   stop(): Promise<void>;
@@ -459,8 +463,25 @@ export interface LiveHostClient {
   setMicrophone(deviceId: string): Promise<void>;
   /** Change or clear the background without interrupting the stream. */
   setBackground(options: LiveBackgroundOptions): Promise<void>;
+  /**
+   * Add a second view — another camera, or a shared screen. Both are
+   * composited into the one published track, so a second source costs
+   * the audience nothing extra.
+   */
+  addSecondarySource(kind: SecondarySourceKind, deviceId?: string): Promise<void>;
+  removeSecondarySource(): Promise<void>;
+  hasSecondarySource(): boolean;
+  /** Layout, inset size, split ratio, corner, and which source leads. */
+  setStage(options: Partial<LiveStageOptions>): Promise<void>;
+  getStage(): LiveStageOptions;
   getLocalVideoTrack(): any | null;
   onError(cb: (message: string) => void): void;
+  /**
+   * Fired whenever the published video track is replaced. The local
+   * preview is bound to a specific track object, so without this it
+   * keeps rendering a track that is no longer being published.
+   */
+  onVideoTrackChanged(cb: (track: any | null) => void): void;
 }
 
 export interface LiveViewerClient {
@@ -490,11 +511,23 @@ export async function createLiveHostClient(
   // What is actually published: either cameraTrack, or a custom track
   // carrying the processed canvas.
   let publishedVideo: any = null;
-  let processor: LiveBackgroundProcessor | null = null;
+  let processor: LiveStageCompositor | null = null;
+  // Held so it can be stopped on teardown; a shared screen keeps the
+  // browser's "you are sharing" bar up until its track is stopped.
+  let secondaryTrack: MediaStreamTrack | null = null;
 
   let errorCb: ((m: string) => void) | null = null;
+  let videoChangedCb: ((track: any | null) => void) | null = null;
   let currentSessionId: string | null = null;
-  let background: LiveBackgroundOptions = opts.background ?? { mode: 'none' };
+  let stage: LiveStageOptions = {
+    ...DEFAULT_STAGE,
+    background: opts.background ?? { mode: 'none' },
+  };
+
+  /** Compositing is needed for a background OR a second source. */
+  function needsCompositor(): boolean {
+    return stage.background.mode !== 'none' || secondaryTrack !== null;
+  }
 
   const encoderConfig = {
     width: { ideal: MAX_PUBLISH_WIDTH, max: MAX_PUBLISH_WIDTH },
@@ -509,14 +542,13 @@ export async function createLiveHostClient(
    * missing background is a cosmetic loss and a dead stream is not.
    */
   async function buildVideoTrack(): Promise<any> {
-    if (background.mode === 'none' || !cameraTrack) return cameraTrack;
+    if (!cameraTrack) return null;
+    if (!needsCompositor()) return cameraTrack;
 
     try {
       processor?.stop();
-      processor = new LiveBackgroundProcessor(
-        cameraTrack.getMediaStreamTrack(),
-        background,
-      );
+      processor = new LiveStageCompositor(cameraTrack.getMediaStreamTrack(), stage);
+      if (secondaryTrack) await processor.setSecondary(secondaryTrack);
       const processed = await processor.start();
       return AgoraRTC.createCustomVideoTrack({
         mediaStreamTrack: processed,
@@ -525,9 +557,68 @@ export async function createLiveHostClient(
     } catch (err: any) {
       processor?.stop();
       processor = null;
-      errorCb?.(`Background effect unavailable: ${err?.message || 'not supported here'}`);
+      errorCb?.(`Effects unavailable: ${err?.message || 'not supported here'}`);
       return cameraTrack;
     }
+  }
+
+  /**
+   * Swap the published video track in place. Needed whenever the
+   * pipeline shape changes - plain camera to composited or back - which
+   * is the only time a republish is unavoidable.
+   */
+  async function republishVideo(): Promise<void> {
+    if (!cameraTrack) return;
+    const previous = publishedVideo;
+    const rebuilt = await buildVideoTrack();
+
+    if (previous) await client.unpublish([previous]);
+    if (previous && previous !== cameraTrack) {
+      previous.stop();
+      previous.close();
+    }
+    if (!needsCompositor()) {
+      processor?.stop();
+      processor = null;
+    }
+    publishedVideo = rebuilt;
+    if (publishedVideo) await client.publish([publishedVideo]);
+    // The preview holds the previous track object; tell it to re-bind.
+    videoChangedCb?.(publishedVideo);
+  }
+
+  async function attachSecondary(
+    kind: SecondarySourceKind,
+    deviceId: string | undefined,
+    onEnded: () => void,
+  ): Promise<boolean> {
+    try {
+      if (kind === 'screen') {
+        const display = await (navigator.mediaDevices as any).getDisplayMedia({
+          video: { frameRate: PUBLISH_FRAMERATE },
+          audio: false,
+        });
+        secondaryTrack = display.getVideoTracks()[0] ?? null;
+        // The browser's own "Stop sharing" button ends the track without
+        // telling us, so listen for it or the layout keeps showing a
+        // frozen final frame forever.
+        secondaryTrack?.addEventListener('ended', onEnded);
+      } else {
+        const media = await navigator.mediaDevices.getUserMedia({
+          video: deviceId ? { deviceId: { exact: deviceId } } : true,
+          audio: false,
+        });
+        secondaryTrack = media.getVideoTracks()[0] ?? null;
+      }
+    } catch (err: any) {
+      errorCb?.(
+        kind === 'screen'
+          ? 'Screen share was cancelled or is unavailable.'
+          : 'Could not open that camera. Some machines cannot run two cameras at once.',
+      );
+      return false;
+    }
+    return secondaryTrack !== null;
   }
 
   /** setDevice keeps the same track object, so a processor reading from
@@ -535,6 +626,42 @@ export async function createLiveHostClient(
   async function applyCamera(deviceId: string): Promise<void> {
     if (!cameraTrack) return;
     await cameraTrack.setDevice(deviceId);
+    // setDevice hands back a different underlying MediaStreamTrack, so
+    // a running compositor must be re-pointed at it or it keeps reading
+    // the old, now-ended one and renders black.
+    if (processor) {
+      await processor.setPrimary(cameraTrack.getMediaStreamTrack());
+    } else {
+      // Not compositing: the preview is bound to the Agora track, which
+      // survives setDevice - but re-announce so callers can re-attach
+      // defensively.
+      videoChangedCb?.(publishedVideo);
+    }
+  }
+
+  async function applyStage(next: Partial<LiveStageOptions>): Promise<void> {
+    const wasCompositing = needsCompositor();
+    stage = { ...stage, ...next };
+
+    // Same pipeline shape: retune the running compositor. No republish,
+    // so viewers see the change without a flicker.
+    if (wasCompositing && needsCompositor() && processor) {
+      await processor.setOptions(stage);
+      return;
+    }
+    await republishVideo();
+  }
+
+  async function removeSecondary(): Promise<void> {
+    secondaryTrack?.stop();
+    secondaryTrack = null;
+    stage = { ...stage, layout: 'solo', swapped: false };
+    if (processor && needsCompositor()) {
+      await processor.setSecondary(null);
+      await processor.setOptions(stage);
+      return;
+    }
+    await republishVideo();
   }
 
   return {
@@ -570,11 +697,13 @@ export async function createLiveHostClient(
 
       const toPublish = [audioTrack, publishedVideo].filter(Boolean);
       await client.publish(toPublish);
+      videoChangedCb?.(publishedVideo);
     },
 
     async stop() {
       try {
         processor?.stop();
+        secondaryTrack?.stop();
         audioTrack?.stop();
         audioTrack?.close();
         if (publishedVideo && publishedVideo !== cameraTrack) {
@@ -586,6 +715,7 @@ export async function createLiveHostClient(
         await client.leave();
       } finally {
         processor = null;
+        secondaryTrack = null;
         audioTrack = null;
         cameraTrack = null;
         publishedVideo = null;
@@ -626,34 +756,40 @@ export async function createLiveHostClient(
     },
 
     async setBackground(next: LiveBackgroundOptions) {
-      const wasProcessed = background.mode !== 'none';
-      const willProcess = next.mode !== 'none';
-      background = next;
+      await applyStage({ background: next });
+    },
 
-      // Same pipeline shape: just retune the running processor. No
-      // republish, so viewers see the change without a flicker.
-      if (wasProcessed && willProcess && processor) {
-        await processor.setOptions(next);
+    async setStage(next: Partial<LiveStageOptions>) {
+      await applyStage(next);
+    },
+
+    getStage() {
+      return processor ? processor.getOptions() : { ...stage };
+    },
+
+    async addSecondarySource(kind: SecondarySourceKind, deviceId?: string) {
+      const ok = await attachSecondary(kind, deviceId, () => {
+        void removeSecondary();
+      });
+      if (!ok) return;
+
+      // Give it somewhere to show, rather than adding an invisible source.
+      if (stage.layout === 'solo') stage = { ...stage, layout: 'pip' };
+
+      if (processor) {
+        await processor.setSecondary(secondaryTrack);
+        await processor.setOptions(stage);
         return;
       }
-      if (!cameraTrack) return;
+      await republishVideo();
+    },
 
-      // Shape changed (on→off or off→on): swap the published track.
-      const previous = publishedVideo;
-      const rebuilt = await buildVideoTrack();
+    async removeSecondarySource() {
+      await removeSecondary();
+    },
 
-      if (previous) await client.unpublish([previous]);
-      if (previous && previous !== cameraTrack) {
-        previous.stop();
-        previous.close();
-      }
-      if (!willProcess) {
-        processor?.stop();
-        processor = null;
-      }
-
-      publishedVideo = rebuilt;
-      if (publishedVideo) await client.publish([publishedVideo]);
+    hasSecondarySource() {
+      return secondaryTrack !== null;
     },
 
     getLocalVideoTrack() {
@@ -662,6 +798,10 @@ export async function createLiveHostClient(
 
     onError(cb) {
       errorCb = cb;
+    },
+
+    onVideoTrackChanged(cb) {
+      videoChangedCb = cb;
     },
   };
 }
