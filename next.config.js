@@ -49,13 +49,13 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          // Delegate the media features the embedded YouTube and TikTok players
-          // need to their own origins. Without this, a present Permissions-Policy
-          // makes these default to "self only", so the cross-origin iframe is
-          // denied encrypted-media/autoplay/etc. — YouTube fails outright with
-          // "Video player configuration error (153)", and the TikTok embed loses
-          // autoplay + fullscreen.
-          { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(self), camera=(self), autoplay=(self "https://www.youtube.com" "https://www.tiktok.com"), encrypted-media=(self "https://www.youtube.com" "https://www.tiktok.com"), fullscreen=(self "https://www.youtube.com" "https://www.tiktok.com"), picture-in-picture=(self "https://www.youtube.com" "https://www.tiktok.com")' },
+          // Delegate the media features the embedded YouTube, TikTok, Instagram
+          // and Facebook players need to their own origins. Without this, a
+          // present Permissions-Policy makes these default to "self only", so the
+          // cross-origin iframe is denied encrypted-media/autoplay/etc. — YouTube
+          // fails outright with "Video player configuration error (153)", and the
+          // other three lose autoplay + fullscreen.
+          { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(self), camera=(self), autoplay=(self "https://www.youtube.com" "https://www.tiktok.com" "https://www.instagram.com" "https://www.facebook.com"), encrypted-media=(self "https://www.youtube.com" "https://www.tiktok.com" "https://www.instagram.com" "https://www.facebook.com"), fullscreen=(self "https://www.youtube.com" "https://www.tiktok.com" "https://www.instagram.com" "https://www.facebook.com"), picture-in-picture=(self "https://www.youtube.com" "https://www.tiktok.com" "https://www.instagram.com" "https://www.facebook.com")' },
           { key: 'X-DNS-Prefetch-Control', value: 'on' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           {
@@ -72,7 +72,7 @@ const nextConfig = {
               // blocks every Agora connection, so the web client can never join
               // the channel — voice/video calls to/from the app never connect.
               "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com https://dev.virtualearth.net https://*.virtualearth.net https://basemaps.cartocdn.com https://*.cartocdn.com https://*.agora.io wss://*.agora.io https://*.sd-rtn.com wss://*.sd-rtn.com https://*.agoraio.cn wss://*.agoraio.cn",
-              "frame-src 'self' blob: https://www.youtube.com https://www.tiktok.com https://js.stripe.com",
+              "frame-src 'self' blob: https://www.youtube.com https://www.tiktok.com https://www.instagram.com https://www.facebook.com https://js.stripe.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",

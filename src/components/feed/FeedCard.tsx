@@ -376,6 +376,234 @@ function TikTokEmbed({ videoId, url }: { videoId: string | null; url: string }) 
   );
 }
 
+// ── Instagram / Facebook URL Detection ────────────────────────────
+
+// Posts, reels and IGTV, with or without the leading /<username>/ segment, plus
+// the /share/<code> links Instagram's own share sheet produces.
+const INSTAGRAM_ANY_REGEX =
+  /(?:https?:\/\/)?(?:www\.)?instagr(?:am\.com|\.am)\/(?:[\w.]+\/)?(?:p|reel|reels|tv|share)\/[\w-]+\/?(?:\?\S*)?/gi;
+
+// Every shape Facebook's share sheet and address bar produce: page videos
+// (with or without a slug), reels, /watch?v=, photos, posts, permalinks, the
+// /share/<kind>/<code> links the mobile app copies, and fb.watch short links.
+const FACEBOOK_ANY_REGEX =
+  /(?:https?:\/\/)?(?:(?:www\.|m\.|web\.|mbasic\.)?facebook\.com\/(?:watch\/?\?v=\d+|reels?\/\d+|share\/[a-z]\/[\w-]+|video\.php\?v=\d+|photo\/?\?fbid=\d+|(?:story|permalink)\.php\?\S+|[\w.-]+\/(?:videos|posts|photos)\/\S*)|fb\.watch\/[\w-]+)\/?/gi;
+
+function extractAllMatches(regex: RegExp, text: string): string[] {
+  const urls: string[] = [];
+  regex.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(text)) !== null) {
+    if (!urls.includes(m[0])) urls.push(m[0]);
+  }
+  return urls;
+}
+
+function extractAllInstagramUrls(text: string): string[] {
+  return extractAllMatches(INSTAGRAM_ANY_REGEX, text);
+}
+
+function extractAllFacebookUrls(text: string): string[] {
+  return extractAllMatches(FACEBOOK_ANY_REGEX, text);
+}
+
+function containsInstagramUrl(text: string): boolean {
+  INSTAGRAM_ANY_REGEX.lastIndex = 0;
+  return INSTAGRAM_ANY_REGEX.test(text);
+}
+
+function containsFacebookUrl(text: string): boolean {
+  FACEBOOK_ANY_REGEX.lastIndex = 0;
+  return FACEBOOK_ANY_REGEX.test(text);
+}
+
+function stripInstagramUrls(text: string): string {
+  return text.replace(INSTAGRAM_ANY_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+}
+
+function stripFacebookUrls(text: string): string {
+  return text.replace(FACEBOOK_ANY_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+}
+
+// Meta killed the token-free oEmbed endpoints in 2020, so the poster frame has
+// to be scraped from the post's OpenGraph tags — which Instagram only emits to
+// a crawler user agent, never to a browser. /api/meta-preview does that server
+// side; this cache keeps a feed full of these links from re-fetching on scroll.
+interface MetaPreview {
+  postId: string | null;
+  embedUrl: string | null;
+  thumbnail: string | null;
+  title: string | null;
+  authorName: string | null;
+}
+
+const metaPreviewCache = new Map<string, MetaPreview | null>();
+
+function useMetaPreview(url: string) {
+  const [preview, setPreview] = useState<MetaPreview | null>(
+    () => metaPreviewCache.get(url) ?? null,
+  );
+  const [loading, setLoading] = useState(() => !metaPreviewCache.has(url));
+
+  useEffect(() => {
+    if (metaPreviewCache.has(url)) {
+      setPreview(metaPreviewCache.get(url) ?? null);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    fetch(`/api/meta-preview?url=${encodeURIComponent(url)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const result: MetaPreview | null = data && !data.error
+          ? {
+              postId: data.postId ?? null,
+              embedUrl: data.embedUrl ?? null,
+              thumbnail: data.thumbnail ?? null,
+              title: data.title ?? null,
+              authorName: data.authorName ?? null,
+            }
+          : null;
+        metaPreviewCache.set(url, result);
+        if (!cancelled) setPreview(result);
+      })
+      .catch(() => {
+        metaPreviewCache.set(url, null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [url]);
+
+  return { preview, loading };
+}
+
+const META_BRANDS = {
+  instagram: {
+    label: 'Instagram',
+    accent: '#D6249F',
+    placeholder: '#12060F',
+    // The /embed/ page is header + media + action bar; 4:5 is the tallest
+    // media Instagram allows, so the box fits a portrait post without cropping.
+    style: { aspectRatio: '4/5', maxHeight: 560 } as CSSProperties,
+    handlePrefix: '@',
+    playLabel: 'Tap to view',
+    openLabel: 'Open on Instagram',
+  },
+  facebook: {
+    label: 'Facebook',
+    accent: '#1877F2',
+    placeholder: '#0A1428',
+    style: { aspectRatio: '16/9', maxHeight: 420 } as CSSProperties,
+    handlePrefix: '',
+    playLabel: 'Tap to play',
+    openLabel: 'Open on Facebook',
+  },
+} as const;
+
+/**
+ * One card for both Meta platforms: they share a resolver and differ only in
+ * branding and shape. Like the YouTube and TikTok cards, this ALWAYS renders a
+ * preview — a post that can't be resolved still shows a branded card that links
+ * out, never an empty placeholder.
+ */
+function MetaEmbed({ platform, url }: { platform: keyof typeof META_BRANDS; url: string }) {
+  const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+  const { preview, loading } = useMetaPreview(fullUrl);
+  const [playing, setPlaying] = useState(false);
+  const brand = META_BRANDS[platform];
+
+  if (playing && preview?.embedUrl) {
+    return (
+      <div className="relative w-full rounded-xl overflow-hidden bg-black" style={brand.style}>
+        <iframe
+          src={preview.embedUrl}
+          title={preview.title || `${brand.label} post`}
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          allowFullScreen
+          scrolling="no"
+          className="absolute inset-0 w-full h-full border-0"
+        />
+      </div>
+    );
+  }
+
+  const cardClass = 'relative block w-full rounded-xl overflow-hidden bg-black text-left';
+
+  const cardInner = (
+    <>
+      {preview?.thumbnail ? (
+        <img
+          src={preview.thumbnail}
+          alt={preview.title || `${brand.label} post`}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <span className="absolute inset-0" style={{ background: brand.placeholder }} />
+      )}
+
+      <span className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+
+      <span className="absolute top-3 left-3 text-xs font-bold text-white bg-black/60 px-2 py-1 rounded">
+        {brand.label}
+      </span>
+
+      <span className="absolute inset-0 flex items-center justify-center">
+        {loading ? (
+          <Loader2 className="w-8 h-8 text-white/70 animate-spin" />
+        ) : (
+          <span
+            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl text-white pl-1"
+            style={{ background: `${brand.accent}E6` }}
+          >
+            ▶
+          </span>
+        )}
+      </span>
+
+      {(preview?.authorName || preview?.title) ? (
+        <span className="absolute bottom-0 left-0 right-0 p-3">
+          {preview?.authorName && (
+            <span className="block text-sm font-semibold text-white truncate">
+              {brand.handlePrefix}{preview.authorName}
+            </span>
+          )}
+          {preview?.title && (
+            <span className="block text-xs text-white/70 line-clamp-2 mt-0.5">
+              {preview.title}
+            </span>
+          )}
+        </span>
+      ) : (
+        !loading && (
+          <span className="absolute bottom-3 left-0 right-0 text-center text-xs text-white/60">
+            {preview?.embedUrl ? brand.playLabel : brand.openLabel}
+          </span>
+        )
+      )}
+    </>
+  );
+
+  // An embed URL is only handed back for a post that actually resolved; without
+  // one (private / removed / friends-only) the card is just a link out.
+  if (preview?.embedUrl) {
+    return (
+      <button type="button" onClick={() => setPlaying(true)} className={cardClass} style={brand.style}>
+        {cardInner}
+      </button>
+    );
+  }
+
+  return (
+    <a href={fullUrl} target="_blank" rel="noopener noreferrer" className={cardClass} style={brand.style}>
+      {cardInner}
+    </a>
+  );
+}
+
 export function isGifOrStickerUrl(text: string): boolean {
   const trimmed = text.trim();
   return (
@@ -618,9 +846,13 @@ export function FeedCard({
         const youtubeUrls = extractYouTubeUrls(post.content);
         const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
         const tiktokMatches = extractAllTikTokMatches(post.content);
+        const instagramUrls = extractAllInstagramUrls(post.content);
+        const facebookUrls = extractAllFacebookUrls(post.content);
         let displayText = post.content;
         if (youtubeIds.length > 0) displayText = displayText.replace(YOUTUBE_REGEX, '').trim();
         if (tiktokMatches.length > 0) displayText = stripTikTokUrls(displayText);
+        if (instagramUrls.length > 0) displayText = stripInstagramUrls(displayText);
+        if (facebookUrls.length > 0) displayText = stripFacebookUrls(displayText);
 
         return (
           <>
@@ -639,6 +871,16 @@ export function FeedCard({
             {tiktokMatches.map((tt, i) => (
               <div key={tt.url + i} className="px-5 pb-3">
                 <TikTokEmbed videoId={tt.videoId} url={tt.url} />
+              </div>
+            ))}
+            {instagramUrls.map((ig, i) => (
+              <div key={ig + i} className="px-5 pb-3">
+                <MetaEmbed platform="instagram" url={ig} />
+              </div>
+            ))}
+            {facebookUrls.map((fb, i) => (
+              <div key={fb + i} className="px-5 pb-3">
+                <MetaEmbed platform="facebook" url={fb} />
               </div>
             ))}
           </>
@@ -669,6 +911,20 @@ export function FeedCard({
           return (
             <div className="px-5 pb-3">
               <TikTokEmbed videoId={vidTtId} url={post.videoUrl} />
+            </div>
+          );
+        }
+        if (containsInstagramUrl(post.videoUrl)) {
+          return (
+            <div className="px-5 pb-3">
+              <MetaEmbed platform="instagram" url={post.videoUrl} />
+            </div>
+          );
+        }
+        if (containsFacebookUrl(post.videoUrl)) {
+          return (
+            <div className="px-5 pb-3">
+              <MetaEmbed platform="facebook" url={post.videoUrl} />
             </div>
           );
         }
