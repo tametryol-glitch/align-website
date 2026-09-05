@@ -17,6 +17,9 @@ import {
   startLiveSession,
   endLiveSession,
   createLiveHostClient,
+  listMediaDevices,
+  primeDevicePermissions,
+  uploadLiveCover,
   sendLiveMessage,
   loadRecentMessages,
   subscribeLiveMessages,
@@ -27,7 +30,9 @@ import {
   type LiveAuthor,
   type LiveMessage,
   type LiveVisibility,
+  type LiveDevices,
 } from '@/lib/liveService';
+import type { LiveBackgroundOptions, LiveBackgroundMode } from '@/lib/liveBackground';
 import {
   Mic,
   MicOff,
@@ -39,6 +44,8 @@ import {
   Loader2,
   AlertCircle,
   Radio,
+  ImagePlus,
+  Sparkles,
 } from 'lucide-react';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
@@ -61,6 +68,17 @@ export default function GoLivePage() {
   const [muted, setMuted] = useState(false);
   const [cameraOff, setCameraOff] = useState(false);
 
+  // Pre-live setup
+  const [devices, setDevices] = useState<LiveDevices>({ cameras: [], microphones: [] });
+  const [cameraId, setCameraId] = useState<string>('');
+  const [micId, setMicId] = useState<string>('');
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [bgMode, setBgMode] = useState<LiveBackgroundMode>('none');
+  const [bgImageUrl, setBgImageUrl] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
+
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
@@ -80,6 +98,25 @@ export default function GoLivePage() {
     // client-side check is only ever a suggestion.
     if (profile && !profile.is_admin) router.replace('/feed');
   }, [isAuthenticated, profile, router]);
+
+  // ── Devices ──────────────────────────────────────────────────────
+  // Labels stay blank until permission has been granted once, so ask
+  // first — otherwise the picker can only offer "Camera 1", "Camera 2".
+  useEffect(() => {
+    if (stage !== 'setup') return;
+    let cancelled = false;
+    (async () => {
+      await primeDevicePermissions();
+      const found = await listMediaDevices();
+      if (cancelled) return;
+      setDevices(found);
+      setCameraId((prev) => prev || found.cameras[0]?.deviceId || '');
+      setMicId((prev) => prev || found.microphones[0]?.deviceId || '');
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [stage]);
 
   // ── Elapsed timer ────────────────────────────────────────────────
   useEffect(() => {
@@ -165,10 +202,20 @@ export default function GoLivePage() {
       const session = await createLiveSession({
         title: title.trim() || 'Live',
         visibility,
+        coverUrl,
       });
       setSessionId(session.id);
 
-      const client = await createLiveHostClient();
+      const background: LiveBackgroundOptions = {
+        mode: bgMode,
+        imageUrl: bgImageUrl,
+        blurPx: 14,
+      };
+      const client = await createLiveHostClient({
+        cameraId: cameraId || null,
+        microphoneId: micId || null,
+        background,
+      });
       client.onError((message) => setNotice(message));
       clientRef.current = client;
 
@@ -180,6 +227,14 @@ export default function GoLivePage() {
       // does not exist yet and play() would silently do nothing.
       await startLiveSession(session.id);
       setStage('live');
+
+      // Tell friends. Deliberately not awaited into the critical path:
+      // a failed notification must never take down a working broadcast.
+      fetch('/api/live/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: session.id }),
+      }).catch(() => {});
     } catch (err: any) {
       setError(err?.message || 'Could not start the broadcast.');
       setStage('setup');
@@ -188,7 +243,7 @@ export default function GoLivePage() {
       await clientRef.current?.stop().catch(() => {});
       clientRef.current = null;
     }
-  }, [title, visibility]);
+  }, [title, visibility, coverUrl, cameraId, micId, bgMode, bgImageUrl]);
 
   // ── End ──────────────────────────────────────────────────────────
   const handleEnd = useCallback(async () => {
@@ -218,6 +273,43 @@ export default function GoLivePage() {
       setNotice(err?.message || 'Message not sent.');
     }
   }, [draft, sessionId]);
+
+  const handleCoverPick = useCallback(async (file: File) => {
+    setCoverUploading(true);
+    setError(null);
+    try {
+      setCoverUrl(await uploadLiveCover(file));
+    } catch (err: any) {
+      setError(err?.message || 'Could not upload that thumbnail.');
+    } finally {
+      setCoverUploading(false);
+    }
+  }, []);
+
+  // Background images stay local: an object URL is enough to composite
+  // with, and uploading one the viewers never receive would be waste.
+  const handleBackgroundPick = useCallback((file: File) => {
+    setBgImageUrl((prev) => {
+      if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setBgMode('image');
+  }, []);
+
+  /** Change the background mid-broadcast without a republish flicker. */
+  const applyBackground = useCallback(
+    async (mode: LiveBackgroundMode, imageUrl?: string | null) => {
+      setBgMode(mode);
+      const url = imageUrl !== undefined ? imageUrl : bgImageUrl;
+      if (stage !== 'live') return;
+      try {
+        await clientRef.current?.setBackground({ mode, imageUrl: url, blurPx: 14 });
+      } catch (err: any) {
+        setNotice(err?.message || 'Could not change the background.');
+      }
+    },
+    [stage, bgImageUrl],
+  );
 
   const fmt = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
@@ -254,6 +346,127 @@ export default function GoLivePage() {
             <option value="private">Just me (test run)</option>
           </select>
 
+          {/* Thumbnail */}
+          <label className="block text-sm text-white/60 mb-1.5">Thumbnail</label>
+          <input
+            ref={coverInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleCoverPick(f);
+              e.target.value = '';
+            }}
+          />
+          <button
+            onClick={() => coverInputRef.current?.click()}
+            disabled={coverUploading}
+            className="w-full mb-5 rounded-lg border border-dashed border-white/15 hover:border-white/30
+                       overflow-hidden disabled:opacity-60"
+          >
+            {coverUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={coverUrl} alt="Stream thumbnail" className="w-full h-32 object-cover" />
+            ) : (
+              <span className="flex items-center justify-center gap-2 h-20 text-sm text-white/45">
+                {coverUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Uploading…
+                  </>
+                ) : (
+                  <>
+                    <ImagePlus className="w-4 h-4" /> Add a thumbnail
+                  </>
+                )}
+              </span>
+            )}
+          </button>
+
+          {/* Camera */}
+          <label className="block text-sm text-white/60 mb-1.5">Camera</label>
+          <select
+            value={cameraId}
+            onChange={(e) => setCameraId(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 mb-5
+                       text-white focus:outline-none focus:border-red-500/60"
+          >
+            {devices.cameras.length === 0 && <option value="">No camera found</option>}
+            {devices.cameras.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Microphone */}
+          <label className="block text-sm text-white/60 mb-1.5">Microphone</label>
+          <select
+            value={micId}
+            onChange={(e) => setMicId(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 mb-5
+                       text-white focus:outline-none focus:border-red-500/60"
+          >
+            {devices.microphones.length === 0 && <option value="">No microphone found</option>}
+            {devices.microphones.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Background */}
+          <label className="block text-sm text-white/60 mb-1.5">Background</label>
+          <input
+            ref={bgInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleBackgroundPick(f);
+              e.target.value = '';
+            }}
+          />
+          <div className="flex gap-2 mb-6">
+            {([
+              { key: 'none', label: 'None' },
+              { key: 'blur', label: 'Blur' },
+            ] as const).map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => setBgMode(opt.key)}
+                className={`flex-1 rounded-lg py-2.5 text-sm border transition-colors ${
+                  bgMode === opt.key
+                    ? 'bg-white/15 border-white/30 text-white'
+                    : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+            <button
+              onClick={() => (bgImageUrl ? setBgMode('image') : bgInputRef.current?.click())}
+              className={`flex-1 rounded-lg py-2.5 text-sm border flex items-center justify-center gap-1.5 transition-colors ${
+                bgMode === 'image'
+                  ? 'bg-white/15 border-white/30 text-white'
+                  : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Image
+            </button>
+          </div>
+
+          {bgMode === 'image' && (
+            <button
+              onClick={() => bgInputRef.current?.click()}
+              className="w-full mb-6 -mt-3 text-xs text-white/45 hover:text-white/70 text-left"
+            >
+              {bgImageUrl ? 'Change background image' : 'Choose a background image…'}
+            </button>
+          )}
+
           {error && (
             <div className="flex items-start gap-2 mb-5 text-sm text-red-400">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -278,6 +491,7 @@ export default function GoLivePage() {
 
           <p className="text-xs text-white/40 mt-4 leading-relaxed">
             Your camera and microphone start when you go live. Streaming at 720p.
+            Background replacement runs on your device and can be demanding on older machines.
           </p>
         </div>
       </div>
@@ -368,6 +582,21 @@ export default function GoLivePage() {
             className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
           >
             <SwitchCamera className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => {
+              // Cycle none → blur → image, skipping image when none is set.
+              const next: LiveBackgroundMode =
+                bgMode === 'none' ? 'blur' : bgMode === 'blur' && bgImageUrl ? 'image' : 'none';
+              applyBackground(next);
+            }}
+            aria-label="Change background"
+            title={`Background: ${bgMode}`}
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              bgMode === 'none' ? 'bg-white/10 hover:bg-white/20' : 'bg-white/25 hover:bg-white/35'
+            }`}
+          >
+            <Sparkles className="w-5 h-5" />
           </button>
         </div>
       </div>

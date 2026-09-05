@@ -14,6 +14,10 @@
 // ═══════════════════════════════════════════════════════════════════
 
 import { createClient } from '@/lib/supabase';
+import {
+  LiveBackgroundProcessor,
+  type LiveBackgroundOptions,
+} from '@/lib/liveBackground';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -355,7 +359,93 @@ export function subscribeLiveSession(
   };
 }
 
+// ── Devices ────────────────────────────────────────────────────────
+
+/**
+ * Cameras and microphones available to this browser.
+ *
+ * Labels are empty until the user has granted permission at least once,
+ * which is why this is worth calling again after the first publish —
+ * before then the picker can only offer "Camera 1", "Camera 2".
+ */
+export async function listMediaDevices(): Promise<LiveDevices> {
+  if (typeof navigator === 'undefined' || !navigator.mediaDevices) {
+    return { cameras: [], microphones: [] };
+  }
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const pick = (kind: MediaDeviceKind, fallback: string) =>
+    devices
+      .filter((d) => d.kind === kind && d.deviceId)
+      .map((d, i) => ({ deviceId: d.deviceId, label: d.label || `${fallback} ${i + 1}` }));
+
+  return {
+    cameras: pick('videoinput', 'Camera'),
+    microphones: pick('audioinput', 'Microphone'),
+  };
+}
+
+/**
+ * Ask for camera and mic once so device labels become readable.
+ * Returns false if the user declined — the caller should say so rather
+ * than presenting an empty picker as if nothing were connected.
+ */
+export async function primeDevicePermissions(): Promise<boolean> {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    stream.getTracks().forEach((t) => t.stop());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── Cover image ────────────────────────────────────────────────────
+
+/** Upload a stream thumbnail. Shares the public post-media bucket. */
+export async function uploadLiveCover(file: File): Promise<string> {
+  const supabase = createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) throw new Error('You must be signed in.');
+
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `live-covers/${auth.user.id}/${Date.now()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('post-media')
+    .upload(path, file, { cacheControl: '3600', upsert: false });
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from('post-media').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+/** Update a session's cover after creation. */
+export async function setLiveCover(sessionId: string, coverUrl: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('live_sessions')
+    .update({ cover_url: coverUrl, updated_at: new Date().toISOString() })
+    .eq('id', sessionId);
+  if (error) throw new Error(error.message);
+}
+
 // ── Agora clients ──────────────────────────────────────────────────
+
+export interface MediaDeviceOption {
+  deviceId: string;
+  label: string;
+}
+
+export interface LiveDevices {
+  cameras: MediaDeviceOption[];
+  microphones: MediaDeviceOption[];
+}
+
+export interface LiveHostOptions {
+  cameraId?: string | null;
+  microphoneId?: string | null;
+  background?: LiveBackgroundOptions;
+}
 
 export interface LiveHostClient {
   start(sessionId: string): Promise<void>;
@@ -363,6 +453,12 @@ export interface LiveHostClient {
   toggleMute(): boolean;
   toggleCamera(): Promise<boolean>;
   switchCamera(): Promise<void>;
+  /** Switch to a specific camera mid-broadcast. */
+  setCamera(deviceId: string): Promise<void>;
+  /** Switch to a specific microphone mid-broadcast. */
+  setMicrophone(deviceId: string): Promise<void>;
+  /** Change or clear the background without interrupting the stream. */
+  setBackground(options: LiveBackgroundOptions): Promise<void>;
   getLocalVideoTrack(): any | null;
   onError(cb: (message: string) => void): void;
 }
@@ -378,7 +474,9 @@ export interface LiveViewerClient {
 /**
  * Host client — publishes one camera + mic stream into a live channel.
  */
-export async function createLiveHostClient(): Promise<LiveHostClient> {
+export async function createLiveHostClient(
+  opts: LiveHostOptions = {},
+): Promise<LiveHostClient> {
   const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
 
   // 'live' mode, not 'rtc'. In live mode Agora optimises for one-to-many
@@ -386,9 +484,58 @@ export async function createLiveHostClient(): Promise<LiveHostClient> {
   const client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' });
 
   let audioTrack: any = null;
-  let videoTrack: any = null;
+  // The raw camera. When a background is active this is NOT what gets
+  // published — it feeds the processor instead.
+  let cameraTrack: any = null;
+  // What is actually published: either cameraTrack, or a custom track
+  // carrying the processed canvas.
+  let publishedVideo: any = null;
+  let processor: LiveBackgroundProcessor | null = null;
+
   let errorCb: ((m: string) => void) | null = null;
   let currentSessionId: string | null = null;
+  let background: LiveBackgroundOptions = opts.background ?? { mode: 'none' };
+
+  const encoderConfig = {
+    width: { ideal: MAX_PUBLISH_WIDTH, max: MAX_PUBLISH_WIDTH },
+    height: { ideal: MAX_PUBLISH_HEIGHT, max: MAX_PUBLISH_HEIGHT },
+    frameRate: PUBLISH_FRAMERATE,
+    bitrateMax: PUBLISH_BITRATE_KBPS,
+  };
+
+  /**
+   * Build the track to publish from the current camera + background.
+   * Falls back to the plain camera if processing cannot start, because a
+   * missing background is a cosmetic loss and a dead stream is not.
+   */
+  async function buildVideoTrack(): Promise<any> {
+    if (background.mode === 'none' || !cameraTrack) return cameraTrack;
+
+    try {
+      processor?.stop();
+      processor = new LiveBackgroundProcessor(
+        cameraTrack.getMediaStreamTrack(),
+        background,
+      );
+      const processed = await processor.start();
+      return AgoraRTC.createCustomVideoTrack({
+        mediaStreamTrack: processed,
+        bitrateMax: PUBLISH_BITRATE_KBPS,
+      });
+    } catch (err: any) {
+      processor?.stop();
+      processor = null;
+      errorCb?.(`Background effect unavailable: ${err?.message || 'not supported here'}`);
+      return cameraTrack;
+    }
+  }
+
+  /** setDevice keeps the same track object, so a processor reading from
+   *  it picks up the new camera with no republish needed. */
+  async function applyCamera(deviceId: string): Promise<void> {
+    if (!cameraTrack) return;
+    await cameraTrack.setDevice(deviceId);
+  }
 
   return {
     async start(sessionId: string) {
@@ -400,20 +547,18 @@ export async function createLiveHostClient(): Promise<LiveHostClient> {
       await client.join(t.appId, t.channelName, t.token, t.uid || null);
 
       try {
-        audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        audioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+          opts.microphoneId ? { microphoneId: opts.microphoneId } : {},
+        );
       } catch (err: any) {
         errorCb?.(`Microphone unavailable: ${err?.message || 'permission denied'}`);
         throw err;
       }
 
       try {
-        videoTrack = await AgoraRTC.createCameraVideoTrack({
-          encoderConfig: {
-            width: { ideal: MAX_PUBLISH_WIDTH, max: MAX_PUBLISH_WIDTH },
-            height: { ideal: MAX_PUBLISH_HEIGHT, max: MAX_PUBLISH_HEIGHT },
-            frameRate: PUBLISH_FRAMERATE,
-            bitrateMax: PUBLISH_BITRATE_KBPS,
-          },
+        cameraTrack = await AgoraRTC.createCameraVideoTrack({
+          ...(opts.cameraId ? { cameraId: opts.cameraId } : {}),
+          encoderConfig,
         });
       } catch (err: any) {
         // Audio-only is a legitimate fallback and costs far less than
@@ -421,20 +566,29 @@ export async function createLiveHostClient(): Promise<LiveHostClient> {
         errorCb?.(`Camera unavailable — going audio-only: ${err?.message || 'permission denied'}`);
       }
 
-      const toPublish = [audioTrack, videoTrack].filter(Boolean);
+      publishedVideo = await buildVideoTrack();
+
+      const toPublish = [audioTrack, publishedVideo].filter(Boolean);
       await client.publish(toPublish);
     },
 
     async stop() {
       try {
+        processor?.stop();
         audioTrack?.stop();
         audioTrack?.close();
-        videoTrack?.stop();
-        videoTrack?.close();
+        if (publishedVideo && publishedVideo !== cameraTrack) {
+          publishedVideo.stop();
+          publishedVideo.close();
+        }
+        cameraTrack?.stop();
+        cameraTrack?.close();
         await client.leave();
       } finally {
+        processor = null;
         audioTrack = null;
-        videoTrack = null;
+        cameraTrack = null;
+        publishedVideo = null;
         if (currentSessionId) await leaveLive(currentSessionId);
         currentSessionId = null;
       }
@@ -448,23 +602,62 @@ export async function createLiveHostClient(): Promise<LiveHostClient> {
     },
 
     async toggleCamera() {
-      if (!videoTrack) return false;
-      const nextOff = videoTrack.enabled;
-      await videoTrack.setEnabled(!nextOff);
+      if (!publishedVideo) return false;
+      const nextOff = publishedVideo.enabled;
+      await publishedVideo.setEnabled(!nextOff);
       return !nextOff;
     },
 
     async switchCamera() {
-      if (!videoTrack) return;
       const devices = await AgoraRTC.getCameras();
-      if (devices.length < 2) return;
-      const currentId = videoTrack.getTrackLabel();
-      const next = devices.find((d: any) => d.label !== currentId) || devices[0];
-      await videoTrack.setDevice(next.deviceId);
+      if (devices.length < 2 || !cameraTrack) return;
+      const currentLabel = cameraTrack.getTrackLabel();
+      const next = devices.find((d: any) => d.label !== currentLabel) || devices[0];
+      await applyCamera(next.deviceId);
+    },
+
+    async setCamera(deviceId: string) {
+      await applyCamera(deviceId);
+    },
+
+    async setMicrophone(deviceId: string) {
+      if (!audioTrack) return;
+      await audioTrack.setDevice(deviceId);
+    },
+
+    async setBackground(next: LiveBackgroundOptions) {
+      const wasProcessed = background.mode !== 'none';
+      const willProcess = next.mode !== 'none';
+      background = next;
+
+      // Same pipeline shape: just retune the running processor. No
+      // republish, so viewers see the change without a flicker.
+      if (wasProcessed && willProcess && processor) {
+        await processor.setOptions(next);
+        return;
+      }
+      if (!cameraTrack) return;
+
+      // Shape changed (on→off or off→on): swap the published track.
+      const previous = publishedVideo;
+      const rebuilt = await buildVideoTrack();
+
+      if (previous) await client.unpublish([previous]);
+      if (previous && previous !== cameraTrack) {
+        previous.stop();
+        previous.close();
+      }
+      if (!willProcess) {
+        processor?.stop();
+        processor = null;
+      }
+
+      publishedVideo = rebuilt;
+      if (publishedVideo) await client.publish([publishedVideo]);
     },
 
     getLocalVideoTrack() {
-      return videoTrack;
+      return publishedVideo;
     },
 
     onError(cb) {
