@@ -41,6 +41,7 @@ export default function LiveViewerPage() {
   const [session, setSession] = useState<LiveSession | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hasVideo, setHasVideo] = useState(false);
+  const [remoteTrack, setRemoteTrack] = useState<any>(null);
 
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
@@ -77,13 +78,13 @@ export default function LiveViewerPage() {
         const client = await createLiveViewerClient();
         clientRef.current = client;
 
+        // Only record the track here. The host can start publishing
+        // before this component switches to the watching phase, and the
+        // stage container does not exist until it does — playing against
+        // a null ref is a silent no-op that leaves the viewer on black.
         client.onRemoteVideoChanged((track) => {
-          if (track && videoRef.current) {
-            track.play(videoRef.current);
-            setHasVideo(true);
-          } else {
-            setHasVideo(false);
-          }
+          setRemoteTrack(track);
+          setHasVideo(!!track);
         });
         client.onHostLeft(() => setPhase('ended'));
         client.onError((m) => setError(m));
@@ -135,6 +136,14 @@ export default function LiveViewerPage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Attach the remote stream once the stage container is actually
+  // mounted. Ordering between the host publishing and this component
+  // reaching the watching phase is not guaranteed either way.
+  useEffect(() => {
+    if (phase !== 'watching' || !remoteTrack || !videoRef.current) return;
+    remoteTrack.play(videoRef.current);
+  }, [phase, remoteTrack]);
 
   // Realtime inserts arrive without an author, so resolve any sender we
   // have not seen yet and cache it. Without this, chat shows UUIDs.

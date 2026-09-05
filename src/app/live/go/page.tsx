@@ -88,6 +88,18 @@ export default function GoLivePage() {
     return () => clearInterval(id);
   }, [stage]);
 
+  // ── Local preview ────────────────────────────────────────────────
+  // Attach here rather than at publish time. The stage container only
+  // exists once stage === 'live', so playing the track any earlier is a
+  // no-op against a null ref — which shows the host a black rectangle
+  // while their camera is in fact publishing perfectly well.
+  // Re-runs on cameraOff so toggling the camera back on re-attaches.
+  useEffect(() => {
+    if (stage !== 'live' || cameraOff) return;
+    const track = clientRef.current?.getLocalVideoTrack();
+    if (track && videoRef.current) track.play(videoRef.current);
+  }, [stage, cameraOff]);
+
   // ── Chat + session subscriptions ─────────────────────────────────
   useEffect(() => {
     if (!sessionId || stage !== 'live') return;
@@ -163,9 +175,9 @@ export default function GoLivePage() {
       // Publish first, then announce. See the note at the top.
       await client.start(session.id);
 
-      const track = client.getLocalVideoTrack();
-      if (track && videoRef.current) track.play(videoRef.current);
-
+      // The preview is attached by the effect below, not here: this runs
+      // while the setup screen is still mounted, so the stage container
+      // does not exist yet and play() would silently do nothing.
       await startLiveSession(session.id);
       setStage('live');
     } catch (err: any) {
