@@ -12,10 +12,15 @@ import { trackPaywallShown, trackCheckoutStarted } from '@/lib/firstPartyAnalyti
 
 type BillingPeriod = 'monthly' | 'annual';
 
+// Starter deliberately carries no highlight: it has no Stripe price
+// (see priceIdForPlan in lib/stripe.ts), so an affiliate-referred visitor
+// steered into it gets neither the 10% coupon nor commission attribution —
+// it silently breaks the discount promised on the /ref landing page.
+// Light is the cheapest tier that works end-to-end through Stripe.
 const PLAN_META = [
   { key: 'free', icon: Star },
-  { key: 'starter', icon: Flame, highlighted: true },
-  { key: 'light', icon: Sparkles },
+  { key: 'starter', icon: Flame },
+  { key: 'light', icon: Sparkles, highlighted: true },
   { key: 'premium', icon: Zap },
   { key: 'pro', icon: Crown },
 ] as const;

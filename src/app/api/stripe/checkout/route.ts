@@ -162,7 +162,47 @@ async function createCheckout(req: NextRequest) {
     }
 
     // 4. Check for affiliate referral — apply 10% off first 2 months
-    const affiliateCookie = req.cookies.get('align_aff')?.value;
+    let affiliateCookie = req.cookies.get('align_aff')?.value || null;
+
+    // Cookie-only attribution silently drops the affiliate whenever the user
+    // subscribes on a different device, in a different browser, or after
+    // clearing cookies — they pay full price and the affiliate earns nothing,
+    // even though the signup was attributed server-side at the time. Fall back
+    // to that recorded signup, still bounded by the affiliate's own cookie
+    // window so attribution can't live forever.
+    if (!affiliateCookie) {
+      try {
+        const { data: convRows } = await admin
+          .from('affiliate_conversions')
+          .select('affiliate_id, created_at')
+          .eq('user_id', user.id)
+          .eq('conversion_type', 'signup')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        const conv = convRows?.[0];
+        if (conv?.affiliate_id) {
+          const { data: affRows } = await admin
+            .from('affiliates')
+            .select('id, status, cookie_days')
+            .eq('id', conv.affiliate_id)
+            .limit(1);
+
+          const aff = affRows?.[0];
+          const windowMs = ((aff?.cookie_days as number) || 30) * 86_400_000;
+          const withinWindow =
+            Date.now() - new Date(conv.created_at as string).getTime() <= windowMs;
+
+          if (aff?.status === 'approved' && withinWindow) {
+            affiliateCookie = aff.id as string;
+            console.log(`[Stripe Checkout] Affiliate ${aff.id} recovered from signup conversion (no cookie)`);
+          }
+        }
+      } catch (err) {
+        console.error('[Stripe Checkout] Affiliate fallback lookup failed:', err);
+      }
+    }
+
     let affiliateCouponId: string | null = null;
 
     if (affiliateCookie) {

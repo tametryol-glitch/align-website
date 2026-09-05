@@ -51,6 +51,23 @@ export function getAffiliateAttribution(): { affiliateId: string | null; clickId
   return { affiliateId: affiliateId || null, clickId: clickId || null };
 }
 
+/** Remember who referred this visitor, so the onboarding offer can say
+ *  "Deidrae sent you 10% off" instead of an anonymous banner. Cosmetic only —
+ *  the actual discount comes from the align_aff cookie, server-side. */
+export function setAffiliateName(name: string) {
+  try {
+    if (name) localStorage.setItem('align_aff_name', name);
+  } catch {}
+}
+
+export function getAffiliateName(): string | null {
+  try {
+    return localStorage.getItem('align_aff_name');
+  } catch {
+    return null;
+  }
+}
+
 export function clearAffiliateAttribution() {
   document.cookie = `${AFFILIATE_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   document.cookie = `${AFFILIATE_CLICK_ID}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -58,6 +75,7 @@ export function clearAffiliateAttribution() {
     localStorage.removeItem(AFFILIATE_COOKIE);
     localStorage.removeItem(AFFILIATE_CLICK_ID);
     localStorage.removeItem('align_aff_expires');
+    localStorage.removeItem('align_aff_name');
   } catch {}
 }
 

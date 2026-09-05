@@ -14,8 +14,9 @@ import { api, buildBirthData } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
 import { BigThreeCard } from '@/components/share';
 import { generateShareUrl, shareCard } from '@/lib/shareCardUtils';
+import OnboardingOffer from '@/components/OnboardingOffer';
 
-const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal', 'Share'];
+const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal', 'Share', 'Unlock'];
 
 const GENDER_OPTIONS = ['Man', 'Woman', 'Non-binary', 'Other', 'Prefer not to say'];
 const INTERESTED_IN_OPTIONS = ['Men', 'Women', 'Everyone'];
@@ -191,7 +192,7 @@ export default function OnboardingPage() {
       }
     }
 
-    router.push('/feed');
+    setStep(9);
   }
 
   async function handleRectification() {
@@ -229,7 +230,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className={`w-full ${step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
+      <div className={`w-full ${step === 9 ? 'max-w-4xl' : step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
         {/* Progress dots (hide on reveal and share steps) */}
         {step < 7 && (
           <div className="flex justify-center gap-2 mb-8">
@@ -652,10 +653,10 @@ export default function OnboardingPage() {
               </div>
 
               <button
-                onClick={() => router.push('/feed')}
+                onClick={() => setStep(9)}
                 className="btn-primary w-full mb-2"
               >
-                Continue to Your Feed
+                See what you unlock
               </button>
               <button
                 onClick={() => router.push('/feed')}
@@ -665,6 +666,10 @@ export default function OnboardingPage() {
               </button>
             </div>
           )}
+
+          {/* Step 9: Plan offer — the highest-intent moment in the funnel.
+              Before this existed, referred users never saw a plan at all. */}
+          {step === 9 && <OnboardingOffer firstName={displayName.split(' ')[0]} />}
         </div>
       </div>
     </div>

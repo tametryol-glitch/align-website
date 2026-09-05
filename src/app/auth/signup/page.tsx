@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { Sparkles, Gift, CheckCircle, Check, Zap } from 'lucide-react';
-import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie } from '@/lib/affiliateService';
+import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie, setAffiliateName } from '@/lib/affiliateService';
 import { PLANS } from '@/lib/plans';
 
 const FREE_PERKS = [
@@ -76,7 +76,7 @@ function SignupPageInner() {
   const [affiliateCode, setAffiliateCode] = useState('');
   const [affiliateVerified, setAffiliateVerified] = useState(false);
   const [affiliateVerifying, setAffiliateVerifying] = useState(false);
-  const [affiliateName, setAffiliateName] = useState('');
+  const [affiliateName, setAffiliateNameState] = useState('');
   const [affiliateError, setAffiliateError] = useState('');
 
   // Effective referral code: URL param takes priority, then manually entered code
@@ -96,6 +96,7 @@ function SignupPageInner() {
       return;
     }
 
+    setAffiliateNameState(verification.name || '');
     setAffiliateName(verification.name || '');
 
     // Track click and set attribution cookie (enables 10% discount at checkout)
@@ -365,7 +366,7 @@ function SignupPageInner() {
                     value={affiliateCode}
                     onChange={(e) => {
                       setAffiliateCode(e.target.value);
-                      if (affiliateVerified) { setAffiliateVerified(false); setAffiliateName(''); }
+                      if (affiliateVerified) { setAffiliateVerified(false); setAffiliateNameState(''); }
                       if (affiliateError) setAffiliateError('');
                     }}
                     className="input flex-1"

@@ -21,6 +21,7 @@ import {
   trackAffiliateClick,
   setAffiliateCookie,
   verifyAffiliateCode,
+  setAffiliateName,
 } from '@/lib/affiliateService';
 
 export default function AffiliateRefPage() {
@@ -30,7 +31,7 @@ export default function AffiliateRefPage() {
   const code = params.code as string;
 
   const [status, setStatus] = useState<'loading' | 'valid' | 'invalid'>('loading');
-  const [affiliateName, setAffiliateName] = useState<string>('');
+  const [affiliateName, setAffiliateNameState] = useState<string>('');
 
   useEffect(() => {
     let completed = false;
@@ -47,6 +48,7 @@ export default function AffiliateRefPage() {
           return;
         }
 
+        setAffiliateNameState(verification.name || '');
         setAffiliateName(verification.name || '');
         setStatus('valid');
         completed = true;
