@@ -354,18 +354,30 @@ const OUTCOMES: { id: string; label: string; icon: any; cls: string; help: strin
 function LedgerPanel() {
   const [entries, setEntries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [overdueOnly, setOverdueOnly] = useState(true);
+  // Defaults to everything on record. The due-for-scoring queue is empty for
+  // most of a forecast's life, so opening on it makes a populated ledger look
+  // like an empty one.
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<{ id: string; outcome: string } | null>(null);
   const [notes, setNotes] = useState('');
+  const [counts, setCounts] = useState({ all: 0, due: 0 });
 
   const load = useCallback(() => {
     setLoading(true);
     setErr(null);
-    auditFetch(`/ledger?limit=200${overdueOnly ? '&overdue_only=true' : ''}`)
-      .then((d) => setEntries(d.entries || []))
-      .catch((e) => setErr(e.message))
+    // Both lists every time, so the counts on the filter are always real and a
+    // reader can see at a glance that "0 due" does not mean "0 recorded".
+    Promise.all([
+      auditFetch('/ledger?limit=200'),
+      auditFetch('/ledger?limit=200&overdue_only=true'),
+    ])
+      .then(([all, due]) => {
+        setEntries(overdueOnly ? (due.entries || []) : (all.entries || []));
+        setCounts({ all: (all.entries || []).length, due: (due.entries || []).length });
+      })
+      .catch((e) => setErr(e.status ? `${e.message} (HTTP ${e.status})` : e.message))
       .finally(() => setLoading(false));
   }, [overdueOnly]);
 
@@ -391,21 +403,36 @@ function LedgerPanel() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
-        <button
-          onClick={() => setOverdueOnly(!overdueOnly)}
-          className={`text-sm px-3 py-1.5 rounded-lg border transition-colors ${
-            overdueOnly
-              ? 'bg-accent-primary/10 border-accent-primary/30 text-accent-primary'
-              : 'bg-bg-card border-border-primary text-text-tertiary hover:text-text-primary'
-          }`}
-        >
-          <Clock className="w-3.5 h-3.5 inline mr-1.5" />
-          {overdueOnly ? 'Due for scoring' : 'All forecasts'}
-        </button>
+        {/* Two explicit options rather than one toggle whose label showed the
+            current state — that read as "there is nothing here" when the due
+            queue was empty. */}
+        <div className="inline-flex rounded-lg border border-border-primary overflow-hidden">
+          <button
+            onClick={() => setOverdueOnly(false)}
+            className={`text-sm px-3 py-1.5 transition-colors ${
+              !overdueOnly
+                ? 'bg-accent-primary/10 text-accent-primary'
+                : 'bg-bg-card text-text-tertiary hover:text-text-primary'
+            }`}
+          >
+            <ClipboardList className="w-3.5 h-3.5 inline mr-1.5" />
+            All on record <span className="tabular-nums">({num(counts.all)})</span>
+          </button>
+          <button
+            onClick={() => setOverdueOnly(true)}
+            className={`text-sm px-3 py-1.5 border-l border-border-primary transition-colors ${
+              overdueOnly
+                ? 'bg-accent-primary/10 text-accent-primary'
+                : 'bg-bg-card text-text-tertiary hover:text-text-primary'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5 inline mr-1.5" />
+            Due for scoring <span className="tabular-nums">({num(counts.due)})</span>
+          </button>
+        </div>
         <button onClick={load} className="text-sm px-3 py-1.5 rounded-lg border border-border-primary text-text-tertiary hover:text-text-primary">
           <RefreshCw className="w-3.5 h-3.5 inline mr-1.5" /> Refresh
         </button>
-        <span className="text-xs text-text-muted">{num(entries.length)} shown</span>
       </div>
 
       {err && (
@@ -417,9 +444,13 @@ function LedgerPanel() {
       ) : entries.length === 0 ? (
         <div className="bg-bg-card border border-border-primary rounded-xl p-8 text-center">
           <Clock className="w-8 h-8 text-text-muted mx-auto mb-3" />
-          <p className="text-sm text-text-tertiary">
+          <p className="text-sm text-text-tertiary max-w-md mx-auto">
             {overdueOnly
-              ? 'Nothing is past its resolution date yet. Forecasts become scorable once their deadline passes.'
+              ? counts.all > 0
+                ? <>Nothing is due yet — but <button onClick={() => setOverdueOnly(false)}
+                    className="text-accent-primary underline underline-offset-2">{num(counts.all)} forecasts are on
+                    record</button>. They become scorable once their resolution date passes.</>
+                : 'Nothing is past its resolution date yet.'
               : 'No forecasts recorded. They are pre-registered automatically after each daily global scan.'}
           </p>
         </div>
