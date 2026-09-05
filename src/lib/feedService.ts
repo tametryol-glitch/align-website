@@ -3,7 +3,7 @@ import { rankFeedPosts, type RankablePost } from './feedRankingEngine';
 import { getSeenCounts } from './impressionService';
 
 // ── Types ──────────────────────────────────────────────────────────
-export type ReactionEmoji = '✨' | '🔥' | '💜' | '🌙' | '⚡' | '😂';
+export type ReactionEmoji = '✨' | '🔥' | '💜' | '🌙' | '⚡' | '😂' | '😠' | '😢';
 
 export interface PostReaction {
   emoji: ReactionEmoji;
@@ -70,6 +70,8 @@ export const REACTION_OPTIONS: { emoji: ReactionEmoji; label: string }[] = [
   { emoji: '🌙', label: 'Deep' },
   { emoji: '⚡', label: 'Mind Blown' },
   { emoji: '😂', label: 'Funny' },
+  { emoji: '😠', label: 'Angry' },
+  { emoji: '😢', label: 'Sad' },
 ];
 
 export const POST_STYLE_PRESETS = [
@@ -505,6 +507,51 @@ export async function toggleReaction(postId: string, userId: string, emoji: Reac
   }
 
   return Array.from(reactionMap.values());
+}
+
+/**
+ * Who reacted to a post, newest first, optionally filtered to one emoji.
+ * Mirrors getReactorsForPost in the mobile socialFeedService.
+ */
+export interface ReactionUser {
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  sunSign: string | null;
+  emoji: ReactionEmoji;
+}
+
+export async function getReactorsForPost(
+  postId: string,
+  filterEmoji?: ReactionEmoji,
+): Promise<ReactionUser[]> {
+  const supabase = createClient();
+  try {
+    let query = supabase
+      .from('post_reactions')
+      .select('emoji, user_id, profiles:user_id ( display_name, avatar_url, sun_sign )')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
+
+    if (filterEmoji) query = query.eq('emoji', filterEmoji);
+
+    const { data, error } = await query;
+    if (error || !data) return [];
+
+    return (data as unknown as Array<{
+      emoji: string;
+      user_id: string;
+      profiles?: { display_name?: string; avatar_url?: string | null; sun_sign?: string | null } | null;
+    }>).map(r => ({
+      userId: r.user_id,
+      displayName: r.profiles?.display_name || 'User',
+      avatarUrl: r.profiles?.avatar_url || null,
+      sunSign: r.profiles?.sun_sign || null,
+      emoji: r.emoji as ReactionEmoji,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 /**

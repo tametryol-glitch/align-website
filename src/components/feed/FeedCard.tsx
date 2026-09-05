@@ -16,6 +16,7 @@ import { getCreatorBadge, getCreatorTier, type CreatorTier } from '@/lib/creator
 import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
 import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 import { extractHttpUrls } from '@/lib/linkify';
+import ReactionViewerModal from './ReactionViewerModal';
 
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
@@ -826,6 +827,7 @@ export function FeedCard({
 }) {
   const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
+  const [showReactors, setShowReactors] = useState(false);
   const [downloading, setDownloading] = useState(false);
   // Doubles as progress text while a cold variant encodes, then as the error
   // if it fails. Null = show the plain "Save video" label.
@@ -1087,7 +1089,7 @@ export function FeedCard({
 
       {/* Reactions display */}
       {post.reactions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-5 pb-2">
+        <div className="flex flex-wrap items-center gap-1.5 px-5 pb-2">
           {post.reactions.map((r) => (
             <button
               key={r.emoji}
@@ -1103,7 +1105,21 @@ export function FeedCard({
               <span className="font-medium">{r.count}</span>
             </button>
           ))}
+          <button
+            onClick={() => setShowReactors(true)}
+            className="text-xs text-text-secondary hover:text-accent-primary hover:underline transition-colors"
+          >
+            {t('feed.seeWhoReacted', 'See who reacted')}
+          </button>
         </div>
+      )}
+
+      {showReactors && (
+        <ReactionViewerModal
+          postId={post.id}
+          reactions={post.reactions}
+          onClose={() => setShowReactors(false)}
+        />
       )}
 
       {/* Virality Indicator */}
