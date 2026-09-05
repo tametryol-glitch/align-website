@@ -14,6 +14,7 @@ import { FeedCard } from '@/components/feed/FeedCard';
 import { ImpressionSlot } from '@/components/feed/ImpressionSlot';
 import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
+import { LiveRail } from '@/components/feed/LiveRail';
 import { MentionInput } from '@/components/feed/MentionInput';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -1070,6 +1071,9 @@ export default function FeedPage() {
           <Plus className="w-5 h-5 text-white" />
         </button>
       </div>
+
+      {/* Renders nothing unless someone is actually broadcasting. */}
+      <LiveRail />
 
       {/* Cosmic Weather Banner */}
       <FeedCosmicBanner />
