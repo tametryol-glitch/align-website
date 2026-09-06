@@ -64,7 +64,10 @@ import {
   Repeat,
   Square,
   X,
+  EyeOff,
+  UserX,
 } from 'lucide-react';
+import { hideLiveMessage, ejectFromLive } from '@/lib/liveSafety';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
 
@@ -985,9 +988,48 @@ export default function GoLivePage() {
             <p className="text-sm text-white/35">No messages yet.</p>
           )}
           {messages.map((m) => (
-            <div key={m.id} className="text-sm leading-snug">
-              <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
-              <span className="text-white/90">{m.body}</span>
+            <div key={m.id} className="group flex items-start gap-1.5 text-sm leading-snug">
+              <span className="flex-1">
+                <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
+                <span className="text-white/90">{m.body}</span>
+              </span>
+              {m.sender_id !== user?.id && (
+                <span className="flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0 mt-0.5">
+                  <button
+                    onClick={async () => {
+                      const res = await hideLiveMessage(m.id);
+                      if (res.ok) setMessages((prev) => prev.filter((x) => x.id !== m.id));
+                      else setNotice(res.error || 'Could not hide that message.');
+                    }}
+                    aria-label="Hide this message"
+                    title="Hide this message"
+                    className="text-white/35 hover:text-white/80"
+                  >
+                    <EyeOff className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!sessionId) return;
+                      const ok = window.confirm(
+                        'Remove this person from the stream? Everything they have said is hidden and they cannot rejoin.',
+                      );
+                      if (!ok) return;
+                      const res = await ejectFromLive(sessionId, m.sender_id);
+                      if (res.ok) {
+                        setMessages((prev) => prev.filter((x) => x.sender_id !== m.sender_id));
+                        setNotice('Removed from this stream.');
+                      } else {
+                        setNotice(res.error || 'Could not remove them.');
+                      }
+                    }}
+                    aria-label="Remove this person from the stream"
+                    title="Remove from stream"
+                    className="text-white/35 hover:text-red-300"
+                  >
+                    <UserX className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
             </div>
           ))}
           <div ref={chatEndRef} />

@@ -27,7 +27,14 @@ import {
   type LiveMessage,
   type LiveViewerClient,
 } from '@/lib/liveService';
-import { Users, Send, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban } from 'lucide-react';
+import {
+  reportLiveStream,
+  reportLiveMessage,
+  blockLiveUser,
+  LIVE_REPORT_REASONS,
+  type LiveReportReason,
+} from '@/lib/liveSafety';
 
 type Phase = 'loading' | 'watching' | 'ended' | 'error';
 
@@ -46,6 +53,9 @@ export default function LiveViewerPage() {
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
+  const [showMenu, setShowMenu] = useState(false);
+  const [reporting, setReporting] = useState<null | { messageId?: string; senderId: string; body?: string }>(null);
+  const [safetyNote, setSafetyNote] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveViewerClient | null>(null);
@@ -158,6 +168,49 @@ export default function LiveViewerPage() {
   }, [messages, authors]);
 
 
+  const submitReport = useCallback(
+    async (reason: LiveReportReason) => {
+      const target = reporting;
+      setReporting(null);
+      if (!target || !session) return;
+
+      const res = target.messageId
+        ? await reportLiveMessage({
+            sessionId: sessionId,
+            messageId: target.messageId,
+            senderId: target.senderId,
+            body: target.body || '',
+            reason,
+          })
+        : await reportLiveStream({
+            sessionId: sessionId,
+            hostId: session.host_id,
+            title: session.title,
+            reason,
+          });
+
+      setSafetyNote(
+        res.ok
+          ? 'Thanks — reported. We review these within 24 hours.'
+          : res.error || 'Could not send that report.',
+      );
+    },
+    [reporting, session, sessionId],
+  );
+
+  const handleBlockHost = useCallback(async () => {
+    if (!session) return;
+    setShowMenu(false);
+    const res = await blockLiveUser(session.host_id);
+    if (res.ok) {
+      // Staying in the room after blocking its host makes no sense.
+      await clientRef.current?.stop().catch(() => {});
+      router.push('/feed');
+      return;
+    }
+    setSafetyNote(res.error || 'Could not block.');
+  }, [session, router]);
+
   const handleSend = useCallback(async () => {
     const body = draft.trim();
     if (!body) return;
@@ -212,6 +265,48 @@ export default function LiveViewerPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row">
+      {/* Report reason picker */}
+      {reporting && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
+          <div className="w-full max-w-sm bg-neutral-900 border border-white/10 rounded-xl p-5">
+            <h2 className="text-base font-semibold mb-1">
+              {reporting.messageId ? 'Report this message' : 'Report this stream'}
+            </h2>
+            <p className="text-xs text-white/45 mb-4">
+              Reports are reviewed within 24 hours. Blocking is immediate.
+            </p>
+            <div className="space-y-1.5">
+              {LIVE_REPORT_REASONS.map((r) => (
+                <button
+                  key={r.value}
+                  onClick={() => submitReport(r.value)}
+                  className="w-full text-left text-sm px-3.5 py-2.5 rounded-lg bg-white/5
+                             hover:bg-white/10 text-white/85"
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setReporting(null)}
+              className="w-full mt-4 py-2.5 text-sm text-white/50 hover:text-white"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {safetyNote && (
+        <div className="fixed top-4 inset-x-4 z-50 mx-auto max-w-sm bg-neutral-900 border
+                        border-white/15 rounded-lg px-4 py-3 text-sm text-white/85 flex items-start gap-3">
+          <span className="flex-1">{safetyNote}</span>
+          <button onClick={() => setSafetyNote(null)} className="text-white/40 hover:text-white">
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="relative flex-1 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-contain" />
 
@@ -240,6 +335,37 @@ export default function LiveViewerPage() {
             <Users className="w-4 h-4" />
             <span className="tabular-nums">{session?.peak_viewers ?? 0}</span>
           </span>
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setShowMenu((v) => !v)}
+              aria-label="More options"
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-52 bg-neutral-900 border border-white/10
+                              rounded-lg overflow-hidden z-10">
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    if (session) setReporting({ senderId: session.host_id });
+                  }}
+                  className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-white/85
+                             hover:bg-white/10 text-left"
+                >
+                  <Flag className="w-4 h-4" /> Report this stream
+                </button>
+                <button
+                  onClick={handleBlockHost}
+                  className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-red-300
+                             hover:bg-white/10 text-left"
+                >
+                  <Ban className="w-4 h-4" /> Block this host
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {error && (
@@ -257,9 +383,23 @@ export default function LiveViewerPage() {
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
           {messages.length === 0 && <p className="text-sm text-white/35">Say hello.</p>}
           {messages.map((m) => (
-            <div key={m.id} className="text-sm leading-snug">
-              <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
-              <span className="text-white/90">{m.body}</span>
+            <div key={m.id} className="group flex items-start gap-1.5 text-sm leading-snug">
+              <span className="flex-1">
+                <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
+                <span className="text-white/90">{m.body}</span>
+              </span>
+              {m.sender_id !== user?.id && (
+                <button
+                  onClick={() =>
+                    setReporting({ messageId: m.id, senderId: m.sender_id, body: m.body })
+                  }
+                  aria-label="Report this message"
+                  className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-white/35
+                             hover:text-white/80 shrink-0 mt-0.5"
+                >
+                  <Flag className="w-3 h-3" />
+                </button>
+              )}
             </div>
           ))}
           <div ref={chatEndRef} />
