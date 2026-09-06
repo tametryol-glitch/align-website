@@ -1179,7 +1179,7 @@ export interface LiveEligibility {
   is_founder: boolean;
   followers: number;
   signups: number;
-  paid_subscribers: number;
+  paid_conversions: number;
   followers_required: number;
   signups_required: number;
   paid_required: number;
