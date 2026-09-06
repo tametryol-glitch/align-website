@@ -67,8 +67,14 @@ export interface LiveMessage {
   kind: 'chat' | 'join' | 'gift' | 'system' | 'pinned';
   is_pinned: boolean;
   created_at: string;
+  reply_to_id?: string | null;
+  hearts_count?: number;
   // Present on history loaded via the join; absent on realtime inserts.
   profile?: { display_name: string | null; avatar_url: string | null } | null;
+  // Resolved client-side from the message already in view, so a reply
+  // costs no extra query when its parent is on screen.
+  reply_to_body?: string | null;
+  reply_to_name?: string | null;
 }
 
 export interface LiveTokenResult {
@@ -249,7 +255,11 @@ export async function leaveLive(sessionId: string): Promise<void> {
 
 // ── Chat ───────────────────────────────────────────────────────────
 
-export async function sendLiveMessage(sessionId: string, body: string): Promise<void> {
+export async function sendLiveMessage(
+  sessionId: string,
+  body: string,
+  replyToId?: string | null,
+): Promise<void> {
   const trimmed = body.trim();
   if (!trimmed) return;
 
@@ -260,10 +270,61 @@ export async function sendLiveMessage(sessionId: string, body: string): Promise<
   const { error } = await supabase.from('live_messages').insert({
     session_id: sessionId,
     sender_id: auth.user.id,
-    body: trimmed.slice(0, 500),
+    // Mention markup inflates length well past what the sender typed,
+    // which is why the column allows 2000 rather than 500.
+    body: trimmed.slice(0, 2000),
     kind: 'chat',
+    reply_to_id: replyToId ?? null,
   });
   if (error) throw new Error(error.message);
+}
+
+/**
+ * Heart or un-heart a single message. Returns the new state.
+ *
+ * A comment heart is a toggle owned by one person, unlike the stream
+ * hearts which are a running tally anyone can add to.
+ */
+export async function toggleMessageHeart(
+  messageId: string,
+  hearted: boolean,
+): Promise<boolean> {
+  const supabase = createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) throw new Error('Sign in to react.');
+
+  if (hearted) {
+    const { error } = await supabase
+      .from('live_message_reactions')
+      .delete()
+      .eq('message_id', messageId)
+      .eq('user_id', auth.user.id);
+    if (error) throw new Error(error.message);
+    return false;
+  }
+
+  const { error } = await supabase
+    .from('live_message_reactions')
+    .insert({ message_id: messageId, user_id: auth.user.id });
+  // A double-tap racing itself is not an error worth surfacing.
+  if (error && !error.message.includes('duplicate')) throw new Error(error.message);
+  return true;
+}
+
+/** Which of these messages the current user has already hearted. */
+export async function loadMyMessageHearts(messageIds: string[]): Promise<Set<string>> {
+  if (messageIds.length === 0) return new Set();
+  const supabase = createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return new Set();
+
+  const { data } = await supabase
+    .from('live_message_reactions')
+    .select('message_id')
+    .eq('user_id', auth.user.id)
+    .in('message_id', messageIds.slice(0, 200));
+
+  return new Set((data || []).map((r: any) => r.message_id));
 }
 
 export async function loadRecentMessages(sessionId: string, limit = 50): Promise<LiveMessage[]> {
@@ -276,7 +337,8 @@ export async function loadRecentMessages(sessionId: string, limit = 50): Promise
     .limit(limit);
   if (error) throw new Error(error.message);
   // Query descending for the index, render ascending.
-  return ((data as LiveMessage[]) || []).reverse();
+  const rows = ((data as LiveMessage[]) || []).reverse();
+  return attachReplyContext(rows);
 }
 
 /**
@@ -371,6 +433,25 @@ export async function getPinnedMessage(sessionId: string): Promise<LiveMessage |
     .limit(1)
     .maybeSingle();
   return (data as LiveMessage) || null;
+}
+
+/**
+ * Fill in what each reply was replying to, from the messages already
+ * loaded. Replies to something scrolled out of history simply show no
+ * quote rather than costing a query per message.
+ */
+export function attachReplyContext(rows: LiveMessage[]): LiveMessage[] {
+  const byId = new Map(rows.map((m) => [m.id, m]));
+  return rows.map((m) => {
+    if (!m.reply_to_id) return m;
+    const parent = byId.get(m.reply_to_id);
+    if (!parent) return m;
+    return {
+      ...m,
+      reply_to_body: parent.body.slice(0, 80),
+      reply_to_name: parent.profile?.display_name || null,
+    };
+  });
 }
 
 /** Subscribe to new chat messages. Returns an unsubscribe function. */

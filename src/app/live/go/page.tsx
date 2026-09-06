@@ -22,6 +22,9 @@ import {
   primeDevicePermissions,
   uploadLiveCover,
   sendLiveMessage,
+  toggleMessageHeart,
+  loadMyMessageHearts,
+  attachReplyContext,
   loadRecentMessages,
   subscribeLiveMessages,
   subscribeLiveSession,
@@ -72,6 +75,10 @@ import {
   Heart,
 } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
+import { LiveChatMessage } from '@/components/live/LiveChatMessage';
+import { MentionInput } from '@/components/feed/MentionInput';
+import { mentionMarkup } from '@/lib/mentions';
+import { CornerUpLeft } from 'lucide-react';
 import { hideLiveMessage, ejectFromLive } from '@/lib/liveSafety';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
@@ -128,6 +135,8 @@ export default function GoLivePage() {
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
+  const [replyTo, setReplyTo] = useState<LiveMessage | null>(null);
+  const [heartedIds, setHeartedIds] = useState<Set<string>>(new Set());
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveHostClient | null>(null);
@@ -212,10 +221,15 @@ export default function GoLivePage() {
   useEffect(() => {
     if (!sessionId || stage !== 'live') return;
 
-    loadRecentMessages(sessionId).then(setMessages).catch(() => {});
+    loadRecentMessages(sessionId)
+      .then(async (rows) => {
+        setMessages(rows);
+        setHeartedIds(await loadMyMessageHearts(rows.map((r) => r.id)));
+      })
+      .catch(() => {});
 
     const offMessages = subscribeLiveMessages(sessionId, (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => attachReplyContext([...prev, msg]));
     });
     const offSession = subscribeLiveSession(sessionId, (s) => {
       setPeakViewers(s.peak_viewers);
@@ -349,16 +363,99 @@ export default function GoLivePage() {
 
   const handleEnd = useCallback(() => endBroadcast('host_ended'), [endBroadcast]);
 
+  const handleMessageHeart = useCallback(
+    async (m: LiveMessage) => {
+      const was = heartedIds.has(m.id);
+      // Optimistic: a heart that waits on a round trip feels broken.
+      setHeartedIds((prev) => {
+        const next = new Set(prev);
+        if (was) next.delete(m.id);
+        else next.add(m.id);
+        return next;
+      });
+      setMessages((prev) =>
+        prev.map((x) =>
+          x.id === m.id
+            ? { ...x, hearts_count: Math.max(0, (x.hearts_count ?? 0) + (was ? -1 : 1)) }
+            : x,
+        ),
+      );
+      try {
+        await toggleMessageHeart(m.id, was);
+      } catch {
+        // Put it back rather than leaving a lie on screen.
+        setHeartedIds((prev) => {
+          const next = new Set(prev);
+          if (was) next.add(m.id);
+          else next.delete(m.id);
+          return next;
+        });
+      }
+    },
+    [heartedIds],
+  );
+
+  const startReply = useCallback((m: LiveMessage) => {
+    setReplyTo(m);
+    // Seed the mention so the person replied to is actually notified,
+    // which is what makes a reply feel addressed rather than adjacent.
+    const name = m.profile?.display_name || 'them';
+    setDraft((d) => (d ? d : mentionMarkup({ id: m.sender_id, displayName: name }) + ' '));
+  }, []);
+
+  const handlePin = useCallback(
+    async (m: LiveMessage) => {
+      if (!sessionId) return;
+      try {
+        await setLiveMessagePinned(sessionId, m.id, !m.is_pinned);
+        setMessages((prev) =>
+          prev.map((x) =>
+            x.id === m.id ? { ...x, is_pinned: !m.is_pinned } : { ...x, is_pinned: false },
+          ),
+        );
+      } catch (err: any) {
+        setNotice(err?.message || 'Could not pin that message.');
+      }
+    },
+    [sessionId],
+  );
+
+  const handleHide = useCallback(async (m: LiveMessage) => {
+    const res = await hideLiveMessage(m.id);
+    if (res.ok) setMessages((prev) => prev.filter((x) => x.id !== m.id));
+    else setNotice(res.error || 'Could not hide that message.');
+  }, []);
+
+  const handleEject = useCallback(
+    async (m: LiveMessage) => {
+      if (!sessionId) return;
+      const ok = window.confirm(
+        'Remove this person from the stream? Everything they have said is hidden and they cannot rejoin.',
+      );
+      if (!ok) return;
+      const res = await ejectFromLive(sessionId, m.sender_id);
+      if (res.ok) {
+        setMessages((prev) => prev.filter((x) => x.sender_id !== m.sender_id));
+        setNotice('Removed from this stream.');
+      } else {
+        setNotice(res.error || 'Could not remove them.');
+      }
+    },
+    [sessionId],
+  );
+
   const handleSend = useCallback(async () => {
     const body = draft.trim();
     if (!body || !sessionId) return;
     setDraft('');
+    const parent = replyTo;
+    setReplyTo(null);
     try {
-      await sendLiveMessage(sessionId, body);
+      await sendLiveMessage(sessionId, body, parent?.id ?? null);
     } catch (err: any) {
       setNotice(err?.message || 'Message not sent.');
     }
-  }, [draft, sessionId]);
+  }, [draft, sessionId, replyTo]);
 
   const handleCoverPick = useCallback(async (file: File) => {
     setCoverUploading(true);
@@ -1020,93 +1117,50 @@ export default function GoLivePage() {
             <p className="text-sm text-white/35">No messages yet.</p>
           )}
           {messages.map((m) => (
-            m.kind === 'join' ? (
-              <div key={m.id} className="text-xs text-white/30 italic">
-                {m.body}
-              </div>
-            ) : (
-            <div key={m.id} className="group flex items-start gap-1.5 text-sm leading-snug">
-              <span className="flex-1">
-                <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
-                <span className="text-white/90">{m.body}</span>
-              </span>
-              <button
-                onClick={async () => {
-                  if (!sessionId) return;
-                  try {
-                    await setLiveMessagePinned(sessionId, m.id, !m.is_pinned);
-                    setMessages((prev) =>
-                      prev.map((x) =>
-                        x.id === m.id
-                          ? { ...x, is_pinned: !m.is_pinned }
-                          : { ...x, is_pinned: false },
-                      ),
-                    );
-                  } catch (err: any) {
-                    setNotice(err?.message || 'Could not pin that message.');
-                  }
-                }}
-                aria-label={m.is_pinned ? 'Unpin this message' : 'Pin this message'}
-                title={m.is_pinned ? 'Unpin' : 'Pin to the top'}
-                className={`shrink-0 mt-0.5 ${
-                  m.is_pinned
-                    ? 'text-amber-300'
-                    : 'opacity-0 group-hover:opacity-100 focus:opacity-100 text-white/35 hover:text-white/80'
-                }`}
-              >
-                <Pin className="w-3 h-3" />
-              </button>
-              {m.sender_id !== user?.id && (
-                <span className="flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0 mt-0.5">
-                  <button
-                    onClick={async () => {
-                      const res = await hideLiveMessage(m.id);
-                      if (res.ok) setMessages((prev) => prev.filter((x) => x.id !== m.id));
-                      else setNotice(res.error || 'Could not hide that message.');
-                    }}
-                    aria-label="Hide this message"
-                    title="Hide this message"
-                    className="text-white/35 hover:text-white/80"
-                  >
-                    <EyeOff className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (!sessionId) return;
-                      const ok = window.confirm(
-                        'Remove this person from the stream? Everything they have said is hidden and they cannot rejoin.',
-                      );
-                      if (!ok) return;
-                      const res = await ejectFromLive(sessionId, m.sender_id);
-                      if (res.ok) {
-                        setMessages((prev) => prev.filter((x) => x.sender_id !== m.sender_id));
-                        setNotice('Removed from this stream.');
-                      } else {
-                        setNotice(res.error || 'Could not remove them.');
-                      }
-                    }}
-                    aria-label="Remove this person from the stream"
-                    title="Remove from stream"
-                    className="text-white/35 hover:text-red-300"
-                  >
-                    <UserX className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-            </div>
-            )
+            <LiveChatMessage
+              key={m.id}
+              message={m}
+              authors={authors}
+              selfId={user?.id}
+              isHost
+              hearted={heartedIds.has(m.id)}
+              onHeart={handleMessageHeart}
+              onReply={startReply}
+              onPin={handlePin}
+              onHide={handleHide}
+              onEject={handleEject}
+            />
           ))}
           <div ref={chatEndRef} />
         </div>
-        <div className="p-3 border-t border-white/10 flex gap-2">
-          <input
+        <div className="p-3 border-t border-white/10">
+          {replyTo && (
+            <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-lg bg-white/5 text-xs">
+              <CornerUpLeft className="w-3 h-3 text-white/40 shrink-0" />
+              <span className="flex-1 truncate text-white/55">
+                Replying to {authorName(replyTo, authors, user?.id)}
+              </span>
+              <button
+                onClick={() => setReplyTo(null)}
+                aria-label="Cancel reply"
+                className="text-white/40 hover:text-white"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <div className="flex gap-2">
+          <MentionInput
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            maxLength={500}
-            placeholder="Say something…"
+            onChange={setDraft}
+            onEnterSubmit={handleSend}
+            placeholder="Say something, or @ someone…"
+            maxLength={2000}
+            menuPlacement="above"
+            excludeUserId={user?.id}
             className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm
                        placeholder-white/30 focus:outline-none focus:border-white/25"
+            wrapperClassName="flex-1"
           />
           <button
             onClick={handleSend}
@@ -1115,6 +1169,7 @@ export default function GoLivePage() {
           >
             <Send className="w-4 h-4" />
           </button>
+          </div>
         </div>
       </div>
     </div>
