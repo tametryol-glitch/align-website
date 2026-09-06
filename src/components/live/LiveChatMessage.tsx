@@ -52,6 +52,18 @@ export function LiveChatMessage({
   onEject,
   onPin,
 }: LiveChatMessageProps) {
+  // A milestone is an event worth noticing in the log, unlike an
+  // arrival — it keeps a tint so someone scrolling back can see where
+  // the energy was.
+  if (m.kind === 'milestone') {
+    return (
+      <div className="flex items-center gap-1.5 text-xs text-rose-300/80 py-0.5">
+        <Heart className="w-3 h-3 shrink-0" fill="currentColor" />
+        <span className="truncate">{m.body}</span>
+      </div>
+    );
+  }
+
   // Arrivals and system notices are not conversation — no avatar, no
   // controls, and visually quieter so they never compete with chat.
   if (m.kind !== 'chat') {

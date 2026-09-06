@@ -64,7 +64,7 @@ export interface LiveMessage {
   session_id: string;
   sender_id: string;
   body: string;
-  kind: 'chat' | 'join' | 'gift' | 'system' | 'pinned';
+  kind: 'chat' | 'join' | 'gift' | 'system' | 'pinned' | 'milestone';
   is_pinned: boolean;
   created_at: string;
   reply_to_id?: string | null;

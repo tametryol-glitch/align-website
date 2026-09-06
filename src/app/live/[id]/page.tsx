@@ -34,9 +34,9 @@ import {
 } from '@/lib/liveService';
 import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
+import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
-import { MentionInput } from '@/components/feed/MentionInput';
-import { mentionMarkup } from '@/lib/mentions';
+import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft, X } from 'lucide-react';
 import {
   reportLiveStream,
@@ -65,6 +65,8 @@ export default function LiveViewerPage() {
   const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
   const [replyTo, setReplyTo] = useState<LiveMessage | null>(null);
   const [heartedIds, setHeartedIds] = useState<Set<string>>(new Set());
+  const composerRef = useRef<LiveComposerHandle | null>(null);
+  const milestone = useMilestones(messages, user?.id);
   const [showMenu, setShowMenu] = useState(false);
   const [reporting, setReporting] = useState<null | { messageId?: string; senderId: string; body?: string }>(null);
   const [safetyNote, setSafetyNote] = useState<string | null>(null);
@@ -307,14 +309,16 @@ export default function LiveViewerPage() {
 
   const startReply = useCallback((m: LiveMessage) => {
     setReplyTo(m);
-    // Seed the mention so the person being replied to is actually
-    // notified, which is what makes a reply feel addressed.
-    const name = m.profile?.display_name || 'them';
-    setDraft((d) => (d ? d : mentionMarkup({ id: m.sender_id, displayName: name }) + ' '));
+    // Seed a readable "@Name"; the composer remembers who it points at
+    // and converts to markup on send.
+    composerRef.current?.addMention({
+      id: m.sender_id,
+      displayName: m.profile?.display_name || 'them',
+    });
   }, []);
 
-  const handleSend = useCallback(async () => {
-    const body = draft.trim();
+  const handleSend = useCallback(async (markup?: string) => {
+    const body = (markup ?? draft).trim();
     if (!body) return;
     setDraft('');
     const parent = replyTo;
@@ -480,6 +484,7 @@ export default function LiveViewerPage() {
         </div>
 
         <FloatingHearts petals={petals} />
+        <MilestoneToast milestone={milestone} />
 
         {pinned && (
           <div className="absolute top-16 inset-x-4 flex items-start gap-2 bg-black/65 backdrop-blur
@@ -551,20 +556,17 @@ export default function LiveViewerPage() {
             </div>
           )}
           <div className="flex gap-2">
-          <MentionInput
+          <LiveComposer
             value={draft}
             onChange={setDraft}
-            onEnterSubmit={handleSend}
-            placeholder="Say something, or @ someone…"
-            maxLength={2000}
-            menuPlacement="above"
+            onSubmit={handleSend}
             excludeUserId={user?.id}
-            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm
-                       placeholder-white/30 focus:outline-none focus:border-white/25"
-            wrapperClassName="flex-1"
+            registerRef={(h) => {
+              composerRef.current = h;
+            }}
           />
           <button
-            onClick={handleSend}
+            onClick={() => handleSend()}
             aria-label="Send message"
             className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0"
           >

@@ -75,9 +75,9 @@ import {
   Heart,
 } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
+import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
-import { MentionInput } from '@/components/feed/MentionInput';
-import { mentionMarkup } from '@/lib/mentions';
+import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft } from 'lucide-react';
 import { hideLiveMessage, ejectFromLive } from '@/lib/liveSafety';
 
@@ -129,6 +129,7 @@ export default function GoLivePage() {
   const [showStage, setShowStage] = useState(false);
   const [busySource, setBusySource] = useState(false);
   const [screenHasAudio, setScreenHasAudio] = useState(false);
+  const [pickingCamera, setPickingCamera] = useState(false);
   const [micGain, setMicGain] = useState(1);
   const [screenGain, setScreenGain] = useState(0.7);
 
@@ -137,6 +138,8 @@ export default function GoLivePage() {
   const [authors, setAuthors] = useState<Record<string, LiveAuthor>>({});
   const [replyTo, setReplyTo] = useState<LiveMessage | null>(null);
   const [heartedIds, setHeartedIds] = useState<Set<string>>(new Set());
+  const composerRef = useRef<LiveComposerHandle | null>(null);
+  const milestone = useMilestones(messages, user?.id);
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveHostClient | null>(null);
@@ -397,10 +400,12 @@ export default function GoLivePage() {
 
   const startReply = useCallback((m: LiveMessage) => {
     setReplyTo(m);
-    // Seed the mention so the person replied to is actually notified,
-    // which is what makes a reply feel addressed rather than adjacent.
-    const name = m.profile?.display_name || 'them';
-    setDraft((d) => (d ? d : mentionMarkup({ id: m.sender_id, displayName: name }) + ' '));
+    // Seed a readable "@Name"; the composer remembers who it points at
+    // and converts to markup on send.
+    composerRef.current?.addMention({
+      id: m.sender_id,
+      displayName: m.profile?.display_name || 'them',
+    });
   }, []);
 
   const handlePin = useCallback(
@@ -444,8 +449,8 @@ export default function GoLivePage() {
     [sessionId],
   );
 
-  const handleSend = useCallback(async () => {
-    const body = draft.trim();
+  const handleSend = useCallback(async (markup?: string) => {
+    const body = (markup ?? draft).trim();
     if (!body || !sessionId) return;
     setDraft('');
     const parent = replyTo;
@@ -513,16 +518,14 @@ export default function GoLivePage() {
   );
 
   const addSource = useCallback(
-    async (kind: 'camera' | 'screen') => {
+    async (kind: 'camera' | 'screen', deviceId?: string) => {
       setBusySource(true);
       setNotice(null);
+      setPickingCamera(false);
       try {
-        // Prefer a camera that is not the one already live, so the two
-        // views are actually different.
-        const secondCam = devices.cameras.find((d) => d.deviceId !== cameraId);
         await clientRef.current?.addSecondarySource(
           kind,
-          kind === 'camera' ? secondCam?.deviceId : undefined,
+          kind === 'camera' ? deviceId : undefined,
         );
         const nowHas = clientRef.current?.hasSecondarySource() ?? false;
         setHasSecond(nowHas);
@@ -539,7 +542,7 @@ export default function GoLivePage() {
         setBusySource(false);
       }
     },
-    [devices.cameras, cameraId],
+    [],
   );
 
   const dropSource = useCallback(async () => {
@@ -796,6 +799,7 @@ export default function GoLivePage() {
       <div className="relative flex-1 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
+        <MilestoneToast milestone={milestone} />
 
         {/* Top HUD */}
         <div className="absolute top-0 inset-x-0 p-4 flex items-center gap-3
@@ -861,9 +865,44 @@ export default function GoLivePage() {
 
               {/* Second source */}
               {!hasSecond ? (
+                pickingCamera ? (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/50">Which camera?</span>
+                      <button
+                        onClick={() => setPickingCamera(false)}
+                        className="text-xs text-white/40 hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    {/* The camera already broadcasting is excluded — two
+                        views of the same lens is not a second view. */}
+                    {devices.cameras
+                      .filter((d) => d.deviceId !== cameraId)
+                      .map((d) => (
+                        <button
+                          key={d.deviceId}
+                          onClick={() => addSource('camera', d.deviceId)}
+                          disabled={busySource}
+                          className="w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-left
+                                     bg-white/10 hover:bg-white/20 disabled:opacity-40"
+                        >
+                          <Camera className="w-4 h-4 shrink-0" />
+                          <span className="truncate">{d.label}</span>
+                        </button>
+                      ))}
+                  </div>
+                ) : (
                 <div className="flex gap-2">
                   <button
-                    onClick={() => addSource('camera')}
+                    onClick={() => {
+                      const others = devices.cameras.filter((d) => d.deviceId !== cameraId);
+                      // One candidate is not a choice worth interrupting
+                      // for; more than one must never be picked for them.
+                      if (others.length === 1) addSource('camera', others[0].deviceId);
+                      else setPickingCamera(true);
+                    }}
                     disabled={busySource || devices.cameras.length < 2}
                     title={
                       devices.cameras.length < 2
@@ -884,6 +923,7 @@ export default function GoLivePage() {
                     <MonitorUp className="w-4 h-4" /> Share screen
                   </button>
                 </div>
+                )
               ) : (
                 <div className="space-y-3">
                   {/* Layout */}
@@ -1150,20 +1190,17 @@ export default function GoLivePage() {
             </div>
           )}
           <div className="flex gap-2">
-          <MentionInput
+          <LiveComposer
             value={draft}
             onChange={setDraft}
-            onEnterSubmit={handleSend}
-            placeholder="Say something, or @ someone…"
-            maxLength={2000}
-            menuPlacement="above"
+            onSubmit={handleSend}
             excludeUserId={user?.id}
-            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm
-                       placeholder-white/30 focus:outline-none focus:border-white/25"
-            wrapperClassName="flex-1"
+            registerRef={(h) => {
+              composerRef.current = h;
+            }}
           />
           <button
-            onClick={handleSend}
+            onClick={() => handleSend()}
             aria-label="Send message"
             className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0"
           >
