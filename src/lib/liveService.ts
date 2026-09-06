@@ -518,6 +518,19 @@ export async function createLiveHostClient(
   // and only a client with the host role is permitted to publish.
   const client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' });
 
+  // Agora tokens expire. Without renewal the host is cut off at the
+  // token TTL mid-sentence, with no warning and no way to recover — the
+  // SDK fires this ~30s before expiry precisely so it never happens.
+  client.on('token-privilege-will-expire', async () => {
+    if (!currentSessionId) return;
+    try {
+      const t = await fetchLiveToken(currentSessionId, 'host');
+      await client.renewToken(t.token);
+    } catch {
+      errorCb?.('Could not renew the streaming credential — the broadcast may end shortly.');
+    }
+  });
+
   let audioTrack: any = null;
   // The raw camera. When a background is active this is NOT what gets
   // published — it feeds the processor instead.
@@ -934,6 +947,19 @@ export async function createLiveViewerClient(): Promise<LiveViewerClient> {
   let hostLeftCb: (() => void) | null = null;
   let errorCb: ((m: string) => void) | null = null;
   let currentSessionId: string | null = null;
+
+  // Audience tokens are shorter-lived than host ones, so without this
+  // every viewer is silently dropped an hour into a long stream while
+  // the host carries on talking to nobody.
+  client.on('token-privilege-will-expire', async () => {
+    if (!currentSessionId) return;
+    try {
+      const t = await fetchLiveToken(currentSessionId, 'audience');
+      await client.renewToken(t.token);
+    } catch {
+      errorCb?.('Lost the connection to this stream.');
+    }
+  });
 
   client.on('user-published', async (user: any, mediaType: 'audio' | 'video') => {
     try {

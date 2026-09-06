@@ -68,6 +68,12 @@ import {
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
 
+// Streams end themselves at two hours. Tokens now renew, so this is a
+// deliberate ceiling rather than a technical one: an unattended stream
+// that never ends bills Agora for every viewer still sitting on it.
+const MAX_STREAM_SECONDS = 2 * 60 * 60;
+const WARN_AT_SECONDS = MAX_STREAM_SECONDS - 5 * 60;
+
 export default function GoLivePage() {
   const router = useRouter();
   const { user, profile, isAuthenticated } = useAuthStore();
@@ -154,6 +160,17 @@ export default function GoLivePage() {
     const id = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [stage]);
+
+  // ── Two hour ceiling ─────────────────────────────────────────────
+  useEffect(() => {
+    if (stage !== 'live') return;
+    if (elapsed === WARN_AT_SECONDS) {
+      setNotice('Five minutes left — this stream ends automatically at two hours.');
+    }
+    if (elapsed >= MAX_STREAM_SECONDS) {
+      void endBroadcast('duration_limit');
+    }
+  }, [elapsed, stage]);
 
   // ── Local preview ────────────────────────────────────────────────
   // Every path that can change what is being published funnels through
@@ -292,22 +309,27 @@ export default function GoLivePage() {
   }, [title, visibility, coverUrl, cameraId, micId, bgMode, bgImageUrl, attachPreview]);
 
   // ── End ──────────────────────────────────────────────────────────
-  const handleEnd = useCallback(async () => {
-    try {
-      await clientRef.current?.stop();
-    } catch {
-      /* stopping the client must never block ending the session */
-    }
-    clientRef.current = null;
-    if (sessionId) {
+  const endBroadcast = useCallback(
+    async (reason: string) => {
       try {
-        await endLiveSession(sessionId, 'host_ended');
-      } catch (err: any) {
-        setError(err?.message || 'The stream stopped but the session did not close cleanly.');
+        await clientRef.current?.stop();
+      } catch {
+        /* stopping the client must never block ending the session */
       }
-    }
-    setStage('ended');
-  }, [sessionId]);
+      clientRef.current = null;
+      if (sessionId) {
+        try {
+          await endLiveSession(sessionId, reason);
+        } catch (err: any) {
+          setError(err?.message || 'The stream stopped but the session did not close cleanly.');
+        }
+      }
+      setStage('ended');
+    },
+    [sessionId],
+  );
+
+  const handleEnd = useCallback(() => endBroadcast('host_ended'), [endBroadcast]);
 
   const handleSend = useCallback(async () => {
     const body = draft.trim();
@@ -656,7 +678,20 @@ export default function GoLivePage() {
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             LIVE
           </span>
-          <span className="text-sm tabular-nums text-white/80">{fmt(elapsed)}</span>
+          <span
+            className={`text-sm tabular-nums ${
+              elapsed >= WARN_AT_SECONDS ? 'text-amber-300' : 'text-white/80'
+            }`}
+            title={
+              elapsed >= WARN_AT_SECONDS
+                ? 'Ends automatically at two hours'
+                : undefined
+            }
+          >
+            {fmt(elapsed)}
+            {elapsed >= WARN_AT_SECONDS &&
+              ` · ${fmt(Math.max(0, MAX_STREAM_SECONDS - elapsed))} left`}
+          </span>
           <span className="flex items-center gap-1.5 text-sm text-white/80">
             <Users className="w-4 h-4" />
             <span className="tabular-nums">{viewerCount || peakViewers}</span>
