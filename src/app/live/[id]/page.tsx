@@ -20,6 +20,8 @@ import {
   loadRecentMessages,
   subscribeLiveMessages,
   subscribeLiveSession,
+  sendLiveHearts,
+  getPinnedMessage,
   type LiveSession,
   fetchLiveAuthors,
   authorName,
@@ -27,7 +29,8 @@ import {
   type LiveMessage,
   type LiveViewerClient,
 } from '@/lib/liveService';
-import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban } from 'lucide-react';
+import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check } from 'lucide-react';
+import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import {
   reportLiveStream,
   reportLiveMessage,
@@ -56,6 +59,10 @@ export default function LiveViewerPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [reporting, setReporting] = useState<null | { messageId?: string; senderId: string; body?: string }>(null);
   const [safetyNote, setSafetyNote] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<LiveMessage | null>(null);
+  const [copied, setCopied] = useState(false);
+  const { petals, burst } = useFloatingHearts();
+  const pendingHearts = useRef(0);
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveViewerClient | null>(null);
@@ -167,6 +174,47 @@ export default function LiveViewerPage() {
     });
   }, [messages, authors]);
 
+
+  // ── Hearts ───────────────────────────────────────────────────────
+  // Taps animate immediately and accumulate; the server hears from us at
+  // most once a second. A round trip per tap would be both laggy and a
+  // needless flood of writes.
+  useEffect(() => {
+    if (phase !== 'watching') return;
+    const id = setInterval(() => {
+      const n = pendingHearts.current;
+      if (n <= 0) return;
+      pendingHearts.current = 0;
+      void sendLiveHearts(sessionId, n);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [phase, sessionId]);
+
+  const tapHeart = useCallback(() => {
+    pendingHearts.current += 1;
+    burst(1);
+  }, [burst]);
+
+  // ── Pinned message ───────────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== 'watching') return;
+    getPinnedMessage(sessionId).then(setPinned).catch(() => {});
+  }, [phase, sessionId, messages.length]);
+
+  const handleShare = useCallback(async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: session?.title || 'Live on Align', url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* the user dismissed the share sheet; nothing to report */
+    }
+  }, [session]);
 
   const submitReport = useCallback(
     async (reason: LiveReportReason) => {
@@ -333,8 +381,15 @@ export default function LiveViewerPage() {
           <span className="text-sm text-white/85 truncate">{session?.title}</span>
           <span className="ml-auto flex items-center gap-1.5 text-sm text-white/80 shrink-0">
             <Users className="w-4 h-4" />
-            <span className="tabular-nums">{session?.peak_viewers ?? 0}</span>
+            <span className="tabular-nums">{session?.current_viewers ?? 0}</span>
           </span>
+          <button
+            onClick={handleShare}
+            aria-label="Share this stream"
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0"
+          >
+            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+          </button>
           <div className="relative shrink-0">
             <button
               onClick={() => setShowMenu((v) => !v)}
@@ -368,6 +423,31 @@ export default function LiveViewerPage() {
           </div>
         </div>
 
+        <FloatingHearts petals={petals} />
+
+        {pinned && (
+          <div className="absolute top-16 inset-x-4 flex items-start gap-2 bg-black/65 backdrop-blur
+                          border border-white/15 rounded-lg px-3 py-2 text-sm">
+            <Pin className="w-3.5 h-3.5 mt-0.5 text-amber-300 shrink-0" />
+            <span className="text-white/85">{pinned.body}</span>
+          </div>
+        )}
+
+        <button
+          onClick={tapHeart}
+          aria-label="Send a heart"
+          className="absolute bottom-5 right-5 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20
+                     backdrop-blur flex items-center justify-center active:scale-90 transition-transform"
+        >
+          <Heart className="w-6 h-6 text-red-400" fill="currentColor" />
+        </button>
+
+        {(session?.hearts_count ?? 0) > 0 && (
+          <span className="absolute bottom-7 right-20 text-xs text-white/60 tabular-nums">
+            {session?.hearts_count}
+          </span>
+        )}
+
         {error && (
           <div className="absolute bottom-4 inset-x-4 bg-red-500/15 border border-red-500/30
                           text-red-200 text-sm rounded-lg px-3 py-2">
@@ -383,6 +463,11 @@ export default function LiveViewerPage() {
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
           {messages.length === 0 && <p className="text-sm text-white/35">Say hello.</p>}
           {messages.map((m) => (
+            m.kind === 'join' ? (
+              <div key={m.id} className="text-xs text-white/30 italic">
+                {m.body}
+              </div>
+            ) : (
             <div key={m.id} className="group flex items-start gap-1.5 text-sm leading-snug">
               <span className="flex-1">
                 <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
@@ -401,6 +486,7 @@ export default function LiveViewerPage() {
                 </button>
               )}
             </div>
+            )
           ))}
           <div ref={chatEndRef} />
         </div>

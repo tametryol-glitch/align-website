@@ -47,6 +47,8 @@ export interface LiveSession {
   duration_seconds: number;
   peak_viewers: number;
   total_viewers: number;
+  /** Who is watching right now, as opposed to the peak. */
+  current_viewers: number;
   messages_count: number;
   hearts_count: number;
 }
@@ -314,6 +316,61 @@ export function authorName(
     authors[msg.sender_id]?.display_name ||
     'Guest'
   );
+}
+
+/**
+ * Send hearts.
+ *
+ * Taps are batched by the caller and the server ignores anything faster
+ * than roughly once a second, so a held-down button costs one round trip
+ * per second rather than one per tap. Returns the stream's running total.
+ */
+export async function sendLiveHearts(sessionId: string, count: number): Promise<number | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('live_react', {
+    p_session_id: sessionId,
+    p_count: Math.max(1, Math.min(30, Math.round(count))),
+    p_emoji: '❤️',
+  });
+  // A dropped heart is never worth an error in front of the viewer.
+  if (error) return null;
+  return typeof data === 'number' ? data : null;
+}
+
+/** Pin or unpin a message. Host only, enforced by RLS. */
+export async function setLiveMessagePinned(
+  sessionId: string,
+  messageId: string,
+  pinned: boolean,
+): Promise<void> {
+  const supabase = createClient();
+  // Only one pinned message at a time, or the banner becomes a second
+  // chat log.
+  if (pinned) {
+    await supabase
+      .from('live_messages')
+      .update({ is_pinned: false })
+      .eq('session_id', sessionId)
+      .eq('is_pinned', true);
+  }
+  const { error } = await supabase
+    .from('live_messages')
+    .update({ is_pinned: pinned })
+    .eq('id', messageId);
+  if (error) throw new Error(error.message);
+}
+
+/** The currently pinned message, if any. */
+export async function getPinnedMessage(sessionId: string): Promise<LiveMessage | null> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from('live_messages')
+    .select('*, profile:profiles!live_messages_sender_id_fkey(display_name, avatar_url)')
+    .eq('session_id', sessionId)
+    .eq('is_pinned', true)
+    .limit(1)
+    .maybeSingle();
+  return (data as LiveMessage) || null;
 }
 
 /** Subscribe to new chat messages. Returns an unsubscribe function. */

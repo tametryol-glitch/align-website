@@ -24,6 +24,7 @@ import {
   loadRecentMessages,
   subscribeLiveMessages,
   subscribeLiveSession,
+  setLiveMessagePinned,
   type LiveHostClient,
   fetchLiveAuthors,
   authorName,
@@ -66,7 +67,10 @@ import {
   X,
   EyeOff,
   UserX,
+  Pin,
+  Heart,
 } from 'lucide-react';
+import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { hideLiveMessage, ejectFromLive } from '@/lib/liveSafety';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
@@ -90,6 +94,8 @@ export default function GoLivePage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [viewerCount, setViewerCount] = useState(0);
   const [peakViewers, setPeakViewers] = useState(0);
+  const [heartsCount, setHeartsCount] = useState(0);
+  const { petals, burst } = useFloatingHearts();
   const [elapsed, setElapsed] = useState(0);
 
   const [muted, setMuted] = useState(false);
@@ -212,6 +218,14 @@ export default function GoLivePage() {
     });
     const offSession = subscribeLiveSession(sessionId, (s) => {
       setPeakViewers(s.peak_viewers);
+      setViewerCount(s.current_viewers ?? 0);
+      // Animate the difference so the host sees hearts arriving rather
+      // than just a number ticking upward.
+      setHeartsCount((prev) => {
+        const next = Number(s.hearts_count ?? 0);
+        if (next > prev) burst(Math.min(6, next - prev));
+        return next;
+      });
 
       // A moderator can end this stream from the admin panel. Without
       // this the host's browser keeps publishing into a dead session —
@@ -228,7 +242,7 @@ export default function GoLivePage() {
       offMessages();
       offSession();
     };
-  }, [sessionId, stage]);
+  }, [sessionId, stage, burst]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -673,6 +687,7 @@ export default function GoLivePage() {
       {/* Stage */}
       <div className="relative flex-1 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
+        <FloatingHearts petals={petals} />
 
         {/* Top HUD */}
         <div className="absolute top-0 inset-x-0 p-4 flex items-center gap-3
@@ -697,8 +712,14 @@ export default function GoLivePage() {
           </span>
           <span className="flex items-center gap-1.5 text-sm text-white/80">
             <Users className="w-4 h-4" />
-            <span className="tabular-nums">{viewerCount || peakViewers}</span>
+            <span className="tabular-nums">{viewerCount}</span>
           </span>
+          {heartsCount > 0 && (
+            <span className="flex items-center gap-1.5 text-sm text-white/70">
+              <Heart className="w-3.5 h-3.5 text-red-400" fill="currentColor" />
+              <span className="tabular-nums">{heartsCount}</span>
+            </span>
+          )}
           <button
             onClick={handleEnd}
             className="ml-auto bg-white/15 hover:bg-white/25 rounded-lg px-3.5 py-1.5 text-sm font-medium"
@@ -988,11 +1009,42 @@ export default function GoLivePage() {
             <p className="text-sm text-white/35">No messages yet.</p>
           )}
           {messages.map((m) => (
+            m.kind === 'join' ? (
+              <div key={m.id} className="text-xs text-white/30 italic">
+                {m.body}
+              </div>
+            ) : (
             <div key={m.id} className="group flex items-start gap-1.5 text-sm leading-snug">
               <span className="flex-1">
                 <span className="text-white/45">{authorName(m, authors, user?.id)}</span>{' '}
                 <span className="text-white/90">{m.body}</span>
               </span>
+              <button
+                onClick={async () => {
+                  if (!sessionId) return;
+                  try {
+                    await setLiveMessagePinned(sessionId, m.id, !m.is_pinned);
+                    setMessages((prev) =>
+                      prev.map((x) =>
+                        x.id === m.id
+                          ? { ...x, is_pinned: !m.is_pinned }
+                          : { ...x, is_pinned: false },
+                      ),
+                    );
+                  } catch (err: any) {
+                    setNotice(err?.message || 'Could not pin that message.');
+                  }
+                }}
+                aria-label={m.is_pinned ? 'Unpin this message' : 'Pin this message'}
+                title={m.is_pinned ? 'Unpin' : 'Pin to the top'}
+                className={`shrink-0 mt-0.5 ${
+                  m.is_pinned
+                    ? 'text-amber-300'
+                    : 'opacity-0 group-hover:opacity-100 focus:opacity-100 text-white/35 hover:text-white/80'
+                }`}
+              >
+                <Pin className="w-3 h-3" />
+              </button>
               {m.sender_id !== user?.id && (
                 <span className="flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 shrink-0 mt-0.5">
                   <button
@@ -1031,6 +1083,7 @@ export default function GoLivePage() {
                 </span>
               )}
             </div>
+            )
           ))}
           <div ref={chatEndRef} />
         </div>
