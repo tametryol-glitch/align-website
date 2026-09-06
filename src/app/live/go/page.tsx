@@ -18,6 +18,7 @@ import {
   startLiveSession,
   endLiveSession,
   createLiveHostClient,
+  getLiveSession,
   listMediaDevices,
   primeDevicePermissions,
   uploadLiveCover,
@@ -76,6 +77,8 @@ import {
 } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
+import { TopHearters } from '@/components/live/TopHearters';
+import { mentionMarkup } from '@/lib/mentions';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
 import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft } from 'lucide-react';
@@ -139,7 +142,7 @@ export default function GoLivePage() {
   const [replyTo, setReplyTo] = useState<LiveMessage | null>(null);
   const [heartedIds, setHeartedIds] = useState<Set<string>>(new Set());
   const composerRef = useRef<LiveComposerHandle | null>(null);
-  const milestone = useMilestones(messages, user?.id);
+  const milestone = useMilestones(messages, user?.id, authors);
 
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveHostClient | null>(null);
@@ -279,6 +282,38 @@ export default function GoLivePage() {
   }, [messages, authors]);
 
 
+  // ── Poll as a safety net ──────────────────────────────────────────
+  // Everything the host sees about their own stream — hearts, who is
+  // watching, a moderator ending it — arrives on one realtime UPDATE.
+  // When that event does not land the host is simply blind, with no
+  // error to explain it, so a slow poll backs it up.
+  useEffect(() => {
+    if (stage !== 'live' || !sessionId) return;
+    let cancelled = false;
+
+    const tick = async () => {
+      try {
+        const s = await getLiveSession(sessionId);
+        if (cancelled || !s) return;
+        setPeakViewers(s.peak_viewers);
+        setViewerCount(s.current_viewers ?? 0);
+        setHeartsCount((prev) => {
+          const next = Number(s.hearts_count ?? 0);
+          if (next > prev) burst(Math.min(6, next - prev));
+          return next;
+        });
+      } catch {
+        /* a missed poll is not worth surfacing */
+      }
+    };
+
+    const id = setInterval(tick, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [stage, sessionId, burst]);
+
   // ── Leaving the page while live must not strand the session ──────
   useEffect(() => {
     if (stage !== 'live') return;
@@ -407,6 +442,22 @@ export default function GoLivePage() {
       displayName: m.profile?.display_name || 'them',
     });
   }, []);
+
+  /** One click turns a milestone into an interaction. */
+  const thankHearter = useCallback(
+    async (who: { id: string; name: string }) => {
+      if (!sessionId) return;
+      try {
+        await sendLiveMessage(
+          sessionId,
+          `Thanks ${mentionMarkup({ id: who.id, displayName: who.name })}!`,
+        );
+      } catch {
+        /* a thank-you that fails to send is not worth an alert */
+      }
+    },
+    [sessionId],
+  );
 
   const handlePin = useCallback(
     async (m: LiveMessage) => {
@@ -799,7 +850,16 @@ export default function GoLivePage() {
       <div className="relative flex-1 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
-        <MilestoneToast milestone={milestone} />
+        <MilestoneToast
+          milestone={milestone}
+          onThank={(m) => thankHearter({ id: m.senderId, name: m.senderName })}
+        />
+        <TopHearters
+          sessionId={sessionId}
+          onPressHearter={(h) =>
+            thankHearter({ id: h.viewer_id, name: h.display_name || 'friend' })
+          }
+        />
 
         {/* Top HUD */}
         <div className="absolute top-0 inset-x-0 p-4 flex items-center gap-3

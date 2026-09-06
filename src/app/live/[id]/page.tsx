@@ -66,7 +66,7 @@ export default function LiveViewerPage() {
   const [replyTo, setReplyTo] = useState<LiveMessage | null>(null);
   const [heartedIds, setHeartedIds] = useState<Set<string>>(new Set());
   const composerRef = useRef<LiveComposerHandle | null>(null);
-  const milestone = useMilestones(messages, user?.id);
+  const milestone = useMilestones(messages, user?.id, authors);
   const [showMenu, setShowMenu] = useState(false);
   const [reporting, setReporting] = useState<null | { messageId?: string; senderId: string; body?: string }>(null);
   const [safetyNote, setSafetyNote] = useState<string | null>(null);

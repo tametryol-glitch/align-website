@@ -1155,3 +1155,35 @@ export async function createLiveViewerClient(): Promise<LiveViewerClient> {
     },
   };
 }
+
+export interface TopHearter {
+  viewer_id: string;
+  count: number;
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+/**
+ * Who is sending the most hearts in this stream.
+ *
+ * This is the thing hosts actually respond to — naming the people
+ * carrying the room. The data already exists in live_reactions; without
+ * surfacing it the host only ever sees an anonymous total.
+ */
+export async function getTopHearters(sessionId: string, limit = 5): Promise<TopHearter[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('live_reactions')
+    .select('viewer_id, count, profile:profiles!live_reactions_viewer_id_fkey(display_name, avatar_url)')
+    .eq('session_id', sessionId)
+    .order('count', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return ((data as any[]) || []).map((r) => ({
+    viewer_id: r.viewer_id,
+    count: r.count ?? 0,
+    display_name: r.profile?.display_name ?? null,
+    avatar_url: r.profile?.avatar_url ?? null,
+  }));
+}
