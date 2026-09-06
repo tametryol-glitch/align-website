@@ -150,8 +150,28 @@ export default function LiveViewerPage() {
       })
       .catch(() => {});
 
-    const offMessages = subscribeLiveMessages(sessionId, (msg) =>
-      setMessages((prev) => attachReplyContext([...prev, msg])),
+    // Realtime UPDATE payloads carry only the raw row -- no joined
+    // profile, no reply context. Merge the changed columns and keep
+    // what the client already resolved, or hearting a comment would
+    // blank out its author.
+    const onUpdate = (u: LiveMessage) =>
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === u.id
+            ? {
+                ...m,
+                ...u,
+                profile: m.profile,
+                reply_to_body: m.reply_to_body,
+                reply_to_name: m.reply_to_name,
+              }
+            : m,
+        ),
+      );
+    const offMessages = subscribeLiveMessages(
+      sessionId,
+      (msg) => setMessages((prev) => attachReplyContext([...prev, msg])),
+      onUpdate,
     );
     const offSession = subscribeLiveSession(sessionId, (s) => {
       setSession(s);
@@ -386,7 +406,7 @@ export default function LiveViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row">
+    <div className="h-[100dvh] overflow-hidden bg-black text-white flex flex-col lg:flex-row">
       {/* Report reason picker */}
       {reporting && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-5">
@@ -429,7 +449,7 @@ export default function LiveViewerPage() {
         </div>
       )}
 
-      <div className="relative flex-1 bg-black">
+      <div className="relative flex-1 min-h-0 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-contain" />
 
         {!hasVideo && (
@@ -531,11 +551,11 @@ export default function LiveViewerPage() {
         )}
       </div>
 
-      <div className="lg:w-80 xl:w-96 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-72 lg:h-auto">
+      <div className="lg:w-80 xl:w-96 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-72 lg:h-auto shrink-0 lg:shrink min-h-0">
         <div className="px-4 py-3 border-b border-white/10 text-sm font-medium text-white/70">
           Live chat
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-2.5">
           {messages.length === 0 && <p className="text-sm text-white/35">Say hello.</p>}
           {messages.map((m) => (
             <LiveChatMessage

@@ -234,9 +234,29 @@ export default function GoLivePage() {
       })
       .catch(() => {});
 
-    const offMessages = subscribeLiveMessages(sessionId, (msg) => {
-      setMessages((prev) => attachReplyContext([...prev, msg]));
-    });
+    // Realtime UPDATE payloads carry only the raw row -- no joined
+    // profile, no reply context. Merge the changed columns and keep
+    // what the client already resolved, or hearting a comment would
+    // blank out its author.
+    const onUpdate = (u: LiveMessage) =>
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === u.id
+            ? {
+                ...m,
+                ...u,
+                profile: m.profile,
+                reply_to_body: m.reply_to_body,
+                reply_to_name: m.reply_to_name,
+              }
+            : m,
+        ),
+      );
+    const offMessages = subscribeLiveMessages(
+      sessionId,
+      (msg) => setMessages((prev) => attachReplyContext([...prev, msg])),
+      onUpdate,
+    );
     const offSession = subscribeLiveSession(sessionId, (s) => {
       setPeakViewers(s.peak_viewers);
       setViewerCount(s.current_viewers ?? 0);
@@ -268,6 +288,15 @@ export default function GoLivePage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages]);
+
+  // Notices are transient by nature -- a failed pin, a device that would
+  // not switch. Left on screen they pile onto the same corner as the
+  // hearters strip and read as a permanent fault.
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), 8000);
+    return () => clearTimeout(t);
+  }, [notice]);
 
   // Realtime inserts arrive without an author, so resolve any sender we
   // have not seen yet and cache it. Without this, chat shows UUIDs.
@@ -832,6 +861,12 @@ export default function GoLivePage() {
               <span className="text-[11px] text-white/40 mt-1">Tier &amp; reach</span>
             </div>
           </div>
+
+          {/* Who actually showed up for you. During the stream this is a
+              glance; afterwards it is the part worth reading. */}
+          <div className="mb-8">
+            <TopHearters sessionId={sessionId} variant="summary" />
+          </div>
           <button
             onClick={() => router.push('/feed')}
             className="w-full bg-white/10 hover:bg-white/15 rounded-lg py-3 font-medium"
@@ -845,9 +880,9 @@ export default function GoLivePage() {
 
   // ── Live ─────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row">
+    <div className="h-[100dvh] overflow-hidden bg-black text-white flex flex-col lg:flex-row">
       {/* Stage */}
-      <div className="relative flex-1 bg-black">
+      <div className="relative flex-1 min-h-0 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
         <MilestoneToast
@@ -1208,11 +1243,11 @@ export default function GoLivePage() {
       </div>
 
       {/* Chat */}
-      <div className="lg:w-80 xl:w-96 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-72 lg:h-auto">
+      <div className="lg:w-80 xl:w-96 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-72 lg:h-auto shrink-0 lg:shrink min-h-0">
         <div className="px-4 py-3 border-b border-white/10 text-sm font-medium text-white/70">
           Live chat
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-2.5">
           {messages.length === 0 && (
             <p className="text-sm text-white/35">No messages yet.</p>
           )}

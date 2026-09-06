@@ -458,6 +458,14 @@ export function attachReplyContext(rows: LiveMessage[]): LiveMessage[] {
 export function subscribeLiveMessages(
   sessionId: string,
   onMessage: (msg: LiveMessage) => void,
+  /**
+   * Row changes to messages already on screen: hearts_count (kept by a
+   * trigger), hiding and pinning.
+   *
+   * Without this every client saw only its own optimistic heart, so a
+   * comment five people hearted read "1" to each of them.
+   */
+  onUpdate?: (msg: LiveMessage) => void,
 ): () => void {
   const supabase = createClient();
   const channel = supabase
@@ -471,6 +479,16 @@ export function subscribeLiveMessages(
         filter: `session_id=eq.${sessionId}`,
       },
       (payload: any) => onMessage(payload.new as LiveMessage),
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'live_messages',
+        filter: `session_id=eq.${sessionId}`,
+      },
+      (payload: any) => onUpdate?.(payload.new as LiveMessage),
     )
     .subscribe();
 
