@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import {
   createLiveSession,
@@ -668,6 +669,16 @@ export default function GoLivePage() {
             <div className="bg-white/5 rounded-lg py-4">
               <div className="text-2xl font-semibold tabular-nums">{peakViewers}</div>
               <div className="text-xs text-white/50 mt-1">Peak viewers</div>
+            </div>
+            <div className="bg-white/5 rounded-lg py-4">
+              <div className="text-2xl font-semibold tabular-nums">{heartsCount}</div>
+              <div className="text-xs text-white/50 mt-1">Hearts</div>
+            </div>
+            <div className="bg-white/5 rounded-lg py-4 flex flex-col items-center justify-center">
+              <Link href="/live/standing" className="text-sm text-amber-300 hover:text-amber-200">
+                View standing
+              </Link>
+              <span className="text-[11px] text-white/40 mt-1">Tier &amp; reach</span>
             </div>
           </div>
           <button
