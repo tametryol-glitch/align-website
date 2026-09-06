@@ -15,6 +15,7 @@ import { ImpressionSlot } from '@/components/feed/ImpressionSlot';
 import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { LiveRail } from '@/components/feed/LiveRail';
+import { getLiveEligibility } from '@/lib/liveService';
 import { MentionInput } from '@/components/feed/MentionInput';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio } from 'lucide-react';
 import Link from 'next/link';
@@ -805,6 +806,19 @@ export default function FeedPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [canGoLive, setCanGoLive] = useState(false);
+
+  // Advisory: the RLS policy on live_sessions decides for real. This
+  // only keeps the button out of sight for people it would reject.
+  useEffect(() => {
+    let cancelled = false;
+    getLiveEligibility().then((e) => {
+      if (!cancelled) setCanGoLive(!!e?.eligible);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [prefillContent, setPrefillContent] = useState('');
   // A finished render handed back by the video editor.
   const [prefillVideoUrl, setPrefillVideoUrl] = useState('');
@@ -1065,9 +1079,10 @@ export default function FeedPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-display font-bold text-text-primary">{t('feed.title')}</h1>
         <div className="flex items-center gap-2">
-          {/* Phase 1 is founder-only. The real gate is the RLS policy on
+          {/* Founders, plus affiliates who have cleared the audience or
+              conversion thresholds. The real gate is the RLS policy on
               live_sessions; this just keeps the button out of sight. */}
-          {profile?.is_admin && (
+          {canGoLive && (
             <Link
               href="/live/go"
               className="flex items-center gap-1.5 h-10 px-3.5 rounded-full bg-red-600 hover:bg-red-500 transition-colors"

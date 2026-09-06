@@ -1174,6 +1174,33 @@ export async function createLiveViewerClient(): Promise<LiveViewerClient> {
   };
 }
 
+export interface LiveEligibility {
+  eligible: boolean;
+  is_founder: boolean;
+  followers: number;
+  signups: number;
+  paid_subscribers: number;
+  followers_required: number;
+  signups_required: number;
+  paid_required: number;
+}
+
+/**
+ * Whether this user may open a broadcast, and how close they are if not.
+ *
+ * Advisory only -- the enforceable gate is the live_sessions INSERT
+ * policy, which calls the same function server-side. This exists so the
+ * apps can hide an entry point that would fail, and so the numbers can
+ * be shown to an affiliate working toward it.
+ */
+export async function getLiveEligibility(): Promise<LiveEligibility | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('live_eligibility');
+  if (error) return null;
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row as LiveEligibility) || null;
+}
+
 export interface TopHearter {
   viewer_id: string;
   count: number;
