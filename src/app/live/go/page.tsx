@@ -266,7 +266,7 @@ export default function GoLivePage() {
   }, [sessionId, stage, burst]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages]);
 
   // Realtime inserts arrive without an author, so resolve any sender we

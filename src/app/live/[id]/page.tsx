@@ -167,7 +167,7 @@ export default function LiveViewerPage() {
   }, [sessionId, phase]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages]);
 
   // Attach the remote stream once the stage container is actually
