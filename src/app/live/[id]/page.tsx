@@ -178,6 +178,20 @@ export default function LiveViewerPage() {
     remoteTrack.play(videoRef.current);
   }, [phase, remoteTrack]);
 
+  // A backgrounded tab can have its media suspended by the OS -- most
+  // aggressively on iOS, where Safari freezes the page outright. Agora
+  // reconnects on its own, but the video element is not re-played, so
+  // returning would otherwise leave the viewer staring at a dead frame.
+  useEffect(() => {
+    if (phase !== 'watching') return;
+    const resume = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (remoteTrack && videoRef.current) remoteTrack.play(videoRef.current);
+    };
+    document.addEventListener('visibilitychange', resume);
+    return () => document.removeEventListener('visibilitychange', resume);
+  }, [phase, remoteTrack]);
+
   // Realtime inserts arrive without an author, so resolve any sender we
   // have not seen yet and cache it. Without this, chat shows UUIDs.
   useEffect(() => {
