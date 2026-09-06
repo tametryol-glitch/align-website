@@ -58,6 +58,7 @@ import {
   Sparkles,
   MonitorUp,
   Camera,
+  Volume2,
   Columns2,
   PictureInPicture2,
   Repeat,
@@ -104,6 +105,9 @@ export default function GoLivePage() {
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [showStage, setShowStage] = useState(false);
   const [busySource, setBusySource] = useState(false);
+  const [screenHasAudio, setScreenHasAudio] = useState(false);
+  const [micGain, setMicGain] = useState(1);
+  const [screenGain, setScreenGain] = useState(0.7);
 
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [draft, setDraft] = useState('');
@@ -386,6 +390,14 @@ export default function GoLivePage() {
         const nowHas = clientRef.current?.hasSecondarySource() ?? false;
         setHasSecond(nowHas);
         if (nowHas) setLayout('pip');
+
+        const withAudio = clientRef.current?.hasScreenAudio() ?? false;
+        setScreenHasAudio(withAudio);
+        if (kind === 'screen' && nowHas && !withAudio) {
+          setNotice(
+            'Sharing without sound. To let viewers hear the video, stop sharing and pick it again with "Share tab audio" ticked.',
+          );
+        }
       } finally {
         setBusySource(false);
       }
@@ -398,11 +410,23 @@ export default function GoLivePage() {
     try {
       await clientRef.current?.removeSecondarySource();
       setHasSecond(false);
+      setScreenHasAudio(false);
       setLayout('solo');
     } finally {
       setBusySource(false);
     }
   }, []);
+
+  const pushLevels = useCallback(
+    async (next: { micGain?: number; screenGain?: number }) => {
+      try {
+        await clientRef.current?.setAudioLevels(next);
+      } catch {
+        /* levels are cosmetic; never interrupt a broadcast for them */
+      }
+    },
+    [],
+  );
 
   const fmt = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
@@ -785,6 +809,57 @@ export default function GoLivePage() {
                         }}
                         className="w-full accent-red-500"
                       />
+                    </div>
+                  )}
+
+                  {/* Audio mix — only meaningful once a second sound
+                      source is actually in the stream. */}
+                  {screenHasAudio && (
+                    <div className="pt-1 border-t border-white/10 space-y-3">
+                      <div className="flex items-center gap-1.5 text-xs text-white/60 pt-2">
+                        <Volume2 className="w-3.5 h-3.5" />
+                        Audio mix
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-xs text-white/50 mb-1">
+                          <span>Your voice</span>
+                          <span className="tabular-nums">{Math.round(micGain * 100)}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={150}
+                          value={Math.round(micGain * 100)}
+                          onChange={(e) => {
+                            const v = Number(e.target.value) / 100;
+                            setMicGain(v);
+                            pushLevels({ micGain: v });
+                          }}
+                          className="w-full accent-red-500"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-xs text-white/50 mb-1">
+                          <span>Shared sound</span>
+                          <span className="tabular-nums">{Math.round(screenGain * 100)}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={150}
+                          value={Math.round(screenGain * 100)}
+                          onChange={(e) => {
+                            const v = Number(e.target.value) / 100;
+                            setScreenGain(v);
+                            pushLevels({ screenGain: v });
+                          }}
+                          className="w-full accent-red-500"
+                        />
+                      </div>
+                      <p className="text-[11px] text-white/35 leading-relaxed">
+                        Wear headphones. Through speakers your microphone picks the
+                        video back up and viewers hear it twice.
+                      </p>
                     </div>
                   )}
 

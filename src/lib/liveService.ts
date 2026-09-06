@@ -20,6 +20,11 @@ import {
   type LiveBackgroundOptions,
   type LiveStageOptions,
 } from '@/lib/liveBackground';
+import {
+  LiveAudioMixer,
+  DEFAULT_AUDIO_LEVELS,
+  type LiveAudioLevels,
+} from '@/lib/liveAudio';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -474,6 +479,15 @@ export interface LiveHostClient {
   /** Layout, inset size, split ratio, corner, and which source leads. */
   setStage(options: Partial<LiveStageOptions>): Promise<void>;
   getStage(): LiveStageOptions;
+  /**
+   * Whether the shared screen actually supplied an audio track. False
+   * when the host forgot to tick "share audio" in the browser picker,
+   * which is the usual reason viewers hear nothing from a video.
+   */
+  hasScreenAudio(): boolean;
+  /** Balance the host's voice against the shared video's audio. */
+  setAudioLevels(levels: Partial<LiveAudioLevels>): Promise<void>;
+  getAudioLevels(): LiveAudioLevels;
   getLocalVideoTrack(): any | null;
   onError(cb: (message: string) => void): void;
   /**
@@ -515,6 +529,12 @@ export async function createLiveHostClient(
   // Held so it can be stopped on teardown; a shared screen keeps the
   // browser's "you are sharing" bar up until its track is stopped.
   let secondaryTrack: MediaStreamTrack | null = null;
+  // Audio from the shared screen, when the host allowed it.
+  let screenAudioTrack: MediaStreamTrack | null = null;
+  let mixer: LiveAudioMixer | null = null;
+  // What is actually published: the plain mic, or the mixer's output.
+  let publishedAudio: any = null;
+  let audioLevels: LiveAudioLevels = { ...DEFAULT_AUDIO_LEVELS };
 
   let errorCb: ((m: string) => void) | null = null;
   let videoChangedCb: ((track: any | null) => void) | null = null;
@@ -527,6 +547,47 @@ export async function createLiveHostClient(
   /** Compositing is needed for a background OR a second source. */
   function needsCompositor(): boolean {
     return stage.background.mode !== 'none' || secondaryTrack !== null;
+  }
+
+  /** Mixing is only needed once there is a second audio source. */
+  function needsMixer(): boolean {
+    return screenAudioTrack !== null;
+  }
+
+  /**
+   * Swap the published audio track when the shape changes - plain mic to
+   * mixed, or back. Kept separate from the video republish so a layout
+   * change never disturbs the audio, and vice versa.
+   */
+  async function republishAudio(): Promise<void> {
+    if (!audioTrack) return;
+    const previous = publishedAudio;
+
+    let next: any;
+    if (needsMixer()) {
+      if (!mixer) {
+        mixer = new LiveAudioMixer(audioTrack.getMediaStreamTrack(), audioLevels);
+        await mixer.start();
+      }
+      mixer.setScreenTrack(screenAudioTrack);
+      const mixed = mixer.outputTrack;
+      next = mixed
+        ? AgoraRTC.createCustomAudioTrack({ mediaStreamTrack: mixed })
+        : audioTrack;
+    } else {
+      mixer?.stop();
+      mixer = null;
+      next = audioTrack;
+    }
+
+    if (previous === next) return;
+    if (previous) await client.unpublish([previous]);
+    if (previous && previous !== audioTrack) {
+      previous.stop();
+      previous.close();
+    }
+    publishedAudio = next;
+    if (publishedAudio) await client.publish([publishedAudio]);
   }
 
   const encoderConfig = {
@@ -594,11 +655,25 @@ export async function createLiveHostClient(
   ): Promise<boolean> {
     try {
       if (kind === 'screen') {
+        // audio:true is what lets viewers hear a shared video. The host
+        // still has to tick "share audio" in the browser's own picker;
+        // if they do not, getAudioTracks() is simply empty.
         const display = await (navigator.mediaDevices as any).getDisplayMedia({
           video: { frameRate: PUBLISH_FRAMERATE },
-          audio: false,
+          audio: {
+            // Leave the media untouched - these are tuned for speech and
+            // would chew up music.
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+          },
         });
         secondaryTrack = display.getVideoTracks()[0] ?? null;
+        screenAudioTrack = display.getAudioTracks()[0] ?? null;
+        screenAudioTrack?.addEventListener('ended', () => {
+          screenAudioTrack = null;
+          void republishAudio();
+        });
         // The browser's own "Stop sharing" button ends the track without
         // telling us, so listen for it or the layout keeps showing a
         // frozen final frame forever.
@@ -655,6 +730,11 @@ export async function createLiveHostClient(
   async function removeSecondary(): Promise<void> {
     secondaryTrack?.stop();
     secondaryTrack = null;
+    if (screenAudioTrack) {
+      screenAudioTrack.stop();
+      screenAudioTrack = null;
+      await republishAudio();
+    }
     stage = { ...stage, layout: 'solo', swapped: false };
     if (processor && needsCompositor()) {
       await processor.setSecondary(null);
@@ -695,7 +775,8 @@ export async function createLiveHostClient(
 
       publishedVideo = await buildVideoTrack();
 
-      const toPublish = [audioTrack, publishedVideo].filter(Boolean);
+      publishedAudio = audioTrack;
+      const toPublish = [publishedAudio, publishedVideo].filter(Boolean);
       await client.publish(toPublish);
       videoChangedCb?.(publishedVideo);
     },
@@ -703,7 +784,13 @@ export async function createLiveHostClient(
     async stop() {
       try {
         processor?.stop();
+        mixer?.stop();
         secondaryTrack?.stop();
+        screenAudioTrack?.stop();
+        if (publishedAudio && publishedAudio !== audioTrack) {
+          publishedAudio.stop();
+          publishedAudio.close();
+        }
         audioTrack?.stop();
         audioTrack?.close();
         if (publishedVideo && publishedVideo !== cameraTrack) {
@@ -715,7 +802,10 @@ export async function createLiveHostClient(
         await client.leave();
       } finally {
         processor = null;
+        mixer = null;
         secondaryTrack = null;
+        screenAudioTrack = null;
+        publishedAudio = null;
         audioTrack = null;
         cameraTrack = null;
         publishedVideo = null;
@@ -726,6 +816,13 @@ export async function createLiveHostClient(
 
     toggleMute() {
       if (!audioTrack) return false;
+      // While mixing, mute the voice only — silencing the shared video
+      // too would look to viewers like the stream had frozen.
+      if (mixer) {
+        const next = !mixer.isMicMuted();
+        mixer.setMicMuted(next);
+        return next;
+      }
       const nextMuted = audioTrack.enabled;
       audioTrack.setEnabled(!nextMuted);
       return nextMuted;
@@ -753,6 +850,9 @@ export async function createLiveHostClient(
     async setMicrophone(deviceId: string) {
       if (!audioTrack) return;
       await audioTrack.setDevice(deviceId);
+      // setDevice acquires a new underlying track, so a running mixer
+      // would otherwise keep reading the old, ended one.
+      mixer?.replaceMic(audioTrack.getMediaStreamTrack());
     },
 
     async setBackground(next: LiveBackgroundOptions) {
@@ -773,6 +873,10 @@ export async function createLiveHostClient(
       });
       if (!ok) return;
 
+      // Mix in the shared audio before touching the video, so sound and
+      // picture arrive together rather than a beat apart.
+      if (screenAudioTrack) await republishAudio();
+
       // Give it somewhere to show, rather than adding an invisible source.
       if (stage.layout === 'solo') stage = { ...stage, layout: 'pip' };
 
@@ -790,6 +894,19 @@ export async function createLiveHostClient(
 
     hasSecondarySource() {
       return secondaryTrack !== null;
+    },
+
+    hasScreenAudio() {
+      return screenAudioTrack !== null;
+    },
+
+    async setAudioLevels(levels: Partial<LiveAudioLevels>) {
+      audioLevels = { ...audioLevels, ...levels };
+      mixer?.setLevels(audioLevels);
+    },
+
+    getAudioLevels() {
+      return mixer ? mixer.getLevels() : { ...audioLevels };
     },
 
     getLocalVideoTrack() {
