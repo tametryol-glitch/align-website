@@ -10,7 +10,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 import { createClient } from './supabase';
-import { toggleReaction, type ReactionEmoji, type PostReaction } from './feedService';
+import { toggleReaction, getReactorsForPost, type ReactionEmoji, type PostReaction } from './feedService';
 
 export type PhotoTarget =
   | { kind: 'post'; postId: string; imageUrl: string }
@@ -189,17 +189,19 @@ export async function getReactorsForPhoto(
   target: PhotoTarget,
   filterEmoji?: ReactionEmoji,
 ): Promise<PhotoReactor[]> {
+  // post_reactions cannot embed profiles (its user_id FK points at
+  // auth.users), so posts go through the two-query path in feedService.
+  // photo_reactions.user_id DOES reference public.profiles, so the embed
+  // below is valid for the profile-photo case.
+  if (target.kind === 'post') return getReactorsForPost(target.postId, filterEmoji);
+
   const supabase = createClient();
   try {
-    const table = target.kind === 'post' ? 'post_reactions' : 'photo_reactions';
     let query = supabase
-      .from(table)
+      .from('photo_reactions')
       .select('emoji, user_id, profiles:user_id ( display_name, avatar_url, sun_sign )')
+      .eq('photo_key', target.photoKey)
       .order('created_at', { ascending: false });
-
-    query = target.kind === 'post'
-      ? query.eq('post_id', target.postId)
-      : query.eq('photo_key', target.photoKey);
 
     if (filterEmoji) query = query.eq('emoji', filterEmoji);
 

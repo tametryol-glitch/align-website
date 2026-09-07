@@ -527,28 +527,49 @@ export async function getReactorsForPost(
 ): Promise<ReactionUser[]> {
   const supabase = createClient();
   try {
+    // NOTE: do NOT embed profiles here. post_reactions.user_id has its FK
+    // into auth.users (see align-api/supabase-migration-reactions.sql),
+    // which PostgREST does not expose, so `profiles:user_id(...)` fails
+    // with PGRST200 and silently yields an empty list. Fetch the profiles
+    // in a second query instead — works regardless of FK topology.
     let query = supabase
       .from('post_reactions')
-      .select('emoji, user_id, profiles:user_id ( display_name, avatar_url, sun_sign )')
+      .select('emoji, user_id')
       .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
     if (filterEmoji) query = query.eq('emoji', filterEmoji);
 
-    const { data, error } = await query;
-    if (error || !data) return [];
+    const { data: rows, error } = await query;
+    if (error) {
+      console.warn('[getReactorsForPost] reactions query failed:', error.message);
+      return [];
+    }
+    if (!rows || rows.length === 0) return [];
 
-    return (data as unknown as Array<{
-      emoji: string;
-      user_id: string;
-      profiles?: { display_name?: string; avatar_url?: string | null; sun_sign?: string | null } | null;
-    }>).map(r => ({
-      userId: r.user_id,
-      displayName: r.profiles?.display_name || 'User',
-      avatarUrl: r.profiles?.avatar_url || null,
-      sunSign: r.profiles?.sun_sign || null,
-      emoji: r.emoji as ReactionEmoji,
-    }));
+    const userIds = Array.from(new Set(rows.map(r => r.user_id as string)));
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, sun_sign')
+      .in('id', userIds);
+
+    if (profileError) {
+      console.warn('[getReactorsForPost] profiles query failed:', profileError.message);
+    }
+
+    const byId = new Map<string, { display_name?: string; avatar_url?: string | null; sun_sign?: string | null }>();
+    for (const p of profiles || []) byId.set(p.id as string, p);
+
+    return rows.map(r => {
+      const profile = byId.get(r.user_id as string);
+      return {
+        userId: r.user_id as string,
+        displayName: profile?.display_name || 'User',
+        avatarUrl: profile?.avatar_url || null,
+        sunSign: profile?.sun_sign || null,
+        emoji: r.emoji as ReactionEmoji,
+      };
+    });
   } catch {
     return [];
   }
