@@ -13,8 +13,22 @@
  * before the billing check had been run), but it works for any list of
  * deleted Supabase user ids.
  *
- * Stripe customers are created with metadata.supabase_user_id — see
- * src/app/api/stripe/checkout/route.ts:97 — which is what this searches on.
+ * Stripe customers reach this account two ways, and they are tagged
+ * differently, so both have to be searched:
+ *
+ *   - metadata.supabase_user_id — set by src/app/api/stripe/checkout/route.ts
+ *     when IT creates the customer.
+ *   - metadata.rc_customer_id — set by RevenueCat Web Billing, which
+ *     provisions its own Stripe customer per subscription. The value is the
+ *     RevenueCat app_user_id, which is the same Supabase user id.
+ *
+ * Searching only the first key made this script report "nothing to refund" on
+ * 2026-09-07 while an account with no profiles row was still being charged
+ * $29/month, because every web subscriber is a Web Billing customer.
+ *
+ * For the same reason it checks CHARGES as well as subscriptions: Web Billing
+ * creates no Stripe Subscription object at all — it drives the recurring
+ * PaymentIntents itself — so a subscriptions.list scan sees nothing.
  *
  * READ-ONLY BY DESIGN, same as find-duplicate-subscriptions.mjs. It never
  * cancels a subscription and never issues a refund. Moving customer money is
@@ -129,7 +143,9 @@ async function main() {
     let customers = [];
     try {
       const res = await stripe.customers.search({
-        query: `metadata['supabase_user_id']:'${userId}'`,
+        query:
+          `metadata['supabase_user_id']:'${userId}' OR ` +
+          `metadata['rc_customer_id']:'${userId}'`,
         limit: 100,
       });
       customers = res.data;
@@ -146,8 +162,32 @@ async function main() {
       });
 
       const live = subs.data.filter((s) => LIVE_STATUSES.has(s.status));
-      if (live.length > 0) {
-        findings.push({ userId, customer, subs: live });
+
+      // No Subscription object does NOT mean no money is moving. A Web
+      // Billing plan shows up only as a recent succeeded charge.
+      const charges = await stripe.charges.list({ customer: customer.id, limit: 100 });
+      const now = Date.now() / 1000;
+      const currentCharges = charges.data.filter((c) => {
+        if (c.status !== 'succeeded' || c.refunded) return false;
+        if (!c.metadata?.rc_billing_generated) return false;
+        const product = String(c.metadata?.rc_product_identifier || '');
+        const windowDays = product.includes('annual') ? 370 : 40;
+        return now - c.created < windowDays * 86_400;
+      });
+
+      // One line per PRODUCT, not per charge. The window is wide enough to
+      // hold two renewals of the same monthly plan, and counting both would
+      // double the reported cost of a single subscription.
+      const latestByProduct = new Map();
+      for (const c of currentCharges) {
+        const product = String(c.metadata?.rc_product_identifier || c.description || 'unknown');
+        const seen = latestByProduct.get(product);
+        if (!seen || c.created > seen.created) latestByProduct.set(product, c);
+      }
+      const webBilling = [...latestByProduct.values()];
+
+      if (live.length > 0 || webBilling.length > 0) {
+        findings.push({ userId, customer, subs: live, webBilling });
       }
     }
   }
@@ -164,19 +204,29 @@ async function main() {
 
   let monthlyCents = 0;
 
-  for (const { userId, customer, subs } of findings) {
+  for (const { userId, customer, subs, webBilling } of findings) {
     console.log(`${userId}`);
     console.log(`  customer ${customer.id}  ${customer.email || '(no email)'}`);
     for (const sub of subs) {
       console.log(`    ${describe(sub)}`);
       monthlyCents += sub.items.data[0]?.price?.unit_amount || 0;
     }
+    for (const charge of webBilling || []) {
+      const when = new Date(charge.created * 1000).toISOString().slice(0, 10);
+      const product = charge.metadata?.rc_product_identifier || charge.description || 'unknown';
+      console.log(`    RevenueCat Web Billing  ${when}  ${money(charge.amount, charge.currency)}  ${product}`);
+      monthlyCents += charge.amount;
+    }
     console.log('');
   }
 
   console.log(`Roughly ${(monthlyCents / 100).toFixed(2)} per billing period is still being charged`);
   console.log('to people who cannot log in to cancel it.');
-  console.log('\nCancel and refund each one in the Stripe dashboard — this script will not.');
+  console.log('');
+  console.log('Cancel each one where it actually lives — this script will not.');
+  console.log('Stripe subscriptions: the Stripe dashboard.');
+  console.log('Lines marked "RevenueCat Web Billing": the RevenueCat dashboard.');
+  console.log('Cancelling those in Stripe does NOT stop the charges.');
   console.log('The customer email above is also how to reach the 6 adults deleted in error.');
 }
 
