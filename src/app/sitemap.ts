@@ -175,6 +175,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily' as const,
       priority: 0.6,
     })),
+    /* Policy pages. Low priority for search, but they must resolve at a
+       real public URL -- a payment processor's review looks for them. */
+    ...['/terms', '/terms/coins', '/terms/creator-payouts', '/affiliates/terms', '/privacy'].map(
+      (route) => ({
+        url: `${base}${route}`,
+        lastModified: now,
+        changeFrequency: 'yearly' as const,
+        priority: 0.3,
+      }),
+    ),
     ...zodiacRoutes,
     ...compatibilityRoutes,
     /* Personality pages (144 Sun-Moon combos) */

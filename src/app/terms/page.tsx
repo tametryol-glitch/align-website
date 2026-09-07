@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -54,6 +55,24 @@ export default function TermsPage() {
 
       <Section title="Changes to These Terms">
         <p>We may update these Terms from time to time. Continued use of the Service after changes take effect constitutes acceptance of the revised Terms.</p>
+      </Section>
+
+      <Section title="Additional Terms">
+        <p>Some features carry their own terms, which apply in addition to these:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>
+            <Link className="text-accent-primary underline" href="/terms/coins">Coins, Gifts &amp; Refunds</Link>
+            {' '}— buying coins, sending gifts, purchase limits and refunds.
+          </li>
+          <li>
+            <Link className="text-accent-primary underline" href="/terms/creator-payouts">Creator Payout Terms</Link>
+            {' '}— how hosts earn from live gifts and how payouts work.
+          </li>
+          <li>
+            <Link className="text-accent-primary underline" href="/affiliates/terms">Affiliate Program Terms</Link>
+            {' '}— commissions, attribution and payment for affiliates.
+          </li>
+        </ul>
       </Section>
 
       <Section title="Contact Us">
