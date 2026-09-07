@@ -12,6 +12,11 @@ import {
   trackPurchaseCompleted,
   trackPurchaseFailed,
 } from '@/lib/firstPartyAnalytics';
+import {
+  getLiveSubscriptionState,
+  planChangeBlockedMessage,
+  BILLING_UNAVAILABLE_MESSAGE,
+} from '@/lib/subscriptionGuard';
 
 const plans = [
   {
@@ -163,29 +168,61 @@ function SubscriptionContent() {
             ? t('subscription.cardDeclined', 'Your card was declined. Please update your payment method and try again.')
             : code === 'checkout_failed'
               ? t('subscription.checkoutFailed', 'Something went wrong starting your subscription. Please try again.')
-              : t('subscription.portalError');
+              : code === 'existing_subscription'
+                ? t('subscription.existingSubscription', "You already have an active subscription, so we stopped before charging you for a second one. Cancel your current plan first, then choose the new one.")
+                : t('subscription.portalError');
       setBanner({ type: 'error', message });
       window.history.replaceState({}, '', '/settings/subscription');
     }
   }, [searchParams, t]);
 
-  function handleSelectPlan(planId: string) {
+  async function handleSelectPlan(planId: string) {
     if (planId === tier) return;
     if (planId === 'free') {
-      window.location.href = '/api/stripe/portal';
+      await handleManageSubscription();
       return;
     }
+
+    // Same guard as /pricing, for the same reason: web subscriptions are sold
+    // through RevenueCat Web Billing, which cannot change a plan in place.
+    // This page's Stripe Checkout route only recognises Stripe *Subscription*
+    // objects — a Web Billing subscription is not one — so an existing
+    // subscriber clicking a different tier here would be given a second,
+    // independently-billed subscription rather than an upgrade.
+    const live = await getLiveSubscriptionState();
+
+    if (!live.reachable) {
+      setBanner({ type: 'error', message: BILLING_UNAVAILABLE_MESSAGE });
+      return;
+    }
+
+    if (live.tier !== 'free') {
+      setBanner({ type: 'error', message: planChangeBlockedMessage(live.tier) });
+      if (live.managementURL) window.open(live.managementURL, '_blank', 'noopener');
+      return;
+    }
+
     trackCheckoutStarted(planId, 'settings_subscription');
     const checkoutUrl = `/api/stripe/checkout?plan=${planId}&email=${encodeURIComponent(user?.email || '')}`;
     window.location.href = checkoutUrl;
   }
 
-  function handleManageSubscription() {
+  // Web Billing subscribers have no `stripe_customer_id` on their profile —
+  // RevenueCat created their Stripe customer itself — so /api/stripe/portal
+  // bounces them to `?no_subscription=true` and they cannot cancel anything
+  // from this site at all. Prefer RevenueCat's own management page and only
+  // fall back to the Stripe portal for genuinely Stripe-billed customers.
+  async function handleManageSubscription() {
+    const live = await getLiveSubscriptionState();
+    if (live.managementURL) {
+      window.location.href = live.managementURL;
+      return;
+    }
     window.location.href = '/api/stripe/portal';
   }
 
   function handleRestorePurchases() {
-    window.location.href = '/api/stripe/portal';
+    void handleManageSubscription();
   }
 
   return (

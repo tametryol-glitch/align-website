@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { getRevenueCatInstance } from '@/lib/revenuecat';
+import {
+  getLiveSubscriptionState,
+  planChangeBlockedMessage,
+  BILLING_UNAVAILABLE_MESSAGE,
+} from '@/lib/subscriptionGuard';
 import { PLANS } from '@/lib/plans';
 import { Check, Sparkles, Star, Zap, Crown, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -32,6 +37,9 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [offerings, setOfferings] = useState<any>(null);
   const [error, setError] = useState('');
+  // Set alongside `error` when a purchase is blocked because a subscription
+  // already exists — RevenueCat's hosted page is where it gets cancelled.
+  const [manageUrl, setManageUrl] = useState<string | null>(null);
   const [billing, setBilling] = useState<BillingPeriod>('monthly');
   const [isAffiliate, setIsAffiliate] = useState(false);
 
@@ -64,11 +72,38 @@ export default function PricingPage() {
     }
     if (planKey === 'free' || planKey === tier) return;
 
+    setError('');
+    setManageUrl(null);
+    setLoading(planKey);
+
+    // A plan change is NOT a purchase. RevenueCat Web Billing cannot swap a
+    // plan in place — purchase() always opens a second, parallel subscription
+    // under a second Stripe customer, and the first one keeps billing. Check
+    // with RevenueCat directly (not the cached store tier, which silently
+    // stays 'free' whenever AuthProvider's sync throws) before spending money.
+    const live = await getLiveSubscriptionState();
+
+    if (!live.reachable) {
+      setError(BILLING_UNAVAILABLE_MESSAGE);
+      setLoading(null);
+      return;
+    }
+
+    if (live.tier !== 'free') {
+      // Already paying. Sending them to Stripe Checkout instead would be
+      // worse, not better: that route only looks for Stripe *Subscription*
+      // objects, and a Web Billing subscription isn't one, so it would open a
+      // THIRD billing relationship on top of the two they'd already have.
+      setError(planChangeBlockedMessage(live.tier));
+      setManageUrl(live.managementURL);
+      setLoading(null);
+      return;
+    }
+
     trackCheckoutStarted(planKey, 'pricing_page');
 
     // Affiliate-referred users go through Stripe Checkout to get their 10% discount
     if (isAffiliate && ['light', 'premium', 'pro'].includes(planKey)) {
-      setLoading(planKey);
       window.location.href = `/api/stripe/checkout?plan=${planKey}`;
       return;
     }
@@ -76,11 +111,9 @@ export default function PricingPage() {
     const purchases = getRevenueCatInstance();
     if (!purchases) {
       setError('Subscription service not initialized. Please try again.');
+      setLoading(null);
       return;
     }
-
-    setLoading(planKey);
-    setError('');
 
     try {
       const currentOffering = offerings?.current;
@@ -180,7 +213,19 @@ export default function PricingPage() {
       )}
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 px-4 py-3 rounded-xl mb-6 text-center">{error}</p>
+        <div className="text-sm text-red-400 bg-red-400/10 px-4 py-3 rounded-xl mb-6 text-center">
+          <p>{error}</p>
+          {manageUrl && (
+            <a
+              href={manageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 underline font-medium"
+            >
+              Manage or cancel your subscription
+            </a>
+          )}
+        </div>
       )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">

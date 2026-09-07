@@ -1690,7 +1690,8 @@
       "noPackages": "Subscription plans are being finalized in the store. Please try again later.",
       "connectionFailed": "Could not reach the subscription service. Please check your connection and try again.",
       "stillStarting": "Subscription service is still starting. Please wait a moment and retry."
-    }
+    },
+    "existingSubscription": "You already have an active subscription, so we stopped before charging you for a second one. Cancel your current plan first, then choose the new one."
   },
   "courses": {
     "title": "Learn Astrology",

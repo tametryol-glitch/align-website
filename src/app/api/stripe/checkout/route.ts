@@ -161,6 +161,65 @@ async function createCheckout(req: NextRequest) {
       );
     }
 
+    // 3c. Last line of defence: is this user already paying through RevenueCat
+    //     Web Billing?
+    //
+    //     Everything above only knows about Stripe *Subscription* objects.
+    //     Web Billing does not create any — it drives recurring PaymentIntents
+    //     itself and provisions its own Stripe customer per subscription
+    //     (metadata.rc_billing_generated = "True", metadata.rc_customer_id =
+    //     the RevenueCat app_user_id, which is the Supabase user id). None of
+    //     that is visible to subscriptions.list, and none of it is linked from
+    //     profiles.stripe_customer_id. So without this check, a Web Billing
+    //     subscriber who lands on Checkout gets a real Stripe subscription
+    //     stacked on top of the one they already pay for — a second full-price
+    //     charge every month, for as long as nobody notices.
+    //
+    //     Note: customers.search is eventually consistent (a few seconds), so
+    //     this cannot catch two purchases made back to back. The client-side
+    //     guard in lib/subscriptionGuard.ts is what covers that; this covers
+    //     everything else.
+    try {
+      const rcCustomers = await stripe.customers.search({
+        query: `metadata['rc_customer_id']:'${user.id}'`,
+        limit: 20,
+      });
+
+      const now = Date.now() / 1000;
+      const DAY = 86_400;
+
+      for (const rcCustomer of rcCustomers.data) {
+        const charges = await stripe.charges.list({ customer: rcCustomer.id, limit: 100 });
+
+        const live = charges.data.find((c) => {
+          if (c.status !== 'succeeded' || c.refunded) return false;
+          // An annual plan is still live long after its one charge; a monthly
+          // one is only live for the ~30 days it bought. Judge by the product
+          // RevenueCat stamped on the charge rather than one blanket window,
+          // so a genuine re-subscribe months after cancelling isn't blocked.
+          const productId = String(c.metadata?.rc_product_identifier || '');
+          const windowDays = productId.includes('annual') ? 370 : 40;
+          return now - c.created < windowDays * DAY;
+        });
+
+        if (live) {
+          console.warn(
+            `[Stripe Checkout] Blocked second subscription for ${user.id}: ` +
+            `RevenueCat Web Billing charge ${live.id} (${live.metadata?.rc_product_identifier}) is still current.`,
+          );
+          return NextResponse.redirect(
+            `${origin()}/settings/subscription?error=existing_subscription`,
+            303,
+          );
+        }
+      }
+    } catch (err) {
+      // A failed lookup must not block a genuine first purchase, so this falls
+      // through on error rather than refusing. The client-side guard runs
+      // first and is the one that fails closed.
+      console.error('[Stripe Checkout] Web Billing duplicate check failed:', err);
+    }
+
     // 4. Check for affiliate referral — apply 10% off first 2 months
     let affiliateCookie = req.cookies.get('align_aff')?.value || null;
 

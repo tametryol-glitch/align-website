@@ -16,6 +16,18 @@
  *
  * Requires STRIPE_SECRET_KEY (read from the environment, or from .env.local).
  *
+ * Two passes, because Align bills through two different mechanisms:
+ *
+ *   1. Stripe Subscriptions — what /api/stripe/checkout creates.
+ *   2. RevenueCat Web Billing — what /pricing creates via purchases-js.
+ *      These produce NO Stripe Subscription object at all. RevenueCat drives
+ *      the recurring PaymentIntents itself and provisions a fresh Stripe
+ *      customer per subscription (metadata.rc_billing_generated = "True"), so
+ *      pass 1 is structurally blind to them: on 2026-09-07 this script
+ *      reported "nothing to clean up" for an account holding zero Subscription
+ *      objects, while a customer was paying Premium and Pro side by side.
+ *      Pass 2 works off charges and groups by metadata.rc_customer_id.
+ *
  * Note: this covers Stripe only. Subscriptions bought in the Android app are
  * billed by Google and are not visible here — check the Play Console
  * (Subscriptions -> filter by the affected user) for those.
@@ -96,7 +108,8 @@ async function main() {
   console.log(`Scanned ${scanned} subscriptions; ${byCustomer.size} customers with a live one.`);
 
   if (duplicates.length === 0) {
-    console.log('\nNo customer has more than one live subscription. Nothing to clean up.');
+    console.log('\nNo customer has more than one live Stripe Subscription.');
+    await scanWebBilling(stripe);
     return;
   }
 
@@ -129,6 +142,114 @@ async function main() {
     '\nNext: in the Stripe dashboard, for each customer keep the subscription for the tier\n' +
       'they actually want, cancel the other, and refund the charges it collected.',
   );
+
+  await scanWebBilling(stripe);
+}
+
+/* ── Pass 2: RevenueCat Web Billing ──────────────────────── */
+
+/**
+ * Web Billing leaves no Subscription object behind, so the only trace of a
+ * recurring charge is the charge itself. Group every RevenueCat-generated
+ * customer by metadata.rc_customer_id (the RevenueCat app_user_id, which is
+ * the Supabase user id) and flag anyone billed for more than one distinct
+ * product inside a single billing window — that is one person paying for two
+ * tiers at the same time.
+ */
+async function scanWebBilling(stripe) {
+  console.log('');
+  console.log('Scanning RevenueCat Web Billing charges…');
+
+  const DAY = 86_400;
+  const now = Date.now() / 1000;
+
+  /** @type {Map<string, {email: string|null, customers: string[], charges: any[]}>} */
+  const byRcCustomer = new Map();
+  let customersScanned = 0;
+
+  for await (const customer of stripe.customers.list({ limit: 100 })) {
+    customersScanned++;
+    const rcId = customer.metadata?.rc_customer_id;
+    if (!rcId) continue;
+
+    const charges = await stripe.charges.list({ customer: customer.id, limit: 100 });
+    const paid = charges.data.filter((c) => c.status === 'succeeded' && !c.refunded);
+    if (paid.length === 0) continue;
+
+    if (!byRcCustomer.has(rcId)) {
+      byRcCustomer.set(rcId, { email: customer.email, customers: [], charges: [] });
+    }
+    const group = byRcCustomer.get(rcId);
+    group.customers.push(customer.id);
+    for (const c of paid) {
+      group.charges.push({
+        created: c.created,
+        amount: c.amount,
+        currency: c.currency,
+        product: c.metadata?.rc_product_identifier || c.description || 'unknown product',
+        refunded: c.amount_refunded,
+      });
+    }
+  }
+
+  console.log(
+    `Scanned ${customersScanned} customers; ${byRcCustomer.size} with Web Billing charges.`,
+  );
+
+  // "At once" = more than one distinct product charged inside the window a
+  // single monthly cycle covers. Two charges for the SAME product 30 days
+  // apart are renewals, not duplicates.
+  const offenders = [];
+  for (const [rcId, group] of byRcCustomer) {
+    const recent = group.charges.filter((c) => now - c.created < 45 * DAY);
+    const products = new Set(recent.map((c) => c.product));
+    if (products.size > 1) offenders.push([rcId, group, products]);
+  }
+
+  if (offenders.length === 0) {
+    console.log('No Web Billing customer is paying for two tiers at once.');
+    return;
+  }
+
+  console.log('');
+  console.log(`${offenders.length} Web Billing customer(s) paying for two tiers at once:`);
+  console.log('');
+
+  let overBilledCents = 0;
+
+  for (const [rcId, group, products] of offenders) {
+    console.log(`${group.email || '(no email)'}  rc_customer_id=${rcId}`);
+    console.log(`  stripe customers: ${group.customers.join(', ')}`);
+
+    for (const c of [...group.charges].sort((a, b) => a.created - b.created)) {
+      const when = new Date(c.created * 1000).toISOString().slice(0, 10);
+      const refundNote = c.refunded ? `  (refunded ${money(c.refunded, c.currency)})` : '';
+      console.log(`    ${when}  ${money(c.amount, c.currency).padStart(12)}  ${c.product}${refundNote}`);
+    }
+
+    // Which tier the customer actually WANTS is not knowable from Stripe, so
+    // this assumes they keep the most expensive one and reports the rest as
+    // duplicate spend. That is a LOWER BOUND: a customer who meant to keep the
+    // cheaper tier is being over-billed by more than this.
+    const latestPerProduct = [...products]
+      .map((product) => {
+        const forProduct = group.charges
+          .filter((c) => c.product === product && now - c.created < 45 * DAY)
+          .sort((a, b) => b.created - a.created);
+        return forProduct[0]?.amount || 0;
+      })
+      .sort((a, b) => a - b);
+    overBilledCents += latestPerProduct.slice(0, -1).reduce((a, b) => a + b, 0);
+
+    console.log('');
+  }
+
+  console.log(`At least ${money(overBilledCents, 'usd')}/month of duplicate Web Billing.`);
+  console.log('');
+  console.log('Next: these are NOT Stripe subscriptions — cancelling in the Stripe');
+  console.log('dashboard will NOT stop the charges. Cancel them in the RevenueCat');
+  console.log('dashboard (Customers -> search the rc_customer_id above -> the');
+  console.log('subscription for the tier they did not want).');
 }
 
 main().catch((err) => {
