@@ -120,6 +120,55 @@ export async function sendGift(
   return { ok: true, balance: row?.balance_after ?? 0 };
 }
 
+export interface CoinLedgerEntry {
+  id: number;
+  entry_type: string;
+  provenance: 'granted' | 'purchased';
+  coins: number;
+  balance_after: number;
+  reason: string | null;
+  created_at: string;
+}
+
+/**
+ * Recent coin movements, newest first.
+ *
+ * Reads the ledger rather than deriving from balances: the balance says
+ * where you are, the ledger says how you got there, and only the second
+ * can answer "where did my coins go".
+ */
+export async function getCoinLedger(limit = 30): Promise<CoinLedgerEntry[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('coin_ledger')
+    .select('id, entry_type, provenance, coins, balance_after, reason, created_at')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) return [];
+  return (data as CoinLedgerEntry[]) || [];
+}
+
+export interface CreatorEarningsSummary {
+  gifts_received: number;
+  coins_received: number;
+  accrued_cents: number;
+  available_cents: number;
+  paid_cents: number;
+}
+
+/**
+ * What a host has received. Deliberately surfaced in coins and gift
+ * counts rather than currency while the rate is zero -- a "$0.00
+ * pending" figure invites a question whose answer would be a promise.
+ */
+export async function getCreatorEarnings(): Promise<CreatorEarningsSummary | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('my_creator_earnings');
+  if (error) return null;
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row as CreatorEarningsSummary) || null;
+}
+
 export async function getTopGifters(sessionId: string, limit = 3): Promise<TopGifter[]> {
   const supabase = createClient();
   const { data, error } = await supabase.rpc('live_top_gifters', {

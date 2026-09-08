@@ -158,7 +158,10 @@ export function GiftSheet({
         )}
 
         <p className="text-[11px] text-white/30 mt-4 text-center">
-          Coins are free while gifting is in preview. They have no cash value.
+          Coins are free while gifting is in preview. They have no cash value.{' '}
+          <a href="/coins" className="underline hover:text-white/60">
+            Your coins
+          </a>
         </p>
       </div>
     </div>

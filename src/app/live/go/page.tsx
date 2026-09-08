@@ -80,6 +80,7 @@ import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast'
 import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
 import { getGiftCatalog, type Gift } from '@/lib/coinService';
 import { TopHearters } from '@/components/live/TopHearters';
+import { TopGifters } from '@/components/live/TopGifters';
 import { mentionMarkup } from '@/lib/mentions';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
 import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
@@ -881,8 +882,9 @@ export default function GoLivePage() {
 
           {/* Who actually showed up for you. During the stream this is a
               glance; afterwards it is the part worth reading. */}
-          <div className="mb-8">
+          <div className="mb-8 flex flex-col gap-6">
             <TopHearters sessionId={sessionId} variant="summary" />
+            <TopGifters sessionId={sessionId} variant="summary" />
           </div>
           <button
             onClick={() => router.push('/feed')}
@@ -903,6 +905,12 @@ export default function GoLivePage() {
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
         <GiftBurst celebration={celebration} />
+        <TopGifters
+          sessionId={sessionId}
+          onPressGifter={(g) =>
+            thankHearter({ id: g.sender_id, name: g.display_name || 'friend' })
+          }
+        />
         <MilestoneToast
           milestone={milestone}
           onThank={(m) => thankHearter({ id: m.senderId, name: m.senderName })}
