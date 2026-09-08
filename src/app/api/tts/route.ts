@@ -28,7 +28,7 @@ const OPENAI_TO_KOKORO: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, voice, speed, format } = await req.json();
+    const { text, voice, speed, format, lang } = await req.json();
     const clean = (text as string || '').trim();
     if (!clean) return NextResponse.json({ error: 'No text provided.' }, { status: 400 });
     if (clean.length > MAX_CHARS) {
@@ -41,7 +41,17 @@ export async function POST(req: NextRequest) {
     const resp = await fetch(`${KOKORO_URL}/tts`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ text: clean, voice: OPENAI_TO_KOKORO[voice] || voice || 'af_heart', speed: speed || 1, format: format || 'mp3' }),
+      // `lang` drives phonemization. Without it the sidecar defaults to en-us,
+      // which reads non-English text with English phonemes — intelligible-ish
+      // for Romance languages, gibberish for the rest. Callers that don't send
+      // it keep the old behaviour.
+      body: JSON.stringify({
+        text: clean,
+        voice: OPENAI_TO_KOKORO[voice] || voice || 'af_heart',
+        speed: speed || 1,
+        format: format || 'mp3',
+        ...(lang ? { lang } : {}),
+      }),
     });
 
     if (!resp.ok) {

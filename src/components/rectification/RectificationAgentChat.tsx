@@ -4,7 +4,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import { Send, Sparkles, RotateCcw } from 'lucide-react';
+import { Send, Sparkles, RotateCcw, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { useSpeechInput } from '@/lib/voice/useSpeechInput';
+import { useStreamingSpeech } from '@/lib/voice/useStreamingSpeech';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -49,6 +51,12 @@ export function RectificationAgentChat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const startedRef = useRef(false);
+  /** Lets the mic callback reach `send` before it's defined. */
+  const sendRef = useRef<(text: string, isAuto?: boolean) => void>(() => {});
+
+  const locale = i18n.language || 'en';
+  const speech = useStreamingSpeech(locale);
+  const mic = useSpeechInput(locale, (text) => sendRef.current(text));
 
   // Keep the transcript pinned to the newest content.
   useEffect(() => {
@@ -109,6 +117,9 @@ export function RectificationAgentChat() {
       setBusy(true);
       setError(null);
       setActivity(null);
+      // Stop any audio still playing from the previous turn before the new one
+      // starts producing sentences.
+      speech.cancel();
 
       // Send the full history including the hidden kickoff — the API requires
       // the first turn to be `user`, and dropping it would break turn two.
@@ -132,6 +143,9 @@ export function RectificationAgentChat() {
             onText: (delta) => {
               acc += delta;
               setStreaming(acc);
+              // Speak each sentence as it closes rather than waiting for the
+              // whole reply — this is what keeps time-to-first-audio short.
+              speech.feed(delta);
             },
             onTool: (tool) => {
               setActivity(tool);
@@ -152,14 +166,20 @@ export function RectificationAgentChat() {
         if (acc.trim()) {
           setMessages((m) => [...m, { role: 'assistant', content: acc }]);
         }
+        // Speak any trailing text that never got closing punctuation.
+        speech.flush();
         setStreaming('');
         setActivity(null);
         setBusy(false);
         abortRef.current = null;
       }
     },
-    [busy, messages, sessionId, seededState, i18n.language],
+    [busy, messages, sessionId, seededState, i18n.language, speech],
   );
+
+  useEffect(() => {
+    sendRef.current = send;
+  }, [send]);
 
   // Kick off the conversation once.
   useEffect(() => {
@@ -171,6 +191,8 @@ export function RectificationAgentChat() {
 
   const reset = () => {
     abortRef.current?.abort();
+    speech.cancel();
+    mic.stop();
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {}
@@ -290,18 +312,77 @@ export function RectificationAgentChat() {
         )}
       </div>
 
+      {mic.error && (
+        <p className="mt-2 text-xs text-red-400">{mic.error}</p>
+      )}
+
       {/* Composer */}
       <form onSubmit={onSubmit} className="mt-3 flex items-center gap-2">
+        {/* Speaking the replies aloud. Toggling counts as the user gesture
+            browsers require before audio may autoplay. */}
+        <button
+          type="button"
+          onClick={() => {
+            if (speech.enabled) speech.cancel();
+            speech.setEnabled(!speech.enabled);
+          }}
+          className={`rounded-full p-2.5 transition-colors ${
+            speech.enabled
+              ? 'bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30'
+              : 'bg-white/5 text-text-muted hover:text-text-primary'
+          }`}
+          aria-label={speech.enabled ? 'Turn off spoken replies' : 'Read replies aloud'}
+          title={
+            speech.enabled
+              ? speech.usingKokoro
+                ? 'Spoken replies on'
+                : 'Spoken replies on (using your device voice for this language)'
+              : 'Read replies aloud'
+          }
+        >
+          {speech.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+        </button>
+
         <input
-          value={input}
+          value={mic.listening ? mic.transcript : input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={busy ? 'Please wait…' : 'Type your answer…'}
-          disabled={busy}
+          placeholder={
+            mic.listening
+              ? 'Listening…'
+              : busy
+                ? 'Please wait…'
+                : 'Type your answer, or tap the mic…'
+          }
+          disabled={busy || mic.listening}
           className="flex-1 rounded-full bg-white/5 px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none focus:ring-1 focus:ring-accent-primary/50 disabled:opacity-50"
         />
+
+        {mic.supported && (
+          <button
+            type="button"
+            onClick={() => {
+              if (mic.listening) {
+                mic.stop();
+              } else {
+                speech.cancel(); // don't talk over the user
+                mic.start();
+              }
+            }}
+            disabled={busy}
+            className={`rounded-full p-2.5 transition-colors disabled:opacity-40 ${
+              mic.listening
+                ? 'bg-red-500/20 text-red-400 animate-pulse'
+                : 'bg-white/5 text-text-muted hover:text-text-primary'
+            }`}
+            aria-label={mic.listening ? 'Stop listening' : 'Answer by voice'}
+          >
+            {mic.listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </button>
+        )}
+
         <button
           type="submit"
-          disabled={busy || !input.trim()}
+          disabled={busy || mic.listening || !input.trim()}
           className="rounded-full bg-accent-primary/20 p-2.5 text-accent-primary disabled:opacity-40 hover:bg-accent-primary/30 transition-colors"
           aria-label="Send"
         >
