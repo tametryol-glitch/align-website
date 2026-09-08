@@ -48,6 +48,29 @@ const HOUSE_LIFE_AREA: Record<number, string> = {
   12: 'your spiritual life, subconscious patterns, and healing',
 };
 
+// ── Transit Significance Weighting ──
+
+// The API returns every exact aspect inside a 3° orb — ~590 events across a
+// year — so a raw event count cannot separate a heavy month from an ordinary
+// one. Weight each hit by how slow the transiting planet is, how hard the
+// aspect is, and how tight the orb is.
+const PLANET_WEIGHT: Record<string, number> = {
+  Pluto: 3, Neptune: 3, Uranus: 3, Saturn: 2.5, Jupiter: 2,
+  Mars: 1, Sun: 0.6, Venus: 0.5, Mercury: 0.5, Moon: 0.2,
+};
+
+const ASPECT_WEIGHT: Record<string, number> = {
+  conjunction: 1.5, opposition: 1.3, square: 1.3, trine: 1, sextile: 0.7,
+};
+
+function eventSignificance(e: any): number {
+  const planet = e.transiting_planet || e.transit_planet || e.planet || '';
+  const aspect = String(e.aspect_type || e.aspect_name || e.aspect || '').toLowerCase();
+  const orb = typeof e.orb === 'number' ? e.orb : 3;
+  const tightness = 0.5 + 0.5 * Math.max(0, 1 - orb / 3);
+  return (PLANET_WEIGHT[planet] ?? 0.5) * (ASPECT_WEIGHT[aspect] ?? 1) * tightness;
+}
+
 // ── Month Forecast Generator ──
 
 interface MonthForecast {
@@ -163,12 +186,14 @@ function generateMonthForecasts(
   startYear: number,
   usedRef: React.MutableRefObject<Map<string, number[]>>,
 ): MonthForecast[] {
-  const forecasts: MonthForecast[] = [];
+  const planetOf = (e: any): string =>
+    e.transiting_planet || e.transit_planet || e.planet || '';
 
+  // ── Pass 1: bucket events per month, ranked by significance ──
+  const buckets = [];
   for (let i = 0; i < 12; i++) {
     const mIdx = (startMonth + i) % 12;
     const year = startYear + Math.floor((startMonth + i) / 12);
-    const monthLabel = `${MONTH_NAMES[mIdx]} ${year}`;
 
     const monthEvents = (transitEvents || []).filter((e: any) => {
       if (!e?.date) return false;
@@ -176,16 +201,54 @@ function generateMonthForecasts(
       return d.getMonth() === mIdx && d.getFullYear() === year;
     });
 
-    const planetOf = (e: any): string =>
-      e.transiting_planet || e.transit_planet || e.planet || '';
-    const outerPlanetEvents = monthEvents.filter((e: any) =>
-      ['Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'].includes(planetOf(e)));
-    const innerPlanetEvents = monthEvents.filter((e: any) =>
-      ['Mars', 'Venus', 'Mercury'].includes(planetOf(e)));
+    // Most significant first, so the dominant transit driving the month's
+    // theme is the one that actually matters — not just the earliest dated.
+    // A slow planet hits the same natal point several times in a month
+    // (retrograde passes), so collapse repeats of the same
+    // planet/point/aspect for display — otherwise the same line is listed
+    // twice. Scoring below still counts every pass: repeated hits are
+    // genuinely what makes a month heavy.
+    const seen = new Set<string>();
+    const bySignificance = [...monthEvents]
+      .sort((a, b) => eventSignificance(b) - eventSignificance(a))
+      .filter((e: any) => {
+        const key = `${planetOf(e)}|${e.natal_planet || e.natal_point || ''}|${e.aspect_type || e.aspect_name || e.aspect || ''}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
-    let intensity: 'calm' | 'active' | 'intense' = 'calm';
-    if (outerPlanetEvents.length >= 3) intensity = 'intense';
-    else if (outerPlanetEvents.length >= 1 || innerPlanetEvents.length >= 4) intensity = 'active';
+    buckets.push({
+      mIdx,
+      monthLabel: `${MONTH_NAMES[mIdx]} ${year}`,
+      outerPlanetEvents: bySignificance.filter((e: any) =>
+        ['Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'].includes(planetOf(e))),
+      innerPlanetEvents: bySignificance.filter((e: any) =>
+        ['Mars', 'Venus', 'Mercury'].includes(planetOf(e))),
+      score: monthEvents.reduce((sum: number, e: any) => sum + eventSignificance(e), 0),
+    });
+  }
+
+  // Intensity is relative to this chart's own year. Absolute cutoffs do not
+  // travel between charts — measured against the live API the median monthly
+  // load ranged from ~41 to ~61 depending on the natal chart, so any fixed
+  // threshold marks one person's entire year "intense" and another's "calm".
+  // Ranking the 12 months against each other always surfaces the months that
+  // genuinely stand out for this person.
+  const rankOf = new Map<string, number>();
+  [...buckets].sort((a, b) => b.score - a.score)
+    .forEach((b, rank) => rankOf.set(b.monthLabel, rank));
+
+  const forecasts: MonthForecast[] = [];
+
+  for (const bucket of buckets) {
+    const { mIdx, monthLabel, outerPlanetEvents, innerPlanetEvents } = bucket;
+    const rank = rankOf.get(monthLabel)!;
+
+    // A month with no transit data at all stays calm however it ranks — this
+    // keeps the page honest if the transit fetch fails.
+    const intensity: 'calm' | 'active' | 'intense' =
+      bucket.score <= 0 ? 'calm' : rank < 3 ? 'intense' : rank < 8 ? 'active' : 'calm';
 
     let theme = 'A month of steady progress';
     let overview = '';
@@ -195,7 +258,7 @@ function generateMonthForecasts(
       const dominant = outerPlanetEvents[0];
       const planet = planetOf(dominant) || '?';
       const natalPt = dominant.natal_planet || dominant.natal_point || '';
-      const aspect = dominant.aspect_type || dominant.aspect || '';
+      const aspect = dominant.aspect_type || dominant.aspect_name || dominant.aspect || '';
       const pTheme = TRANSIT_THEMES[planet];
       const house = dominant.natal_house || dominant.house;
       const houseArea = house ? HOUSE_LIFE_AREA[house] : '';
@@ -209,7 +272,7 @@ function generateMonthForecasts(
       for (const evt of outerPlanetEvents.slice(0, 3)) {
         const p = planetOf(evt) || '?';
         const np = evt.natal_planet || evt.natal_point || '?';
-        const a = evt.aspect_type || evt.aspect || 'activating';
+        const a = evt.aspect_type || evt.aspect_name || evt.aspect || 'activating';
         const h = evt.natal_house || evt.house;
         const ha = h ? HOUSE_LIFE_AREA[h] : '';
         keyTransits.push(
@@ -222,7 +285,7 @@ function generateMonthForecasts(
       for (const evt of innerPlanetEvents.slice(0, 2)) {
         const p = planetOf(evt) || '?';
         const np = evt.natal_planet || evt.natal_point || '?';
-        const a = evt.aspect_type || evt.aspect || 'activating';
+        const a = evt.aspect_type || evt.aspect_name || evt.aspect || 'activating';
         keyTransits.push(`${p} ${a} your natal ${np}`);
       }
     }
@@ -396,13 +459,24 @@ export default function YearAheadPage() {
       let events: any[] = [];
       try {
         const now = new Date();
+        // /transits/events takes a nested `birth_data` object. Spreading the
+        // birth fields flat made every request fail validation (HTTP 422),
+        // which the catch below swallowed — leaving the page with zero
+        // transits and labelling all twelve months "calm".
         const transitData = await api.getTransitEvents({
-          ...birthData,
+          birth_data: birthData,
           start_date: now.toISOString().split('T')[0],
           end_date: new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()).toISOString().split('T')[0],
-          days: 365,
         });
-        events = Array.isArray(transitData) ? transitData : (transitData?.events || transitData?.forecasts || []);
+        const raw: any[] = Array.isArray(transitData)
+          ? transitData
+          : (transitData?.events || transitData?.forecasts || []);
+        // The API emits `aspect_name`; the rest of this page reads
+        // `aspect_type`. Same normalisation the transits page does.
+        events = raw.map((e: any) => ({
+          ...e,
+          aspect_type: e.aspect_type || e.aspect_name || '',
+        }));
       } catch {
         // Transit events may fail — use generic forecasts
       }
