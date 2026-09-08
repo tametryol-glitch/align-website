@@ -20,6 +20,8 @@ import { giftGlyph, subscribeLiveGifts, type LiveGiftRow, type Gift } from '@/li
 interface Celebration {
   key: number;
   glyph: string;
+  /** Real artwork when the catalog has it; the glyph is the fallback. */
+  assetUrl: string | null;
   name: string;
   coins: number;
   sender: string;
@@ -27,9 +29,9 @@ interface Celebration {
 
 /** How loud a given gift should be. */
 function weightOf(coins: number) {
-  if (coins >= 1000) return { ms: 5200, size: 'text-7xl', ring: true };
-  if (coins >= 100) return { ms: 4200, size: 'text-6xl', ring: false };
-  return { ms: 2800, size: 'text-5xl', ring: false };
+  if (coins >= 1000) return { ms: 5200, size: 'text-7xl', px: 168, ring: true };
+  if (coins >= 100) return { ms: 4200, size: 'text-6xl', px: 132, ring: false };
+  return { ms: 2800, size: 'text-5xl', px: 104, ring: false };
 }
 
 export function useGiftBursts(
@@ -49,6 +51,7 @@ export function useGiftBursts(
       setCurrent({
         key: seq.current,
         glyph: giftGlyph(row.gift_id),
+        assetUrl: gift?.asset_url ?? null,
         name: gift?.name || 'a gift',
         coins: row.coins,
         sender: authorName(row.sender_id),
@@ -70,6 +73,7 @@ export function useGiftBursts(
     setCurrent({
       key: seq.current,
       glyph: giftGlyph(gift.id),
+      assetUrl: gift.asset_url,
       name: gift.name,
       coins: gift.coins,
       sender,
@@ -81,7 +85,7 @@ export function useGiftBursts(
 
 export function GiftBurst({ celebration }: { celebration: Celebration | null }) {
   if (!celebration) return null;
-  const { ms, size, ring } = weightOf(celebration.coins);
+  const { ms, size, px, ring } = weightOf(celebration.coins);
 
   return (
     <div
@@ -107,14 +111,27 @@ export function GiftBurst({ celebration }: { celebration: Celebration | null }) 
         className="gift-rise flex flex-col items-center gap-2"
         style={{ animation: `gift-rise ${ms}ms ease-out forwards` }}
       >
-        <span
-          className={`${size} leading-none drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] ${
-            ring ? 'rounded-full ring-4 ring-amber-300/40 p-3' : ''
-          }`}
-          aria-hidden="true"
-        >
-          {celebration.glyph}
-        </span>
+        {celebration.assetUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={celebration.assetUrl}
+            alt=""
+            width={px}
+            height={px}
+            className={`object-contain drop-shadow-[0_2px_24px_rgba(0,0,0,0.6)] ${
+              ring ? 'rounded-full ring-4 ring-amber-300/40 p-2' : ''
+            }`}
+          />
+        ) : (
+          <span
+            className={`${size} leading-none drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] ${
+              ring ? 'rounded-full ring-4 ring-amber-300/40 p-3' : ''
+            }`}
+            aria-hidden="true"
+          >
+            {celebration.glyph}
+          </span>
+        )}
         <span className="text-sm text-white bg-black/55 backdrop-blur rounded-full px-3.5 py-1.5">
           {celebration.sender} sent {celebration.name}
         </span>

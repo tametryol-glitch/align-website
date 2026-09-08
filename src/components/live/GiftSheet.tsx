@@ -140,9 +140,14 @@ export function GiftSheet({
                     : 'border-transparent opacity-35 cursor-not-allowed'
                 } ${sending === g.id ? 'animate-pulse' : ''}`}
               >
-                <span className="text-2xl leading-none" aria-hidden="true">
-                  {giftGlyph(g.id)}
-                </span>
+                {g.asset_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={g.asset_url} alt="" className="w-8 h-8 object-contain" />
+                ) : (
+                  <span className="text-2xl leading-none" aria-hidden="true">
+                    {giftGlyph(g.id)}
+                  </span>
+                )}
                 <span className="text-[10px] text-white/70 truncate max-w-full">{g.name}</span>
                 <span className="text-[10px] text-amber-300/80 tabular-nums">{g.coins}</span>
               </button>
