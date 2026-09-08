@@ -36,7 +36,16 @@ export default function CoinTermsPage() {
         <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
           Coins, Gifts &amp; Refunds
         </h1>
-        <p className="text-text-muted text-sm mb-8">Last updated: {UPDATED}</p>
+        <p className="text-text-muted text-sm mb-3">Last updated: {UPDATED}</p>
+
+        {/* Coins cannot be bought yet. The purchase, limit and refund
+            terms below describe a system that is not yet operating. */}
+        <div className="mb-8 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/90">
+          <strong className="font-semibold">Gifting is in preview.</strong> Coins cannot
+          currently be purchased — they are granted free, have no cash value, and are spent
+          only on gifts inside Align. The buying, limit and refund terms below take effect
+          when coin sales open.
+        </div>
 
         <div className="max-w-none space-y-8 text-text-secondary text-[15px] leading-relaxed">
           <Section title="1. What coins are">

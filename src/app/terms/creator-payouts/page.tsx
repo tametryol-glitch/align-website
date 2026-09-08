@@ -35,7 +35,17 @@ export default function CreatorPayoutTermsPage() {
         <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
           Creator Payout Terms
         </h1>
-        <p className="text-text-muted text-sm mb-8">Last updated: {UPDATED}</p>
+        <p className="text-text-muted text-sm mb-3">Last updated: {UPDATED}</p>
+
+        {/* Gifting runs with money switched off. Without this notice the
+            page below reads as a live commitment to pay, and a host who
+            streamed for a month would be right to expect it. */}
+        <div className="mb-8 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/90">
+          <strong className="font-semibold">Gifting is in preview.</strong> Coins are granted
+          free and cannot be bought, no earnings accrue, and gifts sent during preview do not
+          earn. The rate and payout terms below take effect when coin sales and payouts open,
+          and apply only to gifts received from that date.
+        </div>
 
         <div className="max-w-none space-y-8 text-text-secondary text-[15px] leading-relaxed">
           <Section title="1. Who can earn">
