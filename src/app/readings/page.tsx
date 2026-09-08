@@ -45,7 +45,7 @@ const READINGS: ReadingItem[] = [
   { key: 'Arabic Parts', href: '/readings/arabic-parts', glyph: '✡', tier: 'premium' },
   { key: 'Fixed Stars', href: '/readings/fixed-stars', glyph: '★', tier: 'pro' },
   { key: 'Pathway', href: '/readings/pathway', glyph: '🛤️', tier: 'pro' },
-  { key: 'Rectification', href: '/readings/rectification', glyph: '🔧', tier: 'pro' },
+  { key: 'Rectification', href: '/readings/rectification', glyph: '🔧', tier: 'free' },
   { key: 'Chart Adjuster', href: '/readings/chart-adjuster', glyph: '☉', tier: 'starter' },
 ];
 

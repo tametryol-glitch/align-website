@@ -67,7 +67,7 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   fixed_stars: 'pro',
   zodiacal_releasing: 'pro',
   firdaria: 'pro',
-  rectification: 'pro',
+  rectification: 'free', // free on every plan — it's the tool that rescues a signup who doesn't know their birth time
   pathway: 'pro',
   // Dating features
   dating_basic: 'free',
