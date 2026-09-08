@@ -412,6 +412,89 @@ class AlignAPI {
   }
 
   /**
+   * In-app guide agent (SSE). Answers product questions and can navigate.
+   */
+  async streamGuideAgent(
+    body: {
+      message: string;
+      messages: { role: 'user' | 'assistant'; content: string }[];
+      current_route?: string;
+      language?: string;
+      session_id?: string | null;
+    },
+    handlers: {
+      onText: (delta: string) => void;
+      onNavigate?: (nav: { route: string; reason: string }) => void;
+      onSession?: (sessionId: string) => void;
+      onError?: (message: string) => void;
+    },
+    signal?: AbortSignal,
+  ): Promise<void> {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+
+    const res = await fetch('/api/guide-agent', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal,
+    });
+
+    if (!res.ok) {
+      let detail = `Guide error ${res.status}`;
+      try {
+        const j = await res.json();
+        if (j?.detail) detail = typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail);
+      } catch {}
+      throw new Error(detail);
+    }
+
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error('No response body');
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.replace(/\r$/, '');
+        if (!trimmed.startsWith('data: ')) continue;
+        const raw = trimmed.slice(6);
+        if (raw === '[DONE]') return;
+
+        let evt: any;
+        try {
+          evt = JSON.parse(raw);
+        } catch {
+          continue;
+        }
+
+        switch (evt?.type) {
+          case 'text':
+            handlers.onText(evt.value);
+            break;
+          case 'navigate':
+            handlers.onNavigate?.(evt.value);
+            break;
+          case 'session':
+            handlers.onSession?.(evt.value?.session_id);
+            break;
+          case 'error':
+            handlers.onError?.(String(evt.value));
+            break;
+        }
+      }
+    }
+  }
+
+  /**
    * Conversational rectification agent (SSE).
    *
    * Streams one assistant turn. The caller owns the transcript and the `state`

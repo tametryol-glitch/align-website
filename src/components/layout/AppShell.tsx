@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { BottomTabBar } from './BottomTabBar';
 import { EarnPromoBanner } from '@/components/ui/EarnPromoBanner';
+import { AlignGuide } from '@/components/guide/AlignGuide';
 import { useEffect } from 'react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -40,6 +41,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
       {/* Mobile bottom tab bar */}
       <BottomTabBar />
+      {/* Always-available help agent, every signed-in page */}
+      <AlignGuide />
     </div>
   );
 }
