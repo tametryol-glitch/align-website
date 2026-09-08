@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Profiilin tallentaminen epaonnistui",
       "avatarFailed": "Avatarin lataaminen epaonnistui",
-      "coverFailed": "Kansikuvan lataaminen epaonnistui"
-    }
+      "coverFailed": "Kansikuvan lataaminen epaonnistui",
+      "removeFailed": "Kuvan poistaminen epäonnistui"
+    },
+    "removePhoto": "Poista kuva",
+    "removeCover": "Poista kansikuva",
+    "confirmRemovePhoto": "Poistetaanko profiilikuvasi?",
+    "confirmRemoveCover": "Poistetaanko kansikuvasi?"
   },
   "settings": {
     "title": "Asetukset",

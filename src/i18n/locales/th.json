@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "ไม่สามารถบันทึกโปรไฟล์",
       "avatarFailed": "ไม่สามารถอัปโหลดอวาตาร์",
-      "coverFailed": "ไม่สามารถอัปโหลดรูปปก"
-    }
+      "coverFailed": "ไม่สามารถอัปโหลดรูปปก",
+      "removeFailed": "ลบรูปภาพไม่สำเร็จ"
+    },
+    "removePhoto": "ลบรูปภาพ",
+    "removeCover": "ลบรูปหน้าปก",
+    "confirmRemovePhoto": "ต้องการลบรูปโปรไฟล์ของคุณหรือไม่?",
+    "confirmRemoveCover": "ต้องการลบรูปหน้าปกของคุณหรือไม่?"
   },
   "settings": {
     "title": "การตั้งค่า",

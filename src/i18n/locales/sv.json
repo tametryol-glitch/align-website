@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Kunde inte spara profil",
       "avatarFailed": "Kunde inte ladda upp avatar",
-      "coverFailed": "Kunde inte ladda upp omslagsfoto"
-    }
+      "coverFailed": "Kunde inte ladda upp omslagsfoto",
+      "removeFailed": "Det gick inte att ta bort fotot"
+    },
+    "removePhoto": "Ta bort foto",
+    "removeCover": "Ta bort omslagsbild",
+    "confirmRemovePhoto": "Vill du ta bort din profilbild?",
+    "confirmRemoveCover": "Vill du ta bort din omslagsbild?"
   },
   "settings": {
     "title": "Inställningar",

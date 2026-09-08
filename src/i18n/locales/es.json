@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Error al guardar el perfil",
       "avatarFailed": "Error al subir el avatar",
-      "coverFailed": "Error al subir la foto de portada"
-    }
+      "coverFailed": "Error al subir la foto de portada",
+      "removeFailed": "No se pudo eliminar la foto"
+    },
+    "removePhoto": "Eliminar foto",
+    "removeCover": "Eliminar foto de portada",
+    "confirmRemovePhoto": "¿Eliminar tu foto de perfil?",
+    "confirmRemoveCover": "¿Eliminar tu foto de portada?"
   },
   "settings": {
     "title": "Configuracion",

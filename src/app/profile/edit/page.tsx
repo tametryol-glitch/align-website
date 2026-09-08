@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useGettingStarted } from '@/hooks/useGettingStarted';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Camera, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Camera, ImageIcon, Trash2 } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { BirthDateSelect, isValidBirthDate } from '@/components/ui/BirthDateSelect';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
@@ -44,6 +44,42 @@ export default function EditProfilePage() {
       setTimezone(profile.timezone || '');
     }
   }, [profile]);
+
+  // Remove the avatar or cover photo. The profiles column is the source of
+  // truth for what renders everywhere, so it is cleared first; the storage
+  // object is then deleted best-effort. Avatars have historically been written
+  // to two paths (web at the bucket root, mobile under `avatars/`), so both are
+  // targeted.
+  async function handleRemovePhoto(kind: 'avatar' | 'cover') {
+    if (!user || !profile) return;
+    const confirmMsg = kind === 'avatar'
+      ? t('editProfile.confirmRemovePhoto')
+      : t('editProfile.confirmRemoveCover');
+    if (!window.confirm(confirmMsg)) return;
+
+    setSaving(true);
+    setError('');
+    try {
+      const supabase = createClient();
+      const column = kind === 'avatar' ? 'avatar_url' : 'cover_photo_url';
+      const { error: err } = await supabase
+        .from('profiles')
+        .update({ [column]: null })
+        .eq('id', user.id);
+      if (err) throw err;
+
+      const paths = kind === 'avatar'
+        ? [`${user.id}.jpg`, `avatars/${user.id}.jpg`]
+        : [`covers/${user.id}.jpg`];
+      await supabase.storage.from('avatars').remove(paths).catch(() => {});
+
+      setProfile({ ...profile, [column]: null });
+    } catch (err: any) {
+      setError(err.message || t('editProfile.errors.removeFailed'));
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function handleSave() {
     if (!user) return;
@@ -132,6 +168,18 @@ export default function EditProfilePage() {
               }}
             />
           </label>
+          {profile?.cover_photo_url && (
+            <button
+              type="button"
+              onClick={() => handleRemovePhoto('cover')}
+              disabled={saving}
+              title={t('editProfile.removeCover')}
+              aria-label={t('editProfile.removeCover')}
+              className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4 text-white" />
+            </button>
+          )}
         </div>
         {/* Avatar overlapping cover */}
         <div className="absolute left-1/2 -translate-x-1/2 -bottom-10">
@@ -169,6 +217,18 @@ export default function EditProfilePage() {
                 }}
               />
             </label>
+            {profile?.avatar_url && (
+              <button
+                type="button"
+                onClick={() => handleRemovePhoto('avatar')}
+                disabled={saving}
+                title={t('editProfile.removePhoto')}
+                aria-label={t('editProfile.removePhoto')}
+                className="absolute bottom-0 left-0 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 flex items-center justify-center disabled:opacity-50"
+              >
+                <Trash2 className="w-4 h-4 text-white" />
+              </button>
+            )}
           </div>
         </div>
       </div>

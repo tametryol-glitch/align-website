@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Profil konnte nicht gespeichert werden",
       "avatarFailed": "Avatar konnte nicht hochgeladen werden",
-      "coverFailed": "Titelbild konnte nicht hochgeladen werden"
-    }
+      "coverFailed": "Titelbild konnte nicht hochgeladen werden",
+      "removeFailed": "Foto konnte nicht entfernt werden"
+    },
+    "removePhoto": "Foto entfernen",
+    "removeCover": "Titelbild entfernen",
+    "confirmRemovePhoto": "Dein Profilbild entfernen?",
+    "confirmRemoveCover": "Dein Titelbild entfernen?"
   },
   "settings": {
     "title": "Einstellungen",

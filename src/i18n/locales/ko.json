@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "프로필 저장 실패",
       "avatarFailed": "아바타 업로드 실패",
-      "coverFailed": "커버 사진 업로드 실패"
-    }
+      "coverFailed": "커버 사진 업로드 실패",
+      "removeFailed": "사진을 삭제하지 못했습니다"
+    },
+    "removePhoto": "사진 삭제",
+    "removeCover": "커버 사진 삭제",
+    "confirmRemovePhoto": "프로필 사진을 삭제할까요?",
+    "confirmRemoveCover": "커버 사진을 삭제할까요?"
   },
   "settings": {
     "title": "설정",

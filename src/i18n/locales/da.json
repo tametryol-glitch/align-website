@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Kunne ikke gemme profil",
       "avatarFailed": "Kunne ikke uploade avatar",
-      "coverFailed": "Kunne ikke uploade coverbillede"
-    }
+      "coverFailed": "Kunne ikke uploade coverbillede",
+      "removeFailed": "Kunne ikke fjerne billedet"
+    },
+    "removePhoto": "Fjern billede",
+    "removeCover": "Fjern omslagsbillede",
+    "confirmRemovePhoto": "Vil du fjerne dit profilbillede?",
+    "confirmRemoveCover": "Vil du fjerne dit omslagsbillede?"
   },
   "settings": {
     "title": "Indstillinger",

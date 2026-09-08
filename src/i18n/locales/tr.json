@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Profil kaydedilemedi",
       "avatarFailed": "Avatar yuklenemedi",
-      "coverFailed": "Kapak fotografi yuklenemedi"
-    }
+      "coverFailed": "Kapak fotografi yuklenemedi",
+      "removeFailed": "Fotoğraf kaldırılamadı"
+    },
+    "removePhoto": "Fotoğrafı kaldır",
+    "removeCover": "Kapak fotoğrafını kaldır",
+    "confirmRemovePhoto": "Profil fotoğrafın kaldırılsın mı?",
+    "confirmRemoveCover": "Kapak fotoğrafın kaldırılsın mı?"
   },
   "settings": {
     "title": "Ayarlar",

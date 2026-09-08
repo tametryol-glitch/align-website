@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "保存档案失败",
       "avatarFailed": "上传头像失败",
-      "coverFailed": "上传封面照片失败"
-    }
+      "coverFailed": "上传封面照片失败",
+      "removeFailed": "删除照片失败"
+    },
+    "removePhoto": "删除照片",
+    "removeCover": "删除封面照片",
+    "confirmRemovePhoto": "要删除你的头像吗？",
+    "confirmRemoveCover": "要删除你的封面照片吗？"
   },
   "settings": {
     "title": "设置",

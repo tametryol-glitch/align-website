@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Echec de l'enregistrement du profil",
       "avatarFailed": "Echec du telechargement de l'avatar",
-      "coverFailed": "Echec du telechargement de la photo de couverture"
-    }
+      "coverFailed": "Echec du telechargement de la photo de couverture",
+      "removeFailed": "Échec de la suppression de la photo"
+    },
+    "removePhoto": "Supprimer la photo",
+    "removeCover": "Supprimer la photo de couverture",
+    "confirmRemovePhoto": "Supprimer votre photo de profil ?",
+    "confirmRemoveCover": "Supprimer votre photo de couverture ?"
   },
   "settings": {
     "title": "Parametres",

@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Impossibile salvare il profilo",
       "avatarFailed": "Impossibile caricare l'avatar",
-      "coverFailed": "Impossibile caricare la foto di copertina"
-    }
+      "coverFailed": "Impossibile caricare la foto di copertina",
+      "removeFailed": "Impossibile rimuovere la foto"
+    },
+    "removePhoto": "Rimuovi foto",
+    "removeCover": "Rimuovi foto di copertina",
+    "confirmRemovePhoto": "Rimuovere la tua foto profilo?",
+    "confirmRemoveCover": "Rimuovere la tua foto di copertina?"
   },
   "settings": {
     "title": "Impostazioni",

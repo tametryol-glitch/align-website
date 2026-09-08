@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Nie udało się zapisać profilu",
       "avatarFailed": "Nie udało się przesłać awatara",
-      "coverFailed": "Nie udało się przesłać zdjęcia okładki"
-    }
+      "coverFailed": "Nie udało się przesłać zdjęcia okładki",
+      "removeFailed": "Nie udało się usunąć zdjęcia"
+    },
+    "removePhoto": "Usuń zdjęcie",
+    "removeCover": "Usuń zdjęcie w tle",
+    "confirmRemovePhoto": "Usunąć Twoje zdjęcie profilowe?",
+    "confirmRemoveCover": "Usunąć Twoje zdjęcie w tle?"
   },
   "settings": {
     "title": "Ustawienia",

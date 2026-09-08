@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "प्रोफ़ाइल सहेजने में विफल",
       "avatarFailed": "अवतार अपलोड करने में विफल",
-      "coverFailed": "कवर फ़ोटो अपलोड करने में विफल"
-    }
+      "coverFailed": "कवर फ़ोटो अपलोड करने में विफल",
+      "removeFailed": "फ़ोटो हटाने में विफल"
+    },
+    "removePhoto": "फ़ोटो हटाएँ",
+    "removeCover": "कवर फ़ोटो हटाएँ",
+    "confirmRemovePhoto": "क्या आप अपनी प्रोफ़ाइल फ़ोटो हटाना चाहते हैं?",
+    "confirmRemoveCover": "क्या आप अपनी कवर फ़ोटो हटाना चाहते हैं?"
   },
   "settings": {
     "title": "सेटिंग्स",

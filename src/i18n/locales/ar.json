@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "فشل حفظ الملف",
       "avatarFailed": "فشل رفع الصورة الشخصية",
-      "coverFailed": "فشل رفع صورة الغلاف"
-    }
+      "coverFailed": "فشل رفع صورة الغلاف",
+      "removeFailed": "تعذّر إزالة الصورة"
+    },
+    "removePhoto": "إزالة الصورة",
+    "removeCover": "إزالة صورة الغلاف",
+    "confirmRemovePhoto": "هل تريد إزالة صورة ملفك الشخصي؟",
+    "confirmRemoveCover": "هل تريد إزالة صورة الغلاف؟"
   },
   "settings": {
     "title": "الإعدادات",

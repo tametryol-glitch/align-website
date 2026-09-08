@@ -1479,8 +1479,13 @@
     "errors": {
       "saveFailed": "Falha ao salvar perfil",
       "avatarFailed": "Falha ao enviar avatar",
-      "coverFailed": "Falha ao enviar foto de capa"
-    }
+      "coverFailed": "Falha ao enviar foto de capa",
+      "removeFailed": "Falha ao remover a foto"
+    },
+    "removePhoto": "Remover foto",
+    "removeCover": "Remover foto de capa",
+    "confirmRemovePhoto": "Remover sua foto de perfil?",
+    "confirmRemoveCover": "Remover sua foto de capa?"
   },
   "settings": {
     "title": "Configurações",

@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Profiel opslaan mislukt",
       "avatarFailed": "Avatar uploaden mislukt",
-      "coverFailed": "Omslagfoto uploaden mislukt"
-    }
+      "coverFailed": "Omslagfoto uploaden mislukt",
+      "removeFailed": "Foto verwijderen mislukt"
+    },
+    "removePhoto": "Foto verwijderen",
+    "removeCover": "Omslagfoto verwijderen",
+    "confirmRemovePhoto": "Je profielfoto verwijderen?",
+    "confirmRemoveCover": "Je omslagfoto verwijderen?"
   },
   "settings": {
     "title": "Instellingen",

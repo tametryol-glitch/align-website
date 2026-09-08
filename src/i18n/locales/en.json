@@ -1254,8 +1254,13 @@
     "errors": {
       "saveFailed": "Failed to save profile",
       "avatarFailed": "Failed to upload avatar",
-      "coverFailed": "Failed to upload cover photo"
-    }
+      "coverFailed": "Failed to upload cover photo",
+      "removeFailed": "Failed to remove photo"
+    },
+    "removePhoto": "Remove photo",
+    "removeCover": "Remove cover photo",
+    "confirmRemovePhoto": "Remove your profile picture?",
+    "confirmRemoveCover": "Remove your cover photo?"
   },
   "settings": {
     "title": "Settings",

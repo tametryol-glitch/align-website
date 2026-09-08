@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Kunne ikke lagre profil",
       "avatarFailed": "Kunne ikke laste opp avatar",
-      "coverFailed": "Kunne ikke laste opp forsidebilde"
-    }
+      "coverFailed": "Kunne ikke laste opp forsidebilde",
+      "removeFailed": "Kunne ikke fjerne bildet"
+    },
+    "removePhoto": "Fjern bilde",
+    "removeCover": "Fjern omslagsbilde",
+    "confirmRemovePhoto": "Vil du fjerne profilbildet ditt?",
+    "confirmRemoveCover": "Vil du fjerne omslagsbildet ditt?"
   },
   "settings": {
     "title": "Innstillinger",

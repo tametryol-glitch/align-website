@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "プロフィールの保存に失敗しました",
       "avatarFailed": "アバターのアップロードに失敗しました",
-      "coverFailed": "カバー写真のアップロードに失敗しました"
-    }
+      "coverFailed": "カバー写真のアップロードに失敗しました",
+      "removeFailed": "写真を削除できませんでした"
+    },
+    "removePhoto": "写真を削除",
+    "removeCover": "カバー写真を削除",
+    "confirmRemovePhoto": "プロフィール写真を削除しますか？",
+    "confirmRemoveCover": "カバー写真を削除しますか？"
   },
   "settings": {
     "title": "設定",

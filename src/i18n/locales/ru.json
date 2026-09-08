@@ -1252,8 +1252,13 @@
     "errors": {
       "saveFailed": "Не удалось сохранить профиль",
       "avatarFailed": "Не удалось загрузить аватар",
-      "coverFailed": "Не удалось загрузить обложку"
-    }
+      "coverFailed": "Не удалось загрузить обложку",
+      "removeFailed": "Не удалось удалить фото"
+    },
+    "removePhoto": "Удалить фото",
+    "removeCover": "Удалить обложку",
+    "confirmRemovePhoto": "Удалить фото профиля?",
+    "confirmRemoveCover": "Удалить фото обложки?"
   },
   "settings": {
     "title": "Настройки",
