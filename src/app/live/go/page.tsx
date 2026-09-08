@@ -77,6 +77,8 @@ import {
 } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
+import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
+import { getGiftCatalog, type Gift } from '@/lib/coinService';
 import { TopHearters } from '@/components/live/TopHearters';
 import { mentionMarkup } from '@/lib/mentions';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
@@ -147,6 +149,21 @@ export default function GoLivePage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveHostClient | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const [giftCatalog, setGiftCatalog] = useState<Gift[]>([]);
+
+  useEffect(() => {
+    getGiftCatalog().then(setGiftCatalog);
+  }, []);
+
+  // The host is the person a gift is FOR, so they are the one who most
+  // needs to see who sent it.
+  const nameFor = useCallback(
+    (id: string) => authors[id]?.display_name || 'Someone',
+    [authors],
+  );
+
+  const { celebration } = useGiftBursts(sessionId, giftCatalog, nameFor);
 
   // ── Guards ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -885,6 +902,7 @@ export default function GoLivePage() {
       <div className="relative flex-1 min-h-0 bg-black">
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
+        <GiftBurst celebration={celebration} />
         <MilestoneToast
           milestone={milestone}
           onThank={(m) => thankHearter({ id: m.senderId, name: m.senderName })}

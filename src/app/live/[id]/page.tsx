@@ -32,9 +32,12 @@ import {
   type LiveMessage,
   type LiveViewerClient,
 } from '@/lib/liveService';
-import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check } from 'lucide-react';
+import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check, Gift as GiftIcon } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
+import { GiftSheet } from '@/components/live/GiftSheet';
+import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
+import { getGiftCatalog, type Gift } from '@/lib/coinService';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
 import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft, X } from 'lucide-react';
@@ -78,6 +81,23 @@ export default function LiveViewerPage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<LiveViewerClient | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const [showGifts, setShowGifts] = useState(false);
+  const [giftCatalog, setGiftCatalog] = useState<Gift[]>([]);
+
+  useEffect(() => {
+    getGiftCatalog().then(setGiftCatalog);
+  }, []);
+
+  // Resolve a sender for the celebration banner. The realtime gift row
+  // carries only an id, and a burst reading "someone sent Galaxy" wastes
+  // the moment the sender paid for.
+  const nameFor = useCallback(
+    (id: string) => (id === user?.id ? 'You' : authors[id]?.display_name || 'Someone'),
+    [authors, user?.id],
+  );
+
+  const { celebration, burstLocal } = useGiftBursts(sessionId, giftCatalog, nameFor);
 
   useEffect(() => {
     if (!isAuthenticated) router.replace(`/auth/login?next=/live/${sessionId}`);
@@ -519,6 +539,17 @@ export default function LiveViewerPage() {
 
         <FloatingHearts petals={petals} />
         <MilestoneToast milestone={milestone} />
+        <GiftBurst celebration={celebration} />
+
+        <GiftSheet
+          sessionId={sessionId}
+          open={showGifts}
+          onClose={() => setShowGifts(false)}
+          // Celebrate on the sender's screen straight away. Waiting for
+          // the realtime round trip puts a visible gap between paying
+          // and being seen to pay.
+          onSent={(g) => burstLocal(g, 'You')}
+        />
 
         {pinned && (
           <div className="absolute top-16 inset-x-4 flex items-start gap-2 bg-black/65 backdrop-blur
@@ -527,6 +558,15 @@ export default function LiveViewerPage() {
             <span className="text-white/85">{pinned.body}</span>
           </div>
         )}
+
+        <button
+          onClick={() => setShowGifts(true)}
+          aria-label="Send a gift"
+          className="absolute bottom-24 right-5 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20
+                     backdrop-blur flex items-center justify-center active:scale-90 transition-transform"
+        >
+          <GiftIcon className="w-6 h-6 text-amber-300" />
+        </button>
 
         <button
           onClick={tapHeart}
