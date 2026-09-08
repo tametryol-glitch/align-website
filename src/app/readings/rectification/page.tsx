@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { ArrowLeft, Wrench, Copy, Check, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Wrench, Copy, Check, ChevronUp, ChevronDown, MessageCircle } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import {
@@ -1625,6 +1625,23 @@ Be warm, direct, and specific. Use ${firstName}'s name. No astrology jargon — 
               <p className="text-text-tertiary text-sm">Refine your birth time using major life events</p>
             </div>
           </div>
+        )}
+
+        {step === 0 && (
+          <Link
+            href="/readings/rectification/guided"
+            className="flex items-center gap-3 mb-6 rounded-xl bg-gradient-to-r from-accent-primary/15 to-accent-secondary/15 px-4 py-3 hover:from-accent-primary/25 hover:to-accent-secondary/25 transition-colors"
+          >
+            <MessageCircle className="w-5 h-5 text-accent-primary shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-text-primary">
+                Don&apos;t know your birth time at all?
+              </p>
+              <p className="text-xs text-text-tertiary">
+                Try the guided conversation instead — answer in your own words, no forms
+              </p>
+            </div>
+          </Link>
         )}
 
         {step !== 3 && renderWizardDots()}
