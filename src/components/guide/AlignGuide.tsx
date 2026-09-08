@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import { Sparkles, X, Send, ArrowRight } from 'lucide-react';
+import { ChatMarkdown } from '@/components/ui/ChatMarkdown';
 
 interface Msg {
   role: 'user' | 'assistant';
@@ -210,7 +211,11 @@ export function AlignGuide() {
                         : 'max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-3 py-2'
                     }
                   >
-                    <p className="text-sm text-text-primary whitespace-pre-wrap">{m.content}</p>
+                    {m.role === 'assistant' ? (
+                      <ChatMarkdown>{m.content}</ChatMarkdown>
+                    ) : (
+                      <p className="text-sm text-text-primary whitespace-pre-wrap">{m.content}</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -218,7 +223,7 @@ export function AlignGuide() {
               {streaming && (
                 <div className="flex justify-start">
                   <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-3 py-2">
-                    <p className="text-sm text-text-primary whitespace-pre-wrap">{streaming}</p>
+                    <ChatMarkdown>{streaming}</ChatMarkdown>
                   </div>
                 </div>
               )}

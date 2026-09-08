@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Send, Sparkles, RotateCcw, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useSpeechInput } from '@/lib/voice/useSpeechInput';
 import { useStreamingSpeech } from '@/lib/voice/useStreamingSpeech';
+import { ChatMarkdown } from '@/components/ui/ChatMarkdown';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -255,7 +256,11 @@ export function RectificationAgentChat() {
                   : 'max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-4 py-2.5'
               }
             >
-              <p className="text-sm text-text-primary whitespace-pre-wrap">{m.content}</p>
+              {m.role === 'assistant' ? (
+                <ChatMarkdown>{m.content}</ChatMarkdown>
+              ) : (
+                <p className="text-sm text-text-primary whitespace-pre-wrap">{m.content}</p>
+              )}
             </div>
           </div>
         ))}
@@ -263,7 +268,7 @@ export function RectificationAgentChat() {
         {streaming && (
           <div className="flex justify-start">
             <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-4 py-2.5">
-              <p className="text-sm text-text-primary whitespace-pre-wrap">{streaming}</p>
+              <ChatMarkdown>{streaming}</ChatMarkdown>
             </div>
           </div>
         )}
