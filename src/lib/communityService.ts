@@ -55,7 +55,16 @@ export interface CommunityPost {
   content: string;
   image_url?: string | null;
   media_kind?: string | null;
-  style?: string | null;
+  video_url?: string | null;
+  poster_url?: string | null;
+  /** Total plays; the unique-per-user log lives in community_post_video_views. */
+  video_views_count?: number;
+  /** Creator opt-out for video posts — no download button when false. */
+  allow_download?: boolean;
+  /** Post-style preset + font, same JSONB shape as posts.style. */
+  style?: { preset?: string; font?: string } | null;
+  original_post_id?: string | null;
+  original_user_name?: string | null;
   post_type: PostType;
   topic?: string | null;
   likes: string[];
@@ -131,7 +140,31 @@ export const REPORT_REASONS: { id: ReportReason; label: string }[] = [
   { id: 'other', label: 'Other' },
 ];
 
-export const REACTION_OPTIONS = ['✨', '💜', '🔥', '🌙', '💫', '🙏'];
+/**
+ * The cosmic feed's reaction set, re-exported so a community post offers
+ * exactly the same eight. Kept in sync with feedService.REACTION_OPTIONS —
+ * communities used to expose a different six, which meant a 😂 or 😠 left
+ * on mobile had no way to be given back on web.
+ */
+export const REACTION_OPTIONS: { emoji: string; label: string }[] = [
+  { emoji: '✨', label: 'Resonates' },
+  { emoji: '🔥', label: 'Fire' },
+  { emoji: '💜', label: 'Felt That' },
+  { emoji: '🌙', label: 'Deep' },
+  { emoji: '⚡', label: 'Mind Blown' },
+  { emoji: '😂', label: 'Funny' },
+  { emoji: '😠', label: 'Angry' },
+  { emoji: '😢', label: 'Sad' },
+];
+
+/** One person's reaction on a community post — powers "See who reacted". */
+export interface CommunityReactionUser {
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  sunSign: string | null;
+  emoji: string;
+}
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
@@ -205,14 +238,14 @@ export async function uploadCommunityAvatar(communityId: string, file: File): Pr
 }
 
 /** Upload media for a community post (image or video) */
-export async function uploadCommunityPostMedia(communityId: string, file: File): Promise<{ url: string; mediaKind: string } | null> {
+export async function uploadCommunityPostMedia(communityId: string, file: File): Promise<{ url: string; mediaKind: 'video' | 'photo' } | null> {
   const isVideo = file.type.startsWith('video/');
   const err = validateUpload(file, isVideo ? 'video' : 'image');
   if (err) { console.warn('[Community] post media upload rejected:', err); return null; }
 
   const supabase = createClient();
   const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
-  const mediaKind = isVideo ? 'video' : 'photo';
+  const mediaKind: 'video' | 'photo' = isVideo ? 'video' : 'photo';
   const path = `${communityId}/posts/${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from('community-images').upload(path, file, { upsert: true });
   if (error) return null;
@@ -489,6 +522,22 @@ export async function removeMember(communityId: string, userId: string): Promise
 
 // ── Posts ────────────────────────────────────────────────────────────
 
+/**
+ * Normalise a style payload the way the feed does: defaults are stripped so
+ * the column stays NULL unless the author actually picked something, and a
+ * style is only meaningful on a post with no media.
+ */
+function compactStyle(
+  style: { preset?: string; font?: string } | null | undefined,
+  hasMedia: boolean,
+): { preset?: string; font?: string } | null {
+  if (hasMedia || !style) return null;
+  const out: { preset?: string; font?: string } = {};
+  if (style.preset && style.preset !== 'default') out.preset = style.preset;
+  if (style.font && style.font !== 'system') out.font = style.font;
+  return Object.keys(out).length > 0 ? out : null;
+}
+
 export async function createCommunityPost(
   communityId: string,
   content: string,
@@ -496,11 +545,20 @@ export async function createCommunityPost(
   topic?: string,
   imageUrl?: string,
   mediaKind?: string,
-  style?: string,
+  extra?: {
+    videoUrl?: string;
+    allowDownload?: boolean;
+    style?: { preset?: string; font?: string } | null;
+  },
 ): Promise<{ success: boolean; post?: CommunityPost; error?: string }> {
   const myId = getMyId();
   if (!myId) return { success: false, error: 'Not authenticated' };
   const supabase = createClient();
+
+  const videoUrl = extra?.videoUrl || null;
+  // A video lives in video_url (same as posts) — image_url stays for photos,
+  // stickers and GIFs only.
+  const style = compactStyle(extra?.style, !!imageUrl || !!videoUrl);
 
   const { data, error } = await supabase
     .from('community_posts')
@@ -512,7 +570,9 @@ export async function createCommunityPost(
       topic: topic || null,
       image_url: imageUrl || null,
       media_kind: mediaKind || null,
-      ...(style ? { style } : {}),
+      video_url: videoUrl,
+      ...(videoUrl ? { allow_download: extra?.allowDownload !== false } : {}),
+      style,
       is_pinned: false,
       is_deleted: false,
     })
@@ -535,9 +595,78 @@ export async function createCommunityPost(
       content: data.content,
       image_url: data.image_url,
       media_kind: data.media_kind,
-      style: data.style,
+      video_url: data.video_url,
+      poster_url: data.poster_url,
+      video_views_count: data.video_views_count || 0,
+      allow_download: data.allow_download !== false,
+      style: data.style && typeof data.style === 'object' && Object.keys(data.style).length > 0
+        ? data.style : null,
       post_type: data.post_type || 'discussion',
       topic: data.topic,
+      likes: [],
+      reactions: [],
+      comment_count: 0,
+      created_at: data.created_at,
+      is_pinned: false,
+    },
+  };
+}
+
+/**
+ * Repost a community post back into the same community, carrying the
+ * original author's name — the community equivalent of the feed's repost.
+ */
+export async function repostCommunityPost(
+  communityId: string,
+  post: CommunityPost,
+): Promise<{ success: boolean; post?: CommunityPost; error?: string }> {
+  const myId = getMyId();
+  if (!myId) return { success: false, error: 'Not authenticated' };
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('community_posts')
+    .insert({
+      community_id: communityId,
+      user_id: myId,
+      content: post.content,
+      post_type: post.post_type,
+      topic: post.topic || null,
+      image_url: post.image_url || null,
+      media_kind: post.media_kind || null,
+      video_url: post.video_url || null,
+      style: post.style || null,
+      // A repost of a repost still credits the person who wrote it.
+      original_post_id: post.original_post_id || post.id,
+      original_user_name: post.original_user_name || post.user_name,
+      is_pinned: false,
+      is_deleted: false,
+    })
+    .select()
+    .single();
+
+  if (error || !data) return { success: false, error: error?.message || 'Failed' };
+
+  const prof = (await fetchProfileMap([myId])).get(myId);
+  return {
+    success: true,
+    post: {
+      id: data.id,
+      community_id: communityId,
+      user_id: myId,
+      user_name: prof?.display_name || 'You',
+      user_avatar: prof?.avatar_url,
+      content: data.content,
+      image_url: data.image_url,
+      media_kind: data.media_kind,
+      video_url: data.video_url,
+      video_views_count: 0,
+      allow_download: data.allow_download !== false,
+      style: data.style || null,
+      post_type: data.post_type || 'discussion',
+      topic: data.topic,
+      original_post_id: data.original_post_id,
+      original_user_name: data.original_user_name,
       likes: [],
       reactions: [],
       comment_count: 0,
@@ -554,11 +683,13 @@ export async function getCommunityPosts(
     sortBy?: FeedSortMode;
     search?: string;
     postType?: PostType;
+    /** Cursor for "load more": only posts older than this timestamp. */
+    before?: string;
   },
 ): Promise<CommunityPost[]> {
   const myId = getMyId();
   const supabase = createClient();
-  const limit = options?.limit || 50;
+  const limit = options?.limit || 30;
 
   let query = supabase
     .from('community_posts')
@@ -568,6 +699,7 @@ export async function getCommunityPosts(
     .order('created_at', { ascending: false })
     .limit(limit);
 
+  if (options?.before) query = query.lt('created_at', options.before);
   if (options?.search) query = query.ilike('content', `%${sanitizeSearchInput(options.search)}%`);
   if (options?.postType) query = query.eq('post_type', options.postType);
 
@@ -637,7 +769,14 @@ export async function getCommunityPosts(
       content: p.content,
       image_url: p.image_url,
       media_kind: p.media_kind,
-      style: p.style,
+      video_url: p.video_url,
+      poster_url: p.poster_url,
+      video_views_count: p.video_views_count || 0,
+      allow_download: p.allow_download !== false,
+      style: p.style && typeof p.style === 'object' && Object.keys(p.style).length > 0
+        ? p.style : null,
+      original_post_id: p.original_post_id,
+      original_user_name: p.original_user_name,
       post_type: p.post_type || 'discussion',
       topic: p.topic,
       likes: likesMap.get(p.id) || [],
@@ -676,11 +815,19 @@ export async function getCommunityPosts(
 export async function editCommunityPost(
   postId: string,
   newContent: string,
+  /** Omit to leave the style untouched; pass null to clear it. */
+  style?: { preset?: string; font?: string } | null,
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
+  const row: Record<string, any> = {
+    content: newContent,
+    edited_at: new Date().toISOString(),
+  };
+  if (style !== undefined) row.style = compactStyle(style, false);
+
   const { error } = await supabase
     .from('community_posts')
-    .update({ content: newContent, edited_at: new Date().toISOString() })
+    .update(row)
     .eq('id', postId);
   return error ? { success: false, error: error.message } : { success: true };
 }
@@ -801,6 +948,115 @@ export async function getCommunityPostReactions(postId: string): Promise<Reactio
   } catch {
     return [];
   }
+}
+
+/**
+ * Everyone who reacted to a community post, newest first — the data behind
+ * "See who reacted". Profiles are fetched separately rather than embedded,
+ * for the same reason as the feed: community_post_reactions.user_id points
+ * at profiles, but a PostgREST embed here is fragile across FK renames and
+ * fails silently to an empty list.
+ */
+export async function getCommunityPostReactors(
+  postId: string,
+  filterEmoji?: string,
+): Promise<CommunityReactionUser[]> {
+  const supabase = createClient();
+  try {
+    let query = supabase
+      .from('community_post_reactions')
+      .select('emoji, user_id')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
+
+    if (filterEmoji) query = query.eq('emoji', filterEmoji);
+
+    const { data: rows, error } = await query;
+    if (error || !rows || rows.length === 0) return [];
+
+    const userIds = Array.from(new Set(rows.map((r: any) => r.user_id as string)));
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, sun_sign')
+      .in('id', userIds);
+
+    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+    return rows.map((r: any) => {
+      const prof = profileMap.get(r.user_id);
+      return {
+        userId: r.user_id,
+        displayName: prof?.display_name || 'Stargazer',
+        avatarUrl: prof?.avatar_url || null,
+        sunSign: prof?.sun_sign || null,
+        emoji: r.emoji,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+// ── Bookmarks ───────────────────────────────────────────────────────
+// Server-side, so a saved community post follows the user across devices
+// and shows up on web — mobile used to keep these in device-local storage.
+
+export async function toggleCommunityBookmark(
+  postId: string,
+  communityId: string,
+): Promise<boolean> {
+  const myId = getMyId();
+  if (!myId) return false;
+  const supabase = createClient();
+
+  const { data: existing } = await supabase
+    .from('community_post_bookmarks')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('user_id', myId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from('community_post_bookmarks').delete().eq('id', existing.id);
+    return false;
+  }
+  await supabase
+    .from('community_post_bookmarks')
+    .insert({ post_id: postId, community_id: communityId, user_id: myId });
+  return true;
+}
+
+/** The ids of this user's saved posts, optionally scoped to one community. */
+export async function getMyCommunityBookmarks(communityId?: string): Promise<Set<string>> {
+  const myId = getMyId();
+  if (!myId) return new Set();
+  const supabase = createClient();
+  let query = supabase
+    .from('community_post_bookmarks')
+    .select('post_id')
+    .eq('user_id', myId);
+  if (communityId) query = query.eq('community_id', communityId);
+  const { data } = await query;
+  return new Set((data || []).map((b: any) => b.post_id));
+}
+
+// ── Video views ─────────────────────────────────────────────────────
+
+/**
+ * Record one play. The (post_id, user_id) primary key dedupes repeat views
+ * per person; the counter on the post row is what the 👁️ badge shows.
+ */
+export async function recordCommunityPostVideoView(postId: string): Promise<void> {
+  const myId = getMyId();
+  if (!myId) return;
+  try {
+    const supabase = createClient();
+    await supabase.from('community_post_video_views').upsert(
+      { post_id: postId, user_id: myId, watched_at: new Date().toISOString() },
+      { onConflict: 'post_id,user_id' },
+    );
+    await supabase.rpc('increment_community_post_video_views', { p_post_id: postId });
+  } catch { /* best effort — a view count must never block playback */ }
 }
 
 // ── Comments ────────────────────────────────────────────────────────

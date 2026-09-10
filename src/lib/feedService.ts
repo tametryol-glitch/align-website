@@ -579,13 +579,28 @@ export async function getReactorsForPost(
  * Post a comment, or a reply when `parentCommentId` is given. Replies are
  * one level deep — the DB rejects a reply to a reply.
  */
+/**
+ * Which comment table a call operates on. Community posts carry the same
+ * threading / edit / mention columns as feed posts (see
+ * supabase-migration-threaded-comments.sql), so one code path serves both —
+ * that's what keeps the two comment experiences identical.
+ */
+export type CommentScope = 'post' | 'community';
+
+const COMMENT_TABLE: Record<CommentScope, string> = {
+  post: 'post_comments',
+  community: 'community_post_comments',
+};
+
 export async function addComment(
   postId: string,
   userId: string,
   text: string,
   parentCommentId?: string | null,
+  scope: CommentScope = 'post',
 ) {
   const supabase = createClient();
+  const table = COMMENT_TABLE[scope];
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated — please refresh and log in again');
@@ -595,14 +610,14 @@ export async function addComment(
   const row: Record<string, any> = { post_id: postId, user_id: effectiveUserId, text };
   if (parentCommentId) row.parent_comment_id = parentCommentId;
 
-  const { error: insertError } = await supabase.from('post_comments').insert(row);
+  const { error: insertError } = await supabase.from(table).insert(row);
 
   if (insertError) throw new Error(`Insert failed: ${insertError.message} (code: ${insertError.code})`);
 
   // Read the row back separately — a notification trigger failing on the
   // SELECT must never look like the INSERT failed.
   let readback = supabase
-    .from('post_comments')
+    .from(table)
     .select('id, created_at')
     .eq('post_id', postId)
     .eq('user_id', effectiveUserId)
@@ -665,10 +680,10 @@ async function hydrateComments(rows: any[]): Promise<FeedComment[]> {
 }
 
 /** Top-level comments on a post, oldest first. Replies load on demand. */
-export async function getComments(postId: string): Promise<FeedComment[]> {
+export async function getComments(postId: string, scope: CommentScope = 'post'): Promise<FeedComment[]> {
   const supabase = createClient();
   const { data: rows, error } = await supabase
-    .from('post_comments')
+    .from(COMMENT_TABLE[scope])
     .select(COMMENT_COLUMNS)
     .eq('post_id', postId)
     .eq('is_deleted', false)
@@ -680,10 +695,10 @@ export async function getComments(postId: string): Promise<FeedComment[]> {
 }
 
 /** The replies under one top-level comment, oldest first. */
-export async function getReplies(parentCommentId: string): Promise<FeedComment[]> {
+export async function getReplies(parentCommentId: string, scope: CommentScope = 'post'): Promise<FeedComment[]> {
   const supabase = createClient();
   const { data: rows, error } = await supabase
-    .from('post_comments')
+    .from(COMMENT_TABLE[scope])
     .select(COMMENT_COLUMNS)
     .eq('parent_comment_id', parentCommentId)
     .eq('is_deleted', false)
@@ -694,10 +709,10 @@ export async function getReplies(parentCommentId: string): Promise<FeedComment[]
 }
 
 /** Which top-level comment a reply belongs to (notification deep-links). */
-export async function getCommentParentId(commentId: string): Promise<string | null> {
+export async function getCommentParentId(commentId: string, scope: CommentScope = 'post'): Promise<string | null> {
   const supabase = createClient();
   const { data } = await supabase
-    .from('post_comments')
+    .from(COMMENT_TABLE[scope])
     .select('parent_comment_id')
     .eq('id', commentId)
     .maybeSingle();
@@ -705,19 +720,19 @@ export async function getCommentParentId(commentId: string): Promise<string | nu
 }
 
 /** Edit your own comment. RLS enforces ownership. */
-export async function editComment(commentId: string, text: string): Promise<{ success: boolean; error?: string }> {
+export async function editComment(commentId: string, text: string, scope: CommentScope = 'post'): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
   const { error } = await supabase
-    .from('post_comments')
+    .from(COMMENT_TABLE[scope])
     .update({ text, is_edited: true, edited_at: new Date().toISOString() })
     .eq('id', commentId);
   if (error) return { success: false, error: error.message };
   return { success: true };
 }
 
-export async function deleteComment(commentId: string) {
+export async function deleteComment(commentId: string, scope: CommentScope = 'post') {
   const supabase = createClient();
-  await supabase.from('post_comments').update({ is_deleted: true }).eq('id', commentId);
+  await supabase.from(COMMENT_TABLE[scope]).update({ is_deleted: true }).eq('id', commentId);
 }
 
 export async function deletePost(postId: string): Promise<{ success: boolean; error?: string }> {

@@ -804,6 +804,78 @@ function CosmicMatchBody({ post }: { post: FeedPost }) {
 
 // ── FeedCard ───────────────────────────────────────────────────────
 
+/**
+ * A post body: text with @mentions and clickable links, multi-stage
+ * "Read more" folding, platform embeds (YouTube / TikTok / Instagram /
+ * Facebook) and a generic link unfurl for whatever URL is left over.
+ *
+ * Shared by the cosmic feed and community posts so a link pasted in a
+ * community renders exactly the way it does in the feed.
+ */
+export function PostRichBody({
+  content,
+  textClassName,
+  textStyle,
+  embedClassName = 'px-5 pb-3',
+}: {
+  content: string;
+  textClassName?: string;
+  textStyle?: CSSProperties;
+  /** Gutter wrapper around each embed — feed and community cards differ. */
+  embedClassName?: string;
+}) {
+  const youtubeUrls = extractYouTubeUrls(content);
+  const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
+  const tiktokMatches = extractAllTikTokMatches(content);
+  const instagramUrls = extractAllInstagramUrls(content);
+  const facebookUrls = extractAllFacebookUrls(content);
+  let displayText = content;
+  if (youtubeIds.length > 0) displayText = displayText.replace(YOUTUBE_REGEX, '').trim();
+  if (tiktokMatches.length > 0) displayText = stripTikTokUrls(displayText);
+  if (instagramUrls.length > 0) displayText = stripInstagramUrls(displayText);
+  if (facebookUrls.length > 0) displayText = stripFacebookUrls(displayText);
+
+  // Whatever link is left over gets a generic unfurl card. Only the first
+  // one — a post pasting five links shouldn't become five cards. The URL
+  // stays in the text unless it IS the whole post, where repeating it
+  // above the card would just be noise.
+  const unfurlUrl = extractHttpUrls(displayText).find((u) => !DIRECT_MEDIA_RE.test(u)) ?? null;
+  if (unfurlUrl && isOnlyThisUrl(displayText, unfurlUrl)) displayText = '';
+
+  return (
+    <>
+      {displayText && (
+        <ExpandablePostText text={displayText} className={textClassName} style={textStyle} />
+      )}
+      {youtubeIds.map((vid, i) => (
+        <div key={vid + i} className={embedClassName}>
+          <YouTubeEmbed videoId={vid} />
+        </div>
+      ))}
+      {tiktokMatches.map((tt, i) => (
+        <div key={tt.url + i} className={embedClassName}>
+          <TikTokEmbed videoId={tt.videoId} url={tt.url} />
+        </div>
+      ))}
+      {instagramUrls.map((ig, i) => (
+        <div key={ig + i} className={embedClassName}>
+          <MetaEmbed platform="instagram" url={ig} />
+        </div>
+      ))}
+      {facebookUrls.map((fb, i) => (
+        <div key={fb + i} className={embedClassName}>
+          <MetaEmbed platform="facebook" url={fb} />
+        </div>
+      ))}
+      {unfurlUrl && (
+        <div className={embedClassName}>
+          <LinkPreviewCard url={unfurlUrl} />
+        </div>
+      )}
+    </>
+  );
+}
+
 export function FeedCard({
   post,
   currentUserId,
@@ -964,62 +1036,13 @@ export function FeedCard({
       {post.type === 'cosmic_match' && <CosmicMatchBody post={post} />}
 
       {/* Content */}
-      {post.content && post.type !== 'cosmic_match' && (() => {
-        const youtubeUrls = extractYouTubeUrls(post.content);
-        const youtubeIds = youtubeUrls.map(extractYouTubeId).filter(Boolean) as string[];
-        const tiktokMatches = extractAllTikTokMatches(post.content);
-        const instagramUrls = extractAllInstagramUrls(post.content);
-        const facebookUrls = extractAllFacebookUrls(post.content);
-        let displayText = post.content;
-        if (youtubeIds.length > 0) displayText = displayText.replace(YOUTUBE_REGEX, '').trim();
-        if (tiktokMatches.length > 0) displayText = stripTikTokUrls(displayText);
-        if (instagramUrls.length > 0) displayText = stripInstagramUrls(displayText);
-        if (facebookUrls.length > 0) displayText = stripFacebookUrls(displayText);
-
-        // Whatever link is left over gets a generic unfurl card. Only the first
-        // one — a post pasting five links shouldn't become five cards. The URL
-        // stays in the text unless it IS the whole post, where repeating it
-        // above the card would just be noise.
-        const unfurlUrl = extractHttpUrls(displayText).find((u) => !DIRECT_MEDIA_RE.test(u)) ?? null;
-        if (unfurlUrl && isOnlyThisUrl(displayText, unfurlUrl)) displayText = '';
-
-        return (
-          <>
-            {displayText && (
-              <ExpandablePostText
-                text={displayText}
-                className={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
-                style={textColor ? { color: textColor } : undefined}
-              />
-            )}
-            {youtubeIds.map((vid, i) => (
-              <div key={vid + i} className="px-5 pb-3">
-                <YouTubeEmbed videoId={vid} />
-              </div>
-            ))}
-            {tiktokMatches.map((tt, i) => (
-              <div key={tt.url + i} className="px-5 pb-3">
-                <TikTokEmbed videoId={tt.videoId} url={tt.url} />
-              </div>
-            ))}
-            {instagramUrls.map((ig, i) => (
-              <div key={ig + i} className="px-5 pb-3">
-                <MetaEmbed platform="instagram" url={ig} />
-              </div>
-            ))}
-            {facebookUrls.map((fb, i) => (
-              <div key={fb + i} className="px-5 pb-3">
-                <MetaEmbed platform="facebook" url={fb} />
-              </div>
-            ))}
-            {unfurlUrl && (
-              <div className="px-5 pb-3">
-                <LinkPreviewCard url={unfurlUrl} />
-              </div>
-            )}
-          </>
-        );
-      })()}
+      {post.content && post.type !== 'cosmic_match' && (
+        <PostRichBody
+          content={post.content}
+          textClassName={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
+          textStyle={textColor ? { color: textColor } : undefined}
+        />
+      )}
 
       {/* Media */}
       {post.imageUrl && (

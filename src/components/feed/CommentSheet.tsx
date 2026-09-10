@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   addComment, getComments, getReplies, getCommentParentId, deleteComment, editComment,
-  type FeedComment,
+  type FeedComment, type CommentScope,
 } from '@/lib/feedService';
 import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
 import { isGifOrStickerUrl } from '@/components/feed/FeedCard';
@@ -28,6 +28,8 @@ export function CommentSheet({
   postOwnerId,
   userId,
   highlightCommentId,
+  scope = 'post',
+  canModerate = false,
   onClose,
   onCommentCountChange,
 }: {
@@ -36,6 +38,10 @@ export function CommentSheet({
   userId: string;
   /** Scroll to and highlight this comment once loaded (notification deep-link) */
   highlightCommentId?: string | null;
+  /** Which comment table to read/write — feed posts or community posts. */
+  scope?: CommentScope;
+  /** Community owners/admins moderate any comment in their community. */
+  canModerate?: boolean;
   onClose: () => void;
   onCommentCountChange?: (postId: string, delta: number) => void;
 }) {
@@ -57,17 +63,18 @@ export function CommentSheet({
   const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
-    getComments(postId).then((c) => { setComments(c); setLoading(false); });
-  }, [postId]);
+    setLoading(true);
+    getComments(postId, scope).then((c) => { setComments(c); setLoading(false); });
+  }, [postId, scope]);
 
   const loadReplies = useCallback(async (parentId: string) => {
     setLoadingReplies(parentId);
-    const rows = await getReplies(parentId);
+    const rows = await getReplies(parentId, scope);
     setReplies((prev) => ({ ...prev, [parentId]: rows }));
     setExpanded((prev) => new Set(prev).add(parentId));
     setLoadingReplies(null);
     return rows;
-  }, []);
+  }, [scope]);
 
   function toggleReplies(parentId: string) {
     if (expanded.has(parentId)) {
@@ -89,7 +96,7 @@ export function CommentSheet({
     (async () => {
       const isTopLevel = comments.some((c) => c.id === highlightCommentId);
       if (!isTopLevel) {
-        const parentId = await getCommentParentId(highlightCommentId);
+        const parentId = await getCommentParentId(highlightCommentId, scope);
         if (cancelled || !parentId) return;
         await loadReplies(parentId);
       }
@@ -123,7 +130,7 @@ export function CommentSheet({
     setErrorMsg(null);
     const parentId = replyingTo?.id || null;
     try {
-      const comment = await addComment(postId, userId, text.trim(), parentId);
+      const comment = await addComment(postId, userId, text.trim(), parentId, scope);
       acceptNewComment(comment, parentId);
       setText('');
       setReplyingTo(null);
@@ -140,7 +147,7 @@ export function CommentSheet({
     setErrorMsg(null);
     const parentId = replyingTo?.id || null;
     try {
-      const comment = await addComment(postId, userId, url, parentId);
+      const comment = await addComment(postId, userId, url, parentId, scope);
       acceptNewComment(comment, parentId);
       setReplyingTo(null);
     } catch (err: any) {
@@ -154,7 +161,7 @@ export function CommentSheet({
     setDeletingId(comment.id);
     const parentId = comment.parentCommentId || null;
     try {
-      await deleteComment(comment.id);
+      await deleteComment(comment.id, scope);
       if (parentId) {
         setReplies((prev) => ({
           ...prev,
@@ -176,7 +183,7 @@ export function CommentSheet({
     setSavingEdit(true);
     setErrorMsg(null);
     const next = editing.text.trim();
-    const result = await editComment(editing.id, next);
+    const result = await editComment(editing.id, next, scope);
     if (result.success) {
       const patch = (c: FeedComment) => c.id === editing.id ? { ...c, text: next, isEdited: true } : c;
       setComments((prev) => prev.map(patch));
@@ -206,6 +213,8 @@ export function CommentSheet({
   function canDelete(comment: FeedComment): boolean {
     if (comment.userId === userId) return true;
     if (postOwnerId === userId) return true;
+    // Community owners/admins moderate every comment in their space.
+    if (canModerate) return true;
     return false;
   }
 

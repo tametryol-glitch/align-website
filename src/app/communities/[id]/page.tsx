@@ -9,14 +9,23 @@ import {
   createCommunityPost, editCommunityPost, deleteCommunityPost,
   joinCommunity, leaveCommunity,
   likeCommunityPost, toggleCommunityReaction,
-  commentOnCommunityPost, getCommunityPostComments,
   togglePinPost, removeMember, reportCommunityPost,
   uploadCommunityPostMedia, uploadCommunityBanner, uploadCommunityAvatar,
   updateCommunityBanner, updateCommunityAvatar,
+  repostCommunityPost, toggleCommunityBookmark, getMyCommunityBookmarks,
+  recordCommunityPostVideoView,
   POST_TYPE_META, REACTION_OPTIONS, REPORT_REASONS, COMMUNITY_CATEGORIES, ZODIAC_EMOJIS,
-  type Community, type CommunityPost, type CommunityMember, type CommunityComment,
-  type CommunityRole, type PostType, type FeedSortMode, type ReactionGroup,
+  type Community, type CommunityPost, type CommunityMember,
+  type CommunityRole, type PostType, type FeedSortMode,
 } from '@/lib/communityService';
+import { POST_STYLE_PRESETS } from '@/lib/feedService';
+import { PostRichBody } from '@/components/feed/FeedCard';
+import { CommentSheet } from '@/components/feed/CommentSheet';
+import { MentionInput } from '@/components/feed/MentionInput';
+import ReactionViewerModal from '@/components/feed/ReactionViewerModal';
+import { downloadVideo } from '@/lib/videoDownloadService';
+import { getCreatorBadge, getCreatorTier } from '@/lib/creatorScoreEngine';
+import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/contentViralityEngine';
 import dynamic from 'next/dynamic';
 const GifStickerPicker = dynamic(() => import('@/components/chat/GifStickerPicker').then(m => ({ default: m.GifStickerPicker })), { ssr: false });
 const EmojiPicker = dynamic(() => import('@/components/ui/EmojiPicker'), { ssr: false });
@@ -25,6 +34,7 @@ import {
   ArrowLeft, Users, Send, Heart, MessageCircle, Pin,
   Trash2, Edit3, MoreHorizontal, Shield, Crown, Star,
   Search, RefreshCw, Flag, X, ChevronDown, Camera,
+  Bookmark, Repeat2, Share2, Download, Loader2, Video as VideoIcon,
 } from 'lucide-react';
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -79,13 +89,22 @@ export default function CommunityDetailPage() {
   const [composerGifUrl, setComposerGifUrl] = useState<string | null>(null);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  // Background style for text-only posts — same presets as the cosmic feed.
+  const [composerPreset, setComposerPreset] = useState('default');
+  // Video posts keep the creator's say over downloads, exactly like the feed.
+  const [composerAllowDownload, setComposerAllowDownload] = useState(true);
 
-  // Comments modal
+  // Comments — the cosmic feed's sheet, so replies / @mentions / GIFs /
+  // editing all behave identically inside a community.
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
-  const [comments, setComments] = useState<CommunityComment[]>([]);
-  const [commentsLoading, setCommentsLoading] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [sendingComment, setSendingComment] = useState(false);
+
+  // Saved posts, "who reacted", reporting and paging
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [reactorsPost, setReactorsPost] = useState<CommunityPost | null>(null);
+  const [reportingPostId, setReportingPostId] = useState<string | null>(null);
+  const [reportSent, setReportSent] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   // Edit modal
   const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
@@ -134,19 +153,51 @@ export default function CommunityDetailPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const [comm, postList, memberList, status] = await Promise.all([
+      const [comm, postList, memberList, status, bookmarks] = await Promise.all([
         getCommunity(id),
         getCommunityPosts(id, { sortBy: feedSort, search: searchQuery || undefined }),
         getCommunityMembers(id),
         user ? isMember(id) : Promise.resolve({ member: false }),
+        user ? getMyCommunityBookmarks(id) : Promise.resolve(new Set<string>()),
       ]);
       setCommunity(comm);
       setPosts(postList);
       setMembers(memberList);
       setMemberStatus(status);
+      setBookmarkedIds(bookmarks);
+      setHasMore(postList.length >= 30);
     } catch {}
     setLoading(false);
   }, [id, user, feedSort, searchQuery]);
+
+  /**
+   * Page on created_at using the OLDEST post loaded, not the last one on
+   * screen — pinned posts are hoisted to the top and "popular"/"rising"
+   * reorder the page, so the last card is rarely the oldest.
+   */
+  const loadMore = useCallback(async () => {
+    if (!id || loadingMore || !hasMore || posts.length === 0) return;
+    setLoadingMore(true);
+    try {
+      const oldest = posts.reduce(
+        (min, p) => (new Date(p.created_at).getTime() < new Date(min).getTime() ? p.created_at : min),
+        posts[0].created_at,
+      );
+      const more = await getCommunityPosts(id, {
+        sortBy: feedSort,
+        search: searchQuery || undefined,
+        before: oldest,
+      });
+      setPosts(prev => {
+        const seen = new Set(prev.map(p => p.id));
+        return [...prev, ...more.filter(p => !seen.has(p.id))];
+      });
+      setHasMore(more.length >= 30);
+    } catch {
+      setHasMore(false);
+    }
+    setLoadingMore(false);
+  }, [id, loadingMore, hasMore, posts, feedSort, searchQuery]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -175,12 +226,24 @@ export default function CommunityDetailPage() {
 
     let imageUrl = composerGifUrl || undefined;
     let mediaKind = composerMediaKind || undefined;
+    let videoUrl: string | undefined;
 
     if (composerImage && community) {
       const uploaded = await uploadCommunityPostMedia(community.id, composerImage);
       if (uploaded) {
-        imageUrl = uploaded.url;
-        mediaKind = uploaded.mediaKind;
+        if (uploaded.mediaKind === 'video') {
+          // Videos live in video_url, matching the feed — that's what makes
+          // view counts and downloads work.
+          videoUrl = uploaded.url;
+          mediaKind = undefined;
+        } else {
+          imageUrl = uploaded.url;
+          mediaKind = uploaded.mediaKind;
+        }
+      } else {
+        setPosting(false);
+        alert('Could not upload that file. Try again.');
+        return;
       }
     }
 
@@ -191,6 +254,11 @@ export default function CommunityDetailPage() {
       newPostTopic.trim() || undefined,
       imageUrl,
       mediaKind,
+      {
+        videoUrl,
+        allowDownload: composerAllowDownload,
+        style: composerPreset !== 'default' ? { preset: composerPreset } : null,
+      },
     );
     if (result.success) {
       setNewPostText('');
@@ -200,6 +268,8 @@ export default function CommunityDetailPage() {
       setComposerImagePreview(null);
       setComposerGifUrl(null);
       setComposerMediaKind(null);
+      setComposerPreset('default');
+      setComposerAllowDownload(true);
       setShowComposer(false);
       loadData();
     } else {
@@ -214,9 +284,73 @@ export default function CommunityDetailPage() {
     setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes: newLikes } : p));
   };
 
+  /**
+   * Optimistic, like the cosmic feed: the chip responds on the click and the
+   * server result reconciles after. A failure puts the snapshot back.
+   */
   const handleReaction = async (postId: string, emoji: string) => {
-    const newReactions = await toggleCommunityReaction(postId, emoji);
-    setPosts(prev => prev.map(p => p.id === postId ? { ...p, reactions: newReactions } : p));
+    const previous = posts;
+    setPosts(prev => prev.map(p => {
+      if (p.id !== postId) return p;
+      const existing = p.reactions.find(r => r.emoji === emoji);
+      let next = p.reactions;
+      if (existing && existing.user_reacted) {
+        next = next
+          .map(r => r.emoji === emoji ? { ...r, count: r.count - 1, user_reacted: false } : r)
+          .filter(r => r.count > 0);
+      } else {
+        // One reaction per person per post — drop whatever they had first.
+        next = next
+          .map(r => r.user_reacted ? { ...r, count: r.count - 1, user_reacted: false } : r)
+          .filter(r => r.count > 0);
+        next = next.some(r => r.emoji === emoji)
+          ? next.map(r => r.emoji === emoji ? { ...r, count: r.count + 1, user_reacted: true } : r)
+          : [...next, { emoji, count: 1, user_reacted: true }];
+      }
+      return { ...p, reactions: next };
+    }));
+
+    try {
+      const server = await toggleCommunityReaction(postId, emoji);
+      setPosts(prev => prev.map(p => p.id === postId ? { ...p, reactions: server } : p));
+    } catch {
+      setPosts(previous);
+    }
+  };
+
+  const handleBookmark = async (post: CommunityPost) => {
+    if (!id) return;
+    const saved = await toggleCommunityBookmark(post.id, id);
+    setBookmarkedIds(prev => {
+      const next = new Set(prev);
+      if (saved) next.add(post.id);
+      else next.delete(post.id);
+      return next;
+    });
+  };
+
+  const handleRepost = async (post: CommunityPost) => {
+    if (!id) return;
+    const result = await repostCommunityPost(id, post);
+    if (result.success && result.post) {
+      setPosts(prev => [result.post!, ...prev]);
+    } else {
+      alert(result.error || 'Could not repost.');
+    }
+  };
+
+  const handleShare = async (post: CommunityPost) => {
+    const url = `${window.location.origin}/communities/${id}`;
+    const payload = {
+      title: `${post.user_name} in ${community?.name || 'a community'} on Align`,
+      text: post.content.slice(0, 100),
+      url,
+    };
+    if (navigator.share) {
+      navigator.share(payload).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).catch(() => {});
+    }
   };
 
   const handlePin = async (postId: string) => {
@@ -250,38 +384,10 @@ export default function CommunityDetailPage() {
     loadData();
   };
 
-  const handleReport = async (postId: string) => {
-    const reason = prompt('Report reason: spam, harassment, hate_speech, inappropriate, off_topic, other');
-    if (!reason) return;
-    const validReasons = ['spam','harassment','hate_speech','misinformation','inappropriate','scam','off_topic','other'];
-    const r = validReasons.includes(reason) ? reason : 'other';
-    await reportCommunityPost(id!, postId, r as any);
-    alert('Report submitted. Thank you.');
-  };
-
-  // ── Comments ──
-  const openComments = async (postId: string) => {
-    setCommentPostId(postId);
-    setCommentsLoading(true);
-    const cmts = await getCommunityPostComments(postId);
-    setComments(cmts);
-    setCommentsLoading(false);
-  };
-
-  const handleSendComment = async () => {
-    if (!commentPostId || !newComment.trim()) return;
-    setSendingComment(true);
-    const result = await commentOnCommunityPost(commentPostId, newComment.trim());
-    if (result.success) {
-      setNewComment('');
-      const cmts = await getCommunityPostComments(commentPostId);
-      setComments(cmts);
-      // Update comment count in posts
-      setPosts(prev => prev.map(p =>
-        p.id === commentPostId ? { ...p, comment_count: cmts.length } : p
-      ));
-    }
-    setSendingComment(false);
+  const handleSubmitReport = async (postId: string, reason: string) => {
+    if (!id) return;
+    await reportCommunityPost(id, postId, reason as any);
+    setReportSent(true);
   };
 
   // ── Render ──
@@ -514,15 +620,34 @@ export default function CommunityDetailPage() {
                     className="w-full px-3 py-2 bg-bg-tertiary rounded-lg text-sm text-text-primary placeholder:text-text-muted border-none focus:outline-none"
                   />
 
-                  {/* Content */}
-                  <textarea
-                    placeholder="Share your thoughts..."
-                    value={newPostText}
-                    onChange={e => setNewPostText(e.target.value)}
-                    maxLength={2000}
-                    rows={4}
-                    className="w-full px-3 py-2 bg-bg-tertiary rounded-lg text-sm text-text-primary placeholder:text-text-muted border-none focus:outline-none resize-none"
-                  />
+                  {/* Content — @mention-aware, same input as the feed composer */}
+                  {(() => {
+                    const preset = POST_STYLE_PRESETS.find(pr => pr.id === composerPreset);
+                    const styled = preset && preset.id !== 'default'
+                      && !composerImagePreview && !composerGifUrl;
+                    return (
+                      <div
+                        className="rounded-lg p-1"
+                        style={styled
+                          ? { background: `linear-gradient(135deg, ${preset!.gradient[0]}, ${preset!.gradient[1]})` }
+                          : undefined}
+                      >
+                        <MentionInput
+                          value={newPostText}
+                          onChange={setNewPostText}
+                          excludeUserId={user?.id}
+                          multiline
+                          rows={4}
+                          maxLength={2000}
+                          placeholder="Share your thoughts..."
+                          className="w-full px-3 py-2 bg-bg-tertiary rounded-lg text-sm text-text-primary placeholder:text-text-muted border-none focus:outline-none resize-none"
+                          style={styled
+                            ? { background: 'transparent', color: preset!.textColor }
+                            : undefined}
+                        />
+                      </div>
+                    );
+                  })()}
 
                   {/* Media Action Bar */}
                   <div className="flex items-center gap-2 mt-2">
@@ -619,11 +744,48 @@ export default function CommunityDetailPage() {
                     </div>
                   )}
 
+                  {/* Background style — text-only posts, same presets as the feed */}
+                  {!composerImagePreview && !composerGifUrl && (
+                    <div>
+                      <p className="text-[11px] text-text-muted font-medium mb-1.5">Background</p>
+                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                        {POST_STYLE_PRESETS.map(pr => (
+                          <button
+                            key={pr.id}
+                            type="button"
+                            onClick={() => setComposerPreset(pr.id)}
+                            title={pr.label}
+                            className={`w-7 h-7 rounded-lg border-2 shrink-0 transition-all ${
+                              composerPreset === pr.id ? 'border-accent-primary scale-110' : 'border-border-primary'
+                            }`}
+                            style={pr.id === 'default'
+                              ? { background: '#1E2640' }
+                              : { background: `linear-gradient(135deg, ${pr.gradient[0]}, ${pr.gradient[1]})` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Downloads opt-out — video posts only. Saved copies carry
+                      the Align outro, so this is the creator's say over that. */}
+                  {composerMediaKind === 'video' && (
+                    <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
+                      <input
+                        type="checkbox"
+                        checked={composerAllowDownload}
+                        onChange={e => setComposerAllowDownload(e.target.checked)}
+                        className="w-4 h-4 accent-accent-primary"
+                      />
+                      <span className="text-xs text-text-muted">Let others download this video</span>
+                    </label>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] text-text-muted">{newPostText.length}/2000</span>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => { setShowComposer(false); setNewPostText(''); setNewPostTopic(''); setComposerImage(null); setComposerImagePreview(null); setComposerGifUrl(null); setComposerMediaKind(null); setShowGifPicker(false); setShowEmojiPicker(false); }}
+                        onClick={() => { setShowComposer(false); setNewPostText(''); setNewPostTopic(''); setComposerImage(null); setComposerImagePreview(null); setComposerGifUrl(null); setComposerMediaKind(null); setComposerPreset('default'); setComposerAllowDownload(true); setShowGifPicker(false); setShowEmojiPicker(false); }}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-muted hover:bg-bg-tertiary"
                       >
                         {t('common.cancel')}
@@ -656,16 +818,35 @@ export default function CommunityDetailPage() {
                   post={post}
                   isAdmin={isAdmin}
                   myId={user?.id || ''}
+                  isBookmarked={bookmarkedIds.has(post.id)}
                   onLike={() => handleLike(post.id)}
                   onReaction={(emoji) => handleReaction(post.id, emoji)}
-                  onComment={() => openComments(post.id)}
+                  onViewReactors={() => setReactorsPost(post)}
+                  onComment={() => setCommentPostId(post.id)}
                   onPin={() => handlePin(post.id)}
                   onDelete={() => handleDelete(post.id)}
                   onEdit={() => handleEdit(post)}
-                  onReport={() => handleReport(post.id)}
+                  onReport={() => { setReportSent(false); setReportingPostId(post.id); }}
+                  onBookmark={() => handleBookmark(post)}
+                  onRepost={() => handleRepost(post)}
+                  onShare={() => handleShare(post)}
                   onImageClick={(url) => setLightboxUrl(url)}
                 />
               ))}
+            </div>
+          )}
+
+          {/* Load more */}
+          {hasMore && posts.length > 0 && (
+            <div className="text-center py-6">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="btn-secondary text-sm inline-flex items-center gap-2"
+              >
+                {loadingMore && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {loadingMore ? t('feed.loading') : t('feed.loadMore')}
+              </button>
             </div>
           )}
         </>
@@ -781,63 +962,73 @@ export default function CommunityDetailPage() {
         </div>
       )}
 
-      {/* ═══ COMMENTS MODAL ═══ */}
-      {commentPostId && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-bg-secondary rounded-t-2xl sm:rounded-2xl border border-border-primary w-full max-w-lg max-h-[70vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-border-primary">
-              <h3 className="text-sm font-semibold text-text-primary">{t('components.commentSheet.title')}</h3>
-              <button onClick={() => { setCommentPostId(null); setNewComment(''); }} className="p-1">
-                <X className="w-5 h-5 text-text-muted" />
-              </button>
-            </div>
+      {/* ═══ COMMENTS — the cosmic feed's sheet ═══ */}
+      {commentPostId && (() => {
+        const post = posts.find(p => p.id === commentPostId);
+        return (
+          <CommentSheet
+            postId={commentPostId}
+            postOwnerId={post?.user_id || ''}
+            userId={user?.id || ''}
+            scope="community"
+            canModerate={isAdmin}
+            onClose={() => setCommentPostId(null)}
+            onCommentCountChange={(pid, delta) => {
+              setPosts(prev => prev.map(p =>
+                p.id === pid ? { ...p, comment_count: Math.max(0, p.comment_count + delta) } : p
+              ));
+            }}
+          />
+        );
+      })()}
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {commentsLoading ? (
-                <p className="text-center text-text-muted text-sm py-4">{t('common.loading')}</p>
-              ) : comments.length === 0 ? (
-                <p className="text-center text-text-muted text-sm py-4">{t('components.commentSheet.noComments')}</p>
-              ) : (
-                comments.map(c => (
-                  <div key={c.id} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-accent-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                      {c.user_avatar ? (
-                        <img src={c.user_avatar} alt="" className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <span className="text-[10px] font-bold text-accent-primary">{c.user_name[0]?.toUpperCase()}</span>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-text-primary">{c.user_name}</span>
-                        <span className="text-[10px] text-text-muted">{timeAgo(c.created_at)}</span>
-                      </div>
-                      <p className="text-sm text-text-secondary mt-0.5">{c.text}</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+      {/* ═══ WHO REACTED ═══ */}
+      {reactorsPost && (
+        <ReactionViewerModal
+          postId={reactorsPost.id}
+          scope="community"
+          reactions={reactorsPost.reactions.map(r => ({
+            emoji: r.emoji as any,
+            count: r.count,
+            userReacted: r.user_reacted,
+          }))}
+          onClose={() => setReactorsPost(null)}
+        />
+      )}
 
-            {memberStatus.member && (
-              <div className="p-4 border-t border-border-primary flex gap-2">
-                <input
-                  type="text"
-                  placeholder={t('components.commentSheet.placeholder')}
-                  value={newComment}
-                  onChange={e => setNewComment(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSendComment()}
-                  className="flex-1 px-3 py-2 bg-bg-tertiary rounded-xl text-sm text-text-primary placeholder:text-text-muted border-none focus:outline-none"
-                />
-                <button
-                  onClick={handleSendComment}
-                  disabled={sendingComment || !newComment.trim()}
-                  className="p-2 rounded-xl bg-accent-primary text-white disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+      {/* ═══ REPORT POST ═══ */}
+      {reportingPostId && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setReportingPostId(null)}
+        >
+          <div className="bg-bg-card border border-border-primary rounded-2xl p-5 max-w-xs w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-semibold text-text-primary mb-3">
+              {t('components.feedCard.reportPost', 'Report Post')}
+            </h3>
+            {reportSent ? (
+              <p className="text-sm text-green-400 mb-4">
+                {t('components.feedCard.reportThanks', "Thanks for reporting. We'll review this post.")}
+              </p>
+            ) : (
+              <div className="space-y-1 mb-4">
+                {REPORT_REASONS.map(r => (
+                  <button
+                    key={r.id}
+                    onClick={() => handleSubmitReport(reportingPostId, r.id)}
+                    className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-bg-secondary rounded-lg transition-colors"
+                  >
+                    {r.label}
+                  </button>
+                ))}
               </div>
             )}
+            <button
+              onClick={() => { setReportingPostId(null); setReportSent(false); }}
+              className="btn-secondary w-full text-sm"
+            >
+              {reportSent ? t('common.done') : t('common.cancel')}
+            </button>
           </div>
         </div>
       )}
@@ -890,36 +1081,116 @@ export default function CommunityDetailPage() {
 // POST CARD
 // ═════════════════════════════════════════════════════════════════════
 
+function formatViewCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+
+// One recorded view per post per page session; the DB primary key dedupes
+// per user across sessions. Same contract as the cosmic feed.
+const recordedVideoViewPosts = new Set<string>();
+
+/** The feed's creator-tier estimate, computed from a community post's stats. */
+function estimateCreatorTierFromPost(post: CommunityPost) {
+  const likes = post.reactions.reduce((sum, r) => sum + r.count, 0) + post.likes.length;
+  return getCreatorTier(Math.min(100, likes * 3 + post.comment_count * 5));
+}
+
+/** The feed's Rising / Trending / Supernova badge, for a community post. */
+function getViralityIndicatorFromPost(post: CommunityPost): { label: string; emoji: string } | null {
+  const likes = post.reactions.reduce((sum, r) => sum + r.count, 0) + post.likes.length;
+  const metrics: ContentMetrics = {
+    id: post.id,
+    created_at: post.created_at,
+    content_type: post.video_url ? 'video' : post.image_url ? 'image' : 'text',
+    likes_count: likes,
+    comments_count: post.comment_count,
+    impressions_count: Math.max(likes * 10, 1),
+    caption: post.content || '',
+    creator_score: 50,
+    follower_count: 100,
+  };
+  const tier = getViralTier(predictViralScore(metrics));
+  if (tier === 'supernova') return { label: 'Supernova', emoji: '\u{1F4A5}' };
+  if (tier === 'viral') return { label: 'Trending', emoji: '\u{1F525}' };
+  if (tier === 'rising') return { label: 'Rising', emoji: '⚡' };
+  return null;
+}
+
 function PostCard({
-  post, isAdmin, myId, onLike, onReaction, onComment, onPin, onDelete, onEdit, onReport, onImageClick,
+  post, isAdmin, myId, isBookmarked,
+  onLike, onReaction, onViewReactors, onComment, onPin, onDelete, onEdit, onReport,
+  onBookmark, onRepost, onShare, onImageClick,
 }: {
   post: CommunityPost;
   isAdmin: boolean;
   myId: string;
+  isBookmarked: boolean;
   onLike: () => void;
   onReaction: (emoji: string) => void;
+  onViewReactors: () => void;
   onComment: () => void;
   onPin: () => void;
   onDelete: () => void;
   onEdit: () => void;
   onReport: () => void;
+  onBookmark: () => void;
+  onRepost: () => void;
+  onShare: () => void;
   onImageClick?: (url: string) => void;
 }) {
   const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  // Doubles as progress text while a cold variant encodes, then as the error
+  // if it fails. Null = show the plain "Save video" label.
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
   const isAuthor = post.user_id === myId;
-  const isLong = post.content.length > 200;
   const typeMeta = POST_TYPE_META[post.post_type] || POST_TYPE_META.discussion;
 
+  // Background style — text-only posts, exactly as the feed gates it.
+  const preset = post.style?.preset && !post.image_url && !post.video_url
+    ? POST_STYLE_PRESETS.find(pr => pr.id === post.style?.preset)
+    : null;
+  const hasGradient = !!preset && preset.id !== 'default';
+  const cardStyle = hasGradient
+    ? { background: `linear-gradient(135deg, ${preset!.gradient[0]}, ${preset!.gradient[1]})` }
+    : undefined;
+  const textColor = hasGradient ? preset!.textColor : undefined;
+
+  // Saves the branded copy (clip + Align outro). The first download of a
+  // given video waits on the encode; later ones are instant.
+  const handleDownload = useCallback(async () => {
+    if (downloading || !post.video_url) return;
+    setDownloading(true);
+    setDownloadNotice(null);
+    try {
+      const result = await downloadVideo('community', post.id, post.video_url, setDownloadNotice);
+      setDownloadNotice(result.saved ? null : result.error || 'Could not save.');
+    } finally {
+      setDownloading(false);
+    }
+  }, [downloading, post.id, post.video_url]);
+
   return (
-    <div className={`card rounded-2xl p-4 ${post.is_pinned ? 'border-yellow-500/30 bg-yellow-500/5' : ''}`}>
+    <div
+      className={`card rounded-2xl p-4 relative ${post.is_pinned ? 'border-yellow-500/30' : ''}`}
+      style={cardStyle}
+    >
       {/* Pinned banner */}
       {post.is_pinned && (
         <div className="flex items-center gap-1 text-[11px] text-yellow-400 font-medium mb-2">
           <Pin className="w-3 h-3" /> {t('messages.contextMenu.pin')}
         </div>
+      )}
+
+      {/* Repost attribution */}
+      {post.original_user_name && (
+        <p className="text-xs text-text-muted mb-1" style={textColor ? { color: textColor, opacity: 0.85 } : undefined}>
+          ↻ Reposted from <span className="font-medium text-accent-secondary">{post.original_user_name}</span>
+        </p>
       )}
 
       {/* Header */}
@@ -935,11 +1206,25 @@ function PostCard({
         </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-text-primary truncate">{post.user_name}</span>
+            <Link
+              href={`/user/${post.user_id}`}
+              className="text-sm font-semibold text-text-primary truncate hover:underline"
+              style={textColor ? { color: textColor } : undefined}
+            >
+              {post.user_name}
+            </Link>
             {roleBadge(post.user_role)}
+            {(() => {
+              const tier = estimateCreatorTierFromPost(post);
+              if (tier === 'newcomer') return null;
+              const badge = getCreatorBadge(tier);
+              return <span className="text-xs" title={badge.label}>{badge.emoji}</span>;
+            })()}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-text-muted">{timeAgo(post.created_at)}</span>
+            <span className="text-[11px] text-text-muted" style={textColor ? { color: textColor, opacity: 0.7 } : undefined}>
+              {timeAgo(post.created_at)}
+            </span>
             {post.edited_at && <span className="text-[10px] text-text-muted">(edited)</span>}
           </div>
         </div>
@@ -950,7 +1235,7 @@ function PostCard({
             <MoreHorizontal className="w-4 h-4" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-8 bg-bg-secondary rounded-xl border border-border-primary shadow-lg py-1 z-10 min-w-[140px]">
+            <div className="absolute right-0 top-8 bg-bg-secondary rounded-xl border border-border-primary shadow-lg py-1 z-20 min-w-[140px]">
               {isAuthor && (
                 <button onClick={() => { onEdit(); setShowMenu(false); }} className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-tertiary flex items-center gap-2">
                   <Edit3 className="w-3 h-3" /> {t('common.edit')}
@@ -991,25 +1276,26 @@ function PostCard({
         )}
       </div>
 
-      {/* Content */}
-      <p className="text-sm text-text-primary whitespace-pre-wrap leading-relaxed">
-        {isLong && !expanded ? post.content.slice(0, 200) + '...' : post.content}
-      </p>
-      {isLong && (
-        <button onClick={() => setExpanded(!expanded)} className="text-xs text-accent-primary mt-1 hover:underline">
-          {expanded ? t('common.showLess') : t('common.showMore')}
-        </button>
+      {/* Content — @mentions, clickable links, staged "Read more", and the
+          same YouTube / TikTok / Instagram / Facebook / link-preview embeds
+          the cosmic feed renders. */}
+      {post.content && (
+        <PostRichBody
+          content={post.content}
+          textClassName={`text-sm leading-relaxed whitespace-pre-wrap break-words ${
+            hasGradient ? 'text-lg py-4 text-center font-medium' : 'text-text-primary'
+          }`}
+          textStyle={textColor ? { color: textColor } : undefined}
+          embedClassName="mt-3"
+        />
       )}
 
       {/* Media */}
       {post.image_url && (
         <div className="mt-3 rounded-xl overflow-hidden">
           {post.media_kind === 'video' ? (
-            <video
-              src={post.image_url}
-              controls
-              className="w-full max-h-96 object-contain bg-black rounded-xl"
-            />
+            /* Legacy rows: videos written before video_url existed. */
+            <video src={post.image_url} controls className="w-full max-h-96 object-contain bg-black rounded-xl" />
           ) : post.media_kind === 'sticker' ? (
             <img
               src={post.image_url}
@@ -1030,10 +1316,32 @@ function PostCard({
         </div>
       )}
 
+      {post.video_url && (
+        <div className="mt-3 relative">
+          <video
+            src={post.video_url}
+            poster={post.poster_url || undefined}
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full rounded-xl max-h-96 bg-black"
+            onPlay={() => {
+              if (!recordedVideoViewPosts.has(post.id)) {
+                recordedVideoViewPosts.add(post.id);
+                recordCommunityPostVideoView(post.id);
+              }
+            }}
+          />
+          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/55 text-white text-[11px] font-semibold pointer-events-none">
+            👁️ {formatViewCount(post.video_views_count || 0)}
+          </span>
+        </div>
+      )}
+
       {/* Reaction chips */}
       {post.reactions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {post.reactions.map((r: any) => (
+        <div className="flex flex-wrap items-center gap-1.5 mt-3">
+          {post.reactions.map(r => (
             <button
               key={r.emoji}
               onClick={() => onReaction(r.emoji)}
@@ -1046,56 +1354,116 @@ function PostCard({
               {r.emoji} {r.count}
             </button>
           ))}
+          <button
+            onClick={onViewReactors}
+            className="text-xs text-text-secondary hover:text-accent-primary hover:underline transition-colors"
+          >
+            {t('feed.seeWhoReacted', 'See who reacted')}
+          </button>
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 mt-3 pt-2 border-t border-border-primary">
-        {/* Reaction picker */}
-        <div className="relative">
-          <button
-            onClick={() => setShowReactions(!showReactions)}
-            className="p-1.5 rounded-lg text-text-muted hover:text-accent-primary hover:bg-accent-primary/10 text-xs"
-          >
-            ✨
-          </button>
-          {showReactions && (
-            <div className="absolute bottom-full left-0 mb-1 bg-bg-secondary rounded-xl border border-border-primary shadow-lg p-2 flex gap-1 z-10">
-              {REACTION_OPTIONS.map(emoji => (
-                <button
-                  key={emoji}
-                  onClick={() => { onReaction(emoji); setShowReactions(false); }}
-                  className="w-8 h-8 rounded-lg hover:bg-bg-tertiary flex items-center justify-center text-lg transition-transform hover:scale-125"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Virality indicator */}
+      {(() => {
+        const indicator = getViralityIndicatorFromPost(post);
+        if (!indicator) return null;
+        return (
+          <div className="mt-2">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-500/12 text-orange-400">
+              {indicator.emoji} {indicator.label}
+            </span>
+          </div>
+        );
+      })()}
 
-        {/* Like */}
+      {/* Actions */}
+      <div className="flex items-center mt-3 pt-2 border-t border-border-primary">
+        <button
+          onClick={() => setShowReactions(!showReactions)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors"
+        >
+          <span className="text-base">✨</span> {t('messages.contextMenu.react')}
+        </button>
+
+        {/* Legacy hearts stay reachable so likes left before reactions
+            existed can still be given and taken back. */}
         <button
           onClick={onLike}
-          className={`p-1.5 rounded-lg text-xs flex items-center gap-1 ${
-            post.likes.includes(myId)
-              ? 'text-pink-400'
-              : 'text-text-muted hover:text-pink-400'
+          className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs ${
+            post.likes.includes(myId) ? 'text-pink-400' : 'text-text-muted hover:text-pink-400'
           }`}
+          title="Like"
         >
           <Heart className={`w-3.5 h-3.5 ${post.likes.includes(myId) ? 'fill-pink-400' : ''}`} />
           {post.likes.length > 0 && <span>{post.likes.length}</span>}
         </button>
 
-        {/* Comments */}
         <button
           onClick={onComment}
-          className="p-1.5 rounded-lg text-text-muted hover:text-accent-primary text-xs flex items-center gap-1"
+          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
-          <MessageCircle className="w-3.5 h-3.5" />
-          {post.comment_count > 0 && <span>{post.comment_count}</span>}
+          <MessageCircle className="w-4 h-4" />
+          {post.comment_count > 0 ? post.comment_count : t('components.feedCard.comment')}
         </button>
+
+        <button
+          onClick={onRepost}
+          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors"
+        >
+          <Repeat2 className="w-4 h-4" /> {t('feed.composer.repost', 'Repost')}
+        </button>
+
+        <button
+          onClick={onBookmark}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs transition-colors ${
+            isBookmarked ? 'text-accent-primary' : 'text-text-muted hover:text-accent-primary'
+          }`}
+        >
+          <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+          {isBookmarked ? t('components.feedCard.saved', 'Saved') : t('common.save')}
+        </button>
+
+        <button
+          onClick={onShare}
+          className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors"
+        >
+          <Share2 className="w-4 h-4" /> {t('components.feedCard.share')}
+        </button>
+
+        {/* Download — video posts only, and only when the creator allows it.
+            The saved file carries the Align outro. */}
+        {post.video_url && post.allow_download !== false && (
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            title="Save video"
+            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors disabled:opacity-60"
+          >
+            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {downloadNotice || 'Save video'}
+          </button>
+        )}
       </div>
+
+      {/* Reaction picker */}
+      {showReactions && (
+        <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-border-primary">
+          {REACTION_OPTIONS.map(opt => (
+            <button
+              key={opt.emoji}
+              onClick={() => { onReaction(opt.emoji); setShowReactions(false); }}
+              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-accent-muted transition-colors"
+              title={opt.label}
+            >
+              <span className="text-xl">{opt.emoji}</span>
+              <span className="text-[9px] text-text-muted">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Click outside to close the menu */}
+      {showMenu && <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />}
     </div>
   );
 }

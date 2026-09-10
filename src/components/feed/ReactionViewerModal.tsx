@@ -19,15 +19,18 @@ import {
   type ReactionUser,
   type PostReaction,
 } from '@/lib/feedService';
+import { getCommunityPostReactors } from '@/lib/communityService';
 import { X, Loader2 } from 'lucide-react';
 
 interface ReactionViewerModalProps {
   postId: string;
   reactions: PostReaction[];
+  /** Which table the reactions live in — feed posts or community posts. */
+  scope?: 'post' | 'community';
   onClose: () => void;
 }
 
-export default function ReactionViewerModal({ postId, reactions, onClose }: ReactionViewerModalProps) {
+export default function ReactionViewerModal({ postId, reactions, scope = 'post', onClose }: ReactionViewerModalProps) {
   const [activeTab, setActiveTab] = useState<ReactionEmoji | 'all'>('all');
   const [reactors, setReactors] = useState<ReactionUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,14 +38,17 @@ export default function ReactionViewerModal({ postId, reactions, onClose }: Reac
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getReactorsForPost(postId, activeTab === 'all' ? undefined : activeTab);
+      const emoji = activeTab === 'all' ? undefined : activeTab;
+      const data = scope === 'community'
+        ? (await getCommunityPostReactors(postId, emoji)) as ReactionUser[]
+        : await getReactorsForPost(postId, emoji);
       setReactors(data);
     } catch {
       setReactors([]);
     } finally {
       setLoading(false);
     }
-  }, [postId, activeTab]);
+  }, [postId, activeTab, scope]);
 
   useEffect(() => { load(); }, [load]);
 

@@ -1,6 +1,6 @@
 /**
- * Video downloads — saves a reel or feed video post with the Align outro
- * appended.
+ * Video downloads — saves a reel, feed video post or community video post
+ * with the Align outro appended.
  *
  * The copy stored in the app has no outro; the branded variant is built on
  * demand by the render service and cached server-side, so the first download
@@ -13,7 +13,7 @@ import { createClient } from './supabase';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
 
-export type ShareVariantKind = 'reel' | 'post';
+export type ShareVariantKind = 'reel' | 'post' | 'community';
 
 export interface DownloadResult {
   saved: boolean;
