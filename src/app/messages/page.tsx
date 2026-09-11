@@ -77,6 +77,7 @@ export default function MessagesPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deepLinkAppliedRef = useRef(false);
 
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -167,6 +168,23 @@ export default function MessagesPage() {
     if (!user) return;
     setHiddenMsgIds(getHiddenMessageIds());
     loadConversations();
+  }, [user]);
+
+  // ── Deep link: /messages?conversation=<id> opens that thread ──
+  // Notifications, web push, the profile "Message" button and the dating
+  // matches list all navigate here with the conversation in the query, so it
+  // has to open the thread instead of dropping the user on the inbox.
+  useEffect(() => {
+    if (!user || deepLinkAppliedRef.current) return;
+    const convId = new URLSearchParams(window.location.search).get('conversation');
+    if (!convId) return;
+    deepLinkAppliedRef.current = true;
+    store.setActiveConversationId(convId);
+    // Drop the param so a later refresh or back-nav doesn't re-open it over
+    // whatever conversation the user has since selected.
+    const url = new URL(window.location.href);
+    url.searchParams.delete('conversation');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
   }, [user]);
 
   async function loadConversations() {

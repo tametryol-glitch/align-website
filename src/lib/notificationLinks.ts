@@ -35,7 +35,11 @@ export function getNotificationLink(n: LinkableNotification): string {
     }
     case 'message':
     case 'new_message':
-      return n.data?.conversation_id ? `/messages/${n.data.conversation_id}` : '/messages';
+      // /messages is a single page that opens a thread from ?conversation= —
+      // there is no /messages/[id] route, so a path segment 404s.
+      return n.data?.conversation_id
+        ? `/messages?conversation=${n.data.conversation_id}`
+        : '/messages';
     case 'cosmic_alert':
     case 'transit':
     case 'transit_alert':

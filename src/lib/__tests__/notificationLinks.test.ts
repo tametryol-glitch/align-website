@@ -25,3 +25,21 @@ describe('getNotificationLink — transit_alert riders', () => {
     expect(getNotificationLink({ type: 'transit_alert' })).toBe('/readings');
   });
 });
+
+/**
+ * Message notifications used to point at /messages/<id>, a path with no page
+ * behind it, so every click 404'd. The inbox opens a thread from
+ * ?conversation=, so the query form is the only shape that works.
+ */
+describe('getNotificationLink — messages', () => {
+  it('deep-links into the conversation via the query the inbox reads', () => {
+    expect(getNotificationLink({ type: 'new_message', data: { conversation_id: 'abc-123' } }))
+      .toBe('/messages?conversation=abc-123');
+    expect(getNotificationLink({ type: 'message', data: { conversation_id: 'abc-123' } }))
+      .toBe('/messages?conversation=abc-123');
+  });
+
+  it('falls back to the inbox when the conversation is missing', () => {
+    expect(getNotificationLink({ type: 'new_message', data: {} })).toBe('/messages');
+  });
+});
