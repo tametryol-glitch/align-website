@@ -176,7 +176,16 @@ export function StagePanel({
   return (
     // top-28 keeps clear of the notice banner at top-16, the same
     // collision the hearters strip had.
-    <div className="absolute top-28 left-4 z-20 flex flex-col gap-1.5 items-start max-w-[70%]">
+    //
+    // Bounded on the right so it physically cannot reach the guest
+    // frame's corner, and z-40 so it sits ABOVE that frame: these are
+    // the host's only controls for taking someone off stage, and a
+    // control hidden behind decoration is a control that does not
+    // exist.
+    <div
+      className="absolute top-28 left-4 right-44 lg:right-52 z-40
+                 flex flex-col gap-1.5 items-start"
+    >
       {live && (
         <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30
                         backdrop-blur rounded-full pl-3 pr-1.5 py-1">
