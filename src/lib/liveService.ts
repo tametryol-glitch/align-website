@@ -30,7 +30,10 @@ import {
 
 export type LiveStatus = 'scheduled' | 'live' | 'ended' | 'failed' | 'removed';
 export type LiveVisibility = 'public' | 'followers' | 'private';
-export type LiveRole = 'host' | 'audience';
+// 'guest' is a publisher the host has put on stage. The server
+// decides whether that claim is true; this type only says the word
+// is sayable.
+export type LiveRole = 'host' | 'guest' | 'audience';
 
 export interface LiveSession {
   id: string;
@@ -615,6 +618,15 @@ export type SecondarySourceKind = 'camera' | 'screen';
 export interface LiveHostClient {
   start(sessionId: string): Promise<void>;
   stop(): Promise<void>;
+  /**
+   * The guest's camera, once the host has put someone on stage.
+   *
+   * The host client is otherwise publish-only -- it subscribes to
+   * nobody, because in an ordinary broadcast there is nobody to
+   * subscribe to. Their audio plays automatically; only the video needs
+   * somewhere to go.
+   */
+  onGuestVideoChanged(cb: (track: any | null) => void): void;
   toggleMute(): boolean;
   toggleCamera(): Promise<boolean>;
   switchCamera(): Promise<void>;
@@ -657,9 +669,26 @@ export interface LiveHostClient {
 export interface LiveViewerClient {
   watch(sessionId: string): Promise<void>;
   stop(): Promise<void>;
-  onRemoteVideoChanged(cb: (track: any | null) => void): void;
+  /** `source` says whose stream it is. With a guest on stage there are two. */
+  onRemoteVideoChanged(cb: (track: any | null, source: 'host' | 'guest') => void): void;
   onHostLeft(cb: () => void): void;
   onError(cb: (message: string) => void): void;
+
+  /**
+   * Go on stage.
+   *
+   * This rejoins the channel rather than switching role in place: the
+   * Agora uid is fixed at join time, and a guest has to arrive as
+   * LIVE_UID_GUEST for anyone to tell their stream from the host's.
+   * The cost is a second of black while the swap happens.
+   */
+  goOnStage(sessionId: string, withVideo: boolean): Promise<void>;
+  /** Step down and return to being an ordinary viewer. */
+  leaveStage(sessionId: string): Promise<void>;
+  /** The guest's own preview, so they can see what they are publishing. */
+  onLocalVideoChanged(cb: (track: any | null) => void): void;
+  setStageMuted(muted: boolean): void;
+  setStageCameraOff(off: boolean): void;
 }
 
 /**
@@ -673,6 +702,32 @@ export async function createLiveHostClient(
   // 'live' mode, not 'rtc'. In live mode Agora optimises for one-to-many
   // and only a client with the host role is permitted to publish.
   const client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' });
+
+  let guestVideoCb: ((t: any | null) => void) | null = null;
+
+  // Subscribe to the guest, and only the guest. Publisher uids are
+  // fixed server-side so this is a reliable test; anything else in the
+  // channel is audience and has nothing to publish.
+  client.on('user-published', async (user: any, mediaType: 'audio' | 'video') => {
+    if (Number(user?.uid) !== LIVE_UID_GUEST) return;
+    try {
+      await client.subscribe(user, mediaType);
+      if (mediaType === 'audio') user.audioTrack?.play();
+      else guestVideoCb?.(user.videoTrack || null);
+    } catch {
+      /* the host can take them off stage if this persists */
+    }
+  });
+
+  client.on('user-unpublished', (user: any, mediaType: 'audio' | 'video') => {
+    if (Number(user?.uid) === LIVE_UID_GUEST && mediaType === 'video') {
+      guestVideoCb?.(null);
+    }
+  });
+
+  client.on('user-left', (user: any) => {
+    if (Number(user?.uid) === LIVE_UID_GUEST) guestVideoCb?.(null);
+  });
 
   // Agora tokens expire. Without renewal the host is cut off at the
   // token TTL mid-sentence, with no warning and no way to recover — the
@@ -950,6 +1005,10 @@ export async function createLiveHostClient(
       videoChangedCb?.(publishedVideo);
     },
 
+    onGuestVideoChanged(cb) {
+      guestVideoCb = cb;
+    },
+
     async stop() {
       try {
         processor?.stop();
@@ -1099,62 +1158,108 @@ export async function createLiveViewerClient(): Promise<LiveViewerClient> {
   const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
   const client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' });
 
-  let videoCb: ((t: any | null) => void) | null = null;
+  let videoCb: ((t: any | null, source: 'host' | 'guest') => void) | null = null;
+  let localVideoCb: ((t: any | null) => void) | null = null;
   let hostLeftCb: (() => void) | null = null;
   let errorCb: ((m: string) => void) | null = null;
   let currentSessionId: string | null = null;
 
-  // Audience tokens are shorter-lived than host ones, so without this
-  // every viewer is silently dropped an hour into a long stream while
-  // the host carries on talking to nobody.
+  // Publishing state, only set while this viewer is on stage.
+  let onStage = false;
+  let micTrack: any = null;
+  let camTrack: any = null;
+
+  /**
+   * Whose stream this is.
+   *
+   * Publisher uids are fixed server-side precisely so this is knowable.
+   * Anything else is another audience member and has nothing to show.
+   */
+  const sourceOf = (uid: any): 'host' | 'guest' | null => {
+    const n = Number(uid);
+    if (n === LIVE_UID_HOST) return 'host';
+    if (n === LIVE_UID_GUEST) return 'guest';
+    return null;
+  };
+
+  // Tokens expire. Without renewal every viewer is silently dropped an
+  // hour into a long stream while the host carries on talking to nobody.
   client.on('token-privilege-will-expire', async () => {
     if (!currentSessionId) return;
     try {
-      const t = await fetchLiveToken(currentSessionId, 'audience');
+      const t = await fetchLiveToken(currentSessionId, onStage ? 'guest' : 'audience');
       await client.renewToken(t.token);
     } catch {
-      errorCb?.('Lost the connection to this stream.');
+      // A guest whose renewal fails has most likely been taken off
+      // stage, which is not an error worth alarming them about.
+      if (!onStage) errorCb?.('Lost the connection to this stream.');
     }
   });
 
   client.on('user-published', async (user: any, mediaType: 'audio' | 'video') => {
+    const source = sourceOf(user?.uid);
+    if (!source) return;
     try {
       await client.subscribe(user, mediaType);
       if (mediaType === 'audio') {
         user.audioTrack?.play();
       } else {
-        videoCb?.(user.videoTrack || null);
+        videoCb?.(user.videoTrack || null, source);
       }
     } catch (err: any) {
       errorCb?.(err?.message || 'Could not play the stream.');
     }
   });
 
-  client.on('user-unpublished', (_user: any, mediaType: 'audio' | 'video') => {
-    if (mediaType === 'video') videoCb?.(null);
+  client.on('user-unpublished', (user: any, mediaType: 'audio' | 'video') => {
+    const source = sourceOf(user?.uid);
+    if (source && mediaType === 'video') videoCb?.(null, source);
   });
 
-  // In live mode only the host publishes, so a host leaving means the
-  // broadcast is over even if the session row has not caught up yet.
-  client.on('user-left', () => {
-    videoCb?.(null);
-    hostLeftCb?.();
+  // A guest stepping down is not the broadcast ending. Before publisher
+  // uids were fixed this could not be told apart, and any departure
+  // would have blacked out the stream for everyone.
+  client.on('user-left', (user: any) => {
+    const source = sourceOf(user?.uid);
+    if (!source) return;
+    videoCb?.(null, source);
+    if (source === 'host') hostLeftCb?.();
   });
+
+  /** Tear down whatever this viewer is publishing. Safe to call twice. */
+  const closeLocal = () => {
+    try {
+      micTrack?.stop();
+      micTrack?.close();
+      camTrack?.stop();
+      camTrack?.close();
+    } catch {
+      /* already gone */
+    }
+    micTrack = null;
+    camTrack = null;
+    localVideoCb?.(null);
+  };
+
+  const joinAs = async (sessionId: string, role: 'audience' | 'guest') => {
+    const t = await fetchLiveToken(sessionId, role);
+    await client.setClientRole(role === 'guest' ? 'host' : 'audience');
+    await client.join(t.appId, t.channelName, t.token, t.uid || null);
+  };
 
   return {
     async watch(sessionId: string) {
       currentSessionId = sessionId;
-      const t = await fetchLiveToken(sessionId, 'audience');
-
       // Audience role keeps this client from ever publishing, and is
       // what puts the stream on Agora's cheaper audience billing tier.
-      await client.setClientRole('audience');
-      await client.join(t.appId, t.channelName, t.token, t.uid || null);
+      await joinAs(sessionId, 'audience');
       await joinLive(sessionId);
     },
 
     async stop() {
       try {
+        closeLocal();
+        onStage = false;
         await client.leave();
       } finally {
         if (currentSessionId) await leaveLive(currentSessionId);
@@ -1162,8 +1267,73 @@ export async function createLiveViewerClient(): Promise<LiveViewerClient> {
       }
     },
 
+    async goOnStage(sessionId: string, withVideo: boolean) {
+      currentSessionId = sessionId;
+
+      // Acquire the devices BEFORE leaving the channel. If the browser
+      // refuses the microphone, the viewer stays where they were rather
+      // than being dropped out of a stream they were happily watching.
+      micTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      if (withVideo) {
+        try {
+          camTrack = await AgoraRTC.createCameraVideoTrack({
+            encoderConfig: { width: 640, height: 360, frameRate: 24 },
+          });
+        } catch {
+          // Camera refused but the mic worked: go on as audio only
+          // rather than failing the whole thing.
+          camTrack = null;
+        }
+      }
+
+      try {
+        await client.leave();
+        await joinAs(sessionId, 'guest');
+        await client.publish(camTrack ? [micTrack, camTrack] : [micTrack]);
+        onStage = true;
+        localVideoCb?.(camTrack);
+      } catch (err: any) {
+        closeLocal();
+        onStage = false;
+        // Get back to watching rather than leaving them nowhere.
+        try {
+          await joinAs(sessionId, 'audience');
+        } catch {
+          /* the caller will surface the original failure */
+        }
+        throw err;
+      }
+    },
+
+    async leaveStage(sessionId: string) {
+      onStage = false;
+      try {
+        if (micTrack || camTrack) {
+          await client.unpublish(
+            [micTrack, camTrack].filter(Boolean) as any[],
+          );
+        }
+      } catch {
+        /* already unpublished */
+      }
+      closeLocal();
+      await client.leave();
+      await joinAs(sessionId, 'audience');
+    },
+
+    setStageMuted(muted: boolean) {
+      micTrack?.setEnabled?.(!muted);
+    },
+
+    setStageCameraOff(off: boolean) {
+      camTrack?.setEnabled?.(!off);
+    },
+
     onRemoteVideoChanged(cb) {
       videoCb = cb;
+    },
+    onLocalVideoChanged(cb) {
+      localVideoCb = cb;
     },
     onHostLeft(cb) {
       hostLeftCb = cb;
@@ -1199,6 +1369,110 @@ export async function getLiveEligibility(): Promise<LiveEligibility | null> {
   if (error) return null;
   const row = Array.isArray(data) ? data[0] : data;
   return (row as LiveEligibility) || null;
+}
+
+// ── Guests on stage ──────────────────────────────────────────────
+
+export interface StageEntry {
+  request_id: string;
+  viewer_id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  with_video: boolean;
+  status: 'pending' | 'invited' | 'live';
+  requested_at: string;
+}
+
+/**
+ * Agora uids for the two publishers, assigned server-side.
+ *
+ * Every client needs these to tell the host's stream from the guest's.
+ * They must match LIVE_UID_HOST / LIVE_UID_GUEST in align-api-v2.
+ */
+export const LIVE_UID_HOST = 1;
+export const LIVE_UID_GUEST = 2;
+
+/** Ask the host to come on stage. The caller picks audio-only or video. */
+export async function requestToJoinStage(
+  sessionId: string,
+  withVideo: boolean,
+): Promise<{ ok: true; requestId: string } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('live_request_guest', {
+    p_session_id: sessionId,
+    p_with_video: withVideo,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, requestId: data as string };
+}
+
+/**
+ * Host approves a pending request, or an invited viewer accepts.
+ *
+ * Both land here because both end the same way -- someone goes on
+ * stage and the channel flips to interactive billing.
+ */
+export async function acceptStageGuest(
+  requestId: string,
+  withVideo?: boolean,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const { error } = await supabase.rpc('live_accept_guest', {
+    p_request_id: requestId,
+    p_with_video: withVideo ?? null,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+/** Decline, withdraw, or take someone off stage. Same call for all three. */
+export async function endStageGuest(
+  requestId: string,
+  reason?: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const { error } = await supabase.rpc('live_end_guest', {
+    p_request_id: requestId,
+    p_reason: reason ?? null,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+/** Who is on stage and who is waiting. RLS decides what the caller sees. */
+export async function getStage(sessionId: string): Promise<StageEntry[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('live_stage', { p_session_id: sessionId });
+  if (error) return [];
+  return (data as StageEntry[]) || [];
+}
+
+/**
+ * Stage changes, pushed.
+ *
+ * Both INSERT and UPDATE matter: a host needs a new request to appear
+ * without polling, and a guest needs to know the instant they are
+ * approved or taken off.
+ */
+export function subscribeStage(sessionId: string, onChange: () => void): () => void {
+  const supabase = createClient();
+  const channel = supabase
+    .channel(`live_stage_${sessionId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'live_guest_requests',
+        filter: `session_id=eq.${sessionId}`,
+      },
+      () => onChange(),
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
 }
 
 export interface TopHearter {
