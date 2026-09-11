@@ -79,6 +79,14 @@ import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHea
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
 import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
 import { getGiftCatalog, type Gift } from '@/lib/coinService';
+import { VideoFrame, StagePanel } from '@/components/live/StagePieces';
+import {
+  acceptStageGuest,
+  endStageGuest,
+  getStage,
+  subscribeStage,
+  type StageEntry,
+} from '@/lib/liveService';
 import { TopHearters } from '@/components/live/TopHearters';
 import { TopGifters } from '@/components/live/TopGifters';
 import { mentionMarkup } from '@/lib/mentions';
@@ -165,6 +173,48 @@ export default function GoLivePage() {
   );
 
   const { celebration } = useGiftBursts(sessionId, giftCatalog, nameFor);
+
+  // ── Stage ────────────────────────────────────────────────────────
+  // Named guests rather than stage: `stage` on this page is already the
+  // broadcast's own phase.
+  const [guests, setGuests] = useState<StageEntry[]>([]);
+  const [stageBusy, setStageBusy] = useState(false);
+  const [guestTrack, setGuestTrack] = useState<any | null>(null);
+
+  const liveGuest = guests.find((e) => e.status === 'live');
+
+  const refreshStage = useCallback(async () => {
+    if (!sessionId) return;
+    setGuests(await getStage(sessionId));
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (stage !== 'live' || !sessionId) return;
+    refreshStage();
+    return subscribeStage(sessionId, refreshStage);
+  }, [stage, sessionId, refreshStage]);
+
+  const acceptGuest = useCallback(
+    async (e: StageEntry) => {
+      setStageBusy(true);
+      const res = await acceptStageGuest(e.request_id);
+      setStageBusy(false);
+      if (!res.ok) setNotice(res.error);
+      refreshStage();
+    },
+    [refreshStage],
+  );
+
+  const dropGuest = useCallback(
+    async (e: StageEntry) => {
+      setStageBusy(true);
+      const res = await endStageGuest(e.request_id);
+      setStageBusy(false);
+      if (!res.ok) setNotice(res.error);
+      refreshStage();
+    },
+    [refreshStage],
+  );
 
   // ── Guards ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -397,6 +447,8 @@ export default function GoLivePage() {
       // Re-bind the preview whenever the published track is replaced.
       client.onVideoTrackChanged((track) => attachPreview(track));
       client.onError((message) => setNotice(message));
+      // Without this the host cannot see the person they just invited on.
+      client.onGuestVideoChanged(setGuestTrack);
       clientRef.current = client;
 
       // Publish first, then announce. See the note at the top.
@@ -905,6 +957,22 @@ export default function GoLivePage() {
         <div ref={videoRef} className="absolute inset-0 [&>video]:object-cover" />
         <FloatingHearts petals={petals} />
         <GiftBurst celebration={celebration} />
+
+        {liveGuest && (
+          <VideoFrame
+            track={guestTrack}
+            label={liveGuest.display_name || 'Guest'}
+            className="absolute bottom-32 left-4 w-28 h-40 z-20"
+          />
+        )}
+
+        <StagePanel
+          stage={guests}
+          busy={stageBusy}
+          onAccept={acceptGuest}
+          onDecline={dropGuest}
+          onRemove={dropGuest}
+        />
         <TopGifters
           sessionId={sessionId}
           onPressGifter={(g) =>

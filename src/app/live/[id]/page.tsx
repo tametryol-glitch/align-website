@@ -32,12 +32,20 @@ import {
   type LiveMessage,
   type LiveViewerClient,
 } from '@/lib/liveService';
-import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check, Gift as GiftIcon } from 'lucide-react';
+import { Users, Send, Loader2, AlertCircle, ArrowLeft, MoreVertical, Flag, Ban, Heart, Share2, Pin, Check, Gift as GiftIcon, UserPlus, Mic, Video, PhoneOff } from 'lucide-react';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
 import { GiftSheet } from '@/components/live/GiftSheet';
 import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
 import { getGiftCatalog, type Gift } from '@/lib/coinService';
+import { VideoFrame, StageRequestSheet } from '@/components/live/StagePieces';
+import {
+  requestToJoinStage,
+  endStageGuest,
+  getStage,
+  subscribeStage,
+  type StageEntry,
+} from '@/lib/liveService';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
 import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft, X } from 'lucide-react';
@@ -99,6 +107,100 @@ export default function LiveViewerPage() {
 
   const { celebration, burstLocal } = useGiftBursts(sessionId, giftCatalog, nameFor);
 
+  // ── Stage ────────────────────────────────────────────────────────
+  const [stage, setStage] = useState<StageEntry[]>([]);
+  const [showJoin, setShowJoin] = useState(false);
+  const [joining, setJoining] = useState(false);
+  const [onStage, setOnStage] = useState(false);
+  const [guestTrack, setGuestTrack] = useState<any | null>(null);
+  const [localTrack, setLocalTrack] = useState<any | null>(null);
+  const [stageMuted, setStageMuted] = useState(false);
+  const [stageCamOff, setStageCamOff] = useState(false);
+
+  const mine = stage.find((e) => e.viewer_id === user?.id);
+  const liveGuest = stage.find((e) => e.status === 'live');
+
+  const refreshStage = useCallback(async () => {
+    if (!sessionId) return;
+    setStage(await getStage(sessionId));
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (phase !== 'watching') return;
+    refreshStage();
+    return subscribeStage(sessionId, refreshStage);
+  }, [phase, sessionId, refreshStage]);
+
+  // The guest's own video comes from the local track, not a remote one,
+  // so it is wired separately from the two remote sources.
+  useEffect(() => {
+    clientRef.current?.onLocalVideoChanged(setLocalTrack);
+  }, [phase]);
+
+  /**
+   * Follow the database into and out of the stage.
+   *
+   * The row is the authority on who is on stage -- the host approving,
+   * the host removing someone, and the stream ending all land here as
+   * the same signal, so the client never has to be told twice.
+   */
+  useEffect(() => {
+    const client = clientRef.current;
+    if (!client || phase !== 'watching') return;
+
+    const shouldBeOn = mine?.status === 'live';
+    if (shouldBeOn === onStage) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        if (shouldBeOn) {
+          await client.goOnStage(sessionId, !!mine?.with_video);
+          if (!cancelled) {
+            setOnStage(true);
+            setStageMuted(false);
+            setStageCamOff(false);
+          }
+        } else {
+          await client.leaveStage(sessionId);
+          if (!cancelled) {
+            setOnStage(false);
+            setLocalTrack(null);
+          }
+        }
+      } catch (err: any) {
+        if (cancelled) return;
+        setError(err?.message || 'Could not join the stage.');
+        setOnStage(false);
+        // Give up the slot rather than holding a stage we cannot use.
+        if (mine?.status === 'live') void endStageGuest(mine.request_id, 'guest_left');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mine?.status, mine?.with_video, mine?.request_id, onStage, phase, sessionId]);
+
+  const askToJoin = useCallback(
+    async (withVideo: boolean) => {
+      setJoining(true);
+      const res = await requestToJoinStage(sessionId, withVideo);
+      setJoining(false);
+      setShowJoin(false);
+      if (!res.ok) setError(res.error);
+      else refreshStage();
+    },
+    [sessionId, refreshStage],
+  );
+
+  const leaveOrCancel = useCallback(async () => {
+    if (!mine) return;
+    const res = await endStageGuest(mine.request_id);
+    if (!res.ok) setError(res.error);
+    refreshStage();
+  }, [mine, refreshStage]);
+
   useEffect(() => {
     if (!isAuthenticated) router.replace(`/auth/login?next=/live/${sessionId}`);
   }, [isAuthenticated, router, sessionId]);
@@ -130,7 +232,14 @@ export default function LiveViewerPage() {
         // before this component switches to the watching phase, and the
         // stage container does not exist until it does — playing against
         // a null ref is a silent no-op that leaves the viewer on black.
-        client.onRemoteVideoChanged((track) => {
+        client.onRemoteVideoChanged((track, source) => {
+          // The guest gets their own corner. Before publisher uids were
+          // fixed these two streams were indistinguishable, and a guest
+          // coming on would have replaced the host in the main frame.
+          if (source === 'guest') {
+            setGuestTrack(track);
+            return;
+          }
           setRemoteTrack(track);
           setHasVideo(!!track);
         });
@@ -541,6 +650,25 @@ export default function LiveViewerPage() {
         <MilestoneToast milestone={milestone} />
         <GiftBurst celebration={celebration} />
 
+        {/* Whoever is on stage, seen by everyone in the room. */}
+        {liveGuest && !onStage && (
+          <VideoFrame
+            track={guestTrack}
+            label={liveGuest.display_name || 'Guest'}
+            className="absolute bottom-40 left-4 w-28 h-40 z-20"
+          />
+        )}
+
+        {/* Your own preview while you are the one on stage. */}
+        {onStage && (
+          <VideoFrame
+            track={stageCamOff ? null : localTrack}
+            label="You"
+            muted={stageMuted}
+            className="absolute bottom-40 left-4 w-28 h-40 z-20"
+          />
+        )}
+
         <GiftSheet
           sessionId={sessionId}
           open={showGifts}
@@ -558,6 +686,77 @@ export default function LiveViewerPage() {
             <span className="text-white/85">{pinned.body}</span>
           </div>
         )}
+
+        {onStage ? (
+          <div className="absolute bottom-40 right-5 z-20 flex flex-col gap-2">
+            <button
+              onClick={() => {
+                const next = !stageMuted;
+                setStageMuted(next);
+                clientRef.current?.setStageMuted(next);
+              }}
+              aria-label={stageMuted ? 'Unmute yourself' : 'Mute yourself'}
+              className={`w-12 h-12 rounded-full backdrop-blur flex items-center justify-center ${
+                stageMuted ? 'bg-rose-500/40' : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              <Mic className="w-5 h-5 text-white" />
+            </button>
+
+            {mine?.with_video && (
+              <button
+                onClick={() => {
+                  const next = !stageCamOff;
+                  setStageCamOff(next);
+                  clientRef.current?.setStageCameraOff(next);
+                }}
+                aria-label={stageCamOff ? 'Turn camera on' : 'Turn camera off'}
+                className={`w-12 h-12 rounded-full backdrop-blur flex items-center justify-center ${
+                  stageCamOff ? 'bg-rose-500/40' : 'bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                <Video className="w-5 h-5 text-white" />
+              </button>
+            )}
+
+            <button
+              onClick={leaveOrCancel}
+              aria-label="Leave the stage"
+              className="w-12 h-12 rounded-full bg-rose-600/80 hover:bg-rose-600
+                         backdrop-blur flex items-center justify-center"
+            >
+              <PhoneOff className="w-5 h-5 text-white" />
+            </button>
+          </div>
+        ) : mine?.status === 'pending' ? (
+          <button
+            onClick={leaveOrCancel}
+            className="absolute bottom-40 right-5 z-20 flex items-center gap-1.5 rounded-full
+                       bg-black/55 backdrop-blur px-3.5 h-12 hover:bg-black/70 transition-colors"
+          >
+            <Loader2 className="w-4 h-4 text-white/70 animate-spin" />
+            <span className="text-xs text-white">Waiting &middot; tap to cancel</span>
+          </button>
+        ) : (
+          !liveGuest && (
+            <button
+              onClick={() => setShowJoin(true)}
+              aria-label="Ask to join the stream"
+              className="absolute bottom-40 right-5 w-14 h-14 rounded-full bg-white/10
+                         hover:bg-white/20 backdrop-blur flex items-center justify-center
+                         active:scale-90 transition-transform z-20"
+            >
+              <UserPlus className="w-6 h-6 text-white" />
+            </button>
+          )
+        )}
+
+        <StageRequestSheet
+          open={showJoin}
+          busy={joining}
+          onClose={() => setShowJoin(false)}
+          onRequest={askToJoin}
+        />
 
         <button
           onClick={() => setShowGifts(true)}
