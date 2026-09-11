@@ -966,7 +966,8 @@ export default function GoLivePage() {
           <VideoFrame
             track={guestTrack}
             label={liveGuest.display_name || 'Guest'}
-            className="absolute top-20 right-4 w-36 h-48 lg:w-44 lg:h-60 z-30"
+            className="absolute top-20 right-4 w-48 sm:w-56 lg:w-64 max-w-[45%]
+                       aspect-[4/3] z-30"
           />
         )}
 

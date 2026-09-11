@@ -53,7 +53,12 @@ export function VideoFrame({
       className={`relative rounded-xl overflow-hidden bg-neutral-800 border border-white/15
                   shadow-lg ${className}`}
     >
-      <div ref={ref} className="absolute inset-0 [&>video]:object-cover" />
+      {/* contain, not cover. A guest on a laptop publishes 16:9 and a
+          guest on a phone publishes portrait; cover crops whichever
+          does not match the frame, which on a 16:9 source means a
+          narrow vertical slice of someone's face. Letterbox bars are a
+          far better trade than showing a third of the person. */}
+      <div ref={ref} className="absolute inset-0 [&>video]:object-contain" />
 
       {!track && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -183,7 +188,7 @@ export function StagePanel({
     // control hidden behind decoration is a control that does not
     // exist.
     <div
-      className="absolute top-28 left-4 right-44 lg:right-52 z-40
+      className="absolute top-28 left-4 right-56 lg:right-72 z-40
                  flex flex-col gap-1.5 items-start"
     >
       {live && (
