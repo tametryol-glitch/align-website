@@ -174,7 +174,9 @@ export function StagePanel({
   if (!live && waiting.length === 0) return null;
 
   return (
-    <div className="absolute top-16 inset-x-4 z-20 flex flex-col gap-1.5 items-start">
+    // top-28 keeps clear of the notice banner at top-16, the same
+    // collision the hearters strip had.
+    <div className="absolute top-28 left-4 z-20 flex flex-col gap-1.5 items-start max-w-[70%]">
       {live && (
         <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30
                         backdrop-blur rounded-full pl-3 pr-1.5 py-1">

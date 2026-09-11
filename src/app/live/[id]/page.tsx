@@ -655,7 +655,7 @@ export default function LiveViewerPage() {
           <VideoFrame
             track={guestTrack}
             label={liveGuest.display_name || 'Guest'}
-            className="absolute bottom-40 left-4 w-28 h-40 z-20"
+            className="absolute top-20 right-4 w-32 h-44 sm:w-36 sm:h-48 z-30"
           />
         )}
 
@@ -665,7 +665,7 @@ export default function LiveViewerPage() {
             track={stageCamOff ? null : localTrack}
             label="You"
             muted={stageMuted}
-            className="absolute bottom-40 left-4 w-28 h-40 z-20"
+            className="absolute top-20 right-4 w-32 h-44 sm:w-36 sm:h-48 z-30"
           />
         )}
 

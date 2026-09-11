@@ -958,11 +958,15 @@ export default function GoLivePage() {
         <FloatingHearts petals={petals} />
         <GiftBurst celebration={celebration} />
 
+        {/* Right side, below the header. The bottom of the stage is
+            crowded with controls and gets clipped at short window
+            heights -- a guest you cannot see is the whole feature
+            failing quietly. */}
         {liveGuest && (
           <VideoFrame
             track={guestTrack}
             label={liveGuest.display_name || 'Guest'}
-            className="absolute bottom-32 left-4 w-28 h-40 z-20"
+            className="absolute top-20 right-4 w-36 h-48 lg:w-44 lg:h-60 z-30"
           />
         )}
 

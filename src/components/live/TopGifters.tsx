@@ -120,7 +120,7 @@ export function TopGifters({
 
   return (
     <div
-      className={`absolute top-28 right-4 z-20 flex flex-col items-end gap-1.5 transition-opacity duration-500 ${
+      className={`absolute bottom-28 left-4 z-20 flex flex-col gap-1.5 transition-opacity duration-500 ${
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       aria-hidden={!visible}

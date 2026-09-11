@@ -137,7 +137,7 @@ export function TopHearters({
     <div
       // top-28 keeps it clear of the notice banner at top-16, which used
       // to render straight through this strip.
-      className={`absolute top-28 left-4 z-20 flex flex-col gap-1.5 transition-opacity duration-500 ${
+      className={`absolute top-44 left-4 z-20 flex flex-col gap-1.5 transition-opacity duration-500 ${
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       aria-hidden={!visible}
