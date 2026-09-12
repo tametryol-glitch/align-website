@@ -146,7 +146,10 @@ function AdminPageContent() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-bg-tertiary rounded-xl p-1">
+      {/* flex-wrap matters here: at seven tabs the row no longer fits a
+          narrow window, and without it the last tab (Calls) is pushed
+          off the edge with nothing to scroll it back into view. */}
+      <div className="flex flex-wrap gap-1 mb-6 bg-bg-tertiary rounded-xl p-1">
         <button
           onClick={() => setTab('moderation')}
           className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'moderation' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
