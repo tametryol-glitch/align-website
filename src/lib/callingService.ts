@@ -3,6 +3,8 @@
 // Dynamic import of agora-rtc-sdk-ng, token fetching, track management
 // ═══════════════════════════════════════════════════════════════════
 
+import { createClient } from '@/lib/supabase';
+
 const AGORA_APP_ID = '91cc0147b9524587849b7297fbfe6a95';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -82,29 +84,67 @@ export async function fetchAgoraToken(
   channelName: string,
   uid: number,
 ): Promise<string | null> {
+  const result = await fetchAgoraTokenResult(channelName, uid);
+  return result.token;
+}
+
+/**
+ * As fetchAgoraToken, but distinguishes "the server refused you" from
+ * "the server could not be reached". A 403 carries a quota reason the
+ * caller should show the user verbatim-ish ("you've used your minutes")
+ * rather than the generic connection error.
+ */
+export async function fetchAgoraTokenResult(
+  channelName: string,
+  uid: number,
+): Promise<{ token: string | null; denied: boolean; reason: string | null }> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
       console.warn('[Calling] NEXT_PUBLIC_API_URL is not set');
-      return null;
+      return { token: null, denied: false, reason: null };
+    }
+
+    // Web sent no Authorization header at all until call metering
+    // landed, which is why the token endpoint had to stay open to
+    // anonymous callers. Sending it here is what lets the server
+    // attribute the call to an account, enforce that account's quota,
+    // and eventually reject anonymous requests outright.
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    try {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      const accessToken = data.session?.access_token;
+      if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+    } catch (authErr: any) {
+      // Fall through unauthenticated rather than blocking the call --
+      // the server still grants a token while AGORA_REQUIRE_AUTH is off.
+      console.warn('[Calling] could not attach auth token:', authErr?.message);
     }
 
     const response = await fetch(`${apiUrl}/agora/token`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ channel_name: channelName, uid }),
     });
 
+    if (response.status === 403) {
+      const body = await response.json().catch(() => ({}));
+      const reason = typeof body?.detail === 'string' ? body.detail : 'quota';
+      console.warn(`[Calling] Token refused: ${reason}`);
+      return { token: null, denied: true, reason };
+    }
+
     if (!response.ok) {
       console.warn(`[Calling] Token fetch failed: ${response.status}`);
-      return null;
+      return { token: null, denied: false, reason: null };
     }
 
     const data = await response.json();
-    return data.token || data.rtc_token || null;
+    return { token: data.token || data.rtc_token || null, denied: false, reason: null };
   } catch (err: any) {
     console.warn('[Calling] fetchAgoraToken exception:', err?.message);
-    return null;
+    return { token: null, denied: false, reason: null };
   }
 }
 

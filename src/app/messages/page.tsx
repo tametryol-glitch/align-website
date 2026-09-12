@@ -12,7 +12,8 @@ import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
 import { LocationPicker } from '@/components/chat/LocationPicker';
 import { getChatTheme } from '@/data/chatThemes';
 import { uploadChatFile, uploadVoiceNote } from '@/lib/chatMediaService';
-import { generateChannelName, fetchAgoraToken, createCallClient, type CallState } from '@/lib/callingService';
+import { generateChannelName, fetchAgoraTokenResult, createCallClient, type CallState } from '@/lib/callingService';
+import * as callMetering from '@/lib/callMetering';
 import { sendCallSignal, generateSessionId } from '@/lib/callSignalingService';
 import { useCallStore } from '@/stores/callStore';
 import {
@@ -113,6 +114,8 @@ export default function MessagesPage() {
 
   const callClientRef = useRef<ReturnType<typeof createCallClient> | null>(null);
   const callTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Stops the metering heartbeat. Set once a call is joined, cleared on end.
+  const callHeartbeatStopRef = useRef<(() => void) | null>(null);
   const localVideoRef = useRef<HTMLDivElement>(null);
   const remoteVideoRef = useRef<HTMLDivElement>(null);
   const callSessionRef = useRef<{ channelName: string; sessionId: string; otherId: string; callType: 'voice' | 'video' } | null>(null);
@@ -589,11 +592,18 @@ export default function MessagesPage() {
       const client = createCallClient();
       callClientRef.current = client;
       const uid = Math.floor(Math.random() * 100000) + 1;
-      const token = await fetchAgoraToken(channelName, uid);
+      const tokenResult = await fetchAgoraTokenResult(channelName, uid);
+      const token = tokenResult.token;
       if (!token) {
+        // A refusal is the server enforcing this account's quota, not a
+        // network problem -- say which, or the user retries forever.
         console.warn('[Call] Failed to get Agora token');
-        setCallMediaWarning('Could not reach the call server. Please try again.');
-        handleEndCall();
+        setCallMediaWarning(
+          tokenResult.denied
+            ? callMetering.denialMessage(tokenResult.reason)
+            : 'Could not reach the call server. Please try again.',
+        );
+        handleEndCall(tokenResult.denied ? 'quota_exceeded' : 'failed');
         return;
       }
       client.onMediaError((kind, message) => {
@@ -630,6 +640,18 @@ export default function MessagesPage() {
         handleEndCall();
         return;
       }
+      // Meter from the moment we are actually in the channel -- that is
+      // when Agora starts charging. Both parties beat, so the row stays
+      // accurate even if one side's device dies.
+      const meteredId = callSessionRef.current?.sessionId;
+      if (meteredId && callMetering.isMeteredSessionId(meteredId)) {
+        callHeartbeatStopRef.current?.();
+        callHeartbeatStopRef.current = callMetering.startHeartbeat(meteredId, (reason) => {
+          setCallMediaWarning(callMetering.denialMessage(reason));
+          handleEndCall(reason);
+        });
+      }
+
       if (type === 'video') {
         await client.toggleCamera();
         // Reflect whether the camera actually came up, not what we hoped for.
@@ -718,7 +740,23 @@ export default function MessagesPage() {
     setCallMediaWarning(null);
     setCallCameraOn(type === 'video');
     const channelName = generateChannelName(user.id, otherId);
-    const sessionId = generateSessionId();
+    const localSessionId = generateSessionId();
+
+    // Quota gate. Checked before the phone rings so a blocked or
+    // out-of-minutes account is told why, instead of watching a call
+    // ring and then fail at token time.
+    const meter = await callMetering.start(otherId, channelName, type, localSessionId);
+    if (!meter.allowed) {
+      setCallMediaWarning(callMetering.denialMessage(meter.reason));
+      setCallState('ended');
+      setTimeout(() => setCallState('idle'), 4000);
+      return;
+    }
+
+    // Use the server row id as the signaling session id so the callee
+    // can heartbeat and end the same row. Falls back to the local id if
+    // metering was unreachable -- the call still works, unmetered.
+    const sessionId = meter.sessionId ?? localSessionId;
     callSessionRef.current = { channelName, sessionId, otherId, callType: type };
     sendCallSignal(otherId, {
       type: 'incoming-call',
@@ -758,12 +796,25 @@ export default function MessagesPage() {
     }, 30000);
   }
 
-  async function handleEndCall() {
+  async function handleEndCall(reason: unknown = 'hangup') {
+    // This is also passed straight to onClick in CallScreen, which hands
+    // it a MouseEvent. Without this the event object would be written to
+    // the session row as the end reason.
+    const endReason = typeof reason === 'string' ? reason : 'hangup';
+
+    callHeartbeatStopRef.current?.();
+    callHeartbeatStopRef.current = null;
+
     if (callSessionRef.current) {
-      sendCallSignal(callSessionRef.current.otherId, {
-        type: 'call-ended',
-        sessionId: callSessionRef.current.sessionId,
-      });
+      const { otherId, sessionId } = callSessionRef.current;
+      sendCallSignal(otherId, { type: 'call-ended', sessionId });
+
+      // Close the metered row. Duration is recomputed server-side from
+      // connected_at; the local counter is only a fallback for a call
+      // that ended before the first heartbeat landed.
+      if (callMetering.isMeteredSessionId(sessionId)) {
+        void callMetering.end(sessionId, endReason, callDuration);
+      }
       callSessionRef.current = null;
     }
     const client = callClientRef.current;

@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy, GraduationCap, Megaphone, Globe2, Music, BarChart3, Telescope, Radio } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy, GraduationCap, Megaphone, Globe2, Music, BarChart3, Telescope, Radio, Phone } from 'lucide-react';
 import { LivePanel } from '@/components/admin/LivePanel';
+import { CallsPanel } from '@/components/admin/CallsPanel';
 import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
@@ -89,7 +90,7 @@ interface ReminderReport {
   };
 }
 
-type Tab = 'moderation' | 'live' | 'users' | 'verifications' | 'cosmic-index' | 'affiliates';
+type Tab = 'moderation' | 'live' | 'calls' | 'users' | 'verifications' | 'cosmic-index' | 'affiliates';
 
 export default function AdminPage() {
   return (
@@ -103,7 +104,7 @@ function AdminPageContent() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
   const searchParams = useSearchParams();
-  const initialTab = (['moderation', 'live', 'users', 'verifications', 'cosmic-index', 'affiliates'] as Tab[]).includes(searchParams.get('tab') as Tab)
+  const initialTab = (['moderation', 'live', 'calls', 'users', 'verifications', 'cosmic-index', 'affiliates'] as Tab[]).includes(searchParams.get('tab') as Tab)
     ? (searchParams.get('tab') as Tab)
     : 'moderation';
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -182,6 +183,12 @@ function AdminPageContent() {
         >
           <Radio className="w-4 h-4 inline mr-1.5" /> Live
         </button>
+        <button
+          onClick={() => setTab('calls')}
+          className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${tab === 'calls' ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-muted'}`}
+        >
+          <Phone className="w-4 h-4 inline mr-1.5" /> Calls
+        </button>
       </div>
 
       {/* Quick links */}
@@ -236,6 +243,7 @@ function AdminPageContent() {
       {tab === 'cosmic-index' && <CosmicIndexPanel />}
       {tab === 'affiliates' && <AffiliatesPanel />}
       {tab === 'live' && <LivePanel />}
+      {tab === 'calls' && <CallsPanel />}
     </div>
   );
 }
