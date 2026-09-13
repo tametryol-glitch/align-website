@@ -50,6 +50,16 @@ const EMPTY_CONTEXT: ChartContext = {
   loaded: false,
 };
 
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
+
+function signFromLongitude(lon: unknown): string | null {
+  if (typeof lon !== 'number' || !Number.isFinite(lon)) return null;
+  return ZODIAC_SIGNS[Math.floor((((lon % 360) + 360) % 360) / 30) % 12] || null;
+}
+
 /**
  * Extract a specific planet placement from the chart data planets array.
  */
@@ -119,10 +129,18 @@ export async function buildChartContext(
   const neptune = findPlanet(planets, 'Neptune');
   const pluto = findPlanet(planets, 'Pluto');
 
-  // Determine rising sign from houses or profile
+  // Determine rising sign. The chart response carries the Ascendant as a body
+  // in `positions` — it has no `houses` array (only `house_cusps`), so reading
+  // houses[0].sign always came back undefined and silently fell through to the
+  // profile column, which is a stored snapshot that goes stale whenever the
+  // user edits their birth data. Read the live Ascendant first.
+  const ascendant = findPlanet(planets, 'Ascendant');
   const houses = data.houses || [];
+  const cusps: number[] = Array.isArray(data.house_cusps) ? data.house_cusps : [];
   const risingSign =
+    ascendant?.sign ||
     (houses.length > 0 ? houses[0]?.sign : null) ||
+    (cusps.length === 12 ? signFromLongitude(cusps[0]) : null) ||
     profile.rising_sign ||
     null;
 

@@ -39,6 +39,11 @@ function genMsgId() {
   return `msg_${Date.now()}_${++msgIdCounter}`;
 }
 
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];
+
 /** Build a chart_data_text system prompt from whatever chart data we have.
  *  `liveContext` carries whatever the engine router calculated for THIS question
  *  (progressions, transits, returns, time lords…) — see lib/aiAstrologyEngines.ts. */
@@ -81,6 +86,12 @@ function buildChartDataText(
   parts.push(`- Use ${name}'s name naturally.`);
   parts.push(`- Reference ${name}'s actual chart data provided below. Never generic astrology.`);
   parts.push('- Be specific: exact planet positions, signs, houses, aspects, and dates.');
+  parts.push(
+    '- Every sign, degree and house below is Swiss Ephemeris output. Quote it verbatim. ' +
+    'You must NEVER calculate, estimate or reason out a placement yourself — especially the ' +
+    'rising sign / Ascendant, which depends on the exact birth minute. If a placement is not ' +
+    'stated below, say you are pulling it rather than guessing at it.'
+  );
   parts.push('');
 
   // ── Calculation capability + platform integrity ──
@@ -129,6 +140,40 @@ function buildChartDataText(
 
   if (chartData) {
     const planets = chartData.planets || chartData.positions || [];
+
+    // ── Core placements, stated explicitly and first ──
+    // The full body list below runs to ~47 lines (angles, parts, asteroids).
+    // "Ascendant" sits in the middle of it and is never labelled "Rising", so
+    // the model used to infer a rising sign from whichever sign it saw most
+    // instead of reading the one line that holds it. These four lines are the
+    // authoritative answer for Rising / Sun / Moon / MC.
+    if (planets.length > 0) {
+      const byName = (n: string) =>
+        planets.find((p: any) => (p.name || p.planet || '').toLowerCase() === n.toLowerCase());
+      const fmtCore = (p: any) =>
+        p?.sign ? `${p.sign}${p.sign_degree != null ? ` ${p.sign_degree.toFixed(1)}°` : ''}` : null;
+
+      const ascCore = fmtCore(byName('Ascendant'));
+      const sunCore = fmtCore(byName('Sun'));
+      const moonCore = fmtCore(byName('Moon'));
+      const mcCore = fmtCore(byName('MC'));
+
+      if (ascCore || sunCore || moonCore) {
+        parts.push('=== CORE PLACEMENTS (AUTHORITATIVE — READ BEFORE ANSWERING) ===');
+        if (ascCore) parts.push(`Rising sign / Ascendant: ${ascCore}`);
+        if (sunCore) parts.push(`Sun sign: ${sunCore}`);
+        if (moonCore) parts.push(`Moon sign: ${moonCore}`);
+        if (mcCore) parts.push(`Midheaven / MC: ${mcCore}`);
+        parts.push(
+          'These four are calculated from the exact birth time and are final. ' +
+          'Never infer, estimate, or re-derive them from anything else in this prompt, ' +
+          'and never contradict them — the rising sign in particular is the Ascendant line above, ' +
+          'NOT the sign that appears most often in the body list.'
+        );
+        parts.push('');
+      }
+    }
+
     if (planets.length > 0) {
       parts.push('=== NATAL CHART ===');
       for (const p of planets) {
@@ -155,7 +200,11 @@ function buildChartDataText(
       parts.push('');
     }
 
+    // /charts/natal returns `house_cusps` (12 absolute longitudes), never a
+    // `houses` array — so this block silently never rendered and the AI had no
+    // house-cusp signs at all. Accept either shape.
     const houses = chartData.houses || [];
+    const houseCusps: number[] = Array.isArray(chartData.house_cusps) ? chartData.house_cusps : [];
     if (houses.length > 0) {
       parts.push('=== HOUSES ===');
       for (const h of houses) {
@@ -163,6 +212,14 @@ function buildChartDataText(
         const sign = h.sign || '';
         parts.push(`House ${num}: ${sign}`);
       }
+      parts.push('');
+    } else if (houseCusps.length === 12) {
+      parts.push('=== HOUSES ===');
+      houseCusps.forEach((lon, i) => {
+        const norm = ((lon % 360) + 360) % 360;
+        const sign = ZODIAC_SIGNS[Math.floor(norm / 30) % 12];
+        parts.push(`House ${i + 1}: ${sign} (cusp ${(norm % 30).toFixed(1)}°)`);
+      });
       parts.push('');
     }
   }

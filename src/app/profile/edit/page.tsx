@@ -11,6 +11,8 @@ import { ArrowLeft, Save, Camera, ImageIcon, Trash2 } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { BirthDateSelect, isValidBirthDate } from '@/components/ui/BirthDateSelect';
 import { indexMyPlacements } from '@/lib/cosmicIndexService';
+import { api, buildBirthData } from '@/lib/api';
+import { syncProfileSignsFromChart } from '@/lib/profileSigns';
 import { useTranslation } from 'react-i18next';
 
 export default function EditProfilePage() {
@@ -110,6 +112,26 @@ export default function EditProfilePage() {
       if (data) setProfile(data);
       if (data?.birth_date && data?.latitude && data?.longitude) {
         indexMyPlacements().catch(() => {});
+
+        // Sun / Moon / Rising are stored columns read all over the app and fed
+        // to the AI astrologer's suggested questions. They were only ever
+        // written when NULL, so editing a birth time or place left them
+        // permanently describing the OLD chart. Recompute them here so they
+        // can never drift away from the birth data that produced them.
+        const birthChanged =
+          data.birth_date !== profile?.birth_date ||
+          data.birth_time !== profile?.birth_time ||
+          data.latitude !== profile?.latitude ||
+          data.longitude !== profile?.longitude ||
+          data.timezone !== profile?.timezone;
+        if (birthChanged) {
+          api.getNatalChart(buildBirthData(data, { house_system: 'Whole Sign' }))
+            .then((chart) => syncProfileSignsFromChart(user.id, chart, data))
+            .then((written) => {
+              if (written) setProfile({ ...data, ...written } as any);
+            })
+            .catch(() => {});
+        }
       }
       router.push('/profile');
     } catch (err: any) {
