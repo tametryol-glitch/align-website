@@ -76,7 +76,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="Contact Us">
-        <p>Questions about these Terms? Contact us at <a className="text-accent-primary underline" href="mailto:support@alignastrology.app">support@alignastrology.app</a>.</p>
+        <p>Questions about these Terms? Contact us at <a className="text-accent-primary underline" href="mailto:support@aligncosmic.com">support@aligncosmic.com</a>.</p>
       </Section>
     </div>
   );

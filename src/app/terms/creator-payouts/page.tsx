@@ -187,8 +187,8 @@ export default function CreatorPayoutTermsPage() {
           <Section title="9. Contact">
             <p>
               Questions about earnings or a payout? Email{' '}
-              <a className="text-accent-primary underline" href="mailto:support@alignastrology.app">
-                support@alignastrology.app
+              <a className="text-accent-primary underline" href="mailto:support@aligncosmic.com">
+                support@aligncosmic.com
               </a>
               . See also our{' '}
               <Link href="/terms/coins" className="text-accent-primary underline">

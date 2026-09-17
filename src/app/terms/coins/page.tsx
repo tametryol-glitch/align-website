@@ -152,8 +152,8 @@ export default function CoinTermsPage() {
             </p>
             <p>
               Contact us at{' '}
-              <a className="text-accent-primary underline" href="mailto:support@alignastrology.app">
-                support@alignastrology.app
+              <a className="text-accent-primary underline" href="mailto:support@aligncosmic.com">
+                support@aligncosmic.com
               </a>{' '}
               with the date and amount of the charge.
             </p>
@@ -184,8 +184,8 @@ export default function CoinTermsPage() {
           <Section title="9. Contact">
             <p>
               Questions about coins, gifts or a refund? Email{' '}
-              <a className="text-accent-primary underline" href="mailto:support@alignastrology.app">
-                support@alignastrology.app
+              <a className="text-accent-primary underline" href="mailto:support@aligncosmic.com">
+                support@aligncosmic.com
               </a>
               .
             </p>

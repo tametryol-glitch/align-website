@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
       </Section>
 
       <Section title="Contact Us">
-        <p>For privacy questions or requests, contact us at <a className="text-accent-primary underline" href="mailto:privacy@alignastrology.app">privacy@alignastrology.app</a>.</p>
+        <p>For privacy questions or requests, contact us at <a className="text-accent-primary underline" href="mailto:support@aligncosmic.com">support@aligncosmic.com</a>.</p>
       </Section>
     </div>
   );

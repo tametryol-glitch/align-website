@@ -130,8 +130,8 @@ export default function AffiliateTermsPage() {
             <h2 className="text-xl font-semibold text-text-primary mb-3">11. Contact</h2>
             <p>
               For questions about these terms or the affiliate program, contact us at{' '}
-              <a href="mailto:hello@aligncosmic.com" className="text-accent-primary hover:text-accent-secondary">
-                hello@aligncosmic.com
+              <a href="mailto:support@aligncosmic.com" className="text-accent-primary hover:text-accent-secondary">
+                support@aligncosmic.com
               </a>.
             </p>
           </section>
