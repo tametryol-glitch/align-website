@@ -2415,7 +2415,7 @@
       "paymentValue": "Månadsvis",
       "paymentSub": "PayPal eller banköverföring",
       "exampleTitle": "Exempel på intäkter",
-      "exampleIntro": "Align Pro kostar $9/månad. Din 20% provision =",
+      "exampleIntro": "Align Light kostar $9/månad. Din 20% provision =",
       "examplePerUser": "$1.80/månad per användare",
       "exampleRefer": "Värva {{count}} användare =",
       "exampleAmount": "{{amount}}/månad återkommande"

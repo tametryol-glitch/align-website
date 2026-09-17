@@ -1983,7 +1983,7 @@
       "paymentValue": "Monthly",
       "paymentSub": "PayPal or bank transfer",
       "exampleTitle": "Example Earnings",
-      "exampleIntro": "Align Pro costs $9/month. Your 20% commission =",
+      "exampleIntro": "Align Light costs $9/month. Your 20% commission =",
       "examplePerUser": "$1.80/month per user",
       "exampleRefer": "Refer {{count}} users =",
       "exampleAmount": "{{amount}}/month recurring"

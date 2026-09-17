@@ -2415,7 +2415,7 @@
       "paymentValue": "Ежемесячно",
       "paymentSub": "PayPal или банковский перевод",
       "exampleTitle": "Пример заработка",
-      "exampleIntro": "Align Pro стоит $9/месяц. Ваша комиссия 20% =",
+      "exampleIntro": "Align Light стоит $9/месяц. Ваша комиссия 20% =",
       "examplePerUser": "$1.80/месяц за пользователя",
       "exampleRefer": "Пригласите {{count}} пользователей =",
       "exampleAmount": "{{amount}}/месяц регулярно"

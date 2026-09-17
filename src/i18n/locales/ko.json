@@ -2415,7 +2415,7 @@
       "paymentValue": "매월",
       "paymentSub": "PayPal 또는 계좌 이체",
       "exampleTitle": "수익 예시",
-      "exampleIntro": "Align Pro는 월 $9입니다. 20% 커미션 =",
+      "exampleIntro": "Align Light는 월 $9입니다. 20% 커미션 =",
       "examplePerUser": "사용자당 월 $1.80",
       "exampleRefer": "{{count}}명 추천 =",
       "exampleAmount": "매월 {{amount}} 반복 수익"

@@ -2415,7 +2415,7 @@
       "paymentValue": "毎月",
       "paymentSub": "PayPalまたは銀行振込",
       "exampleTitle": "収益例",
-      "exampleIntro": "Align Proは月額$9。あなたの20%コミッション =",
+      "exampleIntro": "Align Lightは月額$9。あなたの20%コミッション =",
       "examplePerUser": "ユーザー1人あたり月額$1.80",
       "exampleRefer": "{{count}}人を紹介 =",
       "exampleAmount": "毎月{{amount}}の継続収入"

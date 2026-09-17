@@ -2415,7 +2415,7 @@
       "paymentValue": "شهريًا",
       "paymentSub": "PayPal أو تحويل بنكي",
       "exampleTitle": "مثال على الأرباح",
-      "exampleIntro": "يكلف Align Pro مبلغ $9 شهريًا. عمولتك بنسبة 20% =",
+      "exampleIntro": "يكلف Align Light مبلغ $9 شهريًا. عمولتك بنسبة 20% =",
       "examplePerUser": "$1.80 شهريًا لكل مستخدم",
       "exampleRefer": "أحِل {{count}} مستخدمًا =",
       "exampleAmount": "{{amount}} شهريًا بشكل متكرر"

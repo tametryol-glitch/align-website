@@ -2415,7 +2415,7 @@
       "paymentValue": "Mensual",
       "paymentSub": "PayPal o transferencia bancaria",
       "exampleTitle": "Ejemplo de Ganancias",
-      "exampleIntro": "Align Pro cuesta $9/mes. Tu comisión del 20% =",
+      "exampleIntro": "Align Light cuesta $9/mes. Tu comisión del 20% =",
       "examplePerUser": "$1.80/mes por usuario",
       "exampleRefer": "Refiere a {{count}} usuarios =",
       "exampleAmount": "{{amount}}/mes recurrentes"

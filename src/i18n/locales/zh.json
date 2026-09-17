@@ -2418,7 +2418,7 @@
       "paymentValue": "每月",
       "paymentSub": "PayPal 或银行转账",
       "exampleTitle": "收益示例",
-      "exampleIntro": "Align Pro 每月 $9。你的 20% 佣金 =",
+      "exampleIntro": "Align Light 每月 $9。你的 20% 佣金 =",
       "examplePerUser": "每位用户每月 $1.80",
       "exampleRefer": "推荐 {{count}} 位用户 =",
       "exampleAmount": "每月 {{amount}} 持续收入"

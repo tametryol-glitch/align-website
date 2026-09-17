@@ -2415,7 +2415,7 @@
       "paymentValue": "Maandelijks",
       "paymentSub": "PayPal of bankoverschrijving",
       "exampleTitle": "Voorbeeldverdiensten",
-      "exampleIntro": "Align Pro kost $9/maand. Jouw 20% commissie =",
+      "exampleIntro": "Align Light kost $9/maand. Jouw 20% commissie =",
       "examplePerUser": "$1.80/maand per gebruiker",
       "exampleRefer": "Breng {{count}} gebruikers aan =",
       "exampleAmount": "{{amount}}/maand terugkerend"

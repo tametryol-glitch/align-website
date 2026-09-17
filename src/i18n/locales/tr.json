@@ -2415,7 +2415,7 @@
       "paymentValue": "Aylık",
       "paymentSub": "PayPal veya banka havalesi",
       "exampleTitle": "Örnek Kazanç",
-      "exampleIntro": "Align Pro ayda $9. Sizin 20% komisyonunuz =",
+      "exampleIntro": "Align Light ayda $9. Sizin 20% komisyonunuz =",
       "examplePerUser": "kullanıcı başına $1.80/ay",
       "exampleRefer": "{{count}} kullanıcı yönlendirin =",
       "exampleAmount": "aylık {{amount}} yinelenen"

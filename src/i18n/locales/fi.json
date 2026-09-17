@@ -2415,7 +2415,7 @@
       "paymentValue": "Kuukausittain",
       "paymentSub": "PayPal tai pankkisiirto",
       "exampleTitle": "Esimerkkiansiot",
-      "exampleIntro": "Align Pro maksaa $9/kk. Sinun 20% provisiosi =",
+      "exampleIntro": "Align Light maksaa $9/kk. Sinun 20% provisiosi =",
       "examplePerUser": "$1.80/kk per käyttäjä",
       "exampleRefer": "Hanki {{count}} käyttäjää =",
       "exampleAmount": "{{amount}}/kk jatkuvasti"

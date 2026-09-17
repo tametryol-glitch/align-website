@@ -2415,7 +2415,7 @@
       "paymentValue": "รายเดือน",
       "paymentSub": "PayPal หรือโอนผ่านธนาคาร",
       "exampleTitle": "ตัวอย่างรายได้",
-      "exampleIntro": "Align Pro ราคา $9/เดือน ค่าคอมมิชชัน 20% ของคุณ =",
+      "exampleIntro": "Align Light ราคา $9/เดือน ค่าคอมมิชชัน 20% ของคุณ =",
       "examplePerUser": "$1.80/เดือน ต่อผู้ใช้หนึ่งคน",
       "exampleRefer": "แนะนำผู้ใช้ {{count}} คน =",
       "exampleAmount": "{{amount}}/เดือน แบบต่อเนื่อง"

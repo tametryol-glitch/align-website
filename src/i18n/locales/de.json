@@ -2415,7 +2415,7 @@
       "paymentValue": "Monatlich",
       "paymentSub": "PayPal oder Banküberweisung",
       "exampleTitle": "Beispielverdienst",
-      "exampleIntro": "Align Pro kostet $9/Monat. Deine 20% Provision =",
+      "exampleIntro": "Align Light kostet $9/Monat. Deine 20% Provision =",
       "examplePerUser": "$1.80/Monat pro Nutzer",
       "exampleRefer": "Vermittle {{count}} Nutzer =",
       "exampleAmount": "{{amount}}/Monat wiederkehrend"

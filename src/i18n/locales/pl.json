@@ -2415,7 +2415,7 @@
       "paymentValue": "Co miesiąc",
       "paymentSub": "PayPal lub przelew bankowy",
       "exampleTitle": "Przykładowe zarobki",
-      "exampleIntro": "Align Pro kosztuje $9/miesiąc. Twoja prowizja 20% =",
+      "exampleIntro": "Align Light kosztuje $9/miesiąc. Twoja prowizja 20% =",
       "examplePerUser": "$1.80/miesiąc za użytkownika",
       "exampleRefer": "Poleć {{count}} użytkowników =",
       "exampleAmount": "{{amount}}/miesiąc cyklicznie"

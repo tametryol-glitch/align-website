@@ -2415,7 +2415,7 @@
       "paymentValue": "Månedligt",
       "paymentSub": "PayPal eller bankoverførsel",
       "exampleTitle": "Eksempel på indtjening",
-      "exampleIntro": "Align Pro koster $9/måned. Din 20% kommission =",
+      "exampleIntro": "Align Light koster $9/måned. Din 20% kommission =",
       "examplePerUser": "$1.80/måned pr. bruger",
       "exampleRefer": "Henvis {{count}} brugere =",
       "exampleAmount": "{{amount}}/måned tilbagevendende"
