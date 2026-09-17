@@ -10,12 +10,14 @@ import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { ScoreBar } from '@/components/ui/ScoreBar';
 import Link from 'next/link';
-import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Sparkles, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Sparkles, AlertTriangle, Share2 } from 'lucide-react';
 import { computeSynastryCompatibility } from '@/lib/engines';
 import type { CompatibilityResult } from '@/lib/engines';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { useTranslation } from 'react-i18next';
+import RelationshipShareModal from '@/components/share/RelationshipShareModal';
+import { buildSynastrySnapshot } from '@/lib/relationshipShare';
 
 const CATEGORY_META: Record<string, { emoji: string; label: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
   Attraction: { emoji: '🔥', label: 'Physical Attraction', color: 'red' },
@@ -56,6 +58,7 @@ export default function SynastryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showAspects, setShowAspects] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Partner data
   const [partnerName, setPartnerName] = useState('');
@@ -278,7 +281,16 @@ export default function SynastryPage() {
             {result.style_label && (
               <p className="text-xs text-text-tertiary mt-1">{result.style_label}</p>
             )}
+            <button onClick={() => setShareOpen(true)} className="btn-primary mt-5 inline-flex items-center gap-2">
+              <Share2 className="w-4 h-4" /> Share Result
+            </button>
           </div>
+
+          <RelationshipShareModal
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+            snapshot={buildSynastrySnapshot(result, profile?.display_name, partnerName)}
+          />
 
           {/* Summary */}
           {result.summary && (

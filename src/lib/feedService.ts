@@ -417,6 +417,8 @@ export async function createPost(post: {
   /** Defaults to true — creators opt out, not in. Video posts only. */
   allowDownload?: boolean;
   style?: { preset?: string; font?: string } | null;
+  /** Structured payload for chart_share posts (stored in posts.chart_data). */
+  chartData?: Record<string, any>;
 }) {
   const supabase = createClient();
   const styleToSave = post.type === 'text' && post.style?.preset && post.style.preset !== 'default'
@@ -458,6 +460,7 @@ export async function createPost(post: {
       video_url: post.videoUrl || null,
       allow_download: post.allowDownload !== false,
       style: styleToSave,
+      ...(post.chartData ? { chart_data: post.chartData } : {}),
       // Set explicitly — the feed filters `.eq('is_deleted', false)`, so a
       // null default here would make new posts invisible.
       is_deleted: false,

@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
 import ShareContent from './ShareContent';
+import {
+  parseRelationshipSnapshot,
+  relationshipShareQuery,
+  relationshipShareTitle,
+  synastryBand,
+} from '@/lib/relationshipShare';
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -52,6 +58,37 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     return {
       title,
       description,
+      openGraph: {
+        title,
+        description,
+        images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+        type: 'website',
+        siteName: 'Align — AI Astrology',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [ogImageUrl],
+      },
+    };
+  }
+
+  const relationship = parseRelationshipSnapshot((k) => {
+    const v = params[k];
+    return Array.isArray(v) ? v[0] : v;
+  });
+  if (relationship) {
+    const title = relationshipShareTitle(relationship);
+    const description = relationship.kind === 'synastry'
+      ? `${relationship.person1} and ${relationship.person2}: ${synastryBand(relationship.score).label}. See where their charts connect — and check your own synastry on Align.`
+      : `The chart ${relationship.person1} and ${relationship.person2} create together${relationship.sun ? ` — a ${relationship.sun} Sun relationship` : ''}. Get your own composite chart on Align.`;
+    const ogImageUrl = `/api/og?${relationshipShareQuery(relationship)}`;
+
+    return {
+      title,
+      description,
+      robots: { index: false },
       openGraph: {
         title,
         description,

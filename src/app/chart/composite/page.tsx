@@ -10,11 +10,13 @@ import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { NatalWheel } from '@/components/charts/NatalWheel';
 import Link from 'next/link';
-import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { getCompositePlacementInterpretation } from '@/lib/compositePlacementInterp';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { useTranslation } from 'react-i18next';
+import RelationshipShareModal from '@/components/share/RelationshipShareModal';
+import { buildCompositeSnapshot } from '@/lib/relationshipShare';
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
@@ -140,6 +142,7 @@ export default function CompositePage() {
   const [error, setError] = useState('');
   const [showAspects, setShowAspects] = useState(false);
   const [expandedPlanet, setExpandedPlanet] = useState<string | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Partner data
   const [partnerName, setPartnerName] = useState('');
@@ -377,7 +380,16 @@ export default function CompositePage() {
                 )}
               </div>
             )}
+            <button onClick={() => setShareOpen(true)} className="btn-primary mt-5 inline-flex items-center gap-2">
+              <Share2 className="w-4 h-4" /> Share Result
+            </button>
           </div>
+
+          <RelationshipShareModal
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+            snapshot={buildCompositeSnapshot(result, profile?.display_name, partnerName)}
+          />
 
           {/* Composite Wheel (matches mobile app) */}
           <CompositeWheel data={result} />

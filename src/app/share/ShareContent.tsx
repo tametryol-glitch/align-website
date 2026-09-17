@@ -4,6 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { BigThreeCard, CompatibilityCard } from '@/components/share';
+import RelationshipShareView from '@/components/share/RelationshipShareView';
+import { parseRelationshipSnapshot } from '@/lib/relationshipShare';
 
 // ── Valid zodiac signs for validation ──
 
@@ -121,6 +123,20 @@ function ShareInner() {
           </div>
         </div>
 
+        <p className="mt-12 text-xs text-white/20">
+          aligncosmic.com
+        </p>
+      </div>
+    );
+  }
+
+  const relationship = parseRelationshipSnapshot((k) => searchParams.get(k));
+  if (relationship) {
+    return (
+      <div className="min-h-screen flex flex-col items-center px-4 py-12"
+        style={{ background: 'linear-gradient(160deg, #0a0618 0%, #110d2b 40%, #1a1040 70%, #0a0618 100%)' }}
+      >
+        <RelationshipShareView snapshot={relationship} />
         <p className="mt-12 text-xs text-white/20">
           aligncosmic.com
         </p>

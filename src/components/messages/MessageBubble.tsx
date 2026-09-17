@@ -14,6 +14,7 @@ import { LocationBubble } from '@/components/chat/LocationBubble';
 import { PollBubble } from '@/components/chat/PollBubble';
 import type { ChatTheme } from '@/data/chatThemes';
 import { getReactionsFromMessage, type Message } from '@/lib/messagingService';
+import { readStoredSnapshot, relationshipShareQuery, relationshipShareSubtitle } from '@/lib/relationshipShare';
 
 // ── Link Preview Helpers ────────────────────────────────────────────
 
@@ -224,8 +225,22 @@ export function MessageBubble({
             </a>
           )}
 
-          {/* Chart share */}
-          {msg.type === 'chart_share' && (
+          {/* Chart share — synastry / composite results open their full view */}
+          {msg.type === 'chart_share' && (() => {
+            const rel = readStoredSnapshot(msg.metadata?.relationship);
+            if (!rel) return null;
+            return (
+              <Link href={`/share?${relationshipShareQuery(rel)}`} className="block bg-white/10 hover:bg-white/15 rounded-lg p-2.5 mb-1 min-w-[200px]">
+                <p className="text-[10px] uppercase tracking-wider opacity-70">
+                  {rel.kind === 'synastry' ? '♡ Synastry' : '✧ Composite Chart'}
+                </p>
+                <p className="text-sm font-semibold">{rel.person1} & {rel.person2}</p>
+                <p className="text-xs opacity-80">{relationshipShareSubtitle(rel)}</p>
+                <p className="text-[10px] opacity-60 mt-1">Tap to view ›</p>
+              </Link>
+            );
+          })()}
+          {msg.type === 'chart_share' && !readStoredSnapshot(msg.metadata?.relationship) && (
             <div className="bg-white/10 rounded-lg p-2 mb-1">
               <p className="text-xs font-medium">{t('messages.sharedChart', 'Shared a chart')}</p>
               {msg.metadata?.chart_type && (

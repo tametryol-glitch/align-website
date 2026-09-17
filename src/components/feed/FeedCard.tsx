@@ -17,6 +17,8 @@ import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/cont
 import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 import { extractHttpUrls } from '@/lib/linkify';
 import ReactionViewerModal from './ReactionViewerModal';
+import RelationshipShareCard from '@/components/share/RelationshipShareCard';
+import { readStoredSnapshot, relationshipShareQuery } from '@/lib/relationshipShare';
 
 // ── Feature flags (web has no central featureFlags config) ─────────
 const CREATOR_SCORE_ENABLED = true;
@@ -1043,6 +1045,19 @@ export function FeedCard({
           textStyle={textColor ? { color: textColor } : undefined}
         />
       )}
+
+      {/* Shared synastry / composite result */}
+      {post.type === 'chart_share' && (() => {
+        const rel = readStoredSnapshot(post.chartData?.relationship);
+        if (!rel) return null;
+        return (
+          <div className="px-5 pb-3">
+            <Link href={`/share?${relationshipShareQuery(rel)}`} className="block w-full max-w-[360px] mx-auto rounded-3xl overflow-hidden hover:opacity-95 transition-opacity">
+              <RelationshipShareCard snapshot={rel} />
+            </Link>
+          </div>
+        );
+      })()}
 
       {/* Media */}
       {post.imageUrl && (
