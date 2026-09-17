@@ -6,13 +6,16 @@ import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import Link from 'next/link';
-import { Heart, ChevronDown, ChevronUp, Sparkles, AlertTriangle, RefreshCw, Share2, UserPlus, Check, ArrowLeft } from 'lucide-react';
-import { ScoreBar } from '@/components/ui/ScoreBar';
+import { Heart, ChevronDown, ChevronUp, RefreshCw, Share2, UserPlus, ArrowLeft } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { CitySearch } from '@/components/ui/CitySearch';
-import { computeSynastryCompatibility } from '@/lib/engines';
-import type { CompatibilityResult } from '@/lib/engines';
+import { computeAdvancedCompatibility, type AdvancedCompatibilityResult } from '@/lib/engines/advancedCompatibility';
+import { computeCanonicalOverall } from '@/lib/cosmicMatchService';
+import { buildSynastrySnapshot, type SynastrySnapshot } from '@/lib/relationshipShare';
+import { getSynastryPairReading } from '@/lib/synastryReadings';
+import RelationshipShareView from '@/components/share/RelationshipShareView';
+import RelationshipShareModal from '@/components/share/RelationshipShareModal';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 
 interface PersonInput {
@@ -24,30 +27,14 @@ interface PersonInput {
   timezone: string;
 }
 
-const CATEGORY_META: Record<string, { emoji: string; labelKey: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
-  Attraction: { emoji: '🔥', labelKey: 'readings.compatibilityPage.categories.attraction', color: 'red' },
-  Emotional: { emoji: '💙', labelKey: 'readings.compatibilityPage.categories.emotional', color: 'accent' },
-  Mental: { emoji: '🧠', labelKey: 'readings.compatibilityPage.categories.mental', color: 'green' },
-  Stability: { emoji: '🏗️', labelKey: 'readings.compatibilityPage.categories.stability', color: 'gold' },
-  Karmic: { emoji: '🔮', labelKey: 'readings.compatibilityPage.categories.karmic', color: 'accent' },
-  Harmony: { emoji: '☯️', labelKey: 'readings.compatibilityPage.categories.harmony', color: 'green' },
-  Magnetic: { emoji: '⚡', labelKey: 'readings.compatibilityPage.categories.magnetic', color: 'red' },
-};
-
-function overallBand(score: number): { labelKey: string; color: string } {
-  if (score >= 85) return { labelKey: 'readings.compatibilityPage.soulLevelConnection', color: '#22c55e' };
-  if (score >= 70) return { labelKey: 'readings.compatibilityPage.deepCompatibility', color: '#a78bfa' };
-  if (score >= 55) return { labelKey: 'readings.compatibilityPage.strongPotential', color: '#9B6FF6' };
-  if (score >= 40) return { labelKey: 'readings.compatibilityPage.moderateMatch', color: '#F5A623' };
-  if (score >= 25) return { labelKey: 'readings.compatibilityPage.growthRequired', color: '#f59e0b' };
-  return { labelKey: 'readings.compatibilityPage.challengingDynamic', color: '#ef4444' };
-}
-
 export default function CompatibilityPage() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
   const [person2, setPerson2] = useState<PersonInput>({ date: '', time: '12:00', location: '', lat: null, lng: null, timezone: 'UTC' });
-  const [result, setResult] = useState<CompatibilityResult | null>(null);
+  const [result, setResult] = useState<AdvancedCompatibilityResult | null>(null);
+  // Cosmic Match scores + readings — what the page shows is what gets shared.
+  const [snapshot, setSnapshot] = useState<SynastrySnapshot | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showAspects, setShowAspects] = useState(false);
@@ -85,14 +72,21 @@ export default function CompatibilityPage() {
       const houseCusps1 = chart1Data?.house_cusps || [];
       const houseCusps2 = chart2Data?.house_cusps || [];
 
-      // Run the compatibility engine client-side
-      const compatibility = computeSynastryCompatibility(
+      // Same engine and overall as Cosmic Match, so the numbers match everywhere.
+      const compatibility = computeAdvancedCompatibility(
         positions1,
         positions2,
         houseCusps1,
         houseCusps2,
       );
 
+      setSnapshot(buildSynastrySnapshot(
+        compatibility,
+        computeCanonicalOverall(compatibility),
+        profile?.display_name,
+        null,
+        (a) => !!getSynastryPairReading(a.p1, a.p2, a.supportive),
+      ));
       setResult(compatibility);
     } catch (err: any) {
       setError(err.message || 'Failed to compute compatibility');
@@ -181,77 +175,7 @@ export default function CompatibilityPage() {
 
       {result && (
         <div className="space-y-5">
-          {/* Overall Score */}
-          <div className="bg-gradient-cosmic rounded-2xl p-8 border border-accent-muted text-center">
-            <p className="text-accent-secondary text-sm uppercase tracking-wider mb-2">{t('readings.compatibilityPage.overallScore')}</p>
-            <p className="text-6xl font-bold text-text-primary mb-2">{result.overall_score}%</p>
-            <p className="text-sm font-medium" style={{ color: overallBand(result.overall_score).color }}>
-              {t(overallBand(result.overall_score).labelKey)}
-            </p>
-            {result.style_label && (
-              <p className="text-xs text-text-muted mt-2">{result.style_label}</p>
-            )}
-          </div>
-
-          {/* Summary */}
-          {result.summary && (
-            <div className="card">
-              <p className="text-sm text-text-secondary leading-relaxed">{result.summary}</p>
-            </div>
-          )}
-
-          {/* Category Scores */}
-          <div className="card">
-            <h3 className="text-sm font-semibold text-text-primary mb-4">Category Breakdown</h3>
-            <div className="space-y-3">
-              {Object.entries(result.scores).map(([cat, score]) => {
-                const meta = CATEGORY_META[cat];
-                if (!meta) return null;
-                return (
-                  <div key={cat} className="flex items-center gap-3">
-                    <span className="text-lg w-7 text-center">{meta.emoji}</span>
-                    <div className="flex-1">
-                      <ScoreBar value={score} label={t(meta.labelKey)} color={meta.color} size="sm" />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Strengths */}
-          {result.strengths.length > 0 && (
-            <div className="card">
-              <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-green-400" /> Strengths
-              </h3>
-              <ul className="space-y-2">
-                {result.strengths.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-green-400 text-xs mt-0.5">✓</span>
-                    <span className="text-xs text-text-secondary">{s}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Challenges */}
-          {result.challenges.length > 0 && (
-            <div className="card">
-              <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-400" /> Challenges
-              </h3>
-              <ul className="space-y-2">
-                {result.challenges.map((c, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-amber-400 text-xs mt-0.5">!</span>
-                    <span className="text-xs text-text-secondary">{c}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {snapshot && <RelationshipShareView snapshot={snapshot} showCta={false} />}
 
           {/* Aspects Detail (collapsible) */}
           {result.aspects.length > 0 && (
@@ -292,11 +216,13 @@ export default function CompatibilityPage() {
 
           {/* Share & Invite */}
           <div className="grid grid-cols-2 gap-3">
-            <ShareCompatButton score={result.overall_score} />
+            <button onClick={() => setShareOpen(true)} className="btn-primary flex items-center justify-center gap-2 text-sm">
+              <Share2 className="w-4 h-4" /> Share Result
+            </button>
             <button
               onClick={() => {
                 const url = `${window.location.origin}/readings/compatibility`;
-                const text = `Check your cosmic compatibility on Align! I got ${result!.overall_score}% — what will you get?`;
+                const text = `Check your cosmic compatibility on Align! I got ${snapshot?.score ?? 0}% — what will you get?`;
                 if (navigator.share) {
                   navigator.share({ title: 'Check Our Compatibility', text, url }).catch(() => {});
                 } else {
@@ -309,9 +235,13 @@ export default function CompatibilityPage() {
             </button>
           </div>
 
+          {snapshot && (
+            <RelationshipShareModal open={shareOpen} onClose={() => setShareOpen(false)} snapshot={snapshot} />
+          )}
+
           {/* Reset */}
           <button
-            onClick={() => { setResult(null); setShowAspects(false); }}
+            onClick={() => { setResult(null); setSnapshot(null); setShowAspects(false); }}
             className="btn-secondary w-full flex items-center justify-center gap-2"
           >
             <RefreshCw className="w-4 h-4" /> Compare Another Person
@@ -332,27 +262,3 @@ function extractPositions(chartData: any): Array<{ name: string; longitude: numb
     house: p.house || undefined,
   }));
 }
-
-function ShareCompatButton({ score }: { score: number }) {
-  const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-  async function handleShare() {
-    const url = `${window.location.origin}/readings/compatibility`;
-    const text = `We scored ${score}% compatibility on Align! Check yours:`;
-    if (navigator.share) {
-      try { await navigator.share({ title: `${score}% Compatible — Align`, text, url }); return; } catch {}
-    }
-    try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  }
-  return (
-    <button onClick={handleShare} className="btn-primary flex items-center justify-center gap-2 text-sm">
-      {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-      {copied ? 'Link Copied!' : 'Share Result'}
-    </button>
-  );
-}
-
