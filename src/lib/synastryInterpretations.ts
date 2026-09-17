@@ -173,6 +173,10 @@ function getPairKey(planet1: string, planet2: string): string {
   return `${pairs[0]}-${pairs[1]}`;
 }
 
+function findSynastryTheme(planet1: string, planet2: string): { hard: string; soft: string } | undefined {
+  return PLANET_SYNASTRY_THEMES[`${planet1}-${planet2}`] ?? PLANET_SYNASTRY_THEMES[`${planet2}-${planet1}`];
+}
+
 export function getSynastryInterpretation(planet1: string, planet2: string, aspectType: string): string {
   const pairKey = getPairKey(planet1, planet2);
   const aspect = ASPECT_QUALITIES[aspectType] || ASPECT_QUALITIES['Conjunction'];
@@ -180,7 +184,8 @@ export function getSynastryInterpretation(planet1: string, planet2: string, aspe
   const isSoft = ['Trine', 'Sextile'].includes(aspectType);
   const isConjunction = aspectType === 'Conjunction';
 
-  const theme = PLANET_SYNASTRY_THEMES[pairKey];
+  // Table keys aren't alphabetical ('Venus-Mars'), so try both orders.
+  const theme = findSynastryTheme(planet1, planet2) ?? PLANET_SYNASTRY_THEMES[pairKey];
   if (theme) {
     if (isConjunction) {
       return translateText(`${theme.soft.split('.').slice(0, 2).join('.')}. However, the intensity of conjunction also means: ${theme.hard.split('.').slice(0, 2).join('.')}. The merged energy of ${planet1} and ${planet2} in conjunction demands conscious awareness. At its best, the bond carries a rare depth of resonance. At its most challenging, the boundaries between your energies blur until neither person feels fully themselves. The work is maintaining individual identity within the intensity of union.`);

@@ -12,7 +12,7 @@ import { NatalWheel } from '@/components/charts/NatalWheel';
 import Link from 'next/link';
 import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { CitySearch } from '@/components/ui/CitySearch';
-import { getCompositePlacementInterpretation } from '@/lib/compositePlacementInterp';
+import { getCompositePlacementReading, getCompositeAspectReading } from '@/lib/compositeReadings';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { useTranslation } from 'react-i18next';
 import RelationshipShareModal from '@/components/share/RelationshipShareModal';
@@ -353,7 +353,7 @@ export default function CompositePage() {
                     <span className="text-text-secondary">{result.sun_sign}</span>
                   </div>
                   <p className="text-xs text-text-tertiary mt-1 leading-relaxed">
-                    {getCompositePlacementInterpretation('Sun', result.sun_sign).split('. ').slice(0, 2).join('. ') + '.'}
+                    {getCompositePlacementReading('Sun', result.sun_sign)}
                   </p>
                 </div>
                 {result.moon_sign && (
@@ -363,7 +363,7 @@ export default function CompositePage() {
                       <span className="text-text-secondary">{result.moon_sign}</span>
                     </div>
                     <p className="text-xs text-text-tertiary mt-1 leading-relaxed">
-                      {getCompositePlacementInterpretation('Moon', result.moon_sign).split('. ').slice(0, 2).join('. ') + '.'}
+                      {getCompositePlacementReading('Moon', result.moon_sign)}
                     </p>
                   </div>
                 )}
@@ -374,7 +374,7 @@ export default function CompositePage() {
                       <span className="text-text-secondary">{result.ascendant_sign}</span>
                     </div>
                     <p className="text-xs text-text-tertiary mt-1 leading-relaxed">
-                      {getCompositePlacementInterpretation('Ascendant', result.ascendant_sign).split('. ').slice(0, 2).join('. ') + '.'}
+                      {getCompositePlacementReading('Ascendant', result.ascendant_sign)}
                     </p>
                   </div>
                 )}
@@ -388,7 +388,7 @@ export default function CompositePage() {
           <RelationshipShareModal
             open={shareOpen}
             onClose={() => setShareOpen(false)}
-            snapshot={buildCompositeSnapshot(result, profile?.display_name, partnerName)}
+            snapshot={buildCompositeSnapshot(result, profile?.display_name, partnerName, (a) => !!getCompositeAspectReading(a.p1, a.p2, a.aspect))}
           />
 
           {/* Composite Wheel (matches mobile app) */}
@@ -403,9 +403,7 @@ export default function CompositePage() {
               <div className="divide-y divide-border-primary">
                 {result.positions.map((pos, i) => {
                   const isExpanded = expandedPlanet === pos.name;
-                  const interp = isExpanded
-                    ? getCompositePlacementInterpretation(pos.name, pos.sign, pos.house || undefined)
-                    : '';
+                  const interp = isExpanded ? getCompositePlacementReading(pos.name, pos.sign) : null;
                   return (
                     <div key={i}>
                       <button

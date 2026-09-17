@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
-import { parseRelationshipSnapshot, synastryBand, SYNASTRY_CATEGORIES } from '@/lib/relationshipShare';
+import { parseRelationshipSnapshot, scoreColor, SYNASTRY_CATEGORIES } from '@/lib/relationshipShare';
 
 export const runtime = 'edge';
 
@@ -92,29 +92,29 @@ export async function GET(request: NextRequest) {
 
       let body;
       if (snap.kind === 'synastry') {
-        const band = synastryBand(snap.score);
-        const top = SYNASTRY_CATEGORIES
-          .map((c) => ({ label: c.label, score: snap.categories[c.key] ?? 0 }))
-          .sort((x, y) => y.score - x.score)
-          .slice(0, 3);
+        const color = scoreColor(snap.score);
         body = (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '70px', marginTop: '36px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white', lineHeight: 1 }}>{snap.score}%</span>
-              <span style={{ fontSize: '30px', color: band.color, marginTop: '12px' }}>{band.label}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '56px', marginTop: '28px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '220px', height: '220px', borderRadius: '110px', border: `8px solid ${color}` }}>
+                <span style={{ fontSize: '84px', fontWeight: 'bold', color }}>{snap.score}%</span>
+              </div>
+              <span style={{ fontSize: '24px', color: '#A8B0C0', marginTop: '14px' }}>Overall Compatibility</span>
+              {snap.styleLabel ? (
+                <span style={{ fontSize: '26px', color: '#A78BFA', fontStyle: 'italic', marginTop: '6px', textAlign: 'center' }}>{snap.styleLabel}</span>
+              ) : null}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '420px' }}>
-              {top.map((c) => (
-                <div key={c.label} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '22px', color: '#DEE2EA' }}>
-                    <span>{c.label}</span>
-                    <span>{c.score}%</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', width: '600px', gap: '12px' }}>
+              {SYNASTRY_CATEGORIES.map((c) => {
+                const v = snap.categories[c.key] ?? 0;
+                return (
+                  <div key={c.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '192px', padding: '12px 0', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(61,71,96,0.8)' }}>
+                    <span style={{ fontSize: '36px', fontWeight: 'bold', color: scoreColor(v) }}>{v}%</span>
+                    <span style={{ fontSize: '20px', color: '#DEE2EA' }}>{c.label}</span>
+                    <span style={{ fontSize: '15px', color: '#7B849A' }}>{c.weight}% of score</span>
                   </div>
-                  <div style={{ display: 'flex', height: '12px', borderRadius: '6px', background: 'rgba(255,255,255,0.12)', marginTop: '6px' }}>
-                    <div style={{ display: 'flex', width: `${c.score}%`, height: '12px', borderRadius: '6px', background: 'linear-gradient(90deg, #7C3AED, #C4B5FD)' }} />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
@@ -151,10 +151,10 @@ export async function GET(request: NextRequest) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={logoUrl} width={56} height={56} style={{ borderRadius: 14 }} alt="Align" />
               <span style={{ fontSize: '24px', letterSpacing: '6px', color: '#9B6FF6', fontWeight: 'bold' }}>
-                {snap.kind === 'synastry' ? 'SYNASTRY' : 'COMPOSITE CHART'}
+                {snap.kind === 'synastry' ? 'COSMIC COMPATIBILITY' : 'COMPOSITE CHART'}
               </span>
             </div>
-            <span style={{ fontSize: '56px', color: 'white', fontWeight: 'bold', marginTop: '20px' }}>{names}</span>
+            <span style={{ fontSize: '52px', color: 'white', fontWeight: 'bold', marginTop: '14px' }}>{names}</span>
             {body}
             <span style={{ fontSize: '20px', color: '#7B849A', marginTop: '44px' }}>aligncosmic.com</span>
           </div>

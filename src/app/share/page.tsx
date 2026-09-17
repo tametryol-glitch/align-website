@@ -4,7 +4,7 @@ import {
   parseRelationshipSnapshot,
   relationshipShareQuery,
   relationshipShareTitle,
-  synastryBand,
+  synastryBandText,
 } from '@/lib/relationshipShare';
 
 interface Props {
@@ -81,7 +81,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   if (relationship) {
     const title = relationshipShareTitle(relationship);
     const description = relationship.kind === 'synastry'
-      ? `${relationship.person1} and ${relationship.person2}: ${synastryBand(relationship.score).label}. See where their charts connect — and check your own synastry on Align.`
+      ? `${relationship.person1} and ${relationship.person2} are ${relationship.score}% compatible${relationship.styleLabel ? ` — ${relationship.styleLabel}` : ''}. ${synastryBandText(relationship.score)}. See the full breakdown on Align.`
       : `The chart ${relationship.person1} and ${relationship.person2} create together${relationship.sun ? ` — a ${relationship.sun} Sun relationship` : ''}. Get your own composite chart on Align.`;
     const ogImageUrl = `/api/og?${relationshipShareQuery(relationship)}`;
 

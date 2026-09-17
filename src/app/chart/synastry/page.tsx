@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api, buildBirthData } from '@/lib/api';
 import { createClient } from '@/lib/supabase';
@@ -8,35 +8,17 @@ import { useAuthStore } from '@/stores/authStore';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
-import { ScoreBar } from '@/components/ui/ScoreBar';
 import Link from 'next/link';
-import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Sparkles, AlertTriangle, Share2 } from 'lucide-react';
-import { computeSynastryCompatibility } from '@/lib/engines';
-import type { CompatibilityResult } from '@/lib/engines';
+import { ArrowLeft, Heart, Users, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
+import { computeAdvancedCompatibility, type AdvancedCompatibilityResult } from '@/lib/engines/advancedCompatibility';
+import { computeCanonicalOverall } from '@/lib/cosmicMatchService';
 import { CitySearch } from '@/components/ui/CitySearch';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { useTranslation } from 'react-i18next';
 import RelationshipShareModal from '@/components/share/RelationshipShareModal';
 import { buildSynastrySnapshot } from '@/lib/relationshipShare';
-
-const CATEGORY_META: Record<string, { emoji: string; label: string; color: 'accent' | 'gold' | 'green' | 'red' }> = {
-  Attraction: { emoji: '🔥', label: 'Physical Attraction', color: 'red' },
-  Emotional: { emoji: '💙', label: 'Emotional Bond', color: 'accent' },
-  Mental: { emoji: '🧠', label: 'Mental Connection', color: 'green' },
-  Stability: { emoji: '🏗️', label: 'Long-Term Stability', color: 'gold' },
-  Karmic: { emoji: '🔮', label: 'Karmic Link', color: 'accent' },
-  Harmony: { emoji: '☯️', label: 'Harmony', color: 'green' },
-  Magnetic: { emoji: '⚡', label: 'Magnetic Pull', color: 'red' },
-};
-
-function overallBand(score: number): { label: string; color: string } {
-  if (score >= 85) return { label: 'Soul-Level Connection', color: '#22c55e' };
-  if (score >= 70) return { label: 'Deep Compatibility', color: '#a78bfa' };
-  if (score >= 55) return { label: 'Strong Potential', color: '#9B6FF6' };
-  if (score >= 40) return { label: 'Moderate Match', color: '#F5A623' };
-  if (score >= 25) return { label: 'Growth Required', color: '#f59e0b' };
-  return { label: 'Challenging Dynamic', color: '#ef4444' };
-}
+import RelationshipShareView from '@/components/share/RelationshipShareView';
+import { getSynastryPairReading } from '@/lib/synastryReadings';
 
 /** Partner birth inputs used by the engine, from the form or a saved profile. */
 interface PartnerInput {
@@ -54,7 +36,7 @@ export default function SynastryPage() {
   const searchParams = useSearchParams();
   const partnerId = searchParams.get('partnerId');
   const { profile } = useAuthStore();
-  const [result, setResult] = useState<CompatibilityResult | null>(null);
+  const [result, setResult] = useState<AdvancedCompatibilityResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showAspects, setShowAspects] = useState(false);
@@ -73,6 +55,20 @@ export default function SynastryPage() {
   const [autoPartner, setAutoPartner] = useState(false);
 
   const hasBirthData = profile?.birth_date && profile?.latitude;
+
+  // What the page shows and what gets shared are the same snapshot.
+  const snapshot = useMemo(
+    () => result
+      ? buildSynastrySnapshot(
+          result,
+          computeCanonicalOverall(result),
+          profile?.display_name,
+          partnerName,
+          (a) => !!getSynastryPairReading(a.p1, a.p2, a.supportive),
+        )
+      : null,
+    [result, profile?.display_name, partnerName],
+  );
 
   const runCalculation = useCallback(async (partner: PartnerInput) => {
     if (!profile?.birth_date || !profile?.latitude) return;
@@ -104,7 +100,8 @@ export default function SynastryPage() {
       const houseCusps2 = chart2Data?.house_cusps || [];
 
       // Run the compatibility engine client-side
-      const compatibility = computeSynastryCompatibility(
+      // Same engine + overall as Cosmic Match, so the numbers match everywhere.
+      const compatibility = computeAdvancedCompatibility(
         positions1,
         positions2,
         houseCusps1,
@@ -270,89 +267,19 @@ export default function SynastryPage() {
 
       {result && !loading && (
         <div className="space-y-5">
-          {/* Score overview */}
-          <div className="card text-center bg-gradient-cosmic border-fire/20 py-8">
-            <Heart className="w-10 h-10 text-fire mx-auto mb-3" />
-            <p className="text-5xl font-bold text-text-primary">{result.overall_score}%</p>
-            <p className="text-sm font-medium mt-2" style={{ color: overallBand(result.overall_score).color }}>
-              {overallBand(result.overall_score).label}
-            </p>
-            {partnerName && <p className="text-xs text-text-muted mt-1">with {partnerName}</p>}
-            {result.style_label && (
-              <p className="text-xs text-text-tertiary mt-1">{result.style_label}</p>
-            )}
-            <button onClick={() => setShareOpen(true)} className="btn-primary mt-5 inline-flex items-center gap-2">
+          <div className="flex justify-end">
+            <button onClick={() => setShareOpen(true)} className="btn-primary inline-flex items-center gap-2">
               <Share2 className="w-4 h-4" /> Share Result
             </button>
           </div>
 
+          <RelationshipShareView snapshot={snapshot!} showCta={false} />
+
           <RelationshipShareModal
             open={shareOpen}
             onClose={() => setShareOpen(false)}
-            snapshot={buildSynastrySnapshot(result, profile?.display_name, partnerName)}
+            snapshot={snapshot!}
           />
-
-          {/* Summary */}
-          {result.summary && (
-            <div className="card">
-              <p className="text-sm text-text-secondary leading-relaxed">{result.summary}</p>
-            </div>
-          )}
-
-          {/* Category Scores */}
-          <div className="card">
-            <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4">
-              Compatibility Areas
-            </h3>
-            <div className="space-y-3">
-              {Object.entries(result.scores).map(([cat, score]) => {
-                const meta = CATEGORY_META[cat];
-                if (!meta) return null;
-                return (
-                  <div key={cat} className="flex items-center gap-3">
-                    <span className="text-lg w-7 text-center">{meta.emoji}</span>
-                    <div className="flex-1">
-                      <ScoreBar value={score} label={meta.label} color={meta.color} size="sm" />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Strengths */}
-          {result.strengths.length > 0 && (
-            <div className="card">
-              <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-green-400" /> Strengths
-              </h3>
-              <ul className="space-y-2">
-                {result.strengths.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-green-400 text-xs mt-0.5">✓</span>
-                    <span className="text-xs text-text-secondary">{s}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Challenges */}
-          {result.challenges.length > 0 && (
-            <div className="card">
-              <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-400" /> Challenges
-              </h3>
-              <ul className="space-y-2">
-                {result.challenges.map((c, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-amber-400 text-xs mt-0.5">!</span>
-                    <span className="text-xs text-text-secondary">{c}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
 
           {/* Aspects Detail (collapsible) */}
           {result.aspects.length > 0 && (
