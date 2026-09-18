@@ -76,6 +76,15 @@ export const BODY_KEY_TO_SLUG: Record<string, string> = {
   Pandora: 'pandora-in',
   Icarus: 'icarus-in',
   Daedalus: 'daedalus-in',
+  Heracles: 'heracles-in',
+  Atalante: 'atalante-in',
+  Olympia: 'olympia-in',
+  Marathon: 'marathon-in',
+  Spartacus: 'spartacus-in',
+  Victoria: 'victoria-in',
+  Hidalgo: 'hidalgo-in',
+  Panacea: 'panacea-in',
+  Fama: 'fama-in',
 };
 
 export const COSMIC_BODY_SLUGS: string[] = Object.values(BODY_KEY_TO_SLUG);

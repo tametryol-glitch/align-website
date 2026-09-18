@@ -30,6 +30,8 @@ const ALL_CHART_BODIES = [
   'Kassandra', 'Achilles', 'Sphinx', 'Atlantis', 'Tantalus', 'Sisyphus',
   'Damocles', 'Lucifer', 'Magdalena', 'Cupido', 'Destinn', 'Abundantia',
   'Industria',
+  'Heracles', 'Atalante', 'Olympia', 'Marathon', 'Spartacus', 'Victoria',
+  'Hidalgo', 'Panacea', 'Fama',
 ];
 
 describe('cosmic body registry', () => {

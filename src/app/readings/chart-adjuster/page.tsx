@@ -21,6 +21,8 @@ const AVAILABLE_ASTEROIDS = [
   'Diana', 'Minerva', 'Bacchus', 'Circe', 'Medea', 'Kassandra', 'Achilles',
   'Sphinx', 'Atlantis', 'Tantalus', 'Sisyphus', 'Damocles', 'Lucifer',
   'Magdalena', 'Cupido', 'Destinn', 'Abundantia', 'Industria',
+  'Heracles', 'Atalante', 'Olympia', 'Marathon', 'Spartacus', 'Victoria',
+  'Hidalgo', 'Panacea', 'Fama',
 ];
 
 const HOUSE_SYSTEMS: { label: string; value: HouseSystem; apiName: string }[] = [

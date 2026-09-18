@@ -14,6 +14,7 @@ import { BOND_BODIES } from './bonds';
 import { FATE_BODIES } from './fate';
 import { DEPTH_BODIES } from './depths';
 import { MYTH_BODIES } from './myth';
+import { ATHLETIC_BODIES } from './athletic';
 
 export * from './types';
 export { LEGACY_BODY_ROUTES, getBodyRoutePrefix, getLearnMorePath, getLearnMoreUrl } from './routes';
@@ -25,6 +26,7 @@ export const COSMIC_BODIES: CosmicBody[] = [
   ...FATE_BODIES,
   ...DEPTH_BODIES,
   ...MYTH_BODIES,
+  ...ATHLETIC_BODIES,
 ];
 
 const BY_SLUG = new Map(COSMIC_BODIES.map((b) => [b.slug, b]));
