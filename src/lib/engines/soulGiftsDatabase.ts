@@ -48,7 +48,7 @@ export type Indicator =
   | { k: 'aspect'; p1: string; p2: string; a: AspectKind; w: number }  // body-to-body aspect
   | { k: 'onAngle'; body: string; angle: AngleKind; w: number }        // body within 5° of angle (conj)
   | { k: 'signOnAngle'; s: string; angle: AngleKind; w: number }       // sign on the angle's cusp
-  | { k: 'asteroid'; aster: string; target: string; asp?: AspectKind; w: number } // asteroid aspect to body (default conj)
+  | { k: 'asteroid'; aster: string; target: string; asp?: AspectKind; orb?: number; w: number } // asteroid aspect to body (default conj; orb overrides the base orb)
   | { k: 'midpt'; m1: string; m2: string; target: string; w: number }  // midpoint-of-(m1,m2) conj target
   | { k: 'houseFocus'; h: number; min: number; w: number }             // ≥min bodies in this house
   | { k: 'signFocus'; s: string; min: number; w: number }              // ≥min bodies in this sign
@@ -116,6 +116,17 @@ const G = (
 
 // ─── 210+ GIFTS ─────────────────────────────────────────────────
 // Organized by primary category. Cross-category gifts use `alsoIn`.
+
+/**
+ * Gifts shown in the Athletic Gifts lane. A subset of the 'physical'
+ * category: crafts, cooking, hunting and animal work are physical but not
+ * sport, and they were crowding athletes' real gifts out of the lane.
+ */
+export const ATHLETIC_GIFT_IDS: ReadonlySet<string> = new Set([
+  'athleticism', 'martialSkill', 'reflexSpeed', 'endurance', 'bodyCoordination',
+  'combatSports', 'climbingAdventure', 'flexibility', 'strengthSport', 'waterSport',
+  'championInstinct', 'athleticComeback', 'bigStageAthlete', 'acrobat',
+]);
 
 export const SOUL_GIFTS: SoulGift[] = [
 
@@ -1927,7 +1938,9 @@ export const SOUL_GIFTS: SoulGift[] = [
     ]),
 
   // ════════════════════════════════════════════════════════════
-  // PHYSICAL GIFTS (14)
+  // PHYSICAL GIFTS (17) — athletic asteroids (Heracles, Atalante,
+  // Olympia, Marathon, Spartacus, Victoria, Hidalgo, Panacea, Fama) use a
+  // 3° orb; they are requested as extra_asteroids by the Soul Gifts page.
   // ════════════════════════════════════════════════════════════
 
   G('athleticism', 'Athleticism', 'physical',
@@ -1940,6 +1953,8 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'aspect', p1: 'Sun', p2: 'Mars', a: 'conj', w: 14 },
       { k: 'asteroid', aster: 'Nike', target: 'Mars', w: 14 },
       { k: 'pHouse', p: 'Mars', h: 1, w: 12 },
+      { k: 'asteroid', aster: 'Olympia', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Heracles', target: 'Sun', orb: 3, w: 12 },
     ]),
 
   G('martialSkill', 'Martial Skill', 'physical',
@@ -1951,6 +1966,7 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'pSign', p: 'Mars', s: 'Scorpio', w: 14 },
       { k: 'pHouse', p: 'Mars', h: 6, w: 12 },
       { k: 'asteroid', aster: 'Nike', target: 'Mars', w: 12 },
+      { k: 'asteroid', aster: 'Spartacus', target: 'Mars', orb: 3, w: 14 },
     ], ['power']),
 
   G('reflexSpeed', 'Reflex Speed', 'physical',
@@ -1961,6 +1977,8 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'pSign', p: 'Mars', s: 'Aries', w: 12 },
       { k: 'pSign', p: 'Mars', s: 'Gemini', w: 12 },
       { k: 'pSign', p: 'Mercury', s: 'Aries', w: 10 },
+      { k: 'asteroid', aster: 'Atalante', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Atalante', target: 'ASC', orb: 3, w: 12 },
     ]),
 
   G('endurance', 'Endurance', 'physical',
@@ -1971,6 +1989,8 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'pSign', p: 'Mars', s: 'Taurus', w: 12 },
       { k: 'aspect', p1: 'Mars', p2: 'Saturn', a: 'conj', w: 12 },
       { k: 'pHouse', p: 'Mars', h: 6, w: 10 },
+      { k: 'asteroid', aster: 'Marathon', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Marathon', target: 'Sun', orb: 3, w: 12 },
     ]),
 
   G('bodyCoordination', 'Body Coordination', 'physical',
@@ -1991,6 +2011,8 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'pSign', p: 'Mars', s: 'Aries', w: 14 },
       { k: 'asteroid', aster: 'Nike', target: 'Sun', w: 14 },
       { k: 'aspect', p1: 'Sun', p2: 'Mars', a: 'conj', w: 12 },
+      { k: 'asteroid', aster: 'Spartacus', target: 'Sun', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Hidalgo', target: 'Mars', orb: 3, w: 12 },
     ]),
 
   G('climbingAdventure', 'Climbing / Adventure Sports', 'physical',
@@ -2021,6 +2043,7 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'pSign', p: 'Mars', s: 'Taurus', w: 14 },
       { k: 'aspect', p1: 'Mars', p2: 'Saturn', a: 'conj', w: 12 },
       { k: 'pHouse', p: 'Mars', h: 1, w: 10 },
+      { k: 'asteroid', aster: 'Heracles', target: 'Mars', orb: 3, w: 14 },
     ]),
 
   G('waterSport', 'Water Sport / Diving', 'physical',
@@ -2060,6 +2083,46 @@ export const SOUL_GIFTS: SoulGift[] = [
       { k: 'midpt', m1: 'Mars', m2: 'Pluto', target: 'Neptune', w: 12 },  // depth + survival
     ], undefined,
     'Water-sign emphasis with Mars in or aspecting Neptune places your body fluently in water. The 12th house Mars or Mars/Neptune midpoint contacts mark divers, swimmers, and surfers — the soul comfortable in the medium that drowns most people.'),
+
+  G('championInstinct', 'Champion Instinct', 'physical',
+    'You play to win, and you know the difference between competing and winning. Close games make you sharper, not tighter, and you remember every loss far longer than any trophy.',
+    'Enter the ranked version of your sport, the one with a table and a title. You improve fastest when a result is on the line.',
+    [
+      { k: 'asteroid', aster: 'Victoria', target: 'Sun', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Victoria', target: 'MC', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Olympia', target: 'Sun', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Olympia', target: 'MC', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Nike', target: 'Sun', w: 12 },
+      { k: 'aspect', p1: 'Sun', p2: 'Mars', a: 'conj', w: 12 },
+      { k: 'pHouse', p: 'Mars', h: 10, w: 10 },
+    ], ['power'],
+    'Victoria or Olympia fused with your Sun or Midheaven, backed by Nike or a Sun–Mars bond, marks the competitor who is built for the podium, not just the game.'),
+
+  G('athleticComeback', 'Athletic Comeback', 'physical',
+    'You come back from injury faster and more completely than people expect, and you often return better than before. Your body responds to rehab like it was waiting for the instructions.',
+    'Treat recovery as training: sleep, physio, and a written return-to-play plan. The comeback is where you pull ahead of people who never got hurt.',
+    [
+      { k: 'asteroid', aster: 'Panacea', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Panacea', target: 'Sun', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Panacea', target: 'ASC', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Hygiea', target: 'Mars', w: 12 },
+      { k: 'aspect', p1: 'Mars', p2: 'Chiron', a: 'conj', w: 10 },
+      { k: 'pHouse', p: 'Mars', h: 6, w: 8 },
+    ], ['healing'],
+    'Panacea or Hygiea sitting on your Mars, Sun or Ascendant ties your physical drive to repair. The setback becomes part of how you get stronger.'),
+
+  G('bigStageAthlete', 'Big-Stage Athlete', 'physical',
+    'You perform better when it is televised, sold out, or on the record. The crowd, the cameras and the name on the back of your shirt pull a level out of you that practice never sees.',
+    'Get yourself onto a real stage early: finals, showcases, filmed events. Build the public record now; your reputation is part of your game.',
+    [
+      { k: 'asteroid', aster: 'Fama', target: 'MC', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Fama', target: 'ASC', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Fama', target: 'Sun', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Olympia', target: 'ASC', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Hidalgo', target: 'Sun', orb: 3, w: 12 },
+      { k: 'pHouse', p: 'Sun', h: 10, w: 10 },
+    ], ['performance'],
+    'Fama or Olympia on your Midheaven or Ascendant puts your athletic life in public view, and Hidalgo on the Sun gives you the nerve to want the spotlight rather than just survive it.'),
 
   G('acrobat', 'Acrobat / Gymnast', 'physical',
     'You can flip your body and land. Spatial inversion doesn\'t panic the inner ear.',

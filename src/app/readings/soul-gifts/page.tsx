@@ -12,8 +12,9 @@ import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { computeSoulGifts, scoreBand } from '@/lib/engines';
 import type { NatalChart, SoulGiftsResult, ScoredGift } from '@/lib/engines';
 import { PaywallGate } from '@/components/ui/PaywallGate';
+import { ATHLETIC_ASTEROID_NAMES } from '@/lib/athleticAsteroids';
 
-const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna'];
+const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna', ...ATHLETIC_ASTEROID_NAMES];
 
 const SECTIONS = [
   { key: 'topFive', label: 'Top 5 Soul Gifts', emoji: '✨', desc: 'Your strongest innate abilities' },
@@ -22,6 +23,7 @@ const SECTIONS = [
   { key: 'love', label: 'Love Gifts', emoji: '💜', desc: 'Gifts that deepen relationships' },
   { key: 'shadow', label: 'Shadow Gifts', emoji: '🌑', desc: 'Power hidden in your shadow' },
   { key: 'spiritual', label: 'Spiritual Gifts', emoji: '🔮', desc: 'Your connection to the divine' },
+  { key: 'physical', label: 'Athletic Gifts', emoji: '🏅', desc: 'What your body is built to do in sport' },
 ] as const;
 
 export default function SoulGiftsPage() {

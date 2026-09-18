@@ -20,6 +20,7 @@ import {
   AngleKind,
   GiftCategory,
   CUSTOM_RULERS,
+  ATHLETIC_GIFT_IDS,
 } from './soulGiftsDatabase';
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -173,6 +174,7 @@ export interface SoulGiftsResult {
   love: ScoredGift[];        // top 5 scoring love gifts
   shadow: ScoredGift[];      // top 5 scoring shadow gifts
   spiritual: ScoredGift[];   // top 5 scoring spiritual gifts
+  physical: ScoredGift[];    // top 5 scoring athletic gifts (ATHLETIC_GIFT_IDS)
   unlockSteps: string[];     // 5 personalized actions from top gifts
   computedAt: number;
 }
@@ -287,7 +289,7 @@ function evaluateIndicator(ind: Indicator, chart: NatalChart): IndicatorEval {
       const tLon = getLon(chart, ind.target);
       if (aLon == null || tLon == null) return { matched: false, weight: 0 };
       const asp = ind.asp || 'conj';
-      const m = aspectMatch(aLon, tLon, asp);
+      const m = aspectMatch(aLon, tLon, asp, ind.orb);
       if (!m.matched) return { matched: false, weight: 0 };
       const mult = orbMultiplier(m.orb);
       const isAnchor = m.orb <= 1.0 && ANCHOR_TARGETS.has(ind.target);
@@ -579,6 +581,7 @@ export function computeSoulGifts(chart: NatalChart): SoulGiftsResult {
   const love = sorted.filter(inCategory('love')).slice(0, 5);
   const shadow = sorted.filter(inCategory('shadow')).slice(0, 5);
   const spiritual = sorted.filter(inCategory('spiritual')).slice(0, 5);
+  const physical = sorted.filter(g => ATHLETIC_GIFT_IDS.has(g.id)).slice(0, 5);
 
   // Unlock steps — pull the unlock copy from the top 5 gifts
   const unlockSteps = topFive.map(g => `${g.name}: ${g.unlock}`);
@@ -590,6 +593,7 @@ export function computeSoulGifts(chart: NatalChart): SoulGiftsResult {
     love,
     shadow,
     spiritual,
+    physical,
     unlockSteps,
     computedAt: Date.now(),
   };
@@ -597,7 +601,7 @@ export function computeSoulGifts(chart: NatalChart): SoulGiftsResult {
 
 function emptyResult(): SoulGiftsResult {
   return {
-    topFive: [], dormant: [], money: [], love: [], shadow: [], spiritual: [],
+    topFive: [], dormant: [], money: [], love: [], shadow: [], spiritual: [], physical: [],
     unlockSteps: [],
     computedAt: Date.now(),
   };
