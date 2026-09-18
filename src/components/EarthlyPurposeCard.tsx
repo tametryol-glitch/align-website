@@ -20,6 +20,7 @@ import {
   buildEarthlyPurposeUserPrompt,
 } from '@/lib/engines/earthlyPurpose';
 import { buildPurposePoints, reconcilePurposePoints } from '@/lib/engines/purposePoints';
+import { fetchPurposeSignatures, generatePurposeReading, purposeBirthKey, PURPOSE_SIGNATURE_VERSION } from '@/lib/engines/purposeSignature';
 
 const TEASER = 260;
 
@@ -37,6 +38,23 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
 
     (async () => {
       try {
+        // Purpose Signature engine (conjunctions + dispositor chain + every
+        // midpoint within 1°30′). Its cache key carries the engine version so a
+        // reading from the old Duad/Compendium engine is never shown again.
+        const sigKey = `purpose_earth_web:${PURPOSE_SIGNATURE_VERSION}:${purposeBirthKey(profile)}`;
+        const sigCached = typeof window !== 'undefined' ? window.localStorage.getItem(sigKey) : null;
+        if (sigCached) { if (!cancelled) { setText(sigCached); setLoading(false); } return; }
+        try {
+          const sigs = await fetchPurposeSignatures(profile);
+          const reading = await generatePurposeReading(sigs.earth, (t) => { if (!cancelled) setText(t); });
+          if (cancelled) return;
+          setText(reading);
+          try { window.localStorage.setItem(sigKey, reading); } catch { /* ignore */ }
+          return;
+        } catch {
+          /* signature engine unreachable → legacy reading below */
+        }
+
         const cached = typeof window !== 'undefined' ? window.localStorage.getItem(cacheKey) : null;
         if (cached) { if (!cancelled) { setText(cached); setLoading(false); } return; }
 
@@ -81,7 +99,7 @@ export function EarthlyPurposeCard({ profile }: { profile: any }) {
       }
     })();
     return () => { cancelled = true; };
-  }, [hasBirth, profile?.birth_date, profile?.latitude, profile?.longitude]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hasBirth, profile?.birth_date, profile?.birth_time, profile?.latitude, profile?.longitude]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!hasBirth) return null;
   if (!loading && !text) return null;

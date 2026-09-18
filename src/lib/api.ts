@@ -62,6 +62,10 @@ class AlignAPI {
     return this.request('/charts/natal', { method: 'POST', body: JSON.stringify(birthData) });
   }
 
+  async getPurposeSignature(data: any) {
+    return this.request('/charts/purpose-signature', { method: 'POST', body: JSON.stringify(data) });
+  }
+
   async getProgressedChart(data: any) {
     return this.request('/charts/progressed', { method: 'POST', body: JSON.stringify(data) });
   }
