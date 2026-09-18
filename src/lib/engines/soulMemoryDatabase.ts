@@ -4,7 +4,7 @@
  * Source data for the Soul Memory Engine. Five interlocking
  * datasets:
  *
- *   1. ARCHETYPES   — 16 past-life signatures (Temple Astrologer,
+ *   1. ARCHETYPES   — 17 past-life signatures (Temple Astrologer,
  *                     Warrior Commander, Sacred Healer, etc.) with
  *                     hero / shadow descriptions, soul gifts, karma
  *                     themes, current-life mission, and weighted
@@ -44,7 +44,7 @@ export type SMIndicator =
   | { k: 'planetInHouse'; p: string; h: number; w: number }
   | { k: 'aspect'; p1: string; p2: string; a: AspectKind; w: number }
   | { k: 'onAngle'; body: string; angle: AngleKind; w: number }
-  | { k: 'asteroid'; aster: string; target: string; asp?: AspectKind; w: number }
+  | { k: 'asteroid'; aster: string; target: string; asp?: AspectKind; orb?: number; w: number }
   | { k: 'houseFocus'; h: number; min: number; w: number }
   | { k: 'signFocus'; s: string; min: number; w: number }
   | { k: 'elementBalance'; element: ElementKind; min: number; w: number }
@@ -199,6 +199,44 @@ export const ARCHETYPES: Archetype[] = [
       { k: 'fixedStar', body: 'Mars', star: 'Antares', w: 14 },
       { k: 'fixedStar', body: 'ASC', star: 'Aldebaran', w: 12 },
       { k: 'duadSign', body: 'Mars', s: 'Capricorn', w: 6 },
+    ],
+  },
+
+  {
+    id: 'championAthlete',
+    name: 'Champion / Gladiator',
+    shadowName: 'The Gladiator Who Bled for Someone Else\'s Glory',
+    heroDescription:
+      'Your soul remembers the arena. Sand, crowds, the starting line, the wrestling ground at Olympia — you competed in front of people who knew your name, and your body was the instrument that won or lost the day. ' +
+      'Training was not a hobby; it was the shape of your whole life. You understand pain, preparation and the single moment that decides a contest in a way nobody taught you this time around.',
+    shadowDescription:
+      'In the shadow expression your body belonged to someone else — an owner, a patron, a city that wanted a spectacle. You fought or ran for their glory and were discarded when you broke. ' +
+      'That echoes now as a fear that you are only valued while you are winning, and a habit of training through injuries you should have stopped for.',
+    soulGifts: ['Competitive instinct', 'Physical courage', 'Pain tolerance', 'Peak performance under pressure', 'Recovery and comeback', 'Reading an opponent'],
+    relationshipKarma: {
+      theme: 'Rivals, Teammates and Trainers',
+      description:
+        'Old opponents return as the rival who pushes you harder than anyone, teammates as the friends you would bleed for, and old trainers or owners as the coaches and bosses who either build you up or use you up. The pull is instant in both directions.',
+    },
+    currentMission:
+      'Compete for yourself this time. Choose the arena, own the body, and build a life where your worth does not end when the results do. Coach, lead or pass it on when the playing years close.',
+    // Athletic asteroids use a 3° orb (see lib/athleticAsteroids.ts); they
+    // are requested as extra_asteroids by the Soul Memory page.
+    indicators: [
+      { k: 'snSign', s: 'Aries', w: 12 },
+      { k: 'snSign', s: 'Leo', w: 12 },
+      { k: 'snHouse', h: 5, w: 14 },
+      { k: 'snHouse', h: 1, w: 10 },
+      { k: 'asteroid', aster: 'Spartacus', target: 'SN', orb: 3, w: 16 },
+      { k: 'asteroid', aster: 'Olympia', target: 'SN', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Heracles', target: 'SN', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Heracles', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Spartacus', target: 'Mars', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Olympia', target: 'Sun', orb: 3, w: 14 },
+      { k: 'asteroid', aster: 'Victoria', target: 'Sun', orb: 3, w: 12 },
+      { k: 'asteroid', aster: 'Nike', target: 'Mars', orb: 3, w: 12 },
+      { k: 'aspect', p1: 'Sun', p2: 'Mars', a: 'conj', w: 12 },
+      { k: 'planetInHouse', p: 'Mars', h: 5, w: 12 },
     ],
   },
 

@@ -10,10 +10,11 @@ import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { ScoreBar } from '@/components/ui/ScoreBar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { computeSoulMemory, confidenceBand } from '@/lib/engines';
+import { ATHLETIC_ASTEROID_NAMES } from '@/lib/athleticAsteroids';
 import type { NatalChart, SoulMemoryResult, ScoredArchetype } from '@/lib/engines';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 
-const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna'];
+const SOUL_ASTEROIDS = ['Eros', 'Psyche', 'Urania', 'Pallas', 'Ceres', 'Lilith', 'Chiron', 'Vesta', 'Juno', 'Nike', 'Apollo', 'Hygiea', 'Nemesis', 'Karma', 'Fortuna', ...ATHLETIC_ASTEROID_NAMES];
 
 export default function SoulMemoryPage() {
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ export default function SoulMemoryPage() {
             reveal who you were before.
           </p>
           <p className="text-text-muted text-xs mb-6">
-            16 archetypes scored with midpoint engine, duad layer, and draconic confirmation
+            17 archetypes scored with midpoint engine, duad layer, and draconic confirmation
           </p>
           <button onClick={getReading} disabled={loading} className="btn-primary">
             Unlock My Past Lives

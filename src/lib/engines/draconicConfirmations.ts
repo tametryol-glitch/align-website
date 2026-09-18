@@ -95,6 +95,22 @@ export const DRACONIC_CONFIRMATIONS: Record<string, DraconicConfirmationRule[]> 
       narrative: 'Draconic Nike (victory) to natal Sun confirms the soul-level champion archetype.' },
   ],
 
+  // ─── Champion / Gladiator ───────────────────────────────────
+  championAthlete: [
+    { draconic: 'Spartacus', natalTarget: 'Mars', weight: 'asteroid',
+      narrative: 'Draconic Spartacus to natal Mars confirms the fighter who has refused to kneel across many lives.' },
+    { draconic: 'Olympia', natalTarget: 'Sun', weight: 'asteroid',
+      narrative: 'Draconic Olympia confirming natal Sun marks a soul that has competed on the great stages before.' },
+    { draconic: 'Heracles', natalTarget: 'Mars', weight: 'asteroid',
+      narrative: 'Draconic Heracles to natal Mars confirms strength earned through trials across lifetimes.' },
+    { draconic: 'Victoria', natalTarget: 'MC', weight: 'asteroid',
+      narrative: 'Draconic Victoria on natal MC names this soul publicly as a winner across incarnations.' },
+    { draconic: 'Mars', natalTarget: 'Sun', weight: 'luminary',
+      narrative: 'Draconic Mars confirming natal Sun marks an identity forged in physical contest.' },
+    { draconic: 'Nike', natalTarget: 'Mars', weight: 'asteroid',
+      narrative: 'Draconic Nike to natal Mars confirms the soul-level drive to win the contest.' },
+  ],
+
   // ─── Sacred Healer ──────────────────────────────────────────
   sacredHealer: [
     { draconic: 'Chiron', natalTarget: 'Sun', weight: 'luminary',
@@ -292,6 +308,7 @@ export const DRACONIC_BODIES_TO_EVALUATE = [
   'Chiron', 'Vesta', 'Pallas', 'Juno', 'Ceres',
   'Eros', 'Psyche', 'Lilith', 'Urania', 'Apollo',
   'Hygiea', 'Nemesis', 'Karma', 'Nike',
+  'Heracles', 'Olympia', 'Spartacus', 'Victoria',
 ];
 
 /** Natal targets the engine checks for Draconic-to-natal contact. */

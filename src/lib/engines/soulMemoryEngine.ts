@@ -288,7 +288,7 @@ function evaluateIndicator(ind: SMIndicator, chart: NatalChart): IndicatorEval {
       const tLon = getLon(chart, ind.target);
       if (aLon == null || tLon == null) return { matched: false, weight: 0 };
       const asp = ind.asp || 'conj';
-      const m = aspectMatch(aLon, tLon, asp);
+      const m = aspectMatch(aLon, tLon, asp, ind.orb);
       if (!m.matched) return { matched: false, weight: 0 };
       const mult = orbMultiplier(m.orb);
       const isAnchor = m.orb <= 1.0 && ANCHOR_TARGETS.has(ind.target);
