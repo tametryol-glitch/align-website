@@ -10,6 +10,7 @@ import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { PaywallGate } from '@/components/ui/PaywallGate';
 import { PLANET_GLYPHS } from '@/lib/transitData';
 import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
+import { ATHLETIC_ASTEROID_NAMES, getAthleticProfile, isAthleticAsteroid } from '@/lib/athleticAsteroids';
 
 // ─── Zodiac Glyphs ──────────────────────────────────────────────────────────
 const ZODIAC_GLYPHS: Record<string, string> = {
@@ -394,12 +395,23 @@ function calculateLocalPathways(chart: any, profile: any): PathwayResponse {
     Aquarius: 'innovation, technology, and humanitarian networks', Pisces: 'intuition, spiritual gifts, and creative imagination',
   };
 
+  // Athletic asteroids score ONLY the athletics path, and only by
+  // prominence — every chart has all nine, so their sign/house must not
+  // leak into the generic loop below and inflate unrelated paths.
+  const athletic = getAthleticProfile(planets);
+  const ATHLETIC_BONUS_CAP = 36;
+
   // Score pathways
   const scoredPathways = PATHWAY_TEMPLATES.map(tmpl => {
     let score = 0;
     const reasons: string[] = [];
+    if (tmpl.id === 'sports-physical' && athletic.score > 0) {
+      score += Math.min(athletic.score * 3, ATHLETIC_BONUS_CAP);
+      reasons.push(...athletic.hits.slice(0, 3).map(h => h.reason));
+    }
     for (const p of planets) {
       if (!p.name || !p.sign) continue;
+      if (isAthleticAsteroid(p.name)) continue;
       if (tmpl.triggers[p.name]) { score += tmpl.triggers[p.name] * 4; reasons.push(`${p.name} in ${p.sign} supports this path`); }
       if (tmpl.triggers[p.sign]) { score += tmpl.triggers[p.sign] * 2; }
       if (p.house && tmpl.triggers[String(p.house)]) {
@@ -577,7 +589,7 @@ export default function PathwayPage() {
     try {
       // Get natal chart from API, then calculate pathways locally
       const birthData = buildBirthData(profile);
-      const chart = await api.getNatalChart(birthData);
+      const chart = await api.getNatalChart({ ...birthData, extra_asteroids: [...ATHLETIC_ASTEROID_NAMES] });
       if (chart) {
         const result = calculateLocalPathways(chart, profile);
         setData(result);
