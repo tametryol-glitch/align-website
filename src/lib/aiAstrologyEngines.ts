@@ -1,6 +1,7 @@
 import { api, buildBirthData } from '@/lib/api';
 import { getFullDuadCompendium } from '@/lib/engines/duadCompendium';
 import { calculateNumerology } from '@/lib/numerologyCalc';
+import { ATHLETIC_ASTEROID_NAMES, formatAthleticContext } from '@/lib/athleticAsteroids';
 
 // ═══════════════════════════════════════════════════════════════════
 // AI Astrologer — Live Engine Router
@@ -30,7 +31,8 @@ export type EngineKey =
   | 'numerology'
   | 'human_design'
   | 'starseed'
-  | 'planetary_hours';
+  | 'planetary_hours'
+  | 'athletic';
 
 interface LoadCtx {
   /** Payload accepted by every /charts, /returns, /timelords endpoint */
@@ -426,6 +428,27 @@ const ENGINES: EngineDef[] = [
         timezone: birthData.timezone || 'UTC',
       });
       return data?.hours ? `PLANETARY HOURS FOR ${today}:\n${compactJson(data.hours)}` : '';
+    },
+  },
+
+  {
+    key: 'athletic',
+    label: 'Athletic asteroids',
+    keywords: [
+      'athlete', 'athletic', 'sport', 'compete', 'competition', 'competitive',
+      'training', 'workout', 'fitness', 'gym', 'coach', 'olympic', 'olympia',
+      'marathon', 'running', 'runner', 'sprint', 'race', 'racing', 'injury',
+      'injured', 'comeback', 'rehab', 'recovery', 'strength', 'endurance',
+      'stamina', 'fighter', 'boxing', 'martial', 'mma', 'championship',
+      'tournament', 'trophy', 'medal', 'podium', 'game day', 'match day',
+      'heracles', 'hercules', 'atalante', 'atalanta', 'spartacus', 'victoria',
+      'hidalgo', 'panacea', 'fama', 'nike',
+    ],
+    // The nine athletic asteroids are not on the default chart, so fetch
+    // them explicitly. See lib/athleticAsteroids.ts.
+    load: async ({ birthData }) => {
+      const data = await api.getNatalChart({ ...birthData, extra_asteroids: [...ATHLETIC_ASTEROID_NAMES] });
+      return formatAthleticContext(positionsOf(data));
     },
   },
 

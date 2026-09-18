@@ -118,3 +118,61 @@ export function getAthleticProfile(positions: PositionLike[] | undefined | null)
   hits.sort((a, b) => b.weight - a.weight);
   return { score: hits.reduce((s, h) => s + h.weight, 0), hits, computed };
 }
+
+/* ── AI context ──────────────────────────────────────────────────── */
+
+const AI_ASPECTS: { name: string; angle: number }[] = [
+  { name: 'conjunct', angle: 0 },
+  { name: 'opposite', angle: 180 },
+  { name: 'square', angle: 90 },
+  { name: 'trine', angle: 120 },
+  { name: 'sextile', angle: 60 },
+];
+const AI_TARGETS = ['Sun', 'Moon', 'Mars', 'Jupiter', 'Saturn', 'Ascendant', 'MC'];
+const AI_ASPECT_ORB = 2;
+
+/**
+ * Text block for the AI Astrologer: every athletic asteroid's placement,
+ * the prominent ones (the real athletic signature), and other tight
+ * aspects. Returns '' when the chart was fetched without the athletic
+ * extras, so the model is never handed an empty section.
+ */
+export function formatAthleticContext(positions: PositionLike[] | undefined | null): string {
+  const profile = getAthleticProfile(positions);
+  if (profile.computed === 0) return '';
+  const list = Array.isArray(positions) ? positions : [];
+  const byName = new Map(list.filter((p) => p?.name).map((p) => [p.name as string, p]));
+
+  const placements: string[] = [];
+  const aspects: string[] = [];
+  for (const asteroid of ATHLETIC_ASTEROID_NAMES) {
+    const p = byName.get(asteroid);
+    if (!p || typeof p.longitude !== 'number') continue;
+    const deg = (((p.longitude % 30) + 30) % 30).toFixed(1);
+    placements.push(`${asteroid} (${ATHLETIC_THEME[asteroid]}): ${deg}° ${p.sign || ''}${p.house ? `, House ${p.house}` : ''}`);
+    for (const target of AI_TARGETS) {
+      const t = byName.get(target);
+      if (!t || typeof t.longitude !== 'number') continue;
+      const d = arc(p.longitude, t.longitude);
+      for (const a of AI_ASPECTS) {
+        const orb = Math.abs(d - a.angle);
+        if (orb <= AI_ASPECT_ORB && !(a.angle === 0 && orb <= CONJUNCTION_ORB && ATHLETIC_ANCHORS.includes(target as any))) {
+          aspects.push(`${asteroid} ${a.name} ${target === 'MC' ? 'Midheaven' : target} (${orb.toFixed(1)}°)`);
+        }
+      }
+    }
+  }
+
+  const prominent = profile.hits.length
+    ? profile.hits.map((h) => `- ${h.reason} (${h.contacts.map((c) => `${ANCHOR_LABEL[c.anchor]} ${c.orb}°`).join(', ')})`).join('\n')
+    : '- None. No athletic asteroid is within 3° of the Sun, Mars, Ascendant or Midheaven, so do not present these asteroids as a strong athletic signature; read athletic potential from Mars, the Sun, the 1st/5th/6th/10th houses and their aspects instead.';
+
+  return [
+    'ATHLETIC ASTEROIDS (strength, speed, competition, endurance, recovery, fame):',
+    ...placements,
+    '',
+    'PROMINENT ATHLETIC SIGNATURES (within 3° of Sun, Mars, Ascendant or Midheaven; lead with these):',
+    prominent,
+    aspects.length ? `\nOTHER TIGHT ASPECTS (within ${AI_ASPECT_ORB}°):\n${aspects.map((a) => `- ${a}`).join('\n')}` : '',
+  ].filter((s) => s !== undefined).join('\n').trim();
+}
