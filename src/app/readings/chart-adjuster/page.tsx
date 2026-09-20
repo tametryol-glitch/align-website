@@ -23,6 +23,7 @@ const AVAILABLE_ASTEROIDS = [
   'Magdalena', 'Cupido', 'Destinn', 'Abundantia', 'Industria',
   'Heracles', 'Atalante', 'Olympia', 'Marathon', 'Spartacus', 'Victoria',
   'Ganymed', 'Artemis', 'Adonis', 'Phaethon',
+  'Toulouse-Lautrec', 'Steinmetz', 'Hephaistos', 'Kant', 'Picasso', 'Voltaire',
   'Hidalgo', 'Panacea', 'Fama',
 ];
 

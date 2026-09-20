@@ -160,6 +160,9 @@ export const ASTEROID_CATALOG: Record<string, number> = {
   Spartacus: 2579, Victoria: 12, Hidalgo: 944, Panacea: 2878, Fama: 408,
   // Stature & physical presence (2026-09-20).
   Ganymed: 1036, Artemis: 105, Adonis: 2101, Phaethon: 3200,
+  // Short stature & small build (2026-09-20).
+  'Toulouse-Lautrec': 11506, Steinmetz: 1681, Hephaistos: 2212,
+  Kant: 7083, Picasso: 4221, Voltaire: 5676,
 };
 
 const CATALOG_BY_NUM: Record<number, string> = Object.fromEntries(
