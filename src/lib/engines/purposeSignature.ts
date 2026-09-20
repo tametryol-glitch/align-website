@@ -25,7 +25,12 @@ export interface PurposeSignature {
   [key: string]: any;
 }
 
-export const PURPOSE_SIGNATURE_VERSION = 'purpose-signature-v1';
+/**
+ * Client fallback only. The real cache key uses the `engine_version` the
+ * backend returns, so an engine change (new orbs, new voice) refreshes every
+ * reading without a client release.
+ */
+export const PURPOSE_SIGNATURE_VERSION = 'purpose-signature-v2';
 
 // One request per birth chart serves both cards (they mount together).
 const inflight = new Map<string, Promise<Record<PurposeTarget, PurposeSignature>>>();

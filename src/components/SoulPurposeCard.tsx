@@ -40,11 +40,16 @@ export function SoulPurposeCard({ profile }: { profile: any }) {
         // Purpose Signature engine (conjunctions + dispositor chain + every
         // midpoint within 1°30′). Its cache key carries the engine version so a
         // reading from the old Duad/Compendium engine is never shown again.
-        const sigKey = `purpose_north_node_web:${PURPOSE_SIGNATURE_VERSION}:${purposeBirthKey(profile)}`;
-        const sigCached = typeof window !== 'undefined' ? window.localStorage.getItem(sigKey) : null;
+        const keyFor = (v: string) => `purpose_north_node_web:${v}:${purposeBirthKey(profile)}`;
+        const sigCached = typeof window !== 'undefined' ? window.localStorage.getItem(keyFor(PURPOSE_SIGNATURE_VERSION)) : null;
         if (sigCached) { if (!cancelled) { setText(sigCached); setLoading(false); } return; }
         try {
           const sigs = await fetchPurposeSignatures(profile);
+          // The engine version comes from the server, so an engine change
+          // refreshes the reading without shipping a new client.
+          const sigKey = keyFor(sigs.north_node?.engine_version || PURPOSE_SIGNATURE_VERSION);
+          const live = typeof window !== 'undefined' ? window.localStorage.getItem(sigKey) : null;
+          if (live) { if (!cancelled) { setText(live); setLoading(false); } return; }
           const reading = await generatePurposeReading(sigs.north_node, (t) => { if (!cancelled) setText(t); });
           if (cancelled) return;
           setText(reading);
