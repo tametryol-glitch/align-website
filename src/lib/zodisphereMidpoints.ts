@@ -154,6 +154,12 @@ export const ASTEROID_CATALOG: Record<string, number> = {
   Atlantis: 1198, Tantalus: 2102, Sisyphus: 1866, Damocles: 5335,
   Lucifer: 1930, Magdalena: 318, Cupido: 763, Destinn: 6583,
   Abundantia: 151, Industria: 389, Proserpina: 26,
+  // Athletic set — present in the backend catalogue since 2026-09-18 but
+  // missing here, so Zodisphere and ACG filtered them straight out.
+  Heracles: 5143, Atalante: 36, Olympia: 582, Marathon: 4356,
+  Spartacus: 2579, Victoria: 12, Hidalgo: 944, Panacea: 2878, Fama: 408,
+  // Stature & physical presence (2026-09-20).
+  Ganymed: 1036, Artemis: 105, Adonis: 2101, Phaethon: 3200,
 };
 
 const CATALOG_BY_NUM: Record<number, string> = Object.fromEntries(

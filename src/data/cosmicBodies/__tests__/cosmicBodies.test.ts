@@ -27,6 +27,7 @@ const ALL_CHART_BODIES = [
   'Urania', 'Eris', 'Sedna', 'Haumea', 'Makemake', 'Narcissus', 'Echo',
   'Pandora', 'Icarus', 'Daedalus', 'Orpheus', 'Eurydike', 'Persephone',
   'Proserpina', 'Diana', 'Minerva', 'Bacchus', 'Circe', 'Medea',
+  'Ganymed', 'Artemis', 'Adonis', 'Phaethon',
   'Kassandra', 'Achilles', 'Sphinx', 'Atlantis', 'Tantalus', 'Sisyphus',
   'Damocles', 'Lucifer', 'Magdalena', 'Cupido', 'Destinn', 'Abundantia',
   'Industria',

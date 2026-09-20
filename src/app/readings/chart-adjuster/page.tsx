@@ -22,6 +22,7 @@ const AVAILABLE_ASTEROIDS = [
   'Sphinx', 'Atlantis', 'Tantalus', 'Sisyphus', 'Damocles', 'Lucifer',
   'Magdalena', 'Cupido', 'Destinn', 'Abundantia', 'Industria',
   'Heracles', 'Atalante', 'Olympia', 'Marathon', 'Spartacus', 'Victoria',
+  'Ganymed', 'Artemis', 'Adonis', 'Phaethon',
   'Hidalgo', 'Panacea', 'Fama',
 ];
 
