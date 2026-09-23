@@ -86,6 +86,7 @@ export function useAdminSection<T = Record<string, unknown>>(section: string) {
 const TABS = [
   { href: '/admin/analytics',              label: 'Overview' },
   { href: '/admin/analytics/growth',       label: 'Growth' },
+  { href: '/admin/analytics/time',         label: 'Time' },
   { href: '/admin/analytics/content',      label: 'Content' },
   { href: '/admin/analytics/social',       label: 'Social' },
   { href: '/admin/analytics/money',        label: 'Money' },

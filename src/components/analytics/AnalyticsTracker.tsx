@@ -25,6 +25,9 @@ import {
   trackWebVital,
   trackRageClick,
   trackScrollDepth,
+  startEngagementClock,
+  reportEngagedTime,
+  trackHeartbeat,
 } from '@/lib/firstPartyAnalytics';
 
 const HEARTBEAT_MS = 45 * 1000;
@@ -66,15 +69,23 @@ export function AnalyticsTracker() {
     startedRef.current = true;
 
     track('session_start');
+    startEngagementClock();
 
+    // Each heartbeat carries the engaged seconds since the previous report.
     const beat = setInterval(() => {
-      if (document.visibilityState === 'visible') track('session_heartbeat');
+      if (document.visibilityState === 'visible') trackHeartbeat();
     }, HEARTBEAT_MS);
 
     const onHide = () => {
-      if (document.visibilityState === 'hidden') flushAnalytics(true);
+      if (document.visibilityState === 'hidden') {
+        reportEngagedTime();
+        flushAnalytics(true);
+      }
     };
-    const onPageHide = () => flushAnalytics(true);
+    const onPageHide = () => {
+      reportEngagedTime();
+      flushAnalytics(true);
+    };
 
     document.addEventListener('visibilitychange', onHide);
     window.addEventListener('pagehide', onPageHide);

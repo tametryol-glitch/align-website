@@ -211,7 +211,105 @@ export function track(
 }
 
 export function trackPageView(path?: string) {
-  track('page_view', { path: path ?? location.pathname });
+  const next = path ?? location.pathname;
+  // Close out the time spent on the page we're leaving before switching.
+  reportEngagedTime();
+  engagedPath = next;
+  track('page_view', { path: next });
+}
+
+// ── Engaged time (time in app, to the second) ────────────────────────────────
+// Counts milliseconds while the tab is visible AND the visitor is actually
+// there: some input in the last IDLE_MS, or a video playing. A tab left open on
+// a desk stops counting after IDLE_MS. The total rides on heartbeats and on a
+// final engaged_time event when the page changes or the tab is hidden; the
+// server credits it to the member's permanent daily ledger.
+
+const IDLE_MS = 3 * 60 * 1000;
+const CLOCK_TICK_MS = 1000;
+const MAX_TICK_GAP_MS = 15_000; // a longer gap means the device slept — don't count it
+
+let engagedMs = 0;
+let engagedPath: string | null = null;
+let lastTick = 0;
+let lastInput = 0;
+let wasEngaged = false;
+let clockStarted = false;
+
+function videoPlaying(): boolean {
+  try {
+    const vids = document.getElementsByTagName('video');
+    for (let i = 0; i < vids.length; i++) {
+      if (!vids[i].paused && !vids[i].ended) return true;
+    }
+  } catch {}
+  return false;
+}
+
+function engagedNow(now: number): boolean {
+  return (
+    document.visibilityState === 'visible' &&
+    (now - lastInput < IDLE_MS || videoPlaying())
+  );
+}
+
+// Credit the interval since the last tick if we were engaged during it.
+function accrue() {
+  const now = Date.now();
+  const gap = now - lastTick;
+  if (wasEngaged && gap > 0 && gap <= MAX_TICK_GAP_MS) engagedMs += gap;
+  lastTick = now;
+  wasEngaged = engagedNow(now);
+}
+
+function onInput() {
+  const now = Date.now();
+  if (!wasEngaged) accrue(); // close the idle stretch uncounted
+  lastInput = now;
+  wasEngaged = document.visibilityState === 'visible';
+}
+
+/** Start the engaged-time clock. Idempotent. */
+export function startEngagementClock() {
+  if (!isBrowser() || clockStarted) return;
+  clockStarted = true;
+  const now = Date.now();
+  lastTick = now;
+  lastInput = now;
+  engagedPath = engagedPath ?? location.pathname;
+  wasEngaged = engagedNow(now);
+
+  setInterval(accrue, CLOCK_TICK_MS);
+  document.addEventListener('visibilitychange', accrue);
+  const opts = { passive: true, capture: true } as AddEventListenerOptions;
+  for (const type of ['pointerdown', 'pointermove', 'keydown', 'wheel', 'scroll', 'touchstart']) {
+    document.addEventListener(type, onInput, opts);
+  }
+}
+
+/** Take the engaged milliseconds accumulated since the last report. */
+export function takeEngagedMs(): number {
+  if (!clockStarted) return 0;
+  accrue();
+  const ms = Math.round(engagedMs);
+  engagedMs = 0;
+  return ms;
+}
+
+/** Queue an engaged_time event for the current page if any time accrued. */
+export function reportEngagedTime() {
+  const ms = takeEngagedMs();
+  if (ms <= 0) return;
+  track('engaged_time', { path: engagedPath ?? location.pathname, props: { engaged_ms: ms } });
+}
+
+/** Heartbeat that also carries the engaged time since the last report. */
+export function trackHeartbeat() {
+  const ms = takeEngagedMs();
+  track('session_heartbeat', {
+    path: engagedPath ?? location.pathname,
+    props: ms > 0 ? { engaged_ms: ms } : undefined,
+  });
 }
 
 export function trackFeature(feature: string, props?: Record<string, unknown>) {

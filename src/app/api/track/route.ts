@@ -11,12 +11,16 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const MAX_EVENTS = 50;
 const MAX_STR = 512;
+// A single engaged-time report can never claim more than this (clients report
+// every ~45s, so anything larger is a bug or tampering).
+const MAX_ENGAGED_MS = 120_000;
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -40,6 +44,83 @@ function cleanPath(v: unknown): string | null {
   const s = clip(v, MAX_STR);
   if (!s) return null;
   return s.split('?')[0].split('#')[0].slice(0, MAX_STR);
+}
+
+// ── Time-in-app: sections ────────────────────────────────────────────────────
+// Folds a route into a stable section key so web and app land in the same
+// bucket (app "/social/feed" and web "/feed" → "feed"). Only a known set of
+// parent routes keep their second segment; everything else keeps the first
+// segment only, so usernames / ids in dynamic routes never become sections.
+
+const LOCALES = new Set([
+  'ar', 'da', 'de', 'en', 'es', 'fi', 'fr', 'hi', 'it', 'ja',
+  'ko', 'nl', 'no', 'pl', 'pt', 'ru', 'sv', 'th', 'tr', 'zh',
+]);
+const NESTED = new Set(['readings', 'chart', 'settings', 'dating', 'library', 'admin']);
+const HOME = new Set(['home', 'index', 'dashboard', '(tabs)']);
+const STATIC_SEG = /^[a-z][a-z-]{0,40}$/;
+
+function sectionFor(path: string | null): string {
+  if (!path) return 'other';
+  const segs = path.toLowerCase().split('/').filter(Boolean);
+  if (segs.length > 1 && LOCALES.has(segs[0])) segs.shift();
+  if (segs[0] === '(tabs)') segs.shift();
+  if (segs[0] === 'social') segs.shift();
+  if (!segs.length) return 'home';
+  const first = segs[0];
+  if (HOME.has(first)) return 'home';
+  if (!STATIC_SEG.test(first)) return 'other';
+  if (first.endsWith('-in')) return 'placement-pages';
+  if (NESTED.has(first) && segs[1] && STATIC_SEG.test(segs[1])) return `${first}/${segs[1]}`;
+  return first;
+}
+
+// ── Time-in-app: verified identity ───────────────────────────────────────────
+// Time is only ever credited to a member whose login we have verified, so no
+// one can post time for someone else. The app sends its access token as a
+// Bearer header; the web sends its normal Supabase auth cookie. Verified tokens
+// are cached briefly so a heartbeat every 45s doesn't hit the auth server each
+// time.
+
+const verifiedTokens = new Map<string, { uid: string; until: number }>();
+const TOKEN_CACHE_MS = 5 * 60 * 1000;
+
+async function accessTokenFrom(req: NextRequest): Promise<string | null> {
+  const auth = req.headers.get('authorization');
+  if (auth?.toLowerCase().startsWith('bearer ')) return auth.slice(7).trim() || null;
+  try {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) { return req.cookies.get(name)?.value; },
+          set() {},
+          remove() {},
+        },
+      },
+    );
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function verifiedUserId(
+  req: NextRequest,
+  db: ReturnType<typeof admin>,
+): Promise<string | null> {
+  const token = await accessTokenFrom(req);
+  if (!token) return null;
+  const now = Date.now();
+  const hit = verifiedTokens.get(token);
+  if (hit && hit.until > now) return hit.uid;
+  const { data, error } = await db.auth.getUser(token);
+  if (error || !data.user) return null;
+  if (verifiedTokens.size > 5000) verifiedTokens.clear();
+  verifiedTokens.set(token, { uid: data.user.id, until: now + TOKEN_CACHE_MS });
+  return data.user.id;
 }
 
 function countryFromReq(req: NextRequest): string | null {
@@ -123,9 +204,31 @@ export async function POST(req: NextRequest) {
 
     const db = admin();
 
-    // Insert events + touch the session. Fire both; don't fail the request if
+    // Engaged time → per-member daily ledger (verified members only).
+    const timeBuckets = new Map<string, { day: string; section: string; ms: number }>();
+    for (const r of rows as { path: string | null; created_at: string; event_data: any }[]) {
+      const raw = Number(r.event_data?.engaged_ms);
+      if (!Number.isFinite(raw) || raw <= 0) continue;
+      const ms = Math.min(Math.round(raw), MAX_ENGAGED_MS);
+      const day = r.created_at.slice(0, 10);
+      const section = sectionFor(r.path);
+      const key = `${day}|${section}`;
+      const b = timeBuckets.get(key);
+      if (b) b.ms += ms;
+      else timeBuckets.set(key, { day, section, ms });
+    }
+    const timeUserId = timeBuckets.size ? await verifiedUserId(req, db).catch(() => null) : null;
+
+    // Insert events + touch the session. Fire all; don't fail the request if
     // one has a hiccup — we already validated everything.
     await Promise.allSettled([
+      timeUserId
+        ? db.rpc('analytics_add_time', {
+            p_user_id: timeUserId,
+            p_platform: platform,
+            p_rows: Array.from(timeBuckets.values()),
+          })
+        : Promise.resolve(),
       db.from('analytics_events').insert(rows),
       sessionId
         ? db.rpc('analytics_touch_session', {
