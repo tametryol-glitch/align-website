@@ -4,45 +4,18 @@
 //   ?range=7|30|90|0        → overview + leaderboard (0 = all time)
 //   ?q=<username or name>   → matching members for the lookup box
 //   ?user=<uuid>            → one member's time in depth
-// Admin-only (same is_admin gate as the other admin routes). Data comes from
+// Admin-only: web cookie or app Bearer token (see lib/adminAuth). Data comes from
 // analytics_user_time_daily (supabase-migration-analytics-phase8-time.sql).
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { createServerClient } from '@supabase/ssr';
+import { getServiceClient as getAdminClient, verifyAdmin } from '@/lib/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MIGRATION = 'supabase-migration-analytics-phase8-time.sql';
-
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
-  return createClient(url, key, { auth: { persistSession: false } });
-}
-
-async function verifyAdmin(req: NextRequest): Promise<boolean> {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) { return req.cookies.get(name)?.value; },
-        set() {},
-        remove() {},
-      },
-    },
-  );
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
-  const admin = getAdminClient();
-  const { data: profile } = await admin.from('profiles').select('is_admin').eq('id', user.id).single();
-  return !!profile?.is_admin;
-}
 
 function missingFn(err: { message?: string; code?: string } | null): boolean {
   if (!err) return false;
