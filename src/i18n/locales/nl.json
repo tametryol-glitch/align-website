@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Weet je je geboortetijd?",
+    "askBody": "Die bepaalt je Ascendant en je huizen. Weet je hem niet? Geen probleem — onze geboortetijd-gids helpt je hem te vinden door vragen over je leven te stellen.",
+    "yesKnow": "Ja, die weet ik",
+    "noKnow": "Nee, die weet ik niet",
+    "guideTitle": "Laten we je geboortetijd vinden",
+    "guideSubtitle": "Beantwoord een paar vragen over je leven — elk antwoord sluit mogelijke tijden uit.",
+    "cityFirst": "Nog één ding, dan neemt onze gids het over — hij heeft je geboorteplaats nodig om je tijd te bepalen.",
+    "findMyTime": "Vind mijn geboortetijd",
+    "dontKnowLink": "Weet je je geboortetijd niet? Onze gids helpt je hem te vinden",
+    "resultLabel": "Je geschatte geboortetijd",
+    "rising": "{{sign}} Ascendant",
+    "useTime": "Gebruik als mijn geboortetijd",
+    "saved": "Opgeslagen als je geboortetijd",
+    "saveFailed": "Je geboortetijd kon niet worden opgeslagen. Probeer het opnieuw.",
+    "skip": "Nu overslaan — ik doe dit later",
+    "remaining": "Nog {{count}} mogelijke tijden",
+    "answered": "{{count}} beantwoord",
+    "thinking": "Aan het nadenken…",
+    "wait": "Even geduld…",
+    "placeholder": "Typ je antwoord…",
+    "toolCity": "Je geboorteplaats opzoeken",
+    "toolDetails": "Je geboortegegevens vastleggen",
+    "toolNarrowing": "Mogelijke geboortetijden verkleinen",
+    "toolEvent": "Die gebeurtenis vastleggen",
+    "toolFinalize": "De volledige analyse uitvoeren"
   }
 }

@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Kennst du deine Geburtszeit?",
+    "askBody": "Sie bestimmt deinen Aszendenten und deine Häuser. Wenn du sie nicht kennst, kein Problem — unser Geburtszeit-Guide hilft dir, sie zu finden, indem er dir Fragen zu deinem Leben stellt.",
+    "yesKnow": "Ja, ich kenne sie",
+    "noKnow": "Nein, ich kenne sie nicht",
+    "guideTitle": "Lass uns deine Geburtszeit finden",
+    "guideSubtitle": "Beantworte ein paar Fragen zu deinem Leben — jede Antwort schließt mögliche Zeiten aus.",
+    "cityFirst": "Noch eine Sache, dann übernimmt unser Guide — er braucht deinen Geburtsort, um deine Zeit zu ermitteln.",
+    "findMyTime": "Meine Geburtszeit finden",
+    "dontKnowLink": "Du kennst deine Geburtszeit nicht? Unser Guide hilft dir, sie zu finden",
+    "resultLabel": "Deine geschätzte Geburtszeit",
+    "rising": "Aszendent {{sign}}",
+    "useTime": "Als meine Geburtszeit verwenden",
+    "saved": "Als deine Geburtszeit gespeichert",
+    "saveFailed": "Deine Geburtszeit konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "skip": "Jetzt überspringen — ich mache das später",
+    "remaining": "Noch {{count}} mögliche Zeiten",
+    "answered": "{{count}} beantwortet",
+    "thinking": "Denke nach…",
+    "wait": "Bitte warten…",
+    "placeholder": "Gib deine Antwort ein…",
+    "toolCity": "Suche deinen Geburtsort",
+    "toolDetails": "Lege deine Geburtsdaten fest",
+    "toolNarrowing": "Grenze mögliche Geburtszeiten ein",
+    "toolEvent": "Speichere dieses Ereignis",
+    "toolFinalize": "Führe die vollständige Analyse durch"
   }
 }

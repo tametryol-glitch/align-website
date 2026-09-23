@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { BigThreeCard } from '@/components/share';
 import { generateShareUrl, shareCard } from '@/lib/shareCardUtils';
 import OnboardingOffer from '@/components/OnboardingOffer';
+import { RectificationAgentChat } from '@/components/rectification/RectificationAgentChat';
 
 const STEPS = ['Welcome', 'Name', 'Birth Date', 'Birth Time', 'Location', 'Identity', 'Complete', 'Reveal', 'Share', 'Unlock'];
 
@@ -58,6 +59,13 @@ export default function OnboardingPage() {
   const [latitude, setLatitude] = useState<number | null>(profile?.latitude || null);
   const [longitude, setLongitude] = useState<number | null>(profile?.longitude || null);
   const [timezone, setTimezone] = useState(profile?.timezone || '');
+
+  // "Do you know your birth time?" — asked right after the birth date. `false`
+  // skips the time step, collects the birth city, then hands over to the
+  // birth-time guide instead of letting them finish (or quit) with no time.
+  const [timeKnown, setTimeKnown] = useState<boolean | null>(null);
+  const [askTime, setAskTime] = useState(false);
+  const [guideActive, setGuideActive] = useState(false);
 
   // Identity step (optional)
   const [gender, setGender] = useState('');
@@ -195,18 +203,23 @@ export default function OnboardingPage() {
     setStep(9);
   }
 
-  async function handleRectification() {
-    if (!birthDate) {
-      setSaveError('Please enter your birth date before using the rectification tool.');
-      return;
-    }
-    if (latitude == null || longitude == null || !timezone) {
-      setSaveError('Please select your birth city first (step 4) before using the rectification tool.');
-      return;
-    }
+  /** They don't know their time: go get the birth city, then the guide. */
+  function chooseGuide() {
+    setAskTime(false);
+    setTimeKnown(false);
+    setSaveError('');
+    setStep(4);
+  }
+
+  async function startGuide() {
     const saved = await saveProfile();
-    if (!saved) return;
-    router.push('/readings/rectification');
+    if (saved) setGuideActive(true);
+  }
+
+  function leaveGuide(time24?: string) {
+    if (time24) setBirthTime(time24);
+    setGuideActive(false);
+    setStep(5);
   }
 
   function canAdvance(): boolean {
@@ -218,9 +231,29 @@ export default function OnboardingPage() {
   }
 
   function next() {
-    if (step < STEPS.length - 1 && canAdvance()) setStep(step + 1);
+    if (!canAdvance()) return;
+    // Right after the birth date: ask whether they know their time.
+    if (step === 2 && !birthTime && timeKnown === null) {
+      setAskTime(true);
+      return;
+    }
+    if (step === 2 && !birthTime && timeKnown === false) {
+      setStep(4);
+      return;
+    }
+    if (step === 4 && !birthTime && timeKnown === false) {
+      startGuide();
+      return;
+    }
+    if (step < STEPS.length - 1) setStep(step + 1);
   }
   function prev() {
+    // They skipped the time step; go back to the date and ask again.
+    if (step === 4 && timeKnown === false && !birthTime) {
+      setTimeKnown(null);
+      setStep(2);
+      return;
+    }
     if (step > 0) setStep(step - 1);
   }
 
@@ -230,9 +263,9 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className={`w-full ${step === 9 ? 'max-w-4xl' : step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
+      <div className={`w-full ${step === 9 ? 'max-w-4xl' : guideActive ? 'max-w-2xl' : step >= 7 ? 'max-w-lg' : 'max-w-md'}`}>
         {/* Progress dots (hide on reveal and share steps) */}
-        {step < 7 && (
+        {step < 7 && !guideActive && (
           <div className="flex justify-center gap-2 mb-8">
             {STEPS.slice(0, 7).map((_, i) => (
               <div
@@ -246,8 +279,21 @@ export default function OnboardingPage() {
         )}
 
         <div className="card text-center">
+          {/* Birth-time guide — they told us they don't know their time */}
+          {guideActive && (
+            <div className="py-2 text-left">
+              <h2 className="text-xl font-display font-bold text-text-primary mb-1 text-center">
+                {t('timeGuide.guideTitle', { defaultValue: "Let's find your birth time" })}
+              </h2>
+              <p className="text-sm text-text-tertiary mb-4 text-center">
+                {t('timeGuide.guideSubtitle', { defaultValue: 'Answer a few questions about your life — each answer rules out possible times.' })}
+              </p>
+              <RectificationAgentChat onSaved={(time24) => leaveGuide(time24)} onSkip={() => leaveGuide()} />
+            </div>
+          )}
+
           {/* Step 0: Welcome */}
-          {step === 0 && (
+          {!guideActive && step === 0 && (
             <div className="py-8">
               <Image src="/logo.png" alt="Align logo" width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-6" />
               <h1 className="text-2xl font-display font-bold text-text-primary mb-3">
@@ -263,7 +309,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 1: Name */}
-          {step === 1 && (
+          {!guideActive && step === 1 && (
             <div className="py-6">
               <User className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">What&apos;s your name?</h2>
@@ -288,7 +334,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 2: Birth Date */}
-          {step === 2 && (
+          {!guideActive && step === 2 && (
             <div className="py-6">
               <div className="text-3xl mb-4">🎂</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">When were you born?</h2>
@@ -316,7 +362,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 3: Birth Time */}
-          {step === 3 && (
+          {!guideActive && step === 3 && (
             <div className="py-6">
               <Clock className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">What time were you born?</h2>
@@ -343,11 +389,11 @@ export default function OnboardingPage() {
               />
               <button
                 type="button"
-                onClick={handleRectification}
+                onClick={chooseGuide}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-colors mb-4"
               >
                 <Search className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs font-medium text-amber-400">Don&apos;t know your birth time? Use our Rectification Tool to find it</span>
+                <span className="text-xs font-medium text-amber-400">{t('timeGuide.dontKnowLink', { defaultValue: "Don't know your birth time? Our guide will help you find it" })}</span>
               </button>
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
@@ -361,7 +407,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 4: Location */}
-          {step === 4 && (
+          {!guideActive && step === 4 && (
             <div className="py-6">
               <MapPin className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">Where were you born?</h2>
@@ -374,6 +420,11 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
+              {timeKnown === false && !birthTime && (
+                <p className="text-xs text-accent-primary bg-accent-primary/10 rounded-lg px-3 py-2 mb-4">
+                  {t('timeGuide.cityFirst', { defaultValue: 'One more thing, then our birth-time guide takes over — it needs your birth city to work out your time.' })}
+                </p>
+              )}
               <div className="mb-6">
                 <CitySearch
                   value={birthLocation}
@@ -389,19 +440,24 @@ export default function OnboardingPage() {
               {latitude == null && birthLocation && (
                 <p className="text-xs text-amber-400 mb-3">Please select a city from the dropdown results</p>
               )}
+              {saveError && (
+                <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg mb-3">{saveError}</p>
+              )}
               <div className="flex gap-3">
                 <button onClick={prev} className="btn-secondary flex-1">
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={next} disabled={latitude == null || longitude == null || !timezone} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
-                  Next <ChevronRight className="w-4 h-4" />
+                <button onClick={next} disabled={latitude == null || longitude == null || !timezone || saving} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-40">
+                  {timeKnown === false && !birthTime
+                    ? t('timeGuide.findMyTime', { defaultValue: 'Find my birth time' })
+                    : 'Next'} <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           )}
 
           {/* Step 5: Identity (optional) */}
-          {step === 5 && (
+          {!guideActive && step === 5 && (
             <div className="py-6">
               <Heart className="w-10 h-10 text-accent-primary mx-auto mb-4" />
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">
@@ -463,7 +519,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 6: Complete */}
-          {step === 6 && (
+          {!guideActive && step === 6 && (
             <div className="py-8">
               <div className="text-4xl mb-4">✨</div>
               <h2 className="text-xl font-display font-bold text-text-primary mb-2">You&apos;re all set!</h2>
@@ -501,7 +557,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 7: Personality Reveal */}
-          {step === 7 && (
+          {!guideActive && step === 7 && (
             <div className="py-6 text-center">
               {/* Title */}
               <div className={`transition-all duration-700 ease-out ${revealVisible.title ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
@@ -587,7 +643,7 @@ export default function OnboardingPage() {
           )}
 
           {/* Step 8: Share Your Chart Card */}
-          {step === 8 && (
+          {!guideActive && step === 8 && (
             <div className="py-6 text-center">
               <div className="text-4xl mb-3">&#x1F4AB;</div>
               <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
@@ -669,8 +725,32 @@ export default function OnboardingPage() {
 
           {/* Step 9: Plan offer — the highest-intent moment in the funnel.
               Before this existed, referred users never saw a plan at all. */}
-          {step === 9 && <OnboardingOffer firstName={displayName.split(' ')[0]} />}
+          {!guideActive && step === 9 && <OnboardingOffer firstName={displayName.split(' ')[0]} />}
         </div>
+
+        {/* "Do you know your time of birth?" — shown right after the birth date */}
+        {askTime && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
+            <div className="card w-full max-w-sm text-center py-6">
+              <Clock className="w-10 h-10 text-accent-primary mx-auto mb-3" />
+              <h2 className="text-lg font-display font-bold text-text-primary mb-2">
+                {t('timeGuide.askTitle', { defaultValue: 'Do you know your time of birth?' })}
+              </h2>
+              <p className="text-sm text-text-tertiary mb-5">
+                {t('timeGuide.askBody', { defaultValue: "It sets your Rising sign and houses. If you don't know it, no problem — our birth-time guide will help you find it by asking about your life." })}
+              </p>
+              <button
+                onClick={() => { setAskTime(false); setTimeKnown(true); setStep(3); }}
+                className="btn-primary w-full mb-2"
+              >
+                {t('timeGuide.yesKnow', { defaultValue: 'Yes, I know it' })}
+              </button>
+              <button onClick={chooseGuide} className="btn-secondary w-full">
+                {t('timeGuide.noKnow', { defaultValue: "No, I don't know it" })}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

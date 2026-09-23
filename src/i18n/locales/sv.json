@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Vet du din födelsetid?",
+    "askBody": "Den avgör din ascendent och dina hus. Om du inte vet den är det ingen fara — vår födelsetidsguide hjälper dig att hitta den genom att fråga om ditt liv.",
+    "yesKnow": "Ja, jag vet den",
+    "noKnow": "Nej, jag vet inte",
+    "guideTitle": "Låt oss hitta din födelsetid",
+    "guideSubtitle": "Svara på några frågor om ditt liv — varje svar utesluter möjliga tider.",
+    "cityFirst": "En sak till, sedan tar vår guide över — den behöver din födelseort för att räkna ut din tid.",
+    "findMyTime": "Hitta min födelsetid",
+    "dontKnowLink": "Vet du inte din födelsetid? Vår guide hjälper dig att hitta den",
+    "resultLabel": "Din uppskattade födelsetid",
+    "rising": "{{sign}} ascendent",
+    "useTime": "Använd som min födelsetid",
+    "saved": "Sparad som din födelsetid",
+    "saveFailed": "Det gick inte att spara din födelsetid. Försök igen.",
+    "skip": "Hoppa över nu — jag gör det senare",
+    "remaining": "{{count}} möjliga tider kvar",
+    "answered": "{{count}} besvarade",
+    "thinking": "Tänker…",
+    "wait": "Vänta…",
+    "placeholder": "Skriv ditt svar…",
+    "toolCity": "Söker din födelseort",
+    "toolDetails": "Låser dina födelseuppgifter",
+    "toolNarrowing": "Smalnar av möjliga födelsetider",
+    "toolEvent": "Registrerar den händelsen",
+    "toolFinalize": "Kör hela analysen"
   }
 }

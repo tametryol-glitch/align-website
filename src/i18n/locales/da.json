@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Kender du dit fødselstidspunkt?",
+    "askBody": "Det bestemmer din ascendant og dine huse. Hvis du ikke kender det, er det intet problem — vores fødselstidsguide hjælper dig med at finde det ved at spørge ind til dit liv.",
+    "yesKnow": "Ja, jeg kender det",
+    "noKnow": "Nej, jeg kender det ikke",
+    "guideTitle": "Lad os finde dit fødselstidspunkt",
+    "guideSubtitle": "Svar på et par spørgsmål om dit liv — hvert svar udelukker mulige tidspunkter.",
+    "cityFirst": "Én ting mere, så tager vores guide over — den skal bruge din fødeby for at finde dit tidspunkt.",
+    "findMyTime": "Find mit fødselstidspunkt",
+    "dontKnowLink": "Kender du ikke dit fødselstidspunkt? Vores guide hjælper dig med at finde det",
+    "resultLabel": "Dit anslåede fødselstidspunkt",
+    "rising": "{{sign}} ascendant",
+    "useTime": "Brug som mit fødselstidspunkt",
+    "saved": "Gemt som dit fødselstidspunkt",
+    "saveFailed": "Dit fødselstidspunkt kunne ikke gemmes. Prøv igen.",
+    "skip": "Spring over for nu — jeg gør det senere",
+    "remaining": "{{count}} mulige tidspunkter tilbage",
+    "answered": "{{count}} besvaret",
+    "thinking": "Tænker…",
+    "wait": "Vent venligst…",
+    "placeholder": "Skriv dit svar…",
+    "toolCity": "Slår din fødeby op",
+    "toolDetails": "Fastlægger dine fødselsdata",
+    "toolNarrowing": "Indsnævrer mulige fødselstidspunkter",
+    "toolEvent": "Registrerer den begivenhed",
+    "toolFinalize": "Kører den fulde analyse"
   }
 }

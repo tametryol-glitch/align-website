@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Doğum saatini biliyor musun?",
+    "askBody": "Yükselen burcunu ve evlerini belirler. Bilmiyorsan sorun değil — doğum saati rehberimiz hayatınla ilgili sorular sorarak onu bulmana yardım edecek.",
+    "yesKnow": "Evet, biliyorum",
+    "noKnow": "Hayır, bilmiyorum",
+    "guideTitle": "Doğum saatini bulalım",
+    "guideSubtitle": "Hayatınla ilgili birkaç soruyu yanıtla — her yanıt olası saatleri eler.",
+    "cityFirst": "Bir şey daha, sonra rehberimiz devralıyor — saatini hesaplamak için doğduğun şehre ihtiyacı var.",
+    "findMyTime": "Doğum saatimi bul",
+    "dontKnowLink": "Doğum saatini bilmiyor musun? Rehberimiz bulmana yardım eder",
+    "resultLabel": "Tahmini doğum saatin",
+    "rising": "Yükselen {{sign}}",
+    "useTime": "Bunu doğum saatim olarak kullan",
+    "saved": "Doğum saatin olarak kaydedildi",
+    "saveFailed": "Doğum saatin kaydedilemedi. Lütfen tekrar dene.",
+    "skip": "Şimdilik atla — sonra yaparım",
+    "remaining": "{{count}} olası saat kaldı",
+    "answered": "{{count}} yanıtlandı",
+    "thinking": "Düşünüyorum…",
+    "wait": "Lütfen bekle…",
+    "placeholder": "Yanıtını yaz…",
+    "toolCity": "Doğduğun şehir aranıyor",
+    "toolDetails": "Doğum bilgilerin kaydediliyor",
+    "toolNarrowing": "Olası doğum saatleri daraltılıyor",
+    "toolEvent": "Bu olay kaydediliyor",
+    "toolFinalize": "Tam analiz çalıştırılıyor"
   }
 }

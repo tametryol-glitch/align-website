@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Connaissez-vous votre heure de naissance ?",
+    "askBody": "Elle détermine votre Ascendant et vos maisons. Si vous ne la connaissez pas, pas de souci — notre guide de l'heure de naissance vous aidera à la retrouver en vous posant des questions sur votre vie.",
+    "yesKnow": "Oui, je la connais",
+    "noKnow": "Non, je ne la connais pas",
+    "guideTitle": "Trouvons votre heure de naissance",
+    "guideSubtitle": "Répondez à quelques questions sur votre vie — chaque réponse élimine des heures possibles.",
+    "cityFirst": "Encore une chose, puis notre guide prend le relais — il a besoin de votre ville de naissance pour calculer votre heure.",
+    "findMyTime": "Trouver mon heure de naissance",
+    "dontKnowLink": "Vous ne connaissez pas votre heure de naissance ? Notre guide vous aide à la trouver",
+    "resultLabel": "Votre heure de naissance estimée",
+    "rising": "Ascendant {{sign}}",
+    "useTime": "Utiliser comme mon heure de naissance",
+    "saved": "Enregistrée comme votre heure de naissance",
+    "saveFailed": "Impossible d'enregistrer votre heure de naissance. Veuillez réessayer.",
+    "skip": "Passer pour l'instant — je le ferai plus tard",
+    "remaining": "{{count}} heures possibles restantes",
+    "answered": "{{count}} réponses",
+    "thinking": "Réflexion…",
+    "wait": "Veuillez patienter…",
+    "placeholder": "Tapez votre réponse…",
+    "toolCity": "Recherche de votre ville de naissance",
+    "toolDetails": "Enregistrement de vos données de naissance",
+    "toolNarrowing": "Réduction des heures possibles",
+    "toolEvent": "Enregistrement de cet événement",
+    "toolFinalize": "Analyse complète en cours"
   }
 }

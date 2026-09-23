@@ -3284,5 +3284,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Do you know your time of birth?",
+    "askBody": "It sets your Rising sign and houses. If you don't know it, no problem — our birth-time guide will help you find it by asking about your life.",
+    "yesKnow": "Yes, I know it",
+    "noKnow": "No, I don't know it",
+    "guideTitle": "Let's find your birth time",
+    "guideSubtitle": "Answer a few questions about your life — each answer rules out possible times.",
+    "cityFirst": "One more thing, then our birth-time guide takes over — it needs your birth city to work out your time.",
+    "findMyTime": "Find my birth time",
+    "dontKnowLink": "Don't know your birth time? Our guide will help you find it",
+    "resultLabel": "Your estimated birth time",
+    "rising": "{{sign}} rising",
+    "useTime": "Use this as my birth time",
+    "saved": "Saved as your birth time",
+    "saveFailed": "Could not save your birth time. Please try again.",
+    "skip": "Skip for now — I'll do this later",
+    "remaining": "{{count}} possible times left",
+    "answered": "{{count}} answered",
+    "thinking": "Thinking…",
+    "wait": "Please wait…",
+    "placeholder": "Type your answer…",
+    "toolCity": "Looking up your birth city",
+    "toolDetails": "Locking in your birth details",
+    "toolNarrowing": "Narrowing possible birth times",
+    "toolEvent": "Recording that event",
+    "toolFinalize": "Running the full analysis"
   }
 }

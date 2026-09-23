@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Conosci il tuo orario di nascita?",
+    "askBody": "Determina il tuo Ascendente e le tue case. Se non lo conosci, nessun problema: la nostra guida all'orario di nascita ti aiuterà a trovarlo facendoti domande sulla tua vita.",
+    "yesKnow": "Sì, lo conosco",
+    "noKnow": "No, non lo conosco",
+    "guideTitle": "Troviamo il tuo orario di nascita",
+    "guideSubtitle": "Rispondi ad alcune domande sulla tua vita: ogni risposta esclude orari possibili.",
+    "cityFirst": "Un'ultima cosa, poi la nostra guida prende il comando: le serve la tua città di nascita per calcolare l'orario.",
+    "findMyTime": "Trova il mio orario di nascita",
+    "dontKnowLink": "Non conosci il tuo orario di nascita? La nostra guida ti aiuta a trovarlo",
+    "resultLabel": "Il tuo orario di nascita stimato",
+    "rising": "Ascendente {{sign}}",
+    "useTime": "Usa come mio orario di nascita",
+    "saved": "Salvato come tuo orario di nascita",
+    "saveFailed": "Impossibile salvare il tuo orario di nascita. Riprova.",
+    "skip": "Salta per ora — lo farò più tardi",
+    "remaining": "{{count}} orari possibili rimasti",
+    "answered": "{{count}} risposte",
+    "thinking": "Sto pensando…",
+    "wait": "Attendi…",
+    "placeholder": "Scrivi la tua risposta…",
+    "toolCity": "Cerco la tua città di nascita",
+    "toolDetails": "Registro i tuoi dati di nascita",
+    "toolNarrowing": "Restringo gli orari possibili",
+    "toolEvent": "Registro questo evento",
+    "toolFinalize": "Eseguo l'analisi completa"
   }
 }

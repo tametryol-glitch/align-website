@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Você sabe o seu horário de nascimento?",
+    "askBody": "Ele define seu Ascendente e suas casas. Se você não sabe, tudo bem — nosso guia de horário de nascimento vai ajudar você a descobrir, perguntando sobre sua vida.",
+    "yesKnow": "Sim, eu sei",
+    "noKnow": "Não, não sei",
+    "guideTitle": "Vamos descobrir seu horário de nascimento",
+    "guideSubtitle": "Responda algumas perguntas sobre sua vida — cada resposta descarta horários possíveis.",
+    "cityFirst": "Só mais uma coisa e nosso guia assume — ele precisa da sua cidade de nascimento para calcular seu horário.",
+    "findMyTime": "Descobrir meu horário",
+    "dontKnowLink": "Não sabe seu horário de nascimento? Nosso guia ajuda você a descobrir",
+    "resultLabel": "Seu horário de nascimento estimado",
+    "rising": "Ascendente em {{sign}}",
+    "useTime": "Usar como meu horário de nascimento",
+    "saved": "Salvo como seu horário de nascimento",
+    "saveFailed": "Não foi possível salvar seu horário de nascimento. Tente novamente.",
+    "skip": "Pular por agora — faço isso depois",
+    "remaining": "{{count}} horários possíveis restantes",
+    "answered": "{{count}} respondidas",
+    "thinking": "Pensando…",
+    "wait": "Aguarde…",
+    "placeholder": "Digite sua resposta…",
+    "toolCity": "Procurando sua cidade de nascimento",
+    "toolDetails": "Registrando seus dados de nascimento",
+    "toolNarrowing": "Reduzindo os horários possíveis",
+    "toolEvent": "Registrando esse evento",
+    "toolFinalize": "Executando a análise completa"
   }
 }

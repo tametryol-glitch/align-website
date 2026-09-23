@@ -3237,5 +3237,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "你知道自己的出生时间吗？",
+    "askBody": "出生时间决定你的上升星座和宫位。如果不知道也没关系——我们的出生时间向导会通过询问你的人生经历帮你找到它。",
+    "yesKnow": "是的，我知道",
+    "noKnow": "不，我不知道",
+    "guideTitle": "一起找出你的出生时间",
+    "guideSubtitle": "回答几个关于你人生的问题——每个回答都会排除一些可能的时间。",
+    "cityFirst": "还差一步，然后向导接手——它需要你的出生城市来推算时间。",
+    "findMyTime": "找出我的出生时间",
+    "dontKnowLink": "不知道出生时间？我们的向导帮你找到它",
+    "resultLabel": "你的估算出生时间",
+    "rising": "上升{{sign}}",
+    "useTime": "设为我的出生时间",
+    "saved": "已保存为你的出生时间",
+    "saveFailed": "无法保存你的出生时间，请重试。",
+    "skip": "暂时跳过——稍后再做",
+    "remaining": "剩余 {{count}} 个可能时间",
+    "answered": "已回答 {{count}} 个",
+    "thinking": "思考中…",
+    "wait": "请稍候…",
+    "placeholder": "输入你的回答…",
+    "toolCity": "正在查找你的出生城市",
+    "toolDetails": "正在确定你的出生资料",
+    "toolNarrowing": "正在缩小可能的出生时间",
+    "toolEvent": "正在记录该事件",
+    "toolFinalize": "正在运行完整分析"
   }
 }

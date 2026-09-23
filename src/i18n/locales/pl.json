@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Czy znasz swoją godzinę urodzenia?",
+    "askBody": "Wyznacza ona Twój Ascendent i domy. Jeśli jej nie znasz, nic nie szkodzi — nasz przewodnik po godzinie urodzenia pomoże Ci ją ustalić, pytając o Twoje życie.",
+    "yesKnow": "Tak, znam ją",
+    "noKnow": "Nie, nie znam",
+    "guideTitle": "Ustalmy Twoją godzinę urodzenia",
+    "guideSubtitle": "Odpowiedz na kilka pytań o swoje życie — każda odpowiedź wyklucza możliwe godziny.",
+    "cityFirst": "Jeszcze jedno i przewodnik przejmuje stery — potrzebuje Twojego miasta urodzenia, by ustalić godzinę.",
+    "findMyTime": "Znajdź moją godzinę urodzenia",
+    "dontKnowLink": "Nie znasz godziny urodzenia? Nasz przewodnik pomoże Ci ją znaleźć",
+    "resultLabel": "Twoja szacowana godzina urodzenia",
+    "rising": "Ascendent w {{sign}}",
+    "useTime": "Użyj jako mojej godziny urodzenia",
+    "saved": "Zapisano jako Twoją godzinę urodzenia",
+    "saveFailed": "Nie udało się zapisać godziny urodzenia. Spróbuj ponownie.",
+    "skip": "Pomiń na razie — zrobię to później",
+    "remaining": "Pozostało możliwych godzin: {{count}}",
+    "answered": "Odpowiedzi: {{count}}",
+    "thinking": "Myślę…",
+    "wait": "Proszę czekać…",
+    "placeholder": "Wpisz odpowiedź…",
+    "toolCity": "Szukam Twojego miasta urodzenia",
+    "toolDetails": "Zapisuję Twoje dane urodzenia",
+    "toolNarrowing": "Zawężam możliwe godziny urodzenia",
+    "toolEvent": "Zapisuję to wydarzenie",
+    "toolFinalize": "Wykonuję pełną analizę"
   }
 }

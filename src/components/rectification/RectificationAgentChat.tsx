@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import { createClient } from '@/lib/supabase';
+import { indexMyPlacements } from '@/lib/cosmicIndexService';
 import { Send, Sparkles, RotateCcw, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useSpeechInput } from '@/lib/voice/useSpeechInput';
 import { useStreamingSpeech } from '@/lib/voice/useStreamingSpeech';
@@ -34,9 +36,24 @@ const TOOL_LABELS: Record<string, string> = {
   finalize_birth_time: 'Running the full analysis',
 };
 
-export function RectificationAgentChat() {
-  const { i18n } = useTranslation();
+/**
+ * `onSaved` fires after the user saves the found time to their profile.
+ * `onSkip` renders a "skip for now" link (used inside onboarding).
+ */
+export function RectificationAgentChat({
+  onSaved,
+  onSkip,
+}: {
+  onSaved?: (time24: string) => void;
+  onSkip?: () => void;
+} = {}) {
+  const { t, i18n } = useTranslation();
   const profile = useAuthStore((s) => s.profile);
+  const user = useAuthStore((s) => s.user);
+  const setProfile = useAuthStore((s) => s.setProfile);
+  const [saving, setSaving] = useState(false);
+  const [savedTime, setSavedTime] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState('');
@@ -218,6 +235,33 @@ export function RectificationAgentChat() {
 
   const answered = Object.keys(state?.answers || {}).length;
 
+  const time24: string = result?.final_result?.best_rectified_time_24h || '';
+
+  /** Write the engine's time to profiles.birth_time — before this, a finished
+   *  rectification was shown and then lost; nothing ever saved it. */
+  const saveTime = async () => {
+    if (!user || !/^\d{2}:\d{2}/.test(time24) || saving) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const { data, error: dbError } = await createClient()
+        .from('profiles')
+        .update({ birth_time: time24 })
+        .eq('id', user.id)
+        .select()
+        .single();
+      if (dbError || !data) throw dbError || new Error('No row updated');
+      setProfile(data);
+      indexMyPlacements().catch(() => {});
+      setSavedTime(time24);
+      onSaved?.(time24);
+    } catch {
+      setSaveError(t('timeGuide.saveFailed', { defaultValue: 'Could not save your birth time. Please try again.' }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-13rem)] min-h-[28rem]">
       {/* Progress strip */}
@@ -307,6 +351,24 @@ export function RectificationAgentChat() {
                   : ''}
               </p>
             )}
+            {time24 && (
+              savedTime === time24 ? (
+                <p className="mt-3 text-sm font-medium text-green-400">
+                  {t('timeGuide.saved', { defaultValue: 'Saved as your birth time' })}
+                </p>
+              ) : (
+                <button
+                  onClick={saveTime}
+                  disabled={saving}
+                  className="btn-primary w-full mt-3 disabled:opacity-50"
+                >
+                  {saving
+                    ? t('editProfile.saving', { defaultValue: 'Saving…' })
+                    : t('timeGuide.useTime', { defaultValue: 'Use this as my birth time' })}
+                </button>
+              )
+            )}
+            {saveError && <p className="mt-2 text-xs text-red-400">{saveError}</p>}
           </div>
         )}
 
@@ -394,6 +456,12 @@ export function RectificationAgentChat() {
           <Send className="w-4 h-4" />
         </button>
       </form>
+
+      {onSkip && (
+        <button onClick={onSkip} className="btn-ghost w-full mt-2 text-sm text-text-muted">
+          {t('timeGuide.skip', { defaultValue: "Skip for now — I'll do this later" })}
+        </button>
+      )}
     </div>
   );
 }

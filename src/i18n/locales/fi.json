@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "Tiedätkö syntymäaikasi?",
+    "askBody": "Se määrää nousevan merkkisi ja huoneesi. Jos et tiedä sitä, ei hätää — syntymäaikaoppaamme auttaa löytämään sen kysymällä elämästäsi.",
+    "yesKnow": "Kyllä, tiedän",
+    "noKnow": "En tiedä",
+    "guideTitle": "Etsitään syntymäaikasi",
+    "guideSubtitle": "Vastaa muutamaan kysymykseen elämästäsi — jokainen vastaus sulkee pois mahdollisia aikoja.",
+    "cityFirst": "Vielä yksi asia, sitten oppaamme jatkaa — se tarvitsee syntymäkaupunkisi laskeakseen aikasi.",
+    "findMyTime": "Etsi syntymäaikani",
+    "dontKnowLink": "Etkö tiedä syntymäaikaasi? Oppaamme auttaa löytämään sen",
+    "resultLabel": "Arvioitu syntymäaikasi",
+    "rising": "Nouseva {{sign}}",
+    "useTime": "Käytä syntymäaikanani",
+    "saved": "Tallennettu syntymäajaksesi",
+    "saveFailed": "Syntymäaikaasi ei voitu tallentaa. Yritä uudelleen.",
+    "skip": "Ohita nyt — teen tämän myöhemmin",
+    "remaining": "{{count}} mahdollista aikaa jäljellä",
+    "answered": "{{count}} vastattu",
+    "thinking": "Mietin…",
+    "wait": "Odota hetki…",
+    "placeholder": "Kirjoita vastauksesi…",
+    "toolCity": "Haetaan syntymäkaupunkiasi",
+    "toolDetails": "Tallennetaan syntymätietojasi",
+    "toolNarrowing": "Rajataan mahdollisia syntymäaikoja",
+    "toolEvent": "Kirjataan tapahtuma",
+    "toolFinalize": "Suoritetaan koko analyysi"
   }
 }

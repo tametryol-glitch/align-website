@@ -3234,5 +3234,32 @@
       "bf_lily": "Lily",
       "af_sky": "Sky"
     }
+  },
+  "timeGuide": {
+    "askTitle": "태어난 시간을 알고 계신가요?",
+    "askBody": "태어난 시간은 상승궁과 하우스를 결정합니다. 모르셔도 괜찮아요 — 출생 시간 가이드가 당신의 삶에 대해 질문하며 찾도록 도와드립니다.",
+    "yesKnow": "네, 알아요",
+    "noKnow": "아니요, 몰라요",
+    "guideTitle": "태어난 시간을 찾아봐요",
+    "guideSubtitle": "삶에 관한 몇 가지 질문에 답해 주세요 — 답할 때마다 가능한 시간이 줄어듭니다.",
+    "cityFirst": "하나만 더 입력하면 가이드가 이어받습니다 — 시간을 계산하려면 출생 도시가 필요해요.",
+    "findMyTime": "내 출생 시간 찾기",
+    "dontKnowLink": "태어난 시간을 모르세요? 가이드가 찾도록 도와드려요",
+    "resultLabel": "추정 출생 시간",
+    "rising": "{{sign}} 상승궁",
+    "useTime": "내 출생 시간으로 사용",
+    "saved": "출생 시간으로 저장됨",
+    "saveFailed": "출생 시간을 저장하지 못했습니다. 다시 시도해 주세요.",
+    "skip": "지금은 건너뛰기 — 나중에 할게요",
+    "remaining": "가능한 시간 {{count}}개 남음",
+    "answered": "{{count}}개 답변함",
+    "thinking": "생각 중…",
+    "wait": "잠시만 기다려 주세요…",
+    "placeholder": "답변을 입력하세요…",
+    "toolCity": "출생 도시 찾는 중",
+    "toolDetails": "출생 정보 확정 중",
+    "toolNarrowing": "가능한 출생 시간 좁히는 중",
+    "toolEvent": "그 사건 기록 중",
+    "toolFinalize": "전체 분석 실행 중"
   }
 }
