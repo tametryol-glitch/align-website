@@ -19,6 +19,7 @@ import { ArrowLeft, RefreshCw, Search, X, Crown } from 'lucide-react';
 import {
   AnalyticsTabs, AccessDenied, Loading, Card, Stat, StatGrid, Table, MigrationNotice, fmt,
 } from '../_shared';
+import { KpiChart } from '@/components/admin/KpiChart';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,6 +118,14 @@ function ageBand(birth: string | null | undefined): string {
 
 const PLATFORM: Record<string, string> = { web: 'Web', ios: 'iPhone', android: 'Android' };
 
+/** Compact axis label for durations: 45s, 12m, 3h. */
+function axisTime(ms: number): string {
+  const s = ms / 1000;
+  if (s >= 3600) return `${+(s / 3600).toFixed(1)}h`;
+  if (s >= 60) return `${Math.round(s / 60)}m`;
+  return `${Math.round(s)}s`;
+}
+
 // ── Pieces ───────────────────────────────────────────────────────────────────
 
 function Avatar({ url, name, size = 28 }: { url: string | null | undefined; name: string; size?: number }) {
@@ -130,40 +139,6 @@ function Avatar({ url, name, size = 28 }: { url: string | null | undefined; name
     >
       {(name || '?').slice(0, 1).toUpperCase()}
     </span>
-  );
-}
-
-/** One-series bar chart. Hover a bar for the exact time. */
-function Bars({ points, height = 120 }: { points: { key: string; label: string; ms: number; sub?: string }[]; height?: number }) {
-  const [hover, setHover] = useState<number | null>(null);
-  if (!points.length) return <p className="text-xs text-text-muted py-6 text-center">No time recorded yet.</p>;
-  const max = Math.max(...points.map((p) => p.ms), 1);
-  const h = hover != null ? points[hover] : null;
-  return (
-    <div>
-      <div className="h-5 text-[11px] text-text-muted tabular-nums">
-        {h ? <><span className="text-text-primary font-semibold">{hms(h.ms)}</span> · {h.label}{h.sub ? ` · ${h.sub}` : ''}</> : 'Hover a bar for the exact time'}
-      </div>
-      <div className="flex items-end gap-[2px] border-b border-border-primary" style={{ height }} onMouseLeave={() => setHover(null)}>
-        {points.map((p, i) => (
-          <div
-            key={p.key}
-            className="flex-1 h-full flex items-end cursor-default"
-            onMouseEnter={() => setHover(i)}
-            title={`${p.label}: ${hms(p.ms)}`}
-          >
-            <div
-              className={`w-full rounded-t-[4px] transition-colors ${hover === i ? 'bg-accent-primary' : 'bg-accent-primary/60'}`}
-              style={{ height: p.ms > 0 ? `${Math.max(2, (p.ms / max) * 100)}%` : 0 }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-between text-[10px] text-text-muted mt-1">
-        <span>{points[0].label}</span>
-        <span>{points[points.length - 1].label}</span>
-      </div>
-    </div>
   );
 }
 
@@ -289,17 +264,31 @@ function MemberPanel({ userId, onClose }: { userId: string; onClose: () => void 
         <Stat label="Platforms" value={(t.platforms || []).map((x) => PLATFORM[x.label] || x.label).join(' · ') || '—'} />
       </StatGrid>
 
-      <Card title="Daily — last 60 days" hint="UTC days. Hover a bar for the exact time.">
-        <Bars points={daily} />
-      </Card>
+      <KpiChart
+        title="Daily — last 60 days (UTC)"
+        valueLabel="average per day"
+        points={daily.map((d) => ({ date: d.key, value: d.ms }))}
+        format={hms}
+        axisFormat={axisTime}
+      />
 
       <div className="grid md:grid-cols-2 gap-4">
-        <Card title="Weekly — last 12 weeks" hint="Weeks start Monday.">
-          <Bars points={weekly} height={100} />
-        </Card>
-        <Card title="Monthly — all time">
-          <Bars points={monthly} height={100} />
-        </Card>
+        <KpiChart
+          title="Weekly — last 12 weeks (from Monday)"
+          valueLabel="average per week"
+          points={weekly.map((w) => ({ date: w.key, value: w.ms }))}
+          format={hms}
+          axisFormat={axisTime}
+          height={130}
+        />
+        <KpiChart
+          title="Monthly — all time"
+          valueLabel="average per month"
+          points={monthly.map((m) => ({ date: m.key, value: m.ms }))}
+          format={hms}
+          axisFormat={axisTime}
+          height={130}
+        />
       </div>
 
       <Card title="Where they spend their time" hint="Sections ranked by time. Share = part of their total in this window.">
@@ -508,9 +497,13 @@ export default function TimeInAppPage() {
             <Stat label="Median member" value={hms(o.median_ms)} sub="half spend more, half less" />
           </StatGrid>
 
-          <Card title={`Total time per day · ${rangeLabel}`} hint="All members combined. UTC days.">
-            <Bars points={daily} />
-          </Card>
+          <KpiChart
+            title={`Total time per day · ${rangeLabel} (all members, UTC)`}
+            valueLabel="average per day"
+            points={daily.map((d) => ({ date: d.key, value: d.ms }))}
+            format={hms}
+            axisFormat={axisTime}
+          />
 
           <Card title={`Top members · ${rangeLabel}`} hint="Your most engaged members. Click a row for their full history.">
             <Table

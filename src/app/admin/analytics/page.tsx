@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
 import { AnalyticsTabs } from './_shared';
+import { KpiChart, KpiGrid } from '@/components/admin/KpiChart';
 import {
   Shield, BarChart3, Loader2, RefreshCw, Globe2, Languages,
   Users, Radio, TrendingUp, MousePointerClick, ArrowLeft, Sparkles,
@@ -116,52 +117,6 @@ function BarRow({ label, value, max, hint, share }: { label: React.ReactNode; va
       </div>
       <div className="h-2 bg-bg-tertiary rounded-full overflow-hidden">
         <div className="h-full bg-gradient-to-r from-accent-primary to-purple-500 rounded-full" style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-// DAU chart with area fill, hover points (native tooltip) and value labels.
-function DauChart({ rows }: { rows: TrendRow[] }) {
-  if (rows.length === 0) return <p className="text-xs text-text-muted py-6 text-center">No activity yet.</p>;
-  const data = rows.map(r => r.dau);
-  const max = Math.max(...data, 1);
-  const W = 100, H = 44;
-  const step = data.length > 1 ? W / (data.length - 1) : W;
-  const xy = (v: number, i: number) => [i * step, H - (v / max) * (H - 6) - 3] as [number, number];
-  const pts = data.map((v, i) => xy(v, i));
-  const line = pts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
-  const area = `0,${H} ${line} ${W},${H}`;
-  const last = data[data.length - 1];
-  const peak = Math.max(...data);
-
-  return (
-    <div className="relative">
-      <div className="flex items-end justify-between mb-1">
-        <div>
-          <span className="text-3xl font-extrabold text-text-primary">{fmt(last)}</span>
-          <span className="text-xs text-text-muted ml-2">today</span>
-        </div>
-        <span className="text-[11px] text-text-muted">peak {fmt(peak)}</span>
-      </div>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-24">
-        <defs>
-          <linearGradient id="dauFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.25" className="text-accent-primary" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0" className="text-accent-primary" />
-          </linearGradient>
-        </defs>
-        <polygon points={area} fill="url(#dauFill)" className="text-accent-primary" />
-        <polyline points={line} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-primary" vectorEffect="non-scaling-stroke" />
-        {pts.map((p, i) => (
-          <circle key={i} cx={p[0]} cy={p[1]} r="1.6" className="text-accent-primary" fill="currentColor" vectorEffect="non-scaling-stroke">
-            <title>{rows[i].day}: {rows[i].dau} active</title>
-          </circle>
-        ))}
-      </svg>
-      <div className="flex justify-between text-[10px] text-text-muted mt-1">
-        <span>{rows[0]?.day || ''}</span>
-        <span>{rows[rows.length - 1]?.day || ''}</span>
       </div>
     </div>
   );
@@ -558,14 +513,39 @@ export default function AnalyticsAdminPage() {
             <Stat label="Stickiness (DAU/MAU)" value={live.mau ? `${Math.round(((live.dau || 0) / live.mau) * 100)}%` : '—'} />
           </div>
 
-          {/* DAU trend */}
-          <div className="bg-bg-secondary rounded-xl p-5 border border-border-primary">
-            <div className="flex items-center gap-2 mb-2">
+          {/* KPI trends */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-accent-primary" />
-              <h2 className="text-sm font-bold text-text-primary">Daily active users — last {range} days</h2>
-              <Delta pct={deltas?.dauAvg} />
+              <h2 className="text-sm font-bold text-text-primary">KPI trends — last {range} days</h2>
             </div>
-            <DauChart rows={trend} />
+            <KpiGrid>
+              <KpiChart
+                title="Daily active users"
+                delta={deltas?.dauAvg}
+                points={trend.map((r) => ({ date: r.day, value: r.dau }))}
+              />
+              <KpiChart
+                title="New members"
+                value={fmt(newUsers)}
+                valueLabel="total"
+                delta={deltas?.newUsers}
+                points={trend.map((r) => ({ date: r.day, value: r.new_users }))}
+              />
+              <KpiChart
+                title="Sessions"
+                value={fmt(sessions)}
+                valueLabel="total"
+                delta={deltas?.sessions}
+                points={trend.map((r) => ({ date: r.day, value: r.sessions }))}
+              />
+              <KpiChart
+                title="Avg session length"
+                points={trend.map((r) => ({ date: r.day, value: r.avg_session_sec }))}
+                format={(v) => `${Math.floor(v / 60)}m ${String(Math.round(v % 60)).padStart(2, '0')}s`}
+                axisFormat={(v) => `${Math.round(v / 60)}m`}
+              />
+            </KpiGrid>
           </div>
 
           {/* Money & growth: revenue + traffic */}
