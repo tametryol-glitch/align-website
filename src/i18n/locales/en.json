@@ -1142,6 +1142,7 @@
     "filters": {
       "all": "All",
       "social": "Social",
+      "messages": "Messages",
       "cosmic": "Cosmic",
       "system": "System"
     },
@@ -1149,7 +1150,9 @@
       "all": "No notifications yet",
       "allHint": "Your cosmic alerts and social updates will appear here.",
       "social": "No social notifications",
-      "socialHint": "Friend requests, messages, and reactions will show up here.",
+      "socialHint": "Friend requests, comments, and reactions will show up here.",
+      "messages": "No message notifications",
+      "messagesHint": "New direct messages will show up here.",
       "cosmic": "No cosmic alerts",
       "cosmicHint": "Transit alerts and cosmic events will appear here.",
       "system": "No system notifications",

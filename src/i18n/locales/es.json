@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "Todas",
       "social": "Social",
+      "messages": "Mensajes",
       "cosmic": "Cosmico",
       "system": "Sistema"
     },
@@ -1147,7 +1148,9 @@
       "all": "Sin notificaciones aun",
       "allHint": "Tus alertas cosmicas y actualizaciones sociales apareceran aqui.",
       "social": "Sin notificaciones sociales",
-      "socialHint": "Solicitudes de amistad, mensajes y reacciones apareceran aqui.",
+      "socialHint": "Las solicitudes de amistad, comentarios y reacciones aparecerán aquí.",
+      "messages": "No hay notificaciones de mensajes",
+      "messagesHint": "Los nuevos mensajes directos aparecerán aquí.",
       "cosmic": "Sin alertas cosmicas",
       "cosmicHint": "Alertas de transitos y eventos cosmicos apareceran aqui.",
       "system": "Sin notificaciones del sistema",

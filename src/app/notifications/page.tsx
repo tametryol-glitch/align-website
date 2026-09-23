@@ -40,17 +40,18 @@ interface NotificationGroup {
   isRead: boolean;
 }
 
-type TabFilter = 'all' | 'social' | 'cosmic' | 'system';
+type TabFilter = 'all' | 'social' | 'messages' | 'cosmic' | 'system';
 
-const TYPE_CATEGORIES: Record<string, 'social' | 'cosmic' | 'system'> = {
+const TYPE_CATEGORIES: Record<string, Exclude<TabFilter, 'all'>> = {
   friend_request: 'social',
   friend_accepted: 'social',
   reaction: 'social',
   like: 'social',
   comment: 'social',
   mention: 'social',
-  message: 'social',
-  new_message: 'social',
+  // Messages get their own tab so a long chat doesn't bury feed comments.
+  message: 'messages',
+  new_message: 'messages',
   follow: 'social',
   story_reaction: 'social',
   cosmic_alert: 'cosmic',
@@ -97,6 +98,7 @@ const NOTIFICATION_ICONS: Record<string, any> = {
 const TABS: { key: TabFilter; labelKey: string }[] = [
   { key: 'all', labelKey: 'notifications.filters.all' },
   { key: 'social', labelKey: 'notifications.filters.social' },
+  { key: 'messages', labelKey: 'notifications.filters.messages' },
   { key: 'cosmic', labelKey: 'notifications.filters.cosmic' },
   { key: 'system', labelKey: 'notifications.filters.system' },
 ];
@@ -111,6 +113,11 @@ const EMPTY_STATES: Record<TabFilter, { icon: any; titleKey: string; subtitleKey
     icon: Heart,
     titleKey: 'notifications.empty.social',
     subtitleKey: 'notifications.empty.socialHint',
+  },
+  messages: {
+    icon: MessageCircle,
+    titleKey: 'notifications.empty.messages',
+    subtitleKey: 'notifications.empty.messagesHint',
   },
   cosmic: {
     icon: Zap,

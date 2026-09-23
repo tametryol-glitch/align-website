@@ -1275,6 +1275,7 @@ export default function FeedPage() {
             postOwnerId={commentPost?.userId || ''}
             userId={userId}
             highlightCommentId={highlightCommentId}
+            showPost={!!highlightCommentId}
             onClose={() => { setCommentPostId(null); setHighlightCommentId(null); }}
             onCommentCountChange={(pid, delta) => {
               setPosts(prev => prev.map(p =>

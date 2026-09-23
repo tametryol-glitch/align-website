@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "Kaikki",
       "social": "Sosiaaliset",
+      "messages": "Viestit",
       "cosmic": "Kosmiset",
       "system": "Jarjestelma"
     },
@@ -1147,7 +1148,9 @@
       "all": "Ei ilmoituksia viela",
       "allHint": "Kosmiset halytyksesi ja sosiaaliset paivityksesi nakyvat taalla.",
       "social": "Ei sosiaalisia ilmoituksia",
-      "socialHint": "Ystavapyynnot, viestit ja reaktiot nakyvat taalla.",
+      "socialHint": "Kaveripyynnöt, kommentit ja reaktiot näkyvät täällä.",
+      "messages": "Ei viesti-ilmoituksia",
+      "messagesHint": "Uudet yksityisviestit näkyvät täällä.",
       "cosmic": "Ei kosmisia halytyksia",
       "cosmicHint": "Transittihalytykset ja kosmiset tapahtumat nakyvat taalla.",
       "system": "Ei jarjestelmailmoituksia",

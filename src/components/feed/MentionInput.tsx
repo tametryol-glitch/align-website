@@ -8,7 +8,7 @@
  * Used by the post composer and the comment box.
  */
 
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
 import {
   applyMention, getMentionQuery, searchMentionUsers, stripMentionMarkup,
@@ -21,6 +21,8 @@ export function MentionInput({
   placeholder,
   multiline = false,
   rows = 4,
+  autoGrow = false,
+  maxHeight = 160,
   maxLength,
   className,
   wrapperClassName,
@@ -36,6 +38,12 @@ export function MentionInput({
   placeholder?: string;
   multiline?: boolean;
   rows?: number;
+  /**
+   * One-line textarea that grows with its content up to `maxHeight` px, then
+   * scrolls — so wrapped text stays visible while typing (comment boxes).
+   */
+  autoGrow?: boolean;
+  maxHeight?: number;
   maxLength?: number;
   className?: string;
   /** Sizing for the positioned wrapper (e.g. "flex-1" inside a flex row). */
@@ -106,6 +114,17 @@ export function MentionInput({
     }
   }
 
+  // Resize the auto-grow textarea to fit its content on every change.
+  useLayoutEffect(() => {
+    if (!autoGrow) return;
+    const el = ref.current as HTMLTextAreaElement | null;
+    if (!el) return;
+    el.style.height = 'auto';
+    const next = Math.min(el.scrollHeight, maxHeight);
+    el.style.height = `${next}px`;
+    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+  }, [value, autoGrow, maxHeight]);
+
   const shared = {
     ref: ref as any,
     value,
@@ -124,7 +143,9 @@ export function MentionInput({
 
   return (
     <div className={cn('relative', wrapperClassName || 'w-full')}>
-      {multiline ? <textarea {...shared} rows={rows} /> : <input {...shared} />}
+      {autoGrow
+        ? <textarea {...shared} rows={1} style={{ resize: 'none', ...style }} />
+        : multiline ? <textarea {...shared} rows={rows} /> : <input {...shared} />}
 
       {query && results.length > 0 && (
         <div

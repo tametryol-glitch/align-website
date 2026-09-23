@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
-  addComment, getComments, getReplies, getCommentParentId, deleteComment, editComment,
-  type FeedComment, type CommentScope,
+  addComment, getComments, getReplies, getCommentParentId, deleteComment, editComment, getPostPreview,
+  type FeedComment, type CommentScope, type PostPreview,
 } from '@/lib/feedService';
 import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
 import { isGifOrStickerUrl } from '@/components/feed/FeedCard';
@@ -28,6 +28,7 @@ export function CommentSheet({
   postOwnerId,
   userId,
   highlightCommentId,
+  showPost = false,
   scope = 'post',
   canModerate = false,
   onClose,
@@ -38,6 +39,12 @@ export function CommentSheet({
   userId: string;
   /** Scroll to and highlight this comment once loaded (notification deep-link) */
   highlightCommentId?: string | null;
+  /**
+   * Show the post itself above the comments. Used when the sheet opens from a
+   * notification, so the reader sees what the comment is about without
+   * hunting for the post in the feed.
+   */
+  showPost?: boolean;
   /** Which comment table to read/write — feed posts or community posts. */
   scope?: CommentScope;
   /** Community owners/admins moderate any comment in their community. */
@@ -61,6 +68,14 @@ export function CommentSheet({
   const [replyingTo, setReplyingTo] = useState<FeedComment | null>(null);
   const [editing, setEditing] = useState<{ id: string; text: string } | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [post, setPost] = useState<PostPreview | null>(null);
+
+  useEffect(() => {
+    if (!showPost || scope !== 'post') { setPost(null); return; }
+    let cancelled = false;
+    getPostPreview(postId).then((p) => { if (!cancelled) setPost(p); });
+    return () => { cancelled = true; };
+  }, [postId, scope, showPost]);
 
   useEffect(() => {
     setLoading(true);
@@ -276,6 +291,7 @@ export function CommentSheet({
                 onChange={(next) => setEditing({ id: c.id, text: next })}
                 excludeUserId={userId}
                 menuPlacement="below"
+                autoGrow
                 autoFocus
                 maxLength={500}
                 className="input w-full !py-2 text-sm"
@@ -342,6 +358,29 @@ export function CommentSheet({
 
         {/* Comments list */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+          {post && (
+            <div className="rounded-xl border border-border-primary bg-bg-card p-3">
+              <div className="flex items-center gap-2">
+                <Link href={`/user/${post.userId}`} className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {post.userAvatar ? (
+                    <img src={post.userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-bold text-accent-primary">{post.userName[0]?.toUpperCase()}</span>
+                  )}
+                </Link>
+                <Link href={`/user/${post.userId}`} className="text-sm font-semibold text-text-primary hover:underline truncate">{post.userName}</Link>
+                <span className="text-xs text-text-muted flex-shrink-0">{timeAgo(post.createdAt)}</span>
+              </div>
+              {post.content && (
+                <p className="text-sm text-text-secondary mt-2 whitespace-pre-wrap break-words">{renderRichText(post.content)}</p>
+              )}
+              {post.videoUrl ? (
+                <video src={post.videoUrl} poster={post.posterUrl} controls playsInline className="mt-2 w-full max-h-72 rounded-lg bg-black" />
+              ) : post.imageUrl ? (
+                <img src={post.imageUrl} alt="" className="mt-2 w-full max-h-72 rounded-lg object-contain bg-black/20" />
+              ) : null}
+            </div>
+          )}
           {loading && <p className="text-text-muted text-sm text-center py-8">{t('common.loading')}</p>}
           {!loading && comments.length === 0 && (
             <p className="text-text-muted text-sm text-center py-8">{t('components.commentSheet.beFirst')}</p>
@@ -380,7 +419,7 @@ export function CommentSheet({
             onClose={() => setShowGifPicker(false)}
             onSelect={handleGifSelect}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-end gap-2">
             <button
               onClick={() => setShowGifPicker(!showGifPicker)}
               className={cn(
@@ -397,6 +436,7 @@ export function CommentSheet({
               onEnterSubmit={handleSend}
               excludeUserId={userId}
               menuPlacement="above"
+              autoGrow
               placeholder={replyingTo
                 ? `Reply to ${replyingTo.userName}…`
                 : t('components.commentSheet.placeholder')}

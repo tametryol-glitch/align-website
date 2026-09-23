@@ -682,6 +682,47 @@ async function hydrateComments(rows: any[]): Promise<FeedComment[]> {
   });
 }
 
+/** The slice of a post the comment sheet shows above its comments. */
+export interface PostPreview {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  content: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  posterUrl?: string;
+  createdAt: string;
+}
+
+/**
+ * One post by id, for the comment sheet's post header. Fetched on its own so
+ * a comment notification can show the post even when it's older than the
+ * loaded feed page. Null when the post is gone or not visible to this user.
+ */
+export async function getPostPreview(postId: string): Promise<PostPreview | null> {
+  const supabase = createClient();
+  const { data: p, error } = await supabase
+    .from('posts')
+    .select('id, user_id, content, image_url, video_url, poster_url, created_at, profile:profiles!posts_user_id_fkey(display_name, avatar_url)')
+    .eq('id', postId)
+    .eq('is_deleted', false)
+    .maybeSingle();
+  if (error || !p) return null;
+  const profile = (p as any).profile;
+  return {
+    id: p.id,
+    userId: p.user_id,
+    userName: profile?.display_name || 'User',
+    userAvatar: profile?.avatar_url || undefined,
+    content: p.content || '',
+    imageUrl: p.image_url || undefined,
+    videoUrl: p.video_url || undefined,
+    posterUrl: p.poster_url || undefined,
+    createdAt: p.created_at,
+  };
+}
+
 /** Top-level comments on a post, oldest first. Replies load on demand. */
 export async function getComments(postId: string, scope: CommentScope = 'post'): Promise<FeedComment[]> {
   const supabase = createClient();

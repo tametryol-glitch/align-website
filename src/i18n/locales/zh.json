@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "全部",
       "social": "社交",
+      "messages": "消息",
       "cosmic": "宇宙",
       "system": "系统"
     },
@@ -1147,7 +1148,9 @@
       "all": "还没有通知",
       "allHint": "你的宇宙提醒和社交动态将显示在这里。",
       "social": "没有社交通知",
-      "socialHint": "好友请求、消息和回应将显示在这里。",
+      "socialHint": "好友请求、评论和互动回应将显示在这里。",
+      "messages": "暂无消息通知",
+      "messagesHint": "新的私信将显示在这里。",
       "cosmic": "没有宇宙提醒",
       "cosmicHint": "行运提醒和宇宙事件将显示在这里。",
       "system": "没有系统通知",

@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "Tumua",
       "social": "Sosyal",
+      "messages": "Mesajlar",
       "cosmic": "Kozmik",
       "system": "Sistem"
     },
@@ -1147,7 +1148,9 @@
       "all": "Henuz bildirim yok",
       "allHint": "Kozmik uyarilariniz ve sosyal guncellemeleriniz burada gorunecek.",
       "social": "Sosyal bildirim yok",
-      "socialHint": "Arkadas istekleri, mesajlar ve tepkiler burada gosterilecek.",
+      "socialHint": "Arkadaşlık istekleri, yorumlar ve tepkiler burada görünecek.",
+      "messages": "Mesaj bildirimi yok",
+      "messagesHint": "Yeni doğrudan mesajlar burada görünecek.",
       "cosmic": "Kozmik uyari yok",
       "cosmicHint": "Transit uyarilari ve kozmik olaylar burada gorunecek.",
       "system": "Sistem bildirimi yok",

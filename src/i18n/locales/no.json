@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "Alle",
       "social": "Sosialt",
+      "messages": "Meldinger",
       "cosmic": "Kosmisk",
       "system": "System"
     },
@@ -1147,7 +1148,9 @@
       "all": "Ingen varsler ennå",
       "allHint": "Dine kosmiske varsler og sosiale oppdateringer vises her.",
       "social": "Ingen sosiale varsler",
-      "socialHint": "Venneforespørsler, meldinger og reaksjoner vises her.",
+      "socialHint": "Venneforespørsler, kommentarer og reaksjoner vises her.",
+      "messages": "Ingen meldingsvarsler",
+      "messagesHint": "Nye direktemeldinger vises her.",
       "cosmic": "Ingen kosmiske varsler",
       "cosmicHint": "Transittvarsler og kosmiske hendelser vises her.",
       "system": "Ingen systemvarsler",

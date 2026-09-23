@@ -1140,6 +1140,7 @@
     "filters": {
       "all": "Alle",
       "social": "Sociaal",
+      "messages": "Berichten",
       "cosmic": "Kosmisch",
       "system": "Systeem"
     },
@@ -1147,7 +1148,9 @@
       "all": "Nog geen meldingen",
       "allHint": "Je kosmische waarschuwingen en sociale updates verschijnen hier.",
       "social": "Geen sociale meldingen",
-      "socialHint": "Vriendschapsverzoeken, berichten en reacties verschijnen hier.",
+      "socialHint": "Vriendschapsverzoeken, reacties en emoji-reacties verschijnen hier.",
+      "messages": "Geen berichtmeldingen",
+      "messagesHint": "Nieuwe directe berichten verschijnen hier.",
       "cosmic": "Geen kosmische waarschuwingen",
       "cosmicHint": "Transitwaarschuwingen en kosmische events verschijnen hier.",
       "system": "Geen systeemmeldingen",
