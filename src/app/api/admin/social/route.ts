@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { OFFICIAL_ACCOUNTS, isOfficialAccountId } from '@/lib/officialAccounts';
+import { getRequestUser } from '@/lib/adminAuth';
 
 const OFFICIAL_IDS = OFFICIAL_ACCOUNTS.map((a) => a.id);
 
@@ -33,7 +34,7 @@ function getAuthClient(req: NextRequest) {
 
 async function verifyAdmin(req: NextRequest) {
   const supabase = getAuthClient(req);
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return null;
 
   const admin = getAdminClient();

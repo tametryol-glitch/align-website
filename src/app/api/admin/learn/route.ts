@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
+import { getRequestUser } from '@/lib/adminAuth';
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,7 +26,7 @@ function getAuthClient(req: NextRequest) {
 
 async function verifyAdmin(req: NextRequest) {
   const supabase = getAuthClient(req);
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return null;
 
   const admin = getAdminClient();

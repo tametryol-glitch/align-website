@@ -17,6 +17,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { randomUUID } from 'crypto';
 import { isValidCategory } from '@/lib/audioCategories';
+import { getRequestUser } from '@/lib/adminAuth';
 
 const BUCKET = 'cosmic-videos';
 
@@ -43,7 +44,7 @@ function getAuthClient(req: NextRequest) {
 
 async function verifyAdmin(req: NextRequest) {
   const supabase = getAuthClient(req);
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return null;
 
   const admin = getAdminClient();

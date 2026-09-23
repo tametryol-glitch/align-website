@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
+import { bearerToken, getRequestUser } from '@/lib/adminAuth';
 
 /**
  * Thin proxy to the generator in align-api-v2.
@@ -37,7 +38,15 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    const { data: { session } } = await supabase.auth.getSession();
+    // App admin sends its token as Bearer; web admin uses the cookie session.
+    const appToken = bearerToken(req);
+    const appUser = appToken ? await getRequestUser(req) : null;
+    const { data: { session: cookieSession } } = appToken
+      ? { data: { session: null } }
+      : await supabase.auth.getSession();
+    const session = appUser && appToken
+      ? { user: appUser, access_token: appToken }
+      : cookieSession;
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

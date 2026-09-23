@@ -9,7 +9,7 @@
 // =============================================================================
 
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type User } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 
 export function getServiceClient() {
@@ -19,14 +19,23 @@ export function getServiceClient() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-/** The signed-in user's id (cookie or Bearer), or null. Does NOT check admin. */
-export async function getRequestUserId(req: NextRequest): Promise<string | null> {
+/** The Bearer token the app sent, if any. */
+export function bearerToken(req: NextRequest): string | null {
   const auth = req.headers.get('authorization');
-  if (auth?.toLowerCase().startsWith('bearer ')) {
-    const token = auth.slice(7).trim();
-    if (!token) return null;
+  if (!auth?.toLowerCase().startsWith('bearer ')) return null;
+  return auth.slice(7).trim() || null;
+}
+
+/**
+ * The signed-in Supabase user (cookie or Bearer), or null. Does NOT check
+ * admin. Returns the same User object the cookie path always returned, so
+ * existing callers can swap it in unchanged.
+ */
+export async function getRequestUser(req: NextRequest): Promise<User | null> {
+  const token = bearerToken(req);
+  if (token) {
     const { data, error } = await getServiceClient().auth.getUser(token);
-    return error || !data.user ? null : data.user.id;
+    return error ? null : data.user ?? null;
   }
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,7 +49,12 @@ export async function getRequestUserId(req: NextRequest): Promise<string | null>
     },
   );
   const { data: { user } } = await supabase.auth.getUser();
-  return user?.id ?? null;
+  return user ?? null;
+}
+
+/** The signed-in user's id (cookie or Bearer), or null. Does NOT check admin. */
+export async function getRequestUserId(req: NextRequest): Promise<string | null> {
+  return (await getRequestUser(req))?.id ?? null;
 }
 
 /** The admin's user id, or null if the caller is not a signed-in admin. */

@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { randomUUID } from 'crypto';
+import { getRequestUser } from '@/lib/adminAuth';
 
 const BUCKET = 'post-media';
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
@@ -39,7 +40,7 @@ function getAuthClient(req: NextRequest) {
 
 async function verifyAdmin(req: NextRequest) {
   const supabase = getAuthClient(req);
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return null;
 
   const admin = getAdminClient();

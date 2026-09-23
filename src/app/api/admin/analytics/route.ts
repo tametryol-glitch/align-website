@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
+import { getRequestUser } from '@/lib/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,7 +39,7 @@ async function verifyAdmin(req: NextRequest): Promise<boolean> {
       },
     },
   );
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return false;
   const admin = getAdminClient();
   const { data: profile } = await admin.from('profiles').select('is_admin').eq('id', user.id).single();

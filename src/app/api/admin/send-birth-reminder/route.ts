@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { sendEmail } from '@/lib/emailService';
 import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
+import { getRequestUser } from '@/lib/adminAuth';
 
 export const maxDuration = 60;
 
@@ -64,7 +65,7 @@ async function isAdmin(req: NextRequest): Promise<boolean> {
       },
     },
   );
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return false;
   const admin = getAdminClient();
   const { data } = await admin.from('profiles').select('is_admin').eq('id', user.id).single();

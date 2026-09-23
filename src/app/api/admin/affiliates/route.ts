@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { sendEmail } from '@/lib/emailService';
 import { EMAIL_TEMPLATES } from '@/lib/emailTemplates';
+import { getRequestUser } from '@/lib/adminAuth';
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,7 +24,7 @@ async function verifyAdmin(req: NextRequest): Promise<string | null> {
       },
     },
   );
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getRequestUser(req);
   if (!user) return null;
   const admin = getAdminClient();
   const { data: profile } = await admin.from('profiles').select('is_admin').eq('id', user.id).single();
