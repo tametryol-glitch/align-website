@@ -62,3 +62,24 @@ describe('getNotificationLink — people you follow', () => {
     expect(getNotificationLink({ type: 'announcement', data: {} })).toBe('/settings');
   });
 });
+
+/**
+ * Story reactions used to share the post branch, which looks for post_id —
+ * a story reaction never has one, so it always dropped you on a bare /feed.
+ * The feed's story rail opens the frame from ?story=.
+ */
+describe('getNotificationLink — story reactions', () => {
+  it('opens the reacted-to story on the feed', () => {
+    expect(getNotificationLink({ type: 'story_reaction', data: { story_id: 's1', emoji: '🔥' } }))
+      .toBe('/feed?story=s1');
+  });
+
+  it('falls back to the feed when the story id is missing', () => {
+    expect(getNotificationLink({ type: 'story_reaction', data: {} })).toBe('/feed');
+    expect(getNotificationLink({ type: 'story_reaction' })).toBe('/feed');
+  });
+
+  it('ignores a post_id on a story reaction', () => {
+    expect(getNotificationLink({ type: 'story_reaction', data: { post_id: 'p1' } })).toBe('/feed');
+  });
+});

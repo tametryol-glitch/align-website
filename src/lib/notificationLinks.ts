@@ -27,8 +27,7 @@ export function getNotificationLink(n: LinkableNotification): string {
     case 'reaction':
     case 'like':
     case 'comment':
-    case 'mention':
-    case 'story_reaction': {
+    case 'mention': {
       // Deep-link to the exact post (and comment) the notification is about.
       const postId = n.data?.post_id;
       if (!postId) return '/feed';
@@ -37,6 +36,10 @@ export function getNotificationLink(n: LinkableNotification): string {
         ? `/feed?postId=${postId}&commentId=${commentId}`
         : `/feed?postId=${postId}`;
     }
+    case 'story_reaction':
+      // Someone reacted to YOUR story. The feed's story rail opens the frame
+      // from ?story=; if it has already expired you just land on the feed.
+      return n.data?.story_id ? `/feed?story=${n.data.story_id}` : '/feed';
     case 'message':
     case 'new_message':
       // /messages is a single page that opens a thread from ?conversation= —

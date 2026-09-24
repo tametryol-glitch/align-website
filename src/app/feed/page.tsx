@@ -15,6 +15,7 @@ import { ImpressionSlot } from '@/components/feed/ImpressionSlot';
 import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { LiveRail } from '@/components/feed/LiveRail';
+import { StoryRail } from '@/components/stories/StoryRail';
 import { getLiveEligibility } from '@/lib/liveService';
 import { MentionInput } from '@/components/feed/MentionInput';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio } from 'lucide-react';
@@ -1099,6 +1100,9 @@ export default function FeedPage() {
           </button>
         </div>
       </div>
+
+      {/* Stories: your bubble + people you follow / friends with a live story. */}
+      <StoryRail />
 
       {/* Renders nothing unless someone is actually broadcasting. */}
       <LiveRail />
