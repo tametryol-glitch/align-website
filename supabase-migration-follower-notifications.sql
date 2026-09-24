@@ -205,6 +205,14 @@ END;
 $fn$;
 
 
+-- Internal only. Postgres grants EXECUTE to PUBLIC by default, which exposed
+-- this as /rest/v1/rpc/fan_out_to_audience: anyone with the anon key could
+-- send any title to any author's followers. The triggers run it as its owner
+-- (SECURITY DEFINER), so revoking from API roles does not affect them.
+REVOKE ALL ON FUNCTION public.fan_out_to_audience(UUID, TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, INTERVAL, TEXT, TEXT)
+  FROM PUBLIC, anon, authenticated;
+
+
 -- ── 5. "X shared a new post" ─────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION public.notify_followers_new_post()
 RETURNS TRIGGER
