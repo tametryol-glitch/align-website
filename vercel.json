@@ -35,6 +35,10 @@
     {
       "path": "/api/cron/call-sweep",
       "schedule": "10 * * * *"
+    },
+    {
+      "path": "/api/cron/story-cleanup",
+      "schedule": "40 * * * *"
     }
   ]
 }
