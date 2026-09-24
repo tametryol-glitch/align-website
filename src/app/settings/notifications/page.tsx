@@ -8,7 +8,7 @@ import {
   MessageCircle, Users, Megaphone, CalendarDays,
   ClipboardList, Shield, Zap, Sun, BadgeCheck,
   ChevronDown, Eclipse, RotateCcw, ArrowRightLeft,
-  Timer, Triangle, Circle, Hexagon,
+  Timer, Triangle, Circle, Hexagon, UserPlus, Radio,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -22,6 +22,9 @@ interface NotificationPreferences {
     messages: boolean;
     reactions: boolean;
     comments: boolean;
+    newFollowers: boolean;
+    followedPosts: boolean;
+    followedLive: boolean;
   };
   cosmic: {
     frequency: 'essential' | 'important' | 'all';
@@ -83,6 +86,9 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     messages: true,
     reactions: true,
     comments: true,
+    newFollowers: true,
+    followedPosts: true,
+    followedLive: true,
   },
   cosmic: {
     frequency: 'important',
@@ -258,6 +264,30 @@ export default function NotificationSettingsPage() {
       .from('profiles')
       .update({ notification_preferences: newPrefs })
       .eq('id', user.id);
+    // The push trigger and the follower fan-out read notification_preferences,
+    // not the profile JSON above — without this the social toggles did nothing.
+    // Legacy push_* columns are written too: the trigger mutes if EITHER is false.
+    await supabase
+      .from('notification_preferences')
+      .upsert({
+        user_id: user.id,
+        friend_requests: newPrefs.social.friendRequests,
+        push_friend_requests: newPrefs.social.friendRequests,
+        messages: newPrefs.social.messages,
+        push_messages: newPrefs.social.messages,
+        likes: newPrefs.social.reactions,
+        push_likes: newPrefs.social.reactions,
+        comments: newPrefs.social.comments,
+        push_comments: newPrefs.social.comments,
+        new_followers: newPrefs.social.newFollowers,
+        followed_posts: newPrefs.social.followedPosts,
+        followed_live: newPrefs.social.followedLive,
+        announcements: newPrefs.announcements,
+        quiet_hours_enabled: newPrefs.quietHours.enabled,
+        quiet_hours_start: newPrefs.quietHours.start,
+        quiet_hours_end: newPrefs.quietHours.end,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
   }, [user]);
 
   const updatePrefs = useCallback((updater: (prev: NotificationPreferences) => NotificationPreferences) => {
@@ -284,14 +314,50 @@ export default function NotificationSettingsPage() {
         return;
       }
       const supabase = createClient();
-      const { data } = await supabase
-        .from('profiles')
-        .select('notification_preferences')
-        .eq('id', user.id)
-        .single();
-      if (data?.notification_preferences) {
-        setPrefs({ ...DEFAULT_PREFERENCES, ...data.notification_preferences });
+      const [{ data }, { data: gate }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('notification_preferences')
+          .eq('id', user.id)
+          .single(),
+        // What the push trigger actually enforces — may have been set from the app.
+        supabase
+          .from('notification_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+      ]);
+      const stored = data?.notification_preferences || {};
+      const next: NotificationPreferences = {
+        ...DEFAULT_PREFERENCES,
+        ...stored,
+        // Shallow spread would drop social keys added after the JSON was saved.
+        social: { ...DEFAULT_PREFERENCES.social, ...(stored.social || {}) },
+      };
+      if (gate) {
+        const on = (...vals: any[]) => vals.every(v => v !== false);
+        next.social = {
+          ...next.social,
+          friendRequests: on(gate.friend_requests, gate.push_friend_requests),
+          messages: on(gate.messages, gate.push_messages),
+          reactions: on(gate.likes, gate.push_likes),
+          comments: on(gate.comments, gate.push_comments),
+          newFollowers: on(gate.new_followers),
+          followedPosts: on(gate.followed_posts),
+          followedLive: on(gate.followed_live),
+        };
+        next.announcements = on(gate.announcements);
+        // The app stores bare hours ("23"); the selects here expect "23:00".
+        const hhmm = (v: any, fallback: string) =>
+          v ? `${String(v).split(':')[0].padStart(2, '0')}:00` : fallback;
+        next.quietHours = {
+          ...next.quietHours,
+          enabled: gate.quiet_hours_enabled === true,
+          start: hhmm(gate.quiet_hours_start, next.quietHours.start),
+          end: hhmm(gate.quiet_hours_end, next.quietHours.end),
+        };
       }
+      setPrefs(next);
       setLoaded(true);
     }
     load();
@@ -353,6 +419,9 @@ export default function NotificationSettingsPage() {
               <ToggleRow icon={MessageCircle} label="Messages" description="New direct messages from friends" enabled={prefs.social.messages} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, messages: !p.social.messages } }))} />
               <ToggleRow icon={Heart} label="Reactions" description="When someone reacts to your posts" enabled={prefs.social.reactions} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, reactions: !p.social.reactions } }))} />
               <ToggleRow icon={MessageCircle} label="Comments" description="When someone comments on your posts" enabled={prefs.social.comments} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, comments: !p.social.comments } }))} />
+              <ToggleRow icon={UserPlus} label="New Followers" description="When someone starts following you" enabled={prefs.social.newFollowers} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, newFollowers: !p.social.newFollowers } }))} />
+              <ToggleRow icon={Sparkles} label="Posts From People You Follow" description="When someone you follow shares a post or reel" enabled={prefs.social.followedPosts} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedPosts: !p.social.followedPosts } }))} />
+              <ToggleRow icon={Radio} label="Live From People You Follow" description="When someone you follow starts a live stream" enabled={prefs.social.followedLive} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedLive: !p.social.followedLive } }))} />
             </div>
           )}
         </SectionCard>

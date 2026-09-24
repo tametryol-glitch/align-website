@@ -43,3 +43,22 @@ describe('getNotificationLink — messages', () => {
     expect(getNotificationLink({ type: 'new_message', data: {} })).toBe('/messages');
   });
 });
+
+describe('getNotificationLink — people you follow', () => {
+  it('opens the exact post a followed account just shared', () => {
+    expect(getNotificationLink({ type: 'new_post', data: { post_id: 'p1' } })).toBe('/feed?postId=p1');
+  });
+
+  it('sends a new reel to the reels page', () => {
+    expect(getNotificationLink({ type: 'new_post', data: { reel_id: 'r1' } })).toBe('/reels');
+  });
+
+  it('opens the stream for a live_started announcement', () => {
+    expect(getNotificationLink({ type: 'announcement', data: { kind: 'live_started', session_id: 's1' } }))
+      .toBe('/live/s1');
+  });
+
+  it('keeps other announcements on settings', () => {
+    expect(getNotificationLink({ type: 'announcement', data: {} })).toBe('/settings');
+  });
+});

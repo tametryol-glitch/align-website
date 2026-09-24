@@ -457,16 +457,10 @@ export default function GoLivePage() {
       // The preview is attached by the effect below, not here: this runs
       // while the setup screen is still mounted, so the stage container
       // does not exist yet and play() would silently do nothing.
+      // Followers and friends are notified by the trg_notify_live_started
+      // database trigger on this status change — for web and app alike.
       await startLiveSession(session.id);
       setStage('live');
-
-      // Tell friends. Deliberately not awaited into the critical path:
-      // a failed notification must never take down a working broadcast.
-      fetch('/api/live/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: session.id }),
-      }).catch(() => {});
     } catch (err: any) {
       setError(err?.message || 'Could not start the broadcast.');
       setStage('setup');

@@ -20,6 +20,10 @@ export function getNotificationLink(n: LinkableNotification): string {
       return n.actor_id ? `/user/${n.actor_id}` : '/friends';
     case 'follow':
       return n.actor_id ? `/user/${n.actor_id}` : '/friends';
+    case 'new_post':
+      // Someone you follow posted. Reels have no per-reel web route yet.
+      if (n.data?.reel_id) return '/reels';
+      return n.data?.post_id ? `/feed?postId=${n.data.post_id}` : '/feed';
     case 'reaction':
     case 'like':
     case 'comment':
@@ -66,6 +70,8 @@ export function getNotificationLink(n: LinkableNotification): string {
     case 'system':
       return '/dashboard';
     case 'announcement':
+      // "X is live" rides on this type with data.kind = 'live_started'.
+      if (n.data?.kind === 'live_started' && n.data?.session_id) return `/live/${n.data.session_id}`;
       return '/settings';
     case 'account':
     case 'subscription':
