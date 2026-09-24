@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Acotando las horas posibles",
     "toolEvent": "Registrando ese evento",
     "toolFinalize": "Ejecutando el análisis completo"
+  },
+  "stories": {
+    "rail": "Historias",
+    "add": "Añadir a tu historia",
+    "viewYours": "Ver tu historia",
+    "yourStory": "Tu historia",
+    "viewOf": "Ver la historia de {{name}}",
+    "someone": "Alguien",
+    "now": "ahora",
+    "create": {
+      "title": "Nueva historia",
+      "media": "Foto / Vídeo",
+      "text": "Texto",
+      "textPlaceholder": "Escribe algo…",
+      "remove": "Quitar",
+      "choose": "Elige una foto o un vídeo",
+      "videoLimit": "Vídeos de hasta {{max}} s",
+      "caption": "Añade un pie de foto (opcional)",
+      "public": "Pública",
+      "friends": "Solo amigos",
+      "uploading": "Subiendo…",
+      "posting": "Publicando…",
+      "post": "Compartir en la historia",
+      "expires": "Desaparece a las 24 horas"
+    },
+    "errors": {
+      "type": "Elige una foto o un vídeo",
+      "readVideo": "No se pudo leer este vídeo",
+      "tooLong": "Los vídeos pueden durar hasta {{max}} segundos; este dura {{len}} s",
+      "post": "No se pudo publicar tu historia. Inténtalo de nuevo.",
+      "textTooLong": "No superes los {{max}} caracteres",
+      "empty": "Escribe algo primero",
+      "imageType": "Usa una imagen JPG, PNG, GIF o WebP",
+      "videoMax": "Los vídeos pueden durar hasta {{max}} segundos"
+    },
+    "viewer": {
+      "seenBy": "Visto por {{count}}",
+      "reacted": "Reaccionaste con {{emoji}}",
+      "reactWith": "Reaccionar con {{emoji}}",
+      "confirmReact": "¿Enviar {{emoji}} a {{name}}?",
+      "send": "Enviar",
+      "confirmDelete": "¿Eliminar esta historia? No se puede deshacer.",
+      "noViews": "Aún no hay visualizaciones",
+      "reactFailed": "No se pudo enviar tu reacción",
+      "viewersFailed": "No se pudieron cargar los espectadores",
+      "deleteFailed": "No se pudo eliminar esta historia",
+      "play": "Reproducir",
+      "pause": "Pausar",
+      "mute": "Silenciar",
+      "unmute": "Activar sonido"
+    },
+    "reply": {
+      "placeholder": "Responder a {{name}}…",
+      "label": "Responder a esta historia",
+      "sent": "Enviado",
+      "failed": "No se pudo enviar tu respuesta",
+      "youReplied": "Respondiste a su historia",
+      "repliedToYours": "Respondió a tu historia",
+      "unavailable": "La historia ya no está disponible"
+    }
   }
 }

@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Smalnar av möjliga födelsetider",
     "toolEvent": "Registrerar den händelsen",
     "toolFinalize": "Kör hela analysen"
+  },
+  "stories": {
+    "rail": "Stories",
+    "add": "Lägg till i din story",
+    "viewYours": "Visa din story",
+    "yourStory": "Din story",
+    "viewOf": "Visa story från {{name}}",
+    "someone": "Någon",
+    "now": "nu",
+    "create": {
+      "title": "Ny story",
+      "media": "Foto / Video",
+      "text": "Text",
+      "textPlaceholder": "Skriv något…",
+      "remove": "Ta bort",
+      "choose": "Välj ett foto eller en video",
+      "videoLimit": "Videor upp till {{max}} s",
+      "caption": "Lägg till en bildtext (valfritt)",
+      "public": "Offentlig",
+      "friends": "Endast vänner",
+      "uploading": "Laddar upp…",
+      "posting": "Publicerar…",
+      "post": "Dela i story",
+      "expires": "Försvinner efter 24 timmar"
+    },
+    "errors": {
+      "type": "Välj ett foto eller en video",
+      "readVideo": "Den här videon kunde inte läsas",
+      "tooLong": "Videor får vara upp till {{max}} sekunder – den här är {{len}} s",
+      "post": "Din story kunde inte publiceras. Försök igen.",
+      "textTooLong": "Håll dig under {{max}} tecken",
+      "empty": "Skriv något först",
+      "imageType": "Använd en JPG-, PNG-, GIF- eller WebP-bild",
+      "videoMax": "Videor får vara upp till {{max}} sekunder"
+    },
+    "viewer": {
+      "seenBy": "Sedd av {{count}}",
+      "reacted": "Du reagerade med {{emoji}}",
+      "reactWith": "Reagera med {{emoji}}",
+      "confirmReact": "Skicka {{emoji}} till {{name}}?",
+      "send": "Skicka",
+      "confirmDelete": "Radera den här storyn? Det går inte att ångra.",
+      "noViews": "Inga visningar än",
+      "reactFailed": "Din reaktion kunde inte skickas",
+      "viewersFailed": "Tittarna kunde inte laddas",
+      "deleteFailed": "Den här storyn kunde inte raderas",
+      "play": "Spela upp",
+      "pause": "Pausa",
+      "mute": "Stäng av ljud",
+      "unmute": "Slå på ljud"
+    },
+    "reply": {
+      "placeholder": "Svara {{name}}…",
+      "label": "Svara på den här storyn",
+      "sent": "Skickat",
+      "failed": "Ditt svar kunde inte skickas",
+      "youReplied": "Du svarade på deras story",
+      "repliedToYours": "Svarade på din story",
+      "unavailable": "Storyn är inte längre tillgänglig"
+    }
   }
 }

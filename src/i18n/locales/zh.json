@@ -3264,5 +3264,65 @@
     "toolNarrowing": "正在缩小可能的出生时间",
     "toolEvent": "正在记录该事件",
     "toolFinalize": "正在运行完整分析"
+  },
+  "stories": {
+    "rail": "快拍",
+    "add": "添加到你的快拍",
+    "viewYours": "查看你的快拍",
+    "yourStory": "你的快拍",
+    "viewOf": "查看{{name}}的快拍",
+    "someone": "某人",
+    "now": "刚刚",
+    "create": {
+      "title": "新快拍",
+      "media": "照片 / 视频",
+      "text": "文字",
+      "textPlaceholder": "写点什么…",
+      "remove": "移除",
+      "choose": "选择照片或视频",
+      "videoLimit": "视频最长 {{max}} 秒",
+      "caption": "添加说明（可选）",
+      "public": "公开",
+      "friends": "仅好友",
+      "uploading": "正在上传…",
+      "posting": "正在发布…",
+      "post": "分享到快拍",
+      "expires": "24 小时后消失"
+    },
+    "errors": {
+      "type": "请选择照片或视频",
+      "readVideo": "无法读取此视频",
+      "tooLong": "视频最长 {{max}} 秒——此视频为 {{len}} 秒",
+      "post": "无法发布你的快拍，请重试。",
+      "textTooLong": "请控制在 {{max}} 个字符以内",
+      "empty": "请先写点内容",
+      "imageType": "请使用 JPG、PNG、GIF 或 WebP 图片",
+      "videoMax": "视频最长 {{max}} 秒"
+    },
+    "viewer": {
+      "seenBy": "{{count}} 人看过",
+      "reacted": "你回应了 {{emoji}}",
+      "reactWith": "用 {{emoji}} 回应",
+      "confirmReact": "向{{name}}发送 {{emoji}}？",
+      "send": "发送",
+      "confirmDelete": "删除这条快拍？此操作无法撤销。",
+      "noViews": "暂无浏览",
+      "reactFailed": "无法发送你的回应",
+      "viewersFailed": "无法加载浏览者",
+      "deleteFailed": "无法删除这条快拍",
+      "play": "播放",
+      "pause": "暂停",
+      "mute": "静音",
+      "unmute": "取消静音"
+    },
+    "reply": {
+      "placeholder": "回复{{name}}…",
+      "label": "回复这条快拍",
+      "sent": "已发送",
+      "failed": "无法发送你的回复",
+      "youReplied": "你回复了对方的快拍",
+      "repliedToYours": "回复了你的快拍",
+      "unavailable": "快拍已不可用"
+    }
   }
 }

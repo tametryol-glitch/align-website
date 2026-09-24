@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { X, Volume2, VolumeX, Pause, Play, Eye, Trash2, Loader2, Users } from 'lucide-react';
+import { X, Volume2, VolumeX, Pause, Play, Eye, Trash2, Loader2, Users, Send, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
-  markStoryViewed, reactToStory, getStoryViewers, deleteStory, storyDurationMs, storyTimeAgo,
-  STORY_REACTIONS, type StoryGroup, type StoryViewer as StoryViewerRow,
+  markStoryViewed, reactToStory, getStoryViewers, deleteStory, storyDurationMs, storyTimeAgo, replyToStory,
+  STORY_REACTIONS, STORY_REPLY_MAX_CHARS, type StoryGroup, type StoryViewer as StoryViewerRow,
 } from '@/lib/storyService';
 
 /** A press shorter than this is a tap (navigate); longer is a hold (pause). */
@@ -63,17 +63,25 @@ export function StoryViewer({
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [tabHidden, setTabHidden] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [replyFocused, setReplyFocused] = useState(false);
+  const [replySending, setReplySending] = useState(false);
+  const [replySent, setReplySent] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const elapsedRef = useRef(0);
   const pressStartRef = useRef(0);
   const viewedRef = useRef<Set<string>>(new Set());
   const changedRef = useRef(false);
+  const replyInputRef = useRef<HTMLInputElement>(null);
+  const replySentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const group = groups[gi];
   const story = group?.stories[si];
   const isOwn = !!group && group.user_id === myId;
-  const paused = holding || userPaused || viewersOpen || confirmDelete || deleting || !!pendingEmoji || tabHidden;
+  const paused = holding || userPaused || viewersOpen || confirmDelete || deleting || !!pendingEmoji || tabHidden
+    || replyFocused || replySending;
 
   const close = useCallback(() => {
     if (changedRef.current) onChanged();
@@ -105,7 +113,12 @@ export function StoryViewer({
     setViewers(null);
     setConfirmDelete(false);
     setDeleteError(null);
+    setReplyText('');
+    setReplyError(null);
+    setReplySent(false);
   }, [story?.id, story?.type]);
+
+  useEffect(() => () => { if (replySentTimerRef.current) clearTimeout(replySentTimerRef.current); }, []);
 
   // Mark viewed as soon as a frame is shown (not for your own).
   useEffect(() => {
@@ -205,10 +218,32 @@ export function StoryViewer({
       setSentEmoji((m) => ({ ...m, [story.id]: pendingEmoji }));
       setPendingEmoji(null);
     } catch (e: any) {
-      setReactError(e?.message || t('stories.viewer.reactFailed', 'Could not send your reaction'));
+      console.warn('[Stories]', e?.message);
+      setReactError(t('stories.viewer.reactFailed', 'Could not send your reaction'));
     } finally {
       setSending(false);
     }
+  }
+
+  async function sendReply() {
+    if (!story || !group || isOwn || replySending) return;
+    const text = replyText.trim();
+    if (!text) return;
+    setReplySending(true);
+    setReplyError(null);
+    const res = await replyToStory(story, group.user_id, text);
+    setReplySending(false);
+    if (!res.success) {
+      console.warn('[Stories] reply failed:', res.error);
+      setReplyError(t('stories.reply.failed', 'Could not send your reply'));
+      return;
+    }
+    setReplyText('');
+    setReplySent(true);
+    // Sent: drop focus so the story resumes.
+    replyInputRef.current?.blur();
+    if (replySentTimerRef.current) clearTimeout(replySentTimerRef.current);
+    replySentTimerRef.current = setTimeout(() => setReplySent(false), 1800);
   }
 
   async function openViewers() {
@@ -218,7 +253,8 @@ export function StoryViewer({
     try {
       setViewers(await getStoryViewers(story.id));
     } catch (e: any) {
-      setViewersError(e?.message || t('stories.viewer.viewersFailed', 'Could not load viewers'));
+      console.warn('[Stories]', e?.message);
+      setViewersError(t('stories.viewer.viewersFailed', 'Could not load viewers'));
       setViewers([]);
     }
   }
@@ -242,12 +278,14 @@ export function StoryViewer({
       }
       setConfirmDelete(false);
     } catch (e: any) {
-      setDeleteError(e?.message || t('stories.viewer.deleteFailed', 'Could not delete this story'));
+      console.warn('[Stories]', e?.message);
+      setDeleteError(t('stories.viewer.deleteFailed', 'Could not delete this story'));
     } finally {
       setDeleting(false);
     }
   }
 
+  const ago = (iso: string) => { const s = storyTimeAgo(iso); return s === 'now' ? t('stories.now', 'now') : s; };
   const name = isOwn ? t('stories.yourStory', 'Your story') : group.display_name || t('stories.someone', 'Someone');
   const reacted = sentEmoji[story.id];
 
@@ -328,14 +366,14 @@ export function StoryViewer({
               <Avatar url={group.avatar_url} name={group.display_name} />
               <span className="text-sm font-semibold text-white truncate">{name}</span>
             </Link>
-            <span className="text-xs text-white/70 shrink-0">{storyTimeAgo(story.created_at)}</span>
+            <span className="text-xs text-white/70 shrink-0">{ago(story.created_at)}</span>
             {story.visibility === 'friends' && <Users className="w-3.5 h-3.5 text-white/70 shrink-0" aria-label={t('stories.create.friends', 'Friends only')} />}
             <div className="ml-auto flex items-center gap-1">
-              <button onClick={() => setUserPaused((p) => !p)} className="p-1.5 text-white" aria-label={paused ? 'Play' : 'Pause'}>
+              <button onClick={() => setUserPaused((p) => !p)} className="p-1.5 text-white" aria-label={userPaused ? t('stories.viewer.play', 'Play') : t('stories.viewer.pause', 'Pause')}>
                 {userPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
               </button>
               {story.type === 'video' && (
-                <button onClick={() => setMuted((m) => !m)} className="p-1.5 text-white" aria-label={muted ? 'Unmute' : 'Mute'}>
+                <button onClick={() => setMuted((m) => !m)} className="p-1.5 text-white" aria-label={muted ? t('stories.viewer.unmute', 'Unmute') : t('stories.viewer.mute', 'Mute')}>
                   {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 </button>
               )}
@@ -348,7 +386,7 @@ export function StoryViewer({
 
         {/* Caption */}
         {story.type !== 'text' && story.content && (
-          <div className="absolute inset-x-0 bottom-24 z-10 px-4 pointer-events-none">
+          <div className={cn('absolute inset-x-0 z-10 px-4 pointer-events-none', isOwn ? 'bottom-24' : 'bottom-40')}>
             <p className="text-center text-white text-sm bg-black/50 rounded-xl px-3 py-2 whitespace-pre-wrap break-words">{story.content}</p>
           </div>
         )}
@@ -380,11 +418,43 @@ export function StoryViewer({
                     'w-10 h-10 rounded-full text-xl flex items-center justify-center transition-transform hover:scale-110',
                     reacted === e ? 'bg-white/30' : 'bg-white/10',
                   )}
-                  aria-label={`React ${e}`}
+                  aria-label={t('stories.viewer.reactWith', 'React {{emoji}}', { emoji: e })}
                 >
                   {e}
                 </button>
               ))}
+              <form
+                className="w-full flex items-center gap-2 mt-2"
+                onSubmit={(ev) => { ev.preventDefault(); sendReply(); }}
+              >
+                <input
+                  ref={replyInputRef}
+                  value={replyText}
+                  onChange={(ev) => { setReplyText(ev.target.value.slice(0, STORY_REPLY_MAX_CHARS)); setReplyError(null); setReplySent(false); }}
+                  onFocus={() => setReplyFocused(true)}
+                  onBlur={() => setReplyFocused(false)}
+                  onKeyDown={(ev) => { if (ev.key === 'Escape') { ev.preventDefault(); ev.currentTarget.blur(); } }}
+                  placeholder={t('stories.reply.placeholder', 'Reply to {{name}}…', { name: group.display_name || t('stories.someone', 'Someone') })}
+                  disabled={replySending}
+                  enterKeyHint="send"
+                  aria-label={t('stories.reply.label', 'Reply to this story')}
+                  className="flex-1 min-w-0 px-4 py-2.5 rounded-full bg-black/30 border border-white/40 text-sm text-white placeholder-white/70 focus:outline-none focus:border-white"
+                />
+                <button
+                  type="submit"
+                  disabled={replySending || !replyText.trim()}
+                  className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 text-white disabled:opacity-40"
+                  aria-label={t('stories.viewer.send', 'Send')}
+                >
+                  {replySending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </button>
+              </form>
+              {replySent && (
+                <span className="w-full text-center text-xs text-white/90 flex items-center justify-center gap-1" role="status">
+                  <Check className="w-3.5 h-3.5" /> {t('stories.reply.sent', 'Sent')}
+                </span>
+              )}
+              {replyError && <span className="w-full text-center text-xs text-red-300" role="alert">{replyError}</span>}
             </div>
           )}
         </div>
@@ -455,7 +525,7 @@ export function StoryViewer({
                         <Avatar url={v.avatar_url} name={v.display_name} size={36} />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-text-primary truncate">{v.display_name || t('stories.someone', 'Someone')}</p>
-                          <p className="text-[11px] text-text-muted">{storyTimeAgo(v.viewed_at)}</p>
+                          <p className="text-[11px] text-text-muted">{ago(v.viewed_at)}</p>
                         </div>
                         {v.emoji && <span className="text-xl">{v.emoji}</span>}
                       </Link>

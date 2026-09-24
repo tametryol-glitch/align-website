@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Réduction des heures possibles",
     "toolEvent": "Enregistrement de cet événement",
     "toolFinalize": "Analyse complète en cours"
+  },
+  "stories": {
+    "rail": "Stories",
+    "add": "Ajouter à votre story",
+    "viewYours": "Voir votre story",
+    "yourStory": "Votre story",
+    "viewOf": "Voir la story de {{name}}",
+    "someone": "Quelqu’un",
+    "now": "maintenant",
+    "create": {
+      "title": "Nouvelle story",
+      "media": "Photo / Vidéo",
+      "text": "Texte",
+      "textPlaceholder": "Écrivez quelque chose…",
+      "remove": "Retirer",
+      "choose": "Choisissez une photo ou une vidéo",
+      "videoLimit": "Vidéos jusqu’à {{max}} s",
+      "caption": "Ajouter une légende (facultatif)",
+      "public": "Public",
+      "friends": "Amis uniquement",
+      "uploading": "Envoi…",
+      "posting": "Publication…",
+      "post": "Partager en story",
+      "expires": "Disparaît après 24 heures"
+    },
+    "errors": {
+      "type": "Choisissez une photo ou une vidéo",
+      "readVideo": "Impossible de lire cette vidéo",
+      "tooLong": "Les vidéos peuvent durer jusqu’à {{max}} secondes — celle-ci dure {{len}} s",
+      "post": "Impossible de publier votre story. Réessayez.",
+      "textTooLong": "Ne dépassez pas {{max}} caractères",
+      "empty": "Écrivez d’abord quelque chose",
+      "imageType": "Utilisez une image JPG, PNG, GIF ou WebP",
+      "videoMax": "Les vidéos peuvent durer jusqu’à {{max}} secondes"
+    },
+    "viewer": {
+      "seenBy": "Vue par {{count}}",
+      "reacted": "Vous avez réagi {{emoji}}",
+      "reactWith": "Réagir {{emoji}}",
+      "confirmReact": "Envoyer {{emoji}} à {{name}} ?",
+      "send": "Envoyer",
+      "confirmDelete": "Supprimer cette story ? Cette action est irréversible.",
+      "noViews": "Aucune vue pour l’instant",
+      "reactFailed": "Impossible d’envoyer votre réaction",
+      "viewersFailed": "Impossible de charger les spectateurs",
+      "deleteFailed": "Impossible de supprimer cette story",
+      "play": "Lecture",
+      "pause": "Pause",
+      "mute": "Couper le son",
+      "unmute": "Activer le son"
+    },
+    "reply": {
+      "placeholder": "Répondre à {{name}}…",
+      "label": "Répondre à cette story",
+      "sent": "Envoyé",
+      "failed": "Impossible d’envoyer votre réponse",
+      "youReplied": "Vous avez répondu à sa story",
+      "repliedToYours": "A répondu à votre story",
+      "unavailable": "Story plus disponible"
+    }
   }
 }

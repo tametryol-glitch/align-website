@@ -3261,5 +3261,65 @@
     "toolNarrowing": "候補の出生時刻を絞り込み中",
     "toolEvent": "その出来事を記録中",
     "toolFinalize": "完全な分析を実行中"
+  },
+  "stories": {
+    "rail": "ストーリーズ",
+    "add": "ストーリーズに追加",
+    "viewYours": "自分のストーリーズを見る",
+    "yourStory": "あなたのストーリーズ",
+    "viewOf": "{{name}}さんのストーリーズを見る",
+    "someone": "誰か",
+    "now": "今",
+    "create": {
+      "title": "新しいストーリーズ",
+      "media": "写真 / 動画",
+      "text": "テキスト",
+      "textPlaceholder": "何か入力…",
+      "remove": "削除",
+      "choose": "写真または動画を選択",
+      "videoLimit": "動画は最大{{max}}秒",
+      "caption": "キャプションを追加（任意）",
+      "public": "公開",
+      "friends": "友達のみ",
+      "uploading": "アップロード中…",
+      "posting": "投稿中…",
+      "post": "ストーリーズでシェア",
+      "expires": "24時間後に消えます"
+    },
+    "errors": {
+      "type": "写真または動画を選んでください",
+      "readVideo": "この動画を読み込めませんでした",
+      "tooLong": "動画は最大{{max}}秒です（この動画は{{len}}秒）",
+      "post": "ストーリーズを投稿できませんでした。もう一度お試しください。",
+      "textTooLong": "{{max}}文字以内にしてください",
+      "empty": "まず何か入力してください",
+      "imageType": "JPG、PNG、GIF、WebP形式の画像を使用してください",
+      "videoMax": "動画は最大{{max}}秒です"
+    },
+    "viewer": {
+      "seenBy": "既読 {{count}}人",
+      "reacted": "{{emoji}}でリアクションしました",
+      "reactWith": "{{emoji}}でリアクション",
+      "confirmReact": "{{name}}さんに{{emoji}}を送りますか？",
+      "send": "送信",
+      "confirmDelete": "このストーリーズを削除しますか？元に戻せません。",
+      "noViews": "まだ閲覧はありません",
+      "reactFailed": "リアクションを送信できませんでした",
+      "viewersFailed": "閲覧者を読み込めませんでした",
+      "deleteFailed": "このストーリーズを削除できませんでした",
+      "play": "再生",
+      "pause": "一時停止",
+      "mute": "ミュート",
+      "unmute": "ミュート解除"
+    },
+    "reply": {
+      "placeholder": "{{name}}さんに返信…",
+      "label": "このストーリーズに返信",
+      "sent": "送信しました",
+      "failed": "返信を送信できませんでした",
+      "youReplied": "ストーリーズに返信しました",
+      "repliedToYours": "あなたのストーリーズに返信しました",
+      "unavailable": "このストーリーズは表示できません"
+    }
   }
 }

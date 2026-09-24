@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Snevrer inn mulige fødselstidspunkter",
     "toolEvent": "Registrerer den hendelsen",
     "toolFinalize": "Kjører hele analysen"
+  },
+  "stories": {
+    "rail": "Historier",
+    "add": "Legg til i historien din",
+    "viewYours": "Se historien din",
+    "yourStory": "Din historie",
+    "viewOf": "Se historien til {{name}}",
+    "someone": "Noen",
+    "now": "nå",
+    "create": {
+      "title": "Ny historie",
+      "media": "Bilde / Video",
+      "text": "Tekst",
+      "textPlaceholder": "Skriv noe…",
+      "remove": "Fjern",
+      "choose": "Velg et bilde eller en video",
+      "videoLimit": "Videoer på opptil {{max}} s",
+      "caption": "Legg til en bildetekst (valgfritt)",
+      "public": "Offentlig",
+      "friends": "Bare venner",
+      "uploading": "Laster opp…",
+      "posting": "Publiserer…",
+      "post": "Del i historien",
+      "expires": "Forsvinner etter 24 timer"
+    },
+    "errors": {
+      "type": "Velg et bilde eller en video",
+      "readVideo": "Denne videoen kunne ikke leses",
+      "tooLong": "Videoer kan være opptil {{max}} sekunder – denne er {{len}} s",
+      "post": "Historien din kunne ikke publiseres. Prøv igjen.",
+      "textTooLong": "Hold deg under {{max}} tegn",
+      "empty": "Skriv noe først",
+      "imageType": "Bruk et JPG-, PNG-, GIF- eller WebP-bilde",
+      "videoMax": "Videoer kan være opptil {{max}} sekunder"
+    },
+    "viewer": {
+      "seenBy": "Sett av {{count}}",
+      "reacted": "Du reagerte med {{emoji}}",
+      "reactWith": "Reager med {{emoji}}",
+      "confirmReact": "Sende {{emoji}} til {{name}}?",
+      "send": "Send",
+      "confirmDelete": "Slette denne historien? Dette kan ikke angres.",
+      "noViews": "Ingen visninger ennå",
+      "reactFailed": "Reaksjonen din kunne ikke sendes",
+      "viewersFailed": "Seerne kunne ikke lastes inn",
+      "deleteFailed": "Denne historien kunne ikke slettes",
+      "play": "Spill av",
+      "pause": "Pause",
+      "mute": "Slå av lyd",
+      "unmute": "Slå på lyd"
+    },
+    "reply": {
+      "placeholder": "Svar {{name}}…",
+      "label": "Svar på denne historien",
+      "sent": "Sendt",
+      "failed": "Svaret ditt kunne ikke sendes",
+      "youReplied": "Du svarte på historien deres",
+      "repliedToYours": "Svarte på historien din",
+      "unavailable": "Historien er ikke lenger tilgjengelig"
+    }
   }
 }

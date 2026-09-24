@@ -3311,5 +3311,65 @@
     "toolNarrowing": "Narrowing possible birth times",
     "toolEvent": "Recording that event",
     "toolFinalize": "Running the full analysis"
+  },
+  "stories": {
+    "rail": "Stories",
+    "add": "Add to your story",
+    "viewYours": "View your story",
+    "yourStory": "Your story",
+    "viewOf": "View story from {{name}}",
+    "someone": "Someone",
+    "now": "now",
+    "create": {
+      "title": "New story",
+      "media": "Photo / Video",
+      "text": "Text",
+      "textPlaceholder": "Type something…",
+      "remove": "Remove",
+      "choose": "Choose a photo or video",
+      "videoLimit": "Videos up to {{max}}s",
+      "caption": "Add a caption (optional)",
+      "public": "Public",
+      "friends": "Friends only",
+      "uploading": "Uploading…",
+      "posting": "Posting…",
+      "post": "Share to story",
+      "expires": "Disappears after 24 hours"
+    },
+    "errors": {
+      "type": "Choose a photo or a video",
+      "readVideo": "This video could not be read",
+      "tooLong": "Videos can be up to {{max}} seconds — this one is {{len}}s",
+      "post": "Could not post your story. Try again.",
+      "textTooLong": "Keep it under {{max}} characters",
+      "empty": "Write something first",
+      "imageType": "Use a JPG, PNG, GIF or WebP image",
+      "videoMax": "Videos can be up to {{max}} seconds"
+    },
+    "viewer": {
+      "seenBy": "Seen by {{count}}",
+      "reacted": "You reacted {{emoji}}",
+      "reactWith": "React {{emoji}}",
+      "confirmReact": "Send {{emoji}} to {{name}}?",
+      "send": "Send",
+      "confirmDelete": "Delete this story? This can’t be undone.",
+      "noViews": "No views yet",
+      "reactFailed": "Could not send your reaction",
+      "viewersFailed": "Could not load viewers",
+      "deleteFailed": "Could not delete this story",
+      "play": "Play",
+      "pause": "Pause",
+      "mute": "Mute",
+      "unmute": "Unmute"
+    },
+    "reply": {
+      "placeholder": "Reply to {{name}}…",
+      "label": "Reply to this story",
+      "sent": "Sent",
+      "failed": "Could not send your reply",
+      "youReplied": "You replied to their story",
+      "repliedToYours": "Replied to your story",
+      "unavailable": "Story no longer available"
+    }
   }
 }

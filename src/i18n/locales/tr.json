@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Olası doğum saatleri daraltılıyor",
     "toolEvent": "Bu olay kaydediliyor",
     "toolFinalize": "Tam analiz çalıştırılıyor"
+  },
+  "stories": {
+    "rail": "Hikayeler",
+    "add": "Hikayene ekle",
+    "viewYours": "Hikayeni görüntüle",
+    "yourStory": "Hikayen",
+    "viewOf": "{{name}} adlı kişinin hikayesini görüntüle",
+    "someone": "Biri",
+    "now": "şimdi",
+    "create": {
+      "title": "Yeni hikaye",
+      "media": "Fotoğraf / Video",
+      "text": "Metin",
+      "textPlaceholder": "Bir şeyler yaz…",
+      "remove": "Kaldır",
+      "choose": "Bir fotoğraf veya video seç",
+      "videoLimit": "En fazla {{max}} sn video",
+      "caption": "Açıklama ekle (isteğe bağlı)",
+      "public": "Herkese açık",
+      "friends": "Yalnızca arkadaşlar",
+      "uploading": "Yükleniyor…",
+      "posting": "Paylaşılıyor…",
+      "post": "Hikayede paylaş",
+      "expires": "24 saat sonra kaybolur"
+    },
+    "errors": {
+      "type": "Bir fotoğraf veya video seç",
+      "readVideo": "Bu video okunamadı",
+      "tooLong": "Videolar en fazla {{max}} saniye olabilir — bu video {{len}} sn",
+      "post": "Hikayen paylaşılamadı. Tekrar dene.",
+      "textTooLong": "En fazla {{max}} karakter",
+      "empty": "Önce bir şeyler yaz",
+      "imageType": "JPG, PNG, GIF veya WebP görsel kullan",
+      "videoMax": "Videolar en fazla {{max}} saniye olabilir"
+    },
+    "viewer": {
+      "seenBy": "{{count}} kişi gördü",
+      "reacted": "{{emoji}} ile tepki verdin",
+      "reactWith": "{{emoji}} ile tepki ver",
+      "confirmReact": "{{name}} kişisine {{emoji}} gönderilsin mi?",
+      "send": "Gönder",
+      "confirmDelete": "Bu hikaye silinsin mi? Bu işlem geri alınamaz.",
+      "noViews": "Henüz görüntüleme yok",
+      "reactFailed": "Tepkin gönderilemedi",
+      "viewersFailed": "Görüntüleyenler yüklenemedi",
+      "deleteFailed": "Bu hikaye silinemedi",
+      "play": "Oynat",
+      "pause": "Duraklat",
+      "mute": "Sesi kapat",
+      "unmute": "Sesi aç"
+    },
+    "reply": {
+      "placeholder": "{{name}} adlı kişiye yanıt ver…",
+      "label": "Bu hikayeyi yanıtla",
+      "sent": "Gönderildi",
+      "failed": "Yanıtın gönderilemedi",
+      "youReplied": "Hikayesini yanıtladın",
+      "repliedToYours": "Hikayeni yanıtladı",
+      "unavailable": "Hikaye artık mevcut değil"
+    }
   }
 }

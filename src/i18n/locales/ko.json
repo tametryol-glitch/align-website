@@ -3261,5 +3261,65 @@
     "toolNarrowing": "가능한 출생 시간 좁히는 중",
     "toolEvent": "그 사건 기록 중",
     "toolFinalize": "전체 분석 실행 중"
+  },
+  "stories": {
+    "rail": "스토리",
+    "add": "내 스토리에 추가",
+    "viewYours": "내 스토리 보기",
+    "yourStory": "내 스토리",
+    "viewOf": "{{name}}님의 스토리 보기",
+    "someone": "누군가",
+    "now": "방금",
+    "create": {
+      "title": "새 스토리",
+      "media": "사진 / 동영상",
+      "text": "텍스트",
+      "textPlaceholder": "내용을 입력하세요…",
+      "remove": "삭제",
+      "choose": "사진 또는 동영상 선택",
+      "videoLimit": "최대 {{max}}초 동영상",
+      "caption": "캡션 추가(선택 사항)",
+      "public": "전체 공개",
+      "friends": "친구만",
+      "uploading": "업로드 중…",
+      "posting": "게시 중…",
+      "post": "스토리에 공유",
+      "expires": "24시간 후 사라집니다"
+    },
+    "errors": {
+      "type": "사진 또는 동영상을 선택하세요",
+      "readVideo": "이 동영상을 읽을 수 없습니다",
+      "tooLong": "동영상은 최대 {{max}}초까지 가능합니다 — 이 동영상은 {{len}}초입니다",
+      "post": "스토리를 게시할 수 없습니다. 다시 시도하세요.",
+      "textTooLong": "{{max}}자 이내로 작성하세요",
+      "empty": "먼저 내용을 입력하세요",
+      "imageType": "JPG, PNG, GIF 또는 WebP 이미지를 사용하세요",
+      "videoMax": "동영상은 최대 {{max}}초까지 가능합니다"
+    },
+    "viewer": {
+      "seenBy": "{{count}}명이 봄",
+      "reacted": "{{emoji}}(으)로 반응했습니다",
+      "reactWith": "{{emoji}}(으)로 반응",
+      "confirmReact": "{{name}}님에게 {{emoji}}을(를) 보낼까요?",
+      "send": "보내기",
+      "confirmDelete": "이 스토리를 삭제할까요? 되돌릴 수 없습니다.",
+      "noViews": "아직 조회가 없습니다",
+      "reactFailed": "반응을 보낼 수 없습니다",
+      "viewersFailed": "조회자를 불러올 수 없습니다",
+      "deleteFailed": "이 스토리를 삭제할 수 없습니다",
+      "play": "재생",
+      "pause": "일시정지",
+      "mute": "음소거",
+      "unmute": "음소거 해제"
+    },
+    "reply": {
+      "placeholder": "{{name}}님에게 답장…",
+      "label": "이 스토리에 답장",
+      "sent": "전송됨",
+      "failed": "답장을 보낼 수 없습니다",
+      "youReplied": "상대의 스토리에 답장했습니다",
+      "repliedToYours": "내 스토리에 답장했습니다",
+      "unavailable": "더 이상 볼 수 없는 스토리입니다"
+    }
   }
 }

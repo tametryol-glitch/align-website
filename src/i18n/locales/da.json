@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Indsnævrer mulige fødselstidspunkter",
     "toolEvent": "Registrerer den begivenhed",
     "toolFinalize": "Kører den fulde analyse"
+  },
+  "stories": {
+    "rail": "Stories",
+    "add": "Føj til din story",
+    "viewYours": "Se din story",
+    "yourStory": "Din story",
+    "viewOf": "Se story fra {{name}}",
+    "someone": "Nogen",
+    "now": "nu",
+    "create": {
+      "title": "Ny story",
+      "media": "Foto / Video",
+      "text": "Tekst",
+      "textPlaceholder": "Skriv noget…",
+      "remove": "Fjern",
+      "choose": "Vælg et foto eller en video",
+      "videoLimit": "Videoer op til {{max}} s",
+      "caption": "Tilføj en billedtekst (valgfrit)",
+      "public": "Offentlig",
+      "friends": "Kun venner",
+      "uploading": "Uploader…",
+      "posting": "Slår op…",
+      "post": "Del i story",
+      "expires": "Forsvinder efter 24 timer"
+    },
+    "errors": {
+      "type": "Vælg et foto eller en video",
+      "readVideo": "Denne video kunne ikke læses",
+      "tooLong": "Videoer må højst vare {{max}} sekunder – denne varer {{len}} s",
+      "post": "Din story kunne ikke slås op. Prøv igen.",
+      "textTooLong": "Hold dig under {{max}} tegn",
+      "empty": "Skriv noget først",
+      "imageType": "Brug et JPG-, PNG-, GIF- eller WebP-billede",
+      "videoMax": "Videoer må højst vare {{max}} sekunder"
+    },
+    "viewer": {
+      "seenBy": "Set af {{count}}",
+      "reacted": "Du reagerede med {{emoji}}",
+      "reactWith": "Reagér med {{emoji}}",
+      "confirmReact": "Send {{emoji}} til {{name}}?",
+      "send": "Send",
+      "confirmDelete": "Slet denne story? Det kan ikke fortrydes.",
+      "noViews": "Ingen visninger endnu",
+      "reactFailed": "Din reaktion kunne ikke sendes",
+      "viewersFailed": "Seerne kunne ikke indlæses",
+      "deleteFailed": "Denne story kunne ikke slettes",
+      "play": "Afspil",
+      "pause": "Pause",
+      "mute": "Slå lyd fra",
+      "unmute": "Slå lyd til"
+    },
+    "reply": {
+      "placeholder": "Svar {{name}}…",
+      "label": "Svar på denne story",
+      "sent": "Sendt",
+      "failed": "Dit svar kunne ikke sendes",
+      "youReplied": "Du svarede på deres story",
+      "repliedToYours": "Svarede på din story",
+      "unavailable": "Storyen er ikke længere tilgængelig"
+    }
   }
 }

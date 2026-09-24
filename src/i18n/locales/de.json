@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Grenze mögliche Geburtszeiten ein",
     "toolEvent": "Speichere dieses Ereignis",
     "toolFinalize": "Führe die vollständige Analyse durch"
+  },
+  "stories": {
+    "rail": "Storys",
+    "add": "Zu deiner Story hinzufügen",
+    "viewYours": "Deine Story ansehen",
+    "yourStory": "Deine Story",
+    "viewOf": "Story von {{name}} ansehen",
+    "someone": "Jemand",
+    "now": "jetzt",
+    "create": {
+      "title": "Neue Story",
+      "media": "Foto / Video",
+      "text": "Text",
+      "textPlaceholder": "Schreib etwas…",
+      "remove": "Entfernen",
+      "choose": "Foto oder Video auswählen",
+      "videoLimit": "Videos bis {{max}} s",
+      "caption": "Bildunterschrift hinzufügen (optional)",
+      "public": "Öffentlich",
+      "friends": "Nur Freunde",
+      "uploading": "Wird hochgeladen…",
+      "posting": "Wird gepostet…",
+      "post": "In Story teilen",
+      "expires": "Verschwindet nach 24 Stunden"
+    },
+    "errors": {
+      "type": "Wähle ein Foto oder ein Video",
+      "readVideo": "Dieses Video konnte nicht gelesen werden",
+      "tooLong": "Videos dürfen bis zu {{max}} Sekunden lang sein – dieses ist {{len}} s lang",
+      "post": "Deine Story konnte nicht gepostet werden. Versuch es erneut.",
+      "textTooLong": "Maximal {{max}} Zeichen",
+      "empty": "Schreib zuerst etwas",
+      "imageType": "Verwende ein JPG-, PNG-, GIF- oder WebP-Bild",
+      "videoMax": "Videos dürfen bis zu {{max}} Sekunden lang sein"
+    },
+    "viewer": {
+      "seenBy": "Gesehen von {{count}}",
+      "reacted": "Du hast mit {{emoji}} reagiert",
+      "reactWith": "Mit {{emoji}} reagieren",
+      "confirmReact": "{{emoji}} an {{name}} senden?",
+      "send": "Senden",
+      "confirmDelete": "Diese Story löschen? Das kann nicht rückgängig gemacht werden.",
+      "noViews": "Noch keine Aufrufe",
+      "reactFailed": "Deine Reaktion konnte nicht gesendet werden",
+      "viewersFailed": "Zuschauer konnten nicht geladen werden",
+      "deleteFailed": "Diese Story konnte nicht gelöscht werden",
+      "play": "Abspielen",
+      "pause": "Pause",
+      "mute": "Stummschalten",
+      "unmute": "Ton an"
+    },
+    "reply": {
+      "placeholder": "{{name}} antworten…",
+      "label": "Auf diese Story antworten",
+      "sent": "Gesendet",
+      "failed": "Deine Antwort konnte nicht gesendet werden",
+      "youReplied": "Du hast auf die Story geantwortet",
+      "repliedToYours": "Hat auf deine Story geantwortet",
+      "unavailable": "Story nicht mehr verfügbar"
+    }
   }
 }

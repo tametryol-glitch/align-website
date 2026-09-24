@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import {
-  SmilePlus, Check, CheckCheck, Reply, MoreVertical,
+  SmilePlus, Check, CheckCheck, Reply, MoreVertical, Play, Clock,
 } from 'lucide-react';
 import { VoiceMessageBubble } from '@/components/chat/VoiceMessageBubble';
 import { VideoMessageBubble } from '@/components/chat/VideoMessageBubble';
@@ -15,6 +15,7 @@ import { PollBubble } from '@/components/chat/PollBubble';
 import type { ChatTheme } from '@/data/chatThemes';
 import { getReactionsFromMessage, type Message } from '@/lib/messagingService';
 import { readStoredSnapshot, relationshipShareQuery, relationshipShareSubtitle } from '@/lib/relationshipShare';
+import { isStoryReplyMetadata, type StoryReplyMetadata } from '@/lib/storyService';
 
 // ── Link Preview Helpers ────────────────────────────────────────────
 
@@ -113,6 +114,60 @@ function InlineImagePreview({ text }: { text: string }) {
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
       />
     </a>
+  );
+}
+
+// ── Story reply quote (text DM sent from the story viewer) ──────────
+// Media files are deleted when a story expires, so past expiry we show a
+// muted placeholder instead of a broken thumbnail.
+
+function StoryReplyQuote({ meta, isMine }: { meta: StoryReplyMetadata; isMine: boolean }) {
+  const { t } = useTranslation();
+  const expired = !meta.story_expires_at || new Date(meta.story_expires_at).getTime() <= Date.now();
+  const label = isMine
+    ? t('stories.reply.youReplied', 'You replied to their story')
+    : t('stories.reply.repliedToYours', 'Replied to your story');
+
+  const thumb = expired ? (
+    <div className={`w-11 h-16 rounded-md shrink-0 flex items-center justify-center ${isMine ? 'bg-white/10' : 'bg-bg-secondary'}`}>
+      <Clock className="w-4 h-4 opacity-50" />
+    </div>
+  ) : meta.story_type === 'image' && meta.story_media_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={meta.story_media_url} alt="" className="w-11 h-16 rounded-md object-cover shrink-0 bg-black" />
+  ) : meta.story_type === 'video' && meta.story_media_url ? (
+    <div className="relative w-11 h-16 rounded-md overflow-hidden shrink-0 bg-black">
+      <video src={`${meta.story_media_url}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
+      <Play className="absolute inset-0 m-auto w-4 h-4 text-white drop-shadow" />
+    </div>
+  ) : (
+    <div
+      className="w-11 h-16 rounded-md shrink-0 flex items-center justify-center p-1 overflow-hidden"
+      style={{ backgroundColor: meta.story_background_color || '#7C3AED' }}
+    >
+      <span className="text-[7px] leading-tight text-white font-semibold text-center line-clamp-5 break-words">{meta.story_text}</span>
+    </div>
+  );
+
+  const body = (
+    <div className={`flex items-center gap-2 mb-1.5 pb-1.5 border-b ${isMine ? 'border-white/20' : 'border-border-primary'}`}>
+      {thumb}
+      <div className="min-w-0">
+        <p className="text-[10px] uppercase tracking-wide opacity-70">{label}</p>
+        {expired ? (
+          <p className="text-[11px] italic opacity-60">{t('stories.reply.unavailable', 'Story no longer available')}</p>
+        ) : meta.story_type !== 'text' && meta.story_text ? (
+          <p className="text-[11px] opacity-80 line-clamp-2 break-words">{meta.story_text}</p>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  // Live story: the feed deep link opens the viewer on that frame.
+  return expired ? body : (
+    <Link href={`/feed?story=${encodeURIComponent(meta.story_id)}`} className="block hover:opacity-90">
+      {body}
+    </Link>
   );
 }
 
@@ -289,6 +344,11 @@ export function MessageBubble({
               currentUserId={currentUserId}
               onVote={onPollVote}
             />
+          )}
+
+          {/* Story reply: quoted story above the reply text */}
+          {msg.type === 'text' && isStoryReplyMetadata(msg.metadata) && (
+            <StoryReplyQuote meta={msg.metadata} isMine={isMine} />
           )}
 
           {/* Inline image detection for text messages containing image URLs */}

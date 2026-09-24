@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Rajataan mahdollisia syntymäaikoja",
     "toolEvent": "Kirjataan tapahtuma",
     "toolFinalize": "Suoritetaan koko analyysi"
+  },
+  "stories": {
+    "rail": "Tarinat",
+    "add": "Lisää tarinaasi",
+    "viewYours": "Katso tarinasi",
+    "yourStory": "Tarinasi",
+    "viewOf": "Katso käyttäjän {{name}} tarina",
+    "someone": "Joku",
+    "now": "nyt",
+    "create": {
+      "title": "Uusi tarina",
+      "media": "Kuva / Video",
+      "text": "Teksti",
+      "textPlaceholder": "Kirjoita jotain…",
+      "remove": "Poista",
+      "choose": "Valitse kuva tai video",
+      "videoLimit": "Videot enintään {{max}} s",
+      "caption": "Lisää kuvateksti (valinnainen)",
+      "public": "Julkinen",
+      "friends": "Vain ystävät",
+      "uploading": "Ladataan…",
+      "posting": "Julkaistaan…",
+      "post": "Jaa tarinaan",
+      "expires": "Katoaa 24 tunnin kuluttua"
+    },
+    "errors": {
+      "type": "Valitse kuva tai video",
+      "readVideo": "Tätä videota ei voitu lukea",
+      "tooLong": "Videot voivat olla enintään {{max}} sekuntia – tämä on {{len}} s",
+      "post": "Tarinaasi ei voitu julkaista. Yritä uudelleen.",
+      "textTooLong": "Enintään {{max}} merkkiä",
+      "empty": "Kirjoita ensin jotain",
+      "imageType": "Käytä JPG-, PNG-, GIF- tai WebP-kuvaa",
+      "videoMax": "Videot voivat olla enintään {{max}} sekuntia"
+    },
+    "viewer": {
+      "seenBy": "Nähnyt {{count}}",
+      "reacted": "Reagoit: {{emoji}}",
+      "reactWith": "Reagoi: {{emoji}}",
+      "confirmReact": "Lähetetäänkö {{emoji}} käyttäjälle {{name}}?",
+      "send": "Lähetä",
+      "confirmDelete": "Poistetaanko tämä tarina? Toimintoa ei voi perua.",
+      "noViews": "Ei vielä katselukertoja",
+      "reactFailed": "Reaktiotasi ei voitu lähettää",
+      "viewersFailed": "Katsojia ei voitu ladata",
+      "deleteFailed": "Tätä tarinaa ei voitu poistaa",
+      "play": "Toista",
+      "pause": "Tauko",
+      "mute": "Mykistä",
+      "unmute": "Poista mykistys"
+    },
+    "reply": {
+      "placeholder": "Vastaa käyttäjälle {{name}}…",
+      "label": "Vastaa tähän tarinaan",
+      "sent": "Lähetetty",
+      "failed": "Vastaustasi ei voitu lähettää",
+      "youReplied": "Vastasit hänen tarinaansa",
+      "repliedToYours": "Vastasi tarinaasi",
+      "unavailable": "Tarina ei ole enää saatavilla"
+    }
   }
 }

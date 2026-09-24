@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Zawężam możliwe godziny urodzenia",
     "toolEvent": "Zapisuję to wydarzenie",
     "toolFinalize": "Wykonuję pełną analizę"
+  },
+  "stories": {
+    "rail": "Relacje",
+    "add": "Dodaj do relacji",
+    "viewYours": "Zobacz swoją relację",
+    "yourStory": "Twoja relacja",
+    "viewOf": "Zobacz relację: {{name}}",
+    "someone": "Ktoś",
+    "now": "teraz",
+    "create": {
+      "title": "Nowa relacja",
+      "media": "Zdjęcie / Wideo",
+      "text": "Tekst",
+      "textPlaceholder": "Napisz coś…",
+      "remove": "Usuń",
+      "choose": "Wybierz zdjęcie lub wideo",
+      "videoLimit": "Filmy do {{max}} s",
+      "caption": "Dodaj podpis (opcjonalnie)",
+      "public": "Publiczna",
+      "friends": "Tylko znajomi",
+      "uploading": "Przesyłanie…",
+      "posting": "Publikowanie…",
+      "post": "Udostępnij w relacji",
+      "expires": "Znika po 24 godzinach"
+    },
+    "errors": {
+      "type": "Wybierz zdjęcie lub wideo",
+      "readVideo": "Nie udało się odczytać tego wideo",
+      "tooLong": "Filmy mogą trwać do {{max}} sekund — ten trwa {{len}} s",
+      "post": "Nie udało się opublikować relacji. Spróbuj ponownie.",
+      "textTooLong": "Maksymalnie {{max}} znaków",
+      "empty": "Najpierw coś napisz",
+      "imageType": "Użyj obrazu JPG, PNG, GIF lub WebP",
+      "videoMax": "Filmy mogą trwać do {{max}} sekund"
+    },
+    "viewer": {
+      "seenBy": "Wyświetlenia: {{count}}",
+      "reacted": "Twoja reakcja: {{emoji}}",
+      "reactWith": "Zareaguj {{emoji}}",
+      "confirmReact": "Wysłać {{emoji}} do {{name}}?",
+      "send": "Wyślij",
+      "confirmDelete": "Usunąć tę relację? Tej operacji nie można cofnąć.",
+      "noViews": "Brak wyświetleń",
+      "reactFailed": "Nie udało się wysłać reakcji",
+      "viewersFailed": "Nie udało się wczytać widzów",
+      "deleteFailed": "Nie udało się usunąć tej relacji",
+      "play": "Odtwórz",
+      "pause": "Wstrzymaj",
+      "mute": "Wycisz",
+      "unmute": "Włącz dźwięk"
+    },
+    "reply": {
+      "placeholder": "Odpowiedz: {{name}}…",
+      "label": "Odpowiedz na tę relację",
+      "sent": "Wysłano",
+      "failed": "Nie udało się wysłać odpowiedzi",
+      "youReplied": "Odpowiedziałeś(-aś) na relację",
+      "repliedToYours": "Odpowiedź na Twoją relację",
+      "unavailable": "Relacja nie jest już dostępna"
+    }
   }
 }

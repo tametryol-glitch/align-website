@@ -63,6 +63,13 @@ export const STORY_BACKGROUNDS = ['#7C3AED', '#DB2777', '#2563EB', '#059669', '#
 // raster formats only.
 const STORY_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
+/** Validation failures carry a code so the UI can show a translated message. */
+export type StoryErrorCode = 'upload' | 'textTooLong' | 'empty' | 'noFile' | 'imageType' | 'videoLength' | 'videoTooLong';
+
+function storyError(code: StoryErrorCode, message: string): Error & { code: StoryErrorCode } {
+  return Object.assign(new Error(message), { code });
+}
+
 /** How long a frame stays on screen, in milliseconds. */
 export function storyDurationMs(story: Pick<Story, 'type' | 'duration_seconds'>): number {
   if (story.type === 'video') {
@@ -154,26 +161,26 @@ export async function createStory(input: {
 }): Promise<void> {
   const supabase = createClient();
   const content = (input.content || '').trim();
-  if (content.length > STORY_MAX_CHARS) throw new Error(`Keep it under ${STORY_MAX_CHARS} characters`);
+  if (content.length > STORY_MAX_CHARS) throw storyError('textTooLong', `Keep it under ${STORY_MAX_CHARS} characters`);
 
   let mediaUrl: string | null = null;
   let uploadedPath: string | null = null;
 
   if (input.type === 'text') {
-    if (!content) throw new Error('Write something first');
+    if (!content) throw storyError('empty', 'Write something first');
   } else {
     const file = input.file;
-    if (!file) throw new Error('Choose a photo or video');
+    if (!file) throw storyError('noFile', 'Choose a photo or video');
     const { validateUpload } = await import('./sanitize');
     const err = validateUpload(file, input.type === 'video' ? 'video' : 'image');
-    if (err) throw new Error(err);
+    if (err) throw storyError('upload', err);
     if (input.type === 'image' && !STORY_IMAGE_TYPES.has(file.type.toLowerCase())) {
-      throw new Error('Use a JPG, PNG, GIF or WebP image');
+      throw storyError('imageType', 'Use a JPG, PNG, GIF or WebP image');
     }
     if (input.type === 'video') {
       const d = Number(input.durationSeconds);
-      if (!Number.isFinite(d) || d <= 0) throw new Error('Could not read the video length');
-      if (d > STORY_MAX_VIDEO_SECONDS + 0.5) throw new Error(`Videos can be up to ${STORY_MAX_VIDEO_SECONDS} seconds`);
+      if (!Number.isFinite(d) || d <= 0) throw storyError('videoLength', 'Could not read the video length');
+      if (d > STORY_MAX_VIDEO_SECONDS + 0.5) throw storyError('videoTooLong', `Videos can be up to ${STORY_MAX_VIDEO_SECONDS} seconds`);
     }
 
     uploadedPath = buildStoryPath(input.userId, file.name);
@@ -274,4 +281,67 @@ export function storyTimeAgo(iso: string, now: number = Date.now()): string {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h`;
   return `${Math.floor(h / 24)}d`;
+}
+
+// ── Reply to a story by direct message ───────────────────────────────
+// A story reply is an ordinary 'text' DM (messages_type_check has no story
+// type) carrying a snapshot of the story in metadata, so the chat can show
+// what was replied to even after the story row is gone. Push for the DM is
+// handled by the messages DB trigger — never from here.
+
+export const STORY_REPLY_KIND = 'story_reply';
+export const STORY_REPLY_QUOTE_CHARS = 140;
+export const STORY_REPLY_MAX_CHARS = 1000;
+
+export interface StoryReplyMetadata {
+  kind: typeof STORY_REPLY_KIND;
+  story_id: string;
+  story_owner_id: string;
+  story_type: StoryType;
+  /** null for text stories. */
+  story_media_url: string | null;
+  story_text: string | null;
+  story_background_color: string | null;
+  story_expires_at: string;
+}
+
+export function buildStoryReplyMetadata(
+  story: Pick<Story, 'id' | 'type' | 'content' | 'media_url' | 'background_color' | 'expires_at'>,
+  ownerId: string,
+): StoryReplyMetadata {
+  const text = (story.content || '').trim();
+  const quoted = text.length > STORY_REPLY_QUOTE_CHARS
+    ? `${text.slice(0, STORY_REPLY_QUOTE_CHARS - 1).trimEnd()}…`
+    : text;
+  return {
+    kind: STORY_REPLY_KIND,
+    story_id: story.id,
+    story_owner_id: ownerId,
+    story_type: story.type,
+    story_media_url: story.type === 'text' ? null : story.media_url || null,
+    story_text: quoted || null,
+    story_background_color: story.background_color || null,
+    story_expires_at: story.expires_at,
+  };
+}
+
+/** True when a message's metadata is a story reply. */
+export function isStoryReplyMetadata(m: unknown): m is StoryReplyMetadata {
+  return !!m && typeof m === 'object' && (m as any).kind === STORY_REPLY_KIND && typeof (m as any).story_id === 'string';
+}
+
+export async function replyToStory(
+  story: Pick<Story, 'id' | 'type' | 'content' | 'media_url' | 'background_color' | 'expires_at'>,
+  ownerId: string,
+  text: string,
+): Promise<{ success: boolean; error?: string }> {
+  const body = text.trim().slice(0, STORY_REPLY_MAX_CHARS);
+  if (!body) return { success: false, error: 'Write a reply first' };
+  // Lazy: keeps the messaging layer (auth store, push prompts) out of every
+  // story import and out of the pure-helper unit tests.
+  const { getOrCreateConversation, sendMessage } = await import('./messagingService');
+  const conversationId = await getOrCreateConversation(ownerId);
+  if (!conversationId) return { success: false, error: 'Could not open a conversation' };
+  const res = await sendMessage(conversationId, body, 'text', buildStoryReplyMetadata(story, ownerId));
+  return res.success ? { success: true } : { success: false, error: res.error || 'Could not send your reply' };
 }

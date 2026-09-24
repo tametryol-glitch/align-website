@@ -3261,5 +3261,65 @@
     "toolNarrowing": "جارٍ تضييق أوقات الولادة المحتملة",
     "toolEvent": "جارٍ تسجيل هذا الحدث",
     "toolFinalize": "جارٍ إجراء التحليل الكامل"
+  },
+  "stories": {
+    "rail": "القصص",
+    "add": "أضف إلى قصتك",
+    "viewYours": "عرض قصتك",
+    "yourStory": "قصتك",
+    "viewOf": "عرض قصة {{name}}",
+    "someone": "شخص ما",
+    "now": "الآن",
+    "create": {
+      "title": "قصة جديدة",
+      "media": "صورة / فيديو",
+      "text": "نص",
+      "textPlaceholder": "اكتب شيئًا…",
+      "remove": "إزالة",
+      "choose": "اختر صورة أو فيديو",
+      "videoLimit": "مقاطع فيديو حتى {{max}} ث",
+      "caption": "أضف تعليقًا (اختياري)",
+      "public": "عامة",
+      "friends": "الأصدقاء فقط",
+      "uploading": "جارٍ الرفع…",
+      "posting": "جارٍ النشر…",
+      "post": "مشاركة في القصة",
+      "expires": "تختفي بعد 24 ساعة"
+    },
+    "errors": {
+      "type": "اختر صورة أو فيديو",
+      "readVideo": "تعذّرت قراءة هذا الفيديو",
+      "tooLong": "يمكن أن تصل مدة الفيديو إلى {{max}} ثانية — مدة هذا الفيديو {{len}} ث",
+      "post": "تعذّر نشر قصتك. حاول مرة أخرى.",
+      "textTooLong": "لا تتجاوز {{max}} حرفًا",
+      "empty": "اكتب شيئًا أولًا",
+      "imageType": "استخدم صورة بصيغة JPG أو PNG أو GIF أو WebP",
+      "videoMax": "يمكن أن تصل مدة الفيديو إلى {{max}} ثانية"
+    },
+    "viewer": {
+      "seenBy": "شاهدها {{count}}",
+      "reacted": "تفاعلت بـ {{emoji}}",
+      "reactWith": "تفاعل بـ {{emoji}}",
+      "confirmReact": "إرسال {{emoji}} إلى {{name}}؟",
+      "send": "إرسال",
+      "confirmDelete": "حذف هذه القصة؟ لا يمكن التراجع عن ذلك.",
+      "noViews": "لا توجد مشاهدات بعد",
+      "reactFailed": "تعذّر إرسال تفاعلك",
+      "viewersFailed": "تعذّر تحميل المشاهدين",
+      "deleteFailed": "تعذّر حذف هذه القصة",
+      "play": "تشغيل",
+      "pause": "إيقاف مؤقت",
+      "mute": "كتم الصوت",
+      "unmute": "إلغاء الكتم"
+    },
+    "reply": {
+      "placeholder": "الرد على {{name}}…",
+      "label": "الرد على هذه القصة",
+      "sent": "تم الإرسال",
+      "failed": "تعذّر إرسال ردك",
+      "youReplied": "رددتَ على قصته",
+      "repliedToYours": "ردّ على قصتك",
+      "unavailable": "القصة لم تعد متاحة"
+    }
   }
 }

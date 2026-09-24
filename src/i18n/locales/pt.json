@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Reduzindo os horários possíveis",
     "toolEvent": "Registrando esse evento",
     "toolFinalize": "Executando a análise completa"
+  },
+  "stories": {
+    "rail": "Stories",
+    "add": "Adicionar ao seu story",
+    "viewYours": "Ver seu story",
+    "yourStory": "Seu story",
+    "viewOf": "Ver o story de {{name}}",
+    "someone": "Alguém",
+    "now": "agora",
+    "create": {
+      "title": "Novo story",
+      "media": "Foto / Vídeo",
+      "text": "Texto",
+      "textPlaceholder": "Digite algo…",
+      "remove": "Remover",
+      "choose": "Escolha uma foto ou um vídeo",
+      "videoLimit": "Vídeos de até {{max}} s",
+      "caption": "Adicione uma legenda (opcional)",
+      "public": "Público",
+      "friends": "Só amigos",
+      "uploading": "Enviando…",
+      "posting": "Publicando…",
+      "post": "Compartilhar no story",
+      "expires": "Desaparece após 24 horas"
+    },
+    "errors": {
+      "type": "Escolha uma foto ou um vídeo",
+      "readVideo": "Não foi possível ler este vídeo",
+      "tooLong": "Os vídeos podem ter até {{max}} segundos — este tem {{len}} s",
+      "post": "Não foi possível publicar seu story. Tente novamente.",
+      "textTooLong": "Use no máximo {{max}} caracteres",
+      "empty": "Escreva algo primeiro",
+      "imageType": "Use uma imagem JPG, PNG, GIF ou WebP",
+      "videoMax": "Os vídeos podem ter até {{max}} segundos"
+    },
+    "viewer": {
+      "seenBy": "Visto por {{count}}",
+      "reacted": "Você reagiu com {{emoji}}",
+      "reactWith": "Reagir com {{emoji}}",
+      "confirmReact": "Enviar {{emoji}} para {{name}}?",
+      "send": "Enviar",
+      "confirmDelete": "Excluir este story? Isso não pode ser desfeito.",
+      "noViews": "Nenhuma visualização ainda",
+      "reactFailed": "Não foi possível enviar sua reação",
+      "viewersFailed": "Não foi possível carregar quem viu",
+      "deleteFailed": "Não foi possível excluir este story",
+      "play": "Reproduzir",
+      "pause": "Pausar",
+      "mute": "Silenciar",
+      "unmute": "Ativar som"
+    },
+    "reply": {
+      "placeholder": "Responder a {{name}}…",
+      "label": "Responder a este story",
+      "sent": "Enviado",
+      "failed": "Não foi possível enviar sua resposta",
+      "youReplied": "Você respondeu ao story",
+      "repliedToYours": "Respondeu ao seu story",
+      "unavailable": "Story não disponível"
+    }
   }
 }

@@ -56,7 +56,8 @@ export function StoryCreator({
       try {
         seconds = await readVideoDuration(f);
       } catch (e: any) {
-        setError(e?.message || t('stories.errors.readVideo', 'This video could not be read'));
+        console.warn('[Stories] video read failed:', e?.message);
+        setError(t('stories.errors.readVideo', 'This video could not be read'));
         return;
       }
       if (seconds > STORY_MAX_VIDEO_SECONDS + 0.5) {
@@ -78,6 +79,23 @@ export function StoryCreator({
     if (inputRef.current) inputRef.current.value = '';
   }
 
+  // createStory's own checks carry a code; upload-policy messages (shared
+  // sanitize module, not translated) pass through; anything else gets the
+  // generic message.
+  function postErrorText(e: any): string {
+    switch (e?.code) {
+      case 'upload': return e.message;
+      case 'textTooLong': return t('stories.errors.textTooLong', 'Keep it under {{max}} characters', { max: STORY_MAX_CHARS });
+      case 'empty': return t('stories.errors.empty', 'Write something first');
+      case 'noFile': return t('stories.errors.type', 'Choose a photo or a video');
+      case 'imageType': return t('stories.errors.imageType', 'Use a JPG, PNG, GIF or WebP image');
+      case 'videoLength': return t('stories.errors.readVideo', 'This video could not be read');
+      case 'videoTooLong': return t('stories.errors.videoMax', 'Videos can be up to {{max}} seconds', { max: STORY_MAX_VIDEO_SECONDS });
+    }
+    console.warn('[Stories] post failed:', e?.message);
+    return t('stories.errors.post', 'Could not post your story. Try again.');
+  }
+
   const canPost = !posting && (mode === 'text' ? text.trim().length > 0 : !!file);
 
   async function post() {
@@ -96,7 +114,7 @@ export function StoryCreator({
       });
       onPosted();
     } catch (e: any) {
-      setError(e?.message || t('stories.errors.post', 'Could not post your story. Try again.'));
+      setError(postErrorText(e));
       setPosting(false);
     }
   }

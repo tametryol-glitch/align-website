@@ -3261,5 +3261,65 @@
     "toolNarrowing": "Mogelijke geboortetijden verkleinen",
     "toolEvent": "Die gebeurtenis vastleggen",
     "toolFinalize": "De volledige analyse uitvoeren"
+  },
+  "stories": {
+    "rail": "Verhalen",
+    "add": "Toevoegen aan je verhaal",
+    "viewYours": "Je verhaal bekijken",
+    "yourStory": "Jouw verhaal",
+    "viewOf": "Verhaal van {{name}} bekijken",
+    "someone": "Iemand",
+    "now": "nu",
+    "create": {
+      "title": "Nieuw verhaal",
+      "media": "Foto / Video",
+      "text": "Tekst",
+      "textPlaceholder": "Typ iets…",
+      "remove": "Verwijderen",
+      "choose": "Kies een foto of video",
+      "videoLimit": "Video’s tot {{max}} s",
+      "caption": "Voeg een bijschrift toe (optioneel)",
+      "public": "Openbaar",
+      "friends": "Alleen vrienden",
+      "uploading": "Uploaden…",
+      "posting": "Plaatsen…",
+      "post": "Delen in verhaal",
+      "expires": "Verdwijnt na 24 uur"
+    },
+    "errors": {
+      "type": "Kies een foto of een video",
+      "readVideo": "Deze video kan niet worden gelezen",
+      "tooLong": "Video’s mogen maximaal {{max}} seconden duren — deze duurt {{len}} s",
+      "post": "Je verhaal kon niet worden geplaatst. Probeer het opnieuw.",
+      "textTooLong": "Blijf onder de {{max}} tekens",
+      "empty": "Schrijf eerst iets",
+      "imageType": "Gebruik een JPG-, PNG-, GIF- of WebP-afbeelding",
+      "videoMax": "Video’s mogen maximaal {{max}} seconden duren"
+    },
+    "viewer": {
+      "seenBy": "Gezien door {{count}}",
+      "reacted": "Je reageerde met {{emoji}}",
+      "reactWith": "Reageer met {{emoji}}",
+      "confirmReact": "{{emoji}} sturen naar {{name}}?",
+      "send": "Versturen",
+      "confirmDelete": "Dit verhaal verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "noViews": "Nog geen weergaven",
+      "reactFailed": "Je reactie kon niet worden verstuurd",
+      "viewersFailed": "Kijkers konden niet worden geladen",
+      "deleteFailed": "Dit verhaal kon niet worden verwijderd",
+      "play": "Afspelen",
+      "pause": "Pauzeren",
+      "mute": "Dempen",
+      "unmute": "Geluid aan"
+    },
+    "reply": {
+      "placeholder": "Antwoord aan {{name}}…",
+      "label": "Reageer op dit verhaal",
+      "sent": "Verstuurd",
+      "failed": "Je antwoord kon niet worden verstuurd",
+      "youReplied": "Je hebt op hun verhaal gereageerd",
+      "repliedToYours": "Heeft op je verhaal gereageerd",
+      "unavailable": "Verhaal niet meer beschikbaar"
+    }
   }
 }
