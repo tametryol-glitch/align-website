@@ -10,11 +10,11 @@
 // ═══════════════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
-import { getStoryRail, type StoryGroup } from '@/lib/storyService';
+import { getStoryRail, STORY_BACKGROUNDS, type Story, type StoryGroup } from '@/lib/storyService';
 import { StoryCreator } from './StoryCreator';
 import { StoryViewer } from './StoryViewer';
 
@@ -23,8 +23,33 @@ function BubbleAvatar({ url, name }: { url: string | null; name: string | null }
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt="" className="w-full h-full rounded-full object-cover" />
   ) : (
-    <div className="w-full h-full rounded-full bg-accent-primary/30 flex items-center justify-center text-lg font-semibold text-text-primary">
+    <div className="w-full h-full rounded-full bg-accent-primary/30 flex items-center justify-center text-sm font-semibold text-text-primary">
       {(name || '?').charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+/** What the card shows: the author's newest frame. */
+function StoryPreview({ story }: { story: Story }) {
+  if (story.type === 'image' && story.media_url) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={story.media_url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />;
+  }
+  if (story.type === 'video') {
+    return story.thumbnail_url ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={story.thumbnail_url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+    ) : story.media_url ? (
+      // Stories posted before posters existed: let the browser pull one frame.
+      <video src={`${story.media_url}#t=0.1`} preload="metadata" muted playsInline className="absolute inset-0 w-full h-full object-cover" />
+    ) : null;
+  }
+  return (
+    <div
+      className="absolute inset-0 flex items-center justify-center p-2"
+      style={{ backgroundColor: story.background_color || STORY_BACKGROUNDS[0] }}
+    >
+      <p className="text-white text-[11px] font-semibold leading-snug text-center line-clamp-5 break-words">{story.content}</p>
     </div>
   );
 }
@@ -82,52 +107,99 @@ export function StoryRail() {
     setViewer({ group: index, story: firstUnseen === -1 ? 0 : firstUnseen, groups });
   }
 
-  const ringClass = (g: StoryGroup | null) =>
-    !g ? 'bg-border-primary' : g.all_seen && g.user_id !== myId
+  const ringClass = (g: StoryGroup) =>
+    g.all_seen && g.user_id !== myId
       ? 'bg-border-primary'
       : 'bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600';
+
+  const newest = (g: StoryGroup) => g.stories[g.stories.length - 1];
+
+  // Portrait card: the newest frame fills it, the author's avatar sits in a
+  // ring (gradient = something unseen) in the corner, name along the bottom.
+  // A render helper, not a component: defined in here it would remount (and
+  // reload its image) on every rail update.
+  function renderCard({ g, label, onClick, ariaLabel }: { g: StoryGroup; label: string; onClick: () => void; ariaLabel: string }) {
+    const latest = newest(g);
+    return (
+      <button
+        onClick={onClick}
+        className="relative w-[92px] h-[148px] rounded-xl overflow-hidden bg-bg-tertiary border border-border-primary hover:brightness-110 transition"
+        aria-label={ariaLabel}
+      >
+        <StoryPreview story={latest} />
+        {latest.type === 'video' && (
+          <Play className="absolute top-2 right-2 w-3.5 h-3.5 text-white drop-shadow" fill="currentColor" />
+        )}
+        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/75 to-transparent" />
+        <div className={cn('absolute top-1.5 left-1.5 w-9 h-9 rounded-full p-[2px]', ringClass(g))}>
+          <div className="w-full h-full rounded-full p-[1.5px] bg-bg-primary">
+            <BubbleAvatar url={g.avatar_url} name={g.display_name} />
+          </div>
+        </div>
+        <span className={cn(
+          'absolute inset-x-1.5 bottom-1.5 text-[11px] font-semibold text-left truncate',
+          g.all_seen && g.user_id !== myId ? 'text-white/70' : 'text-white',
+        )}>
+          {label}
+        </span>
+      </button>
+    );
+  }
 
   return (
     <>
       <div className="mb-4 -mx-1">
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide px-1 pb-1" role="list" aria-label={t('stories.rail', 'Stories')}>
-          {/* Your story */}
-          <div className="shrink-0 w-[68px] flex flex-col items-center" role="listitem">
-            <div className="relative">
-              <button
-                onClick={() => (mine ? openGroup(mine) : setCreatorOpen(true))}
-                className={cn('w-16 h-16 rounded-full p-[2px]', mine ? ringClass(mine) : 'bg-transparent')}
-                aria-label={mine ? t('stories.viewYours', 'View your story') : t('stories.add', 'Add to your story')}
-              >
-                <div className="w-full h-full rounded-full p-[2px] bg-bg-primary">
-                  <BubbleAvatar url={profile?.avatar_url || null} name={profile?.display_name || null} />
-                </div>
-              </button>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide px-1 pb-1" role="list" aria-label={t('stories.rail', 'Stories')}>
+          {/* Your story: your newest frame, or a create card when you have none */}
+          <div className="shrink-0 relative" role="listitem">
+            {mine ? (
+              renderCard({
+                g: mine,
+                label: t('stories.yourStory', 'Your story'),
+                onClick: () => openGroup(mine),
+                ariaLabel: t('stories.viewYours', 'View your story'),
+              })
+            ) : (
               <button
                 onClick={() => setCreatorOpen(true)}
-                className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-accent-primary border-2 border-bg-primary flex items-center justify-center hover:scale-110 transition-transform"
+                className="relative w-[92px] h-[148px] rounded-xl overflow-hidden bg-bg-tertiary border border-border-primary hover:brightness-110 transition flex flex-col"
                 aria-label={t('stories.add', 'Add to your story')}
               >
-                <Plus className="w-3.5 h-3.5 text-white" />
+                <div className="h-[98px] w-full overflow-hidden">
+                  {profile?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-accent-primary/30 flex items-center justify-center text-2xl font-semibold text-text-primary">
+                      {(profile?.display_name || '?').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <span className="flex-1 flex items-end justify-center pb-2 text-[11px] font-semibold text-text-primary">
+                  {t('stories.yourStory', 'Your story')}
+                </span>
               </button>
-            </div>
-            <span className="mt-1 text-[11px] text-text-secondary truncate w-full text-center">{t('stories.yourStory', 'Your story')}</span>
+            )}
+            <button
+              onClick={() => setCreatorOpen(true)}
+              className={cn(
+                'absolute w-7 h-7 rounded-full bg-accent-primary border-2 border-bg-primary flex items-center justify-center hover:scale-110 transition-transform',
+                mine ? 'top-1.5 right-1.5' : 'left-1/2 -translate-x-1/2 top-[84px]',
+              )}
+              aria-label={t('stories.add', 'Add to your story')}
+            >
+              <Plus className="w-4 h-4 text-white" />
+            </button>
           </div>
 
           {others.map((g) => (
-            <div key={g.user_id} className="shrink-0 w-[68px] flex flex-col items-center" role="listitem">
-              <button
-                onClick={() => openGroup(g)}
-                className={cn('w-16 h-16 rounded-full p-[2px]', ringClass(g))}
-                aria-label={t('stories.viewOf', 'View story from {{name}}', { name: g.display_name || '' })}
-              >
-                <div className="w-full h-full rounded-full p-[2px] bg-bg-primary">
-                  <BubbleAvatar url={g.avatar_url} name={g.display_name} />
-                </div>
-              </button>
-              <span className={cn('mt-1 text-[11px] truncate w-full text-center', g.all_seen ? 'text-text-muted' : 'text-text-primary')}>
-                {g.display_name || t('stories.someone', 'Someone')}
-              </span>
+            <div key={g.user_id} className="shrink-0" role="listitem">
+              {renderCard({
+                g: g,
+                label: g.display_name || t('stories.someone', 'Someone'),
+                onClick: () => openGroup(g),
+                ariaLabel: t('stories.viewOf', 'View story from {{name}}', { name: g.display_name || '' }),
+              })}
             </div>
           ))}
         </div>

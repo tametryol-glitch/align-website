@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
   const { data: expired, error } = await admin
     .from('stories')
-    .select('id, media_url')
+    .select('id, media_url, thumbnail_url')
     .lt('expires_at', cutoff)
     .order('expires_at', { ascending: true })
     .limit(BATCH);
@@ -73,21 +73,24 @@ export async function GET(request: NextRequest) {
   const failures: string[] = [];
 
   // Text stories have no media and can go straight away.
-  const withMedia: { id: string; path: string }[] = [];
+  // A video story has two files: the video and its rail poster.
+  const withMedia: { id: string; paths: string[] }[] = [];
   for (const s of expired) {
-    const path = storyPathFromUrl(s.media_url);
-    if (path) withMedia.push({ id: s.id, path });
+    const paths = [storyPathFromUrl(s.media_url), storyPathFromUrl(s.thumbnail_url)]
+      .filter((x): x is string => !!x);
+    if (paths.length) withMedia.push({ id: s.id, paths });
     else deletable.push(s.id);
   }
 
-  for (let i = 0; i < withMedia.length; i += REMOVE_CHUNK) {
-    const chunk = withMedia.slice(i, i + REMOVE_CHUNK);
-    const { error: rmErr } = await admin.storage.from(BUCKET).remove(chunk.map((c) => c.path));
+  for (let i = 0; i < withMedia.length; i += REMOVE_CHUNK / 2) {
+    const chunk = withMedia.slice(i, i + REMOVE_CHUNK / 2);
+    const paths = chunk.flatMap((c) => c.paths);
+    const { error: rmErr } = await admin.storage.from(BUCKET).remove(paths);
     if (rmErr) {
       failures.push(rmErr.message);
       continue; // keep these rows; retried next run
     }
-    files += chunk.length;
+    files += paths.length;
     deletable.push(...chunk.map((c) => c.id));
   }
 

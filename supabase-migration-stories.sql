@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS public.stories (
   type             TEXT NOT NULL CHECK (type IN ('text', 'image', 'video')),
   content          TEXT CHECK (content IS NULL OR char_length(content) <= 500),
   media_url        TEXT,
+  thumbnail_url    TEXT,   -- poster frame for video stories (rail preview)
   background_color TEXT,
   duration_seconds NUMERIC(5,2),
   visibility       TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'friends')),
@@ -270,6 +271,7 @@ AS $$
            'type',             l.type,
            'content',          l.content,
            'media_url',        l.media_url,
+           'thumbnail_url',    l.thumbnail_url,
            'background_color', l.background_color,
            'duration_seconds', l.duration_seconds,
            'visibility',       l.visibility,

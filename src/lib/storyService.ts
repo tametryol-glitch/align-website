@@ -18,6 +18,8 @@ export interface Story {
   type: StoryType;
   content: string | null;
   media_url: string | null;
+  /** Poster frame for video stories (rail preview); null for older stories. */
+  thumbnail_url: string | null;
   background_color: string | null;
   duration_seconds: number | null;
   visibility: StoryVisibility;
@@ -120,6 +122,7 @@ function normaliseStory(s: any): Story {
     type: s.type,
     content: s.content ?? null,
     media_url: s.media_url ?? null,
+    thumbnail_url: s.thumbnail_url ?? null,
     background_color: s.background_color ?? null,
     duration_seconds: s.duration_seconds == null ? null : Number(s.duration_seconds),
     visibility: s.visibility === 'friends' ? 'friends' : 'public',
@@ -150,6 +153,53 @@ export async function getStoryRail(): Promise<StoryGroup[]> {
     .filter((g) => g.stories.length > 0);
 }
 
+/**
+ * Grab one frame of a local video as a JPEG, for the rail preview card.
+ * Browser only. Resolves null rather than failing the post: a missing
+ * poster just means the card falls back to loading the video itself.
+ */
+export function captureVideoPoster(file: File, maxWidth = 540): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement('video');
+    let settled = false;
+    const finish = (blob: Blob | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      URL.revokeObjectURL(url);
+      resolve(blob);
+    };
+    const timer = setTimeout(() => finish(null), 8000);
+    video.preload = 'auto';
+    video.muted = true;
+    video.playsInline = true;
+    video.onloadedmetadata = () => {
+      // A little way in: frame 0 is often black.
+      const d = Number.isFinite(video.duration) ? video.duration : 0;
+      video.currentTime = Math.min(0.5, d / 2);
+    };
+    video.onseeked = () => {
+      try {
+        const w = video.videoWidth, h = video.videoHeight;
+        if (!w || !h) return finish(null);
+        const scale = Math.min(1, maxWidth / w);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(w * scale);
+        canvas.height = Math.round(h * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return finish(null);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((b) => finish(b), 'image/jpeg', 0.8);
+      } catch {
+        finish(null);
+      }
+    };
+    video.onerror = () => finish(null);
+    video.src = url;
+  });
+}
+
 export async function createStory(input: {
   userId: string;
   type: StoryType;
@@ -165,6 +215,8 @@ export async function createStory(input: {
 
   let mediaUrl: string | null = null;
   let uploadedPath: string | null = null;
+  let thumbUrl: string | null = null;
+  let thumbPath: string | null = null;
 
   if (input.type === 'text') {
     if (!content) throw storyError('empty', 'Write something first');
@@ -189,6 +241,21 @@ export async function createStory(input: {
       .upload(uploadedPath, file, { contentType: file.type, upsert: false });
     if (upErr) throw new Error(upErr.message);
     mediaUrl = supabase.storage.from(STORY_BUCKET).getPublicUrl(uploadedPath).data.publicUrl;
+
+    if (input.type === 'video') {
+      // Optional: the story posts fine without it.
+      const poster = await captureVideoPoster(file);
+      if (poster) {
+        const p = uploadedPath.replace(/\.[a-z0-9]+$/, '') + '_thumb.jpg';
+        const { error: thErr } = await supabase.storage
+          .from(STORY_BUCKET)
+          .upload(p, poster, { contentType: 'image/jpeg', upsert: false });
+        if (!thErr) {
+          thumbPath = p;
+          thumbUrl = supabase.storage.from(STORY_BUCKET).getPublicUrl(p).data.publicUrl;
+        }
+      }
+    }
   }
 
   const row: Record<string, unknown> = {
@@ -200,11 +267,13 @@ export async function createStory(input: {
   };
   if (input.type === 'text') row.background_color = input.backgroundColor || STORY_BACKGROUNDS[0];
   if (input.type === 'video') row.duration_seconds = Math.round(Number(input.durationSeconds) * 100) / 100;
+  if (thumbUrl) row.thumbnail_url = thumbUrl;
 
   const { error } = await supabase.from('stories').insert(row);
   if (error) {
     // Don't leave an orphaned file behind a failed insert.
-    if (uploadedPath) await supabase.storage.from(STORY_BUCKET).remove([uploadedPath]).catch(() => {});
+    const orphans = [uploadedPath, thumbPath].filter((x): x is string => !!x);
+    if (orphans.length) await supabase.storage.from(STORY_BUCKET).remove(orphans).catch(() => {});
     throw new Error(error.message);
   }
 }
@@ -261,14 +330,15 @@ export async function getStoryViewers(storyId: string): Promise<StoryViewer[]> {
   return viewers;
 }
 
-export async function deleteStory(story: Pick<Story, 'id' | 'media_url'>): Promise<void> {
+export async function deleteStory(story: Pick<Story, 'id' | 'media_url'> & { thumbnail_url?: string | null }): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.from('stories').delete().eq('id', story.id);
   if (error) throw new Error(error.message);
-  const path = storyPathFromUrl(story.media_url);
-  if (path) {
+  const paths = [storyPathFromUrl(story.media_url), storyPathFromUrl(story.thumbnail_url)]
+    .filter((x): x is string => !!x);
+  if (paths.length) {
     // Best effort: the row is gone either way, a stray file is harmless.
-    try { await supabase.storage.from(STORY_BUCKET).remove([path]); } catch { /* ignore */ }
+    try { await supabase.storage.from(STORY_BUCKET).remove(paths); } catch { /* ignore */ }
   }
 }
 
