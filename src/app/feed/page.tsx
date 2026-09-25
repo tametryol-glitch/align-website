@@ -560,9 +560,10 @@ function CreatePostModal({
               {/* Image previews — up to 10; tap one to edit it */}
               {images.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                  {/* Wrapping grid (5 per row) so every photo and the + tile stay visible */}
+                  <div className="grid grid-cols-5 gap-2">
                     {images.map((img, i) => (
-                      <div key={img.id} className="relative shrink-0 w-24 h-32 rounded-xl overflow-hidden border border-border-primary bg-black">
+                      <div key={img.id} className="relative aspect-[3/4] rounded-xl overflow-hidden border border-border-primary bg-black">
                         <button
                           type="button"
                           onClick={() => setEditingImageId(img.id)}
@@ -595,7 +596,7 @@ function CreatePostModal({
                       </div>
                     ))}
                     {images.length < MAX_POST_IMAGES && (
-                      <label className="shrink-0 w-24 h-32 rounded-xl border-2 border-dashed border-border-primary flex flex-col items-center justify-center gap-1 text-text-muted hover:border-accent-primary/50 cursor-pointer">
+                      <label className="aspect-[3/4] rounded-xl border-2 border-dashed border-border-primary flex flex-col items-center justify-center gap-1 text-text-muted hover:border-accent-primary/50 cursor-pointer">
                         <Plus className="w-5 h-5" />
                         <span className="text-[10px]">{t('feed.composer.addMore', 'Add more')}</span>
                         <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageSelect} />
@@ -736,31 +737,6 @@ function CreatePostModal({
 
               {recorderError && (
                 <p className="text-xs text-red-300">{recorderError}</p>
-              )}
-
-              {/* Attachment bar (for text mode) */}
-              {postMode === 'text' && !imagePreview && !videoPreview && (
-                <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors">
-                    <ImageIcon className="w-4 h-4" /> {t('feed.composer.addImage')}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageSelect}
-                    />
-                  </label>
-                  {/* Switch to video mode so both Record and Upload are shown,
-                      instead of jumping straight to a file picker. */}
-                  <button
-                    type="button"
-                    onClick={() => { setPostMode('video'); clearImage(); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-muted hover:text-accent-primary hover:bg-accent-muted cursor-pointer transition-colors"
-                  >
-                    <Video className="w-4 h-4" /> {t('feed.composer.addVideo')}
-                  </button>
-                </div>
               )}
 
               {/* Style presets (text only, no image/video) */}
