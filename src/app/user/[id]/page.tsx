@@ -899,6 +899,7 @@ export default function UserProfilePage() {
           photos={lightboxPhotos}
           initialIndex={lightboxIndex}
           userId={user?.id || null}
+          ownerId={userId || null}
           onClose={() => setLightboxIndex(null)}
           seedReactions={photoReactions}
           onReactionsChanged={(targetId, reactions) => {

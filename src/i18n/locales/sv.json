@@ -3321,5 +3321,50 @@
       "repliedToYours": "Svarade på din story",
       "unavailable": "Storyn är inte längre tillgänglig"
     }
+  },
+  "views": {
+    "nav": "Visningar",
+    "title": "Vem som tittar på dig",
+    "subtitle": "Senaste 7 dagarna jämfört med de 7 dagarna innan",
+    "whoViewed": "Vem såg det",
+    "seeWho": "Se vem som såg det",
+    "count": "{{formatted}} visningar",
+    "count_one": "{{formatted}} visning",
+    "loadMore": "Ladda fler",
+    "empty": "Inga visningar än",
+    "emptyHint": "När någon tittar på din profil, dina inlägg, foton, videor, reels eller berättelser visas det här.",
+    "error": "Dina visningar kunde inte laddas",
+    "sheet": {
+      "title": "{{count}} personer har sett detta",
+      "title_one": "1 person har sett detta",
+      "titleLoading": "Tittare",
+      "empty": "Inga visningar än",
+      "error": "Tittarna kunde inte laddas"
+    },
+    "stats": {
+      "people": "Personer",
+      "profile": "Profil",
+      "post": "Inlägg",
+      "photo": "Foton",
+      "video": "Videor",
+      "reel": "Reels",
+      "story": "Berättelser",
+      "new": "Ny"
+    },
+    "filters": {
+      "all": "Alla"
+    },
+    "activity": {
+      "profile": "{{name}} tittade på din profil",
+      "post": "{{name}} såg ditt inlägg",
+      "video": "{{name}} tittade på din video",
+      "reel": "{{name}} tittade på din reel",
+      "photo": "{{name}} tittade på ditt foto",
+      "story": "{{name}} tittade på din berättelse"
+    },
+    "settings": {
+      "label": "Visningsmilstolpar",
+      "description": "När dina inlägg, foton, videor, reels eller berättelser når en visningsmilstolpe"
+    }
   }
 }

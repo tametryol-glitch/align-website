@@ -10,8 +10,9 @@
 // Web twin of align-app/src/components/ui/PhotoViewerModal.tsx.
 // ═══════════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { REACTION_OPTIONS, type ReactionEmoji } from '@/lib/feedService';
@@ -19,6 +20,9 @@ import {
   getPhotoReactions, togglePhotoReaction, getReactorsForPhoto, photoTargetId,
   type PhotoTarget, type PhotoReaction, type PhotoReactor,
 } from '@/lib/photoReactionService';
+import { recordPhotoView, getPhotoViewCounts, getPostViewersCount } from '@/lib/viewsService';
+import { trackPostImpression, flushImpressions } from '@/lib/impressionService';
+import ViewersSheet from '@/components/views/ViewersSheet';
 
 interface PhotoLightboxProps {
   photos: Array<{ target: PhotoTarget; label?: string }>;
@@ -28,6 +32,8 @@ interface PhotoLightboxProps {
   onClose: () => void;
   seedReactions?: Map<string, PhotoReaction[]>;
   onReactionsChanged?: (targetId: string, reactions: PhotoReaction[]) => void;
+  /** Whose gallery this is — decides ownership of post-backed photos. */
+  ownerId?: string | null;
 }
 
 export function PhotoLightbox({
@@ -37,15 +43,52 @@ export function PhotoLightbox({
   onClose,
   seedReactions,
   onReactionsChanged,
+  ownerId,
 }: PhotoLightboxProps) {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(initialIndex);
   const [reactions, setReactions] = useState<PhotoReaction[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [reactors, setReactors] = useState<PhotoReactor[] | null>(null);
   const [reactorsLoading, setReactorsLoading] = useState(false);
 
+  const [viewCount, setViewCount] = useState(0);
+  const [showViewers, setShowViewers] = useState(false);
+  // One recorded view per photo per time the viewer is open.
+  const viewedRef = useRef<Set<string>>(new Set());
+
   const entry = photos[index];
   const target = entry?.target;
+  const photoOwner = target ? (target.kind === 'profile' ? target.ownerId : ownerId ?? null) : null;
+  const isOwnPhoto = !!userId && photoOwner === userId;
+
+  // Record the view (never your own), then load the count. Best effort:
+  // before the views migration is live both calls quietly do nothing.
+  useEffect(() => {
+    if (!target) return;
+    let cancelled = false;
+    setViewCount(0);
+    setShowViewers(false);
+    (async () => {
+      const key = photoTargetId(target);
+      if (userId && !isOwnPhoto && !viewedRef.current.has(key)) {
+        viewedRef.current.add(key);
+        if (target.kind === 'profile') {
+          await recordPhotoView(target.photoKey, target.ownerId, target.imageUrl);
+        } else {
+          trackPostImpression(target.postId);
+          flushImpressions();
+        }
+      }
+      if (!userId) return;
+      const n = target.kind === 'profile'
+        ? (await getPhotoViewCounts([target.photoKey]))[target.photoKey] || 0
+        : await getPostViewersCount(target.postId);
+      if (!cancelled) setViewCount(n);
+    })().catch(() => {});
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, photos.length, userId]);
 
   // Load reactions for whichever photo is on screen.
   useEffect(() => {
@@ -69,13 +112,14 @@ export function PhotoLightbox({
   // Keyboard: Esc closes, arrows page.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (showViewers) return; // the viewers sheet handles its own Escape
       if (e.key === 'Escape') onClose();
       else if (e.key === 'ArrowLeft') go(-1);
       else if (e.key === 'ArrowRight') go(1);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, go]);
+  }, [onClose, go, showViewers]);
 
   async function handleReact(emoji: ReactionEmoji) {
     if (!target || !userId) return;
@@ -174,6 +218,21 @@ export function PhotoLightbox({
       <div className="bg-black/60 px-4 py-3 space-y-2 max-h-[45vh] overflow-y-auto">
         {entry.label && <p className="text-white/60 text-xs">{entry.label}</p>}
 
+        {viewCount > 0 && (
+          isOwnPhoto ? (
+            <button
+              onClick={() => setShowViewers(true)}
+              className="text-white/70 text-xs hover:text-white hover:underline"
+            >
+              👁 {t('views.count', '{{formatted}} views', { count: viewCount, formatted: String(viewCount) })}
+            </button>
+          ) : (
+            <p className="text-white/60 text-xs">
+              👁 {t('views.count', '{{formatted}} views', { count: viewCount, formatted: String(viewCount) })}
+            </p>
+          )
+        )}
+
         <div className="flex items-center gap-2 flex-wrap">
           {reactions.map(r => (
             <button
@@ -257,6 +316,15 @@ export function PhotoLightbox({
           </>
         )}
       </div>
+
+      {showViewers && (
+        <ViewersSheet
+          kind={target.kind === 'profile' ? 'photo' : 'post'}
+          id={target.kind === 'profile' ? target.photoKey : target.postId}
+          initialCount={viewCount}
+          onClose={() => setShowViewers(false)}
+        />
+      )}
     </div>
   );
 }

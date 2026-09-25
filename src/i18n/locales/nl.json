@@ -3321,5 +3321,50 @@
       "repliedToYours": "Heeft op je verhaal gereageerd",
       "unavailable": "Verhaal niet meer beschikbaar"
     }
+  },
+  "views": {
+    "nav": "Weergaven",
+    "title": "Wie naar je kijkt",
+    "subtitle": "Afgelopen 7 dagen, vergeleken met de 7 dagen ervoor",
+    "whoViewed": "Wie het zag",
+    "seeWho": "Bekijk wie het zag",
+    "count": "{{formatted}} weergaven",
+    "count_one": "{{formatted}} weergave",
+    "loadMore": "Meer laden",
+    "empty": "Nog geen weergaven",
+    "emptyHint": "Wanneer iemand je profiel, berichten, foto's, video's, reels of verhalen bekijkt, verschijnt dat hier.",
+    "error": "Je weergaven konden niet worden geladen",
+    "sheet": {
+      "title": "{{count}} mensen hebben dit bekeken",
+      "title_one": "1 persoon heeft dit bekeken",
+      "titleLoading": "Kijkers",
+      "empty": "Nog geen weergaven",
+      "error": "Kijkers konden niet worden geladen"
+    },
+    "stats": {
+      "people": "Mensen",
+      "profile": "Profiel",
+      "post": "Berichten",
+      "photo": "Foto's",
+      "video": "Video's",
+      "reel": "Reels",
+      "story": "Verhalen",
+      "new": "Nieuw"
+    },
+    "filters": {
+      "all": "Alles"
+    },
+    "activity": {
+      "profile": "{{name}} bekeek je profiel",
+      "post": "{{name}} zag je bericht",
+      "video": "{{name}} keek je video",
+      "reel": "{{name}} keek je reel",
+      "photo": "{{name}} bekeek je foto",
+      "story": "{{name}} bekeek je verhaal"
+    },
+    "settings": {
+      "label": "Weergave-mijlpalen",
+      "description": "Wanneer je berichten, foto's, video's, reels of verhalen een weergave-mijlpaal bereiken"
+    }
   }
 }

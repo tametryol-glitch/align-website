@@ -8,7 +8,7 @@ import {
   MessageCircle, Users, Megaphone, CalendarDays,
   ClipboardList, Shield, Zap, Sun, BadgeCheck,
   ChevronDown, Eclipse, RotateCcw, ArrowRightLeft,
-  Timer, Triangle, Circle, Hexagon, UserPlus, Radio,
+  Timer, Triangle, Circle, Hexagon, UserPlus, Radio, Eye,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -25,6 +25,7 @@ interface NotificationPreferences {
     newFollowers: boolean;
     followedPosts: boolean;
     followedLive: boolean;
+    viewMilestones: boolean;
   };
   cosmic: {
     frequency: 'essential' | 'important' | 'all';
@@ -89,6 +90,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     newFollowers: true,
     followedPosts: true,
     followedLive: true,
+    viewMilestones: true,
   },
   cosmic: {
     frequency: 'important',
@@ -288,6 +290,14 @@ export default function NotificationSettingsPage() {
         quiet_hours_end: newPrefs.quietHours.end,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
+    // Separate write: until the views migration adds this column, putting it
+    // in the upsert above would make PostgREST reject every other toggle too.
+    try {
+      await supabase
+        .from('notification_preferences')
+        .update({ view_milestones: newPrefs.social.viewMilestones })
+        .eq('user_id', user.id);
+    } catch { /* column not live yet */ }
   }, [user]);
 
   const updatePrefs = useCallback((updater: (prev: NotificationPreferences) => NotificationPreferences) => {
@@ -345,6 +355,7 @@ export default function NotificationSettingsPage() {
           newFollowers: on(gate.new_followers),
           followedPosts: on(gate.followed_posts),
           followedLive: on(gate.followed_live),
+          viewMilestones: on(gate.view_milestones),
         };
         next.announcements = on(gate.announcements);
         // The app stores bare hours ("23"); the selects here expect "23:00".
@@ -422,6 +433,7 @@ export default function NotificationSettingsPage() {
               <ToggleRow icon={UserPlus} label="New Followers" description="When someone starts following you" enabled={prefs.social.newFollowers} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, newFollowers: !p.social.newFollowers } }))} />
               <ToggleRow icon={Sparkles} label="Posts From People You Follow" description="When someone you follow shares a post or reel" enabled={prefs.social.followedPosts} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedPosts: !p.social.followedPosts } }))} />
               <ToggleRow icon={Radio} label="Live From People You Follow" description="When someone you follow starts a live stream" enabled={prefs.social.followedLive} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedLive: !p.social.followedLive } }))} />
+              <ToggleRow icon={Eye} label={t('views.settings.label', 'View Milestones')} description={t('views.settings.description', 'When your posts, photos, videos, reels or stories reach a view milestone')} enabled={prefs.social.viewMilestones} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, viewMilestones: !p.social.viewMilestones } }))} />
             </div>
           )}
         </SectionCard>

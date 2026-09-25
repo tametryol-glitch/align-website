@@ -3321,5 +3321,50 @@
       "repliedToYours": "Ha risposto alla tua storia",
       "unavailable": "Storia non più disponibile"
     }
+  },
+  "views": {
+    "nav": "Visualizzazioni",
+    "title": "Chi ti sta guardando",
+    "subtitle": "Ultimi 7 giorni, rispetto ai 7 giorni precedenti",
+    "whoViewed": "Chi l’ha visto",
+    "seeWho": "Vedi chi l’ha visto",
+    "count": "{{formatted}} visualizzazioni",
+    "count_one": "{{formatted}} visualizzazione",
+    "loadMore": "Carica altro",
+    "empty": "Ancora nessuna visualizzazione",
+    "emptyHint": "Quando qualcuno guarda il tuo profilo, i tuoi post, foto, video, reel o storie, apparirà qui.",
+    "error": "Impossibile caricare le tue visualizzazioni",
+    "sheet": {
+      "title": "{{count}} persone l’hanno visto",
+      "title_one": "1 persona l’ha visto",
+      "titleLoading": "Spettatori",
+      "empty": "Ancora nessuna visualizzazione",
+      "error": "Impossibile caricare gli spettatori"
+    },
+    "stats": {
+      "people": "Persone",
+      "profile": "Profilo",
+      "post": "Post",
+      "photo": "Foto",
+      "video": "Video",
+      "reel": "Reel",
+      "story": "Storie",
+      "new": "Nuovo"
+    },
+    "filters": {
+      "all": "Tutto"
+    },
+    "activity": {
+      "profile": "{{name}} ha visto il tuo profilo",
+      "post": "{{name}} ha visto il tuo post",
+      "video": "{{name}} ha guardato il tuo video",
+      "reel": "{{name}} ha guardato il tuo reel",
+      "photo": "{{name}} ha visto la tua foto",
+      "story": "{{name}} ha visto la tua storia"
+    },
+    "settings": {
+      "label": "Traguardi di visualizzazioni",
+      "description": "Quando i tuoi post, foto, video, reel o storie raggiungono un traguardo di visualizzazioni"
+    }
   }
 }

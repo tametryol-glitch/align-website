@@ -17,6 +17,8 @@ import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/cont
 import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 import { extractHttpUrls } from '@/lib/linkify';
 import ReactionViewerModal from './ReactionViewerModal';
+import ViewersSheet from '@/components/views/ViewersSheet';
+import type { ViewKind } from '@/lib/viewsService';
 import RelationshipShareCard from '@/components/share/RelationshipShareCard';
 import { readStoredSnapshot, relationshipShareQuery } from '@/lib/relationshipShare';
 
@@ -902,6 +904,8 @@ export function FeedCard({
   const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
   const [showReactors, setShowReactors] = useState(false);
+  // Owner only: which "who viewed" list is open ('post' seen / 'video' watched).
+  const [viewersKind, setViewersKind] = useState<ViewKind | null>(null);
   const [downloading, setDownloading] = useState(false);
   // Doubles as progress text while a cold variant encodes, then as the error
   // if it fails. Null = show the plain "Save video" label.
@@ -1118,9 +1122,20 @@ export function FeedCard({
                 }
               }}
             />
-            <span className="absolute top-2 right-7 px-2 py-0.5 rounded-md bg-black/55 text-white text-[11px] font-semibold pointer-events-none">
-              👁️ {formatViewCount(post.videoViewsCount || 0)}
-            </span>
+            {isOwner ? (
+              <button
+                type="button"
+                onClick={() => setViewersKind('video')}
+                title={t('views.seeWho', 'See who viewed')}
+                className="absolute top-2 right-7 px-2 py-0.5 rounded-md bg-black/55 hover:bg-black/75 text-white text-[11px] font-semibold"
+              >
+                👁️ {formatViewCount(post.videoViewsCount || 0)}
+              </button>
+            ) : (
+              <span className="absolute top-2 right-7 px-2 py-0.5 rounded-md bg-black/55 text-white text-[11px] font-semibold pointer-events-none">
+                👁️ {formatViewCount(post.videoViewsCount || 0)}
+              </span>
+            )}
           </div>
         );
       })()}
@@ -1157,6 +1172,35 @@ export function FeedCard({
           postId={post.id}
           reactions={post.reactions}
           onClose={() => setShowReactors(false)}
+        />
+      )}
+
+      {/* Views — unique people who saw a non-video post. Everyone sees the
+          number; the owner can open the list. */}
+      {!post.videoUrl && (post.viewersCount || 0) > 0 && (
+        <div className="px-5 pb-2">
+          {isOwner ? (
+            <button
+              type="button"
+              onClick={() => setViewersKind('post')}
+              className="text-xs text-text-muted hover:text-accent-primary hover:underline transition-colors"
+            >
+              👁 {t('views.count', '{{formatted}} views', { count: post.viewersCount || 0, formatted: formatViewCount(post.viewersCount || 0) })}
+            </button>
+          ) : (
+            <span className="text-xs text-text-muted">
+              👁 {t('views.count', '{{formatted}} views', { count: post.viewersCount || 0, formatted: formatViewCount(post.viewersCount || 0) })}
+            </span>
+          )}
+        </div>
+      )}
+
+      {viewersKind && (
+        <ViewersSheet
+          kind={viewersKind}
+          id={post.id}
+          initialCount={viewersKind === 'video' ? undefined : post.viewersCount}
+          onClose={() => setViewersKind(null)}
         />
       )}
 

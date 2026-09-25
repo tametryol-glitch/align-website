@@ -3321,5 +3321,50 @@
       "repliedToYours": "Respondeu ao seu story",
       "unavailable": "Story não disponível"
     }
+  },
+  "views": {
+    "nav": "Visualizações",
+    "title": "Quem está vendo você",
+    "subtitle": "Últimos 7 dias, comparados com os 7 dias anteriores",
+    "whoViewed": "Quem viu",
+    "seeWho": "Ver quem viu",
+    "count": "{{formatted}} visualizações",
+    "count_one": "{{formatted}} visualização",
+    "loadMore": "Carregar mais",
+    "empty": "Nenhuma visualização ainda",
+    "emptyHint": "Quando alguém ver seu perfil, posts, fotos, vídeos, reels ou stories, aparecerá aqui.",
+    "error": "Não foi possível carregar suas visualizações",
+    "sheet": {
+      "title": "{{count}} pessoas viram isto",
+      "title_one": "1 pessoa viu isto",
+      "titleLoading": "Espectadores",
+      "empty": "Nenhuma visualização ainda",
+      "error": "Não foi possível carregar quem viu"
+    },
+    "stats": {
+      "people": "Pessoas",
+      "profile": "Perfil",
+      "post": "Posts",
+      "photo": "Fotos",
+      "video": "Vídeos",
+      "reel": "Reels",
+      "story": "Stories",
+      "new": "Novo"
+    },
+    "filters": {
+      "all": "Tudo"
+    },
+    "activity": {
+      "profile": "{{name}} viu seu perfil",
+      "post": "{{name}} viu seu post",
+      "video": "{{name}} assistiu seu vídeo",
+      "reel": "{{name}} assistiu seu reel",
+      "photo": "{{name}} viu sua foto",
+      "story": "{{name}} viu seu story"
+    },
+    "settings": {
+      "label": "Marcos de visualizações",
+      "description": "Quando seus posts, fotos, vídeos, reels ou stories atingirem um marco de visualizações"
+    }
   }
 }

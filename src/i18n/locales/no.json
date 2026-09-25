@@ -3321,5 +3321,50 @@
       "repliedToYours": "Svarte på historien din",
       "unavailable": "Historien er ikke lenger tilgjengelig"
     }
+  },
+  "views": {
+    "nav": "Visninger",
+    "title": "Hvem som ser deg",
+    "subtitle": "Siste 7 dager sammenlignet med de 7 dagene før",
+    "whoViewed": "Hvem så det",
+    "seeWho": "Se hvem som så det",
+    "count": "{{formatted}} visninger",
+    "count_one": "{{formatted}} visning",
+    "loadMore": "Last inn flere",
+    "empty": "Ingen visninger ennå",
+    "emptyHint": "Når noen ser profilen din, innleggene, bildene, videoene, reels eller historiene dine, vises det her.",
+    "error": "Kunne ikke laste inn visningene dine",
+    "sheet": {
+      "title": "{{count}} personer har sett dette",
+      "title_one": "1 person har sett dette",
+      "titleLoading": "Seere",
+      "empty": "Ingen visninger ennå",
+      "error": "Kunne ikke laste inn seerne"
+    },
+    "stats": {
+      "people": "Personer",
+      "profile": "Profil",
+      "post": "Innlegg",
+      "photo": "Bilder",
+      "video": "Videoer",
+      "reel": "Reels",
+      "story": "Historier",
+      "new": "Ny"
+    },
+    "filters": {
+      "all": "Alle"
+    },
+    "activity": {
+      "profile": "{{name}} så profilen din",
+      "post": "{{name}} så innlegget ditt",
+      "video": "{{name}} så videoen din",
+      "reel": "{{name}} så reelen din",
+      "photo": "{{name}} så bildet ditt",
+      "story": "{{name}} så historien din"
+    },
+    "settings": {
+      "label": "Visningsmilepæler",
+      "description": "Når innleggene, bildene, videoene, reels eller historiene dine når en visningsmilepæl"
+    }
   }
 }

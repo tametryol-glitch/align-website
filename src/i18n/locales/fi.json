@@ -3321,5 +3321,50 @@
       "repliedToYours": "Vastasi tarinaasi",
       "unavailable": "Tarina ei ole enää saatavilla"
     }
+  },
+  "views": {
+    "nav": "Katselut",
+    "title": "Kuka katsoo sinua",
+    "subtitle": "Viimeiset 7 päivää verrattuna edellisiin 7 päivään",
+    "whoViewed": "Kuka katsoi",
+    "seeWho": "Katso, kuka katsoi",
+    "count": "Katselut: {{formatted}}",
+    "count_one": "Katselut: {{formatted}}",
+    "loadMore": "Lataa lisää",
+    "empty": "Ei vielä katseluja",
+    "emptyHint": "Kun joku katsoo profiiliasi, julkaisujasi, kuviasi, videoitasi, reelejäsi tai tarinoitasi, se näkyy täällä.",
+    "error": "Katselujen lataaminen epäonnistui",
+    "sheet": {
+      "title": "Katsojia: {{count}}",
+      "title_one": "1 henkilö katsoi tämän",
+      "titleLoading": "Katsojat",
+      "empty": "Ei vielä katseluja",
+      "error": "Katsojien lataaminen epäonnistui"
+    },
+    "stats": {
+      "people": "Ihmiset",
+      "profile": "Profiili",
+      "post": "Julkaisut",
+      "photo": "Kuvat",
+      "video": "Videot",
+      "reel": "Reelit",
+      "story": "Tarinat",
+      "new": "Uusi"
+    },
+    "filters": {
+      "all": "Kaikki"
+    },
+    "activity": {
+      "profile": "{{name}} katsoi profiiliasi",
+      "post": "{{name}} näki julkaisusi",
+      "video": "{{name}} katsoi videosi",
+      "reel": "{{name}} katsoi reelisi",
+      "photo": "{{name}} katsoi kuvasi",
+      "story": "{{name}} katsoi tarinasi"
+    },
+    "settings": {
+      "label": "Katselujen virstanpylväät",
+      "description": "Kun julkaisusi, kuvasi, videosi, reelisi tai tarinasi saavuttavat katselujen virstanpylvään"
+    }
   }
 }

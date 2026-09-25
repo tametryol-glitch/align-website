@@ -501,6 +501,9 @@ export default function ProfilePage() {
             <Link href="/profile/edit" className="btn-secondary text-sm inline-flex items-center gap-2 px-6 py-2">
               <Pencil className="w-4 h-4" /> {t('profile.editProfile')}
             </Link>
+            <Link href="/views" className="btn-secondary text-sm inline-flex items-center gap-2 px-6 py-2">
+              👀 {t('views.whoViewed', 'Who viewed')}
+            </Link>
             {profile.sun_sign && profile.moon_sign && profile.rising_sign && (
               <ShareButtonWithCard
                 variant="button"
@@ -954,6 +957,7 @@ export default function ProfilePage() {
           photos={lightboxPhotos}
           initialIndex={lightboxIndex}
           userId={userId || null}
+          ownerId={userId || null}
           onClose={() => setLightboxIndex(null)}
           seedReactions={photoReactions}
           onReactionsChanged={(targetId, reactions) => {

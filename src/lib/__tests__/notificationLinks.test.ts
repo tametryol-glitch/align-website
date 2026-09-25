@@ -83,3 +83,9 @@ describe('getNotificationLink — story reactions', () => {
     expect(getNotificationLink({ type: 'story_reaction', data: { post_id: 'p1' } })).toBe('/feed');
   });
 });
+
+describe('getNotificationLink — view milestones', () => {
+  it('opens the Views page', () => {
+    expect(getNotificationLink({ type: 'view_milestone', data: { kind: 'photo', count: 25 } })).toBe('/views');
+  });
+});

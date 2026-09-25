@@ -20,6 +20,7 @@ import {
   type ReelReportReason,
 } from '@/lib/reelsService';
 import { downloadVideo } from '@/lib/videoDownloadService';
+import ViewersSheet from '@/components/views/ViewersSheet';
 import {
   Heart,
   Bookmark,
@@ -77,6 +78,7 @@ function ReelItem({
   onView,
   onDownload,
   downloading,
+  onOpenViewers,
 }: {
   reel: Reel;
   isActive: boolean;
@@ -90,6 +92,8 @@ function ReelItem({
   onView: () => void;
   onDownload: () => void;
   downloading: boolean;
+  /** Set only for the reel's creator — opens "who viewed". */
+  onOpenViewers?: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -370,15 +374,29 @@ function ReelItem({
           </button>
         )}
 
-        {/* Views */}
-        <div className="flex flex-col items-center gap-1">
-          <div className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
-            <Eye className="w-5 h-5 text-white/70" />
+        {/* Views — the creator can open who viewed */}
+        {onOpenViewers ? (
+          <button
+            onClick={onOpenViewers}
+            className="flex flex-col items-center gap-1 group"
+          >
+            <div className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-white text-xs font-semibold drop-shadow-lg">
+              {formatCount(reel.views_count)}
+            </span>
+          </button>
+        ) : (
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
+              <Eye className="w-5 h-5 text-white/70" />
+            </div>
+            <span className="text-white/70 text-xs font-semibold drop-shadow-lg">
+              {formatCount(reel.views_count)}
+            </span>
           </div>
-          <span className="text-white/70 text-xs font-semibold drop-shadow-lg">
-            {formatCount(reel.views_count)}
-          </span>
-        </div>
+        )}
 
         {/* Report / more */}
         <button
@@ -669,6 +687,8 @@ export default function ReelsPage() {
   const [commentReelId, setCommentReelId] = useState<string | null>(null);
   // Report modal
   const [reportReelId, setReportReelId] = useState<string | null>(null);
+  // Creator only: "who viewed" sheet for one of their reels.
+  const [viewersReelId, setViewersReelId] = useState<string | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(0);
@@ -1037,6 +1057,7 @@ export default function ReelsPage() {
                 onView={() => handleRecordView(reel.id)}
                 onDownload={() => handleDownload(reel)}
                 downloading={downloadingId === reel.id}
+                onOpenViewers={user?.id && reel.creator_id === user.id ? () => setViewersReelId(reel.id) : undefined}
               />
             </div>
           ))}
@@ -1080,6 +1101,15 @@ export default function ReelsPage() {
           reelId={commentReelId}
           onClose={() => setCommentReelId(null)}
           onCountChange={handleCommentCountChange}
+        />
+      )}
+
+      {/* Who viewed (creator only) */}
+      {viewersReelId && (
+        <ViewersSheet
+          kind="reel"
+          id={viewersReelId}
+          onClose={() => setViewersReelId(null)}
         />
       )}
 

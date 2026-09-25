@@ -3321,5 +3321,50 @@
       "repliedToYours": "Svarede på din story",
       "unavailable": "Storyen er ikke længere tilgængelig"
     }
+  },
+  "views": {
+    "nav": "Visninger",
+    "title": "Hvem der ser dig",
+    "subtitle": "Sidste 7 dage sammenlignet med de 7 dage før",
+    "whoViewed": "Hvem så det",
+    "seeWho": "Se hvem der så det",
+    "count": "{{formatted}} visninger",
+    "count_one": "{{formatted}} visning",
+    "loadMore": "Indlæs flere",
+    "empty": "Ingen visninger endnu",
+    "emptyHint": "Når nogen ser din profil, dine opslag, billeder, videoer, reels eller historier, vises det her.",
+    "error": "Dine visninger kunne ikke indlæses",
+    "sheet": {
+      "title": "{{count}} personer har set dette",
+      "title_one": "1 person har set dette",
+      "titleLoading": "Seere",
+      "empty": "Ingen visninger endnu",
+      "error": "Seerne kunne ikke indlæses"
+    },
+    "stats": {
+      "people": "Personer",
+      "profile": "Profil",
+      "post": "Opslag",
+      "photo": "Billeder",
+      "video": "Videoer",
+      "reel": "Reels",
+      "story": "Historier",
+      "new": "Ny"
+    },
+    "filters": {
+      "all": "Alle"
+    },
+    "activity": {
+      "profile": "{{name}} så din profil",
+      "post": "{{name}} så dit opslag",
+      "video": "{{name}} så din video",
+      "reel": "{{name}} så din reel",
+      "photo": "{{name}} så dit billede",
+      "story": "{{name}} så din historie"
+    },
+    "settings": {
+      "label": "Visningsmilepæle",
+      "description": "Når dine opslag, billeder, videoer, reels eller historier når en visningsmilepæl"
+    }
   }
 }

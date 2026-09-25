@@ -3321,5 +3321,50 @@
       "repliedToYours": "Hikayeni yanıtladı",
       "unavailable": "Hikaye artık mevcut değil"
     }
+  },
+  "views": {
+    "nav": "Görüntülenmeler",
+    "title": "Seni kimler görüntülüyor",
+    "subtitle": "Son 7 gün, önceki 7 günle karşılaştırmalı",
+    "whoViewed": "Kimler gördü",
+    "seeWho": "Kimlerin gördüğünü gör",
+    "count": "{{formatted}} görüntülenme",
+    "count_one": "{{formatted}} görüntülenme",
+    "loadMore": "Daha fazla yükle",
+    "empty": "Henüz görüntülenme yok",
+    "emptyHint": "Birisi profilini, gönderilerini, fotoğraflarını, videolarını, reels'lerini veya hikayelerini görüntülediğinde burada görünecek.",
+    "error": "Görüntülenmeler yüklenemedi",
+    "sheet": {
+      "title": "{{count}} kişi bunu gördü",
+      "title_one": "1 kişi bunu gördü",
+      "titleLoading": "İzleyenler",
+      "empty": "Henüz görüntülenme yok",
+      "error": "İzleyenler yüklenemedi"
+    },
+    "stats": {
+      "people": "Kişiler",
+      "profile": "Profil",
+      "post": "Gönderiler",
+      "photo": "Fotoğraflar",
+      "video": "Videolar",
+      "reel": "Reels",
+      "story": "Hikayeler",
+      "new": "Yeni"
+    },
+    "filters": {
+      "all": "Tümü"
+    },
+    "activity": {
+      "profile": "{{name}} profilini görüntüledi",
+      "post": "{{name}} gönderini gördü",
+      "video": "{{name}} videonu izledi",
+      "reel": "{{name}} reels'ini izledi",
+      "photo": "{{name}} fotoğrafını görüntüledi",
+      "story": "{{name}} hikayeni görüntüledi"
+    },
+    "settings": {
+      "label": "Görüntülenme dönüm noktaları",
+      "description": "Gönderilerin, fotoğrafların, videoların, reels'lerin veya hikayelerin bir görüntülenme dönüm noktasına ulaştığında"
+    }
   }
 }

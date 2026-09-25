@@ -3321,5 +3321,50 @@
       "repliedToYours": "Respondió a tu historia",
       "unavailable": "La historia ya no está disponible"
     }
+  },
+  "views": {
+    "nav": "Vistas",
+    "title": "Quién te está viendo",
+    "subtitle": "Últimos 7 días, comparados con los 7 anteriores",
+    "whoViewed": "Quién lo vio",
+    "seeWho": "Ver quién lo vio",
+    "count": "{{formatted}} vistas",
+    "count_one": "{{formatted}} vista",
+    "loadMore": "Cargar más",
+    "empty": "Aún no hay vistas",
+    "emptyHint": "Cuando alguien vea tu perfil, publicaciones, fotos, videos, reels o historias, aparecerá aquí.",
+    "error": "No se pudieron cargar tus vistas",
+    "sheet": {
+      "title": "{{count}} personas vieron esto",
+      "title_one": "1 persona vio esto",
+      "titleLoading": "Espectadores",
+      "empty": "Aún no hay vistas",
+      "error": "No se pudieron cargar los espectadores"
+    },
+    "stats": {
+      "people": "Personas",
+      "profile": "Perfil",
+      "post": "Publicaciones",
+      "photo": "Fotos",
+      "video": "Videos",
+      "reel": "Reels",
+      "story": "Historias",
+      "new": "Nuevo"
+    },
+    "filters": {
+      "all": "Todo"
+    },
+    "activity": {
+      "profile": "{{name}} vio tu perfil",
+      "post": "{{name}} vio tu publicación",
+      "video": "{{name}} vio tu video",
+      "reel": "{{name}} vio tu reel",
+      "photo": "{{name}} vio tu foto",
+      "story": "{{name}} vio tu historia"
+    },
+    "settings": {
+      "label": "Hitos de vistas",
+      "description": "Cuando tus publicaciones, fotos, videos, reels o historias alcancen un hito de vistas"
+    }
   }
 }

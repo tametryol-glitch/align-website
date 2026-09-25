@@ -57,6 +57,7 @@ const TYPE_SCORES: Record<string, number> = {
   comment: 60,
   like: 50,
   story_reaction: 48,
+  view_milestone: 40,
   follow: 45,
   transit_alert: 30,
   system: 25,

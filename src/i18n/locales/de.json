@@ -3321,5 +3321,50 @@
       "repliedToYours": "Hat auf deine Story geantwortet",
       "unavailable": "Story nicht mehr verfügbar"
     }
+  },
+  "views": {
+    "nav": "Aufrufe",
+    "title": "Wer dich ansieht",
+    "subtitle": "Letzte 7 Tage im Vergleich zu den 7 Tagen davor",
+    "whoViewed": "Wer es gesehen hat",
+    "seeWho": "Sehen, wer es angesehen hat",
+    "count": "{{formatted}} Aufrufe",
+    "count_one": "{{formatted}} Aufruf",
+    "loadMore": "Mehr laden",
+    "empty": "Noch keine Aufrufe",
+    "emptyHint": "Wenn jemand dein Profil, deine Beiträge, Fotos, Videos, Reels oder Storys ansieht, erscheint es hier.",
+    "error": "Deine Aufrufe konnten nicht geladen werden",
+    "sheet": {
+      "title": "{{count}} Personen haben das gesehen",
+      "title_one": "1 Person hat das gesehen",
+      "titleLoading": "Zuschauer",
+      "empty": "Noch keine Aufrufe",
+      "error": "Zuschauer konnten nicht geladen werden"
+    },
+    "stats": {
+      "people": "Personen",
+      "profile": "Profil",
+      "post": "Beiträge",
+      "photo": "Fotos",
+      "video": "Videos",
+      "reel": "Reels",
+      "story": "Storys",
+      "new": "Neu"
+    },
+    "filters": {
+      "all": "Alle"
+    },
+    "activity": {
+      "profile": "{{name}} hat dein Profil angesehen",
+      "post": "{{name}} hat deinen Beitrag gesehen",
+      "video": "{{name}} hat dein Video angesehen",
+      "reel": "{{name}} hat dein Reel angesehen",
+      "photo": "{{name}} hat dein Foto angesehen",
+      "story": "{{name}} hat deine Story angesehen"
+    },
+    "settings": {
+      "label": "Aufruf-Meilensteine",
+      "description": "Wenn deine Beiträge, Fotos, Videos, Reels oder Storys einen Aufruf-Meilenstein erreichen"
+    }
   }
 }

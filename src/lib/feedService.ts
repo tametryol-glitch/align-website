@@ -44,6 +44,8 @@ export interface FeedPost {
   posterUrl?: string;
   /** Total video plays (unique-per-user log lives in post_video_views). */
   videoViewsCount?: number;
+  /** Unique people (not the author) who saw this post in the feed. */
+  viewersCount?: number;
   /**
    * Creator opt-out for video posts. When false no download button is shown.
    * Defaults to true; only meaningful when videoUrl is set.
@@ -246,6 +248,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
+      viewersCount: p.viewers_count || 0,
       // Rows predating the downloads migration have no value — treat those
       // as allowed, matching the DB default.
       allowDownload: p.allow_download !== false,
@@ -369,6 +372,7 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
+      viewersCount: p.viewers_count || 0,
       // Rows predating the downloads migration have no value — treat those
       // as allowed, matching the DB default.
       allowDownload: p.allow_download !== false,

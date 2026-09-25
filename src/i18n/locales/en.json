@@ -3371,5 +3371,50 @@
       "repliedToYours": "Replied to your story",
       "unavailable": "Story no longer available"
     }
+  },
+  "views": {
+    "nav": "Views",
+    "title": "Who's viewing you",
+    "subtitle": "Last 7 days, compared with the 7 days before",
+    "whoViewed": "Who viewed",
+    "seeWho": "See who viewed",
+    "count": "{{formatted}} views",
+    "count_one": "{{formatted}} view",
+    "loadMore": "Load more",
+    "empty": "No views yet",
+    "emptyHint": "When people view your profile, posts, photos, videos, reels or stories, they will show up here.",
+    "error": "Could not load your views",
+    "sheet": {
+      "title": "{{count}} people viewed this",
+      "title_one": "1 person viewed this",
+      "titleLoading": "Viewers",
+      "empty": "No views yet",
+      "error": "Could not load viewers"
+    },
+    "stats": {
+      "people": "People",
+      "profile": "Profile",
+      "post": "Posts",
+      "photo": "Photos",
+      "video": "Videos",
+      "reel": "Reels",
+      "story": "Stories",
+      "new": "New"
+    },
+    "filters": {
+      "all": "All"
+    },
+    "activity": {
+      "profile": "{{name}} viewed your profile",
+      "post": "{{name}} saw your post",
+      "video": "{{name}} watched your video",
+      "reel": "{{name}} watched your reel",
+      "photo": "{{name}} viewed your photo",
+      "story": "{{name}} viewed your story"
+    },
+    "settings": {
+      "label": "View Milestones",
+      "description": "When your posts, photos, videos, reels or stories reach a view milestone"
+    }
   }
 }

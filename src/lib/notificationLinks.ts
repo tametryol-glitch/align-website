@@ -40,6 +40,9 @@ export function getNotificationLink(n: LinkableNotification): string {
       // Someone reacted to YOUR story. The feed's story rail opens the frame
       // from ?story=; if it has already expired you just land on the feed.
       return n.data?.story_id ? `/feed?story=${n.data.story_id}` : '/feed';
+    case 'view_milestone':
+      // "25 people have viewed your photo" — the Views page lists who.
+      return '/views';
     case 'message':
     case 'new_message':
       // /messages is a single page that opens a thread from ?conversation= —

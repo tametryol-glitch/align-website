@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter } from 'lucide-react';
+import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter, Eye } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
   prioritizeNotifications as prioritizeByImportance,
@@ -55,6 +55,7 @@ const TYPE_CATEGORIES: Record<string, Exclude<TabFilter, 'all'>> = {
   follow: 'social',
   new_post: 'social',
   story_reaction: 'social',
+  view_milestone: 'social',
   cosmic_alert: 'cosmic',
   transit: 'cosmic',
   transit_alert: 'cosmic',
@@ -82,6 +83,7 @@ const NOTIFICATION_ICONS: Record<string, any> = {
   follow: UserPlus,
   new_post: Star,
   story_reaction: Heart,
+  view_milestone: Eye,
   cosmic_alert: Zap,
   transit: Zap,
   transit_alert: Zap,

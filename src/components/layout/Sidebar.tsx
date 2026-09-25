@@ -8,11 +8,12 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
 import { useFriendsStore } from '@/stores/friendsStore';
+import { useViewBadge } from '@/hooks/useViewBadge';
 import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
   Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
-  Bookmark, BarChart3, Palette, Orbit, DollarSign,
+  Bookmark, BarChart3, Palette, Orbit, DollarSign, Eye,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -34,6 +35,7 @@ const NAV_ITEMS = [
   { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },
   { href: '/bookmarks', labelKey: 'components.sidebar.bookmarks', icon: Bookmark },
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
+  { href: '/views', labelKey: 'views.nav', icon: Eye },
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
   { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
@@ -47,6 +49,7 @@ export function Sidebar() {
   const { profile } = useAuthStore();
   const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
   const pendingFriendRequests = useFriendsStore((s) => s.pendingRequestCount);
+  const newViewers = useViewBadge();
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary flex-col z-40">
@@ -62,6 +65,7 @@ export function Sidebar() {
           const active = pathname === href || pathname.startsWith(href + '/');
           const showBadge = href === '/messages' && totalUnread > 0;
           const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
+          const showViewsBadge = href === '/views' && newViewers > 0;
           return (
             <Link
               key={href}
@@ -84,6 +88,11 @@ export function Sidebar() {
               {showFriendBadge && (
                 <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
                   {pendingFriendRequests > 99 ? '99+' : pendingFriendRequests}
+                </span>
+              )}
+              {showViewsBadge && (
+                <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold min-w-[18px] text-center">
+                  {newViewers > 98 ? '99+' : newViewers}
                 </span>
               )}
             </Link>

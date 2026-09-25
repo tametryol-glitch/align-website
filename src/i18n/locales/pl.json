@@ -3321,5 +3321,50 @@
       "repliedToYours": "Odpowiedź na Twoją relację",
       "unavailable": "Relacja nie jest już dostępna"
     }
+  },
+  "views": {
+    "nav": "Wyświetlenia",
+    "title": "Kto cię ogląda",
+    "subtitle": "Ostatnie 7 dni w porównaniu z poprzednimi 7 dniami",
+    "whoViewed": "Kto wyświetlił",
+    "seeWho": "Zobacz, kto wyświetlił",
+    "count": "Wyświetlenia: {{formatted}}",
+    "count_one": "Wyświetlenia: {{formatted}}",
+    "loadMore": "Załaduj więcej",
+    "empty": "Brak wyświetleń",
+    "emptyHint": "Gdy ktoś obejrzy twój profil, posty, zdjęcia, filmy, rolki lub relacje, pojawi się tutaj.",
+    "error": "Nie udało się załadować wyświetleń",
+    "sheet": {
+      "title": "Osoby, które to widziały: {{count}}",
+      "title_one": "1 osoba to widziała",
+      "titleLoading": "Widzowie",
+      "empty": "Brak wyświetleń",
+      "error": "Nie udało się załadować widzów"
+    },
+    "stats": {
+      "people": "Osoby",
+      "profile": "Profil",
+      "post": "Posty",
+      "photo": "Zdjęcia",
+      "video": "Filmy",
+      "reel": "Rolki",
+      "story": "Relacje",
+      "new": "Nowe"
+    },
+    "filters": {
+      "all": "Wszystko"
+    },
+    "activity": {
+      "profile": "{{name}} wyświetlił(a) twój profil",
+      "post": "{{name}} zobaczył(a) twój post",
+      "video": "{{name}} obejrzał(a) twój film",
+      "reel": "{{name}} obejrzał(a) twoją rolkę",
+      "photo": "{{name}} wyświetlił(a) twoje zdjęcie",
+      "story": "{{name}} wyświetlił(a) twoją relację"
+    },
+    "settings": {
+      "label": "Kamienie milowe wyświetleń",
+      "description": "Gdy twoje posty, zdjęcia, filmy, rolki lub relacje osiągną kamień milowy wyświetleń"
+    }
   }
 }

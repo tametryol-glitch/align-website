@@ -3321,5 +3321,50 @@
       "repliedToYours": "A répondu à votre story",
       "unavailable": "Story plus disponible"
     }
+  },
+  "views": {
+    "nav": "Vues",
+    "title": "Qui vous regarde",
+    "subtitle": "7 derniers jours, comparés aux 7 jours précédents",
+    "whoViewed": "Qui a vu",
+    "seeWho": "Voir qui a vu",
+    "count": "{{formatted}} vues",
+    "count_one": "{{formatted}} vue",
+    "loadMore": "Charger plus",
+    "empty": "Aucune vue pour l’instant",
+    "emptyHint": "Quand quelqu’un consulte votre profil, vos publications, photos, vidéos, reels ou stories, cela apparaîtra ici.",
+    "error": "Impossible de charger vos vues",
+    "sheet": {
+      "title": "{{count}} personnes ont vu ceci",
+      "title_one": "1 personne a vu ceci",
+      "titleLoading": "Spectateurs",
+      "empty": "Aucune vue pour l’instant",
+      "error": "Impossible de charger les spectateurs"
+    },
+    "stats": {
+      "people": "Personnes",
+      "profile": "Profil",
+      "post": "Publications",
+      "photo": "Photos",
+      "video": "Vidéos",
+      "reel": "Reels",
+      "story": "Stories",
+      "new": "Nouveau"
+    },
+    "filters": {
+      "all": "Tout"
+    },
+    "activity": {
+      "profile": "{{name}} a consulté votre profil",
+      "post": "{{name}} a vu votre publication",
+      "video": "{{name}} a regardé votre vidéo",
+      "reel": "{{name}} a regardé votre reel",
+      "photo": "{{name}} a vu votre photo",
+      "story": "{{name}} a vu votre story"
+    },
+    "settings": {
+      "label": "Paliers de vues",
+      "description": "Quand vos publications, photos, vidéos, reels ou stories atteignent un palier de vues"
+    }
   }
 }

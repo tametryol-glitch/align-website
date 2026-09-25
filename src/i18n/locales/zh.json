@@ -3324,5 +3324,50 @@
       "repliedToYours": "回复了你的快拍",
       "unavailable": "快拍已不可用"
     }
+  },
+  "views": {
+    "nav": "浏览",
+    "title": "谁在看你",
+    "subtitle": "最近 7 天,与之前 7 天相比",
+    "whoViewed": "谁看过",
+    "seeWho": "查看谁看过",
+    "count": "{{formatted}} 次浏览",
+    "count_one": "{{formatted}} 次浏览",
+    "loadMore": "加载更多",
+    "empty": "暂无浏览",
+    "emptyHint": "当有人查看你的个人资料、帖子、照片、视频、短视频或快拍时,会显示在这里。",
+    "error": "无法加载你的浏览记录",
+    "sheet": {
+      "title": "{{count}} 人看过",
+      "title_one": "1 人看过",
+      "titleLoading": "浏览者",
+      "empty": "暂无浏览",
+      "error": "无法加载浏览者"
+    },
+    "stats": {
+      "people": "人数",
+      "profile": "个人资料",
+      "post": "帖子",
+      "photo": "照片",
+      "video": "视频",
+      "reel": "短视频",
+      "story": "快拍",
+      "new": "新"
+    },
+    "filters": {
+      "all": "全部"
+    },
+    "activity": {
+      "profile": "{{name}} 查看了你的个人资料",
+      "post": "{{name}} 看到了你的帖子",
+      "video": "{{name}} 观看了你的视频",
+      "reel": "{{name}} 观看了你的短视频",
+      "photo": "{{name}} 查看了你的照片",
+      "story": "{{name}} 查看了你的快拍"
+    },
+    "settings": {
+      "label": "浏览里程碑",
+      "description": "当你的帖子、照片、视频、短视频或快拍达到浏览里程碑时"
+    }
   }
 }

@@ -9,11 +9,12 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
 import { useFriendsStore } from '@/stores/friendsStore';
+import { useViewBadge } from '@/hooks/useViewBadge';
 import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit,
+  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit, Eye,
 } from 'lucide-react';
 
 const TABS = [
@@ -36,6 +37,7 @@ const MORE_ITEMS = [
   { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
   { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
   { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
+  { href: '/views', labelKey: 'views.nav', icon: Eye },
   { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
   { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
   { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
@@ -51,6 +53,7 @@ export function BottomTabBar() {
   const { profile } = useAuthStore();
   const totalUnread = useMessagesStore((s) => s.totalUnreadMessages);
   const pendingFriendRequests = useFriendsStore((s) => s.pendingRequestCount);
+  const newViewers = useViewBadge();
   const [showMore, setShowMore] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -135,6 +138,11 @@ export function BottomTabBar() {
                       {showBadge && pendingFriendRequests > 0 && (
                         <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-accent-primary flex items-center justify-center text-[8px] text-white font-bold">
                           {pendingFriendRequests > 9 ? '9+' : pendingFriendRequests}
+                        </span>
+                      )}
+                      {href === '/views' && newViewers > 0 && (
+                        <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[8px] text-white font-bold">
+                          {newViewers > 9 ? '9+' : newViewers}
                         </span>
                       )}
                     </div>
