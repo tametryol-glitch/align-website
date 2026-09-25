@@ -1251,7 +1251,19 @@
     "loadingProfile": "Ładowanie profilu...",
     "profileViews": "Wyświetlenia profilu",
     "noViews": "Brak wyświetleń profilu",
-    "editPost": "Edytuj post"
+    "editPost": "Edytuj post",
+    "album": {
+      "hint": "Dodaj zdjęcia do profilu bez publikowania ich w feedzie.",
+      "add": "Dodaj zdjęcia",
+      "uploading": "Przesyłanie…",
+      "tooMany": "Możesz dodać maksymalnie {{max}} zdjęć naraz.",
+      "manage": "Edytuj zdjęcie",
+      "captionPlaceholder": "Dodaj podpis…",
+      "delete": "Usuń",
+      "deleteConfirm": "Usunąć to zdjęcie z albumu?",
+      "save": "Zapisz podpis",
+      "saving": "Zapisywanie…"
+    }
   },
   "editProfile": {
     "title": "Edytuj profil",

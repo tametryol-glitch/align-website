@@ -1251,7 +1251,19 @@
     "loadingProfile": "Indlaeser profil...",
     "profileViews": "Profilvisninger",
     "noViews": "Ingen profilvisninger endnu",
-    "editPost": "Rediger opslag"
+    "editPost": "Rediger opslag",
+    "album": {
+      "hint": "Tilføj billeder til din profil uden at poste dem i feedet.",
+      "add": "Tilføj billeder",
+      "uploading": "Uploader…",
+      "tooMany": "Du kan tilføje op til {{max}} billeder ad gangen.",
+      "manage": "Rediger billede",
+      "captionPlaceholder": "Tilføj en billedtekst…",
+      "delete": "Slet",
+      "deleteConfirm": "Slet dette billede fra dit album?",
+      "save": "Gem billedtekst",
+      "saving": "Gemmer…"
+    }
   },
   "editProfile": {
     "title": "Rediger profil",

@@ -1251,7 +1251,19 @@
     "loadingProfile": "Laddar profil...",
     "profileViews": "Profilvisningar",
     "noViews": "Inga profilvisningar ännu",
-    "editPost": "Redigera inlägg"
+    "editPost": "Redigera inlägg",
+    "album": {
+      "hint": "Lägg till foton i din profil utan att publicera dem i flödet.",
+      "add": "Lägg till foton",
+      "uploading": "Laddar upp…",
+      "tooMany": "Du kan lägga till upp till {{max}} foton åt gången.",
+      "manage": "Redigera foto",
+      "captionPlaceholder": "Lägg till en bildtext…",
+      "delete": "Radera",
+      "deleteConfirm": "Radera det här fotot från ditt album?",
+      "save": "Spara bildtext",
+      "saving": "Sparar…"
+    }
   },
   "editProfile": {
     "title": "Redigera profil",

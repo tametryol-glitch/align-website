@@ -1251,7 +1251,19 @@
     "loadingProfile": "프로필 로딩 중...",
     "profileViews": "프로필 조회수",
     "noViews": "아직 프로필 조회가 없습니다",
-    "editPost": "게시물 편집"
+    "editPost": "게시물 편집",
+    "album": {
+      "hint": "피드에 게시하지 않고 프로필에 사진을 추가하세요.",
+      "add": "사진 추가",
+      "uploading": "업로드 중…",
+      "tooMany": "한 번에 최대 {{max}}장까지 추가할 수 있어요.",
+      "manage": "사진 편집",
+      "captionPlaceholder": "캡션 추가…",
+      "delete": "삭제",
+      "deleteConfirm": "이 사진을 앨범에서 삭제할까요?",
+      "save": "캡션 저장",
+      "saving": "저장 중…"
+    }
   },
   "editProfile": {
     "title": "프로필 편집",

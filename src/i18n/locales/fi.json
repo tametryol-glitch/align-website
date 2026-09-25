@@ -1251,7 +1251,19 @@
     "loadingProfile": "Ladataan profiilia...",
     "profileViews": "Profiilin nayttokerrat",
     "noViews": "Ei profiilin nayttokertoja viela",
-    "editPost": "Muokkaa julkaisua"
+    "editPost": "Muokkaa julkaisua",
+    "album": {
+      "hint": "Lisää kuvia profiiliisi julkaisematta niitä syötteessä.",
+      "add": "Lisää kuvia",
+      "uploading": "Ladataan…",
+      "tooMany": "Voit lisätä enintään {{max}} kuvaa kerralla.",
+      "manage": "Muokkaa kuvaa",
+      "captionPlaceholder": "Lisää kuvateksti…",
+      "delete": "Poista",
+      "deleteConfirm": "Poistetaanko tämä kuva albumistasi?",
+      "save": "Tallenna kuvateksti",
+      "saving": "Tallennetaan…"
+    }
   },
   "editProfile": {
     "title": "Muokkaa profiilia",

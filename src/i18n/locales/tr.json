@@ -1251,7 +1251,19 @@
     "loadingProfile": "Profil yukleniyor...",
     "profileViews": "Profil Goruntuelemeleri",
     "noViews": "Henuz profil goruntulemesi yok",
-    "editPost": "Gonderiyi Duzenle"
+    "editPost": "Gonderiyi Duzenle",
+    "album": {
+      "hint": "Fotoğrafları akışta paylaşmadan profiline ekle.",
+      "add": "Fotoğraf ekle",
+      "uploading": "Yükleniyor…",
+      "tooMany": "Tek seferde en fazla {{max}} fotoğraf ekleyebilirsin.",
+      "manage": "Fotoğrafı düzenle",
+      "captionPlaceholder": "Açıklama ekle…",
+      "delete": "Sil",
+      "deleteConfirm": "Bu fotoğraf albümünden silinsin mi?",
+      "save": "Açıklamayı kaydet",
+      "saving": "Kaydediliyor…"
+    }
   },
   "editProfile": {
     "title": "Profili Duzenle",

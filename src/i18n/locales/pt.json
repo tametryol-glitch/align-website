@@ -1478,7 +1478,19 @@
     "loadingProfile": "Carregando perfil...",
     "profileViews": "Visualizações do Perfil",
     "noViews": "Nenhuma visualização do perfil ainda",
-    "editPost": "Editar Publicação"
+    "editPost": "Editar Publicação",
+    "album": {
+      "hint": "Adicione fotos ao seu perfil sem publicá-las no feed.",
+      "add": "Adicionar fotos",
+      "uploading": "Enviando…",
+      "tooMany": "Você pode adicionar até {{max}} fotos por vez.",
+      "manage": "Editar foto",
+      "captionPlaceholder": "Adicione uma legenda…",
+      "delete": "Excluir",
+      "deleteConfirm": "Excluir esta foto do seu álbum?",
+      "save": "Salvar legenda",
+      "saving": "Salvando…"
+    }
   },
   "editProfile": {
     "title": "Editar Perfil",

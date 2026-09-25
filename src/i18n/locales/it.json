@@ -1251,7 +1251,19 @@
     "loadingProfile": "Caricamento profilo...",
     "profileViews": "Visualizzazioni profilo",
     "noViews": "Ancora nessuna visualizzazione del profilo",
-    "editPost": "Modifica post"
+    "editPost": "Modifica post",
+    "album": {
+      "hint": "Aggiungi foto al tuo profilo senza pubblicarle nel feed.",
+      "add": "Aggiungi foto",
+      "uploading": "Caricamento…",
+      "tooMany": "Puoi aggiungere fino a {{max}} foto alla volta.",
+      "manage": "Modifica foto",
+      "captionPlaceholder": "Aggiungi una didascalia…",
+      "delete": "Elimina",
+      "deleteConfirm": "Eliminare questa foto dal tuo album?",
+      "save": "Salva didascalia",
+      "saving": "Salvataggio…"
+    }
   },
   "editProfile": {
     "title": "Modifica profilo",

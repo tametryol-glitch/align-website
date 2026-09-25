@@ -1251,7 +1251,19 @@
     "loadingProfile": "Profil wird geladen...",
     "profileViews": "Profilaufrufe",
     "noViews": "Noch keine Profilaufrufe",
-    "editPost": "Beitrag bearbeiten"
+    "editPost": "Beitrag bearbeiten",
+    "album": {
+      "hint": "Füge deinem Profil Fotos hinzu, ohne sie im Feed zu posten.",
+      "add": "Fotos hinzufügen",
+      "uploading": "Wird hochgeladen…",
+      "tooMany": "Du kannst bis zu {{max}} Fotos auf einmal hinzufügen.",
+      "manage": "Foto bearbeiten",
+      "captionPlaceholder": "Bildunterschrift hinzufügen…",
+      "delete": "Löschen",
+      "deleteConfirm": "Dieses Foto aus deinem Album löschen?",
+      "save": "Bildunterschrift speichern",
+      "saving": "Wird gespeichert…"
+    }
   },
   "editProfile": {
     "title": "Profil bearbeiten",

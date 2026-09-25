@@ -1251,7 +1251,19 @@
     "loadingProfile": "Chargement du profil...",
     "profileViews": "Vues du Profil",
     "noViews": "Pas encore de vues du profil",
-    "editPost": "Modifier la Publication"
+    "editPost": "Modifier la Publication",
+    "album": {
+      "hint": "Ajoutez des photos à votre profil sans les publier dans le fil.",
+      "add": "Ajouter des photos",
+      "uploading": "Envoi…",
+      "tooMany": "Vous pouvez ajouter jusqu’à {{max}} photos à la fois.",
+      "manage": "Modifier la photo",
+      "captionPlaceholder": "Ajouter une légende…",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer cette photo de votre album ?",
+      "save": "Enregistrer la légende",
+      "saving": "Enregistrement…"
+    }
   },
   "editProfile": {
     "title": "Modifier le Profil",

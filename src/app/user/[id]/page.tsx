@@ -25,6 +25,7 @@ import {
   type PhotoTarget, type PhotoReaction,
 } from '@/lib/photoReactionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
+import { getAlbumPhotos } from '@/lib/albumService';
 
 interface ProfileData {
   id: string;
@@ -224,6 +225,14 @@ export default function UserProfilePage() {
     try {
       const supabase = createClient();
 
+      // 0. Album photos - added straight to the profile, newest first.
+      const albumPhotos: ProfilePhoto[] = (await getAlbumPhotos(userId)).map(a => ({
+        id: `album-${a.id}`,
+        image_url: a.image_url,
+        target: profilePhotoTarget(a.image_url, userId),
+        label: a.caption || undefined,
+      }));
+
       // 1. Profile photos (avatar, cover, dating photos) — these have no
       //    post behind them, so they react against photo_reactions.
       const profilePhotos: ProfilePhoto[] = [];
@@ -282,7 +291,7 @@ export default function UserProfilePage() {
           target: { kind: 'post' as const, postId: p.id, imageUrl: p.image_url },
         }));
 
-      const merged = [...profilePhotos, ...postPhotos];
+      const merged = [...albumPhotos, ...profilePhotos, ...postPhotos];
       setPhotos(merged);
 
       // 3. Prefetch reaction counts for the grid badges.

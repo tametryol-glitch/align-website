@@ -1251,7 +1251,19 @@
     "loadingProfile": "Laster profil...",
     "profileViews": "Profilvisninger",
     "noViews": "Ingen profilvisninger ennå",
-    "editPost": "Rediger innlegg"
+    "editPost": "Rediger innlegg",
+    "album": {
+      "hint": "Legg til bilder på profilen din uten å poste dem i feeden.",
+      "add": "Legg til bilder",
+      "uploading": "Laster opp…",
+      "tooMany": "Du kan legge til opptil {{max}} bilder om gangen.",
+      "manage": "Rediger bilde",
+      "captionPlaceholder": "Legg til en bildetekst…",
+      "delete": "Slett",
+      "deleteConfirm": "Slette dette bildet fra albumet ditt?",
+      "save": "Lagre bildetekst",
+      "saving": "Lagrer…"
+    }
   },
   "editProfile": {
     "title": "Rediger profil",

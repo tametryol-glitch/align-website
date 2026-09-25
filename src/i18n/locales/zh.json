@@ -1251,7 +1251,19 @@
     "loadingProfile": "加载档案中...",
     "profileViews": "档案浏览量",
     "noViews": "还没有档案浏览记录",
-    "editPost": "编辑帖子"
+    "editPost": "编辑帖子",
+    "album": {
+      "hint": "无需发布到动态，即可将照片添加到个人资料。",
+      "add": "添加照片",
+      "uploading": "上传中…",
+      "tooMany": "一次最多可添加 {{max}} 张照片。",
+      "manage": "编辑照片",
+      "captionPlaceholder": "添加说明…",
+      "delete": "删除",
+      "deleteConfirm": "要从相册中删除这张照片吗？",
+      "save": "保存说明",
+      "saving": "保存中…"
+    }
   },
   "editProfile": {
     "title": "编辑档案",

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { Pencil, Settings, QrCode, Share2, ChevronRight, Calendar, Image as ImageIcon, Shield, CreditCard, Eye, X, Sparkles, Gift } from 'lucide-react';
+import { Pencil, Settings, QrCode, Share2, ChevronRight, Calendar, Image as ImageIcon, Shield, CreditCard, Eye, X, Sparkles, Gift, Plus, MoreHorizontal, Trash2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import { getZodiacGlyph } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -24,6 +24,10 @@ import {
   batchGetPhotoReactions, profilePhotoTarget, photoTargetId,
   type PhotoTarget, type PhotoReaction,
 } from '@/lib/photoReactionService';
+import {
+  getAlbumPhotos, addAlbumPhotos, updateAlbumCaption, deleteAlbumPhoto,
+  MAX_ALBUM_UPLOAD, MAX_ALBUM_CAPTION, type AlbumPhoto,
+} from '@/lib/albumService';
 import { XPProgressBar } from '@/components/ui/XPProgressBar';
 import { BadgeGrid } from '@/components/ui/BadgeGrid';
 import { useGamificationStore } from '@/stores/gamificationStore';
@@ -36,6 +40,8 @@ interface ProfilePhoto {
   image_url: string;
   target: PhotoTarget;
   label?: string;
+  /** Set when the photo lives in the member's profile album. */
+  album?: AlbumPhoto;
 }
 
 const HD_TYPE_EMOJI: Record<string, string> = {
@@ -82,6 +88,14 @@ export default function ProfilePage() {
   const [postsLoading, setPostsLoading] = useState(false);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [reelsLoading, setReelsLoading] = useState(false);
+
+  // Profile album - add / caption / delete your own photos.
+  const albumInputRef = useRef<HTMLInputElement>(null);
+  const [albumUploading, setAlbumUploading] = useState(false);
+  const [albumError, setAlbumError] = useState<string | null>(null);
+  const [managingPhoto, setManagingPhoto] = useState<AlbumPhoto | null>(null);
+  const [captionDraft, setCaptionDraft] = useState('');
+  const [albumSaving, setAlbumSaving] = useState(false);
 
   // Post interaction state
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
@@ -133,6 +147,14 @@ export default function ProfilePage() {
   }, [userId]);
 
   useEffect(() => { loadStats(); }, [loadStats]);
+
+  // Deep link: /profile?tab=photos (the old /gallery route redirects here).
+  useEffect(() => {
+    if (!userId) return;
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab === 'photos' || tab === 'reels' || tab === 'about') handleTabChange(tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   async function loadViewers() {
     if (!userId) return;
@@ -186,11 +208,20 @@ export default function ProfilePage() {
     setPostsLoading(false);
   }
 
-  async function loadPhotos() {
-    if (!userId || photos.length > 0) return;
-    setPhotosLoading(true);
+  async function loadPhotos(force = false) {
+    if (!userId || (photos.length > 0 && !force)) return;
+    if (!force) setPhotosLoading(true);
     try {
       const supabase = createClient();
+
+      // 0. Album photos - added straight to the profile, newest first.
+      const albumPhotos: ProfilePhoto[] = (await getAlbumPhotos(userId)).map(a => ({
+        id: `album-${a.id}`,
+        image_url: a.image_url,
+        target: profilePhotoTarget(a.image_url, userId),
+        label: a.caption || undefined,
+        album: a,
+      }));
 
       // 1. Profile photos (avatar, cover, dating photos) - no post behind
       //    them, so they react against photo_reactions.
@@ -250,7 +281,7 @@ export default function ProfilePage() {
           target: { kind: 'post' as const, postId: p.id, imageUrl: p.image_url },
         }));
 
-      const merged = [...profilePhotos, ...postPhotos];
+      const merged = [...albumPhotos, ...profilePhotos, ...postPhotos];
       setPhotos(merged);
 
       // 3. Prefetch reaction counts for the grid badges.
@@ -277,6 +308,51 @@ export default function ProfilePage() {
       setLightboxPhotos([{ target: profilePhotoTarget(url, userId), label }]);
       setLightboxIndex(0);
     }
+  }
+
+  async function handleAlbumFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!userId || files.length === 0) return;
+    setAlbumError(files.length > MAX_ALBUM_UPLOAD
+      ? t('profile.album.tooMany', { max: MAX_ALBUM_UPLOAD, defaultValue: 'You can add up to {{max}} photos at a time.' })
+      : null);
+    setAlbumUploading(true);
+    const { added, error } = await addAlbumPhotos(userId, files);
+    setAlbumUploading(false);
+    if (error) setAlbumError(error);
+    if (added.length > 0) await loadPhotos(true);
+  }
+
+  function openManagePhoto(album: AlbumPhoto) {
+    setManagingPhoto(album);
+    setCaptionDraft(album.caption || '');
+  }
+
+  async function saveAlbumCaption() {
+    if (!managingPhoto) return;
+    setAlbumSaving(true);
+    const ok = await updateAlbumCaption(managingPhoto.id, captionDraft);
+    setAlbumSaving(false);
+    if (!ok) return;
+    const caption = captionDraft.trim().slice(0, MAX_ALBUM_CAPTION) || null;
+    const id = managingPhoto.id;
+    setPhotos(prev => prev.map(p => p.album?.id === id
+      ? { ...p, label: caption || undefined, album: { ...p.album, caption } }
+      : p));
+    setManagingPhoto(null);
+  }
+
+  async function removeAlbumPhoto() {
+    if (!managingPhoto) return;
+    if (!window.confirm(t('profile.album.deleteConfirm', 'Delete this photo from your album?'))) return;
+    setAlbumSaving(true);
+    const ok = await deleteAlbumPhoto(managingPhoto);
+    setAlbumSaving(false);
+    if (!ok) return;
+    const id = managingPhoto.id;
+    setPhotos(prev => prev.filter(p => p.album?.id !== id));
+    setManagingPhoto(null);
   }
 
   function photoReactionCount(photo: ProfilePhoto): number {
@@ -589,12 +665,19 @@ export default function ProfilePage() {
 
       {/* Owner Section: Quick Links */}
       <div className="card overflow-hidden mb-4">
-        <Link href="/gallery" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
+        <button
+          type="button"
+          onClick={() => {
+            handleTabChange('photos');
+            document.getElementById('profile-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="w-full flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors"
+        >
           <span className="flex items-center gap-3 text-sm text-text-primary">
             <ImageIcon className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.gallery')}
           </span>
           <ChevronRight className="w-4 h-4 text-text-muted" />
-        </Link>
+        </button>
         <Link href="/settings/safety" className="flex items-center justify-between px-4 py-3.5 border-b border-border hover:bg-bg-card-hover transition-colors">
           <span className="flex items-center gap-3 text-sm text-text-primary">
             <Shield className="w-4 h-4 text-text-muted" /> {t('profile.quickLinks.safetyTrust')}
@@ -622,7 +705,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab Bar */}
-      <div className="flex border-b border-border mb-4">
+      <div id="profile-tabs" className="flex border-b border-border mb-4 scroll-mt-4">
         {(['posts', 'photos', 'reels', 'about'] as ProfileTab[]).map(tab => (
           <button
             key={tab}
@@ -673,6 +756,29 @@ export default function ProfilePage() {
       {/* Tab Content: Photos */}
       {activeTab === 'photos' && (
         <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-text-tertiary">
+              {t('profile.album.hint', 'Add photos to your profile without posting them to the feed.')}
+            </p>
+            <button
+              type="button"
+              onClick={() => albumInputRef.current?.click()}
+              disabled={albumUploading}
+              className="btn-primary flex items-center gap-1.5 text-sm px-3 py-1.5 shrink-0 ml-3"
+            >
+              <Plus className="w-4 h-4" />
+              {albumUploading ? t('profile.album.uploading', 'Uploading…') : t('profile.album.add', 'Add photos')}
+            </button>
+            <input
+              ref={albumInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/heic"
+              multiple
+              onChange={handleAlbumFiles}
+              className="hidden"
+            />
+          </div>
+          {albumError && <p className="text-xs text-red-400 mb-3">{albumError}</p>}
           {photosLoading ? (
             <LoadingCosmic label={t('common.loading')} />
           ) : photos.length > 0 ? (
@@ -697,6 +803,20 @@ export default function ProfilePage() {
                     {count > 0 && (
                       <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-black/60 text-white text-[11px] font-semibold">
                         ✨ {count}
+                      </span>
+                    )}
+                    {photo.album && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={t('profile.album.manage', 'Edit photo')}
+                        onClick={(e) => { e.stopPropagation(); openManagePhoto(photo.album!); }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); openManagePhoto(photo.album!); }
+                        }}
+                        className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center"
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
                       </span>
                     )}
                   </button>
@@ -945,6 +1065,47 @@ export default function ProfilePage() {
                 className="btn-primary flex-1 text-sm"
               >
                 {editSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Album photo: edit caption / delete */}
+      {managingPhoto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => !albumSaving && setManagingPhoto(null)} />
+          <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary">
+              <h3 className="text-lg font-semibold text-text-primary">{t('profile.album.manage', 'Edit photo')}</h3>
+              <button onClick={() => setManagingPhoto(null)} disabled={albumSaving} className="text-text-muted hover:text-text-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              <div className="relative w-full aspect-square max-h-[50vh] rounded-xl overflow-hidden bg-bg-card">
+                <Image src={managingPhoto.image_url} alt={managingPhoto.caption || 'Photo'} fill className="object-cover" unoptimized />
+              </div>
+              <textarea
+                value={captionDraft}
+                onChange={(e) => setCaptionDraft(e.target.value)}
+                placeholder={t('profile.album.captionPlaceholder', 'Add a caption…')}
+                rows={2}
+                maxLength={MAX_ALBUM_CAPTION}
+                className="w-full bg-bg-card border border-border-primary rounded-xl p-3 text-sm text-text-primary resize-none outline-none focus:border-accent-primary transition-colors"
+              />
+              <p className="text-xs text-text-muted text-right -mt-2">{captionDraft.length}/{MAX_ALBUM_CAPTION}</p>
+            </div>
+            <div className="px-5 py-4 border-t border-border-primary flex gap-3">
+              <button
+                onClick={removeAlbumPhoto}
+                disabled={albumSaving}
+                className="btn-secondary text-sm flex items-center justify-center gap-1.5 text-red-400"
+              >
+                <Trash2 className="w-4 h-4" /> {t('profile.album.delete', 'Delete')}
+              </button>
+              <button onClick={saveAlbumCaption} disabled={albumSaving} className="btn-primary flex-1 text-sm">
+                {albumSaving ? t('profile.album.saving', 'Saving…') : t('profile.album.save', 'Save caption')}
               </button>
             </div>
           </div>

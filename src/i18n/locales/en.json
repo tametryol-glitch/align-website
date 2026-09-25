@@ -1253,7 +1253,19 @@
     "loadingProfile": "Loading profile...",
     "profileViews": "Profile Views",
     "noViews": "No profile views yet",
-    "editPost": "Edit Post"
+    "editPost": "Edit Post",
+    "album": {
+      "hint": "Add photos to your profile without posting them to the feed.",
+      "add": "Add photos",
+      "uploading": "Uploading…",
+      "tooMany": "You can add up to {{max}} photos at a time.",
+      "manage": "Edit photo",
+      "captionPlaceholder": "Add a caption…",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this photo from your album?",
+      "save": "Save caption",
+      "saving": "Saving…"
+    }
   },
   "editProfile": {
     "title": "Edit Profile",

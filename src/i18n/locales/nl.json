@@ -1251,7 +1251,19 @@
     "loadingProfile": "Profiel laden...",
     "profileViews": "Profielweergaven",
     "noViews": "Nog geen profielweergaven",
-    "editPost": "Bericht bewerken"
+    "editPost": "Bericht bewerken",
+    "album": {
+      "hint": "Voeg foto’s toe aan je profiel zonder ze in de feed te plaatsen.",
+      "add": "Foto’s toevoegen",
+      "uploading": "Uploaden…",
+      "tooMany": "Je kunt maximaal {{max}} foto’s tegelijk toevoegen.",
+      "manage": "Foto bewerken",
+      "captionPlaceholder": "Voeg een bijschrift toe…",
+      "delete": "Verwijderen",
+      "deleteConfirm": "Deze foto uit je album verwijderen?",
+      "save": "Bijschrift opslaan",
+      "saving": "Opslaan…"
+    }
   },
   "editProfile": {
     "title": "Profiel bewerken",

@@ -1251,7 +1251,19 @@
     "loadingProfile": "プロフィールを読み込み中...",
     "profileViews": "プロフィール閲覧数",
     "noViews": "まだプロフィール閲覧がありません",
-    "editPost": "投稿を編集"
+    "editPost": "投稿を編集",
+    "album": {
+      "hint": "フィードに投稿せずにプロフィールに写真を追加できます。",
+      "add": "写真を追加",
+      "uploading": "アップロード中…",
+      "tooMany": "一度に追加できる写真は{{max}}枚までです。",
+      "manage": "写真を編集",
+      "captionPlaceholder": "キャプションを追加…",
+      "delete": "削除",
+      "deleteConfirm": "この写真をアルバムから削除しますか？",
+      "save": "キャプションを保存",
+      "saving": "保存中…"
+    }
   },
   "editProfile": {
     "title": "プロフィールを編集",
