@@ -1,6 +1,6 @@
 'use client';
 
-// Photo post media: one photo, or a swipeable carousel of up to 10, with an
+// Photo post media: one photo, or a swipeable carousel of up to 12, with an
 // optional song under the whole post (TikTok photo mode). The <audio> belongs
 // to the post, not to a slide, so the song keeps playing without a break
 // while the viewer swipes from photo to photo.

@@ -13,7 +13,7 @@ import { useSyncExternalStore } from 'react';
 import { createClient } from '@/lib/supabase';
 import { trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 
-export const MAX_POST_IMAGES = 10;
+export const MAX_POST_IMAGES = 12;
 
 /** What gets written to posts.music_* / stories.music_*. */
 export interface AttachedMusic {

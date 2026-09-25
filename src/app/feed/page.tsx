@@ -557,7 +557,7 @@ function CreatePostModal({
               </div>
               <p className="text-xs text-text-muted text-right">{content.length}/2000</p>
 
-              {/* Image previews — up to 10; tap one to edit it */}
+              {/* Image previews — up to MAX_POST_IMAGES; tap one to edit it */}
               {images.length > 0 && (
                 <div className="space-y-2">
                   {/* Wrapping grid (5 per row) so every photo and the + tile stay visible */}
