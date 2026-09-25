@@ -172,13 +172,14 @@ export default function ZodisphereGlobeCesium({
         // Zoom-dependent PLACE LABELS (Google-Earth style): a transparent labels
         // tile layer over the satellite. Its tiles naturally reveal countries
         // when zoomed out, then states, cities and streets as you zoom in — the
-        // LOD is handled by the tile pyramid, no custom logic. Free CARTO tiles
-        // (OpenStreetMap data), light labels with dark halos for legibility.
+        // LOD is handled by the tile pyramid, no custom logic. Free Esri tiles
+        // (Dark Gray Reference), light labels for legibility on dark imagery.
         try {
           const labels = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png',
-            credit: '© OpenStreetMap contributors, © CARTO',
-            maximumLevel: 19,
+            // CARTO now requires an API key; Esri's Dark Gray labels are keyless.
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+            credit: 'Esri, HERE, Garmin, © OpenStreetMap contributors',
+            maximumLevel: 16,
           });
           const layer = viewer.imageryLayers.addImageryProvider(labels);
           labelsLayerRef.current = layer;

@@ -760,8 +760,14 @@ var map = L.map('map', {
   maxBoundsViscosity: 1.0,
   minZoom: 2,
 });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 18, subdomains: 'abcd', noWrap: true,
+// CARTO basemaps now require an API key (serves "API KEY REQUIRED" tiles).
+// Esri Dark Gray Canvas: keyless dark base + separate label layer.
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 18, maxNativeZoom: 16, noWrap: true,
+  bounds: [[-85, -180], [85, 180]],
+}).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 18, maxNativeZoom: 16, noWrap: true,
   bounds: [[-85, -180], [85, 180]],
 }).addTo(map);
 
