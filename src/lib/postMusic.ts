@@ -9,7 +9,7 @@
  * see supabase-migration-multi-image-music.sql. Listens are logged here.
  */
 
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore, type RefObject } from 'react';
 import { createClient } from '@/lib/supabase';
 import { trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 
@@ -73,38 +73,66 @@ export async function fetchTrendingTrackIds(limit = 20): Promise<string[]> {
   }
 }
 
-// ── Feed playback: one song at a time + a global mute ────────────────────────
+// ── Feed playback: one thing at a time + a global mute ──────────────────────
 //
-// Like Instagram/TikTok: sound stays on or off across the whole feed, and only
-// the post that is most in view plays. Browsers block audio until the visitor
-// has interacted with the page, so the first play may be refused — the chip
-// then shows as muted until they tap it.
+// Like Instagram/TikTok: the post most in view plays (a photo post's song or a
+// video) and everything else pauses; scrolling past pauses it. Songs start
+// with sound ON — the visitor mutes if they want, and that choice is kept.
+//
+// Browsers refuse sound until the visitor has tapped/clicked/typed on the page
+// once. When that happens we show the song as muted *without* saving it, and
+// the first tap anywhere turns the sound back on (see unblockOnGesture).
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
-let muted = true;
+let muted = false;
+/** Muted only because the browser blocked autoplay (not the visitor's choice). */
+let blockedByBrowser = false;
 let activeOwner: string | null = null;
 
 function emit() { listeners.forEach((l) => l()); }
 
 try {
-  if (typeof window !== 'undefined') muted = window.localStorage.getItem('align.feedMusicMuted') !== '0';
+  if (typeof window !== 'undefined') muted = window.localStorage.getItem('align.feedMusicMuted') === '1';
 } catch { /* storage blocked */ }
 
 /** persist=false for a browser autoplay block — keep the visitor's choice. */
 export function setFeedMuted(next: boolean, persist = true) {
   muted = next;
+  blockedByBrowser = !persist && next;
   if (persist) {
     try { window.localStorage.setItem('align.feedMusicMuted', next ? '1' : '0'); } catch { /* ignore */ }
   }
+  if (blockedByBrowser) unblockOnGesture();
   emit();
+}
+
+let gestureHooked = false;
+/** First tap/key anywhere on the page lifts a browser autoplay block. */
+function unblockOnGesture() {
+  if (gestureHooked || typeof document === 'undefined') return;
+  gestureHooked = true;
+  const lift = (e: Event) => {
+    // The song chip handles its own tap (it toggles sound itself).
+    if ((e.target as Element | null)?.closest?.('[data-music-chip]')) return;
+    document.removeEventListener('pointerdown', lift, true);
+    document.removeEventListener('keydown', lift, true);
+    gestureHooked = false;
+    if (blockedByBrowser) {
+      blockedByBrowser = false;
+      muted = false;
+      emit();
+    }
+  };
+  document.addEventListener('pointerdown', lift, true);
+  document.addEventListener('keydown', lift, true);
 }
 
 export function useFeedMuted(): boolean {
   return useSyncExternalStore(
     (l) => { listeners.add(l); return () => { listeners.delete(l); }; },
     () => muted,
-    () => true,
+    () => false,
   );
 }
 
@@ -127,4 +155,26 @@ export function useActiveOwner(): string | null {
     () => activeOwner,
     () => null,
   );
+}
+
+/**
+ * Hold the playing slot while `ref` is at least 60% on screen; let go when it
+ * scrolls away. Returns whether this owner is the one that should play.
+ */
+export function useInViewPlayback(ref: RefObject<Element | null>, owner: string, enabled = true): boolean {
+  const active = useActiveOwner() === owner;
+  useEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) claimPlayback(owner);
+        else releasePlayback(owner);
+      },
+      { threshold: [0, 0.6, 1] },
+    );
+    io.observe(el);
+    return () => { io.disconnect(); releasePlayback(owner); };
+  }, [ref, owner, enabled]);
+  return active;
 }

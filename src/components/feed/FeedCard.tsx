@@ -18,6 +18,7 @@ import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 import { extractHttpUrls } from '@/lib/linkify';
 import ReactionViewerModal from './ReactionViewerModal';
 import { PhotoCarousel } from './PhotoCarousel';
+import { AutoPlayVideo } from './AutoPlayVideo';
 import ViewersSheet from '@/components/views/ViewersSheet';
 import type { ViewKind } from '@/lib/viewsService';
 import RelationshipShareCard from '@/components/share/RelationshipShareCard';
@@ -1115,12 +1116,10 @@ export function FeedCard({
         }
         return (
           <div className="px-5 pb-3 relative">
-            <video
+            <AutoPlayVideo
+              postId={post.id}
               src={post.videoUrl}
               poster={post.posterUrl}
-              controls
-              playsInline
-              preload="metadata"
               className="w-full rounded-xl max-h-[400px] bg-black"
               onPlay={() => {
                 // One recorded view per post per page session; the DB

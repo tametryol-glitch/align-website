@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Music2, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
-  claimPlayback, releasePlayback, useActiveOwner, useFeedMuted, setFeedMuted, recordMusicListen,
+  claimPlayback, useInViewPlayback, useFeedMuted, setFeedMuted, recordMusicListen,
   type AttachedMusic,
 } from '@/lib/postMusic';
 
@@ -29,9 +29,9 @@ export function PhotoCarousel({
   const rootRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const muted = useFeedMuted();
-  const activeOwner = useActiveOwner();
   const owner = `post:${postId}`;
-  const isActive = activeOwner === owner;
+  // Holds the feed's single playing slot while this post is mostly on screen.
+  const isActive = useInViewPlayback(rootRef, owner, !!music);
   const many = images.length > 1;
 
   // Which slide is showing — from the native scroll-snap position.
@@ -49,21 +49,6 @@ export function PhotoCarousel({
     el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' });
   };
 
-  // Claim the feed's single music slot while this post is mostly on screen.
-  useEffect(() => {
-    if (!music || !rootRef.current) return;
-    const el = rootRef.current;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) claimPlayback(owner);
-        else releasePlayback(owner);
-      },
-      { threshold: [0, 0.6, 1] },
-    );
-    io.observe(el);
-    return () => { io.disconnect(); releasePlayback(owner); };
-  }, [music, owner]);
-
   // Play / pause the one song for this post.
   useEffect(() => {
     const a = audioRef.current;
@@ -72,7 +57,8 @@ export function PhotoCarousel({
       if (a.currentTime < music.startSec) a.currentTime = music.startSec;
       a.play()
         .then(() => recordMusicListen(owner, music.trackId))
-        // Autoplay refused (no interaction with the page yet) — show muted.
+        // Autoplay refused (no tap on the page yet) — show muted until the
+        // first tap anywhere, which turns sound back on.
         .catch(() => setFeedMuted(true, false));
     } else {
       a.pause();
@@ -174,6 +160,7 @@ export function PhotoCarousel({
           <button
             type="button"
             onClick={toggleSound}
+            data-music-chip
             className={cn(
               'absolute left-2 flex items-center gap-1.5 max-w-[70%] pl-2 pr-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-medium backdrop-blur-sm',
               many ? 'bottom-6' : 'bottom-2',
