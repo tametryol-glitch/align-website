@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Telechargement de la video...",
       "addImage": "Ajouter une Image",
       "addVideo": "Ajouter une Video",
-      "editPost": "Modifier la Publication"
+      "editPost": "Modifier la Publication",
+      "imageTooBig": "Chaque photo doit faire moins de 10 Mo",
+      "maxImages": "Vous pouvez ajouter jusqu’à {{max}} photos",
+      "editPhoto": "Modifier la photo",
+      "cover": "Couverture",
+      "addMore": "Ajouter",
+      "photoCount": "{{count}}/{{max}} photos · touchez une photo pour la modifier",
+      "addMusic": "Ajouter une musique",
+      "changeMusic": "Touchez pour changer",
+      "musicHint": "Un titre joue pendant que l’on fait défiler vos photos",
+      "uploadImageHint": "Jusqu’à {{max}} photos · JPG, PNG, GIF, WebP jusqu’à 10 Mo chacune"
     },
     "poll": {
       "question": "Question",
@@ -1045,6 +1055,10 @@
       "title": "Tendances",
       "clearFilter": "Effacer le filtre",
       "noResults": "Aucun post trouvé pour {{tag}}"
+    },
+    "carousel": {
+      "prev": "Photo précédente",
+      "next": "Photo suivante"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Envoi…",
       "posting": "Publication…",
       "post": "Partager en story",
-      "expires": "Disparaît après 24 heures"
+      "expires": "Disparaît après 24 heures",
+      "edit": "Modifier la photo",
+      "addMusic": "Ajouter une musique",
+      "musicMutesVideo": "Le son de la vidéo est coupé pendant la lecture de votre musique"
     },
     "errors": {
       "type": "Choisissez une photo ou une vidéo",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Paliers de vues",
       "description": "Quand vos publications, photos, vidéos, reels ou stories atteignent un palier de vues"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Ajouter une musique",
+      "search": "Rechercher des titres",
+      "all": "Tout",
+      "trending": "Tendances de la semaine",
+      "library": "Tous les titres",
+      "empty": "Aucun titre trouvé",
+      "startAt": "Commencer à",
+      "remove": "Sans musique",
+      "use": "Utiliser ce titre"
+    },
+    "unmute": "Activer le son",
+    "mute": "Couper le son",
+    "song": "Titre"
+  },
+  "editor": {
+    "errors": {
+      "load": "Impossible d’ouvrir cette photo",
+      "save": "Impossible d’enregistrer vos modifications. Réessayez."
+    },
+    "tools": {
+      "text": "Texte",
+      "stickers": "Stickers",
+      "draw": "Dessiner",
+      "filters": "Filtres",
+      "adjust": "Ajuster",
+      "rotate": "Pivoter",
+      "music": "Musique"
+    },
+    "done": "OK",
+    "smaller": "Plus petit",
+    "bigger": "Plus grand",
+    "editText": "Modifier le texte",
+    "delete": "Supprimer",
+    "textPlaceholder": "Écrivez quelque chose…",
+    "saveText": "Enregistrer le texte",
+    "addText": "Ajouter du texte",
+    "brush": "Taille du pinceau",
+    "undo": "Annuler",
+    "adjust": {
+      "brightness": "Luminosité",
+      "contrast": "Contraste",
+      "saturation": "Saturation"
+    },
+    "reset": "Réinitialiser",
+    "filters": {
+      "original": "Original",
+      "vivid": "Éclatant",
+      "warm": "Chaud",
+      "cool": "Froid",
+      "cosmic": "Cosmique",
+      "rose": "Rose",
+      "golden": "Doré",
+      "dusk": "Crépuscule",
+      "fade": "Délavé",
+      "noir": "Noir"
     }
   }
 }

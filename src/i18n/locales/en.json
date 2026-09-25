@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Uploading video...",
       "addImage": "Add Image",
       "addVideo": "Add Video",
-      "editPost": "Edit Post"
+      "editPost": "Edit Post",
+      "imageTooBig": "Each photo must be under 10 MB",
+      "maxImages": "You can add up to {{max}} photos",
+      "editPhoto": "Edit photo",
+      "cover": "Cover",
+      "addMore": "Add more",
+      "photoCount": "{{count}}/{{max}} photos · tap a photo to edit it",
+      "addMusic": "Add music",
+      "changeMusic": "Tap to change",
+      "musicHint": "One song plays while people swipe your photos",
+      "uploadImageHint": "Up to {{max}} photos · JPG, PNG, GIF, WebP up to 10 MB each"
     },
     "poll": {
       "question": "Question",
@@ -1047,6 +1057,10 @@
       "title": "Trending",
       "clearFilter": "Clear filter",
       "noResults": "No posts found for {{tag}}"
+    },
+    "carousel": {
+      "prev": "Previous photo",
+      "next": "Next photo"
     }
   },
   "friends": {
@@ -3334,7 +3348,10 @@
       "uploading": "Uploading…",
       "posting": "Posting…",
       "post": "Share to story",
-      "expires": "Disappears after 24 hours"
+      "expires": "Disappears after 24 hours",
+      "edit": "Edit photo",
+      "addMusic": "Add music",
+      "musicMutesVideo": "The video's own sound is muted while your song plays"
     },
     "errors": {
       "type": "Choose a photo or a video",
@@ -3415,6 +3432,65 @@
     "settings": {
       "label": "View Milestones",
       "description": "When your posts, photos, videos, reels or stories reach a view milestone"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Add music",
+      "search": "Search songs",
+      "all": "All",
+      "trending": "Trending this week",
+      "library": "All songs",
+      "empty": "No songs found",
+      "startAt": "Start from",
+      "remove": "No music",
+      "use": "Use this song"
+    },
+    "unmute": "Turn sound on",
+    "mute": "Turn sound off",
+    "song": "Song"
+  },
+  "editor": {
+    "errors": {
+      "load": "This photo could not be opened",
+      "save": "Could not save your edits. Try again."
+    },
+    "tools": {
+      "text": "Text",
+      "stickers": "Stickers",
+      "draw": "Draw",
+      "filters": "Filters",
+      "adjust": "Adjust",
+      "rotate": "Rotate",
+      "music": "Music"
+    },
+    "done": "Done",
+    "smaller": "Smaller",
+    "bigger": "Bigger",
+    "editText": "Edit text",
+    "delete": "Delete",
+    "textPlaceholder": "Type something…",
+    "saveText": "Save text",
+    "addText": "Add text",
+    "brush": "Brush size",
+    "undo": "Undo",
+    "adjust": {
+      "brightness": "Brightness",
+      "contrast": "Contrast",
+      "saturation": "Saturation"
+    },
+    "reset": "Reset",
+    "filters": {
+      "original": "Original",
+      "vivid": "Vivid",
+      "warm": "Warm",
+      "cool": "Cool",
+      "cosmic": "Cosmic",
+      "rose": "Rose",
+      "golden": "Golden",
+      "dusk": "Dusk",
+      "fade": "Fade",
+      "noir": "Noir"
     }
   }
 }

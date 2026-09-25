@@ -1,6 +1,7 @@
 import { createClient } from './supabase';
 import { rankFeedPosts, type RankablePost } from './feedRankingEngine';
 import { getSeenCounts } from './impressionService';
+import { musicColumns, musicFromRow, MAX_POST_IMAGES, type AttachedMusic } from './postMusic';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type ReactionEmoji = '✨' | '🔥' | '💜' | '🌙' | '⚡' | '😂' | '😠' | '😢';
@@ -40,6 +41,10 @@ export interface FeedPost {
   content: string;
   imageUrl?: string;
   mediaKind?: 'photo' | 'sticker' | 'gif';
+  /** Every photo of a multi-photo post, in order (imageUrl = the first). */
+  mediaUrls?: string[];
+  /** Song from the music library playing under a photo post. */
+  music?: AttachedMusic;
   videoUrl?: string;
   posterUrl?: string;
   /** Total video plays (unique-per-user log lives in post_video_views). */
@@ -245,6 +250,8 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       content: p.content || '',
       imageUrl: p.image_url || undefined,
       mediaKind: p.media_kind || undefined,
+      mediaUrls: Array.isArray(p.media_urls) && p.media_urls.length ? p.media_urls : undefined,
+      music: musicFromRow(p),
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
@@ -369,6 +376,8 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       content: p.content || '',
       imageUrl: p.image_url || undefined,
       mediaKind: p.media_kind || undefined,
+      mediaUrls: Array.isArray(p.media_urls) && p.media_urls.length ? p.media_urls : undefined,
+      music: musicFromRow(p),
       videoUrl: p.video_url || undefined,
       posterUrl: p.poster_url || undefined,
       videoViewsCount: p.video_views_count || 0,
@@ -417,6 +426,9 @@ export async function createPost(post: {
   visibility: 'friends' | 'public';
   imageUrl?: string;
   mediaKind?: string;
+  /** All photos, in order, for a photo post (max 10). imageUrl must be the first. */
+  mediaUrls?: string[];
+  music?: AttachedMusic | null;
   videoUrl?: string;
   /** Defaults to true — creators opt out, not in. Video posts only. */
   allowDownload?: boolean;
@@ -461,6 +473,8 @@ export async function createPost(post: {
       visibility: post.visibility,
       image_url: post.imageUrl || null,
       media_kind: post.mediaKind || null,
+      ...(post.mediaUrls && post.mediaUrls.length > 0 ? { media_urls: post.mediaUrls.slice(0, MAX_POST_IMAGES) } : {}),
+      ...musicColumns(post.music),
       video_url: post.videoUrl || null,
       allow_download: post.allowDownload !== false,
       style: styleToSave,
@@ -835,6 +849,8 @@ export async function repostPost(userId: string, originalPost: FeedPost) {
       visibility: 'public',
       image_url: originalPost.imageUrl || null,
       video_url: originalPost.videoUrl || null,
+      ...(originalPost.mediaUrls && originalPost.mediaUrls.length > 1 ? { media_urls: originalPost.mediaUrls } : {}),
+      ...musicColumns(originalPost.music),
       original_post_id: originalPost.id,
       original_user_name: originalPost.userName,
     })

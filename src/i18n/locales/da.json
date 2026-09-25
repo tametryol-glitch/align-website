@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Uploader video...",
       "addImage": "Tilfoej billede",
       "addVideo": "Tilfoej video",
-      "editPost": "Rediger opslag"
+      "editPost": "Rediger opslag",
+      "imageTooBig": "Hvert billede skal være under 10 MB",
+      "maxImages": "Du kan tilføje op til {{max}} billeder",
+      "editPhoto": "Rediger billede",
+      "cover": "Forside",
+      "addMore": "Tilføj flere",
+      "photoCount": "{{count}}/{{max}} billeder · tryk på et billede for at redigere det",
+      "addMusic": "Tilføj musik",
+      "changeMusic": "Tryk for at skifte",
+      "musicHint": "Én sang spiller, mens folk swiper gennem dine billeder",
+      "uploadImageHint": "Op til {{max}} billeder · JPG, PNG, GIF, WebP op til 10 MB hver"
     },
     "poll": {
       "question": "Spoergsmal",
@@ -1045,6 +1055,10 @@
       "title": "Tendens",
       "clearFilter": "Ryd filter",
       "noResults": "Ingen indlæg fundet for {{tag}}"
+    },
+    "carousel": {
+      "prev": "Forrige billede",
+      "next": "Næste billede"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Uploader…",
       "posting": "Slår op…",
       "post": "Del i story",
-      "expires": "Forsvinder efter 24 timer"
+      "expires": "Forsvinder efter 24 timer",
+      "edit": "Rediger billede",
+      "addMusic": "Tilføj musik",
+      "musicMutesVideo": "Videoens egen lyd er slået fra, mens din sang spiller"
     },
     "errors": {
       "type": "Vælg et foto eller en video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Visningsmilepæle",
       "description": "Når dine opslag, billeder, videoer, reels eller historier når en visningsmilepæl"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Tilføj musik",
+      "search": "Søg efter sange",
+      "all": "Alle",
+      "trending": "Populært i denne uge",
+      "library": "Alle sange",
+      "empty": "Ingen sange fundet",
+      "startAt": "Start fra",
+      "remove": "Ingen musik",
+      "use": "Brug denne sang"
+    },
+    "unmute": "Slå lyd til",
+    "mute": "Slå lyd fra",
+    "song": "Sang"
+  },
+  "editor": {
+    "errors": {
+      "load": "Billedet kunne ikke åbnes",
+      "save": "Dine ændringer kunne ikke gemmes. Prøv igen."
+    },
+    "tools": {
+      "text": "Tekst",
+      "stickers": "Stickers",
+      "draw": "Tegn",
+      "filters": "Filtre",
+      "adjust": "Juster",
+      "rotate": "Rotér",
+      "music": "Musik"
+    },
+    "done": "Færdig",
+    "smaller": "Mindre",
+    "bigger": "Større",
+    "editText": "Rediger tekst",
+    "delete": "Slet",
+    "textPlaceholder": "Skriv noget…",
+    "saveText": "Gem tekst",
+    "addText": "Tilføj tekst",
+    "brush": "Penselstørrelse",
+    "undo": "Fortryd",
+    "adjust": {
+      "brightness": "Lysstyrke",
+      "contrast": "Kontrast",
+      "saturation": "Mætning"
+    },
+    "reset": "Nulstil",
+    "filters": {
+      "original": "Original",
+      "vivid": "Livlig",
+      "warm": "Varm",
+      "cool": "Kølig",
+      "cosmic": "Kosmisk",
+      "rose": "Rosa",
+      "golden": "Gylden",
+      "dusk": "Skumring",
+      "fade": "Falmet",
+      "noir": "Noir"
     }
   }
 }

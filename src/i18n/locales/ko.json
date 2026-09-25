@@ -1000,7 +1000,17 @@
       "uploadingVideo": "비디오 업로드 중...",
       "addImage": "이미지 추가",
       "addVideo": "비디오 추가",
-      "editPost": "게시물 편집"
+      "editPost": "게시물 편집",
+      "imageTooBig": "사진은 한 장당 10MB 미만이어야 해요",
+      "maxImages": "사진은 최대 {{max}}장까지 추가할 수 있어요",
+      "editPhoto": "사진 편집",
+      "cover": "커버",
+      "addMore": "더 추가",
+      "photoCount": "사진 {{count}}/{{max}}장 · 사진을 탭해서 편집하세요",
+      "addMusic": "음악 추가",
+      "changeMusic": "탭해서 변경",
+      "musicHint": "사진을 넘기는 동안 노래 한 곡이 재생돼요",
+      "uploadImageHint": "최대 {{max}}장 · JPG, PNG, GIF, WebP, 장당 최대 10MB"
     },
     "poll": {
       "question": "질문",
@@ -1045,6 +1055,10 @@
       "title": "트렌딩",
       "clearFilter": "필터 지우기",
       "noResults": "{{tag}}에 대한 게시물이 없습니다"
+    },
+    "carousel": {
+      "prev": "이전 사진",
+      "next": "다음 사진"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "업로드 중…",
       "posting": "게시 중…",
       "post": "스토리에 공유",
-      "expires": "24시간 후 사라집니다"
+      "expires": "24시간 후 사라집니다",
+      "edit": "사진 편집",
+      "addMusic": "음악 추가",
+      "musicMutesVideo": "노래가 재생되는 동안 동영상 원본 소리는 음소거돼요"
     },
     "errors": {
       "type": "사진 또는 동영상을 선택하세요",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "조회수 달성 알림",
       "description": "게시물, 사진, 동영상, 릴스 또는 스토리가 조회수 목표에 도달했을 때"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "음악 추가",
+      "search": "노래 검색",
+      "all": "전체",
+      "trending": "이번 주 인기",
+      "library": "모든 노래",
+      "empty": "노래를 찾을 수 없어요",
+      "startAt": "시작 지점",
+      "remove": "음악 없음",
+      "use": "이 노래 사용"
+    },
+    "unmute": "소리 켜기",
+    "mute": "소리 끄기",
+    "song": "노래"
+  },
+  "editor": {
+    "errors": {
+      "load": "이 사진을 열 수 없어요",
+      "save": "수정 사항을 저장하지 못했어요. 다시 시도해 주세요."
+    },
+    "tools": {
+      "text": "텍스트",
+      "stickers": "스티커",
+      "draw": "그리기",
+      "filters": "필터",
+      "adjust": "조정",
+      "rotate": "회전",
+      "music": "음악"
+    },
+    "done": "완료",
+    "smaller": "작게",
+    "bigger": "크게",
+    "editText": "텍스트 수정",
+    "delete": "삭제",
+    "textPlaceholder": "내용을 입력하세요…",
+    "saveText": "텍스트 저장",
+    "addText": "텍스트 추가",
+    "brush": "브러시 크기",
+    "undo": "실행 취소",
+    "adjust": {
+      "brightness": "밝기",
+      "contrast": "대비",
+      "saturation": "채도"
+    },
+    "reset": "초기화",
+    "filters": {
+      "original": "원본",
+      "vivid": "비비드",
+      "warm": "웜",
+      "cool": "쿨",
+      "cosmic": "코스믹",
+      "rose": "로즈",
+      "golden": "골든",
+      "dusk": "황혼",
+      "fade": "페이드",
+      "noir": "누아르"
     }
   }
 }

@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Video wird hochgeladen...",
       "addImage": "Bild hinzufügen",
       "addVideo": "Video hinzufügen",
-      "editPost": "Beitrag bearbeiten"
+      "editPost": "Beitrag bearbeiten",
+      "imageTooBig": "Jedes Foto muss kleiner als 10 MB sein",
+      "maxImages": "Du kannst bis zu {{max}} Fotos hinzufügen",
+      "editPhoto": "Foto bearbeiten",
+      "cover": "Titelbild",
+      "addMore": "Mehr hinzufügen",
+      "photoCount": "{{count}}/{{max}} Fotos · tippe auf ein Foto, um es zu bearbeiten",
+      "addMusic": "Musik hinzufügen",
+      "changeMusic": "Zum Ändern tippen",
+      "musicHint": "Ein Song läuft, während man durch deine Fotos wischt",
+      "uploadImageHint": "Bis zu {{max}} Fotos · JPG, PNG, GIF, WebP bis je 10 MB"
     },
     "poll": {
       "question": "Frage",
@@ -1045,6 +1055,10 @@
       "title": "Trendend",
       "clearFilter": "Filter zurücksetzen",
       "noResults": "Keine Beiträge für {{tag}} gefunden"
+    },
+    "carousel": {
+      "prev": "Vorheriges Foto",
+      "next": "Nächstes Foto"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Wird hochgeladen…",
       "posting": "Wird gepostet…",
       "post": "In Story teilen",
-      "expires": "Verschwindet nach 24 Stunden"
+      "expires": "Verschwindet nach 24 Stunden",
+      "edit": "Foto bearbeiten",
+      "addMusic": "Musik hinzufügen",
+      "musicMutesVideo": "Der Originalton des Videos ist stumm, während dein Song läuft"
     },
     "errors": {
       "type": "Wähle ein Foto oder ein Video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Aufruf-Meilensteine",
       "description": "Wenn deine Beiträge, Fotos, Videos, Reels oder Storys einen Aufruf-Meilenstein erreichen"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Musik hinzufügen",
+      "search": "Songs suchen",
+      "all": "Alle",
+      "trending": "Diese Woche angesagt",
+      "library": "Alle Songs",
+      "empty": "Keine Songs gefunden",
+      "startAt": "Start bei",
+      "remove": "Keine Musik",
+      "use": "Diesen Song verwenden"
+    },
+    "unmute": "Ton einschalten",
+    "mute": "Ton ausschalten",
+    "song": "Song"
+  },
+  "editor": {
+    "errors": {
+      "load": "Dieses Foto konnte nicht geöffnet werden",
+      "save": "Deine Änderungen konnten nicht gespeichert werden. Versuch es erneut."
+    },
+    "tools": {
+      "text": "Text",
+      "stickers": "Sticker",
+      "draw": "Zeichnen",
+      "filters": "Filter",
+      "adjust": "Anpassen",
+      "rotate": "Drehen",
+      "music": "Musik"
+    },
+    "done": "Fertig",
+    "smaller": "Kleiner",
+    "bigger": "Größer",
+    "editText": "Text bearbeiten",
+    "delete": "Löschen",
+    "textPlaceholder": "Schreib etwas…",
+    "saveText": "Text speichern",
+    "addText": "Text hinzufügen",
+    "brush": "Pinselgröße",
+    "undo": "Rückgängig",
+    "adjust": {
+      "brightness": "Helligkeit",
+      "contrast": "Kontrast",
+      "saturation": "Sättigung"
+    },
+    "reset": "Zurücksetzen",
+    "filters": {
+      "original": "Original",
+      "vivid": "Lebhaft",
+      "warm": "Warm",
+      "cool": "Kühl",
+      "cosmic": "Kosmisch",
+      "rose": "Rosé",
+      "golden": "Golden",
+      "dusk": "Dämmerung",
+      "fade": "Verblasst",
+      "noir": "Noir"
     }
   }
 }

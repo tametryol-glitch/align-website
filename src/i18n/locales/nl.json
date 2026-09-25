@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Video uploaden...",
       "addImage": "Afbeelding toevoegen",
       "addVideo": "Video toevoegen",
-      "editPost": "Bericht bewerken"
+      "editPost": "Bericht bewerken",
+      "imageTooBig": "Elke foto moet kleiner zijn dan 10 MB",
+      "maxImages": "Je kunt maximaal {{max}} foto's toevoegen",
+      "editPhoto": "Foto bewerken",
+      "cover": "Omslag",
+      "addMore": "Meer toevoegen",
+      "photoCount": "{{count}}/{{max}} foto's · tik op een foto om te bewerken",
+      "addMusic": "Muziek toevoegen",
+      "changeMusic": "Tik om te wijzigen",
+      "musicHint": "Eén nummer speelt terwijl mensen door je foto's swipen",
+      "uploadImageHint": "Maximaal {{max}} foto's · JPG, PNG, GIF, WebP tot 10 MB per stuk"
     },
     "poll": {
       "question": "Vraag",
@@ -1045,6 +1055,10 @@
       "title": "Trending",
       "clearFilter": "Filter wissen",
       "noResults": "Geen berichten gevonden voor {{tag}}"
+    },
+    "carousel": {
+      "prev": "Vorige foto",
+      "next": "Volgende foto"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Uploaden…",
       "posting": "Plaatsen…",
       "post": "Delen in verhaal",
-      "expires": "Verdwijnt na 24 uur"
+      "expires": "Verdwijnt na 24 uur",
+      "edit": "Foto bewerken",
+      "addMusic": "Muziek toevoegen",
+      "musicMutesVideo": "Het geluid van de video staat uit terwijl je nummer speelt"
     },
     "errors": {
       "type": "Kies een foto of een video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Weergave-mijlpalen",
       "description": "Wanneer je berichten, foto's, video's, reels of verhalen een weergave-mijlpaal bereiken"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Muziek toevoegen",
+      "search": "Nummers zoeken",
+      "all": "Alles",
+      "trending": "Trending deze week",
+      "library": "Alle nummers",
+      "empty": "Geen nummers gevonden",
+      "startAt": "Begin bij",
+      "remove": "Geen muziek",
+      "use": "Dit nummer gebruiken"
+    },
+    "unmute": "Geluid aan",
+    "mute": "Geluid uit",
+    "song": "Nummer"
+  },
+  "editor": {
+    "errors": {
+      "load": "Deze foto kan niet worden geopend",
+      "save": "Je bewerkingen konden niet worden opgeslagen. Probeer het opnieuw."
+    },
+    "tools": {
+      "text": "Tekst",
+      "stickers": "Stickers",
+      "draw": "Tekenen",
+      "filters": "Filters",
+      "adjust": "Aanpassen",
+      "rotate": "Draaien",
+      "music": "Muziek"
+    },
+    "done": "Klaar",
+    "smaller": "Kleiner",
+    "bigger": "Groter",
+    "editText": "Tekst bewerken",
+    "delete": "Verwijderen",
+    "textPlaceholder": "Typ iets…",
+    "saveText": "Tekst opslaan",
+    "addText": "Tekst toevoegen",
+    "brush": "Penseelgrootte",
+    "undo": "Ongedaan maken",
+    "adjust": {
+      "brightness": "Helderheid",
+      "contrast": "Contrast",
+      "saturation": "Verzadiging"
+    },
+    "reset": "Herstellen",
+    "filters": {
+      "original": "Origineel",
+      "vivid": "Levendig",
+      "warm": "Warm",
+      "cool": "Koel",
+      "cosmic": "Kosmisch",
+      "rose": "Roze",
+      "golden": "Goud",
+      "dusk": "Schemering",
+      "fade": "Vervaagd",
+      "noir": "Noir"
     }
   }
 }

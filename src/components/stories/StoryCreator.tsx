@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { X, Image as ImageIcon, Type, Globe, Users, Loader2, AlertCircle } from 'lucide-react';
+import { X, Image as ImageIcon, Type, Globe, Users, Loader2, AlertCircle, Music2, Wand2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
@@ -9,6 +9,9 @@ import {
   STORY_BACKGROUNDS, STORY_MAX_CHARS, STORY_MAX_VIDEO_SECONDS,
   type StoryVisibility,
 } from '@/lib/storyService';
+import { MusicPicker } from '@/components/music/MusicPicker';
+import { ImageEditor } from '@/components/imageEditor/ImageEditor';
+import type { AttachedMusic } from '@/lib/postMusic';
 
 type Mode = 'media' | 'text';
 
@@ -33,16 +36,31 @@ export function StoryCreator({
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Optional song (music library) and the photo editor.
+  const [music, setMusic] = useState<AttachedMusic | null>(null);
+  const [showMusicPicker, setShowMusicPicker] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const previewAudioRef = useRef<HTMLAudioElement>(null);
 
   const isVideo = !!file && file.type.startsWith('video/');
 
   useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !posting) onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !posting && !editing && !showMusicPicker) onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, posting]);
+  }, [onClose, posting, editing, showMusicPicker]);
+
+  // Let the creator hear the song on the preview (quiet while a picker or
+  // the editor is open — they play it themselves).
+  useEffect(() => {
+    const a = previewAudioRef.current;
+    if (!a || !music) return;
+    if (editing || showMusicPicker) { a.pause(); return; }
+    a.currentTime = music.startSec;
+    a.play().catch(() => {});
+  }, [music, editing, showMusicPicker]);
 
   async function pickFile(f: File | undefined) {
     setError(null);
@@ -111,6 +129,7 @@ export function StoryCreator({
         backgroundColor: mode === 'text' ? bg : null,
         durationSeconds: isVideo ? videoSeconds : null,
         visibility,
+        music,
       });
       onPosted();
     } catch (e: any) {
@@ -200,6 +219,42 @@ export function StoryCreator({
           />
         </div>
 
+        {/* Edit photo + music */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          {mode === 'media' && file && !isVideo && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              disabled={posting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-primary bg-bg-tertiary text-xs text-text-secondary hover:text-text-primary"
+            >
+              <Wand2 className="w-3.5 h-3.5" /> {t('stories.create.edit', 'Edit photo')}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowMusicPicker(true)}
+            disabled={posting}
+            className={cn(
+              'flex items-center gap-1.5 max-w-[60%] px-3 py-1.5 rounded-full border text-xs',
+              music ? 'border-accent-primary bg-accent-primary/15 text-text-primary' : 'border-border-primary bg-bg-tertiary text-text-secondary hover:text-text-primary',
+            )}
+          >
+            <Music2 className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{music ? music.title : t('stories.create.addMusic', 'Add music')}</span>
+          </button>
+          {music && !posting && (
+            <button type="button" onClick={() => setMusic(null)} className="p-1 text-text-muted hover:text-text-primary" aria-label={t('music.picker.remove', 'No music')}>
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        {music && isVideo && (
+          <p className="-mt-2 mb-3 text-center text-[11px] text-text-tertiary">
+            {t('stories.create.musicMutesVideo', "The video's own sound is muted while your song plays")}
+          </p>
+        )}
+
         {mode === 'text' ? (
           <div className="flex items-center justify-center gap-2 mb-4">
             {STORY_BACKGROUNDS.map((c) => (
@@ -263,6 +318,29 @@ export function StoryCreator({
         </button>
         <p className="mt-2 text-center text-[11px] text-text-tertiary">{t('stories.create.expires', 'Disappears after 24 hours')}</p>
       </div>
+      {music && <audio ref={previewAudioRef} src={music.url} loop />}
+      {showMusicPicker && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <MusicPicker value={music} onChange={setMusic} onClose={() => setShowMusicPicker(false)} />
+        </div>
+      )}
+      {editing && file && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <ImageEditor
+            file={file}
+            music={music}
+            onMusicChange={setMusic}
+            onCancel={() => setEditing(false)}
+            onDone={(edited) => {
+              if (edited !== file) {
+                setFile(edited);
+                setPreviewUrl(URL.createObjectURL(edited));
+              }
+              setEditing(false);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

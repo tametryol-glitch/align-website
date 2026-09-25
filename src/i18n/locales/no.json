@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Laster opp video...",
       "addImage": "Legg til bilde",
       "addVideo": "Legg til video",
-      "editPost": "Rediger innlegg"
+      "editPost": "Rediger innlegg",
+      "imageTooBig": "Hvert bilde må være under 10 MB",
+      "maxImages": "Du kan legge til opptil {{max}} bilder",
+      "editPhoto": "Rediger bilde",
+      "cover": "Forside",
+      "addMore": "Legg til flere",
+      "photoCount": "{{count}}/{{max}} bilder · trykk på et bilde for å redigere det",
+      "addMusic": "Legg til musikk",
+      "changeMusic": "Trykk for å bytte",
+      "musicHint": "Én sang spilles mens folk sveiper gjennom bildene dine",
+      "uploadImageHint": "Opptil {{max}} bilder · JPG, PNG, GIF, WebP på opptil 10 MB hver"
     },
     "poll": {
       "question": "Spørsmål",
@@ -1045,6 +1055,10 @@
       "title": "Trendy",
       "clearFilter": "Fjern filter",
       "noResults": "Ingen innlegg funnet for {{tag}}"
+    },
+    "carousel": {
+      "prev": "Forrige bilde",
+      "next": "Neste bilde"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Laster opp…",
       "posting": "Publiserer…",
       "post": "Del i historien",
-      "expires": "Forsvinner etter 24 timer"
+      "expires": "Forsvinner etter 24 timer",
+      "edit": "Rediger bilde",
+      "addMusic": "Legg til musikk",
+      "musicMutesVideo": "Videoens egen lyd er dempet mens sangen din spilles"
     },
     "errors": {
       "type": "Velg et bilde eller en video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Visningsmilepæler",
       "description": "Når innleggene, bildene, videoene, reels eller historiene dine når en visningsmilepæl"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Legg til musikk",
+      "search": "Søk etter sanger",
+      "all": "Alle",
+      "trending": "Populært denne uken",
+      "library": "Alle sanger",
+      "empty": "Fant ingen sanger",
+      "startAt": "Start fra",
+      "remove": "Ingen musikk",
+      "use": "Bruk denne sangen"
+    },
+    "unmute": "Slå på lyd",
+    "mute": "Slå av lyd",
+    "song": "Sang"
+  },
+  "editor": {
+    "errors": {
+      "load": "Kunne ikke åpne dette bildet",
+      "save": "Kunne ikke lagre endringene dine. Prøv igjen."
+    },
+    "tools": {
+      "text": "Tekst",
+      "stickers": "Klistremerker",
+      "draw": "Tegn",
+      "filters": "Filtre",
+      "adjust": "Juster",
+      "rotate": "Roter",
+      "music": "Musikk"
+    },
+    "done": "Ferdig",
+    "smaller": "Mindre",
+    "bigger": "Større",
+    "editText": "Rediger tekst",
+    "delete": "Slett",
+    "textPlaceholder": "Skriv noe…",
+    "saveText": "Lagre tekst",
+    "addText": "Legg til tekst",
+    "brush": "Penselstørrelse",
+    "undo": "Angre",
+    "adjust": {
+      "brightness": "Lysstyrke",
+      "contrast": "Kontrast",
+      "saturation": "Metning"
+    },
+    "reset": "Tilbakestill",
+    "filters": {
+      "original": "Original",
+      "vivid": "Livlig",
+      "warm": "Varm",
+      "cool": "Kjølig",
+      "cosmic": "Kosmisk",
+      "rose": "Rosa",
+      "golden": "Gyllen",
+      "dusk": "Skumring",
+      "fade": "Falmet",
+      "noir": "Noir"
     }
   }
 }

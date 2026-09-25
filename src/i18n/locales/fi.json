@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Ladataan videota...",
       "addImage": "Lisaa kuva",
       "addVideo": "Lisaa video",
-      "editPost": "Muokkaa julkaisua"
+      "editPost": "Muokkaa julkaisua",
+      "imageTooBig": "Jokaisen kuvan on oltava alle 10 Mt",
+      "maxImages": "Voit lisätä enintään {{max}} kuvaa",
+      "editPhoto": "Muokkaa kuvaa",
+      "cover": "Kansikuva",
+      "addMore": "Lisää",
+      "photoCount": "{{count}}/{{max}} kuvaa · napauta kuvaa muokataksesi sitä",
+      "addMusic": "Lisää musiikkia",
+      "changeMusic": "Vaihda napauttamalla",
+      "musicHint": "Yksi kappale soi, kun kuviasi selataan",
+      "uploadImageHint": "Enintään {{max}} kuvaa · JPG, PNG, GIF, WebP, enintään 10 Mt/kuva"
     },
     "poll": {
       "question": "Kysymys",
@@ -1045,6 +1055,10 @@
       "title": "Suosituimmat",
       "clearFilter": "Tyhjennä suodatin",
       "noResults": "Ei viestejä löytynyt tagille {{tag}}"
+    },
+    "carousel": {
+      "prev": "Edellinen kuva",
+      "next": "Seuraava kuva"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Ladataan…",
       "posting": "Julkaistaan…",
       "post": "Jaa tarinaan",
-      "expires": "Katoaa 24 tunnin kuluttua"
+      "expires": "Katoaa 24 tunnin kuluttua",
+      "edit": "Muokkaa kuvaa",
+      "addMusic": "Lisää musiikkia",
+      "musicMutesVideo": "Videon oma ääni mykistetään, kun kappaleesi soi"
     },
     "errors": {
       "type": "Valitse kuva tai video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Katselujen virstanpylväät",
       "description": "Kun julkaisusi, kuvasi, videosi, reelisi tai tarinasi saavuttavat katselujen virstanpylvään"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Lisää musiikkia",
+      "search": "Hae kappaleita",
+      "all": "Kaikki",
+      "trending": "Suosittua tällä viikolla",
+      "library": "Kaikki kappaleet",
+      "empty": "Kappaleita ei löytynyt",
+      "startAt": "Aloita kohdasta",
+      "remove": "Ei musiikkia",
+      "use": "Käytä tätä kappaletta"
+    },
+    "unmute": "Ääni päälle",
+    "mute": "Ääni pois",
+    "song": "Kappale"
+  },
+  "editor": {
+    "errors": {
+      "load": "Kuvaa ei voitu avata",
+      "save": "Muokkauksia ei voitu tallentaa. Yritä uudelleen."
+    },
+    "tools": {
+      "text": "Teksti",
+      "stickers": "Tarrat",
+      "draw": "Piirrä",
+      "filters": "Suodattimet",
+      "adjust": "Säädä",
+      "rotate": "Kierrä",
+      "music": "Musiikki"
+    },
+    "done": "Valmis",
+    "smaller": "Pienempi",
+    "bigger": "Suurempi",
+    "editText": "Muokkaa tekstiä",
+    "delete": "Poista",
+    "textPlaceholder": "Kirjoita jotain…",
+    "saveText": "Tallenna teksti",
+    "addText": "Lisää tekstiä",
+    "brush": "Siveltimen koko",
+    "undo": "Kumoa",
+    "adjust": {
+      "brightness": "Kirkkaus",
+      "contrast": "Kontrasti",
+      "saturation": "Kylläisyys"
+    },
+    "reset": "Palauta",
+    "filters": {
+      "original": "Alkuperäinen",
+      "vivid": "Eloisa",
+      "warm": "Lämmin",
+      "cool": "Viileä",
+      "cosmic": "Kosminen",
+      "rose": "Ruusu",
+      "golden": "Kulta",
+      "dusk": "Hämärä",
+      "fade": "Haalistunut",
+      "noir": "Noir"
     }
   }
 }

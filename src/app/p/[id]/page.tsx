@@ -18,6 +18,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { AppShell } from '@/components/layout/AppShell';
 import { FeedCard } from '@/components/feed/FeedCard';
 import type { FeedPost, ReactionEmoji, PostReaction, FeedComment } from '@/lib/feedService';
+import { musicFromRow } from '@/lib/postMusic';
 
 // ── YouTube helpers (inline to avoid circular deps) ───────────────
 const YT_REGEX = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/;
@@ -50,6 +51,8 @@ function mapPost(
     content: p.content || '',
     imageUrl: p.image_url || undefined,
     mediaKind: p.media_kind || undefined,
+    mediaUrls: Array.isArray(p.media_urls) && p.media_urls.length ? p.media_urls : undefined,
+    music: musicFromRow(p),
     videoUrl: p.video_url || undefined,
     posterUrl: p.poster_url || undefined,
     chartData: p.chart_data || undefined,

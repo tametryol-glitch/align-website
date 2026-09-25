@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Przesyłanie wideo...",
       "addImage": "Dodaj obraz",
       "addVideo": "Dodaj wideo",
-      "editPost": "Edytuj post"
+      "editPost": "Edytuj post",
+      "imageTooBig": "Każde zdjęcie musi mieć mniej niż 10 MB",
+      "maxImages": "Możesz dodać maksymalnie {{max}} zdjęć",
+      "editPhoto": "Edytuj zdjęcie",
+      "cover": "Okładka",
+      "addMore": "Dodaj więcej",
+      "photoCount": "Zdjęcia: {{count}}/{{max}} · dotknij zdjęcia, aby je edytować",
+      "addMusic": "Dodaj muzykę",
+      "changeMusic": "Dotknij, aby zmienić",
+      "musicHint": "Jeden utwór gra, gdy inni przewijają Twoje zdjęcia",
+      "uploadImageHint": "Maks. {{max}} zdjęć · JPG, PNG, GIF, WebP do 10 MB każde"
     },
     "poll": {
       "question": "Pytanie",
@@ -1045,6 +1055,10 @@
       "title": "Na czasie",
       "clearFilter": "Wyczyść filtr",
       "noResults": "Nie znaleziono postów dla {{tag}}"
+    },
+    "carousel": {
+      "prev": "Poprzednie zdjęcie",
+      "next": "Następne zdjęcie"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Przesyłanie…",
       "posting": "Publikowanie…",
       "post": "Udostępnij w relacji",
-      "expires": "Znika po 24 godzinach"
+      "expires": "Znika po 24 godzinach",
+      "edit": "Edytuj zdjęcie",
+      "addMusic": "Dodaj muzykę",
+      "musicMutesVideo": "Oryginalny dźwięk filmu jest wyciszony, gdy gra Twój utwór"
     },
     "errors": {
       "type": "Wybierz zdjęcie lub wideo",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Kamienie milowe wyświetleń",
       "description": "Gdy twoje posty, zdjęcia, filmy, rolki lub relacje osiągną kamień milowy wyświetleń"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Dodaj muzykę",
+      "search": "Szukaj utworów",
+      "all": "Wszystko",
+      "trending": "Na topie w tym tygodniu",
+      "library": "Wszystkie utwory",
+      "empty": "Nie znaleziono utworów",
+      "startAt": "Zacznij od",
+      "remove": "Bez muzyki",
+      "use": "Użyj tego utworu"
+    },
+    "unmute": "Włącz dźwięk",
+    "mute": "Wyłącz dźwięk",
+    "song": "Utwór"
+  },
+  "editor": {
+    "errors": {
+      "load": "Nie udało się otworzyć tego zdjęcia",
+      "save": "Nie udało się zapisać zmian. Spróbuj ponownie."
+    },
+    "tools": {
+      "text": "Tekst",
+      "stickers": "Naklejki",
+      "draw": "Rysuj",
+      "filters": "Filtry",
+      "adjust": "Dostosuj",
+      "rotate": "Obróć",
+      "music": "Muzyka"
+    },
+    "done": "Gotowe",
+    "smaller": "Mniejszy",
+    "bigger": "Większy",
+    "editText": "Edytuj tekst",
+    "delete": "Usuń",
+    "textPlaceholder": "Napisz coś…",
+    "saveText": "Zapisz tekst",
+    "addText": "Dodaj tekst",
+    "brush": "Rozmiar pędzla",
+    "undo": "Cofnij",
+    "adjust": {
+      "brightness": "Jasność",
+      "contrast": "Kontrast",
+      "saturation": "Nasycenie"
+    },
+    "reset": "Resetuj",
+    "filters": {
+      "original": "Oryginał",
+      "vivid": "Żywy",
+      "warm": "Ciepły",
+      "cool": "Chłodny",
+      "cosmic": "Kosmiczny",
+      "rose": "Róż",
+      "golden": "Złoty",
+      "dusk": "Zmierzch",
+      "fade": "Wyblakły",
+      "noir": "Noir"
     }
   }
 }

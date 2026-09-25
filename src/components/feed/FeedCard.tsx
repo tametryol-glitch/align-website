@@ -17,6 +17,7 @@ import { predictViralScore, getViralTier, type ContentMetrics } from '@/lib/cont
 import { renderRichText, clampCutOutsideMention } from '@/lib/mentions';
 import { extractHttpUrls } from '@/lib/linkify';
 import ReactionViewerModal from './ReactionViewerModal';
+import { PhotoCarousel } from './PhotoCarousel';
 import ViewersSheet from '@/components/views/ViewersSheet';
 import type { ViewKind } from '@/lib/viewsService';
 import RelationshipShareCard from '@/components/share/RelationshipShareCard';
@@ -1064,7 +1065,15 @@ export function FeedCard({
       })()}
 
       {/* Media */}
-      {post.imageUrl && (
+      {post.imageUrl && ((post.mediaUrls?.length ?? 0) > 1 || post.music) ? (
+        <div className="px-5 pb-3">
+          <PhotoCarousel
+            postId={post.id}
+            images={(post.mediaUrls?.length ?? 0) > 1 ? post.mediaUrls! : [post.imageUrl]}
+            music={post.music}
+          />
+        </div>
+      ) : post.imageUrl && (
         <div className="px-5 pb-3">
           <img
             src={post.imageUrl}

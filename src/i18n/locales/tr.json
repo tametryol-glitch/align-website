@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Video yukleniyor...",
       "addImage": "Gorsel Ekle",
       "addVideo": "Video Ekle",
-      "editPost": "Gonderiyi Duzenle"
+      "editPost": "Gonderiyi Duzenle",
+      "imageTooBig": "Her fotoğraf 10 MB'tan küçük olmalı",
+      "maxImages": "En fazla {{max}} fotoğraf ekleyebilirsin",
+      "editPhoto": "Fotoğrafı düzenle",
+      "cover": "Kapak",
+      "addMore": "Daha fazla ekle",
+      "photoCount": "{{count}}/{{max}} fotoğraf · düzenlemek için bir fotoğrafa dokun",
+      "addMusic": "Müzik ekle",
+      "changeMusic": "Değiştirmek için dokun",
+      "musicHint": "Fotoğrafların kaydırılırken tek bir şarkı çalar",
+      "uploadImageHint": "En fazla {{max}} fotoğraf · JPG, PNG, GIF, WebP, her biri en fazla 10 MB"
     },
     "poll": {
       "question": "Soru",
@@ -1045,6 +1055,10 @@
       "title": "Trend Olanlar",
       "clearFilter": "Filtreyi Temizle",
       "noResults": "{{tag}} için hiç gönderi bulunamadı"
+    },
+    "carousel": {
+      "prev": "Önceki fotoğraf",
+      "next": "Sonraki fotoğraf"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Yükleniyor…",
       "posting": "Paylaşılıyor…",
       "post": "Hikayede paylaş",
-      "expires": "24 saat sonra kaybolur"
+      "expires": "24 saat sonra kaybolur",
+      "edit": "Fotoğrafı düzenle",
+      "addMusic": "Müzik ekle",
+      "musicMutesVideo": "Şarkın çalarken videonun kendi sesi kapatılır"
     },
     "errors": {
       "type": "Bir fotoğraf veya video seç",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Görüntülenme dönüm noktaları",
       "description": "Gönderilerin, fotoğrafların, videoların, reels'lerin veya hikayelerin bir görüntülenme dönüm noktasına ulaştığında"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Müzik ekle",
+      "search": "Şarkı ara",
+      "all": "Tümü",
+      "trending": "Bu haftanın trendleri",
+      "library": "Tüm şarkılar",
+      "empty": "Şarkı bulunamadı",
+      "startAt": "Başlangıç",
+      "remove": "Müzik yok",
+      "use": "Bu şarkıyı kullan"
+    },
+    "unmute": "Sesi aç",
+    "mute": "Sesi kapat",
+    "song": "Şarkı"
+  },
+  "editor": {
+    "errors": {
+      "load": "Bu fotoğraf açılamadı",
+      "save": "Düzenlemelerin kaydedilemedi. Tekrar dene."
+    },
+    "tools": {
+      "text": "Metin",
+      "stickers": "Çıkartmalar",
+      "draw": "Çiz",
+      "filters": "Filtreler",
+      "adjust": "Ayarla",
+      "rotate": "Döndür",
+      "music": "Müzik"
+    },
+    "done": "Bitti",
+    "smaller": "Küçült",
+    "bigger": "Büyüt",
+    "editText": "Metni düzenle",
+    "delete": "Sil",
+    "textPlaceholder": "Bir şeyler yaz…",
+    "saveText": "Metni kaydet",
+    "addText": "Metin ekle",
+    "brush": "Fırça boyutu",
+    "undo": "Geri al",
+    "adjust": {
+      "brightness": "Parlaklık",
+      "contrast": "Kontrast",
+      "saturation": "Doygunluk"
+    },
+    "reset": "Sıfırla",
+    "filters": {
+      "original": "Orijinal",
+      "vivid": "Canlı",
+      "warm": "Sıcak",
+      "cool": "Soğuk",
+      "cosmic": "Kozmik",
+      "rose": "Pembe",
+      "golden": "Altın",
+      "dusk": "Alacakaranlık",
+      "fade": "Soluk",
+      "noir": "Noir"
     }
   }
 }

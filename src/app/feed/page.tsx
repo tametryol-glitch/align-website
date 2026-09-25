@@ -18,7 +18,10 @@ import { LiveRail } from '@/components/feed/LiveRail';
 import { StoryRail } from '@/components/stories/StoryRail';
 import { getLiveEligibility } from '@/lib/liveService';
 import { MentionInput } from '@/components/feed/MentionInput';
-import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio } from 'lucide-react';
+import { MusicPicker } from '@/components/music/MusicPicker';
+import { ImageEditor } from '@/components/imageEditor/ImageEditor';
+import { musicFromRow, MAX_POST_IMAGES, type AttachedMusic } from '@/lib/postMusic';
+import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio, Pencil, Music2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
@@ -211,10 +214,15 @@ function CreatePostModal({
     initialVideoUrl ? 'video' : 'text',
   );
 
-  // Image state
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Image state — up to MAX_POST_IMAGES photos; the first is the cover.
+  const [images, setImages] = useState<{ id: string; file: File; preview: string }[]>([]);
+  const imageFile = images[0]?.file ?? null;
+  const imagePreview = images[0]?.preview ?? null;
   const [uploading, setUploading] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  // Song under a photo post (music library).
+  const [music, setMusic] = useState<AttachedMusic | null>(null);
+  const [showMusicPicker, setShowMusicPicker] = useState(false);
 
   // Video state
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -235,22 +243,48 @@ function CreatePostModal({
   const hasGradient = preset && preset.id !== 'default' && postMode === 'text';
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Image must be under 10 MB');
-      return;
+    const picked = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (picked.length === 0) return;
+    setError('');
+    const tooBig = picked.filter((f) => f.size > 10 * 1024 * 1024);
+    const ok = picked.filter((f) => f.size <= 10 * 1024 * 1024);
+    const room = MAX_POST_IMAGES - images.length;
+    if (tooBig.length) setError(t('feed.composer.imageTooBig', 'Each photo must be under 10 MB'));
+    if (ok.length > room) {
+      setError(t('feed.composer.maxImages', 'You can add up to {{max}} photos', { max: MAX_POST_IMAGES }));
     }
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    const added = ok.slice(0, Math.max(0, room)).map((file) => ({
+      id: Math.random().toString(36).slice(2, 10),
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    if (added.length === 0) return;
+    setImages((prev) => [...prev, ...added]);
     setPostMode('photo');
     setSelectedPreset('default');
   }
 
+  function removeImageAt(id: string) {
+    setImages((prev) => {
+      const gone = prev.find((i) => i.id === id);
+      if (gone) URL.revokeObjectURL(gone.preview);
+      return prev.filter((i) => i.id !== id);
+    });
+  }
+
+  function replaceImage(id: string, file: File) {
+    setImages((prev) => prev.map((i) => {
+      if (i.id !== id) return i;
+      URL.revokeObjectURL(i.preview);
+      return { ...i, file, preview: URL.createObjectURL(file) };
+    }));
+  }
+
   function clearImage() {
-    setImageFile(null);
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
-    setImagePreview(null);
+    images.forEach((i) => URL.revokeObjectURL(i.preview));
+    setImages([]);
+    setMusic(null);
   }
 
   function removeImage() {
@@ -379,8 +413,11 @@ function CreatePostModal({
         let imageUrl: string | undefined;
         let videoUrl: string | undefined;
         setUploading(true);
-        if (imageFile) {
-          imageUrl = await uploadPostMedia(userId, imageFile);
+        let mediaUrls: string[] | undefined;
+        if (images.length > 0) {
+          const urls = await Promise.all(images.map((i) => uploadPostMedia(userId, i.file)));
+          imageUrl = urls[0];
+          if (urls.length > 1) mediaUrls = urls;
         }
         if (hostedVideoUrl) {
           // Already uploaded by the editor — don't send it up a second time.
@@ -398,6 +435,8 @@ function CreatePostModal({
           visibility,
           imageUrl,
           mediaKind: imageFile ? 'photo' : undefined,
+          mediaUrls,
+          music: imageFile ? music : null,
           videoUrl,
           ...(videoUrl ? { allowDownload } : {}),
           style: hasGradient ? { preset: selectedPreset } : null,
@@ -415,6 +454,25 @@ function CreatePostModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      {editingImageId && (() => {
+        const img = images.find((i) => i.id === editingImageId);
+        if (!img) return null;
+        return (
+          <ImageEditor
+            file={img.file}
+            music={music}
+            onMusicChange={setMusic}
+            onCancel={() => setEditingImageId(null)}
+            onDone={(edited) => {
+              if (edited !== img.file) replaceImage(img.id, edited);
+              setEditingImageId(null);
+            }}
+          />
+        );
+      })()}
+      {showMusicPicker && (
+        <MusicPicker value={music} onChange={setMusic} onClose={() => setShowMusicPicker(false)} />
+      )}
       <div className="relative bg-bg-secondary border border-border-primary rounded-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-primary sticky top-0 bg-bg-secondary z-10">
@@ -499,16 +557,74 @@ function CreatePostModal({
               </div>
               <p className="text-xs text-text-muted text-right">{content.length}/2000</p>
 
-              {/* Image preview */}
-              {imagePreview && (
-                <div className="relative rounded-xl overflow-hidden border border-border-primary">
-                  <Image src={imagePreview} alt="Image preview" width={400} height={240} className="w-full max-h-[240px] object-cover" unoptimized />
-                  <button
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              {/* Image previews — up to 10; tap one to edit it */}
+              {images.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    {images.map((img, i) => (
+                      <div key={img.id} className="relative shrink-0 w-24 h-32 rounded-xl overflow-hidden border border-border-primary bg-black">
+                        <button
+                          type="button"
+                          onClick={() => setEditingImageId(img.id)}
+                          className="block w-full h-full"
+                          aria-label={t('feed.composer.editPhoto', 'Edit photo')}
+                        >
+                          <Image src={img.preview} alt="" width={96} height={128} className="w-full h-full object-cover" unoptimized />
+                        </button>
+                        {i === 0 && images.length > 1 && (
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-white text-[9px] font-semibold">
+                            {t('feed.composer.cover', 'Cover')}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setEditingImageId(img.id)}
+                          className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
+                          aria-label={t('feed.composer.editPhoto', 'Edit photo')}
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => (images.length === 1 ? removeImage() : removeImageAt(img.id))}
+                          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
+                          aria-label={t('stories.create.remove', 'Remove')}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    {images.length < MAX_POST_IMAGES && (
+                      <label className="shrink-0 w-24 h-32 rounded-xl border-2 border-dashed border-border-primary flex flex-col items-center justify-center gap-1 text-text-muted hover:border-accent-primary/50 cursor-pointer">
+                        <Plus className="w-5 h-5" />
+                        <span className="text-[10px]">{t('feed.composer.addMore', 'Add more')}</span>
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageSelect} />
+                      </label>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-text-muted">
+                    {t('feed.composer.photoCount', '{{count}}/{{max}} photos · tap a photo to edit it', { count: images.length, max: MAX_POST_IMAGES })}
+                  </p>
+
+                  {/* Music for the whole post */}
+                  <div className="flex items-center gap-2 p-2 rounded-xl border border-border-primary bg-bg-tertiary">
+                    <span className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center text-white shrink-0">
+                      <Music2 className="w-4 h-4" />
+                    </span>
+                    <button type="button" onClick={() => setShowMusicPicker(true)} className="flex-1 min-w-0 text-left">
+                      <span className="block text-sm text-text-primary truncate">
+                        {music ? music.title : t('feed.composer.addMusic', 'Add music')}
+                      </span>
+                      <span className="block text-[11px] text-text-muted truncate">
+                        {music ? t('feed.composer.changeMusic', 'Tap to change') : t('feed.composer.musicHint', 'One song plays while people swipe your photos')}
+                      </span>
+                    </button>
+                    {music && (
+                      <button type="button" onClick={() => setMusic(null)} className="p-1 text-text-muted hover:text-text-primary" aria-label={t('music.picker.remove', 'No music')}>
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -517,10 +633,13 @@ function CreatePostModal({
                 <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border-primary rounded-xl cursor-pointer hover:border-accent-primary/50 transition-colors">
                   <ImageIcon className="w-8 h-8 text-text-muted" />
                   <span className="text-sm text-text-muted">{t('feed.composer.uploadImage')}</span>
-                  <span className="text-xs text-text-muted">JPG, PNG, GIF, WebP up to 10 MB</span>
+                  <span className="text-xs text-text-muted">
+                    {t('feed.composer.uploadImageHint', 'Up to {{max}} photos · JPG, PNG, GIF, WebP up to 10 MB each', { max: MAX_POST_IMAGES })}
+                  </span>
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     className="hidden"
                     onChange={handleImageSelect}
                   />
@@ -627,6 +746,7 @@ function CreatePostModal({
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       className="hidden"
                       onChange={handleImageSelect}
                     />
@@ -999,6 +1119,8 @@ export default function FeedPage() {
       content: rawPost.content || '',
       imageUrl: rawPost.image_url || undefined,
       mediaKind: rawPost.media_kind || undefined,
+      mediaUrls: Array.isArray(rawPost.media_urls) && rawPost.media_urls.length ? rawPost.media_urls : undefined,
+      music: musicFromRow(rawPost),
       videoUrl: rawPost.video_url || undefined,
       reactions: [],
       comments: [],

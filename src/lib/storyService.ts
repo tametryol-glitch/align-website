@@ -9,6 +9,7 @@
 // =============================================================================
 
 import { createClient } from './supabase';
+import { musicColumns, musicFromRow, type AttachedMusic } from './postMusic';
 
 export type StoryType = 'text' | 'image' | 'video';
 export type StoryVisibility = 'public' | 'friends';
@@ -28,6 +29,8 @@ export interface Story {
   created_at: string;
   expires_at: string;
   seen: boolean;
+  /** Optional song from the music library. */
+  music?: AttachedMusic;
 }
 
 export interface StoryGroup {
@@ -130,6 +133,7 @@ function normaliseStory(s: any): Story {
     created_at: s.created_at,
     expires_at: s.expires_at,
     seen: !!s.seen,
+    music: musicFromRow(s),
   };
 }
 
@@ -208,6 +212,7 @@ export async function createStory(input: {
   backgroundColor?: string | null;
   durationSeconds?: number | null;
   visibility: StoryVisibility;
+  music?: AttachedMusic | null;
 }): Promise<void> {
   const supabase = createClient();
   const content = (input.content || '').trim();
@@ -264,6 +269,7 @@ export async function createStory(input: {
     content: content || null,
     media_url: mediaUrl,
     visibility: input.visibility,
+    ...musicColumns(input.music),
   };
   if (input.type === 'text') row.background_color = input.backgroundColor || STORY_BACKGROUNDS[0];
   if (input.type === 'video') row.duration_seconds = Math.round(Number(input.durationSeconds) * 100) / 100;

@@ -1000,7 +1000,17 @@
       "uploadingVideo": "Laddar upp video...",
       "addImage": "Lägg till bild",
       "addVideo": "Lägg till video",
-      "editPost": "Redigera inlägg"
+      "editPost": "Redigera inlägg",
+      "imageTooBig": "Varje bild måste vara under 10 MB",
+      "maxImages": "Du kan lägga till upp till {{max}} bilder",
+      "editPhoto": "Redigera bild",
+      "cover": "Omslag",
+      "addMore": "Lägg till fler",
+      "photoCount": "{{count}}/{{max}} bilder · tryck på en bild för att redigera den",
+      "addMusic": "Lägg till musik",
+      "changeMusic": "Tryck för att byta",
+      "musicHint": "En låt spelas medan folk swipar genom dina bilder",
+      "uploadImageHint": "Upp till {{max}} bilder · JPG, PNG, GIF, WebP upp till 10 MB var"
     },
     "poll": {
       "question": "Fråga",
@@ -1045,6 +1055,10 @@
       "title": "Trendar",
       "clearFilter": "Rensa filter",
       "noResults": "Inga inlägg hittades för {{tag}}"
+    },
+    "carousel": {
+      "prev": "Föregående bild",
+      "next": "Nästa bild"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "Laddar upp…",
       "posting": "Publicerar…",
       "post": "Dela i story",
-      "expires": "Försvinner efter 24 timmar"
+      "expires": "Försvinner efter 24 timmar",
+      "edit": "Redigera bild",
+      "addMusic": "Lägg till musik",
+      "musicMutesVideo": "Videons eget ljud stängs av medan din låt spelas"
     },
     "errors": {
       "type": "Välj ett foto eller en video",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "Visningsmilstolpar",
       "description": "När dina inlägg, foton, videor, reels eller berättelser når en visningsmilstolpe"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "Lägg till musik",
+      "search": "Sök låtar",
+      "all": "Alla",
+      "trending": "Trendar den här veckan",
+      "library": "Alla låtar",
+      "empty": "Inga låtar hittades",
+      "startAt": "Börja från",
+      "remove": "Ingen musik",
+      "use": "Använd den här låten"
+    },
+    "unmute": "Slå på ljud",
+    "mute": "Stäng av ljud",
+    "song": "Låt"
+  },
+  "editor": {
+    "errors": {
+      "load": "Det gick inte att öppna bilden",
+      "save": "Det gick inte att spara dina ändringar. Försök igen."
+    },
+    "tools": {
+      "text": "Text",
+      "stickers": "Klistermärken",
+      "draw": "Rita",
+      "filters": "Filter",
+      "adjust": "Justera",
+      "rotate": "Rotera",
+      "music": "Musik"
+    },
+    "done": "Klar",
+    "smaller": "Mindre",
+    "bigger": "Större",
+    "editText": "Redigera text",
+    "delete": "Radera",
+    "textPlaceholder": "Skriv något…",
+    "saveText": "Spara text",
+    "addText": "Lägg till text",
+    "brush": "Penselstorlek",
+    "undo": "Ångra",
+    "adjust": {
+      "brightness": "Ljusstyrka",
+      "contrast": "Kontrast",
+      "saturation": "Mättnad"
+    },
+    "reset": "Återställ",
+    "filters": {
+      "original": "Original",
+      "vivid": "Livfull",
+      "warm": "Varm",
+      "cool": "Sval",
+      "cosmic": "Kosmisk",
+      "rose": "Rosa",
+      "golden": "Gyllene",
+      "dusk": "Skymning",
+      "fade": "Blekt",
+      "noir": "Noir"
     }
   }
 }

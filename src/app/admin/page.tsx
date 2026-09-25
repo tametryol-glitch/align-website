@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy, GraduationCap, Megaphone, Globe2, Music, BarChart3, Telescope, Radio, Phone } from 'lucide-react';
+import { Shield, Users, Flag, Search, Trash2, CheckCircle, XCircle, Database, Loader2, Camera, Eye, AlertTriangle, Mail, FileText, DollarSign, ExternalLink, Copy, GraduationCap, Megaphone, Globe2, Music, BarChart3, Telescope, Radio, Phone, TrendingUp } from 'lucide-react';
 import { LivePanel } from '@/components/admin/LivePanel';
 import { CallsPanel } from '@/components/admin/CallsPanel';
 import Link from 'next/link';
@@ -237,6 +237,12 @@ function AdminPageContent() {
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-bg-card border border-border-primary text-text-secondary hover:text-text-primary hover:border-accent-primary/30 transition-colors"
         >
           <Music className="w-4 h-4" /> Audio Library
+        </Link>
+        <Link
+          href="/admin/music-trends"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-bg-card border border-border-primary text-text-secondary hover:text-text-primary hover:border-accent-primary/30 transition-colors"
+        >
+          <TrendingUp className="w-4 h-4" /> Music Trends
         </Link>
       </div>
 

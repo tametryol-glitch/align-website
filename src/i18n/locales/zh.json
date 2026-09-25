@@ -1000,7 +1000,17 @@
       "uploadingVideo": "上传视频中...",
       "addImage": "添加图片",
       "addVideo": "添加视频",
-      "editPost": "编辑帖子"
+      "editPost": "编辑帖子",
+      "imageTooBig": "每张照片须小于 10 MB",
+      "maxImages": "最多可添加 {{max}} 张照片",
+      "editPhoto": "编辑照片",
+      "cover": "封面",
+      "addMore": "添加更多",
+      "photoCount": "{{count}}/{{max}} 张照片 · 点按照片即可编辑",
+      "addMusic": "添加音乐",
+      "changeMusic": "点按更换",
+      "musicHint": "大家滑动浏览你的照片时会播放一首歌",
+      "uploadImageHint": "最多 {{max}} 张照片 · JPG、PNG、GIF、WebP，每张不超过 10 MB"
     },
     "poll": {
       "question": "问题",
@@ -1045,6 +1055,10 @@
       "title": "热门",
       "clearFilter": "清除筛选",
       "noResults": "未找到与{{tag}}相关的帖子"
+    },
+    "carousel": {
+      "prev": "上一张",
+      "next": "下一张"
     }
   },
   "friends": {
@@ -3287,7 +3301,10 @@
       "uploading": "正在上传…",
       "posting": "正在发布…",
       "post": "分享到快拍",
-      "expires": "24 小时后消失"
+      "expires": "24 小时后消失",
+      "edit": "编辑照片",
+      "addMusic": "添加音乐",
+      "musicMutesVideo": "播放你的歌曲时，视频原声将静音"
     },
     "errors": {
       "type": "请选择照片或视频",
@@ -3368,6 +3385,65 @@
     "settings": {
       "label": "浏览里程碑",
       "description": "当你的帖子、照片、视频、短视频或快拍达到浏览里程碑时"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "添加音乐",
+      "search": "搜索歌曲",
+      "all": "全部",
+      "trending": "本周热门",
+      "library": "全部歌曲",
+      "empty": "未找到歌曲",
+      "startAt": "开始位置",
+      "remove": "不使用音乐",
+      "use": "使用这首歌"
+    },
+    "unmute": "打开声音",
+    "mute": "关闭声音",
+    "song": "歌曲"
+  },
+  "editor": {
+    "errors": {
+      "load": "无法打开这张照片",
+      "save": "无法保存你的编辑，请重试。"
+    },
+    "tools": {
+      "text": "文字",
+      "stickers": "贴纸",
+      "draw": "涂鸦",
+      "filters": "滤镜",
+      "adjust": "调整",
+      "rotate": "旋转",
+      "music": "音乐"
+    },
+    "done": "完成",
+    "smaller": "缩小",
+    "bigger": "放大",
+    "editText": "编辑文字",
+    "delete": "删除",
+    "textPlaceholder": "输入内容…",
+    "saveText": "保存文字",
+    "addText": "添加文字",
+    "brush": "画笔大小",
+    "undo": "撤销",
+    "adjust": {
+      "brightness": "亮度",
+      "contrast": "对比度",
+      "saturation": "饱和度"
+    },
+    "reset": "重置",
+    "filters": {
+      "original": "原图",
+      "vivid": "鲜艳",
+      "warm": "暖色",
+      "cool": "冷色",
+      "cosmic": "宇宙",
+      "rose": "玫瑰",
+      "golden": "金色",
+      "dusk": "黄昏",
+      "fade": "褪色",
+      "noir": "黑白"
     }
   }
 }

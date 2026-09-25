@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { X, Volume2, VolumeX, Pause, Play, Eye, Trash2, Loader2, Users, Send, Check } from 'lucide-react';
+import { X, Volume2, VolumeX, Pause, Play, Eye, Trash2, Loader2, Users, Send, Check, Music2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   markStoryViewed, reactToStory, getStoryViewers, deleteStory, storyDurationMs, storyTimeAgo, replyToStory,
   STORY_REACTIONS, STORY_REPLY_MAX_CHARS, type StoryGroup, type StoryViewer as StoryViewerRow,
 } from '@/lib/storyService';
+import { recordMusicListen } from '@/lib/postMusic';
 
 /** A press shorter than this is a tap (navigate); longer is a hold (pause). */
 const TAP_MS = 250;
@@ -52,6 +53,8 @@ export function StoryViewer({
   const [holding, setHolding] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
   const [muted, setMuted] = useState(true);
+  // Story songs start with sound: opening the viewer is a tap, so browsers allow it.
+  const [musicMuted, setMusicMuted] = useState(false);
   const [pendingEmoji, setPendingEmoji] = useState<string | null>(null);
   const [sentEmoji, setSentEmoji] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
@@ -70,6 +73,7 @@ export function StoryViewer({
   const [replyError, setReplyError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const musicRef = useRef<HTMLAudioElement>(null);
   const elapsedRef = useRef(0);
   const pressStartRef = useRef(0);
   const viewedRef = useRef<Set<string>>(new Set());
@@ -153,6 +157,30 @@ export function StoryViewer({
     if (paused) v.pause();
     else v.play().catch(() => { /* autoplay blocked: user can tap play */ });
   }, [paused, story?.id, story?.type, ready]);
+
+  // Story song. One <audio> for the whole viewer: when the next frame carries
+  // the same song it keeps playing instead of restarting.
+  const musicUrl = story?.music?.url || null;
+  useEffect(() => {
+    const a = musicRef.current;
+    if (!a) return;
+    if (!musicUrl || !story?.music) { a.pause(); return; }
+    if (a.dataset.src !== musicUrl) {
+      a.dataset.src = musicUrl;
+      a.src = musicUrl;
+      a.currentTime = story.music.startSec;
+    }
+  }, [musicUrl, story?.music]);
+
+  useEffect(() => {
+    const a = musicRef.current;
+    if (!a || !musicUrl) return;
+    a.muted = musicMuted;
+    if (paused) { a.pause(); return; }
+    a.play()
+      .then(() => { if (story?.music) recordMusicListen(`story:${story.id}`, story.music.trackId); })
+      .catch(() => { /* blocked: the volume button starts it */ });
+  }, [paused, musicUrl, musicMuted, story?.id, story?.music]);
 
   useEffect(() => {
     const onVis = () => setTabHidden(document.visibilityState === 'hidden');
@@ -291,6 +319,7 @@ export function StoryViewer({
 
   return (
     <div className="fixed inset-0 z-[80] bg-black/95 flex items-center justify-center" role="dialog" aria-modal="true">
+      <audio ref={musicRef} loop preload="auto" />
       {/* Close (outside the card on desktop, corner on mobile) */}
       <button
         onClick={close}
@@ -326,7 +355,7 @@ export function StoryViewer({
               className="w-full h-full object-contain"
               playsInline
               autoPlay
-              muted={muted}
+              muted={muted || !!story.music}
               onLoadedData={() => setReady(true)}
               onTimeUpdate={(e) => {
                 const v = e.currentTarget;
@@ -372,7 +401,20 @@ export function StoryViewer({
               <button onClick={() => setUserPaused((p) => !p)} className="p-1.5 text-white" aria-label={userPaused ? t('stories.viewer.play', 'Play') : t('stories.viewer.pause', 'Pause')}>
                 {userPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
               </button>
-              {story.type === 'video' && (
+              {story.music ? (
+                <button
+                  onClick={() => {
+                    const a = musicRef.current;
+                    // Start inside the tap so iOS allows the sound.
+                    if (a && musicMuted) { a.muted = false; if (!paused) a.play().catch(() => {}); }
+                    setMusicMuted((m) => !m);
+                  }}
+                  className="p-1.5 text-white"
+                  aria-label={musicMuted ? t('stories.viewer.unmute', 'Unmute') : t('stories.viewer.mute', 'Mute')}
+                >
+                  {musicMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </button>
+              ) : story.type === 'video' && (
                 <button onClick={() => setMuted((m) => !m)} className="p-1.5 text-white" aria-label={muted ? t('stories.viewer.unmute', 'Unmute') : t('stories.viewer.mute', 'Mute')}>
                   {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 </button>
@@ -382,6 +424,12 @@ export function StoryViewer({
               </button>
             </div>
           </div>
+          {story.music && (
+            <div className="mt-2 inline-flex items-center gap-1.5 max-w-[80%] px-2.5 py-1 rounded-full bg-black/40 text-white text-[11px]">
+              <Music2 className={cn('w-3 h-3 shrink-0', !paused && !musicMuted && 'animate-spin')} style={{ animationDuration: '3s' }} />
+              <span className="truncate">{story.music.title || t('music.song', 'Song')}</span>
+            </div>
+          )}
         </div>
 
         {/* Caption */}

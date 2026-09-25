@@ -1000,7 +1000,17 @@
       "uploadingVideo": "動画をアップロード中...",
       "addImage": "画像を追加",
       "addVideo": "動画を追加",
-      "editPost": "投稿を編集"
+      "editPost": "投稿を編集",
+      "imageTooBig": "写真は1枚10MB未満にしてください",
+      "maxImages": "写真は最大{{max}}枚まで追加できます",
+      "editPhoto": "写真を編集",
+      "cover": "カバー",
+      "addMore": "さらに追加",
+      "photoCount": "{{count}}/{{max}}枚 · 写真をタップして編集",
+      "addMusic": "音楽を追加",
+      "changeMusic": "タップして変更",
+      "musicHint": "写真をスワイプしている間、1曲が流れます",
+      "uploadImageHint": "最大{{max}}枚 · JPG、PNG、GIF、WebP（各10MBまで）"
     },
     "poll": {
       "question": "質問",
@@ -1045,6 +1055,10 @@
       "title": "トレンド",
       "clearFilter": "フィルターをクリア",
       "noResults": "{{tag}}の投稿は見つかりませんでした"
+    },
+    "carousel": {
+      "prev": "前の写真",
+      "next": "次の写真"
     }
   },
   "friends": {
@@ -3284,7 +3298,10 @@
       "uploading": "アップロード中…",
       "posting": "投稿中…",
       "post": "ストーリーズでシェア",
-      "expires": "24時間後に消えます"
+      "expires": "24時間後に消えます",
+      "edit": "写真を編集",
+      "addMusic": "音楽を追加",
+      "musicMutesVideo": "曲の再生中は動画の元の音声がミュートされます"
     },
     "errors": {
       "type": "写真または動画を選んでください",
@@ -3365,6 +3382,65 @@
     "settings": {
       "label": "閲覧数のマイルストーン",
       "description": "投稿、写真、動画、リール、ストーリーの閲覧数がマイルストーンに達したとき"
+    }
+  },
+  "music": {
+    "picker": {
+      "title": "音楽を追加",
+      "search": "曲を検索",
+      "all": "すべて",
+      "trending": "今週のトレンド",
+      "library": "すべての曲",
+      "empty": "曲が見つかりません",
+      "startAt": "開始位置",
+      "remove": "音楽なし",
+      "use": "この曲を使う"
+    },
+    "unmute": "サウンドをオン",
+    "mute": "サウンドをオフ",
+    "song": "曲"
+  },
+  "editor": {
+    "errors": {
+      "load": "この写真を開けませんでした",
+      "save": "編集内容を保存できませんでした。もう一度お試しください。"
+    },
+    "tools": {
+      "text": "テキスト",
+      "stickers": "スタンプ",
+      "draw": "描く",
+      "filters": "フィルター",
+      "adjust": "調整",
+      "rotate": "回転",
+      "music": "音楽"
+    },
+    "done": "完了",
+    "smaller": "小さく",
+    "bigger": "大きく",
+    "editText": "テキストを編集",
+    "delete": "削除",
+    "textPlaceholder": "テキストを入力…",
+    "saveText": "テキストを保存",
+    "addText": "テキストを追加",
+    "brush": "ブラシサイズ",
+    "undo": "元に戻す",
+    "adjust": {
+      "brightness": "明るさ",
+      "contrast": "コントラスト",
+      "saturation": "彩度"
+    },
+    "reset": "リセット",
+    "filters": {
+      "original": "オリジナル",
+      "vivid": "ビビッド",
+      "warm": "ウォーム",
+      "cool": "クール",
+      "cosmic": "コズミック",
+      "rose": "ローズ",
+      "golden": "ゴールデン",
+      "dusk": "夕暮れ",
+      "fade": "フェード",
+      "noir": "ノワール"
     }
   }
 }
