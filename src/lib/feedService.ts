@@ -407,7 +407,9 @@ export async function uploadPostMedia(userId: string, file: File): Promise<strin
 
   const supabase = createClient();
   const ext = file.name.split('.').pop() || 'jpg';
-  const path = `${userId}/${Date.now()}.${ext}`;
+  // Random suffix: multi-photo posts upload in parallel, and two files in the
+  // same millisecond would otherwise collide ("The resource already exists").
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from('post-media')
