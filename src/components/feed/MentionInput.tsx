@@ -12,6 +12,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { cn } from '@/lib/utils';
 import {
   applyMention, getMentionQuery, searchMentionUsers, stripMentionMarkup,
+  mentionDisplayText, applyMentionDisplayEdit, mentionDisplayToValuePos, mentionValueToDisplayPos, isMentionAt,
   type MentionUser,
 } from '@/lib/mentions';
 
@@ -62,7 +63,10 @@ export function MentionInput({
   const [results, setResults] = useState<MentionUser[]>([]);
   const [active, setActive] = useState(0);
   // Caret at the moment the query was captured — where the markup goes.
+  // Kept in SHOWN-text positions: the box shows "@Name", while `value`
+  // underneath keeps the full @[Name](id) markup the notification needs.
   const caretRef = useRef(0);
+  const shown = mentionDisplayText(value);
 
   // Debounced people search for the active "@query"
   useEffect(() => {
@@ -75,20 +79,37 @@ export function MentionInput({
     return () => { cancelled = true; clearTimeout(timer); };
   }, [query, excludeUserId]);
 
-  function syncQuery(next: string, caret: number) {
+  /** `shownText` is what the box shows; `stored` the markup behind it. */
+  function syncQuery(shownText: string, caret: number, stored: string = value) {
     caretRef.current = caret;
-    setQuery(getMentionQuery(next, caret));
+    const q = getMentionQuery(shownText, caret);
+    // An "@" that already belongs to a tag isn't a new search.
+    setQuery(q && !isMentionAt(stored, q.start) ? q : null);
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const next = e.target.value;
-    onChange(next);
-    syncQuery(next, e.target.selectionStart ?? next.length);
+    const nextShown = e.target.value;
+    const nextValue = applyMentionDisplayEdit(value, nextShown);
+    onChange(nextValue);
+    const newShown = mentionDisplayText(nextValue);
+    let caret = e.target.selectionStart ?? nextShown.length;
+    if (newShown !== nextShown) {
+      // Backspacing into a tag removed the whole tag (the extra characters were
+      // before the caret) — put the caret where the tag was.
+      caret = Math.max(0, Math.min(newShown.length, caret - (nextShown.length - newShown.length)));
+      const el = e.target;
+      requestAnimationFrame(() => { try { el.setSelectionRange(caret, caret); } catch { /* ignore */ } });
+    }
+    syncQuery(newShown, caret, nextValue);
   }
 
   function pick(user: MentionUser) {
     if (!query) return;
-    const { text, caret } = applyMention(value, query.start, caretRef.current, user);
+    const startV = mentionDisplayToValuePos(value, query.start);
+    const caretV = mentionDisplayToValuePos(value, caretRef.current);
+    const applied = applyMention(value, startV, caretV, user);
+    const text = applied.text;
+    const caret = mentionValueToDisplayPos(text, applied.caret);
     onChange(text);
     setQuery(null);
     setResults([]);
@@ -127,7 +148,7 @@ export function MentionInput({
 
   const shared = {
     ref: ref as any,
-    value,
+    value: shown,
     onChange: handleChange,
     onKeyDown: handleKeyDown,
     onKeyUp: (e: any) => syncQuery(e.target.value, e.target.selectionStart ?? 0),

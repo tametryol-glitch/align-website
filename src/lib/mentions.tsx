@@ -145,3 +145,125 @@ export async function searchMentionUsers(query: string, excludeId?: string): Pro
     avatarUrl: p.avatar_url,
   }));
 }
+
+// ── Editing with names instead of markup ───────────────────────────────────
+// The text box shows "@Display Name"; the value underneath keeps the full
+// "@[Display Name](user-uuid)" markup so the tag (and its notification)
+// survives. These map edits made to the shown text back onto the markup.
+
+interface MentionSeg { raw: string; disp: string; mention: boolean }
+
+function mentionSegments(value: string): MentionSeg[] {
+  const segs: MentionSeg[] = [];
+  const re = new RegExp(MENTION_RE.source, 'g');
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(value)) !== null) {
+    if (m.index > last) { const t = value.slice(last, m.index); segs.push({ raw: t, disp: t, mention: false }); }
+    segs.push({ raw: m[0], disp: `@${m[1]}`, mention: true });
+    last = m.index + m[0].length;
+  }
+  if (last < value.length) { const t = value.slice(last); segs.push({ raw: t, disp: t, mention: false }); }
+  return segs;
+}
+
+/** What the text box shows for a stored value. */
+export function mentionDisplayText(value: string): string {
+  return mentionSegments(value).map((s) => s.disp).join('');
+}
+
+/** Position in the shown text → position in the stored value. */
+export function mentionDisplayToValuePos(value: string, pos: number): number {
+  let d = 0;
+  let r = 0;
+  for (const s of mentionSegments(value)) {
+    const de = d + s.disp.length;
+    if (pos <= de) {
+      if (!s.mention) return r + (pos - d);
+      return pos === d ? r : r + s.raw.length;
+    }
+    d = de;
+    r += s.raw.length;
+  }
+  return r;
+}
+
+/** Position in the stored value → position in the shown text. */
+export function mentionValueToDisplayPos(value: string, pos: number): number {
+  let d = 0;
+  let r = 0;
+  for (const s of mentionSegments(value)) {
+    const re = r + s.raw.length;
+    if (pos <= re) {
+      if (!s.mention) return d + (pos - r);
+      return pos === r ? d : d + s.disp.length;
+    }
+    d += s.disp.length;
+    r = re;
+  }
+  return d;
+}
+
+/** True when the shown text has a tag starting at `pos` (its "@"). */
+export function isMentionAt(value: string, pos: number): boolean {
+  let d = 0;
+  for (const s of mentionSegments(value)) {
+    if (s.mention && d === pos) return true;
+    d += s.disp.length;
+  }
+  return false;
+}
+
+/**
+ * Apply an edit made to the shown text back onto the stored value.
+ * Deleting into a tag removes the whole tag; typing inside a tag turns it
+ * back into plain text (the tag no longer matches the person).
+ */
+export function applyMentionDisplayEdit(value: string, nextDisplay: string): string {
+  let segs = mentionSegments(value);
+  const prev = segs.map((s) => s.disp).join('');
+  if (prev === nextDisplay) return value;
+
+  let p = 0;
+  const max = Math.min(prev.length, nextDisplay.length);
+  while (p < max && prev[p] === nextDisplay[p]) p++;
+  let sfx = 0;
+  while (sfx < max - p && prev[prev.length - 1 - sfx] === nextDisplay[nextDisplay.length - 1 - sfx]) sfx++;
+  let a = p;
+  let b = prev.length - sfx;
+  const ins = nextDisplay.slice(p, nextDisplay.length - sfx);
+
+  // Typing inside a tag: it stops being a tag.
+  if (a === b) {
+    let d = 0;
+    segs = segs.map((s) => {
+      const hit = s.mention && a > d && a < d + s.disp.length;
+      d += s.disp.length;
+      return hit ? { raw: s.disp, disp: s.disp, mention: false } : s;
+    });
+  }
+  // Deleting any part of a tag deletes all of it.
+  let d = 0;
+  for (const s of segs) {
+    const ds = d;
+    const de = d + s.disp.length;
+    if (s.mention && a < de && b > ds) { a = Math.min(a, ds); b = Math.max(b, de); }
+    d = de;
+  }
+  const base = segs.map((s) => s.raw).join('');
+  const toRaw = (pos: number) => {
+    let dd = 0;
+    let rr = 0;
+    for (const s of segs) {
+      const de = dd + s.disp.length;
+      if (pos <= de) {
+        if (!s.mention) return rr + (pos - dd);
+        return pos === dd ? rr : rr + s.raw.length;
+      }
+      dd = de;
+      rr += s.raw.length;
+    }
+    return rr;
+  };
+  return base.slice(0, toRaw(a)) + ins + base.slice(toRaw(b));
+}
