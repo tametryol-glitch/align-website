@@ -12,6 +12,7 @@ import {
 import { MusicPicker } from '@/components/music/MusicPicker';
 import { ImageEditor } from '@/components/imageEditor/ImageEditor';
 import type { AttachedMusic } from '@/lib/postMusic';
+import { compressForUpload } from '@/lib/imageEdit';
 
 type Mode = 'media' | 'text';
 
@@ -125,7 +126,7 @@ export function StoryCreator({
         userId,
         type: mode === 'text' ? 'text' : isVideo ? 'video' : 'image',
         content: mode === 'text' ? text : caption,
-        file: mode === 'media' ? file : null,
+        file: mode === 'media' && file ? (isVideo ? file : await compressForUpload(file)) : null,
         backgroundColor: mode === 'text' ? bg : null,
         durationSeconds: isVideo ? videoSeconds : null,
         visibility,

@@ -3410,7 +3410,8 @@
     },
     "unmute": "Ääni päälle",
     "mute": "Ääni pois",
-    "song": "Kappale"
+    "song": "Kappale",
+    "tapForSound": "Napauta äänet päälle"
   },
   "editor": {
     "errors": {

@@ -12,7 +12,7 @@
 // video leaves the screen.
 
 import { useEffect, useRef } from 'react';
-import { claimPlayback, useInViewPlayback } from '@/lib/postMusic';
+import { claimPlayback, useInViewPlayback, setActiveMedia, clearActiveMedia, setFeedMuted } from '@/lib/postMusic';
 
 export function AutoPlayVideo({
   postId,
@@ -30,6 +30,8 @@ export function AutoPlayVideo({
   const ref = useRef<HTMLVideoElement>(null);
   const owner = `video:${postId}`;
   const active = useInViewPlayback(ref, owner);
+  const activeRef = useRef(active);
+  activeRef.current = active;
   // Pauses/mutes we did ourselves, so they aren't mistaken for the viewer's.
   const selfPausing = useRef(false);
   const autoMuted = useRef(false);
@@ -39,6 +41,7 @@ export function AutoPlayVideo({
     const v = ref.current;
     if (!v) return;
     if (!active) {
+      clearActiveMedia(v);
       userPaused.current = false;
       if (!v.paused) { selfPausing.current = true; v.pause(); }
       return;
@@ -51,6 +54,9 @@ export function AutoPlayVideo({
       v.muted = true;
       autoMuted.current = true;
       v.play().catch(() => {});
+      // Let the next tap anywhere switch the sound on (inside that tap).
+      setActiveMedia(v);
+      setFeedMuted(true, false);
     });
   }, [active]);
 
@@ -65,7 +71,7 @@ export function AutoPlayVideo({
       className={className}
       onPlay={() => {
         // Pressed play on a video that isn't the one in focus: it takes over.
-        claimPlayback(owner);
+        if (!activeRef.current) claimPlayback(owner);
         onPlay?.();
       }}
       onPause={() => {

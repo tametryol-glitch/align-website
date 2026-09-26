@@ -3410,7 +3410,8 @@
     },
     "unmute": "サウンドをオン",
     "mute": "サウンドをオフ",
-    "song": "曲"
+    "song": "曲",
+    "tapForSound": "タップで音声オン"
   },
   "editor": {
     "errors": {

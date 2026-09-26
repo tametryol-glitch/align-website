@@ -3460,7 +3460,8 @@
     },
     "unmute": "Turn sound on",
     "mute": "Turn sound off",
-    "song": "Song"
+    "song": "Song",
+    "tapForSound": "Tap for sound"
   },
   "editor": {
     "errors": {

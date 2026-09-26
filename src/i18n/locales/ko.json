@@ -3410,7 +3410,8 @@
     },
     "unmute": "소리 켜기",
     "mute": "소리 끄기",
-    "song": "노래"
+    "song": "노래",
+    "tapForSound": "탭하여 소리 켜기"
   },
   "editor": {
     "errors": {

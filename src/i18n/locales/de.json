@@ -3410,7 +3410,8 @@
     },
     "unmute": "Ton einschalten",
     "mute": "Ton ausschalten",
-    "song": "Song"
+    "song": "Song",
+    "tapForSound": "Für Ton tippen"
   },
   "editor": {
     "errors": {

@@ -3410,7 +3410,8 @@
     },
     "unmute": "Slå på ljud",
     "mute": "Stäng av ljud",
-    "song": "Låt"
+    "song": "Låt",
+    "tapForSound": "Tryck för ljud"
   },
   "editor": {
     "errors": {

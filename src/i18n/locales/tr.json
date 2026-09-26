@@ -3410,7 +3410,8 @@
     },
     "unmute": "Sesi aç",
     "mute": "Sesi kapat",
-    "song": "Şarkı"
+    "song": "Şarkı",
+    "tapForSound": "Ses için dokun"
   },
   "editor": {
     "errors": {

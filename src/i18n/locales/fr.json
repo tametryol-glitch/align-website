@@ -3410,7 +3410,8 @@
     },
     "unmute": "Activer le son",
     "mute": "Couper le son",
-    "song": "Titre"
+    "song": "Titre",
+    "tapForSound": "Touchez pour le son"
   },
   "editor": {
     "errors": {

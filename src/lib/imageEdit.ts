@@ -317,3 +317,61 @@ export async function exportEditedImage(
   const base = fileName.replace(/\.[^.]+$/, '') || 'photo';
   return new File([blob], `${base}-edited.jpg`, { type: 'image/jpeg' });
 }
+
+// ── Upload size ─────────────────────────────────────────────────────────────
+
+/**
+ * Shrink a photo before it's uploaded: long side capped at `maxSide`, saved as
+ * JPEG (or WebP when it has see-through parts, so they stay see-through).
+ * Phone photos and PNG exports are often 2–10 MB; this brings them to a few
+ * hundred KB so a 10-photo post loads fast. GIFs (animation) and files that
+ * are already small are left alone.
+ */
+export async function compressForUpload(file: File, maxSide = 2048): Promise<File> {
+  const type = file.type.toLowerCase();
+  if (!type.startsWith('image/') || type === 'image/gif' || type === 'image/svg+xml') return file;
+  if (file.size < 400 * 1024) return file;
+  try {
+    const url = URL.createObjectURL(file);
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error('decode failed'));
+      i.src = url;
+    }).finally(() => URL.revokeObjectURL(url));
+
+    const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, w, h);
+
+    // Only PNG/WebP can carry transparency — check before choosing JPEG.
+    let hasAlpha = false;
+    if (type === 'image/png' || type === 'image/webp') {
+      const d = ctx.getImageData(0, 0, w, h).data;
+      for (let i = 3; i < d.length; i += 4 * 7) { if (d[i] < 250) { hasAlpha = true; break; } }
+    }
+    const toBlob = (mime: string, q: number) =>
+      new Promise<Blob | null>((r) => canvas.toBlob(r, mime, q));
+
+    let blob: Blob | null;
+    let ext: string;
+    if (hasAlpha) {
+      blob = await toBlob('image/webp', 0.85);
+      // Safari can't write WebP (gives PNG back) — keep the resized PNG then.
+      ext = blob?.type === 'image/webp' ? 'webp' : 'png';
+    } else {
+      blob = await toBlob('image/jpeg', 0.85);
+      ext = 'jpg';
+    }
+    if (!blob || blob.size >= file.size) return file;
+    const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
+    return new File([blob], `${base}.${ext}`, { type: blob.type });
+  } catch {
+    return file;
+  }
+}

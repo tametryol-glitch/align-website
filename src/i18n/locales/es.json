@@ -3410,7 +3410,8 @@
     },
     "unmute": "Activar sonido",
     "mute": "Silenciar",
-    "song": "Canción"
+    "song": "Canción",
+    "tapForSound": "Toca para activar el sonido"
   },
   "editor": {
     "errors": {

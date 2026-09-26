@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Music2, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
-  claimPlayback, useInViewPlayback, useFeedMuted, setFeedMuted, recordMusicListen,
+  claimPlayback, useInViewPlayback, useFeedMuted, setFeedMuted, setActiveMedia, clearActiveMedia, isSoundBlocked, recordMusicListen,
   type AttachedMusic,
 } from '@/lib/postMusic';
 
@@ -48,6 +48,14 @@ export function PhotoCarousel({
     const next = Math.max(0, Math.min(images.length - 1, index + dir));
     el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' });
   };
+
+  // While this post has the slot, a tap anywhere can start its song.
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a || !music || !isActive) return;
+    setActiveMedia(a);
+    return () => clearActiveMedia(a);
+  }, [isActive, music]);
 
   // Play / pause the one song for this post.
   useEffect(() => {
@@ -156,7 +164,7 @@ export function PhotoCarousel({
 
       {music && (
         <>
-          <audio ref={audioRef} src={music.url} preload="none" onEnded={onEnded} />
+          <audio ref={audioRef} src={music.url} preload="metadata" onEnded={onEnded} />
           <button
             type="button"
             onClick={toggleSound}
@@ -169,7 +177,11 @@ export function PhotoCarousel({
           >
             {muted ? <VolumeX className="w-3.5 h-3.5 shrink-0" /> : <Volume2 className="w-3.5 h-3.5 shrink-0" />}
             <Music2 className={cn('w-3 h-3 shrink-0', isActive && !muted && 'animate-spin')} style={{ animationDuration: '3s' }} />
-            <span className="truncate">{music.title || t('music.song', 'Song')}</span>
+            <span className="truncate">
+              {muted && isSoundBlocked()
+                ? t('music.tapForSound', 'Tap for sound')
+                : music.title || t('music.song', 'Song')}
+            </span>
           </button>
         </>
       )}

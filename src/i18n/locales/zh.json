@@ -3413,7 +3413,8 @@
     },
     "unmute": "打开声音",
     "mute": "关闭声音",
-    "song": "歌曲"
+    "song": "歌曲",
+    "tapForSound": "点按开启声音"
   },
   "editor": {
     "errors": {

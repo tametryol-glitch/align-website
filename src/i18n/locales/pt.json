@@ -3410,7 +3410,8 @@
     },
     "unmute": "Ativar som",
     "mute": "Desativar som",
-    "song": "Música"
+    "song": "Música",
+    "tapForSound": "Toque para ativar o som"
   },
   "editor": {
     "errors": {

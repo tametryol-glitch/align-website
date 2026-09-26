@@ -20,6 +20,7 @@ import { getLiveEligibility } from '@/lib/liveService';
 import { MentionInput } from '@/components/feed/MentionInput';
 import { MusicPicker } from '@/components/music/MusicPicker';
 import { ImageEditor } from '@/components/imageEditor/ImageEditor';
+import { compressForUpload } from '@/lib/imageEdit';
 import { musicFromRow, MAX_POST_IMAGES, type AttachedMusic } from '@/lib/postMusic';
 import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, Sparkles, BookOpen, MessagesSquare, Hash, TrendingUp, Circle, Square, Scissors, Loader2, Radio, Pencil, Music2 } from 'lucide-react';
 import Link from 'next/link';
@@ -415,7 +416,8 @@ function CreatePostModal({
         setUploading(true);
         let mediaUrls: string[] | undefined;
         if (images.length > 0) {
-          const urls = await Promise.all(images.map((i) => uploadPostMedia(userId, i.file)));
+          // Shrunk first (a 2 MB PNG → a few hundred KB) so the post loads fast.
+          const urls = await Promise.all(images.map(async (i) => uploadPostMedia(userId, await compressForUpload(i.file))));
           imageUrl = urls[0];
           if (urls.length > 1) mediaUrls = urls;
         }
