@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Music2, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PhotoLightbox } from '@/components/ui/PhotoLightbox';
 import {
   claimPlayback, useInViewPlayback, useFeedMuted, setFeedMuted, setActiveMedia, clearActiveMedia, isSoundBlocked, recordMusicListen,
   type AttachedMusic,
@@ -18,13 +19,19 @@ export function PhotoCarousel({
   postId,
   images,
   music,
+  userId = null,
+  ownerId = null,
 }: {
   postId: string;
   images: string[];
   music?: AttachedMusic;
+  /** Viewer — lets the full-size viewer react / count views. */
+  userId?: string | null;
+  ownerId?: string | null;
 }) {
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -123,7 +130,8 @@ export function PhotoCarousel({
               alt=""
               loading={i === 0 ? 'eager' : 'lazy'}
               draggable={false}
-              className={cn('w-full object-cover', many ? 'aspect-[4/5] max-h-[520px]' : 'max-h-[400px]')}
+              onClick={() => setViewerIndex(i)}
+              className={cn('w-full object-contain cursor-zoom-in', many ? 'aspect-[4/5] max-h-[560px]' : 'max-h-[600px]')}
             />
           </div>
         ))}
@@ -184,6 +192,16 @@ export function PhotoCarousel({
             </span>
           </button>
         </>
+      )}
+
+      {viewerIndex !== null && (
+        <PhotoLightbox
+          photos={images.map((u) => ({ target: { kind: 'post' as const, postId, imageUrl: u } }))}
+          initialIndex={viewerIndex}
+          userId={userId}
+          ownerId={ownerId}
+          onClose={() => setViewerIndex(null)}
+        />
       )}
     </div>
   );

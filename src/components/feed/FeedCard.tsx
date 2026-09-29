@@ -1072,14 +1072,17 @@ export function FeedCard({
             postId={post.id}
             images={(post.mediaUrls?.length ?? 0) > 1 ? post.mediaUrls! : [post.imageUrl]}
             music={post.music}
+            userId={currentUserId ?? null}
+            ownerId={post.userId ?? null}
           />
         </div>
       ) : post.imageUrl && (
         <div className="px-5 pb-3">
-          <img
-            src={post.imageUrl}
-            alt=""
-            className="w-full rounded-xl object-cover max-h-[400px]"
+          <PhotoCarousel
+            postId={post.id}
+            images={[post.imageUrl]}
+            userId={currentUserId ?? null}
+            ownerId={post.userId ?? null}
           />
         </div>
       )}
