@@ -103,8 +103,9 @@ const POOLS: Record<string, string[]> = {
   '806ba1be-51a2-4c77-9f3a-a5e703310852': COSMIC_WEATHER_POOL, // Cosmic Weather
 };
 
-// ── Daily "Earn with Align" promo ───────────────────────────────────────────
-// Posted by Align Daily EVERY day in addition to its regular rotation post.
+// ── Weekly "Earn with Align" promo ──────────────────────────────────────────
+// Posted by Align Daily once a week in addition to its regular rotation post.
+const EARN_WINDOW_DAYS = 7;
 // Every variant must keep: the affiliate apply link, and the full Creator
 // Program qualification list (kept in sync with creatorEligibility.ts
 // CREATOR_THRESHOLDS: 100 followers, 1,000 lifetime views, 300 views/30d,
@@ -204,23 +205,29 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Daily "Earn with Align" promo — in addition to the regular rotation.
+    // Weekly "Earn with Align" promo — in addition to the regular rotation.
     // Idempotent by content marker (the affiliate URL) rather than post count,
-    // so it neither blocks nor is blocked by the regular daily post.
+    // so it neither blocks nor is blocked by the regular rotation post. Gated on
+    // a rolling 7-day window (today + 6 prior days) so a missed cron run still
+    // posts on the next one.
     {
+      const earnWindowStart = new Date(
+        new Date(dayStart).getTime() - (EARN_WINDOW_DAYS - 1) * 86400000,
+      ).toISOString();
       const { count, error: countErr } = await admin
         .from('posts')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', EARN_ACCOUNT_ID)
-        .gte('created_at', dayStart)
+        .gte('created_at', earnWindowStart)
         .ilike('content', `%${EARN_MARKER}%`);
 
       if (countErr) {
         results.push({ account: 'Align Daily (Earn promo)', status: 'error', reason: countErr.message });
       } else if ((count ?? 0) > 0) {
-        results.push({ account: 'Align Daily (Earn promo)', status: 'skipped', reason: 'Already posted today' });
+        results.push({ account: 'Align Daily (Earn promo)', status: 'skipped', reason: 'Posted within last 7 days' });
       } else {
-        const content = EARN_PROMO_POOL[doy % EARN_PROMO_POOL.length];
+        // Index by week, not day: posting weekly, doy % 7 would repeat one variant.
+        const content = EARN_PROMO_POOL[Math.floor(doy / EARN_WINDOW_DAYS) % EARN_PROMO_POOL.length];
         const { error: insertErr } = await admin.from('posts').insert({
           user_id: EARN_ACCOUNT_ID,
           type: 'text',
