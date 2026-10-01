@@ -1263,7 +1263,10 @@
       "deleteConfirm": "要从相册中删除这张照片吗？",
       "save": "保存说明",
       "saving": "保存中…"
-    }
+    },
+    "sunLabel": "太阳",
+    "moonLabel": "月亮",
+    "risingLabel": "上升"
   },
   "editProfile": {
     "title": "编辑档案",

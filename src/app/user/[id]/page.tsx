@@ -593,17 +593,17 @@ export default function UserProfilePage() {
           <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
             {profile.sun_sign && (
               <span className="px-3 py-1 rounded-full bg-fire/10 text-fire text-xs font-medium">
-                Sun {getZodiacGlyph(profile.sun_sign)} {profile.sun_sign}
+                {t('profile.sunLabel')} {getZodiacGlyph(profile.sun_sign)} {profile.sun_sign}
               </span>
             )}
             {profile.moon_sign && (
               <span className="px-3 py-1 rounded-full bg-water/10 text-water text-xs font-medium">
-                Moon {getZodiacGlyph(profile.moon_sign)} {profile.moon_sign}
+                {t('profile.moonLabel')} {getZodiacGlyph(profile.moon_sign)} {profile.moon_sign}
               </span>
             )}
             {profile.rising_sign && (
               <span className="px-3 py-1 rounded-full bg-air/10 text-air text-xs font-medium">
-                Rising {getZodiacGlyph(profile.rising_sign)} {profile.rising_sign}
+                {t('profile.risingLabel')} {getZodiacGlyph(profile.rising_sign)} {profile.rising_sign}
               </span>
             )}
             {profile.starseed && (

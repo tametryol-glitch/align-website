@@ -1263,7 +1263,10 @@
       "deleteConfirm": "Poistetaanko tämä kuva albumistasi?",
       "save": "Tallenna kuvateksti",
       "saving": "Tallennetaan…"
-    }
+    },
+    "sunLabel": "Aurinko",
+    "moonLabel": "Kuu",
+    "risingLabel": "Nousevamerkki"
   },
   "editProfile": {
     "title": "Muokkaa profiilia",

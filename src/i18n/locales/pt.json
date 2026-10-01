@@ -1490,7 +1490,10 @@
       "deleteConfirm": "Excluir esta foto do seu álbum?",
       "save": "Salvar legenda",
       "saving": "Salvando…"
-    }
+    },
+    "sunLabel": "Sol",
+    "moonLabel": "Lua",
+    "risingLabel": "Ascendente"
   },
   "editProfile": {
     "title": "Editar Perfil",

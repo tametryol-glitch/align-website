@@ -1263,7 +1263,10 @@
       "deleteConfirm": "Radera det här fotot från ditt album?",
       "save": "Spara bildtext",
       "saving": "Sparar…"
-    }
+    },
+    "sunLabel": "Sol",
+    "moonLabel": "Måne",
+    "risingLabel": "Ascendent"
   },
   "editProfile": {
     "title": "Redigera profil",

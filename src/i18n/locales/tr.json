@@ -1263,7 +1263,10 @@
       "deleteConfirm": "Bu fotoğraf albümünden silinsin mi?",
       "save": "Açıklamayı kaydet",
       "saving": "Kaydediliyor…"
-    }
+    },
+    "sunLabel": "Güneş",
+    "moonLabel": "Ay",
+    "risingLabel": "Yükselen"
   },
   "editProfile": {
     "title": "Profili Duzenle",

@@ -1263,7 +1263,10 @@
       "deleteConfirm": "この写真をアルバムから削除しますか？",
       "save": "キャプションを保存",
       "saving": "保存中…"
-    }
+    },
+    "sunLabel": "太陽",
+    "moonLabel": "月",
+    "risingLabel": "上昇"
   },
   "editProfile": {
     "title": "プロフィールを編集",

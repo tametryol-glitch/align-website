@@ -1263,7 +1263,10 @@
       "deleteConfirm": "¿Eliminar esta foto de tu álbum?",
       "save": "Guardar descripción",
       "saving": "Guardando…"
-    }
+    },
+    "sunLabel": "Sol",
+    "moonLabel": "Luna",
+    "risingLabel": "Ascendente"
   },
   "editProfile": {
     "title": "Editar Perfil",

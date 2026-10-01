@@ -1263,7 +1263,10 @@
       "deleteConfirm": "Slet dette billede fra dit album?",
       "save": "Gem billedtekst",
       "saving": "Gemmer…"
-    }
+    },
+    "sunLabel": "Sol",
+    "moonLabel": "Måne",
+    "risingLabel": "Ascendant"
   },
   "editProfile": {
     "title": "Rediger profil",

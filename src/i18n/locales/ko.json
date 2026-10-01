@@ -1263,7 +1263,10 @@
       "deleteConfirm": "이 사진을 앨범에서 삭제할까요?",
       "save": "캡션 저장",
       "saving": "저장 중…"
-    }
+    },
+    "sunLabel": "태양",
+    "moonLabel": "달",
+    "risingLabel": "상승"
   },
   "editProfile": {
     "title": "프로필 편집",

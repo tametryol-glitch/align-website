@@ -1263,7 +1263,10 @@
       "deleteConfirm": "حذف هذه الصورة من ألبومك؟",
       "save": "حفظ التعليق",
       "saving": "جارٍ الحفظ…"
-    }
+    },
+    "sunLabel": "الشمس",
+    "moonLabel": "القمر",
+    "risingLabel": "الطالع"
   },
   "editProfile": {
     "title": "تعديل الملف",

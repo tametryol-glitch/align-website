@@ -1265,7 +1265,10 @@
       "deleteConfirm": "Delete this photo from your album?",
       "save": "Save caption",
       "saving": "Saving…"
-    }
+    },
+    "sunLabel": "Sun",
+    "moonLabel": "Moon",
+    "risingLabel": "Rising"
   },
   "editProfile": {
     "title": "Edit Profile",

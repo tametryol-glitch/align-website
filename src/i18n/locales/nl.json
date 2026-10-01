@@ -1263,7 +1263,10 @@
       "deleteConfirm": "Deze foto uit je album verwijderen?",
       "save": "Bijschrift opslaan",
       "saving": "Opslaan…"
-    }
+    },
+    "sunLabel": "Zon",
+    "moonLabel": "Maan",
+    "risingLabel": "Ascendant"
   },
   "editProfile": {
     "title": "Profiel bewerken",
