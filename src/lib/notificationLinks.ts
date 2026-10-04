@@ -66,6 +66,10 @@ export function getNotificationLink(n: LinkableNotification): string {
       // The purpose check-in rides on the same type; the conversation card
       // lives on the dashboard, not in /readings.
       if (n.data?.kind === 'purpose_checkin') return '/dashboard';
+      // Station Alerts ride the same type; the alert id opens the exact reading.
+      if (n.data?.kind === 'station_alert') {
+        return n.data?.alert_id ? `/stations?alert=${n.data.alert_id}` : '/stations';
+      }
       return '/readings';
     case 'cosmic_match_ready':
       // /compatibility/[signs] is the public sign-pair guide, not this user's

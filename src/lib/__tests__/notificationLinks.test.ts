@@ -20,6 +20,12 @@ describe('getNotificationLink — transit_alert riders', () => {
       .toBe('/readings/cosmic-frequencies');
   });
 
+  it('opens the exact station reading for a station alert', () => {
+    expect(getNotificationLink({ type: 'transit_alert', data: { kind: 'station_alert', alert_id: 'a1' } }))
+      .toBe('/stations?alert=a1');
+    expect(getNotificationLink({ type: 'transit_alert', data: { kind: 'station_alert' } })).toBe('/stations');
+  });
+
   it('falls back to /readings for a plain transit alert', () => {
     expect(getNotificationLink({ type: 'transit_alert', data: {} })).toBe('/readings');
     expect(getNotificationLink({ type: 'transit_alert' })).toBe('/readings');

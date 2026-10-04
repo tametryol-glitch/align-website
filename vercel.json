@@ -33,6 +33,10 @@
       "schedule": "0 16 * * *"
     },
     {
+      "path": "/api/cron/stations",
+      "schedule": "30 12 * * *"
+    },
+    {
       "path": "/api/cron/call-sweep",
       "schedule": "10 * * * *"
     },

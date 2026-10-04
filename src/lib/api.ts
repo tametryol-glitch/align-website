@@ -352,6 +352,37 @@ class AlignAPI {
     return this.request('/divine-timing/ask', { method: 'POST', body: JSON.stringify(data) }, 45000);
   }
 
+  // ── Station Alerts (retrograde / station / direct, personal) ──
+  async stationsWatch(days = 120) {
+    return this.request(`/stations/watch?days=${days}`);
+  }
+
+  async stationsAlerts(limit = 30) {
+    return this.request(`/stations/alerts?limit=${limit}`);
+  }
+
+  async stationsAlert(id: string) {
+    return this.request(`/stations/alerts/${encodeURIComponent(id)}`);
+  }
+
+  async stationsOutcome(predictionId: string, outcome: 'yes' | 'partly' | 'no') {
+    return this.request(`/stations/predictions/${encodeURIComponent(predictionId)}/outcome`, {
+      method: 'POST', body: JSON.stringify({ outcome }),
+    });
+  }
+
+  async stationsScorecard() {
+    return this.request('/stations/scorecard');
+  }
+
+  async stationsPrefs() {
+    return this.request('/stations/prefs');
+  }
+
+  async stationsSavePrefs(prefs: { enabled?: boolean; bodies?: string[]; types?: string[]; push_mode?: 'tight' | 'all' | 'off' }) {
+    return this.request('/stations/prefs', { method: 'PUT', body: JSON.stringify(prefs) });
+  }
+
   async markDivineOutcome(questionId: string, outcome: string) {
     return this.request('/divine-timing/outcome', { method: 'POST', body: JSON.stringify({ question_id: questionId, outcome }) });
   }
