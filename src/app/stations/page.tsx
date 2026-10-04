@@ -49,6 +49,9 @@ interface AlertDetail extends AlertSummary {
   reading: Reading;
   predictions: { id: string; text: string; window_start: string; window_end: string; outcome: string | null }[];
   locked_note?: string;
+  locked_sections?: string[];
+  locked_predictions?: number;
+  locked_has_do_avoid?: boolean;
 }
 
 const STATUS_LABEL: Record<WatchItem['status'], string> = {
@@ -164,12 +167,30 @@ function StationsInner() {
             ))}
 
             {detail.locked ? (
-              <div className="card text-center py-8">
-                <Lock className="w-8 h-8 text-accent-primary mx-auto mb-2" />
-                <p className="text-text-primary font-semibold mb-1">What this means for your chart</p>
-                <p className="text-sm text-text-tertiary mb-4">{detail.locked_note}</p>
-                <Link href="/pricing" className="btn-primary inline-block px-6 py-2">See plans</Link>
-              </div>
+              <>
+                {detail.reading.predictions.length > 0 && (
+                  <div className="card space-y-3">
+                    <p className="text-[11px] uppercase tracking-widest text-text-muted">What it could produce</p>
+                    {detail.reading.predictions.map((p, i) => (
+                      <div key={i} className="border-l-2 border-accent-primary/50 pl-3">
+                        <p className="text-text-primary leading-relaxed">{p.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="card text-center py-6">
+                  <Lock className="w-7 h-7 text-accent-primary mx-auto mb-2" />
+                  <p className="text-text-primary font-semibold mb-2">Still locked in your reading</p>
+                  <ul className="text-sm text-text-tertiary space-y-1 mb-4">
+                    {(detail.locked_sections || []).map((t) => <li key={t}>{t}</li>)}
+                    {(detail.locked_predictions || 0) > 0 && (
+                      <li>{detail.locked_predictions} more prediction{detail.locked_predictions === 1 ? '' : 's'}</li>
+                    )}
+                    {detail.locked_has_do_avoid && <li>What to do and what to avoid</li>}
+                  </ul>
+                  <Link href="/pricing" className="btn-primary inline-block px-6 py-2">See plans</Link>
+                </div>
+              </>
             ) : (
               <>
                 {detail.predictions.length > 0 && (
