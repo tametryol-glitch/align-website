@@ -26,8 +26,16 @@
 
 const PACKAGE_NAME = 'com.align.astrology';
 
-/** SHA-256 certificate fingerprints, "AA:BB:..." (32 bytes, colon-separated). */
-const ANDROID_SIGNING_FINGERPRINTS: string[] = [];
+/**
+ * SHA-256 certificate fingerprints, "AA:BB:..." (32 bytes, colon-separated).
+ *
+ * Read from the Play Developer API (generatedApks.list -> certificateSha256Hash)
+ * on 04-10-2026: identical for builds 683, 686 and 687, i.e. the Play App
+ * signing key that signs everything Google delivers. Not the EAS upload key.
+ */
+const ANDROID_SIGNING_FINGERPRINTS: string[] = [
+  '12:E8:D0:0C:97:A4:8B:31:18:83:39:CC:3F:F2:88:B3:0C:E9:6F:12:56:6C:CA:B6:51:D4:19:58:1E:00:67:53',
+];
 
 const FINGERPRINT_RE = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
 
