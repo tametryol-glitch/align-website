@@ -71,7 +71,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed', '/api/meta-preview', '/api/link-preview', '/api/aasa', '/api/push'];
+  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed', '/api/meta-preview', '/api/link-preview', '/api/aasa', '/api/assetlinks', '/api/push'];
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
@@ -105,6 +105,17 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/hidden-zodiac') ||
     pathname.startsWith('/soul-age') ||   // free for everyone, no account required
     pathname.startsWith('/share') ||
+    // Share-link landing pages: /p post, /r reel, /u profile, /c chart, /g
+    // community. These are the URLs people send to friends who may not have an
+    // account; each page shows a teaser/open-in-app screen to logged-out
+    // visitors (public data only) and forwards members to the real page. They
+    // were behind the login gate, so a stranger tapping a shared link was
+    // bounced to the login page and never saw the landing page.
+    pathname.startsWith('/p/') ||
+    pathname.startsWith('/r/') ||
+    pathname.startsWith('/u/') ||
+    pathname.startsWith('/c/') ||
+    pathname.startsWith('/g/') ||
     pathname.startsWith('/b/') ||               // shared Build-A-Match build — the whole point is that a stranger can open it; the build travels in the URL, so no private data is read or exposed
 
     pathname.startsWith('/moon-sign') ||

@@ -31,6 +31,12 @@ const nextConfig = {
         source: '/.well-known/apple-app-site-association',
         destination: '/api/aasa',
       },
+      // Android's counterpart: Digital Asset Links, which lets Android 12+
+      // open shared links straight in the app.
+      {
+        source: '/.well-known/assetlinks.json',
+        destination: '/api/assetlinks',
+      },
     ];
   },
   async headers() {
