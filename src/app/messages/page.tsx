@@ -107,6 +107,9 @@ export default function MessagesPage() {
   const [callDuration, setCallDuration] = useState(0);
   const [callMuted, setCallMuted] = useState(false);
   const [callCameraOn, setCallCameraOn] = useState(true);
+  // The OTHER person's camera is publishing video. With callCameraOn this
+  // decides voice vs video layout, so a call can switch either way mid-call.
+  const [callRemoteVideoOn, setCallRemoteVideoOn] = useState(false);
   const [callMediaWarning, setCallMediaWarning] = useState<string | null>(null);
   const [callPeer, setCallPeer] = useState<{ id: string; name: string; avatar_url?: string } | null>(null);
   const pendingAcceptedCall = useCallStore((s) => s.pendingAcceptedCall);
@@ -636,7 +639,10 @@ export default function MessagesPage() {
         }
       });
       client.onRemoteVideoChanged((track) => {
-        if (type !== 'video' || !track) return;
+        // Video can start at any point, including in a call that began as
+        // voice, so this no longer depends on the type the call started as.
+        setCallRemoteVideoOn(!!track);
+        if (!track) return;
         attachTrackWhenReady(() => client.getRemoteVideoTrack(), remoteVideoRef, 'remote');
       });
       client.onRemoteUserLeft(() => {
@@ -720,6 +726,7 @@ export default function MessagesPage() {
       setCallDuration(0);
       setCallMuted(false);
       setCallCameraOn(call.callType === 'video');
+      setCallRemoteVideoOn(false);
       callSessionRef.current = {
         channelName: call.channelName,
         sessionId: call.sessionId,
@@ -755,6 +762,7 @@ export default function MessagesPage() {
     setCallMuted(false);
     setCallMediaWarning(null);
     setCallCameraOn(type === 'video');
+    setCallRemoteVideoOn(false);
     // One channel PER CALL (see align-app callingService.initiateCall): the
     // pair-only name is shared by every call between two people, so a leftover
     // connection from the previous call was still in the next one.
@@ -856,6 +864,7 @@ export default function MessagesPage() {
       callTimerRef.current = null;
     }
     setCallState('ended');
+    setCallRemoteVideoOn(false);
     setTimeout(() => setCallState('idle'), 3000);
   }
 
@@ -1237,6 +1246,7 @@ export default function MessagesPage() {
           duration={callDuration}
           isMuted={callMuted}
           isCameraOn={callCameraOn}
+          isRemoteVideoOn={callRemoteVideoOn}
           mediaWarning={callMediaWarning}
           localVideoRef={localVideoRef}
           remoteVideoRef={remoteVideoRef}

@@ -23,6 +23,8 @@ interface CallScreenProps {
   duration: number;
   isMuted: boolean;
   isCameraOn: boolean;
+  /** The OTHER person's camera is publishing video right now */
+  isRemoteVideoOn?: boolean;
   /** Shown as a banner when the local mic or camera could not be acquired */
   mediaWarning?: string | null;
   localVideoRef?: React.RefObject<HTMLDivElement>;
@@ -388,6 +390,7 @@ export function CallScreen({
   duration,
   isMuted,
   isCameraOn,
+  isRemoteVideoOn = false,
   mediaWarning,
   localVideoRef,
   remoteVideoRef,
@@ -411,7 +414,10 @@ export function CallScreen({
 
   if (!visible && !isOpen) return null;
 
-  const isVideoActive = callState === 'active' && callType === 'video';
+  // The layout follows the cameras, not the type the call started as: a voice
+  // call becomes video the moment either person turns a camera on, and goes
+  // back to the avatar screen when both are off (like WhatsApp).
+  const isVideoActive = callState === 'active' && (isCameraOn || isRemoteVideoOn);
 
   // ── RINGING state ──────────────────────────────────────────────
 
@@ -544,6 +550,10 @@ export function CallScreen({
               <Mic className="w-6 h-6" style={{ color: C.textPrimary }} />
             )}
           </ControlButton>
+          {/* Turn on your camera: voice call -> video call */}
+          <ControlButton isActive={false} onPress={onToggleCamera}>
+            <VideoOff className="w-6 h-6" style={{ color: C.textPrimary }} />
+          </ControlButton>
           <EndCallPill onPress={onEndCall} />
         </div>
       </GlassTray>
@@ -573,8 +583,22 @@ export function CallScreen({
           borderRadius: 12,
           border: `2px solid ${C.gold}`,
           backgroundColor: 'rgba(10, 10, 20, 0.8)',
+          // Stay mounted (the video is attached through this ref) but out of
+          // sight while the camera is off.
+          display: isCameraOn ? 'block' : 'none',
         }}
       />
+
+      {/* The other person's camera is off: show who they are */}
+      {!isRemoteVideoOn && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+          <Avatar avatarUrl={targetUser.avatar_url} name={targetUser.name} size={96} />
+          <p className="mt-4 font-bold" style={{ color: C.textPrimary, fontSize: 20 }}>
+            {targetUser.name}
+          </p>
+          <p className="mt-1" style={{ color: C.textMuted, fontSize: 13 }}>Camera off</p>
+        </div>
+      )}
 
       {/* Top gradient overlay — name & duration */}
       <div
@@ -802,8 +826,8 @@ export function CallScreen({
       <div className={`relative flex-1 flex ${isVideoActive ? '' : 'flex-col'}`}>
         {callState === 'ringing' && renderRinging()}
         {callState === 'connecting' && renderConnecting()}
-        {callState === 'active' && callType === 'voice' && renderActiveVoice()}
-        {callState === 'active' && callType === 'video' && renderActiveVideo()}
+        {callState === 'active' && !isVideoActive && renderActiveVoice()}
+        {callState === 'active' && isVideoActive && renderActiveVideo()}
         {callState === 'ended' && renderEnded()}
       </div>
     </div>
