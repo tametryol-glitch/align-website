@@ -45,6 +45,8 @@ export function getNotificationLink(n: LinkableNotification): string {
       return '/views';
     case 'message':
     case 'new_message':
+    case 'incoming_call':
+    case 'missed_call':
       // /messages is a single page that opens a thread from ?conversation= —
       // there is no /messages/[id] route, so a path segment 404s.
       return n.data?.conversation_id

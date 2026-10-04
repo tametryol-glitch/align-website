@@ -105,6 +105,51 @@ async function broadcastOnChannel(
   }
 }
 
+// ── Call log (chat row + push) ─────────────────────────────────────
+
+/**
+ * Write the call into the 1:1 conversation and raise the `incoming_call`
+ * notification, which rings the callee's phones/browsers through the one
+ * authoritative push path (send_push_notification). Resolves false if the RPC
+ * is unavailable so the caller can fall back to the legacy push.
+ */
+export async function logCallStart(
+  receiverId: string,
+  callType: 'voice' | 'video',
+  sessionId: string,
+  channelName: string,
+): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.rpc('call_log_start', {
+      p_other_id: receiverId,
+      p_call_type: callType,
+      p_session_id: sessionId,
+      p_channel_name: channelName,
+    });
+    if (error) {
+      console.warn('[CallSignaling] call_log_start failed:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err: unknown) {
+    console.warn('[CallSignaling] call_log_start error:', err);
+    return false;
+  }
+}
+
+// status: accepted | declined | missed | ended. Forward-only on the server, so
+// duplicate / late reports (both sides report 'ended') are harmless.
+function logCallStatus(sessionId: string, status: string): void {
+  if (!sessionId) return;
+  try {
+    const supabase = createClient();
+    void Promise.resolve(
+      supabase.rpc('call_log_update', { p_session_id: sessionId, p_status: status }),
+    ).catch(() => {});
+  } catch { /* the call must never fail because its log did */ }
+}
+
 // ── Send Signal ────────────────────────────────────────────────────
 
 /**
@@ -133,18 +178,22 @@ export function sendCallSignal(targetUserId: string, signal: CallSignal): void {
         response: signal.accepted ? 'accepted' : 'declined',
         accepted: signal.accepted,
       });
+      logCallStatus(signal.sessionId, signal.accepted ? 'accepted' : 'declined');
       break;
 
     case 'call-cancelled':
       broadcastOnChannel(channelName, 'call-cancelled', {
         sessionId: signal.sessionId,
       });
+      // Caller gave up or nobody answered in time: a missed call.
+      logCallStatus(signal.sessionId, 'missed');
       break;
 
     case 'call-ended':
       broadcastOnChannel(channelName, 'call-ended', {
         sessionId: signal.sessionId,
       });
+      logCallStatus(signal.sessionId, 'ended');
       break;
   }
 }

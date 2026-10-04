@@ -12,6 +12,7 @@ import { VideoMessageBubble } from '@/components/chat/VideoMessageBubble';
 import { FileBubble } from '@/components/chat/FileBubble';
 import { LocationBubble } from '@/components/chat/LocationBubble';
 import { PollBubble } from '@/components/chat/PollBubble';
+import { CallBubble } from '@/components/chat/CallBubble';
 import type { ChatTheme } from '@/data/chatThemes';
 import { getReactionsFromMessage, type Message } from '@/lib/messagingService';
 import { readStoredSnapshot, relationshipShareQuery, relationshipShareSubtitle } from '@/lib/relationshipShare';
@@ -356,8 +357,13 @@ export function MessageBubble({
             <InlineImagePreview text={msg.content} />
           )}
 
+          {/* Call (voice / video) */}
+          {msg.type === 'call' && (
+            <CallBubble metadata={msg.metadata || {}} createdAt={msg.created_at} isMine={isMine} />
+          )}
+
           {/* Text content */}
-          {msg.content && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
+          {msg.content && msg.type !== 'call' && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
             <>
               <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
               <BubbleLinkPreview text={msg.content} isMine={isMine} />

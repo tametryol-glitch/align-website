@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
     body: payload.body || '',
     url: `${SITE}${url}`,
     tag,
+    call: type === 'incoming_call',
     notification_id: notification_id || null,
   });
 
@@ -115,12 +116,20 @@ export async function POST(request: NextRequest) {
   const staleIds: string[] = [];
   let sent = 0;
 
+  // A ring is only worth delivering while it is still ringing. The Web Push
+  // default TTL is four weeks, so a laptop that was asleep would otherwise
+  // announce "X is calling" hours later. Same 45s the native path uses.
+  const sendOptions = type === 'incoming_call'
+    ? { TTL: 45, urgency: 'high' as const }
+    : undefined;
+
   await Promise.all(
     subs.map(async (sub) => {
       try {
         await webpush.sendNotification(
           { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
           body,
+          sendOptions,
         );
         sent++;
         logRows.push({

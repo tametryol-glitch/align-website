@@ -8,6 +8,9 @@ self.addEventListener('push', (event) => {
     data: { url: data.url || '/', notificationId: data.notification_id || null },
     tag: data.tag || 'default',
     renotify: true,
+    // A ringing call stays on screen until answered or dismissed, with a
+    // long vibration on devices that support it, instead of auto-fading.
+    ...(data.call ? { requireInteraction: true, vibrate: [800, 400, 800, 400, 800] } : {}),
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });

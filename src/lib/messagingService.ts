@@ -22,7 +22,8 @@ export type MessageType =
   | 'file'
   | 'location'
   | 'contact'
-  | 'poll';
+  | 'poll'
+  | 'call';
 
 export interface Message {
   id: string;

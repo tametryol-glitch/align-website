@@ -14,7 +14,8 @@ import { getChatTheme } from '@/data/chatThemes';
 import { uploadChatFile, uploadVoiceNote } from '@/lib/chatMediaService';
 import { generateChannelName, fetchAgoraTokenResult, createCallClient, type CallState } from '@/lib/callingService';
 import * as callMetering from '@/lib/callMetering';
-import { sendCallSignal, generateSessionId } from '@/lib/callSignalingService';
+import { sendCallSignal, generateSessionId, logCallStart } from '@/lib/callSignalingService';
+import { startRingback, stopCallTones } from '@/lib/callTones';
 import { useCallStore } from '@/stores/callStore';
 import {
   getConversations,
@@ -722,6 +723,13 @@ export default function MessagesPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingAcceptedCall, user]);
 
+  // ── Ringback: the caller hears the line ringing until it is answered ──
+  useEffect(() => {
+    if (callState !== 'ringing' || !callIsOutgoing) return;
+    startRingback();
+    return () => stopCallTones();
+  }, [callState, callIsOutgoing]);
+
   // ── Call initiation ──
   async function handleCallStart(type: 'voice' | 'video') {
     if (!user || !activeConv) return;
@@ -766,23 +774,30 @@ export default function MessagesPage() {
       channelName,
       sessionId,
     });
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (apiUrl) {
-        fetch(`${apiUrl}/agora/signal-call`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            caller_id: user.id,
-            caller_name: user.user_metadata?.display_name || 'User',
-            receiver_id: otherId,
-            channel_name: channelName,
-            call_type: type,
-            session_id: sessionId,
-          }),
-        }).catch(() => {});
-      }
-    } catch {}
+    // Log the call in the thread and raise the push notification (rings the
+    // callee's phones and browsers). The legacy endpoint is only a fallback
+    // for when that RPC is unavailable -- it never reached web users or
+    // anyone without the old single push token.
+    logCallStart(otherId, type, sessionId, channelName).then((logged) => {
+      if (logged) return;
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (apiUrl) {
+          fetch(`${apiUrl}/agora/signal-call`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              caller_id: user.id,
+              caller_name: user.user_metadata?.display_name || 'User',
+              receiver_id: otherId,
+              channel_name: channelName,
+              call_type: type,
+              session_id: sessionId,
+            }),
+          }).catch(() => {});
+        }
+      } catch {}
+    });
     setTimeout(() => {
       setCallState(prev => {
         if (prev === 'ringing') {
