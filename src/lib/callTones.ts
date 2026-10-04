@@ -102,10 +102,32 @@ function play(tone: Tone) {
   }, 500);
 }
 
+// The callee's ringtone is the cosmic track (same file the app uses). If the
+// browser refuses to autoplay it, fall back to the synthesised ring.
+let ringAudio: HTMLAudioElement | null = null;
+
 export function startRingback(): void { play('ringback'); }
-export function startRingtone(): void { play('ringtone'); }
+
+export function startRingtone(): void {
+  if (typeof window === 'undefined') return;
+  if (ringAudio) return;
+  const audio = new Audio('/audio/cosmic-ring.mp3');
+  audio.loop = true;
+  audio.volume = 1;
+  ringAudio = audio;
+  audio.play().catch(() => {
+    if (ringAudio === audio) {
+      ringAudio = null;
+      play('ringtone');
+    }
+  });
+}
 
 export function stopCallTones(): void {
+  if (ringAudio) {
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch { /* ignore */ }
+    ringAudio = null;
+  }
   activeTone = null;
   if (timer) { clearInterval(timer); timer = null; }
   for (const osc of liveNodes) {
