@@ -34,10 +34,15 @@ export function GlobalCallListener() {
   const router = useRouter();
 
   // ── Single global subscription to all call signals ──
+  // Keyed on the user's ID, not the user object: the auth store hands out a
+  // new object on every token refresh, which tore the subscription down and
+  // rebuilt it -- and supabase-js returns the still-closing old channel for
+  // the same topic, leaving a listener that never fires.
+  const userId = user?.id;
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
-    const sub = subscribeToCallSignals(user.id, (signal: CallSignal) => {
+    const sub = subscribeToCallSignals(userId, (signal: CallSignal) => {
       switch (signal.type) {
         case 'incoming-call':
           setIncomingCall({
@@ -82,7 +87,7 @@ export function GlobalCallListener() {
     });
 
     return () => sub.unsubscribe();
-  }, [user, setIncomingCall, pushActiveSignal]);
+  }, [userId, setIncomingCall, pushActiveSignal]);
 
   // ── Ring while an incoming call is showing ──
   // Stops on accept / decline / cancel (incomingCall goes null) and on unmount.
@@ -99,7 +104,7 @@ export function GlobalCallListener() {
   // no broadcast, so look for a live ring in their own call rows instead.
   const handledSessions = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
     let cancelled = false;
 
     const recover = async () => {
@@ -110,14 +115,14 @@ export function GlobalCallListener() {
           .from('messages')
           .select('sender_id, metadata, created_at')
           .eq('type', 'call')
-          .neq('sender_id', user.id)
+          .neq('sender_id', userId)
           .gte('created_at', since)
           .order('created_at', { ascending: false })
           .limit(5);
         if (cancelled || !data) return;
         const live = data.find((m: any) =>
           m.metadata?.status === 'ringing'
-          && m.metadata?.callee_id === user.id
+          && m.metadata?.callee_id === userId
           && m.metadata?.session_id
           && !handledSessions.current.has(m.metadata.session_id),
         );
@@ -141,7 +146,7 @@ export function GlobalCallListener() {
       cancelled = true;
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [user, setIncomingCall]);
+  }, [userId, setIncomingCall]);
 
   // ── Accept incoming call ──
   const handleAccept = useCallback(() => {

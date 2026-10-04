@@ -587,6 +587,14 @@ export default function MessagesPage() {
 
   // ── Agora connection helper ──
   async function connectToAgoraCall(channelName: string, type: 'voice' | 'video') {
+    // Joining twice puts a second copy of this person in the call (its own mic
+    // and speaker) -- the other side hears an echo and sees 3 participants on
+    // a 1:1 call. A signal delivered twice, or two code paths both reacting to
+    // one answer, must still produce exactly one join.
+    if (callClientRef.current) {
+      console.warn('[Call] Already in / joining a call — ignoring duplicate join');
+      return;
+    }
     try {
       setCallState('connecting');
       setCallMediaWarning(null);
@@ -747,8 +755,11 @@ export default function MessagesPage() {
     setCallMuted(false);
     setCallMediaWarning(null);
     setCallCameraOn(type === 'video');
-    const channelName = generateChannelName(user.id, otherId);
+    // One channel PER CALL (see align-app callingService.initiateCall): the
+    // pair-only name is shared by every call between two people, so a leftover
+    // connection from the previous call was still in the next one.
     const localSessionId = generateSessionId();
+    const channelName = `${generateChannelName(user.id, otherId)}_${localSessionId.replace(/-/g, '').slice(0, 8)}`;
 
     // Quota gate. Checked before the phone rings so a blocked or
     // out-of-minutes account is told why, instead of watching a call

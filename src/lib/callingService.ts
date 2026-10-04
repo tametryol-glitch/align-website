@@ -242,7 +242,15 @@ export function createCallClient(): CallClient {
 
         // Create and publish local audio track
         try {
-          localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+          // Echo cancellation / noise suppression / auto gain requested
+          // explicitly instead of relying on per-browser defaults, so the
+          // other person never hears their own voice come back.
+          localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+            AEC: true,
+            ANS: true,
+            AGC: true,
+            encoderConfig: 'speech_standard',
+          });
           await agoraClient.publish([localAudioTrack]);
         } catch (err: any) {
           console.warn('[Calling] Failed to create/publish audio track:', err?.message);
