@@ -507,66 +507,66 @@ const ASPECT_VERBS: Record<string, { supportive: string; challenging: string }> 
 };
 
 const ASPECT_THEMES: Record<string, Record<string, string>> = {
-  'Sun|Moon':        { supportive: 'natural emotional understanding',              challenging: 'ego-emotion clashes' },
-  'Venus|Mars':      { supportive: 'magnetic romantic chemistry',                  challenging: 'desire vs. value conflicts' },
-  'Moon|Moon':       { supportive: 'deep emotional attunement',                    challenging: 'emotional overwhelm' },
-  'Moon|Venus':      { supportive: 'tender affection and comfort',                 challenging: 'emotional neediness patterns' },
-  'Venus|Saturn':    { supportive: 'enduring commitment and loyalty',              challenging: 'coldness or restriction in love' },
-  'Pluto|Venus':     { supportive: 'transformative passion',                       challenging: 'obsessive attachment' },
-  'Pluto|Mars':      { supportive: 'powerful shared drive',                        challenging: 'power struggles and dominance' },
-  'Moon|Saturn':     { supportive: 'emotional security and maturity',              challenging: 'emotional suppression' },
-  'Sun|Saturn':      { supportive: 'mutual respect and structure',                 challenging: 'authority conflicts' },
-  'Mercury|Mercury': { supportive: 'brilliant mental rapport',                     challenging: 'communication breakdowns' },
-  'Sun|Mercury':     { supportive: 'easy understanding of each other\'s thinking', challenging: 'mismatched perspectives' },
-  'Moon|Mercury':    { supportive: 'intuitive communication',                      challenging: 'feelings lost in translation' },
-  'Sun|Venus':       { supportive: 'warm admiration and affection',                challenging: 'superficial attraction without depth' },
-  'Sun|Mars':        { supportive: 'energizing motivation together',               challenging: 'competitive friction' },
-  'Moon|Mars':       { supportive: 'passionate emotional connection',              challenging: 'emotional volatility' },
-  'Moon|Pluto':      { supportive: 'deep soul-level bonding',                      challenging: 'emotional manipulation' },
-  'Sun|Pluto':       { supportive: 'mutual empowerment',                           challenging: 'control dynamics' },
-  'Venus|Neptune':   { supportive: 'romantic idealism and spiritual love',         challenging: 'illusion and deception in love' },
-  'Jupiter|Venus':   { supportive: 'joyful abundance in love',                     challenging: 'overindulgence together' },
-  'Jupiter|Sun':     { supportive: 'shared optimism and growth',                   challenging: 'inflated expectations' },
-  'North Node|Sun':  { supportive: 'destined growth together',                     challenging: 'karmic tension around purpose' },
-  'North Node|Moon': { supportive: 'fated emotional connection',                   challenging: 'karmic emotional patterns' },
-  'Chiron|Venus':    { supportive: 'healing through love',                         challenging: 'old wounds triggered in love' },
-  'Chiron|Sun':      { supportive: 'mutual healing of identity wounds',            challenging: 'core insecurities surfacing' },
-  'Chiron|Moon':     { supportive: 'deep emotional healing',                       challenging: 'emotional wounds reopened' },
-  'Sun|Ascendant':   { supportive: 'natural recognition and attraction',           challenging: 'identity projection' },
-  'Venus|Ascendant': { supportive: 'instant charm and appeal',                     challenging: 'surface-level attraction' },
-  'Mars|Ascendant':  { supportive: 'physical magnetism',                           challenging: 'aggressive first impressions' },
-  'Venus|Uranus':    { supportive: 'exciting and unconventional love',             challenging: 'instability in affection' },
-  'Moon|Uranus':     { supportive: 'emotionally freeing',                          challenging: 'emotional unpredictability' },
-  'Sun|Uranus':      { supportive: 'stimulating individuality',                    challenging: 'disruptive independence' },
-  'Sun|Neptune':     { supportive: 'spiritual inspiration together',               challenging: 'confusion about identity' },
-  'Moon|Neptune':    { supportive: 'intuitive psychic bond',                       challenging: 'emotional confusion and escapism' },
-  'Mercury|Uranus':  { supportive: 'electrifying intellectual spark',              challenging: 'erratic communication' },
-  'Mercury|Neptune': { supportive: 'inspired creative communication',              challenging: 'misunderstandings and confusion' },
-  'Sun|Descendant':  { supportive: 'natural partnership alignment',                challenging: 'over-reliance on the other' },
-  'Venus|Descendant':{ supportive: 'ideal romantic partnership energy',            challenging: 'codependency patterns' },
-  'Moon|IC':         { supportive: 'feeling like home together',                   challenging: 'boundary issues around family' },
-  'North Node|Venus':{ supportive: 'love aligned with soul growth',               challenging: 'karmic love lessons' },
-  'North Node|Mars': { supportive: 'driven action toward shared destiny',          challenging: 'karmic conflict patterns' },
-  'North Node|Ascendant': { supportive: 'destined recognition',                   challenging: 'fated but uncomfortable encounters' },
-  'Juno|Sun':            { supportive: 'natural partnership alignment',            challenging: 'commitment clashing with identity' },
-  'Juno|Moon':           { supportive: 'emotional devotion and partnership',       challenging: 'emotional needs vs commitment demands' },
-  'Juno|Venus':          { supportive: 'love aligned with lasting partnership',    challenging: 'romantic ideals clashing with commitment reality' },
-  'Juno|Mars':           { supportive: 'passionate committed drive',               challenging: 'desire vs partnership expectations' },
-  'Juno|Saturn':         { supportive: 'enduring structural commitment',           challenging: 'restriction within the partnership' },
-  'Juno|Ascendant':      { supportive: 'instant recognition of partnership potential', challenging: 'projection of partnership ideals' },
-  'Juno|Juno':           { supportive: 'shared vision of partnership',             challenging: 'clashing partnership expectations' },
-  'Juno|North Node':     { supportive: 'commitment aligned with soul growth',      challenging: 'karmic tension around partnership' },
-  'Juno|Pluto':          { supportive: 'transformative deep commitment',           challenging: 'obsessive or controlling partnership dynamics' },
-  'Vesta|Sun':           { supportive: 'sacred devotion to each other\'s light',   challenging: 'identity consumed by dedication' },
-  'Vesta|Moon':          { supportive: 'devotional emotional care',                challenging: 'sacrifice of emotional needs for devotion' },
-  'Vesta|Venus':         { supportive: 'sacred love and devoted affection',        challenging: 'sacrificing pleasure for duty' },
-  'Vesta|Mars':          { supportive: 'devoted action and sacred drive',          challenging: 'passion channeled into obsessive focus' },
-  'Vesta|Saturn':        { supportive: 'disciplined devotion and endurance',       challenging: 'rigid duty eclipsing warmth' },
-  'Vesta|Ascendant':     { supportive: 'visible devotion and sacred presence',     challenging: 'identity overshadowed by dedication' },
-  'Vesta|Pluto':         { supportive: 'transformative sacred purpose',            challenging: 'obsessive devotional intensity' },
-  'Vesta|Juno':          { supportive: 'devotion perfectly aligned with partnership', challenging: 'sacred duty vs partnership freedom' },
-  'Vesta|Vesta':         { supportive: 'shared sacred focus and dedication',       challenging: 'competing devotional priorities' },
-  'Vesta|North Node':    { supportive: 'devotion aligned with destiny',            challenging: 'sacrificial patterns from past lives' },
+  'Moon|Sun': { supportive: 'you two understand each other without having to explain', challenging: 'one person\'s personality can steamroll the other\'s feelings. What helps: ask how the other feels before explaining what you meant' },
+  'Mars|Venus': { supportive: 'real, visible chemistry that neither of you has to fake', challenging: 'you want different things from desire. What helps: say what you\'re actually after instead of letting the other guess' },
+  'Moon|Moon': { supportive: 'you read each other\'s moods before a word is said', challenging: 'you can drown in each other\'s feelings. What helps: agree that one of you steps back when the other spirals' },
+  'Moon|Venus': { supportive: 'affection here is soft and easy to come home to', challenging: 'one of you will test the other\'s affection for proof. What helps: say the reassurance out loud before it\'s demanded' },
+  'Saturn|Venus': { supportive: 'the kind of loyalty that stays when things get dull', challenging: 'love can feel rationed or judged. What helps: show warmth on purpose, because it won\'t happen by default' },
+  'Pluto|Venus': { supportive: 'a pull that rewires how you both love', challenging: 'attachment can turn possessive fast. What helps: keep your own friends and routines so neither becomes the whole world' },
+  'Mars|Pluto': { supportive: 'you push each other to be far stronger than you\'d be alone', challenging: 'every disagreement turns into who wins. What helps: pick the fight\'s goal first, and drop it if it\'s only to win' },
+  'Moon|Saturn': { supportive: 'one of you steadies the other when feelings run hot', challenging: 'one of you can make the other\'s emotions feel like a burden. What helps: say \'I need listening, not fixing\'' },
+  'Saturn|Sun': { supportive: 'mutual respect that grows into something built to last', challenging: 'one of you feels judged, the other feels disrespected. What helps: separate criticism of the idea from criticism of the person' },
+  'Mercury|Mercury': { supportive: 'you finish each other\'s thoughts and never run out to talk about', challenging: 'you talk past each other and both think you were clear. What helps: repeat back what you heard before you reply' },
+  'Mercury|Sun': { supportive: 'you each get how the other thinks and talks', challenging: 'criticism gets heard where none was meant. What helps: ask what was meant before reacting' },
+  'Mercury|Moon': { supportive: 'hard things can be said and the feeling underneath gets heard', challenging: 'logic gets heard as coldness and feelings as drama. What helps: lead with the feeling, then the point' },
+  'Sun|Venus': { supportive: 'admiration here is open and obvious', challenging: 'the attraction is strong but can stay at the surface. What helps: ask the questions that go past the first impression' },
+  'Mars|Sun': { supportive: 'they get you moving and you get them moving', challenging: 'you compete when you should be cooperating. What helps: choose a shared opponent, like a goal or a deadline, instead of each other' },
+  'Mars|Moon': { supportive: 'you spark each other, emotionally and physically', challenging: 'tempers flare quickly. What helps: take a 20-minute break before you finish any heated argument' },
+  'Moon|Pluto': { supportive: 'you bond at a depth most people never reach', challenging: 'one of you can end up steering the other\'s feelings. What helps: name it when you feel pressured instead of going quiet' },
+  'Pluto|Sun': { supportive: 'you each make the other stronger and more honest', challenging: 'one of you will try to control the other\'s choices. What helps: protect each other\'s right to decide for themselves' },
+  'Neptune|Venus': { supportive: 'love that feels almost spiritual', challenging: 'one of you may love an idea more than the person. What helps: check what is actually done, not what is hoped' },
+  'Jupiter|Venus': { supportive: 'joy and generosity come easily between you', challenging: 'you can overdo everything, from spending to promises. What helps: keep one shared budget and one honest check-in each week' },
+  'Jupiter|Sun': { supportive: 'you make each other believe bigger things are possible', challenging: 'you promise more than either of you delivers. What helps: only commit to what you\'d still do on a tired day' },
+  'North Node|Sun': { supportive: 'being together points you both toward who you\'re meant to become', challenging: 'growing together means leaving something comfortable behind. What helps: talk about what you\'re each afraid of losing' },
+  'Moon|North Node': { supportive: 'this feels fated at an emotional level', challenging: 'old emotional patterns replay with them. What helps: notice when a feeling is older than the relationship' },
+  'Chiron|Venus': { supportive: 'being loved here heals something old', challenging: 'one of you touches exactly where the other was hurt in love. What helps: name the sore spot before it gets stepped on' },
+  'Chiron|Sun': { supportive: 'seeing each other clearly helps you both accept yourselves', challenging: 'one of you pokes at the other\'s deepest insecurity without meaning to. What helps: say which topics are tender' },
+  'Chiron|Moon': { supportive: 'you can cry in front of each other and feel better after', challenging: 'old emotional wounds reopen here. What helps: treat those moments as healing, not as a fight' },
+  'Ascendant|Sun': { supportive: 'instant familiarity, and one of you feels truly seen', challenging: 'one of you sees the other as they want them to be. What helps: wait a few months before deciding who they are' },
+  'Ascendant|Venus': { supportive: 'charm lands instantly', challenging: 'the first spark can be mistaken for something deeper. What helps: let the second and third meetings decide' },
+  'Ascendant|Mars': { supportive: 'the physical pull is obvious to both of you', challenging: 'a first impression can feel pushy. What helps: slow the pace until it\'s mutual' },
+  'Uranus|Venus': { supportive: 'love with surprise in it, never routine', challenging: 'affection comes in bursts and disappears. What helps: agree on a baseline of contact so silence doesn\'t read as rejection' },
+  'Moon|Uranus': { supportive: 'you each feel free to be yourselves', challenging: 'moods shift without warning. What helps: ask for a heads-up before pulling away' },
+  'Sun|Uranus': { supportive: 'they push you to be more original', challenging: 'independence turns into distance. What helps: schedule time together so freedom doesn\'t become absence' },
+  'Neptune|Sun': { supportive: 'you inspire the best, most hopeful versions of each other', challenging: 'one of you loses track of who they are. What helps: each keep one thing that is only yours' },
+  'Moon|Neptune': { supportive: 'an intuitive bond that needs few words', challenging: 'you can disappear into each other and avoid real problems. What helps: say the hard thing plainly, even when it\'s awkward' },
+  'Mercury|Uranus': { supportive: 'conversations that spark ideas neither of you had alone', challenging: 'you interrupt, change topics, or go quiet suddenly. What helps: finish the thought before you start another' },
+  'Mercury|Neptune': { supportive: 'you talk in images and feelings and still get each other', challenging: 'you each assume the other understood. What helps: put important plans in writing' },
+  'Descendant|Sun': { supportive: 'this feels like the partner one of you was looking for', challenging: 'one of you leans on the other to feel complete. What helps: build your own life so staying is a choice, not a need' },
+  'Descendant|Venus': { supportive: 'one of you is close to the other\'s picture of an ideal partner', challenging: 'you slide into needing each other to feel whole. What helps: protect separate hobbies and friendships' },
+  'IC|Moon': { supportive: 'being together feels like home', challenging: 'you step on each other\'s family boundaries. What helps: decide together how much family gets a say' },
+  'North Node|Venus': { supportive: 'love here moves you toward who you\'re meant to be', challenging: 'love comes with a lesson you didn\'t ask for. What helps: ask what the relationship is teaching instead of what it\'s costing' },
+  'Mars|North Node': { supportive: 'you act together toward the same future', challenging: 'you repeat the same fight on loop. What helps: change the pattern, not the person' },
+  'Ascendant|North Node': { supportive: 'meeting feels meant to happen', challenging: 'the meeting changes you in ways you didn\'t pick. What helps: take the discomfort as information, not as a warning' },
+  'Juno|Sun': { supportive: 'this feels like a life you could build together', challenging: 'committing seems to cost independence. What helps: define what you\'d keep before you merge anything' },
+  'Juno|Moon': { supportive: 'devotion feels safe here', challenging: 'emotional needs and ideas of commitment don\'t match. What helps: spell out what commitment means to each of you' },
+  'Juno|Venus': { supportive: 'romance and long-term partnership point the same way', challenging: 'the romantic ideal and the real day-to-day don\'t line up. What helps: love the real person, not the picture' },
+  'Juno|Mars': { supportive: 'desire and commitment reinforce each other', challenging: 'what you want and what the relationship expects pull apart. What helps: don\'t let duty replace desire' },
+  'Juno|Saturn': { supportive: 'a commitment that holds under pressure', challenging: 'the partnership feels like a set of rules. What helps: renegotiate the rules out loud once a year' },
+  'Ascendant|Juno': { supportive: 'partnership potential is visible the moment you meet', challenging: 'one of you projects the ideal partner onto the other. What helps: ask, don\'t assume' },
+  'Juno|Juno': { supportive: 'you want the same kind of partnership', challenging: 'you want different kinds of commitment. What helps: write down what you each expect before you assume' },
+  'Juno|North Node': { supportive: 'commitment here feels like part of the path', challenging: 'the partnership is meant to stretch you, and that\'s uncomfortable. What helps: stay through the discomfort before judging it' },
+  'Juno|Pluto': { supportive: 'a commitment that changes both of you deeply', challenging: 'commitment turns into control. What helps: keep exits open so staying is a real choice' },
+  'Sun|Vesta': { supportive: 'you each treat the other\'s light as worth protecting', challenging: 'one of you gives so much that they vanish. What helps: don\'t let devotion replace having a self' },
+  'Moon|Vesta': { supportive: 'feelings get cared for like a vow', challenging: 'one of you gives up emotional needs to keep the peace. What helps: ask for what you need before you resent it' },
+  'Venus|Vesta': { supportive: 'love here is devoted, almost sacred', challenging: 'duty replaces fun. What helps: schedule pleasure like you\'d schedule a responsibility' },
+  'Mars|Vesta': { supportive: 'you put real energy into what you build together', challenging: 'passion narrows into work, a project or a fixation. What helps: do something purely for fun every week' },
+  'Saturn|Vesta': { supportive: 'disciplined devotion that outlasts mood', challenging: 'duty gets rigid and warmth disappears. What helps: say thank you out loud, not just do the chores' },
+  'Ascendant|Vesta': { supportive: 'devotion is visible to everyone, including each other', challenging: 'dedication to the other overshadows who you are. What helps: stay visible as yourself' },
+  'Pluto|Vesta': { supportive: 'devotion that transforms what you each stand for', challenging: 'devotion turns obsessive. What helps: notice when focus becomes fixation and step back' },
+  'Juno|Vesta': { supportive: 'devotion and partnership work together instead of competing', challenging: 'devotion and the need for freedom collide. What helps: agree what is sacred and what is flexible' },
+  'Vesta|Vesta': { supportive: 'you both hold the same things sacred', challenging: 'you\'re each devoted to different things. What helps: choose one shared priority to protect first' },
+  'North Node|Vesta': { supportive: 'your devotion points at the same destiny', challenging: 'you repeat sacrifices from old patterns. What helps: ask whether you\'re giving from love or from habit' },
 };
 
 // ── Sigmoid normalization (matches Python exactly) ──
@@ -608,15 +608,55 @@ function determineStyleLabel(scores: Record<string, number>): string {
 }
 
 // ── Build human-readable aspect description ──
-function describeAspect(inner: string, outer: string, aspect: string, supportive: boolean): string {
+// What each body governs in a person \u2014 used when a pair has no hand-written theme,
+// so the fallback says something specific instead of a generic phrase.
+const BODY_ESSENCE: Record<string, string> = {
+  Sun: 'sense of self', Moon: 'emotional needs', Mercury: 'way of thinking',
+  Venus: 'way of loving', Mars: 'drive and desire', Jupiter: 'optimism and growth',
+  Saturn: 'need for structure', Uranus: 'need for freedom', Neptune: 'idealism',
+  Pluto: 'intensity', Ascendant: 'first impression', Descendant: 'ideal partner',
+  MC: 'public direction', IC: 'sense of home', 'North Node': 'life direction',
+  'South Node': 'past patterns', Chiron: 'sore spots', Juno: 'commitment style',
+  Vesta: 'devotion',
+};
+
+function fallbackTheme(inner: string, outer: string, supportive: boolean): string {
+  const a = BODY_ESSENCE[inner] || inner;
+  const b = BODY_ESSENCE[outer] || outer;
+  return supportive
+    ? `your ${a} and their ${b} pull in the same direction, so this part of you two comes easily`
+    : `your ${a} and their ${b} pull in different directions \u2014 it only stops stinging once you name it out loud`;
+}
+
+function describeAspect(inner: string, outer: string, aspect: string, supportive: boolean, orb?: number): string {
   const pk = pairKey(inner, outer);
   const verb = ASPECT_VERBS[aspect] || { supportive: 'connects to', challenging: 'clashes with' };
   const theme = ASPECT_THEMES[pk];
   const verbStr = supportive ? verb.supportive : verb.challenging;
   const themeStr = theme
     ? (supportive ? theme.supportive : theme.challenging)
-    : (supportive ? 'positive energy exchange' : 'growth through tension');
-  return `Your ${inner} ${verbStr} their ${outer} \u2014 ${themeStr}`;
+    : fallbackTheme(inner, outer, supportive);
+  const exact = orb !== undefined && orb <= 0.5 ? ' (near-exact, one of the loudest signals between you)' : '';
+  return `Your ${inner} ${verbStr} their ${outer} \u2014 ${themeStr}${exact}`;
+}
+
+// Angles are two ends of one axis: a planet conjunct their Descendant is also
+// opposite their Ascendant. Count that once, not as two separate findings.
+const AXIS_GROUP: Record<string, string> = { Ascendant: 'AC', Descendant: 'AC', MC: 'MC', IC: 'MC' };
+
+function dedupeAxis<T extends { inner: string; outer: string }>(list: T[], limit: number): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const a of list) {
+    const ga = AXIS_GROUP[a.outer];
+    const gb = AXIS_GROUP[a.inner];
+    const key = ga ? `${a.inner}>${ga}` : gb ? `${gb}<${a.outer}` : `${a.inner}|${a.outer}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(a);
+    if (out.length === limit) break;
+  }
+  return out;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -771,19 +811,15 @@ export function computeSynastryCompatibility(
   const styleLabel = determineStyleLabel(normalized);
 
   // ── 7. TOP ASPECTS ──
-  const supportiveAspects = allAspectDetails
-    .filter(a => a.supportive)
-    .sort((a, b) => b.strength - a.strength)
-    .slice(0, 5);
+  const supportiveAspects = dedupeAxis(
+    allAspectDetails.filter(a => a.supportive).sort((a, b) => b.strength - a.strength), 5);
 
-  const challengingAspects = allAspectDetails
-    .filter(a => !a.supportive)
-    .sort((a, b) => b.strength - a.strength)
-    .slice(0, 5);
+  const challengingAspects = dedupeAxis(
+    allAspectDetails.filter(a => !a.supportive).sort((a, b) => b.strength - a.strength), 5);
 
   // Build human-readable strings
-  const strengths = supportiveAspects.map(a => describeAspect(a.inner, a.outer, a.aspect, true));
-  const challenges = challengingAspects.map(a => describeAspect(a.inner, a.outer, a.aspect, false));
+  const strengths = supportiveAspects.map(a => describeAspect(a.inner, a.outer, a.aspect, true, a.orb));
+  const challenges = challengingAspects.map(a => describeAspect(a.inner, a.outer, a.aspect, false, a.orb));
 
   // Build the full aspects array for display
   const aspects = allAspectDetails
