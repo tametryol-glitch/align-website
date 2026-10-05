@@ -13,6 +13,10 @@
       "schedule": "0 14 * * *"
     },
     {
+      "path": "/api/cron/social-video",
+      "schedule": "0 23 * * *"
+    },
+    {
       "path": "/api/cron/analytics-rollup",
       "schedule": "20 3 * * *"
     },
