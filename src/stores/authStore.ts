@@ -23,6 +23,7 @@ export interface UserProfile {
   align_code?: string | null;
   created_at?: string | null;
   is_subscribed?: boolean | null;
+  subscription_tier?: string | null;
   is_admin?: boolean | null;
   chat_theme?: string | null;
 }
