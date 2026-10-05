@@ -162,7 +162,7 @@ function StationsInner() {
             {detail.reading.sections.map((s) => (
               <div key={s.key} className="card">
                 <p className="text-[11px] uppercase tracking-widest text-text-muted mb-1">{s.title}</p>
-                <p className="text-text-secondary leading-relaxed">{s.text}</p>
+                <p className="text-text-secondary leading-relaxed whitespace-pre-line">{s.text}</p>
               </div>
             ))}
 
