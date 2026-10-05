@@ -63,8 +63,21 @@ export interface CosmicMatch {
 
   // Meta
   calculated_at: string | null;
+  calculation_version?: number | null;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Bump when the wording or scoring a saved match carries changes. A `ready`
+ * match saved under an older version is recalculated once, the first time its
+ * detail is opened (see upgradeMatchIfOutdated).
+ *   2 — person-focused strengths/challenges text, axis-deduped aspects
+ */
+export const COSMIC_MATCH_CALC_VERSION = 2;
+
+export function isMatchOutdated(match: Pick<CosmicMatch, 'status' | 'calculation_version'>): boolean {
+  return match.status === 'ready' && (match.calculation_version ?? 1) < COSMIC_MATCH_CALC_VERSION;
 }
 
 // ── Helpers ──
@@ -283,6 +296,7 @@ function resultToRow(result: AdvancedCompatibilityResult, profileA: any, profile
     user_a_birth_hash: hashBirthData(profileA),
     user_b_birth_hash: hashBirthData(profileB),
     calculated_at: new Date().toISOString(),
+    calculation_version: COSMIC_MATCH_CALC_VERSION,
   };
 }
 
@@ -390,6 +404,7 @@ export async function optInCosmicMatchShare(matchId: string): Promise<ShareOptIn
 export async function triggerCosmicMatchCalculation(
   userId: string,
   otherUserId: string,
+  opts: { upgrade?: boolean } = {},
 ): Promise<CosmicMatch | null> {
   try {
     if (!userId || !otherUserId) return null;
@@ -410,11 +425,21 @@ export async function triggerCosmicMatchCalculation(
     //     - only fire the "Cosmic Match Ready" notification the first time
     const { data: existing } = await supabase
       .from('cosmic_matches')
-      .select('status, calculated_at')
+      .select('status, calculated_at, calculation_version')
       .eq('id', matchId)
       .single();
 
-    if (existing?.status === 'ready' && existing?.calculated_at) {
+    // An upgrade re-runs a good, already-ready match under the current engine
+    // version. It must never degrade the row: no 'calculating' flicker, and on
+    // any failure the old ready result is left exactly as it was.
+    const isUpgrade = !!opts.upgrade && !!existing?.calculated_at
+      && isMatchOutdated({ status: existing.status, calculation_version: existing.calculation_version });
+    const setStatus = async (status: string) => {
+      if (isUpgrade) return;
+      await supabase.from('cosmic_matches').update({ status }).eq('id', matchId);
+    };
+
+    if (existing?.status === 'ready' && existing?.calculated_at && !isUpgrade) {
       const { data: current } = await supabase
         .from('cosmic_matches')
         .select('*')
@@ -426,10 +451,7 @@ export async function triggerCosmicMatchCalculation(
     const isFirstResult = !existing?.calculated_at;
 
     // 2. Mark as calculating
-    await supabase
-      .from('cosmic_matches')
-      .update({ status: 'calculating' })
-      .eq('id', matchId);
+    await setStatus('calculating');
 
     // 3. Fetch both profiles
     const { data: profiles } = await supabase
@@ -438,10 +460,7 @@ export async function triggerCosmicMatchCalculation(
       .in('id', [userId, otherUserId]);
 
     if (!profiles || profiles.length < 2) {
-      await supabase
-        .from('cosmic_matches')
-        .update({ status: 'no_data' })
-        .eq('id', matchId);
+      await setStatus('no_data');
       return null;
     }
 
@@ -450,10 +469,7 @@ export async function triggerCosmicMatchCalculation(
 
     // 4. Check if both have birth data
     if (!profileA?.birth_date || !profileB?.birth_date) {
-      await supabase
-        .from('cosmic_matches')
-        .update({ status: 'no_data' })
-        .eq('id', matchId);
+      await setStatus('no_data');
       return null;
     }
 
@@ -478,6 +494,9 @@ export async function triggerCosmicMatchCalculation(
       // API failed — will fall back to sign-based below
     }
 
+    // An upgrade never trades a full-chart result for a rough sign-based one.
+    if (!result && isUpgrade) return null;
+
     // 6. Fallback: sign-based estimation if full chart not available
     if (!result) {
       const signPositions1 = buildSignBasedPositions(profileA);
@@ -493,10 +512,7 @@ export async function triggerCosmicMatchCalculation(
         );
       } catch {
         // Even fallback failed
-        await supabase
-          .from('cosmic_matches')
-          .update({ status: 'error' })
-          .eq('id', matchId);
+        await setStatus('error');
         return null;
       }
     }
@@ -513,10 +529,7 @@ export async function triggerCosmicMatchCalculation(
       .single();
 
     if (updateError) {
-      await supabase
-        .from('cosmic_matches')
-        .update({ status: 'error' })
-        .eq('id', matchId);
+      await setStatus('error');
       return null;
     }
 

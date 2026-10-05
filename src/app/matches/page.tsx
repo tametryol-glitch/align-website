@@ -8,6 +8,7 @@ import { getFriends, type FriendProfile } from '@/lib/friendService';
 import {
   getMyCosmicMatches,
   triggerCosmicMatchCalculation,
+  isMatchOutdated,
   type CosmicMatch,
 } from '@/lib/cosmicMatchService';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -175,6 +176,23 @@ export default function MatchesPage() {
       return haystack.includes(q);
     });
   }, [sortedEntries, searchQuery]);
+
+  // Matches saved under an older engine version get recalculated once, the
+  // first time their detail is opened. Failures leave the old result untouched.
+  const upgradingRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const sel = selectedMatch;
+    if (!sel || !user?.id || !isMatchOutdated(sel.match) || upgradingRef.current.has(sel.match.id)) return;
+    upgradingRef.current.add(sel.match.id);
+    triggerCosmicMatchCalculation(user.id, sel.friend.friend_id, { upgrade: true })
+      .then((fresh) => {
+        if (!fresh) return;
+        const next = { friend: sel.friend, match: fresh };
+        setEntries((prev) => prev.map((e) => (e.match.id === fresh.id ? next : e)));
+        setSelectedMatch((cur) => (cur && cur.match.id === fresh.id ? next : cur));
+      })
+      .catch(() => {});
+  }, [selectedMatch, user?.id]);
 
   // Auto-open a specific match when arriving from a notification deep-link
   const deepLinkedRef = useRef(false);
