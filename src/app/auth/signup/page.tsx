@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase';
 import { Sparkles, Gift, CheckCircle, Check, Zap } from 'lucide-react';
 import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie, setAffiliateName } from '@/lib/affiliateService';
 import { PLANS } from '@/lib/plans';
+import { TurnstileWidget, TURNSTILE_SITE_KEY } from '@/components/auth/TurnstileWidget';
 
 const FREE_PERKS = [
   'Natal chart overview (Sun, Moon, Rising)',
@@ -56,6 +57,8 @@ function SignupPageInner() {
   const [error, setError] = useState('');
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
   const [success, setSuccess] = useState(false);
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -129,6 +132,10 @@ function SignupPageInner() {
       return;
     }
     setPasswordErrors([]);
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError('Please wait a moment for the security check to finish, then try again.');
+      return;
+    }
     setLoading(true);
 
     const supabase = createClient();
@@ -141,12 +148,14 @@ function SignupPageInner() {
       options: {
         data: { name, referral_code: effectiveRef || undefined },
         emailRedirectTo: emailRedirectUrl,
+        captchaToken: captchaToken || undefined,
       },
     });
 
     if (error) {
       setError(error.message);
       setLoading(false);
+      setCaptchaReset((n) => n + 1); // tokens are single-use
       return;
     }
 
@@ -399,6 +408,8 @@ function SignupPageInner() {
             {error && (
               <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>
             )}
+
+            <TurnstileWidget onToken={setCaptchaToken} resetKey={captchaReset} />
 
             <button type="submit" disabled={loading} className="btn-secondary w-full">
               {loading ? t('common.loading') : t('auth.signup')}

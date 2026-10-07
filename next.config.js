@@ -68,7 +68,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.youtube.com https://s.ytimg.com https://www.googletagmanager.com https://js.stripe.com https://unpkg.com https://dev.virtualearth.net https://*.virtualearth.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.youtube.com https://s.ytimg.com https://www.googletagmanager.com https://js.stripe.com https://challenges.cloudflare.com https://unpkg.com https://dev.virtualearth.net https://*.virtualearth.net",
               "style-src 'self' 'unsafe-inline' https://unpkg.com",
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co",
@@ -77,8 +77,8 @@ const nextConfig = {
               // HTTPS and WebSocket. Without these the browser's CSP silently
               // blocks every Agora connection, so the web client can never join
               // the channel — voice/video calls to/from the app never connect.
-              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com https://dev.virtualearth.net https://*.virtualearth.net https://basemaps.cartocdn.com https://*.cartocdn.com https://*.agora.io wss://*.agora.io https://*.sd-rtn.com wss://*.sd-rtn.com https://*.agoraio.cn wss://*.agoraio.cn",
-              "frame-src 'self' blob: https://www.youtube.com https://www.tiktok.com https://www.instagram.com https://www.facebook.com https://js.stripe.com",
+              "connect-src 'self' data: blob: https://wxzwdvlbcsmnkhjmkgkx.supabase.co wss://wxzwdvlbcsmnkhjmkgkx.supabase.co https://align-api-v2-production.up.railway.app https://api.giphy.com https://api.revenuecat.com https://api.stripe.com https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://api.cesium.com https://assets.ion.cesium.com https://*.cesium.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tiles.stadiamaps.com https://tiles.arcgisonline.com https://*.arcgisonline.com https://dev.virtualearth.net https://*.virtualearth.net https://basemaps.cartocdn.com https://*.cartocdn.com https://*.agora.io wss://*.agora.io https://*.sd-rtn.com wss://*.sd-rtn.com https://*.agoraio.cn wss://*.agoraio.cn",
+              "frame-src 'self' blob: https://www.youtube.com https://www.tiktok.com https://www.instagram.com https://www.facebook.com https://js.stripe.com https://challenges.cloudflare.com",
               "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",

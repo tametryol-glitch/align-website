@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { Sparkles, Gift, CheckCircle } from 'lucide-react';
 import { verifyAffiliateCode, trackAffiliateClick, setAffiliateCookie } from '@/lib/affiliateService';
+import { TurnstileWidget, TURNSTILE_SITE_KEY } from '@/components/auth/TurnstileWidget';
 
 export default function LoginPage() {
   return (
@@ -23,6 +24,8 @@ function LoginPageInner() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
   const refParam = searchParams.get('ref');
@@ -65,14 +68,23 @@ function LoginPageInner() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError('Please wait a moment for the security check to finish, then try again.');
+      return;
+    }
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: { captchaToken: captchaToken || undefined },
+    });
 
     if (error) {
       setError(error.message);
       setLoading(false);
+      setCaptchaReset((n) => n + 1); // tokens are single-use
     } else {
       router.push('/feed');
     }
@@ -181,6 +193,8 @@ function LoginPageInner() {
             {error && (
               <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>
             )}
+
+            <TurnstileWidget onToken={setCaptchaToken} resetKey={captchaReset} />
 
             <button type="submit" disabled={loading} className="btn-primary w-full">
               {loading ? t('common.loading') : t('auth.login')}
