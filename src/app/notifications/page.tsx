@@ -290,6 +290,15 @@ export default function NotificationsPage() {
     if (user) loadNotifications();
   }, [user, loadNotifications]);
 
+  // Message notifications are deleted server-side once the conversation is
+  // read (possibly on another device/tab) — refresh when this tab is revisited.
+  useEffect(() => {
+    if (!user) return;
+    const onVisible = () => { if (!document.hidden) loadNotifications(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [user, loadNotifications]);
+
   useEffect(() => {
     if (!user) return;
 
