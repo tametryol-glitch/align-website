@@ -139,12 +139,13 @@ export async function uploadVideoNote(
     if (vErr) { console.warn('[ChatMedia] uploadVideoNote rejected:', vErr); return null; }
 
     const supabase = createClient();
-    const path = `video_notes/${conversationId}/${userId}-${Date.now()}.webm`;
+    const isMp4 = blob.type.startsWith('video/mp4');
+    const path = `video_notes/${conversationId}/${userId}-${Date.now()}.${isMp4 ? 'mp4' : 'webm'}`;
 
     const { error } = await supabase.storage
       .from('chat-media')
       .upload(path, blob, {
-        contentType: 'video/webm',
+        contentType: isMp4 ? 'video/mp4' : 'video/webm',
       });
 
     if (error) {

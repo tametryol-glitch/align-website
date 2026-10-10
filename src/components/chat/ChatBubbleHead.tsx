@@ -30,6 +30,11 @@ const PILL_MS = 5000;
 const AUTO_DISMISS_MS = 120_000;
 
 function previewFor(msg: any): string {
+  if (msg.metadata?.once === true) {
+    if (msg.type === 'voice_note') return '🔒 One-time voice message';
+    if (msg.type === 'video_note') return '🔒 One-time video';
+    if (msg.type === 'image') return '🔒 One-time photo';
+  }
   switch (msg.type) {
     case 'image': return '📷 Photo';
     case 'video': case 'video_note': return '🎥 Video';

@@ -45,6 +45,7 @@ function getMessageTypeIcon(type: string) {
 }
 
 function getMessagePreview(message: ForwardMessageModalProps['message']): string {
+  if (message.metadata?.once === true) return message.content || '🔒 One-time media';
   switch (message.type) {
     case 'image':
       return 'Photo';
@@ -118,7 +119,7 @@ export function ForwardMessageModal({
   // ── Forward handler ──
 
   async function handleForward() {
-    if (!selectedId) return;
+    if (!selectedId || message.metadata?.once === true) return;
     setForwarding(true);
     try {
       onForward(selectedId);

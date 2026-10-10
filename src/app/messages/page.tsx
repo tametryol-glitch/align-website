@@ -4,14 +4,16 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
-import { MessageCircle, Plus, Reply, SmilePlus, Pencil, Trash2, Forward, Pin } from 'lucide-react';
+import { MessageCircle, Plus, Reply, SmilePlus, Pencil, Trash2, Forward, Pin, Star } from 'lucide-react';
 import { PollCreator } from '@/components/chat/PollCreator';
 import { CallScreen } from '@/components/chat/CallScreen';
 import { GroupSettingsModal } from '@/components/chat/GroupSettingsModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
+import { VideoNoteRecorderModal } from '@/components/chat/VideoNoteRecorderModal';
 import { LocationPicker } from '@/components/chat/LocationPicker';
 import { getChatTheme } from '@/data/chatThemes';
-import { uploadChatFile, uploadVoiceNote } from '@/lib/chatMediaService';
+import { uploadChatFile, uploadVoiceNote, uploadVideoNote } from '@/lib/chatMediaService';
+import { uploadOnceMedia, isOnceMessage, onceLabel } from '@/lib/onceMediaService';
 import { generateChannelName, fetchAgoraTokenResult, createCallClient, type CallState } from '@/lib/callingService';
 import * as callMetering from '@/lib/callMetering';
 import { sendCallSignal, generateSessionId, logCallStart } from '@/lib/callSignalingService';
@@ -42,6 +44,8 @@ import {
   getTotalUnreadCount,
   uploadChatImage,
   pinMessage,
+  starMessage,
+  getStarredMessages,
   type Message,
 } from '@/lib/messagingService';
 
@@ -76,6 +80,7 @@ export default function MessagesPage() {
   const chatTheme = useMemo(() => getChatTheme(profile?.chat_theme), [profile?.chat_theme]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const pinToBottomUntil = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -85,6 +90,8 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
   const [contextMenu, setContextMenu] = useState<{ message: Message; x: number; y: number } | null>(null);
+  // Private stars for the open chat (ids only) — drives the Star/Unstar menu label.
+  const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
   const [reactionPicker, setReactionPicker] = useState<Message | null>(null);
   const [showConvMenu, setShowConvMenu] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
@@ -99,6 +106,9 @@ export default function MessagesPage() {
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [forwardMessage, setForwardMessage] = useState<Message | null>(null);
+  // One-time view: armed for the NEXT photo / voice note only, then resets.
+  const [onceArmed, setOnceArmed] = useState(false);
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
 
   // Call state
   const [callState, setCallState] = useState<CallState>('idle');
@@ -229,10 +239,44 @@ export default function MessagesPage() {
     store.setMessages(msgs);
     store.setHasMore(msgs.length >= 50);
     store.setMessagesLoading(false);
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    // Stay pinned to the newest message while the thread settles: images,
+    // link previews and media load after the first paint and grow the
+    // content, so a single scroll lands partway up. Released on user input.
+    pinToBottomUntil.current = Date.now() + 2500;
+    pinThreadToBottom();
+    const pinTimer = setInterval(() => {
+      if (Date.now() >= pinToBottomUntil.current) { clearInterval(pinTimer); return; }
+      pinThreadToBottom();
     }, 100);
   }
+
+  function pinThreadToBottom() {
+    const container = messagesContainerRef.current;
+    if (container) container.scrollTop = container.scrollHeight;
+  }
+
+  // Release the pin as soon as the user scrolls on their own, and re-anchor
+  // whenever media inside the thread finishes loading while pinned.
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    const release = () => { pinToBottomUntil.current = 0; };
+    const onMediaLoad = () => {
+      if (Date.now() < pinToBottomUntil.current) pinThreadToBottom();
+    };
+    container.addEventListener('wheel', release, { passive: true });
+    container.addEventListener('touchmove', release, { passive: true });
+    container.addEventListener('keydown', release);
+    container.addEventListener('load', onMediaLoad, true);
+    container.addEventListener('loadedmetadata', onMediaLoad, true);
+    return () => {
+      container.removeEventListener('wheel', release);
+      container.removeEventListener('touchmove', release);
+      container.removeEventListener('keydown', release);
+      container.removeEventListener('load', onMediaLoad, true);
+      container.removeEventListener('loadedmetadata', onMediaLoad, true);
+    };
+  }, [store.activeConversationId]);
 
   // ── Load more (pagination) ──
   async function loadMoreMessages() {
@@ -395,6 +439,27 @@ export default function MessagesPage() {
     const file = e.target.files?.[0];
     if (!file || !store.activeConversationId || !user) return;
     setSending(true);
+    if (onceArmed) {
+      const path = await uploadOnceMedia(store.activeConversationId, file, 'image');
+      if (path) {
+        const label = onceLabel('image');
+        const result = await sendMsg(store.activeConversationId, label, 'image', { once: true, storage_path: path }, store.replyTo?.id);
+        if (result.success && result.message) {
+          store.addMessage(result.message);
+          store.updateConversationPreview(store.activeConversationId, label, user.id);
+          store.setReplyTo(null);
+          setOnceArmed(false);
+        } else {
+          setSendError(result.error || 'Failed to send message.');
+        }
+      } else {
+        setSendError('Could not upload the photo.');
+      }
+      setSending(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+      return;
+    }
     const url = await uploadChatImage(store.activeConversationId, file);
     if (url) {
       const result = await sendMsg(store.activeConversationId, url, 'image', { url });
@@ -471,6 +536,26 @@ export default function MessagesPage() {
   async function handleVoiceComplete(blob: Blob, duration: number) {
     if (!store.activeConversationId || !user) return;
     setSending(true);
+    if (onceArmed) {
+      const path = await uploadOnceMedia(store.activeConversationId, blob, 'voice_note');
+      if (path) {
+        const label = onceLabel('voice_note');
+        const msgResult = await sendMsg(store.activeConversationId, label, 'voice_note', { once: true, storage_path: path, duration }, store.replyTo?.id);
+        if (msgResult.success && msgResult.message) {
+          store.addMessage(msgResult.message);
+          store.updateConversationPreview(store.activeConversationId, label, user.id);
+          store.setReplyTo(null);
+          setOnceArmed(false);
+        } else {
+          setSendError(msgResult.error || 'Failed to send message.');
+        }
+      } else {
+        setSendError('Could not upload the voice message.');
+      }
+      setSending(false);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+      return;
+    }
     const uploadResult = await uploadVoiceNote(store.activeConversationId, blob, duration);
     if (uploadResult) {
       const msgResult = await sendMsg(store.activeConversationId, '', 'voice_note', { url: uploadResult.url, duration: uploadResult.duration }, store.replyTo?.id);
@@ -482,6 +567,34 @@ export default function MessagesPage() {
     }
     setSending(false);
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  // ── Video note send (from the recorder modal) ──
+  async function handleVideoNoteSend(file: File, duration: number, once: boolean): Promise<boolean> {
+    if (!store.activeConversationId || !user) return false;
+    const convId = store.activeConversationId;
+    let msgResult;
+    let preview: string;
+    if (once) {
+      const path = await uploadOnceMedia(convId, file, 'video_note');
+      if (!path) return false;
+      preview = onceLabel('video_note');
+      msgResult = await sendMsg(convId, preview, 'video_note', { once: true, storage_path: path, duration }, store.replyTo?.id);
+    } else {
+      const up = await uploadVideoNote(convId, file, duration);
+      if (!up) return false;
+      preview = '🎥 Video';
+      msgResult = await sendMsg(convId, '', 'video_note', { video_url: up.url, url: up.url, storage_path: up.path, duration }, store.replyTo?.id);
+    }
+    if (!msgResult.success || !msgResult.message) return false;
+    store.addMessage(msgResult.message);
+    store.updateConversationPreview(convId, preview, user.id);
+    store.setReplyTo(null);
+    // Sending resets the armed toggle, same as photos and voice notes.
+    setOnceArmed(false);
+    setShowVideoRecorder(false);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+    return true;
   }
 
   // ── File upload (any type) ──
@@ -546,7 +659,7 @@ export default function MessagesPage() {
 
   // ── Forward message ──
   async function handleForwardMessage(conversationId: string) {
-    if (!forwardMessage || !user) return;
+    if (!forwardMessage || !user || isOnceMessage(forwardMessage)) return;
     const result = await sendMsg(conversationId, forwardMessage.content, forwardMessage.type as 'text', forwardMessage.metadata || undefined);
     if (result.success && result.message) {
       if (conversationId === store.activeConversationId) {
@@ -941,6 +1054,37 @@ export default function MessagesPage() {
     setContextMenu(null);
   }
 
+  // ── Star a message (private to me) ──
+  useEffect(() => {
+    const convId = store.activeConversationId;
+    setStarredIds(new Set());
+    if (!convId) return;
+    let alive = true;
+    getStarredMessages(convId).then((msgs) => {
+      if (alive) setStarredIds(new Set(msgs.map((m) => m.id)));
+    });
+    return () => { alive = false; };
+  }, [store.activeConversationId]);
+
+  async function handleStarMessage(msg: Message) {
+    const isStarred = starredIds.has(msg.id);
+    setContextMenu(null);
+    // Optimistic, rolled back if the save fails.
+    setStarredIds((prev) => {
+      const next = new Set(prev);
+      if (isStarred) next.delete(msg.id); else next.add(msg.id);
+      return next;
+    });
+    const ok = await starMessage(msg.id, msg.conversation_id, !isStarred);
+    if (!ok) {
+      setStarredIds((prev) => {
+        const next = new Set(prev);
+        if (isStarred) next.add(msg.id); else next.delete(msg.id);
+        return next;
+      });
+    }
+  }
+
   // ── Close context menus on click outside ──
   useEffect(() => {
     function handleClick() {
@@ -986,7 +1130,7 @@ export default function MessagesPage() {
         />
 
         {/* ───────────── RIGHT: Chat Area ───────────── */}
-        <div className={`flex-1 flex flex-col min-w-0 ${
+        <div className={`relative flex-1 flex flex-col min-w-0 ${
           store.activeConversationId ? 'flex' : 'hidden sm:flex'
         }`}>
           {activeConv ? (
@@ -1017,6 +1161,7 @@ export default function MessagesPage() {
                 onCallStart={handleCallStart}
                 onGroupSettings={() => setShowGroupSettings(true)}
                 onOpenReactionPicker={setReactionPicker}
+                onUnstar={(id) => setStarredIds((prev) => { const n = new Set(prev); n.delete(id); return n; })}
               />
 
               {sendError && (
@@ -1035,6 +1180,9 @@ export default function MessagesPage() {
                 showGifPicker={showGifPicker}
                 showAttachMenu={showAttachMenu}
                 inputRef={inputRef}
+                onceArmed={onceArmed}
+                onToggleOnce={() => setOnceArmed(v => !v)}
+                onVideoNote={activeConv.is_group ? undefined : () => setShowVideoRecorder(true)}
                 onNewMessageChange={handleInputChange}
                 onEditTextChange={setEditText}
                 onSend={handleSend}
@@ -1091,7 +1239,7 @@ export default function MessagesPage() {
           >
             <SmilePlus className="w-4 h-4" /> {t('messages.contextMenu.react')}
           </button>
-          {contextMenu.message.sender_id === user.id && (
+          {contextMenu.message.sender_id === user.id && !isOnceMessage(contextMenu.message) && (
             <button
               onClick={() => handleEdit(contextMenu.message)}
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
@@ -1117,30 +1265,45 @@ export default function MessagesPage() {
               <Trash2 className="w-4 h-4" /> {t('messages.contextMenu.deleteForEveryone', 'Delete for everyone')}
             </button>
           )}
-          <button
-            onClick={() => {
-              setForwardMessage(contextMenu.message);
-              setContextMenu(null);
-            }}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
-          >
-            <Forward className="w-4 h-4" /> {t('messages.contextMenu.forward')}
-          </button>
+          {!isOnceMessage(contextMenu.message) && (
+            <button
+              onClick={() => {
+                setForwardMessage(contextMenu.message);
+                setContextMenu(null);
+              }}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+            >
+              <Forward className="w-4 h-4" /> {t('messages.contextMenu.forward')}
+            </button>
+          )}
+          {!isOnceMessage(contextMenu.message) && !contextMenu.message.is_deleted && (
+            <button
+              onClick={() => handleStarMessage(contextMenu.message)}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+            >
+              <Star className="w-4 h-4" />{' '}
+              {starredIds.has(contextMenu.message.id)
+                ? t('messages.contextMenu.unstar', 'Unstar')
+                : t('messages.contextMenu.star', 'Star')}
+            </button>
+          )}
           <button
             onClick={() => handlePinMessage(contextMenu.message)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
           >
             <Pin className="w-4 h-4" /> {contextMenu.message.metadata?.pinned ? t('messages.contextMenu.unpin') : t('messages.contextMenu.pin')}
           </button>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(contextMenu.message.content);
-              setContextMenu(null);
-            }}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
-          >
-            {t('messages.contextMenu.copyText')}
-          </button>
+          {!isOnceMessage(contextMenu.message) && (
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(contextMenu.message.content);
+                setContextMenu(null);
+              }}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary transition-colors"
+            >
+              {t('messages.contextMenu.copyText')}
+            </button>
+          )}
         </div>
       )}
 
@@ -1218,6 +1381,15 @@ export default function MessagesPage() {
           groupAvatar={activeConv.group_avatar_url || undefined}
           isAdmin={true}
           onGroupUpdated={loadConversations}
+        />
+      )}
+
+      {/* ───────────── Video Message Recorder ───────────── */}
+      {showVideoRecorder && (
+        <VideoNoteRecorderModal
+          defaultOnce={onceArmed}
+          onSend={handleVideoNoteSend}
+          onClose={() => setShowVideoRecorder(false)}
         />
       )}
 

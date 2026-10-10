@@ -869,6 +869,74 @@ export async function getPinnedMessages(conversationId: string): Promise<Message
   }
 }
 
+// ── Starred messages (private, per user) ────────────────────────────
+
+export async function starMessage(messageId: string, conversationId: string, star: boolean): Promise<boolean> {
+  try {
+    const myId = getMyId();
+    if (!myId) return false;
+    const supabase = createClient();
+    if (star) {
+      const { error } = await supabase
+        .from('message_stars')
+        .upsert(
+          { user_id: myId, message_id: messageId, conversation_id: conversationId },
+          { onConflict: 'user_id,message_id', ignoreDuplicates: true },
+        );
+      return !error;
+    }
+    const { error } = await supabase
+      .from('message_stars')
+      .delete()
+      .eq('user_id', myId)
+      .eq('message_id', messageId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Starred messages in one chat, newest star first. */
+export async function getStarredMessages(conversationId: string): Promise<Message[]> {
+  try {
+    const myId = getMyId();
+    if (!myId) return [];
+    const supabase = createClient();
+    const { data: stars, error } = await supabase
+      .from('message_stars')
+      .select('message_id, created_at')
+      .eq('user_id', myId)
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: false });
+    if (error || !stars || stars.length === 0) return [];
+
+    const { data: msgs } = await supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:profiles!messages_sender_id_fkey(display_name, avatar_url)
+      `)
+      .in('id', stars.map((s: any) => s.message_id))
+      .eq('is_deleted', false);
+    if (!msgs) return [];
+
+    const byId = new Map<string, any>(msgs.map((m: any) => [m.id, m]));
+    const out: Message[] = [];
+    for (const s of stars as any[]) {
+      const m = byId.get(s.message_id);
+      if (!m) continue;
+      out.push({
+        ...m,
+        sender_name: m.sender?.display_name || 'Unknown',
+        sender_avatar: m.sender?.avatar_url || null,
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 // ── Set Member Role ─────────────────────────────────────────────────
 
 export async function setMemberRole(

@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Send, X, Image as ImageIcon, Smile,
+  Send, X, Image as ImageIcon, Smile, Video,
 } from 'lucide-react';
 import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
 import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
@@ -22,6 +22,10 @@ export interface MessageComposerProps {
   showGifPicker: boolean;
   showAttachMenu: boolean;
   inputRef: React.RefObject<HTMLInputElement>;
+  onceArmed: boolean;
+  /** Opens the video-message recorder; omitted in group chats. */
+  onVideoNote?: () => void;
+  onToggleOnce: () => void;
   onNewMessageChange: (value: string) => void;
   onEditTextChange: (value: string) => void;
   onSend: (e: React.FormEvent) => void;
@@ -41,7 +45,7 @@ export interface MessageComposerProps {
 
 export function MessageComposer({
   newMessage, editText, editingMessage, replyTo, sending, smartReplies,
-  showGifPicker, showAttachMenu, inputRef,
+  showGifPicker, showAttachMenu, inputRef, onceArmed, onToggleOnce, onVideoNote,
   onNewMessageChange, onEditTextChange, onSend, onCancelReplyEdit,
   onImageUpload, onFileUpload, onGifSelect, onVoiceComplete,
   onSmartReplySelect, onToggleGifPicker, onToggleAttachMenu,
@@ -129,6 +133,33 @@ export function MessageComposer({
           title="Send image"
         >
           <ImageIcon className="w-4 h-4" />
+        </button>
+
+        {/* Video message (1:1 only) */}
+        {onVideoNote && (
+          <button
+            type="button"
+            onClick={onVideoNote}
+            className="p-2 text-text-muted hover:text-text-primary transition-colors"
+            title="Record a video message"
+          >
+            <Video className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* One-time view: applies to the next photo / voice note, then resets */}
+        <button
+          type="button"
+          onClick={onToggleOnce}
+          aria-pressed={onceArmed}
+          className={`w-6 h-6 rounded-full border-2 text-[10px] font-bold leading-none flex items-center justify-center transition-colors ${
+            onceArmed
+              ? 'border-accent-primary bg-accent-primary text-white'
+              : 'border-text-muted text-text-muted hover:text-text-primary hover:border-text-primary'
+          }`}
+          title={onceArmed ? 'One-time view is on for your next photo or voice message' : 'One-time view'}
+        >
+          1
         </button>
 
         {/* GIF picker toggle */}

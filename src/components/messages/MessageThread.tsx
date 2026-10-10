@@ -1,14 +1,15 @@
 'use client';
 
-import { useRef, useMemo, useCallback } from 'react';
+import { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
-  ArrowLeft, Search, ChevronDown, Settings2,
+  ArrowLeft, Search, ChevronDown, Settings2, Star,
 } from 'lucide-react';
 import { CallButton } from '@/components/chat/CallButton';
+import { StarredMessagesPanel } from './StarredMessagesPanel';
 import { MessageBubble } from './MessageBubble';
 import type { ChatTheme } from '@/data/chatThemes';
 import type { Message, Conversation } from '@/lib/messagingService';
@@ -52,6 +53,8 @@ export interface MessageThreadProps {
   onCallStart: (type: 'voice' | 'video') => void;
   onGroupSettings: () => void;
   onOpenReactionPicker: (msg: Message) => void;
+  /** Keeps the page's star state in sync when a star is removed in the panel. */
+  onUnstar?: (messageId: string) => void;
 }
 
 export function MessageThread({
@@ -61,9 +64,13 @@ export function MessageThread({
   messagesEndRef, messagesContainerRef,
   onBack, onScroll, onLoadMore, onReaction, onReply, onContextMenu,
   onPollVote, onMessageSearchChange, onCallStart, onGroupSettings,
-  onOpenReactionPicker,
+  onOpenReactionPicker, onUnstar,
 }: MessageThreadProps) {
   const { t } = useTranslation();
+  const [showStarred, setShowStarred] = useState(false);
+
+  // Close the panel when switching to another chat.
+  useEffect(() => { setShowStarred(false); }, [activeConv.id]);
 
   // Date headers
   const messagesWithHeaders = useMemo(() => {
@@ -152,6 +159,14 @@ export function MessageThread({
             className="bg-bg-tertiary border border-border-primary rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted w-48 focus:outline-none focus:border-accent-primary"
           />
         </div>
+        {/* Starred messages */}
+        <button
+          onClick={() => setShowStarred(true)}
+          className="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center text-text-muted hover:text-yellow-400 hover:bg-yellow-400/10 transition-colors"
+          title={t('messages.starred.title', 'Starred messages')}
+        >
+          <Star className="w-4 h-4" />
+        </button>
         {/* Call buttons */}
         {!activeConv.is_group && (
           <CallButton
@@ -256,6 +271,16 @@ export function MessageThread({
 
         <div ref={messagesEndRef} />
       </div>
+
+      {showStarred && (
+        <StarredMessagesPanel
+          conversationId={activeConv.id}
+          currentUserId={currentUserId}
+          onClose={() => setShowStarred(false)}
+          onSelect={scrollToMessage}
+          onUnstar={(id) => onUnstar?.(id)}
+        />
+      )}
 
       {/* Scroll to bottom button */}
       {showScrollDown && (

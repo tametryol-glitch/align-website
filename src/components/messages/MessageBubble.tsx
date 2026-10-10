@@ -13,6 +13,8 @@ import { FileBubble } from '@/components/chat/FileBubble';
 import { LocationBubble } from '@/components/chat/LocationBubble';
 import { PollBubble } from '@/components/chat/PollBubble';
 import { CallBubble } from '@/components/chat/CallBubble';
+import { OnceMediaBubble } from '@/components/chat/OnceMediaBubble';
+import { isOnceMessage } from '@/lib/onceMediaService';
 import type { ChatTheme } from '@/data/chatThemes';
 import { getReactionsFromMessage, type Message } from '@/lib/messagingService';
 import { readStoredSnapshot, relationshipShareQuery, relationshipShareSubtitle } from '@/lib/relationshipShare';
@@ -204,6 +206,8 @@ export function MessageBubble({
   const { t } = useTranslation();
   const reactions = getReactionsFromMessage(msg);
   const hasReactions = Object.keys(reactions).length > 0;
+  // One-time view media carries no url — it renders as its own compact bubble.
+  const once = isOnceMessage(msg);
 
   if (msg.type === 'system') {
     return (
@@ -268,9 +272,12 @@ export function MessageBubble({
               : { backgroundColor: chatTheme.otherBubble, color: chatTheme.otherText }
           ) : undefined}
         >
+          {/* One-time view photo / voice note / video note */}
+          {once && <OnceMediaBubble message={msg} isMine={isMine} />}
+
           {/* Image message. Mobile stores the URL under metadata.image_url;
               fall back to it so mobile-sent images render on web too. */}
-          {msg.type === 'image' && (msg.metadata?.url || msg.metadata?.image_url) && (
+          {!once && msg.type === 'image' && (msg.metadata?.url || msg.metadata?.image_url) && (
             <a href={(msg.metadata.url || msg.metadata.image_url) as string} target="_blank" rel="noopener noreferrer" className="block mb-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -321,6 +328,14 @@ export function MessageBubble({
             />
           )}
 
+          {/* Video note (mobile uses metadata.video_url) */}
+          {!once && msg.type === 'video_note' && (msg.metadata?.url || msg.metadata?.video_url) && (
+            <VideoMessageBubble
+              metadata={{ url: (msg.metadata.url || msg.metadata.video_url) as string, duration: msg.metadata.duration as number, thumbnail_url: msg.metadata.thumbnail_url as string }}
+              isMine={isMine}
+            />
+          )}
+
           {/* File attachment (mobile uses metadata.file_url) */}
           {msg.type === 'file' && (msg.metadata?.url || msg.metadata?.file_url) && (
             <FileBubble
@@ -363,7 +378,7 @@ export function MessageBubble({
           )}
 
           {/* Text content */}
-          {msg.content && msg.type !== 'call' && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
+          {msg.content && !once && msg.type !== 'call' && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
             <>
               <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
               <BubbleLinkPreview text={msg.content} isMine={isMine} />
