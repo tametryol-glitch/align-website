@@ -19,6 +19,25 @@ import { useCallStore } from '@/stores/callStore';
 import { subscribeToCallSignals, sendCallSignal, type CallSignal } from '@/lib/callSignalingService';
 import { IncomingCallOverlay } from '@/components/chat/IncomingCallOverlay';
 import { createClient } from '@/lib/supabase';
+
+/** The ring signal only carries the caller's name, so look up their profile
+ *  picture and fill it in -- otherwise the call screen shows an initial. */
+async function attachCallerAvatar(callerId: string, sessionId: string) {
+  try {
+    const { data } = await createClient()
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', callerId)
+      .maybeSingle();
+    const url = data?.avatar_url as string | null | undefined;
+    if (!url) return;
+    const current = useCallStore.getState().incomingCall;
+    // Only if that same ring is still on screen.
+    if (current && current.sessionId === sessionId && !current.callerAvatar) {
+      useCallStore.getState().setIncomingCall({ ...current, callerAvatar: url });
+    }
+  } catch { /* initials remain */ }
+}
 import { startRingtone, stopCallTones } from '@/lib/callTones';
 
 // A ring older than this has been answered, missed or timed out (callers give
@@ -53,6 +72,7 @@ export function GlobalCallListener() {
             sessionId: signal.sessionId,
             callerId: signal.callerId,
           });
+          void attachCallerAvatar(signal.callerId, signal.sessionId);
           break;
 
         case 'call-cancelled': {
@@ -136,6 +156,7 @@ export function GlobalCallListener() {
           sessionId: md.session_id,
           callerId: live.sender_id,
         });
+        void attachCallerAvatar(live.sender_id, md.session_id);
       } catch { /* ringing falls back to the broadcast alone */ }
     };
 
