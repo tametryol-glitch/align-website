@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
-  ArrowLeft, Search, ChevronDown, Settings2, Star,
+  ArrowLeft, Search, ChevronDown, Settings2, Star, Images,
 } from 'lucide-react';
 import { CallButton } from '@/components/chat/CallButton';
 import { StarredMessagesPanel } from './StarredMessagesPanel';
+import { SharedMediaPanel } from './SharedMediaPanel';
 import { MessageBubble } from './MessageBubble';
 import type { ChatTheme } from '@/data/chatThemes';
 import type { Message, Conversation } from '@/lib/messagingService';
@@ -68,9 +69,10 @@ export function MessageThread({
 }: MessageThreadProps) {
   const { t } = useTranslation();
   const [showStarred, setShowStarred] = useState(false);
+  const [showShared, setShowShared] = useState(false);
 
   // Close the panel when switching to another chat.
-  useEffect(() => { setShowStarred(false); }, [activeConv.id]);
+  useEffect(() => { setShowStarred(false); setShowShared(false); }, [activeConv.id]);
 
   // Date headers
   const messagesWithHeaders = useMemo(() => {
@@ -159,6 +161,14 @@ export function MessageThread({
             className="bg-bg-tertiary border border-border-primary rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted w-48 focus:outline-none focus:border-accent-primary"
           />
         </div>
+        {/* Shared media, links and docs */}
+        <button
+          onClick={() => setShowShared(true)}
+          className="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center text-text-muted hover:text-accent-primary hover:bg-accent-primary/15 transition-colors"
+          title={t('messages.shared.title', 'Media, links and docs')}
+        >
+          <Images className="w-4 h-4" />
+        </button>
         {/* Starred messages */}
         <button
           onClick={() => setShowStarred(true)}
@@ -271,6 +281,13 @@ export function MessageThread({
 
         <div ref={messagesEndRef} />
       </div>
+
+      {showShared && (
+        <SharedMediaPanel
+          conversationId={activeConv.id}
+          onClose={() => setShowShared(false)}
+        />
+      )}
 
       {showStarred && (
         <StarredMessagesPanel

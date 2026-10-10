@@ -937,6 +937,66 @@ export async function getStarredMessages(conversationId: string): Promise<Messag
   }
 }
 
+// ── Shared media / links / docs for one chat ────────────────────────
+
+export type SharedKind = 'media' | 'links' | 'docs';
+
+/** Every http(s) URL in a piece of text, trailing punctuation trimmed. */
+export function extractUrls(text: string | null | undefined): string[] {
+  if (!text) return [];
+  const found = text.match(/https?:\/\/[^\s<>"']+/gi) || [];
+  return found.map((u) => u.replace(/[).,;:!?]+$/, ''));
+}
+
+/** One page of shared items in a chat, newest first. Pass the last item's
+ *  created_at as `before` to load the next page. */
+export async function getSharedMessages(
+  conversationId: string,
+  kind: SharedKind,
+  before?: string,
+  limit = 60,
+): Promise<{ items: Message[]; hasMore: boolean }> {
+  try {
+    const supabase = createClient();
+    let q = supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:profiles!messages_sender_id_fkey(display_name, avatar_url)
+      `)
+      .eq('conversation_id', conversationId)
+      .eq('is_deleted', false);
+    if (kind === 'media') q = q.in('type', ['image', 'video']);
+    else if (kind === 'docs') q = q.eq('type', 'file');
+    else q = q.eq('type', 'text').ilike('content', '%http%');
+    if (before) q = q.lt('created_at', before);
+
+    const { data, error } = await q.order('created_at', { ascending: false }).limit(limit);
+    if (error || !data) return { items: [], hasMore: false };
+
+    const items = (data as any[])
+      .map((m) => ({
+        ...m,
+        sender_name: m.sender?.display_name || 'Unknown',
+        sender_avatar: m.sender?.avatar_url || null,
+      }) as Message)
+      .filter((m) => {
+        const md = m.metadata || {};
+        if (kind === 'media') {
+          // Leave out one-time-view media, stickers and GIFs.
+          if (md.once === true) return false;
+          if (md.media_kind === 'sticker' || md.media_kind === 'gif') return false;
+          return !!(md.url || md.image_url || md.video_url);
+        }
+        if (kind === 'docs') return !!(md.url || md.file_url);
+        return extractUrls(m.content).length > 0;
+      });
+    return { items, hasMore: data.length >= limit };
+  } catch {
+    return { items: [], hasMore: false };
+  }
+}
+
 // ── Set Member Role ─────────────────────────────────────────────────
 
 export async function setMemberRole(
