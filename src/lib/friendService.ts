@@ -7,6 +7,8 @@ import { sanitizeSearchInput } from './sanitize';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { notifyPushMoment } from '@/lib/pushMoments';
+import { fetchPresence } from '@/lib/presenceService';
+import { isFreshOnline } from '@/lib/presence';
 
 // ── Types ──
 
@@ -116,9 +118,14 @@ export async function getFriends(): Promise<FriendProfile[]> {
 
     if (error || !data) return [];
 
+    const presence = await fetchPresence(
+      data.map((row: any) => (row.user_id === myId ? row.friend_id : row.user_id)),
+    );
+
     return data.map((row: any) => {
       const isUser = row.user_id === myId;
       const friend = isUser ? row.profiles_friend : row.profiles_user;
+      const live = presence[friend?.id || (isUser ? row.friend_id : row.user_id)];
       return {
         friend_id: friend?.id || (isUser ? row.friend_id : row.user_id),
         display_name: friend?.display_name || 'Unknown',
@@ -127,8 +134,10 @@ export async function getFriends(): Promise<FriendProfile[]> {
         sun_sign: friend?.sun_sign || null,
         moon_sign: friend?.moon_sign || null,
         rising_sign: friend?.rising_sign || null,
-        is_online: friend?.is_online || false,
-        last_seen: friend?.last_seen || '',
+        // Server-resolved presence (fresh heartbeat + their privacy setting). If the RPC is not
+        // available yet, fall back to the raw columns with the same freshness rule.
+        is_online: live ? live.isOnline : isFreshOnline(friend?.is_online, friend?.last_seen),
+        last_seen: live ? (live.hidden ? '' : live.lastSeen || '') : friend?.last_seen || '',
         friends_since: row.created_at,
         friendship_id: row.id,
       };

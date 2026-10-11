@@ -12,6 +12,9 @@ import { CallButton } from '@/components/chat/CallButton';
 import { StarredMessagesPanel } from './StarredMessagesPanel';
 import { SharedMediaPanel } from './SharedMediaPanel';
 import { MessageBubble } from './MessageBubble';
+import { useMessagesStore } from '@/stores/messagesStore';
+import { fetchPresence } from '@/lib/presenceService';
+import { formatLastSeen, type PresenceInfo } from '@/lib/presence';
 import { ChatPet } from '@/components/chat/ChatPet';
 import type { ChatTheme } from '@/data/chatThemes';
 import type { Message, Conversation } from '@/lib/messagingService';
@@ -106,6 +109,28 @@ export function MessageThread({
     }
   }
 
+  // ── Real online / last seen for the other person (DMs only) ──
+  const otherId = !activeConv.is_group ? activeConv.other_user_id : '';
+  const inChat = useMessagesStore((st) => !!otherId && st.onlineUserIds.includes(otherId));
+  const [srvPresence, setSrvPresence] = useState<PresenceInfo | null>(null);
+  useEffect(() => {
+    if (!otherId) { setSrvPresence(null); return; }
+    let alive = true;
+    const load = async () => {
+      const map = await fetchPresence([otherId]);
+      if (alive && map[otherId]) setSrvPresence(map[otherId]);
+    };
+    load();
+    const timer = setInterval(load, 20000);
+    const onVis = () => { if (document.visibilityState === 'visible') load(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => { alive = false; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); };
+  }, [otherId, inChat]);
+  const presenceHidden = !!srvPresence?.hidden;
+  const otherOnline = !activeConv.is_group && !presenceHidden &&
+    (inChat || (srvPresence ? srvPresence.isOnline : !!activeConv.other_user_online));
+  const otherLastSeen = presenceHidden ? null : (srvPresence?.lastSeen ?? activeConv.other_last_seen ?? null);
+
   return (
     <>
       {/* Chat header */}
@@ -132,7 +157,7 @@ export function MessageThread({
               size="sm"
             />
           )}
-          {activeConv.other_user_online && (
+          {otherOnline && (
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-bg-card" />
           )}
         </div>
@@ -146,8 +171,10 @@ export function MessageThread({
           <p className="text-[10px] text-text-muted">
             {isOtherTyping ? (
               <span className="text-accent-primary">{t('messages.typing', 'typing...')}</span>
-            ) : activeConv.other_user_online ? (
+            ) : otherOnline ? (
               <span className="text-green-400">{t('messages.online', 'online')}</span>
+            ) : otherLastSeen ? (
+              <span>{formatLastSeen(otherLastSeen)}</span>
             ) : null}
           </p>
         </div>

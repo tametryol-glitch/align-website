@@ -219,7 +219,16 @@ export default function MessagesPage() {
     const sub = subscribeToConversations(() => {
       loadConversations();
     });
-    return () => sub.unsubscribe();
+    // Online dots come from the server's heartbeat view; refresh quietly while the tab is visible.
+    const dotTimer = setInterval(async () => {
+      if (document.visibilityState !== 'visible') return;
+      const convos = await getConversations();
+      store.setConversations(convos);
+    }, 45000);
+    return () => {
+      clearInterval(dotTimer);
+      sub.unsubscribe();
+    };
   }, [user]);
 
   // ── Load messages when active conversation changes ──

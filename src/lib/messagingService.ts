@@ -54,6 +54,8 @@ export interface Conversation {
   other_user_name: string;
   other_user_avatar: string | null;
   other_user_online: boolean;
+  /** Last heartbeat of the other person; null when they hide their online status. */
+  other_last_seen?: string | null;
   other_last_read_at?: string | null;
   unread_count: number;
   // Group fields
@@ -136,6 +138,7 @@ export async function getConversations(): Promise<Conversation[]> {
       other_user_name: row.is_group ? (row.group_name || 'Group') : (row.other_display_name || 'Unknown'),
       other_user_avatar: row.is_group ? (row.group_avatar_url || null) : (row.other_avatar_url || null),
       other_user_online: row.is_group ? false : (row.other_is_online || false),
+      other_last_seen: row.is_group ? null : (row.other_last_seen || null),
       other_last_read_at: row.other_last_read_at || null,
       unread_count: Number(row.unread_count) || 0,
       is_group: row.is_group || false,
@@ -622,8 +625,19 @@ export function subscribeToPresence(
     console.warn('[Presence] Channel setup failed:', err);
   }
 
+  // A hidden tab can keep its socket alive. Leave the room when the tab is hidden so the other
+  // person stops seeing us as "here", and rejoin when it is visible again.
+  const onVisibility = () => {
+    try {
+      if (document.visibilityState === 'hidden') channel.untrack();
+      else channel.track({ user_id: getMyId(), online_at: new Date().toISOString() });
+    } catch { /* non-critical */ }
+  };
+  if (typeof document !== 'undefined') document.addEventListener('visibilitychange', onVisibility);
+
   return {
     unsubscribe: () => {
+      if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisibility);
       try { supabase.removeChannel(channel); } catch { /* already removed */ }
     },
   };

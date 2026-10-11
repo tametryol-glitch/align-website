@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/layout/AuthProvider';
 import { GlobalCallListener } from '@/components/GlobalCallListener';
+import { PresenceBeacon } from '@/components/layout/PresenceBeacon';
 import { ChatBubbleHead } from '@/components/chat/ChatBubbleHead';
 import I18nProvider from '@/i18n/I18nProvider';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <AuthProvider>
             <GlobalCallListener />
+            <PresenceBeacon />
             <ChatBubbleHead />
             <BadgeEarnedPopup />
             <FounderIntroModal />
