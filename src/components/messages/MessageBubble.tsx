@@ -380,7 +380,13 @@ export function MessageBubble({
               metadata={msg.metadata || {}}
               createdAt={msg.created_at}
               isMine={isMine}
-              onCallBack={onCallBack ? () => onCallBack(msg.metadata?.call_type === 'video' ? 'video' : 'voice') : undefined}
+              onCallBack={onCallBack ? () => {
+                const kind = msg.metadata?.call_type === 'video' ? 'video' : 'voice';
+                const question = isMine
+                  ? `Call again? This will start a ${kind} call.`
+                  : `Call ${msg.sender_name || 'them'} back? This will start a ${kind} call.`;
+                if (window.confirm(question)) onCallBack(kind);
+              } : undefined}
             />
           )}
 
