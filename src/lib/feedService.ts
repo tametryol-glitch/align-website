@@ -23,6 +23,9 @@ export interface FeedComment {
   parentCommentId?: string | null;
   replyCount?: number;
   isEdited?: boolean;
+  /** A GIF / sticker / photo posted as its own image (the app stores comments this way). */
+  imageUrl?: string;
+  mediaKind?: string;
 }
 
 /** A user tagged in a post (e.g. the two people in a cosmic_match card). */
@@ -174,7 +177,7 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
   // Batch-fetch reactions and comments
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id, image_url, media_kind').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -228,6 +231,8 @@ export async function getFeed(userId: string, before?: string): Promise<FeedPost
       text: c.text,
       createdAt: c.created_at,
       parentCommentId: c.parent_comment_id || null,
+      imageUrl: c.image_url || undefined,
+      mediaKind: c.media_kind || undefined,
     };
     // Replies live under their parent in the sheet — the card preview
     // only shows top-level comments, but the count covers the thread.
@@ -321,7 +326,7 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
 
   const [reactionsRes, commentsRes] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji, user_id').in('post_id', postIds),
-    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
+    supabase.from('post_comments').select('id, post_id, user_id, text, created_at, parent_comment_id, image_url, media_kind').in('post_id', postIds).eq('is_deleted', false).order('created_at', { ascending: true }),
   ]);
 
   const reactionsMap = new Map<string, PostReaction[]>();
@@ -356,6 +361,8 @@ export async function getUserPosts(targetUserId: string, currentUserId: string):
       text: c.text,
       createdAt: c.created_at,
       parentCommentId: c.parent_comment_id || null,
+      imageUrl: c.image_url || undefined,
+      mediaKind: c.media_kind || undefined,
     };
     if (!c.parent_comment_id) {
       if (!commentsMap.has(c.post_id)) commentsMap.set(c.post_id, []);
@@ -672,7 +679,7 @@ export async function addComment(
   } as FeedComment;
 }
 
-const COMMENT_COLUMNS = 'id, user_id, text, created_at, parent_comment_id, reply_count, is_edited';
+const COMMENT_COLUMNS = 'id, user_id, text, created_at, parent_comment_id, reply_count, is_edited, image_url, media_kind';
 
 async function hydrateComments(rows: any[]): Promise<FeedComment[]> {
   if (!rows.length) return [];
@@ -698,6 +705,8 @@ async function hydrateComments(rows: any[]): Promise<FeedComment[]> {
       parentCommentId: c.parent_comment_id || null,
       replyCount: c.reply_count || 0,
       isEdited: !!c.is_edited,
+      imageUrl: c.image_url || undefined,
+      mediaKind: c.media_kind || undefined,
     };
   });
 }

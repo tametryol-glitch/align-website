@@ -735,7 +735,9 @@ export function isGifOrStickerUrl(text: string): boolean {
   const trimmed = text.trim();
   return (
     trimmed.startsWith('https://media') && trimmed.includes('giphy.com') ||
-    /^https?:\/\/\S+\.gif(\?.*)?$/i.test(trimmed)
+    /^https?:\/\/\S+\.gif(\?.*)?$/i.test(trimmed) ||
+    // A sticker the person made themselves (shared user-stickers bucket).
+    /^https?:\/\/\S+\/storage\/v1\/object\/public\/user-stickers\/\S+$/i.test(trimmed)
   );
 }
 
@@ -1327,8 +1329,8 @@ export function FeedCard({
               </Link>
               <div className="flex-1 min-w-0">
                 <Link href={`/user/${c.userId}`} className="font-semibold text-text-primary mr-1.5 hover:underline">{c.userName}</Link>
-                {isGifOrStickerUrl(c.text) ? (
-                  <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[180px] max-h-[120px] rounded-lg object-contain" />
+                {(c.imageUrl || isGifOrStickerUrl(c.text)) ? (
+                  <img src={c.imageUrl || c.text.trim()} alt={c.mediaKind === 'sticker' ? 'Sticker' : 'GIF'} className="mt-1 max-w-[180px] max-h-[120px] rounded-lg object-contain" />
                 ) : (
                   <span className="text-text-secondary">{renderRichText(c.text)}</span>
                 )}

@@ -310,8 +310,8 @@ export function CommentSheet({
                 </button>
               </div>
             </div>
-          ) : isGifOrStickerUrl(c.text) ? (
-            <img src={c.text.trim()} alt="GIF" className="mt-1 max-w-[220px] max-h-[160px] rounded-lg object-contain" />
+          ) : (c.imageUrl || isGifOrStickerUrl(c.text)) ? (
+            <img src={c.imageUrl || c.text.trim()} alt={c.mediaKind === 'sticker' ? 'Sticker' : 'GIF'} className="mt-1 max-w-[220px] max-h-[160px] rounded-lg object-contain" />
           ) : (
             <p className="text-sm text-text-secondary mt-0.5 whitespace-pre-wrap break-words">{renderRichText(c.text)}</p>
           )}
