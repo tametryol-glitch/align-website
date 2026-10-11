@@ -1,12 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Send, X, Image as ImageIcon, Smile, Video,
+  Send, X, Image as ImageIcon, Smile, Sticker, Video,
 } from 'lucide-react';
 import { GifStickerPicker } from '@/components/chat/GifStickerPicker';
 import { VoiceRecorder } from '@/components/chat/VoiceRecorder';
+import { EmojiPicker } from './EmojiPicker';
 import { AttachmentMenu } from '@/components/chat/AttachmentMenu';
 import type { Message } from '@/lib/messagingService';
 
@@ -54,6 +55,24 @@ export function MessageComposer({
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileUploadRef = useRef<HTMLInputElement>(null);
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  // Put the emoji where the cursor is (not just at the end), then restore focus.
+  function insertEmoji(emoji: string) {
+    const el = inputRef.current;
+    const current = editingMessage ? editText : newMessage;
+    const start = el?.selectionStart ?? current.length;
+    const end = el?.selectionEnd ?? current.length;
+    const next = current.slice(0, start) + emoji + current.slice(end);
+    if (editingMessage) onEditTextChange(next);
+    else onNewMessageChange(next);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus();
+      const pos = start + emoji.length;
+      try { el.setSelectionRange(pos, pos); } catch { /* not supported on this input */ }
+    });
+  }
 
   return (
     <>
@@ -74,6 +93,13 @@ export function MessageComposer({
           >
             <X className="w-4 h-4" />
           </button>
+        </div>
+      )}
+
+      {/* Emoji picker */}
+      {showEmoji && (
+        <div className="relative">
+          <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
         </div>
       )}
 
@@ -162,6 +188,17 @@ export function MessageComposer({
           1
         </button>
 
+        {/* Emoji picker toggle */}
+        <button
+          type="button"
+          onClick={() => setShowEmoji((v) => !v)}
+          className={`p-2 transition-colors ${showEmoji ? 'text-accent-primary' : 'text-text-muted hover:text-text-primary'}`}
+          title={t('messages.emoji.title', 'Emoji')}
+          aria-label="Emoji"
+        >
+          <Smile className="w-4 h-4" />
+        </button>
+
         {/* GIF picker toggle */}
         <button
           type="button"
@@ -169,7 +206,7 @@ export function MessageComposer({
           className={`p-2 transition-colors ${showGifPicker ? 'text-accent-primary' : 'text-text-muted hover:text-text-primary'}`}
           title="GIFs & Stickers"
         >
-          <Smile className="w-4 h-4" />
+          <Sticker className="w-4 h-4" />
         </button>
 
         {/* Text input */}
