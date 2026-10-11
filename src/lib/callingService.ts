@@ -174,6 +174,11 @@ export function createCallClient(): CallClient {
   // Callback holders
   let onJoinedCallback: ((uid: number) => void) | null = null;
   let onLeftCallback: ((uid: number) => void) | null = null;
+  // Who is on the other end. The call only ends when EVERYONE else has left, and
+  // an unexplained drop gets a grace period (a network blip is not a hang-up).
+  const remoteUids = new Set<number>();
+  let leaveTimer: ReturnType<typeof setTimeout> | null = null;
+  const LEAVE_GRACE_MS = 30_000;
   let onMediaErrorCallback: ((kind: 'mic' | 'camera', message: string) => void) | null = null;
   let onRemoteVideoCallback: ((track: any | null) => void) | null = null;
 
@@ -187,6 +192,9 @@ export function createCallClient(): CallClient {
 
         // Register remote user event handlers
         agoraClient.on('user-published', async (user: any, mediaType: string) => {
+          // Someone is (back) on the line: cancel any pending "they left" end.
+          remoteUids.add(user.uid);
+          if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
           try {
             await agoraClient.subscribe(user, mediaType);
             if (mediaType === 'audio') {
@@ -226,14 +234,22 @@ export function createCallClient(): CallClient {
           }
         });
 
-        agoraClient.on('user-left', (user: any) => {
+        agoraClient.on('user-left', (user: any, reason?: string) => {
+          remoteUids.delete(user.uid);
           remoteVideoTrack = null;
           if (onRemoteVideoCallback) {
             onRemoteVideoCallback(null);
           }
-          if (onLeftCallback) {
-            onLeftCallback(user.uid);
-          }
+          if (remoteUids.size > 0) return; // others are still on the call
+          // 'Quit' = they hung up on purpose: end now. Anything else (network
+          // drop, server timeout) may be a brief blip: wait before ending.
+          const wait = reason === 'Quit' ? 0 : LEAVE_GRACE_MS;
+          if (leaveTimer) clearTimeout(leaveTimer);
+          leaveTimer = setTimeout(() => {
+            leaveTimer = null;
+            if (remoteUids.size > 0) return;
+            if (onLeftCallback) onLeftCallback(user.uid);
+          }, wait);
         });
 
         // Join the channel
@@ -283,6 +299,9 @@ export function createCallClient(): CallClient {
         }
 
         remoteVideoTrack = null;
+        // We are ending the call ourselves: no pending "they left" timer.
+        if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
+        remoteUids.clear();
 
         if (agoraClient && joined) {
           try {
