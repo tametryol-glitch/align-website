@@ -10,6 +10,7 @@ import {
   getTrendingStickers,
   type GiphyItem,
 } from '@/lib/giphyService';
+import { MyStickers } from './MyStickers';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ interface GifStickerPickerProps {
   onSelect: (url: string, type: 'gif' | 'sticker') => void;
 }
 
-type TabKey = 'gifs' | 'stickers';
+type TabKey = 'gifs' | 'stickers' | 'mine';
 
 const LIMIT = 25;
 
@@ -41,6 +42,7 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
   // ── Fetch items (initial or search) ──
 
   const fetchItems = useCallback(async (tab: TabKey, search: string, newOffset: number) => {
+    if (tab === 'mine') return; // the person's own stickers load themselves
     const isInitial = newOffset === 0;
     if (isInitial) setLoading(true);
     else setLoadingMore(true);
@@ -76,7 +78,7 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
   // ── Load trending on open / tab change ──
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || activeTab === 'mine') return;
     setItems([]);
     setOffset(0);
     setHasMore(true);
@@ -86,7 +88,7 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
   // ── Debounced search ──
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || activeTab === 'mine') return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
@@ -158,7 +160,7 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
     >
       {/* ── Tabs ── */}
       <div className="flex gap-1 bg-bg-tertiary rounded-xl p-1 m-3 mb-0">
-        {(['gifs', 'stickers'] as TabKey[]).map(tab => (
+        {(['gifs', 'stickers', 'mine'] as TabKey[]).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -168,12 +170,13 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
-            {tab === 'gifs' ? 'GIFs' : 'Stickers'}
+            {tab === 'gifs' ? 'GIFs' : tab === 'stickers' ? 'Stickers' : 'Mine'}
           </button>
         ))}
       </div>
 
-      {/* ── Search ── */}
+      {/* ── Search (Giphy tabs only) ── */}
+      {activeTab !== 'mine' && (
       <div className="p-3 pb-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -195,6 +198,7 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
           )}
         </div>
       </div>
+      )}
 
       {/* ── Grid ── */}
       <div
@@ -203,7 +207,11 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
         className="overflow-y-auto px-3 pb-2"
         style={{ maxHeight: '270px' }}
       >
-        {loading ? (
+        {activeTab === 'mine' ? (
+          <div className="pt-3">
+            <MyStickers onPick={(url) => onSelect(url, 'sticker')} />
+          </div>
+        ) : loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 text-accent-primary animate-spin" />
           </div>
@@ -240,9 +248,11 @@ export function GifStickerPicker({ isOpen, onClose, onSelect }: GifStickerPicker
       </div>
 
       {/* ── Giphy attribution ── */}
-      <div className="px-3 py-2 border-t border-border-primary">
-        <p className="text-[10px] text-text-muted text-center">Powered by GIPHY</p>
-      </div>
+      {activeTab !== 'mine' && (
+        <div className="px-3 py-2 border-t border-border-primary">
+          <p className="text-[10px] text-text-muted text-center">Powered by GIPHY</p>
+        </div>
+      )}
     </div>
   );
 }
