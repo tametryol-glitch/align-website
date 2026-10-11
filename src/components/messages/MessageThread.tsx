@@ -12,6 +12,7 @@ import { CallButton } from '@/components/chat/CallButton';
 import { StarredMessagesPanel } from './StarredMessagesPanel';
 import { SharedMediaPanel } from './SharedMediaPanel';
 import { MessageBubble } from './MessageBubble';
+import { ChatPet } from '@/components/chat/ChatPet';
 import type { ChatTheme } from '@/data/chatThemes';
 import type { Message, Conversation } from '@/lib/messagingService';
 
@@ -198,6 +199,17 @@ export function MessageThread({
           </button>
         )}
       </div>
+
+      {/* Shared chat pet — 1:1 conversations only, same pet as the mobile app */}
+      {!activeConv.is_group && activeConv.other_user_id && currentUserId && (
+        <ChatPet
+          key={`${activeConv.id}:${activeConv.other_user_id}`}
+          conversationId={activeConv.id}
+          myId={currentUserId}
+          otherId={activeConv.other_user_id}
+          otherName={activeConv.other_user_name}
+        />
+      )}
 
       {/* Messages area */}
       <div

@@ -1,0 +1,163 @@
+{
+  "traits": [
+    {
+      "a": "c7aa9d8f-4bb1-423b-89a4-6ac1412cad02",
+      "b": "dcc444af-e884-431f-9d3a-7fad7264ae1d",
+      "traits": {
+        "hue": 273,
+        "hue2": 24,
+        "ear": 1,
+        "pat": 3,
+        "eye": 2,
+        "tail": 0,
+        "rare": false,
+        "nameSeed": 860968
+      }
+    },
+    {
+      "a": "75b45698-2baa-4328-9f77-014ae23793e3",
+      "b": "c7aa9d8f-4bb1-423b-89a4-6ac1412cad02",
+      "traits": {
+        "hue": 125,
+        "hue2": 218,
+        "ear": 1,
+        "pat": 0,
+        "eye": 0,
+        "tail": 0,
+        "rare": true,
+        "nameSeed": 973081
+      }
+    },
+    {
+      "a": "abf329d6-886c-435a-8a45-13ddac37c10c",
+      "b": "c7aa9d8f-4bb1-423b-89a4-6ac1412cad02",
+      "traits": {
+        "hue": 317,
+        "hue2": 218,
+        "ear": 2,
+        "pat": 1,
+        "eye": 0,
+        "tail": 0,
+        "rare": false,
+        "nameSeed": 262187
+      }
+    },
+    {
+      "a": "a",
+      "b": "b",
+      "traits": {
+        "hue": 347,
+        "hue2": 218,
+        "ear": 3,
+        "pat": 0,
+        "eye": 2,
+        "tail": 0,
+        "rare": false,
+        "nameSeed": 164142
+      }
+    },
+    {
+      "a": "user-1",
+      "b": "user-2",
+      "traits": {
+        "hue": 131,
+        "hue2": 40,
+        "ear": 3,
+        "pat": 1,
+        "eye": 0,
+        "tail": 0,
+        "rare": false,
+        "nameSeed": 655100
+      }
+    },
+    {
+      "a": "00000000-0000-0000-0000-000000000001",
+      "b": "ffffffff-ffff-ffff-ffff-fffffffffffe",
+      "traits": {
+        "hue": 77,
+        "hue2": 160,
+        "ear": 2,
+        "pat": 1,
+        "eye": 1,
+        "tail": 1,
+        "rare": false,
+        "nameSeed": 840348
+      }
+    }
+  ],
+  "stats": [
+    {
+      "row": {
+        "fed": 70,
+        "joy": 60,
+        "stats_at": "2026-10-10T00:00:00Z",
+        "sick_until": null
+      },
+      "now": "2026-10-10T10:00:00.000Z",
+      "out": {
+        "fed": 45,
+        "joy": 35
+      }
+    },
+    {
+      "row": {
+        "fed": 30,
+        "joy": 80,
+        "stats_at": "2026-10-10T00:00:00Z",
+        "sick_until": null
+      },
+      "now": "2026-10-10T10:00:00.000Z",
+      "out": {
+        "fed": 5,
+        "joy": 43
+      }
+    },
+    {
+      "row": {
+        "fed": 100,
+        "joy": 80,
+        "stats_at": "2026-10-10T00:00:00Z",
+        "sick_until": "2026-10-10T02:00:00Z"
+      },
+      "now": "2026-10-10T10:00:00.000Z",
+      "out": {
+        "fed": 75,
+        "joy": 52
+      }
+    }
+  ],
+  "stages": [
+    {
+      "xp": 0,
+      "stage": 0
+    },
+    {
+      "xp": 59,
+      "stage": 0
+    },
+    {
+      "xp": 60,
+      "stage": 1
+    },
+    {
+      "xp": 299,
+      "stage": 1
+    },
+    {
+      "xp": 300,
+      "stage": 2
+    },
+    {
+      "xp": 799,
+      "stage": 2
+    },
+    {
+      "xp": 800,
+      "stage": 3
+    },
+    {
+      "xp": 5000,
+      "stage": 3
+    }
+  ]
+}
