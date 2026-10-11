@@ -195,12 +195,14 @@ export interface MessageBubbleProps {
   onReply: (msg: Message) => void;
   onContextMenu: (msg: Message, x: number, y: number) => void;
   onPollVote: (messageId: string, optionIndex: number) => void;
+  /** Starts a call to the other person (used by the call-back button on missed calls). */
+  onCallBack?: (type: 'voice' | 'video') => void;
   onScrollToMessage: (messageId: string) => void;
 }
 
 export function MessageBubble({
   message: msg, isMine, isGroup, read, otherReadAt, chatTheme,
-  currentUserId, onReaction, onOpenReactionPicker, onReply, onContextMenu, onPollVote,
+  currentUserId, onReaction, onOpenReactionPicker, onReply, onContextMenu, onPollVote, onCallBack,
   onScrollToMessage,
 }: MessageBubbleProps) {
   const { t } = useTranslation();
@@ -374,7 +376,12 @@ export function MessageBubble({
 
           {/* Call (voice / video) */}
           {msg.type === 'call' && (
-            <CallBubble metadata={msg.metadata || {}} createdAt={msg.created_at} isMine={isMine} />
+            <CallBubble
+              metadata={msg.metadata || {}}
+              createdAt={msg.created_at}
+              isMine={isMine}
+              onCallBack={onCallBack ? () => onCallBack(msg.metadata?.call_type === 'video' ? 'video' : 'voice') : undefined}
+            />
           )}
 
           {/* Text content */}

@@ -8,6 +8,8 @@ interface CallBubbleProps {
   metadata: Record<string, any>;
   createdAt: string;
   isMine: boolean;
+  /** Shows a "Call back" button on missed / declined / unanswered calls. */
+  onCallBack?: () => void;
 }
 
 // A ring nobody finished (the caller's device died mid-ring) never gets its
@@ -22,7 +24,7 @@ function fmtDuration(totalSeconds: number): string {
   return m > 0 ? `${m}m ${r}s` : `${r}s`;
 }
 
-export function CallBubble({ metadata, createdAt, isMine }: CallBubbleProps) {
+export function CallBubble({ metadata, createdAt, isMine, onCallBack }: CallBubbleProps) {
   const video = metadata?.call_type === 'video';
   let status: string = metadata?.status || 'ringing';
   if (status === 'ringing' && Date.now() - new Date(createdAt).getTime() > RING_TIMEOUT_MS) {
@@ -52,6 +54,7 @@ export function CallBubble({ metadata, createdAt, isMine }: CallBubbleProps) {
       title = isMine ? `No answer (${noun})` : `Missed ${noun}`;
   }
   const missedForMe = !isMine && (status === 'missed' || status === 'declined');
+  const canCallBack = !!onCallBack && (status === 'missed' || status === 'declined');
 
   return (
     <div className="flex items-center gap-2.5 min-w-[170px] py-0.5">
@@ -59,6 +62,15 @@ export function CallBubble({ metadata, createdAt, isMine }: CallBubbleProps) {
       <div className="min-w-0">
         <p className={`text-sm font-medium truncate ${missedForMe ? 'text-red-400' : ''}`}>{title}</p>
         {detail && <p className="text-[11px] opacity-70">{detail}</p>}
+        {canCallBack && (
+          <button
+            type="button"
+            onClick={onCallBack}
+            className="mt-1 text-[11px] font-semibold underline underline-offset-2 hover:opacity-80"
+          >
+            {isMine ? 'Call again' : 'Call back'}
+          </button>
+        )}
       </div>
     </div>
   );

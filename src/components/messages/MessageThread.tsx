@@ -254,6 +254,7 @@ export function MessageThread({
                   onReply={onReply}
                   onContextMenu={onContextMenu}
                   onPollVote={onPollVote}
+                  onCallBack={activeConv.is_group || callState !== 'idle' ? undefined : onCallStart}
                   onScrollToMessage={scrollToMessage}
                 />
               );
