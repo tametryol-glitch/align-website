@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -419,7 +420,7 @@ export default function FragmentsPage() {
                             <img src={frag.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                           ) : (
                             <span className="text-lg font-bold text-accent-primary">
-                              {(frag.display_name || '?')[0].toUpperCase()}
+                              {getInitial(frag.display_name)}
                             </span>
                           )}
                         </div>
@@ -557,7 +558,7 @@ export default function FragmentsPage() {
                           <img src={sr.avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
                         ) : (
                           <span className="text-lg font-bold text-accent-primary">
-                            {(sr.displayName || '?')[0].toUpperCase()}
+                            {getInitial(sr.displayName)}
                           </span>
                         )}
                       </div>
@@ -753,7 +754,7 @@ function FriendPickerModal({
                     <img src={friend.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                   ) : (
                     <span className="text-sm font-bold text-accent-primary">
-                      {friend.display_name[0].toUpperCase()}
+                      {getInitial(friend.display_name)}
                     </span>
                   )}
                 </div>

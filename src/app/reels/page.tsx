@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
@@ -246,7 +247,7 @@ function ReelItem({
               />
             ) : (
               <div className="w-full h-full bg-[#9B6FF6] flex items-center justify-center text-white font-bold text-sm">
-                {(reel.creator_name || 'U').charAt(0).toUpperCase()}
+                {getInitial(reel.creator_name, 'U')}
               </div>
             )}
           </Link>
@@ -537,7 +538,7 @@ function CommentPanel({
                     />
                   ) : (
                     <div className="w-full h-full bg-[#9B6FF6] flex items-center justify-center text-white text-xs font-bold">
-                      {(comment.user_name || '?').charAt(0).toUpperCase()}
+                      {getInitial(comment.user_name)}
                     </div>
                   )}
                 </Link>

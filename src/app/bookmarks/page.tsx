@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
@@ -114,7 +115,7 @@ export default function BookmarksPage() {
                           <Image src={b.post.profile.avatar_url} alt="User avatar" width={28} height={28} className="w-full h-full rounded-full object-cover" unoptimized />
                         ) : (
                           <span className="text-[10px] font-bold text-accent-primary">
-                            {(b.post.profile?.display_name || '?')[0].toUpperCase()}
+                            {getInitial(b.post.profile?.display_name)}
                           </span>
                         )}
                       </div>

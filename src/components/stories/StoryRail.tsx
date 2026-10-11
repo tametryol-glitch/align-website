@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 // ═══════════════════════════════════════════════════════════════════
 // Stories rail — top of the feed. "Your story" first, then authors with
 // something unseen (gradient ring), then fully-seen authors (muted ring).
@@ -24,7 +25,7 @@ function BubbleAvatar({ url, name }: { url: string | null; name: string | null }
     <img src={url} alt="" className="w-full h-full rounded-full object-cover" />
   ) : (
     <div className="w-full h-full rounded-full bg-accent-primary/30 flex items-center justify-center text-sm font-semibold text-text-primary">
-      {(name || '?').charAt(0).toUpperCase()}
+      {getInitial(name)}
     </div>
   );
 }
@@ -171,7 +172,7 @@ export function StoryRail() {
                     <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-accent-primary/30 flex items-center justify-center text-2xl font-semibold text-text-primary">
-                      {(profile?.display_name || '?').charAt(0).toUpperCase()}
+                      {getInitial(profile?.display_name)}
                     </div>
                   )}
                 </div>

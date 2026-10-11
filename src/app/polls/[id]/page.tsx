@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
@@ -237,7 +238,7 @@ export default function PollDetailPage() {
             </Link>
           ) : !poll.isAnonymous ? (
             <Link href={`/user/${poll.authorId}`} className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-sm font-bold text-white cursor-pointer">
-              {poll.authorName.charAt(0).toUpperCase()}
+              {getInitial(poll.authorName)}
             </Link>
           ) : (
             <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center text-lg">

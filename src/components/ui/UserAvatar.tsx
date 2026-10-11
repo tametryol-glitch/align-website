@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +23,7 @@ interface UserAvatarProps {
 
 export function UserAvatar({ avatarUrl, displayName, size = 'md', className }: UserAvatarProps) {
   const { container, text, px } = SIZE_MAP[size];
-  const initial = (displayName || '?')[0].toUpperCase();
+  const initial = getInitial(displayName);
 
   return (
     <div className={cn('rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 overflow-hidden', container, className)}>

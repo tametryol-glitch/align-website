@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -159,7 +160,7 @@ function PollCard({
           </Link>
         ) : !poll.isAnonymous ? (
           <Link href={`/user/${poll.authorId}`} onClick={(e) => e.stopPropagation()} className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-primary to-purple-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">
-            {poll.authorName.charAt(0).toUpperCase()}
+            {getInitial(poll.authorName)}
           </Link>
         ) : null}
         <div className="flex-1 min-w-0">

@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 // ═══════════════════════════════════════════════════════════════════
 // Live chat composer.
 //
@@ -186,7 +187,7 @@ export function LiveComposer({
                 <img src={u.avatarUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
               ) : (
                 <span className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center text-[10px]">
-                  {u.displayName.charAt(0).toUpperCase()}
+                  {getInitial(u.displayName)}
                 </span>
               )}
               <span className="truncate">{u.displayName}</span>

@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
@@ -230,7 +231,7 @@ export default function FragmentDetailPage() {
           {fragment.avatar_url ? (
             <Image src={fragment.avatar_url} alt="Fragment avatar" width={64} height={64} className="w-full h-full rounded-full object-cover" unoptimized />
           ) : (
-            (fragment.display_name || '?')[0].toUpperCase()
+            getInitial(fragment.display_name)
           )}
         </div>
         <div className="flex-1">

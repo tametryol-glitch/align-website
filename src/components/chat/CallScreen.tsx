@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Phone,
@@ -195,7 +196,7 @@ function Avatar({
   size?: number;
   showPulse?: boolean;
 }) {
-  const initial = (name || '?')[0].toUpperCase();
+  const initial = getInitial(name);
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -615,7 +616,7 @@ export function CallScreen({
             <img src={targetUser.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
           ) : (
             <span className="font-bold" style={{ color: C.accent, fontSize: 16 }}>
-              {(targetUser.name || '?')[0].toUpperCase()}
+              {getInitial(targetUser.name)}
             </span>
           )}
         </div>

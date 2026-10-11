@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -231,7 +232,7 @@ export default function DiscoverPage() {
                   {u.avatar_url ? (
                     <Image src={u.avatar_url} alt="User avatar" width={40} height={40} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
-                    <span className="text-sm font-bold text-accent-primary">{(u.display_name || '?')[0].toUpperCase()}</span>
+                    <span className="text-sm font-bold text-accent-primary">{getInitial(u.display_name)}</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -499,7 +500,7 @@ export default function DiscoverPage() {
                       {p?.avatar_url ? (
                         <Image src={p.avatar_url} alt="User avatar" width={36} height={36} className="w-full h-full rounded-full object-cover" unoptimized />
                       ) : (
-                        <span className="text-xs font-bold text-accent-primary">{(p?.display_name || '?')[0].toUpperCase()}</span>
+                        <span className="text-xs font-bold text-accent-primary">{getInitial(p?.display_name)}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -562,7 +563,7 @@ export default function DiscoverPage() {
                   {u.avatar_url ? (
                     <Image src={u.avatar_url} alt="User avatar" width={56} height={56} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
-                    (u.display_name || '?')[0].toUpperCase()
+                    getInitial(u.display_name)
                   )}
                 </div>
                 <p className="text-xs text-text-primary font-medium truncate">{u.display_name}</p>
@@ -590,7 +591,7 @@ export default function DiscoverPage() {
                   {u.avatar_url ? (
                     <Image src={u.avatar_url} alt="User avatar" width={56} height={56} className="w-full h-full rounded-full object-cover" unoptimized />
                   ) : (
-                    (u.display_name || '?')[0].toUpperCase()
+                    getInitial(u.display_name)
                   )}
                 </div>
                 <p className="text-xs text-text-primary font-medium truncate">{u.display_name}</p>

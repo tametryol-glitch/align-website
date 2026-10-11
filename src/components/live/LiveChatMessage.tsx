@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 // ═══════════════════════════════════════════════════════════════════
 // One line of live chat.
 //
@@ -73,7 +74,7 @@ export function LiveChatMessage({
   const isMine = m.sender_id === selfId;
   const name = authorName(m, authors, selfId);
   const avatar = avatarFor(m, authors);
-  const initial = (name === 'You' ? 'Y' : name).charAt(0).toUpperCase();
+  const initial = (name === 'You' ? 'Y' : getInitial(name));
 
   return (
     <div className="group flex items-start gap-2">

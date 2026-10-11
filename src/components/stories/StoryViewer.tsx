@@ -1,5 +1,6 @@
 'use client';
 
+import { getInitial } from '@/lib/initials';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { X, Volume2, VolumeX, Pause, Play, Eye, Trash2, Loader2, Users, Send, Check, Music2 } from 'lucide-react';
@@ -23,7 +24,7 @@ function Avatar({ url, name, size = 32 }: { url: string | null; name: string | n
       className="rounded-full bg-accent-primary/30 flex items-center justify-center text-white font-semibold shrink-0"
       style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
-      {(name || '?').charAt(0).toUpperCase()}
+      {getInitial(name)}
     </div>
   );
 }
