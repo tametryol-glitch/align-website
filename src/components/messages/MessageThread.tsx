@@ -255,7 +255,7 @@ export function MessageThread({
         onScroll={onScroll}
         className="flex-1 overflow-y-auto px-4 py-3 relative"
         style={chatTheme ? (chatTheme.imageUrl
-          ? { backgroundImage: `linear-gradient(rgba(0,0,0,${(chatTheme.dim ?? 25) / 100}), rgba(0,0,0,${(chatTheme.dim ?? 25) / 100})), url("${chatTheme.imageUrl}")`, backgroundSize: 'cover', backgroundPosition: 'center' }
+          ? { backgroundImage: `linear-gradient(rgba(0,0,0,${(chatTheme.dim ?? 25) / 100}), rgba(0,0,0,${(chatTheme.dim ?? 25) / 100})), url("${chatTheme.imageUrl}"), linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url("${chatTheme.imageUrl}")`, backgroundSize: 'cover, contain, cover, cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }
           : { background: `linear-gradient(135deg, ${chatTheme.background.join(', ')})` }) : undefined}
       >
         {/* Load more indicator */}
