@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
-  ArrowLeft, Search, ChevronDown, Settings2, Star, Images,
+  ArrowLeft, Search, ChevronDown, Settings2, Star, Images, Palette,
 } from 'lucide-react';
 import { CallButton } from '@/components/chat/CallButton';
 import { StarredMessagesPanel } from './StarredMessagesPanel';
@@ -17,6 +17,7 @@ import { fetchPresence } from '@/lib/presenceService';
 import { formatLastSeen, type PresenceInfo } from '@/lib/presence';
 import { ChatPet } from '@/components/chat/ChatPet';
 import type { ChatTheme } from '@/data/chatThemes';
+import { ChatWallpaperPicker } from './ChatWallpaperPicker';
 import type { Message, Conversation } from '@/lib/messagingService';
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -40,6 +41,7 @@ export interface MessageThreadProps {
   loadingMore: boolean;
   isOtherTyping: boolean;
   chatTheme: ChatTheme | null;
+  onApplyTheme: (themeId: string, customUrl?: string | null, dim?: number) => Promise<{ ok: boolean; error?: string }>;
   currentUserId: string;
   otherReadAt: string | null;
   messageSearchQuery: string;
@@ -64,7 +66,7 @@ export interface MessageThreadProps {
 
 export function MessageThread({
   activeConv, messages, messagesLoading, hasMore, loadingMore,
-  isOtherTyping, chatTheme, currentUserId, otherReadAt,
+  isOtherTyping, chatTheme, onApplyTheme, currentUserId, otherReadAt,
   messageSearchQuery, callState, showScrollDown,
   messagesEndRef, messagesContainerRef,
   onBack, onScroll, onLoadMore, onReaction, onReply, onContextMenu,
@@ -74,9 +76,10 @@ export function MessageThread({
   const { t } = useTranslation();
   const [showStarred, setShowStarred] = useState(false);
   const [showShared, setShowShared] = useState(false);
+  const [showWallpaper, setShowWallpaper] = useState(false);
 
   // Close the panel when switching to another chat.
-  useEffect(() => { setShowStarred(false); setShowShared(false); }, [activeConv.id]);
+  useEffect(() => { setShowStarred(false); setShowShared(false); setShowWallpaper(false); }, [activeConv.id]);
 
   // Date headers
   const messagesWithHeaders = useMemo(() => {
@@ -197,6 +200,14 @@ export function MessageThread({
         >
           <Images className="w-4 h-4" />
         </button>
+        {/* Chat wallpaper (shared with the other person) */}
+        <button
+          onClick={() => setShowWallpaper(true)}
+          className="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center text-text-muted hover:text-accent-primary hover:bg-accent-primary/15 transition-colors"
+          title="Chat wallpaper"
+        >
+          <Palette className="w-4 h-4" />
+        </button>
         {/* Starred messages */}
         <button
           onClick={() => setShowStarred(true)}
@@ -243,7 +254,9 @@ export function MessageThread({
         ref={messagesContainerRef}
         onScroll={onScroll}
         className="flex-1 overflow-y-auto px-4 py-3 relative"
-        style={chatTheme ? { background: `linear-gradient(135deg, ${chatTheme.background[0]}, ${chatTheme.background[1]})` } : undefined}
+        style={chatTheme ? (chatTheme.imageUrl
+          ? { backgroundImage: `linear-gradient(rgba(0,0,0,${(chatTheme.dim ?? 25) / 100}), rgba(0,0,0,${(chatTheme.dim ?? 25) / 100})), url("${chatTheme.imageUrl}")`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'local' }
+          : { background: `linear-gradient(135deg, ${chatTheme.background.join(', ')})` }) : undefined}
       >
         {/* Load more indicator */}
         {loadingMore && (
@@ -321,6 +334,15 @@ export function MessageThread({
 
         <div ref={messagesEndRef} />
       </div>
+
+      {showWallpaper && (
+        <ChatWallpaperPicker
+          conversationId={activeConv.id}
+          current={chatTheme}
+          apply={onApplyTheme}
+          onClose={() => setShowWallpaper(false)}
+        />
+      )}
 
       {showShared && (
         <SharedMediaPanel

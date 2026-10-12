@@ -11,7 +11,7 @@ import { GroupSettingsModal } from '@/components/chat/GroupSettingsModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
 import { VideoNoteRecorderModal } from '@/components/chat/VideoNoteRecorderModal';
 import { LocationPicker } from '@/components/chat/LocationPicker';
-import { getChatTheme } from '@/data/chatThemes';
+import { useConversationTheme } from '@/lib/conversationThemeService';
 import { uploadChatFile, uploadVoiceNote, uploadVideoNote } from '@/lib/chatMediaService';
 import { uploadOnceMedia, isOnceMessage, onceLabel } from '@/lib/onceMediaService';
 import { generateChannelName, fetchAgoraTokenResult, createCallClient, type CallState } from '@/lib/callingService';
@@ -77,7 +77,8 @@ export default function MessagesPage() {
   const { t } = useTranslation();
   const { user, profile } = useAuthStore();
   const store = useMessagesStore();
-  const chatTheme = useMemo(() => getChatTheme(profile?.chat_theme), [profile?.chat_theme]);
+  // Wallpaper is per-conversation and shared by everyone in the chat (live).
+  const { theme: chatTheme, apply: applyChatTheme } = useConversationTheme(store.activeConversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const pinToBottomUntil = useRef(0);
@@ -1152,6 +1153,7 @@ export default function MessagesPage() {
                 loadingMore={loadingMore}
                 isOtherTyping={!!isOtherTyping}
                 chatTheme={chatTheme}
+                onApplyTheme={applyChatTheme}
                 currentUserId={user.id}
                 otherReadAt={store.otherReadAt}
                 messageSearchQuery={store.messageSearchQuery}
