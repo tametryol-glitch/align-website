@@ -32,7 +32,8 @@ const MAX_FILE_SIZE  = 50 * 1024 * 1024;   // 50 MB
 export type UploadCategory = 'image' | 'video' | 'audio' | 'file';
 
 export function validateUpload(file: File | Blob, category: UploadCategory): string | null {
-  const mime = file.type.toLowerCase();
+  // Strip codec params: MediaRecorder reports e.g. 'audio/mp4;codecs=mp4a.40.2'.
+  const mime = file.type.toLowerCase().split(';')[0].trim();
   const size = file.size;
 
   switch (category) {

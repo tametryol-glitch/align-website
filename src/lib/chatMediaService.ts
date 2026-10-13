@@ -91,12 +91,16 @@ export async function uploadVoiceNote(
     if (vErr) { console.warn('[ChatMedia] uploadVoiceNote rejected:', vErr); return null; }
 
     const supabase = createClient();
-    const path = `voice_notes/${conversationId}/${userId}-${Date.now()}.webm`;
+    // Safari/iOS records AAC in an MP4 container, Chrome/Firefox record WebM/Ogg.
+    // Store with the real container so every browser can play it back.
+    const baseType = (blob.type || 'audio/webm').toLowerCase().split(';')[0].trim();
+    const ext = baseType === 'audio/mp4' ? 'm4a' : baseType === 'audio/ogg' ? 'ogg' : 'webm';
+    const path = `voice_notes/${conversationId}/${userId}-${Date.now()}.${ext}`;
 
     const { error } = await supabase.storage
       .from('chat-media')
       .upload(path, blob, {
-        contentType: 'audio/webm',
+        contentType: baseType,
       });
 
     if (error) {

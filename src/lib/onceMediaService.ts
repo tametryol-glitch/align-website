@@ -50,11 +50,12 @@ export async function uploadOnceMedia(
 
     let ext = type === 'image' ? 'jpg' : 'webm';
     if (file instanceof File && file.name.includes('.')) ext = file.name.split('.').pop()!.toLowerCase();
+    else if (type !== 'image' && file.type.toLowerCase().startsWith('audio/mp4')) ext = 'm4a';
     const path = `${userId}/${conversationId}/${Date.now()}.${ext}`;
 
     const { error } = await createClient().storage
       .from(BUCKET)
-      .upload(path, file, file.type ? { contentType: file.type } : undefined);
+      .upload(path, file, file.type ? { contentType: file.type.split(';')[0].trim() } : undefined);
     if (error) {
       console.warn('[OnceMedia] upload error:', error.message);
       return null;

@@ -572,8 +572,12 @@ export default function MessagesPage() {
       if (msgResult.success && msgResult.message) {
         store.addMessage(msgResult.message);
         store.updateConversationPreview(store.activeConversationId, '🎤 Voice message', user.id);
+      } else {
+        setSendError(msgResult.error || 'Failed to send message.');
       }
       store.setReplyTo(null);
+    } else {
+      setSendError('Could not upload the voice message.');
     }
     setSending(false);
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);

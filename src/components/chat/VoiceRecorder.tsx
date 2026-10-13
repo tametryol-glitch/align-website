@@ -23,8 +23,17 @@ function formatTime(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+// Every iPhone browser is WebKit. Its MediaRecorder only reliably produces
+// MP4/AAC, and mixing a Web Audio analyser into the same mic stream can leave
+// the recording empty — so iOS gets mp4 first and no waveform analyser.
+function isIOS(): boolean {
+  return typeof navigator !== 'undefined' && /iP(hone|ad|od)/.test(navigator.userAgent);
+}
+
 function getSupportedMimeType(): string {
-  const types = ['audio/webm', 'audio/ogg', 'audio/mp4'];
+  const types = isIOS()
+    ? ['audio/mp4', 'audio/webm', 'audio/ogg']
+    : ['audio/webm', 'audio/ogg', 'audio/mp4'];
   for (const type of types) {
     if (MediaRecorder.isTypeSupported(type)) return type;
   }
@@ -109,14 +118,20 @@ export function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRecorderPr
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      // Set up audio analysis for waveform
-      const audioCtx = new AudioContext();
-      audioCtxRef.current = audioCtx;
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      source.connect(analyser);
-      analyserRef.current = analyser;
+      // Set up audio analysis for waveform (skipped on iOS, see isIOS)
+      if (!isIOS()) {
+        try {
+          const audioCtx = new AudioContext();
+          audioCtxRef.current = audioCtx;
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          source.connect(analyser);
+          analyserRef.current = analyser;
+        } catch {
+          analyserRef.current = null; // waveform is cosmetic; keep recording
+        }
+      }
 
       // Set up MediaRecorder
       const mimeType = getSupportedMimeType();
@@ -134,17 +149,25 @@ export function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRecorderPr
 
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, {
-          type: recorder.mimeType || 'audio/webm',
+          type: (recorder.mimeType || mimeType || 'audio/webm').split(';')[0].trim(),
         });
-        const finalDuration = durationRef.current;
+        // A sub-second tap still counts as 1s so it isn't silently dropped.
+        const finalDuration = Math.max(1, durationRef.current);
         cleanup();
         setState('idle');
         setDuration(0);
         durationRef.current = 0;
         setBarHeights(new Array(BAR_COUNT).fill(4));
 
-        if (blob.size > 0 && finalDuration > 0) {
+        if (blob.size > 0) {
           onRecordingComplete(blob, finalDuration);
+        } else {
+          setState('error');
+          setErrorMessage('Recording was empty, try again');
+          setTimeout(() => {
+            setState('idle');
+            setErrorMessage('');
+          }, 3000);
         }
       };
 
