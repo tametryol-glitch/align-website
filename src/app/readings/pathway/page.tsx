@@ -91,6 +91,92 @@ interface PathwayResponse {
   wealth_equation: WealthEquation;
   pathways: Pathway[];
   reading: Reading;
+  /** Full 2nd + 10th house evidence from the backend Pathway Signature engine. */
+  signature?: any;
+}
+
+/** Backend `/pathway/analyze` response → the shape this page renders. */
+function normalizeBackend(raw: any): PathwayResponse {
+  const we = raw.wealth_summary || {};
+  const r = raw.reading || {};
+  return {
+    wealth_equation: {
+      second_house_sign: we.second_house_sign || '',
+      second_house_ruler: we.second_house_ruler || '',
+      second_ruler_placement: we.second_ruler_placement || { sign: '', house: 0 },
+      second_house_planets: we.second_house_planets || [],
+      second_house_asteroids: we.second_house_asteroids || [],
+      second_house_bodies: [],
+      ruler_chain: we.ruler_chain || [],
+      final_dispositor: we.final_dispositor || null,
+      loop_detected: !!we.loop_detected,
+      repeated_signs: we.repeated_signs || {},
+      repeated_houses: we.repeated_houses || {},
+      repeated_bodies: we.repeated_bodies || {},
+      conjunction_modifiers: [],
+      precision_layers: [],
+    },
+    pathways: (raw.top_pathways || []).map((p: any, i: number) => ({
+      id: p.id, rank: i + 1, title: p.title, score: Math.round(p.score || 0),
+      raw_score: p.raw_score || p.score || 0, reasons: p.reasons || [],
+      monetization: p.monetization || [], environments: p.environments || [],
+    })),
+    reading: {
+      wealth_equation_text: r.wealth_equation_text || '',
+      what_creates_wealth_text: r.what_creates_wealth_text || '',
+      top_5_text: r.top_5_text || '',
+      blockages_text: r.blockages_text || [],
+      activation_text: r.activation_text || [],
+      main_abundance_unlock: r.main_abundance_unlock || '',
+      main_karmic_trap: r.main_karmic_trap || '',
+    },
+    signature: raw.signature,
+  };
+}
+
+const ord = (n: number | null | undefined) => {
+  if (!n) return '?';
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+/** One house's evidence: ruler, inner layers, chain, conjunctions, midpoints. */
+function SignatureHouse({ sig }: { sig: any }) {
+  const r = sig.ruler;
+  const links = (sig.chain?.links || []).filter((l: any) => l.resolved);
+  return (
+    <div className="mb-5 pb-4 border-b border-purple-500/15 last:border-0">
+      <p className="font-semibold text-amber-400 mb-1">
+        {ord(sig.house)} house {'·'} {sig.house_sign} ruled by {PLANET_GLYPHS[r.name] || ''} {r.name}
+      </p>
+      <p className="text-sm text-text-secondary mb-1">
+        {r.name} is at {r.position} in the {ord(r.house)} house.
+      </p>
+      <p className="text-sm text-text-secondary mb-1">
+        <span className="font-bold text-text-primary">Inner layers:</span>{' '}
+        {(sig.layers || []).map((l: any) => `${l.sign} (${ord(l.house)} house, ${l.ruler})`).join(' · ')}
+      </p>
+      <p className="text-sm text-text-secondary mb-1">
+        <span className="font-bold text-text-primary">Chain:</span>{' '}
+        {links.map((l: any) => `${l.body} ${l.sign} ${ord(l.house)}`).join(' → ')}
+        {sig.chain?.termination === 'loop' ? ' → loop' : sig.chain?.final_dispositor ? ' (final dispositor)' : ''}
+      </p>
+      {sig.conjunctions?.length > 0 && (
+        <p className="text-sm text-text-secondary mb-1">
+          <span className="font-bold text-text-primary">Conjunct {r.name}:</span>{' '}
+          {sig.conjunctions.map((c: any) => `${c.name} ${c.orb_text}`).join(', ')}
+        </p>
+      )}
+      {sig.midpoints?.length > 0 && (
+        <p className="text-sm text-text-secondary">
+          <span className="font-bold text-text-primary">Midpoints on {r.name}:</span>{' '}
+          {sig.midpoints.slice(0, 12).map((m: any) => `${m.a}/${m.b} ${m.orb_text}`).join(', ')}
+          {sig.midpoints.length > 12 ? ` (+${sig.midpoints.length - 12} more)` : ''}
+        </p>
+      )}
+    </div>
+  );
 }
 
 // ─── CopyButton component ──────────────────────────────────────────────────
@@ -587,8 +673,19 @@ export default function PathwayPage() {
     setAiText('');
 
     try {
-      // Get natal chart from API, then calculate pathways locally
       const birthData = buildBirthData(profile);
+      // Preferred: the backend Pathway Signature engine (2nd + 10th house).
+      try {
+        const raw: any = await api.getPathwayAnalysis({ ...birthData, name: profile?.display_name || '' });
+        if (raw?.signature && raw?.top_pathways?.length) {
+          setData(normalizeBackend(raw));
+          setExpandedPathway(1);
+          return;
+        }
+      } catch {
+        // Fall through to the local calculation below.
+      }
+      // Fallback: get natal chart from API, then calculate pathways locally
       const chart = await api.getNatalChart({ ...birthData, extra_asteroids: [...ATHLETIC_ASTEROID_NAMES] });
       if (chart) {
         const result = calculateLocalPathways(chart, profile);
@@ -748,6 +845,26 @@ export default function PathwayPage() {
               </div>
             )}
           </div>
+
+          {/* Pathway Signature — 2nd + 10th house evidence */}
+          {data.signature && (
+            <div className="rounded-xl p-6 border border-purple-500/25" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.03))' }}>
+              <h2 className="text-lg font-display font-bold text-purple-400 mb-2">Your Pathway Signature</h2>
+              <p className="text-sm text-text-muted mb-4">Your earning house and your career house, each read through its ruler, the ruler{"'"}s inner layers, its dispositor chain, every body conjunct it, and every midpoint within 1°30{"′"} of it.</p>
+              {['2', '10'].map((h) => data.signature.houses?.[h] ? <SignatureHouse key={h} sig={data.signature.houses[h]} /> : null)}
+              {data.signature.callings?.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs text-amber-400 uppercase tracking-wider mb-2 font-semibold">Work Your Chart Names</p>
+                  {data.signature.callings.slice(0, 6).map((c: any, i: number) => (
+                    <div key={i} className="flex gap-2 mb-1.5 items-start">
+                      <span className="text-xs text-amber-400 font-bold min-w-[70px] pt-0.5">{c.body}</span>
+                      <p className="text-sm text-text-secondary flex-1 leading-relaxed">{c.calling}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Precision Layer Card */}
           {precisionMode && data.wealth_equation.precision_layers.length > 0 && (

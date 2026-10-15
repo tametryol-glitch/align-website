@@ -423,7 +423,11 @@ class AlignAPI {
     onDone();
   }
 
-  // Pathway
+  // Pathway — 2nd + 10th house signature engine (rulers, layers, chains, midpoints)
+  async getPathwayAnalysis(data: any) {
+    return this.request('/pathway/analyze', { method: 'POST', body: JSON.stringify(data) });
+  }
+
   async getPathway(data: any) {
     return this.request('/pathway/reading', { method: 'POST', body: JSON.stringify(data) });
   }
