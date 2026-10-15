@@ -175,6 +175,15 @@ function SignatureHouse({ sig }: { sig: any }) {
           {sig.midpoints.length > 12 ? ` (+${sig.midpoints.length - 12} more)` : ''}
         </p>
       )}
+      {sig.mc && (
+        <p className="text-sm text-text-secondary mt-1">
+          <span className="font-bold text-text-primary">Midheaven {sig.mc.position}:</span>{' '}
+          {sig.mc.conjunctions?.length > 0 && `conjunct ${sig.mc.conjunctions.map((c: any) => `${c.name} ${c.orb_text}`).join(', ')}; `}
+          {sig.mc.midpoints?.length > 0
+            ? `midpoints ${sig.mc.midpoints.slice(0, 12).map((m: any) => `${m.a}/${m.b} ${m.orb_text}`).join(', ')}${sig.mc.midpoints.length > 12 ? ` (+${sig.mc.midpoints.length - 12} more)` : ''}`
+            : 'no midpoints within orb'}
+        </p>
+      )}
     </div>
   );
 }
