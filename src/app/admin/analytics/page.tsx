@@ -80,6 +80,60 @@ function timeAgo(iso?: string): string {
   return `${Math.floor(s / 3600)}h ago`;
 }
 
+interface OnlineMember {
+  id: string; username: string | null; display_name: string | null; avatar_url: string | null;
+  tier: string; platforms: string[]; country: string | null; app_version: string | null;
+  started_at: string; last_seen_at: string;
+}
+interface OnlineData { members: OnlineMember[]; anonymous: number }
+
+const PLATFORM_ICON: Record<string, string> = { web: '🌐', ios: '📱', android: '🤖' };
+
+function OnlineList({ online }: { online: OnlineData | null }) {
+  if (!online) return <p className="text-xs text-text-muted py-3">Loading accounts…</p>;
+  return (
+    <div className="mt-4 pt-4 border-t border-accent-primary/20">
+      {online.members.length === 0 ? (
+        <p className="text-xs text-text-muted">No signed-in accounts online right now.</p>
+      ) : (
+        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {online.members.map((m) => (
+            <li key={m.id}>
+              <Link
+                href={`/admin/analytics/time?user=${m.id}`}
+                className="flex items-center gap-3 rounded-xl bg-bg-secondary border border-border-primary px-3 py-2 hover:border-accent-primary/40 transition-colors"
+              >
+                {m.avatar_url
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={m.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                  : <span className="w-8 h-8 rounded-full bg-bg-tertiary flex-shrink-0" />}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-text-primary truncate">
+                    {m.display_name || m.username || 'Unnamed'}
+                  </span>
+                  <span className="block text-[11px] text-text-muted truncate">
+                    {m.username ? `@${m.username}` : m.id.slice(0, 8)}
+                    {m.country ? ` · ${flagEmoji(m.country)}` : ''} · {m.tier}
+                  </span>
+                </span>
+                <span className="text-right flex-shrink-0">
+                  <span className="block text-sm">{m.platforms.map((p) => PLATFORM_ICON[p] || p).join(' ')}</span>
+                  <span className="block text-[10px] text-text-muted">{timeAgo(m.last_seen_at)}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {online.anonymous > 0 && (
+        <p className="text-[11px] text-text-muted mt-3">
+          + {online.anonymous} signed-out visitor{online.anonymous === 1 ? '' : 's'} (not identifiable)
+        </p>
+      )}
+    </div>
+  );
+}
+
 function Delta({ pct }: { pct?: number }) {
   if (pct == null) return null;
   if (pct === 0) return <span className="inline-flex items-center gap-0.5 text-[11px] text-text-muted"><Minus className="w-3 h-3" />0%</span>;
@@ -378,6 +432,8 @@ export default function AnalyticsAdminPage() {
   const [range, setRange] = useState<7 | 30>(7);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showOnline, setShowOnline] = useState(false);
+  const [online, setOnline] = useState<OnlineData | null>(null);
 
   useEffect(() => {
     async function verifyAdmin() {
@@ -396,6 +452,18 @@ export default function AnalyticsAdminPage() {
     if (res.ok) setData(await res.json());
     setLoading(false);
   }, []);
+
+  // Who is online: only fetched while the list is open, refreshed with the page.
+  useEffect(() => {
+    if (!verified || !showOnline) return;
+    const loadOnline = async () => {
+      const res = await fetch('/api/admin/analytics/online').catch(() => null);
+      if (res?.ok) setOnline(await res.json());
+    };
+    loadOnline();
+    const t = setInterval(loadOnline, 30000);
+    return () => clearInterval(t);
+  }, [verified, showOnline]);
 
   useEffect(() => {
     if (!verified) return;
@@ -494,11 +562,18 @@ export default function AnalyticsAdminPage() {
                 <p className="text-xs text-text-muted uppercase tracking-wider mt-1">Online right now</p>
               </div>
             </div>
-            <div className="flex gap-5 text-sm">
+            <div className="flex gap-5 text-sm items-center flex-wrap">
               <span className="text-text-secondary">🌐 Web <strong className="text-text-primary">{fmt(live.live_web)}</strong></span>
               <span className="text-text-secondary">📱 iOS <strong className="text-text-primary">{fmt(live.live_ios)}</strong></span>
               <span className="text-text-secondary">🤖 Android <strong className="text-text-primary">{fmt(live.live_android)}</strong></span>
+              <button
+                onClick={() => setShowOnline((v) => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-primary/15 border border-accent-primary/30 text-accent-primary text-xs font-medium hover:bg-accent-primary/25 transition-colors"
+              >
+                <Users className="w-3.5 h-3.5" /> {showOnline ? 'Hide accounts' : 'Who’s online'}
+              </button>
             </div>
+            {showOnline && <div className="basis-full"><OnlineList online={online} /></div>}
           </div>
 
           {/* Headline stats with deltas */}

@@ -388,6 +388,12 @@ export default function TimeInAppPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
 
+  // Deep link from Analytics → "Who's online": /admin/analytics/time?user=<uuid>
+  useEffect(() => {
+    const u = new URLSearchParams(window.location.search).get('user');
+    if (u && /^[0-9a-f-]{36}$/i.test(u)) setSelected(u);
+  }, []);
+
   useEffect(() => {
     (async () => {
       if (!profile?.is_admin) return;
