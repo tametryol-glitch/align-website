@@ -1439,6 +1439,13 @@ export default function MessagesPage() {
           remoteVideoRef={remoteVideoRef}
           onToggleMute={handleCallToggleMute}
           onToggleCamera={handleCallToggleCamera}
+          onListDevices={async () =>
+            callClientRef.current
+              ? callClientRef.current.listDevices()
+              : { microphones: [], cameras: [], micId: '', cameraId: '' }
+          }
+          onSelectMic={(id) => callClientRef.current?.setMicrophone(id)}
+          onSelectCamera={(id) => callClientRef.current?.setCamera(id)}
           onEndCall={handleEndCall}
         />
       )}

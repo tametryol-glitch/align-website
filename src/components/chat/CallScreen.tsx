@@ -10,8 +10,9 @@ import {
   Video,
   VideoOff,
   MessageCircle,
-  X,
+  Settings,
 } from 'lucide-react';
+import type { CallDevices } from '@/lib/callingService';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -32,6 +33,10 @@ interface CallScreenProps {
   remoteVideoRef?: React.RefObject<HTMLDivElement>;
   onToggleMute: () => void;
   onToggleCamera: () => void;
+  /** Lists plugged-in mics/cameras; enables the device picker when given */
+  onListDevices?: () => Promise<CallDevices>;
+  onSelectMic?: (deviceId: string) => void | Promise<void>;
+  onSelectCamera?: (deviceId: string) => void | Promise<void>;
   onEndCall: () => void;
   onAcceptCall?: () => void;
   onDeclineCall?: () => void;
@@ -380,6 +385,103 @@ function ControlButton({
   );
 }
 
+// ── Device picker (mic / camera choice) ─────────────────────────────
+
+function DevicePicker({
+  onListDevices,
+  onSelectMic,
+  onSelectCamera,
+}: {
+  onListDevices: () => Promise<CallDevices>;
+  onSelectMic?: (deviceId: string) => void | Promise<void>;
+  onSelectCamera?: (deviceId: string) => void | Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [devices, setDevices] = useState<CallDevices | null>(null);
+
+  const refresh = async () => {
+    setDevices(await onListDevices());
+  };
+
+  // Re-list while open so a headset plugged in mid-call shows up.
+  useEffect(() => {
+    if (!open) return;
+    refresh();
+    const onChange = () => { refresh(); };
+    navigator.mediaDevices?.addEventListener?.('devicechange', onChange);
+    return () => navigator.mediaDevices?.removeEventListener?.('devicechange', onChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: C.textPrimary,
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: 8,
+    padding: '8px 10px',
+    fontSize: 13,
+  };
+
+  const renderSelect = (
+    label: string,
+    options: { deviceId: string; label: string }[],
+    value: string,
+    onChange?: (id: string) => void | Promise<void>,
+  ) => (
+    <label className="block mb-3">
+      <span className="block mb-1" style={{ color: C.textMuted, fontSize: 12 }}>{label}</span>
+      {options.length === 0 ? (
+        <span style={{ color: C.textSecondary, fontSize: 13 }}>None found</span>
+      ) : (
+        <select
+          style={selectStyle}
+          value={options.some((o) => o.deviceId === value) ? value : ''}
+          onChange={async (e) => {
+            await onChange?.(e.target.value);
+            refresh();
+          }}
+        >
+          {!options.some((o) => o.deviceId === value) && (
+            <option value="" disabled>Default</option>
+          )}
+          {options.map((o) => (
+            <option key={o.deviceId} value={o.deviceId} style={{ color: '#000' }}>{o.label}</option>
+          ))}
+        </select>
+      )}
+    </label>
+  );
+
+  return (
+    <div className="relative">
+      <ControlButton isActive={open} onPress={() => setOpen((v) => !v)}>
+        <Settings className="w-5 h-5" style={{ color: C.textPrimary }} />
+      </ControlButton>
+      {open && (
+        <div
+          className="absolute z-50"
+          style={{
+            bottom: 68,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 280,
+            maxWidth: '86vw',
+            backgroundColor: 'rgba(12, 16, 32, 0.96)',
+            border: '1px solid rgba(245, 166, 35, 0.25)',
+            borderRadius: 14,
+            padding: 14,
+            backdropFilter: 'blur(20px)',
+          }}
+        >
+          {renderSelect('Microphone', devices?.microphones ?? [], devices?.micId ?? '', onSelectMic)}
+          {renderSelect('Camera', devices?.cameras ?? [], devices?.cameraId ?? '', onSelectCamera)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Component ──────────────────────────────────────────────────
 
 export function CallScreen({
@@ -397,6 +499,9 @@ export function CallScreen({
   remoteVideoRef,
   onToggleMute,
   onToggleCamera,
+  onListDevices,
+  onSelectMic,
+  onSelectCamera,
   onEndCall,
   onAcceptCall,
   onDeclineCall,
@@ -555,6 +660,9 @@ export function CallScreen({
           <ControlButton isActive={false} onPress={onToggleCamera}>
             <VideoOff className="w-6 h-6" style={{ color: C.textPrimary }} />
           </ControlButton>
+          {onListDevices && (
+            <DevicePicker onListDevices={onListDevices} onSelectMic={onSelectMic} onSelectCamera={onSelectCamera} />
+          )}
           <EndCallPill onPress={onEndCall} />
         </div>
       </GlassTray>
@@ -696,6 +804,10 @@ export function CallScreen({
               <VideoOff className="w-5 h-5" style={{ color: C.textPrimary }} />
             )}
           </ControlButton>
+
+          {onListDevices && (
+            <DevicePicker onListDevices={onListDevices} onSelectMic={onSelectMic} onSelectCamera={onSelectCamera} />
+          )}
         </div>
       </div>
     </div>

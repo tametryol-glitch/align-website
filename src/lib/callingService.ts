@@ -47,8 +47,37 @@ export interface CallClient {
   getLocalVideoTrack(): any | null;
   /** Get the remote video track for rendering */
   getRemoteVideoTrack(): any | null;
+  /** Enumerate the mics and cameras plugged into this computer */
+  listDevices(): Promise<CallDevices>;
+  /** Switch the live microphone (or the one used when the call joins) */
+  setMicrophone(deviceId: string): Promise<void>;
+  /** Switch the live camera (or the one used when it is next turned on) */
+  setCamera(deviceId: string): Promise<void>;
   /** Clean up all tracks and destroy the client */
   destroy(): Promise<void>;
+}
+
+export interface CallDeviceOption {
+  deviceId: string;
+  label: string;
+}
+
+export interface CallDevices {
+  microphones: CallDeviceOption[];
+  cameras: CallDeviceOption[];
+  /** Device currently in use (or preferred), '' when unknown */
+  micId: string;
+  cameraId: string;
+}
+
+const PREF_MIC_KEY = 'align_call_mic_id';
+const PREF_CAMERA_KEY = 'align_call_camera_id';
+
+function readPref(key: string): string {
+  try { return window.localStorage.getItem(key) || ''; } catch { return ''; }
+}
+function writePref(key: string, value: string) {
+  try { window.localStorage.setItem(key, value); } catch { /* storage unavailable */ }
 }
 
 // ── Utility ────────────────────────────────────────────────────────
@@ -181,6 +210,10 @@ export function createCallClient(): CallClient {
   const LEAVE_GRACE_MS = 30_000;
   let onMediaErrorCallback: ((kind: 'mic' | 'camera', message: string) => void) | null = null;
   let onRemoteVideoCallback: ((track: any | null) => void) | null = null;
+  // The user's chosen devices. Empty = browser default. Remembered across
+  // calls; a saved device that has since been unplugged falls back (below).
+  let preferredMicId = readPref(PREF_MIC_KEY);
+  let preferredCameraId = readPref(PREF_CAMERA_KEY);
 
   return {
     async join(channelName: string, token: string, uid: number): Promise<boolean> {
@@ -261,12 +294,23 @@ export function createCallClient(): CallClient {
           // Echo cancellation / noise suppression / auto gain requested
           // explicitly instead of relying on per-browser defaults, so the
           // other person never hears their own voice come back.
-          localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+          const micConfig: any = {
             AEC: true,
             ANS: true,
             AGC: true,
             encoderConfig: 'speech_standard',
-          });
+          };
+          try {
+            localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+              preferredMicId ? { ...micConfig, microphoneId: preferredMicId } : micConfig,
+            );
+          } catch (micErr: any) {
+            // The remembered mic may be unplugged: retry with the default
+            // rather than joining a call with no way to be heard.
+            if (!preferredMicId) throw micErr;
+            preferredMicId = '';
+            localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(micConfig);
+          }
           await agoraClient.publish([localAudioTrack]);
         } catch (err: any) {
           console.warn('[Calling] Failed to create/publish audio track:', err?.message);
@@ -352,7 +396,15 @@ export function createCallClient(): CallClient {
         } else if (!cameraOn) {
           // Turn on camera
           const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
-          localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+          try {
+            localVideoTrack = await AgoraRTC.createCameraVideoTrack(
+              preferredCameraId ? { cameraId: preferredCameraId } : undefined,
+            );
+          } catch (camErr: any) {
+            if (!preferredCameraId) throw camErr;
+            preferredCameraId = '';
+            localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+          }
           if (agoraClient && joined) {
             await agoraClient.publish([localVideoTrack]);
           }
@@ -402,6 +454,55 @@ export function createCallClient(): CallClient {
 
     getRemoteVideoTrack(): any | null {
       return remoteVideoTrack;
+    },
+
+    async listDevices(): Promise<CallDevices> {
+      const empty: CallDevices = { microphones: [], cameras: [], micId: '', cameraId: '' };
+      try {
+        const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
+        const [mics, cams] = await Promise.all([
+          AgoraRTC.getMicrophones().catch(() => [] as any[]),
+          AgoraRTC.getCameras().catch(() => [] as any[]),
+        ]);
+        const toOptions = (list: any[], fallback: string): CallDeviceOption[] =>
+          list
+            .filter((d) => d.deviceId)
+            .map((d, i) => ({ deviceId: d.deviceId, label: d.label || `${fallback} ${i + 1}` }));
+        // Prefer what is really live; fall back to the saved choice.
+        const liveMic = localAudioTrack?.getMediaStreamTrack?.()?.getSettings?.()?.deviceId || '';
+        const liveCam = localVideoTrack?.getMediaStreamTrack?.()?.getSettings?.()?.deviceId || '';
+        return {
+          microphones: toOptions(mics, 'Microphone'),
+          cameras: toOptions(cams, 'Camera'),
+          micId: liveMic || preferredMicId,
+          cameraId: liveCam || preferredCameraId,
+        };
+      } catch (err: any) {
+        console.warn('[Calling] listDevices error:', err?.message);
+        return empty;
+      }
+    },
+
+    async setMicrophone(deviceId: string): Promise<void> {
+      try {
+        if (localAudioTrack) await localAudioTrack.setDevice(deviceId);
+        preferredMicId = deviceId;
+        writePref(PREF_MIC_KEY, deviceId);
+      } catch (err: any) {
+        console.warn('[Calling] setMicrophone error:', err?.message);
+        if (onMediaErrorCallback) onMediaErrorCallback('mic', err?.message || 'Could not switch microphone');
+      }
+    },
+
+    async setCamera(deviceId: string): Promise<void> {
+      try {
+        if (localVideoTrack) await localVideoTrack.setDevice(deviceId);
+        preferredCameraId = deviceId;
+        writePref(PREF_CAMERA_KEY, deviceId);
+      } catch (err: any) {
+        console.warn('[Calling] setCamera error:', err?.message);
+        if (onMediaErrorCallback) onMediaErrorCallback('camera', err?.message || 'Could not switch camera');
+      }
     },
 
     async destroy(): Promise<void> {
