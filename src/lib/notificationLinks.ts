@@ -31,7 +31,7 @@ export function getNotificationLink(n: LinkableNotification): string {
       // Deep-link to the exact post (and comment) the notification is about.
       const postId = n.data?.post_id;
       if (!postId) return '/feed';
-      const commentId = n.type === 'comment' || n.type === 'mention' ? n.data?.comment_id : undefined;
+      const commentId = n.type === 'comment' || n.type === 'mention' || n.type === 'like' ? n.data?.comment_id : undefined;
       return commentId
         ? `/feed?postId=${postId}&commentId=${commentId}`
         : `/feed?postId=${postId}`;
