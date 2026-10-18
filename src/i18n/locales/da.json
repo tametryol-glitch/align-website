@@ -3458,5 +3458,16 @@
       "fade": "Falmet",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Gendan din {{count}}-dages stribe?",
+    "body": "Du missede en dag, men du kan gendanne din stribe nu. Tilgængelig én gang om måneden. Dage tilbage til at gendanne: {{days}}.",
+    "notNow": "Ikke nu",
+    "justCheckIn": "Tjek bare ind",
+    "recover": "Gendan stribe",
+    "hint": "Gendan",
+    "failTitle": "Kunne ikke gendanne",
+    "failBody": "Prøv igen om et øjeblik.",
+    "link": "Gendan {{count}}-dages stribe"
   }
 }

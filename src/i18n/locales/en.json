@@ -3508,5 +3508,16 @@
       "fade": "Fade",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Recover your {{count}}-day streak?",
+    "body": "You missed a day, but you can restore your streak now. Available once a month. Days left to recover: {{days}}.",
+    "notNow": "Not now",
+    "justCheckIn": "Just check in",
+    "recover": "Recover streak",
+    "hint": "Recover",
+    "failTitle": "Could not recover",
+    "failBody": "Please try again in a moment.",
+    "link": "Recover {{count}}-day streak"
   }
 }

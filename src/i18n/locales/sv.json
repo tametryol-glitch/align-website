@@ -3458,5 +3458,16 @@
       "fade": "Blekt",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Återställ din {{count}}-dagars svit?",
+    "body": "Du missade en dag, men du kan återställa din svit nu. Tillgängligt en gång i månaden. Dagar kvar att återställa: {{days}}.",
+    "notNow": "Inte nu",
+    "justCheckIn": "Checka bara in",
+    "recover": "Återställ svit",
+    "hint": "Återställ",
+    "failTitle": "Kunde inte återställa",
+    "failBody": "Försök igen om en stund.",
+    "link": "Återställ {{count}}-dagars svit"
   }
 }

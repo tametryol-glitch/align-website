@@ -3458,5 +3458,16 @@
       "fade": "Wyblakły",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Odzyskać serię {{count}} dni?",
+    "body": "Ominął Cię jeden dzień, ale możesz teraz przywrócić serię. Dostępne raz w miesiącu. Pozostało dni na odzyskanie: {{days}}.",
+    "notNow": "Nie teraz",
+    "justCheckIn": "Tylko zamelduj",
+    "recover": "Odzyskaj serię",
+    "hint": "Odzyskaj",
+    "failTitle": "Nie udało się odzyskać",
+    "failBody": "Spróbuj ponownie za chwilę.",
+    "link": "Odzyskaj serię {{count}} dni"
   }
 }

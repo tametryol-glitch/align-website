@@ -3458,5 +3458,16 @@
       "fade": "Desvanecer",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "¿Recuperar tu racha de {{count}} días?",
+    "body": "Perdiste un día, pero puedes restaurar tu racha ahora. Disponible una vez al mes. Días restantes para recuperar: {{days}}.",
+    "notNow": "Ahora no",
+    "justCheckIn": "Solo registrar",
+    "recover": "Recuperar racha",
+    "hint": "Recuperar",
+    "failTitle": "No se pudo recuperar",
+    "failBody": "Inténtalo de nuevo en un momento.",
+    "link": "Recuperar racha de {{count}} días"
   }
 }

@@ -3458,5 +3458,16 @@
       "fade": "Soluk",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "{{count}} günlük serini kurtarmak ister misin?",
+    "body": "Bir günü kaçırdın ama serini şimdi geri getirebilirsin. Ayda bir kez kullanılabilir. Kurtarmak için kalan gün: {{days}}.",
+    "notNow": "Şimdi değil",
+    "justCheckIn": "Sadece giriş yap",
+    "recover": "Seriyi kurtar",
+    "hint": "Kurtar",
+    "failTitle": "Kurtarılamadı",
+    "failBody": "Lütfen birazdan tekrar dene.",
+    "link": "{{count}} günlük seriyi kurtar"
   }
 }

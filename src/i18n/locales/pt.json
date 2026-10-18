@@ -3458,5 +3458,16 @@
       "fade": "Esmaecer",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Recuperar sua sequência de {{count}} dias?",
+    "body": "Você perdeu um dia, mas pode restaurar sua sequência agora. Disponível uma vez por mês. Dias restantes para recuperar: {{days}}.",
+    "notNow": "Agora não",
+    "justCheckIn": "Apenas fazer check-in",
+    "recover": "Recuperar sequência",
+    "hint": "Recuperar",
+    "failTitle": "Não foi possível recuperar",
+    "failBody": "Tente novamente em instantes.",
+    "link": "Recuperar sequência de {{count}} dias"
   }
 }

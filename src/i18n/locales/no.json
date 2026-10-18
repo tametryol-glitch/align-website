@@ -3458,5 +3458,16 @@
       "fade": "Falmet",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Gjenopprette din {{count}}-dagers rekke?",
+    "body": "Du gikk glipp av en dag, men du kan gjenopprette rekken din nå. Tilgjengelig én gang i måneden. Dager igjen for å gjenopprette: {{days}}.",
+    "notNow": "Ikke nå",
+    "justCheckIn": "Bare sjekk inn",
+    "recover": "Gjenopprett rekke",
+    "hint": "Gjenopprett",
+    "failTitle": "Kunne ikke gjenopprette",
+    "failBody": "Prøv igjen om et øyeblikk.",
+    "link": "Gjenopprett {{count}}-dagers rekke"
   }
 }

@@ -3458,5 +3458,16 @@
       "fade": "Sbiadito",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Recuperare la tua serie di {{count}} giorni?",
+    "body": "Hai saltato un giorno, ma puoi ripristinare la tua serie adesso. Disponibile una volta al mese. Giorni rimasti per recuperare: {{days}}.",
+    "notNow": "Non ora",
+    "justCheckIn": "Solo check-in",
+    "recover": "Recupera serie",
+    "hint": "Recupera",
+    "failTitle": "Impossibile recuperare",
+    "failBody": "Riprova tra un momento.",
+    "link": "Recupera serie di {{count}} giorni"
   }
 }

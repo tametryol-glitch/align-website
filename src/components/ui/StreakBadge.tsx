@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useStreakStore } from '@/stores/streakStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 
 export function StreakBadge() {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { currentStreak, longestStreak, checkedInToday, loading, performCheckIn, recovery, performRecovery } =
     useStreakStore();
@@ -13,16 +15,17 @@ export function StreakBadge() {
 
   const handleRecover = async () => {
     if (!user || loading) return;
-    const days = recovery.days_left ?? 1;
     const ok = window.confirm(
-      `Recover your ${recovery.lost_streak}-day streak?\n\nAvailable once a month — ${days} day${days === 1 ? '' : 's'} left to recover.`,
+      `${t('streakRecovery.title', { count: recovery.lost_streak })}
+
+${t('streakRecovery.body', { days: recovery.days_left ?? 1 })}`,
     );
     if (!ok) return;
     if (await performRecovery(user.id)) {
       setCelebrating(true);
       setTimeout(() => setCelebrating(false), 1200);
     } else {
-      window.alert('Could not recover your streak. Please try again in a moment.');
+      window.alert(`${t('streakRecovery.failTitle')}. ${t('streakRecovery.failBody')}`);
     }
   };
 
@@ -78,7 +81,7 @@ export function StreakBadge() {
         disabled={loading}
         className="text-[10px] font-semibold text-amber-300 underline underline-offset-2 hover:text-amber-200 whitespace-nowrap"
       >
-        Recover {recovery.lost_streak}-day streak
+        {t('streakRecovery.link', { count: recovery.lost_streak })}
       </button>
     )}
     </div>

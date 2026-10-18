@@ -3461,5 +3461,16 @@
       "fade": "褪色",
       "noir": "黑白"
     }
+  },
+  "streakRecovery": {
+    "title": "要恢复你的 {{count}} 天连续记录吗？",
+    "body": "你错过了一天，但现在可以恢复连续记录。每月可用一次。剩余恢复天数：{{days}}。",
+    "notNow": "暂不",
+    "justCheckIn": "仅签到",
+    "recover": "恢复连续记录",
+    "hint": "恢复",
+    "failTitle": "无法恢复",
+    "failBody": "请稍后再试。",
+    "link": "恢复 {{count}} 天连续记录"
   }
 }

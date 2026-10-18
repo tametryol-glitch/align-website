@@ -3458,5 +3458,16 @@
       "fade": "Verblasst",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Deine {{count}}-Tage-Serie wiederherstellen?",
+    "body": "Du hast einen Tag verpasst, kannst deine Serie aber jetzt wiederherstellen. Einmal pro Monat möglich. Verbleibende Tage zur Wiederherstellung: {{days}}.",
+    "notNow": "Jetzt nicht",
+    "justCheckIn": "Nur einchecken",
+    "recover": "Serie wiederherstellen",
+    "hint": "Wiederherstellen",
+    "failTitle": "Wiederherstellung fehlgeschlagen",
+    "failBody": "Bitte versuche es gleich noch einmal.",
+    "link": "{{count}}-Tage-Serie wiederherstellen"
   }
 }

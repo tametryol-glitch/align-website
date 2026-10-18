@@ -3458,5 +3458,16 @@
       "fade": "Vervaagd",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Je reeks van {{count}} dagen herstellen?",
+    "body": "Je hebt een dag gemist, maar je kunt je reeks nu herstellen. Eén keer per maand beschikbaar. Resterende dagen om te herstellen: {{days}}.",
+    "notNow": "Nu niet",
+    "justCheckIn": "Alleen inchecken",
+    "recover": "Reeks herstellen",
+    "hint": "Herstellen",
+    "failTitle": "Herstellen mislukt",
+    "failBody": "Probeer het zo meteen opnieuw.",
+    "link": "Reeks van {{count}} dagen herstellen"
   }
 }

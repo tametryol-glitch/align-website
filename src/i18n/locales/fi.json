@@ -3458,5 +3458,16 @@
       "fade": "Haalistunut",
       "noir": "Noir"
     }
+  },
+  "streakRecovery": {
+    "title": "Palautetaanko {{count}} päivän putkesi?",
+    "body": "Jäit yhdestä päivästä, mutta voit palauttaa putkesi nyt. Käytettävissä kerran kuussa. Päiviä jäljellä palautukseen: {{days}}.",
+    "notNow": "Ei nyt",
+    "justCheckIn": "Vain kirjaudu",
+    "recover": "Palauta putki",
+    "hint": "Palauta",
+    "failTitle": "Palautus epäonnistui",
+    "failBody": "Yritä hetken kuluttua uudelleen.",
+    "link": "Palauta {{count}} päivän putki"
   }
 }
