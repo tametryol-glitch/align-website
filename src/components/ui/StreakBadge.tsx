@@ -6,8 +6,25 @@ import { useAuthStore } from '@/stores/authStore';
 
 export function StreakBadge() {
   const { user } = useAuthStore();
-  const { currentStreak, longestStreak, checkedInToday, loading, performCheckIn } = useStreakStore();
+  const { currentStreak, longestStreak, checkedInToday, loading, performCheckIn, recovery, performRecovery } =
+    useStreakStore();
   const [celebrating, setCelebrating] = useState(false);
+  const canRecover = recovery.recoverable && recovery.can_recover;
+
+  const handleRecover = async () => {
+    if (!user || loading) return;
+    const days = recovery.days_left ?? 1;
+    const ok = window.confirm(
+      `Recover your ${recovery.lost_streak}-day streak?\n\nAvailable once a month — ${days} day${days === 1 ? '' : 's'} left to recover.`,
+    );
+    if (!ok) return;
+    if (await performRecovery(user.id)) {
+      setCelebrating(true);
+      setTimeout(() => setCelebrating(false), 1200);
+    } else {
+      window.alert('Could not recover your streak. Please try again in a moment.');
+    }
+  };
 
   const handleCheckIn = async () => {
     if (checkedInToday || !user || loading) return;
@@ -18,6 +35,7 @@ export function StreakBadge() {
   };
 
   return (
+    <div className="flex flex-col items-center gap-1">
     <button
       onClick={handleCheckIn}
       disabled={checkedInToday || loading}
@@ -54,5 +72,15 @@ export function StreakBadge() {
         longest: {longestStreak}d
       </span>
     </button>
+    {canRecover && (
+      <button
+        onClick={handleRecover}
+        disabled={loading}
+        className="text-[10px] font-semibold text-amber-300 underline underline-offset-2 hover:text-amber-200 whitespace-nowrap"
+      >
+        Recover {recovery.lost_streak}-day streak
+      </button>
+    )}
+    </div>
   );
 }

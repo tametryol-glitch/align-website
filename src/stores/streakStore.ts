@@ -1,5 +1,12 @@
 import { create } from 'zustand';
-import { getStreak, checkIn, StreakData } from '@/lib/streakService';
+import {
+  getStreak,
+  checkIn,
+  getStreakRecovery,
+  recoverStreak,
+  StreakData,
+  StreakRecovery,
+} from '@/lib/streakService';
 
 interface StreakState {
   currentStreak: number;
@@ -10,7 +17,11 @@ interface StreakState {
   loading: boolean;
   fetchStreak: (userId: string) => Promise<void>;
   performCheckIn: (userId: string) => Promise<void>;
+  recovery: StreakRecovery;
+  performRecovery: (userId: string) => Promise<boolean>;
 }
+
+const NO_RECOVERY: StreakRecovery = { recoverable: false, can_recover: false };
 
 function isToday(dateStr: string | null): boolean {
   if (!dateStr) return false;
@@ -18,7 +29,8 @@ function isToday(dateStr: string | null): boolean {
   return dateStr === today;
 }
 
-export const useStreakStore = create<StreakState>((set) => ({
+export const useStreakStore = create<StreakState>((set, get) => ({
+  recovery: NO_RECOVERY,
   currentStreak: 0,
   longestStreak: 0,
   lastCheckIn: null,
@@ -47,8 +59,23 @@ export const useStreakStore = create<StreakState>((set) => ({
           checkedInToday: false,
         });
       }
+      set({ recovery: await getStreakRecovery() });
     } catch (err) {
       console.error('Failed to fetch streak:', err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  performRecovery: async (userId: string) => {
+    set({ loading: true });
+    try {
+      const result = await recoverStreak();
+      if (result.recovered) await get().fetchStreak(userId);
+      return !!result.recovered;
+    } catch (err) {
+      console.error('Failed to recover streak:', err);
+      return false;
     } finally {
       set({ loading: false });
     }
@@ -64,6 +91,7 @@ export const useStreakStore = create<StreakState>((set) => ({
         totalCheckIns: data.total_check_ins,
         checkedInToday: isToday(data.last_check_in),
       });
+      set({ recovery: await getStreakRecovery() });
     } catch (err) {
       console.error('Failed to check in:', err);
     }

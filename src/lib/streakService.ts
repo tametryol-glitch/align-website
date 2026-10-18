@@ -6,8 +6,38 @@ export interface StreakData {
   longest_streak: number;
   last_check_in: string | null;
   total_check_ins: number;
+  lost_streak?: number;
+  lost_recover_until?: string | null;
+  last_recovery_at?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface StreakRecovery {
+  recoverable: boolean;
+  can_recover: boolean;
+  lost_streak?: number;
+  restore_to?: number;
+  days_left?: number;
+  recovered?: boolean;
+}
+
+/** Whether a lost streak can currently be recovered (48h window, once a month). */
+export async function getStreakRecovery(): Promise<StreakRecovery> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('streak_recovery', { p_apply: false });
+  if (error) {
+    console.error('Error fetching streak recovery:', error);
+    return { recoverable: false, can_recover: false };
+  }
+  return data as StreakRecovery;
+}
+
+export async function recoverStreak(): Promise<StreakRecovery> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('streak_recovery', { p_apply: true });
+  if (error) throw new Error(`Failed to recover streak: ${error.message}`);
+  return data as StreakRecovery;
 }
 
 /**
@@ -80,12 +110,19 @@ export async function checkIn(userId: string): Promise<StreakData> {
   );
 
   let newCurrentStreak: number;
+  const lostFields: Partial<StreakData> = {};
   if (diffDays === 1) {
     // Consecutive day — increment
     newCurrentStreak = existing.current_streak + 1;
   } else {
-    // Streak broken — reset
+    // Streak broken — reset, but remember it so it can be recovered for 48h
     newCurrentStreak = 1;
+    if (existing.current_streak >= 2) {
+      const until = new Date(existing.last_check_in + 'T00:00:00Z');
+      until.setUTCDate(until.getUTCDate() + 3);
+      lostFields.lost_streak = existing.current_streak;
+      lostFields.lost_recover_until = until.toISOString().split('T')[0];
+    }
   }
 
   const newLongestStreak = Math.max(newCurrentStreak, existing.longest_streak);
@@ -98,6 +135,7 @@ export async function checkIn(userId: string): Promise<StreakData> {
       longest_streak: newLongestStreak,
       last_check_in: today,
       total_check_ins: newTotalCheckIns,
+      ...lostFields,
       updated_at: new Date().toISOString(),
     })
     .eq('user_id', userId)
