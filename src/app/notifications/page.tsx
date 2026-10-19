@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
-import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter, Eye } from 'lucide-react';
+import { Bell, UserPlus, Heart, MessageCircle, Star, Check, CheckCheck, Zap, Megaphone, Filter, Eye, X, Trash2 } from 'lucide-react';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import {
   prioritizeNotifications as prioritizeByImportance,
@@ -376,6 +376,37 @@ export default function NotificationsPage() {
     setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, is_read: true } : n));
   }
 
+  async function deleteNotifications(ids: string[]) {
+    if (ids.length === 0) return;
+    const supabase = createClient();
+    const { error } = await supabase.from('notifications').delete().in('id', ids);
+    if (error) return;
+    setNotifications(prev => prev.filter(n => !ids.includes(n.id)));
+  }
+
+  async function clearAll() {
+    if (!user) return;
+    if (!window.confirm(t('notifications.clearAllConfirm', 'Delete all notifications? This cannot be undone.'))) return;
+    const supabase = createClient();
+    const { error } = await supabase.from('notifications').delete().eq('user_id', user.id);
+    if (error) return;
+    setNotifications([]);
+  }
+
+  function DeleteBtn({ ids, className = '' }: { ids: string[]; className?: string }) {
+    return (
+      <button
+        type="button"
+        aria-label={t('notifications.delete', 'Delete')}
+        title={t('notifications.delete', 'Delete')}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteNotifications(ids); }}
+        className={`absolute right-2 top-2 p-1.5 rounded-full text-text-muted hover:text-red-400 hover:bg-bg-tertiary transition-colors ${className}`}
+      >
+        <X className="w-4 h-4" />
+      </button>
+    );
+  }
+
   function toggleGroupExpand(groupId: string) {
     setExpandedGroups(prev => {
       const next = new Set(prev);
@@ -447,11 +478,18 @@ export default function NotificationsPage() {
             </span>
           )}
         </h1>
-        {unreadCount > 0 && (
-          <button onClick={markAllRead} className="btn-ghost text-sm flex items-center gap-1.5 text-accent-primary">
-            <CheckCheck className="w-4 h-4" /> {t('notifications.markAllRead')}
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {unreadCount > 0 && (
+            <button onClick={markAllRead} className="btn-ghost text-sm flex items-center gap-1.5 text-accent-primary">
+              <CheckCheck className="w-4 h-4" /> {t('notifications.markAllRead')}
+            </button>
+          )}
+          {notifications.length > 0 && (
+            <button onClick={clearAll} className="btn-ghost text-sm flex items-center gap-1.5 text-text-muted hover:text-red-400">
+              <Trash2 className="w-4 h-4" /> {t('notifications.clearAll', 'Clear all')}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
@@ -492,7 +530,7 @@ export default function NotificationsPage() {
               const isOptimalTime = SMART_SCHEDULING_ENABLED && engagementPattern
                 ? shouldSendNow(engagementPattern, new Date(n.created_at).getHours(), 'medium')
                 : false;
-              const wrapperClass = `flex items-start gap-3 p-4 rounded-xl transition-colors w-full text-left ${
+              const wrapperClass = `flex items-start gap-3 p-4 rounded-xl transition-colors w-full text-left pr-10 ${
                 n.is_read
                   ? 'bg-bg-card hover:bg-bg-card-hover'
                   : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
@@ -534,41 +572,45 @@ export default function NotificationsPage() {
               // The share invite opens a double-opt-in modal instead of navigating.
               if (n.type === 'cosmic_match_share_invite') {
                 return (
-                  <button
-                    key={n.id}
-                    onClick={() => {
-                      if (!n.is_read) markOneRead(n.id);
-                      if (n.data?.match_id) {
-                        setShareInvite({ matchId: n.data.match_id, partnerName: n.data.other_user_name, score: n.data.score });
-                      }
-                    }}
-                    className={wrapperClass}
-                  >
-                    {inner}
-                  </button>
+                  <div key={n.id} className="relative">
+                    <button
+                      onClick={() => {
+                        if (!n.is_read) markOneRead(n.id);
+                        if (n.data?.match_id) {
+                          setShareInvite({ matchId: n.data.match_id, partnerName: n.data.other_user_name, score: n.data.score });
+                        }
+                      }}
+                      className={wrapperClass}
+                    >
+                      {inner}
+                    </button>
+                    <DeleteBtn ids={[n.id]} />
+                  </div>
                 );
               }
 
               return (
-                <Link
-                  key={n.id}
-                  href={link}
-                  onClick={() => !n.is_read && markOneRead(n.id)}
-                  className={wrapperClass}
-                >
-                  {inner}
-                </Link>
+                <div key={n.id} className="relative">
+                  <Link
+                    href={link}
+                    onClick={() => !n.is_read && markOneRead(n.id)}
+                    className={wrapperClass}
+                  >
+                    {inner}
+                  </Link>
+                  <DeleteBtn ids={[n.id]} />
+                </div>
               );
             }
 
             return (
-              <div key={group.id} className="rounded-xl overflow-hidden">
+              <div key={group.id} className="rounded-xl overflow-hidden relative">
                 <button
                   onClick={() => {
                     toggleGroupExpand(group.id);
                     if (!group.isRead) markGroupRead(group);
                   }}
-                  className={`w-full flex items-start gap-3 p-4 rounded-xl transition-colors text-left ${
+                  className={`w-full flex items-start gap-3 p-4 pr-10 rounded-xl transition-colors text-left ${
                     group.isRead
                       ? 'bg-bg-card hover:bg-bg-card-hover'
                       : 'bg-accent-primary/5 border border-accent-primary/20 hover:bg-accent-primary/10'
@@ -605,16 +647,17 @@ export default function NotificationsPage() {
                     <div className="w-2 h-2 rounded-full bg-accent-primary flex-shrink-0 mt-2" />
                   )}
                 </button>
+                <DeleteBtn ids={group.notifications.map(n => n.id)} />
 
                 {isExpanded && (
                   <div className="ml-6 border-l border-border-primary pl-4 mt-1 space-y-1">
                     {group.notifications.map(n => {
                       const link = getNotificationLink(n);
                       return (
+                        <div key={n.id} className="relative">
                         <Link
-                          key={n.id}
                           href={link}
-                          className="flex items-start gap-3 p-3 rounded-lg transition-colors bg-bg-card hover:bg-bg-card-hover"
+                          className="flex items-start gap-3 p-3 pr-9 rounded-lg transition-colors bg-bg-card hover:bg-bg-card-hover"
                         >
                           <div
                             className={`w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0 ${n.actor_id ? 'cursor-pointer hover:ring-2 hover:ring-accent-primary/50' : ''}`}
@@ -638,6 +681,8 @@ export default function NotificationsPage() {
                             <p className="text-[10px] text-text-muted mt-0.5">{timeAgo(n.created_at)}</p>
                           </div>
                         </Link>
+                        <DeleteBtn ids={[n.id]} className="!top-1.5" />
+                        </div>
                       );
                     })}
                   </div>
