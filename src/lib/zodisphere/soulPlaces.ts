@@ -55,7 +55,7 @@ const wrap180 = (x: number) => ((x % 360) + 540) % 360 - 180;
  * measuring to the segment, not just its endpoints — immune to the line's 1°
  * vertex spacing (which alone could misjudge distance by ~35 miles).
  */
-function pointToSegmentMiles(
+export function pointToSegmentMiles(
   clat: number, clng: number,
   aLat: number, aLon: number,
   bLat: number, bLon: number,
@@ -195,6 +195,7 @@ export function findSoulPlaces(
   maxMiles = 50,
   max = 12,
   nearbyMax = 6,
+  compose: (o: { body: string; angle: AcgAngle; compositeDraconicLon: number; distanceMiles: number }) => SoulPlaceReading = composeDraconicComposite,
 ): SoulPlace[] {
   const latMargin = maxMiles / MILES_PER_DEG + 1; // segments span ≤1° of latitude
   const out: SoulPlace[] = [];
@@ -229,7 +230,7 @@ export function findSoulPlaces(
       body: line.planet,
       angle: line.angle,
       distanceMiles: primary.d,
-      reading: composeDraconicComposite({
+      reading: compose({
         body: line.planet,
         angle: line.angle,
         compositeDraconicLon: lon,

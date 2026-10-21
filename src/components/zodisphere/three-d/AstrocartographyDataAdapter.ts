@@ -15,6 +15,9 @@ import {
   getMyChartBodies,
   getMyProgressedChartBodies,
   getMyTransitChartBodies,
+  getSolarReturnChartBodies,
+  getSolarArcChartBodies,
+  type ChartData,
   projectWide,
   buildMidpointLines,
   probeMidpoints,
@@ -74,6 +77,10 @@ export interface AcgLine3D {
    *  'compendium' = finer sub-line revealed on zoom-in, 'matrix' = the finest
    *  4th-level rung revealed only at the deepest (building-level) zoom. */
   style?: 'natal' | 'duad' | 'compendium' | 'gridline' | 'matrix';
+  /** Relationship modes: the underlying body (planet is then "<owner> <body>")
+   *  and whose line it is ('A' = you, 'B' = your partner). */
+  body?: string;
+  owner?: 'A' | 'B';
   /** Optional text label for a horizontal grid line, placed at `labelLon`. */
   label?: string;
   labelLon?: number;
@@ -266,6 +273,56 @@ export async function getTransitAcgLines(
     }
   }
   return { lines, unavailable };
+}
+
+/** Project a fetched chart's bodies to ACG lines at the chart's own rotation. */
+function linesFromChart(
+  chart: ChartData,
+  bodyNames: string[],
+  prefix: string,
+): { lines: AcgLine3D[]; unavailable: string[] } {
+  const gmst = gmstAtMoment(chart.birthDate);
+  const byName = new Map(chart.bodies.map((b) => [b.name, b.longitude]));
+  const lines: AcgLine3D[] = [];
+  const unavailable: string[] = [];
+  for (const name of bodyNames.filter((n) => !NON_PROJECTABLE.has(n))) {
+    const lon = byName.get(name);
+    if (lon == null || !Number.isFinite(lon)) { unavailable.push(name); continue; }
+    const color = ACG_BODY_COLORS[name] || bodyInfoOf(name).color;
+    for (const raw of projectWide(lon, gmst)) {
+      lines.push({
+        id: `${prefix}-${name}:${raw.lineType}`, planet: name, angle: raw.lineType as AcgAngle, color,
+        points: raw.points.map((p) => ({ lat: p.lat, lon: p.lon })),
+      });
+    }
+  }
+  return { lines, unavailable };
+}
+
+/**
+ * SOLAR RETURN ACG lines for birthday-year `year`: where the planets of the
+ * year-ahead chart (cast for the exact Sun-return moment) are angular on Earth.
+ */
+export async function getSolarReturnAcgLines(
+  profile: any,
+  bodyNames: string[],
+  year: number,
+): Promise<{ lines: AcgLine3D[]; unavailable: string[]; momentUT: Date | null }> {
+  if (!bodyNames.length) return { lines: [], unavailable: [], momentUT: null };
+  const chart = await getSolarReturnChartBodies(profile, year);
+  if (!chart) return { lines: [], unavailable: bodyNames, momentUT: null };
+  return { ...linesFromChart(chart, bodyNames, `sr${year}`), momentUT: chart.birthDate };
+}
+
+/** SOLAR ARC ACG lines: natal bodies directed by the progressed Sun's arc. */
+export async function getSolarArcAcgLines(
+  profile: any,
+  bodyNames: string[],
+): Promise<{ lines: AcgLine3D[]; unavailable: string[]; arcDeg: number | null }> {
+  if (!bodyNames.length) return { lines: [], unavailable: [], arcDeg: null };
+  const chart = await getSolarArcChartBodies(profile);
+  if (!chart) return { lines: [], unavailable: bodyNames, arcDeg: null };
+  return { ...linesFromChart(chart, bodyNames, 'arc'), arcDeg: chart.arcDeg };
 }
 
 // ── Tap-to-read probe for natal ACG lines ───────────────────────────────────

@@ -33,8 +33,29 @@ import { paransNearLatitude } from '@/components/zodisphere/three-d/parans';
 import { natalLineMeaning } from '@/components/zodisphere/three-d/natalLineMeaning';
 import { computeLocationReport, countryAt, type LocationReport } from '@/components/zodisphere/three-d/locationInspector';
 import { Plus, Minus, Home, Tag, X, Search, GitMerge, Orbit, Type, Frame, Bookmark, Waves, Lock, Sparkles } from 'lucide-react';
+import { getSolarReturnAcgLines, getSolarArcAcgLines } from '@/components/zodisphere/three-d/AstrocartographyDataAdapter';
+import { getMyChartBodies } from '@/lib/zodisphereMidpoints';
+import { gmstAtMoment } from '@/lib/engines/derivedAcgLines';
+import { RelationshipPanel, SolarPanel, RelocatedCard } from '@/components/zodisphere/three-d/ModePanels';
+import { partnerProblem, type PartnerProfile } from '@/components/zodisphere/three-d/PartnerPicker';
+import { relocateChart } from '@/components/zodisphere/three-d/relocated';
+import { composeRelocation } from '@/components/zodisphere/three-d/zodisphereInterpretation';
+import {
+  getCompositeResult, getSynastryResult, rankBirthdayPlaces,
+  type CompositeResult, type SynastryResult,
+} from '@/lib/zodisphere/relationshipModes';
 
-type ChartMode = 'natal' | 'grid' | 'draconic' | 'progressed' | 'transit';
+type ChartMode = 'natal' | 'grid' | 'draconic' | 'progressed' | 'transit' | 'composite' | 'synastry' | 'relocated' | 'solar';
+
+/** Birthday year whose Solar Return is "current": the most recent birthday. */
+function currentSolarYear(birthDate?: string | null): number {
+  const now = new Date();
+  const parts = String(birthDate || '').split('-').map(Number);
+  if (parts.length < 3 || parts.some((n) => !Number.isFinite(n))) return now.getFullYear();
+  const [m, d] = parts[0] > 31 ? [parts[1], parts[2]] : [parts[1], parts[0]];
+  const bday = new Date(now.getFullYear(), m - 1, d);
+  return now < bday ? now.getFullYear() - 1 : now.getFullYear();
+}
 const PLANET_ORDER = ACG_PLANETS;
 const ALL_ANGLES: AcgAngle[] = ['MC', 'IC', 'ASC', 'DSC'];
 const ALL_BODIES = [...ACG_PLANETS, ...ACG_POINTS, ...ACG_ASTEROIDS];
@@ -94,7 +115,6 @@ export default function Zodisphere3dPrototypePage() {
   const [grid, setGrid] = useState<DuadGrid | null>(null);
   const [natalCtx, setNatalCtx] = useState<NatalContext | null>(null);
   const [natalRefLines, setNatalRefLines] = useState<AcgLine3D[]>([]);
-  const [modesOpen, setModesOpen] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());       // visual toggle
   const [hiddenAngles, setHiddenAngles] = useState<Set<AcgAngle>>(new Set());
   const [showLabels, setShowLabels] = useState(true);
@@ -185,7 +205,8 @@ export default function Zodisphere3dPrototypePage() {
 
   // Fetch ACG lines for the active bodies (planets + any added points/asteroids).
   useEffect(() => {
-    if (!enabled || !profile) return;
+    // Composite / Synastry / Solar own their lines (effects below).
+    if (!enabled || !profile || chartMode === 'composite' || chartMode === 'synastry' || chartMode === 'solar') return;
     let alive = true;
     (async () => {
       if (!profile.birth_date || profile.latitude == null) {
@@ -206,7 +227,8 @@ export default function Zodisphere3dPrototypePage() {
       const layerName = chartMode === 'draconic' ? ' · Draconic'
         : chartMode === 'progressed' ? ` · Progressed as of ${today}`
         : chartMode === 'transit' ? ` · Transits as of ${today}`
-        : chartMode === 'grid' ? ' · Duad Grid' : '';
+        : chartMode === 'grid' ? ' · Duad Grid'
+        : chartMode === 'relocated' ? ' · Relocated: tap any place' : '';
       setNote(
         `${lines.length} lines · ${shown} placements × ASC/DSC/MC/IC${layerName}.` +
         (unavailable.length ? ` Unavailable: ${unavailable.join(', ')}.` : ''),
@@ -377,7 +399,7 @@ export default function Zodisphere3dPrototypePage() {
   // Driven by the tapped line, or (for spots no line crosses) the nearest line
   // with a proximity so the prose is framed as a softer, at-a-distance influence.
   const locInterp = useMemo(() => {
-    if (!effectiveLine || !natalCtx || !tapPoint) return null;
+    if (!effectiveLine || !natalCtx || !tapPoint || chartMode === 'solar') return null;
     return interpretLocation(natalCtx, effectiveLine.line.planet, {
       band: (chartMode === 'grid' && gridBand)
         ? { duadSign: gridBand.duadSign, compendiumSign: gridBand.compendiumSign, matrixSign: gridBand.matrixSign }
@@ -466,6 +488,120 @@ export default function Zodisphere3dPrototypePage() {
     return () => { alive = false; };
   }, [enabled, profile, mode, pairs]);
 
+  // ── Composite · Synastry · Solar Return/Arc · Relocated ──────────────────────
+  const isRelMode = chartMode === 'composite' || chartMode === 'synastry';
+  const [partner, setPartner] = useState<{ profile: PartnerProfile; label: string } | null>(null);
+  const [relBusy, setRelBusy] = useState(false);
+  const [relErr, setRelErr] = useState<string | null>(null);
+  const [compositeRes, setCompositeRes] = useState<CompositeResult | null>(null);
+  const [synastryRes, setSynastryRes] = useState<SynastryResult | null>(null);
+  const countryOf = useCallback(
+    (lat: number, lng: number) => (countryFeatures.length ? countryAt(lat, lng, countryFeatures) : null),
+    [countryFeatures],
+  );
+  const flyToPlace = useCallback((lat: number, lng: number) => { controller?.flyTo(lat, lng, 1_500_000); }, [controller]);
+
+  const pickPartner = useCallback((p: PartnerProfile, label: string) => {
+    const problem = partnerProblem(p, label || 'They');
+    if (problem) { setRelErr(problem); return; }
+    setRelErr(null);
+    setPartner({ profile: p, label: label || 'Them' });
+  }, []);
+
+  useEffect(() => {
+    if (!enabled || !isRelMode) return;
+    if (!partner) { setAllLines([]); setNote(''); return; }
+    if (!profile?.birth_date || profile.latitude == null) { setRelErr('Add your birth date, exact time and place to your profile first.'); return; }
+    if (!cityData.length) return; // wait for the city list so places can be ranked
+    let alive = true;
+    setRelBusy(true); setRelErr(null); setAllLines([]);
+    (async () => {
+      try {
+        if (chartMode === 'composite') {
+          const r = await getCompositeResult(profile, partner.profile, cityData);
+          if (!alive) return;
+          if (!r) { setRelErr('Couldn’t build the composite. Both charts need a birth date, exact time and place.'); return; }
+          setCompositeRes(r); setAllLines(r.lines);
+          setNote(`Composite of you + ${partner.label} · ${r.lines.length} lines (the relationship’s own chart).`);
+        } else {
+          const r = await getSynastryResult(profile, partner.profile, partner.label, cityData);
+          if (!alive) return;
+          if (!r) { setRelErr('Couldn’t build the synastry. Both charts need a birth date, exact time and place.'); return; }
+          setSynastryRes(r); setAllLines(r.lines);
+          setNote(`You (gold) and ${partner.label} (violet) · ${r.lines.length} lines, ${r.crossings.length} crossings ranked.`);
+        }
+      } catch (e: any) {
+        if (alive) setRelErr(e?.message || 'Something went wrong reading the stars.');
+      } finally {
+        if (alive) setRelBusy(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [enabled, isRelMode, chartMode, partner, profile, cityData]);
+
+  // Solar Return / Solar Arc.
+  const [solarKind, setSolarKind] = useState<'return' | 'arc'>('return');
+  const [solarYear, setSolarYear] = useState<number | null>(null);
+  const activeSolarYear = solarYear ?? currentSolarYear(profile?.birth_date);
+  const [solarLines, setSolarLines] = useState<AcgLine3D[]>([]);
+  const [solarMoment, setSolarMoment] = useState<Date | null>(null);
+  const [solarArc, setSolarArc] = useState<number | null>(null);
+  const [solarBusy, setSolarBusy] = useState(false);
+  useEffect(() => {
+    if (!enabled || chartMode !== 'solar') return;
+    if (!profile?.birth_date || profile.latitude == null) { setNote('Add your birth date, time and place in your profile to see your solar return.'); return; }
+    let alive = true;
+    setSolarBusy(true);
+    (async () => {
+      try {
+        if (solarKind === 'return') {
+          const r = await getSolarReturnAcgLines(profile, bodies, activeSolarYear);
+          if (!alive) return;
+          setSolarLines(r.lines); setAllLines(r.lines); setSolarMoment(r.momentUT); setSolarArc(null);
+          setNote(r.lines.length ? `Solar Return ${activeSolarYear} · ${r.lines.length} lines` : 'Couldn’t compute the solar return. Check your birth details.');
+        } else {
+          const r = await getSolarArcAcgLines(profile, bodies);
+          if (!alive) return;
+          setSolarLines(r.lines); setAllLines(r.lines); setSolarArc(r.arcDeg); setSolarMoment(null);
+          setNote(r.lines.length ? `Solar Arc · ${r.lines.length} lines (${r.arcDeg?.toFixed(1)}° of arc)` : 'Couldn’t compute the solar arc. Check your birth details.');
+        }
+      } finally {
+        if (alive) setSolarBusy(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [enabled, chartMode, solarKind, activeSolarYear, profile, bodies]);
+  const solarRank = useMemo(
+    () => (chartMode === 'solar' && solarKind === 'return' && solarLines.length && cityData.length
+      ? rankBirthdayPlaces(solarLines.filter((l) => PLANET_ORDER.includes(l.planet)), cityData, activeSolarYear)
+      : { best: [], avoid: [] }),
+    [chartMode, solarKind, solarLines, cityData, activeSolarYear],
+  );
+
+  // Relocated: the natal sky + birth rotation, re-cast for any tapped place.
+  const [relocBase, setRelocBase] = useState<{ bodies: Array<{ name: string; longitude: number }>; gmst: number } | null>(null);
+  const [compareIdx, setCompareIdx] = useState<number | null>(null);
+  useEffect(() => {
+    if (!enabled || chartMode !== 'relocated' || !profile?.birth_date || profile.latitude == null) { return; }
+    let alive = true;
+    getMyChartBodies(profile, []).then((c) => {
+      if (alive && c) setRelocBase({ bodies: c.bodies, gmst: gmstAtMoment(c.birthDate) });
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [enabled, chartMode, profile]);
+  const relocateAt = useCallback((lat: number, lng: number, name: string) => {
+    if (!relocBase || profile?.latitude == null || profile?.longitude == null) return null;
+    const chart = relocateChart(
+      relocBase.bodies.filter((b) => PLANET_ORDER.includes(b.name)),
+      relocBase.gmst, { lat, lon: lng }, { lat: profile.latitude, lon: profile.longitude },
+    );
+    const reading = composeRelocation({
+      placeName: name, ascSign: chart.ascSign, mcSign: chart.mcSign, natalAscSign: chart.natalAscSign,
+      placements: chart.placements, angular: chart.angular.map((a) => ({ body: a.body, angle: a.angle })),
+    });
+    return { chart, reading };
+  }, [relocBase, profile]);
+
   // Open the Location Inspector at a point (used by taps and by search).
   const inspectAt = useCallback((lat: number, lng: number) => {
     setLineHits(probeAcgLines(lat, lng, visibleLines));
@@ -478,6 +614,7 @@ export default function Zodisphere3dPrototypePage() {
 
   // Tap-to-read: midpoints mode → nearby midpoint lines; lines mode → inspector.
   const handleTap = useCallback((lat: number, lng: number) => {
+    if (isRelMode) return; // relationship modes read from their ranked list, not single-person tap
     if (mode === 'midpoints') {
       const hits = probeMidpoints(lat, lng, midRaw);
       setProbeHits(hits);
@@ -485,7 +622,7 @@ export default function Zodisphere3dPrototypePage() {
       return;
     }
     inspectAt(lat, lng);
-  }, [mode, midRaw, inspectAt]);
+  }, [isRelMode, mode, midRaw, inspectAt]);
 
   // ── Place search (offline: bundled cities + countries; no geocoding vendor) ──
   const [geoQuery, setGeoQuery] = useState('');
@@ -594,8 +731,41 @@ export default function Zodisphere3dPrototypePage() {
       )}
 
       {/* Soul Places (Draconic Composite) — founder-gated beta, top-right panel. */}
-      {mounted && enabled && webglOk && !error && soulPlacesOn && (
+      {mounted && enabled && webglOk && !error && soulPlacesOn && !isRelMode && chartMode !== 'solar' && (
         <SoulPlacesPanel profile={profile} cities={cityData} countryFeatures={countryFeatures} autoPartnerId={soulPartnerId} />
+      )}
+
+      {/* Composite / Synastry: pick a person, ranked places. */}
+      {mounted && enabled && webglOk && !error && isRelMode && (
+        <RelationshipPanel
+          mode={chartMode as 'composite' | 'synastry'}
+          partnerLabel={partner?.label ?? null}
+          loading={relBusy}
+          error={relErr}
+          onPick={pickPartner}
+          onClear={() => { setPartner(null); setRelErr(null); setCompositeRes(null); setSynastryRes(null); setAllLines([]); }}
+          composite={compositeRes}
+          synastry={synastryRes}
+          countryOf={countryOf}
+          onFly={flyToPlace}
+        />
+      )}
+
+      {/* Solar Return / Solar Arc. */}
+      {mounted && enabled && webglOk && !error && chartMode === 'solar' && (
+        <SolarPanel
+          kind={solarKind}
+          onKind={setSolarKind}
+          year={activeSolarYear}
+          onYear={setSolarYear}
+          loading={solarBusy}
+          momentUT={solarMoment}
+          arcDeg={solarArc}
+          best={solarRank.best}
+          avoid={solarRank.avoid}
+          countryOf={countryOf}
+          onFly={flyToPlace}
+        />
       )}
 
       {/* Place search (offline cities + countries) → fly-to + inspector. */}
@@ -655,7 +825,7 @@ export default function Zodisphere3dPrototypePage() {
               <div className="pb-2 border-b border-white/10">
                 <div className="text-[11px] font-semibold text-white/80 mb-1.5">Chart mode</div>
                 <div className="grid grid-cols-2 gap-1">
-                  {([['natal', 'Natal'], ['grid', 'Duad Grid'], ['draconic', 'Draconic'], ['progressed', 'Progressed'], ['transit', 'Transits']] as [ChartMode, string][]).map(([m, label]) => (
+                  {([['natal', 'Natal'], ['grid', 'Duad Grid'], ['draconic', 'Draconic'], ['progressed', 'Progressed'], ['transit', 'Transits'], ['solar', 'Solar Return'], ['relocated', 'Relocated'], ['composite', 'Composite'], ['synastry', 'Synastry']] as [ChartMode, string][]).map(([m, label]) => (
                     <button
                       key={m}
                       onClick={() => setChartMode(m)}
@@ -686,16 +856,23 @@ export default function Zodisphere3dPrototypePage() {
                     tap anywhere to read the duad / compendium / matrix band + which planet crosses there.
                   </div>
                 )}
-                <button
-                  onClick={() => setModesOpen((v) => !v)}
-                  className="mt-1.5 text-[10px] text-white/40 hover:text-white/70"
-                >
-                  {modesOpen ? '▾ hide' : '▸ more modes'}
-                </button>
-                {modesOpen && (
-                  <p className="text-[10px] text-white/35 leading-snug mt-1">
-                    Transits, solar-arc/return, synastry, composite &amp; relocated — coming soon (need extra chart data).
-                  </p>
+                {chartMode === 'relocated' && (
+                  <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
+                    <strong>Relocated</strong> keeps your birth sky and re-casts it for any place. <span className="text-teal-200">Tap anywhere</span> to see
+                    your new rising sign, which planets move house, and whether the place lifts or strains you. Save places, then compare them.
+                  </div>
+                )}
+                {chartMode === 'solar' && (
+                  <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
+                    Your <strong>year-ahead</strong> map, cast for the exact moment your Sun returns. Open the panel for the best and hardest places to spend your birthday.
+                  </div>
+                )}
+                {(chartMode === 'composite' || chartMode === 'synastry') && (
+                  <div className="mt-1.5 text-[10px] text-white/45 leading-snug">
+                    {chartMode === 'composite'
+                      ? <>The <strong>relationship&apos;s own chart</strong>: the midpoint of both of you. Pick a person in the panel.</>
+                      : <><strong>Your lines</strong> (gold) and <strong>theirs</strong> (violet) together. Pick a person in the panel to find where they cross.</>}
+                  </div>
                 )}
               </div>
               {/* Active bodies */}
@@ -907,7 +1084,7 @@ export default function Zodisphere3dPrototypePage() {
       )}
 
       {/* Location Inspector — tap any place in Lines mode. */}
-      {mounted && enabled && webglOk && !error && mode === 'lines' && lineDetailOpen && tapPoint && (() => {
+      {mounted && enabled && webglOk && !error && mode === 'lines' && !isRelMode && lineDetailOpen && tapPoint && (() => {
         const cities = nearestCities(tapPoint.lat, tapPoint.lng);
         const country = countryAt(tapPoint.lat, tapPoint.lng, countryFeatures);
         const placeName = cities[0] || country || `${tapPoint.lat.toFixed(1)}°, ${tapPoint.lng.toFixed(1)}°`;
@@ -944,6 +1121,37 @@ export default function Zodisphere3dPrototypePage() {
                 <button onClick={() => setLineDetailOpen(false)} aria-label="Close"><X className="w-4 h-4 text-white/50 hover:text-white" /></button>
               </div>
             </div>
+
+            {/* Relocated: the chart rebuilt for this exact place (+ optional compare). */}
+            {chartMode === 'relocated' && (() => {
+              if (!relocBase) return <p className="mb-2 text-[11px] text-white/45">Rebuilding your chart for this place…</p>;
+              const here = relocateAt(tapPoint.lat, tapPoint.lng, placeName);
+              if (!here) return null;
+              const cmpSaved = compareIdx != null ? savedLocations[compareIdx] : null;
+              const cmp = cmpSaved ? relocateAt(cmpSaved.lat, cmpSaved.lng, cmpSaved.name) : null;
+              return (
+                <>
+                  <RelocatedCard
+                    placeName={placeName}
+                    reading={here.reading}
+                    chart={here.chart}
+                    compare={cmp && cmpSaved ? { label: cmpSaved.name, reading: cmp.reading, chart: cmp.chart } : null}
+                    onClearCompare={() => setCompareIdx(null)}
+                  />
+                  {savedLocations.length > 0 && (
+                    <select
+                      value={compareIdx ?? ''}
+                      onChange={(e) => setCompareIdx(e.target.value === '' ? null : Number(e.target.value))}
+                      className="mb-2 w-full rounded-lg bg-white/5 border border-white/10 px-2 py-1.5 text-[11px] text-white outline-none"
+                      aria-label="Compare with a saved place"
+                    >
+                      <option value="" className="bg-black">Compare with a saved place…</option>
+                      {savedLocations.map((s, i) => <option key={i} value={i} className="bg-black">{s.name}</option>)}
+                    </select>
+                  )}
+                </>
+              );
+            })()}
 
             {/* Interpretive life-area scores */}
             {locReport && (

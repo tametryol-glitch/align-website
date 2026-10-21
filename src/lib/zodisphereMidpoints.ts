@@ -256,7 +256,7 @@ function parseChartBodies(chart: any): ChartBody[] {
 }
 
 /** Birth moment in UTC from a profile (real historical tz/DST). */
-function birthMomentUT(profile: any): { ut: Date; tzOff: number } | null {
+export function birthMomentUT(profile: any): { ut: Date; tzOff: number } | null {
   if (!profile?.birth_date) return null;
   const parts = String(profile.birth_date).split('-').map(Number);
   let yr: number, mo: number, dy: number;
@@ -279,7 +279,7 @@ const TROPICAL_YEAR_DAYS = 365.242190;
  *  ephemeris (getNatalChart). Planetary longitudes are location-independent, but
  *  the API takes local date/time + tz, so we express the moment in the birthplace
  *  tz frame (resolved for that date so DST is right) and it round-trips to UT. */
-async function chartBodiesAtMoment(profile: any, momentUT: Date): Promise<ChartData | null> {
+export async function chartBodiesAtMoment(profile: any, momentUT: Date): Promise<ChartData | null> {
   const pad = (n: number) => String(n).padStart(2, '0');
   let tzOff = Math.round((profile.longitude || 0) / 15);
   const approx = new Date(momentUT.getTime() + tzOff * 3_600_000);
@@ -329,6 +329,79 @@ export async function getMyTransitChartBodies(profile: any): Promise<ChartData |
     return await chartBodiesAtMoment(profile, new Date());
   } catch (e: any) {
     console.error('[zodisphere] transit chart fetch failed:', e?.message);
+    return null;
+  }
+}
+
+// ── Solar Return + Solar Arc ───────────────────────────────────────────────
+const SUN_DAILY_DEG = 0.9856;
+const wrapSigned = (x: number) => ((x % 360) + 540) % 360 - 180;
+
+/**
+ * Find the exact moment the Sun returns to its natal longitude near `guessUT`.
+ * Newton iteration on the real ephemeris (`sunAt`): each step moves the clock by
+ * (remaining arc / mean solar speed). Converges to well under 0.01° (~15 min of
+ * time, i.e. arc-minutes) in 2-3 fetches. Returns null if the ephemeris fails.
+ */
+export async function solveSolarReturnMoment(
+  natalSunLon: number,
+  guessUT: Date,
+  sunAt: (d: Date) => Promise<number | null>,
+  maxIterations = 4,
+): Promise<Date | null> {
+  let t = guessUT.getTime();
+  for (let i = 0; i < maxIterations; i++) {
+    const s = await sunAt(new Date(t));
+    if (s == null || !Number.isFinite(s)) return null;
+    const delta = wrapSigned(natalSunLon - s);
+    if (Math.abs(delta) < 0.002) break;
+    t += (delta / SUN_DAILY_DEG) * DAY_MS;
+  }
+  return new Date(t);
+}
+
+/** The SOLAR RETURN chart for birthday-year `year`: the sky at the exact moment
+ *  the Sun comes home to its natal degree. Its `birthDate` is that moment (the
+ *  rotation reference for the ACG projection). */
+export async function getSolarReturnChartBodies(profile: any, year: number): Promise<ChartData | null> {
+  if (!profile?.birth_date || profile?.latitude == null) return null;
+  try {
+    const bm = birthMomentUT(profile);
+    const natal = await getMyChartBodies(profile, []);
+    const natalSun = natal?.bodies.find((b) => b.name === 'Sun')?.longitude;
+    if (!bm || natalSun == null) return null;
+    const guess = new Date(bm.ut.getTime() + (year - bm.ut.getUTCFullYear()) * TROPICAL_YEAR_DAYS * DAY_MS);
+    const sunAt = async (d: Date) => {
+      const c = await chartBodiesAtMoment(profile, d);
+      return c?.bodies.find((b) => b.name === 'Sun')?.longitude ?? null;
+    };
+    const moment = await solveSolarReturnMoment(natalSun, guess, sunAt);
+    if (!moment) return null;
+    return await chartBodiesAtMoment(profile, moment);
+  } catch (e: any) {
+    console.error('[zodisphere] solar return fetch failed:', e?.message);
+    return null;
+  }
+}
+
+/** SOLAR ARC: every natal longitude advanced by the secondary-progressed Sun's
+ *  movement (progressed Sun − natal Sun). Keeps the natal Earth rotation, so the
+ *  directed lines slide along the natal geometry. `arcDeg` is returned too. */
+export async function getSolarArcChartBodies(profile: any): Promise<(ChartData & { arcDeg: number }) | null> {
+  if (!profile?.birth_date || profile?.latitude == null) return null;
+  try {
+    const [natal, prog] = await Promise.all([getMyChartBodies(profile, []), getMyProgressedChartBodies(profile)]);
+    const nSun = natal?.bodies.find((b) => b.name === 'Sun')?.longitude;
+    const pSun = prog?.bodies.find((b) => b.name === 'Sun')?.longitude;
+    if (!natal || nSun == null || pSun == null) return null;
+    const arcDeg = ((pSun - nSun) % 360 + 360) % 360;
+    return {
+      bodies: natal.bodies.map((b) => ({ name: b.name, longitude: (((b.longitude + arcDeg) % 360) + 360) % 360 })),
+      birthDate: natal.birthDate,
+      arcDeg,
+    };
+  } catch (e: any) {
+    console.error('[zodisphere] solar arc fetch failed:', e?.message);
     return null;
   }
 }

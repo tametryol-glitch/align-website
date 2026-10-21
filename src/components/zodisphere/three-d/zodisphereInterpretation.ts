@@ -935,3 +935,209 @@ export function composeDraconicComposite(opts: {
 
   return { headline, narrative: parts.join('\n\n'), whatCouldHaveBeen };
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// COMPOSITE · SYNASTRY · RELOCATED · SOLAR RETURN readings
+// Voice: second person, verdict-first, plain language, and honest about the hard
+// outcomes as well as the good ones. No astrology jargon in the prose.
+// ═════════════════════════════════════════════════════════════════════════════
+
+/** How favourable each body tends to be where it is angular (-1 hard … +1 easy). */
+export const BODY_VALENCE: Record<string, number> = {
+  Sun: 0.8, Moon: 0.5, Mercury: 0.3, Venus: 1, Mars: -0.5,
+  Jupiter: 1, Saturn: -0.6, Uranus: -0.3, Neptune: -0.3, Pluto: -0.6,
+};
+const SOFT_BODIES = new Set(['Venus', 'Jupiter', 'Moon', 'Sun']);
+const HARD_BODIES = new Set(['Mars', 'Saturn', 'Uranus', 'Neptune', 'Pluto']);
+
+const SOFT_GIFT: Record<string, string> = {
+  Venus: 'tenderness and attraction', Jupiter: 'luck and generosity', Moon: 'safety and care',
+  Sun: 'pride and mutual respect', Mercury: 'easy conversation',
+};
+const HARD_RISK: Record<string, string> = {
+  Mars: 'arguments that escalate fast and tempers that don’t cool down',
+  Saturn: 'coldness, criticism, and a feeling of being judged or held back',
+  Pluto: 'power struggles, jealousy, and control',
+  Uranus: 'sudden breaks and one of you bolting',
+  Neptune: 'blurred truth: white lies, disappointment, and loving someone who isn’t quite real',
+};
+
+// ── Composite: the relationship as its own entity ───────────────────────────
+const COUPLE_DOES: Record<string, string> = {
+  Sun: 'gives the two of you a shared identity and something to be proud of',
+  Moon: 'makes you each other’s safe place',
+  Mercury: 'puts the two of you on the same wavelength',
+  Venus: 'turns up the love, the affection, and the desire',
+  Mars: 'turns up the heat, for passion and for fights alike',
+  Jupiter: 'opens things up: luck, growth, and a bigger shared life',
+  Saturn: 'tests whether this relationship can carry real weight',
+  Uranus: 'shakes the relationship loose from its routine',
+  Neptune: 'wraps the two of you in a dream, beautiful and slippery',
+  Pluto: 'forces the relationship to transform or break',
+};
+const COUPLE_ANGLE: Record<Angle, string> = {
+  MC: 'in public, where people see the two of you as a pair',
+  IC: 'at home, in the private life you build together',
+  ASC: 'in how the two of you come across as a unit',
+  DSC: 'face to face, in how you treat each other',
+};
+const COUPLE_BEST_FOR: Record<string, string> = {
+  Sun: 'starting something together', Moon: 'making a home', Mercury: 'the big conversations',
+  Venus: 'moving in, marrying, or renewing your vows', Mars: 'fighting for something together, and learning to fight fair',
+  Jupiter: 'expanding: travel, study, the business, the family', Saturn: 'committing to the hard, long-term work',
+  Uranus: 'shaking up a stale relationship', Neptune: 'dreaming together, and checking the fine print',
+  Pluto: 'a total reset of what the two of you are',
+};
+
+export function composeCompositePlace(opts: {
+  body: string; angle: Angle; compositeDraconicLon: number; distanceMiles: number;
+}): SoulPlaceReading {
+  const { body, angle, compositeDraconicLon: lon, distanceMiles } = opts;
+  const sign = signOfLon(lon);
+  const f = getFullDuadCompendium(lon);
+  const trait = (s: string) => SIGN_TRAIT[s] || 'wired its own way';
+  const miles = Math.max(1, Math.round(distanceMiles));
+  const mi = `${miles} ${miles === 1 ? 'mile' : 'miles'}`;
+  const closeness = miles <= 15 ? `almost dead-on, only ${mi} off` : miles <= 35 ? `close, about ${mi} away` : `inside reach, roughly ${mi} off`;
+  const does = COUPLE_DOES[body] || 'colours the relationship';
+  const parts: string[] = [];
+  parts.push(`**As a couple, ${body} ${does}, ${COUPLE_ANGLE[angle]}.** This is where the relationship itself runs strongest, ${closeness}.`);
+  parts.push(`The two of you together are ${trait(sign)}, and this place amplifies it. Being here feels ${ELEMENT_ATMOSPHERE[ELEMENT[sign]]}.`);
+  parts.push(`Underneath, there's a quieter current: ${trait(f.duadSign)}. Go deeper and it turns into ${trait(f.compendiumSign)}, the part only the two of you know.`);
+  const gift = SOFT_GIFT[body];
+  const risk = HARD_RISK[body];
+  if (gift) parts.push(`The upside is real: ${gift}. The cost if you ignore the relationship here: it gets taken for granted.`);
+  if (risk) parts.push(`Be honest about the cost: ${risk}. The place doesn't cause it, it exposes what's already there.`);
+  const headline = `${body} ${angle} · ${cap(body === 'Venus' ? 'love' : body === 'Moon' ? 'home' : body === 'Sun' ? 'shared identity' : body === 'Mars' ? 'heat' : body === 'Jupiter' ? 'growth' : body === 'Saturn' ? 'endurance' : body === 'Mercury' ? 'understanding' : body === 'Uranus' ? 'rupture and freedom' : body === 'Neptune' ? 'illusion and devotion' : 'transformation')}`;
+  return {
+    headline,
+    narrative: parts.join('\n\n'),
+    whatCouldHaveBeen: `Best for: ${COUPLE_BEST_FOR[body] || 'time together'}.${risk ? ` Watch for ${risk}.` : ''}`,
+  };
+}
+
+// ── Synastry: where two people's lines meet ─────────────────────────────────
+const PERSON_FORCE: Record<string, string> = {
+  Sun: 'pride and purpose', Moon: 'need for safety', Mercury: 'words and ideas',
+  Venus: 'affection and taste', Mars: 'drive and temper', Jupiter: 'generosity and luck',
+  Saturn: 'caution and sense of duty', Uranus: 'restlessness', Neptune: 'dreaminess',
+  Pluto: 'intensity and need for control',
+};
+const ANGLE_FOR_ME: Record<Angle, string> = {
+  ASC: 'in how you come across', MC: 'in your public life', DSC: 'in how you treat a partner', IC: 'at home and in your roots',
+};
+const ANGLE_FOR_THEM: Record<Angle, string> = {
+  ASC: 'in how they come across', MC: 'in their public life', DSC: 'in how they treat a partner', IC: 'at home and in their roots',
+};
+
+export type CrossingKind = 'thrive' | 'charged' | 'clash';
+export interface SynastryReading { headline: string; narrative: string; kind: CrossingKind; score: number; }
+
+export function composeSynastryCrossing(opts: {
+  bodyA: string; angleA: Angle; bodyB: string; angleB: Angle; nameB: string;
+}): SynastryReading {
+  const { bodyA, angleA, bodyB, angleB, nameB } = opts;
+  const them = nameB || 'them';
+  const theirs = nameB ? `${nameB}'s` : 'their';
+  const softA = SOFT_BODIES.has(bodyA), softB = SOFT_BODIES.has(bodyB);
+  const hardA = HARD_BODIES.has(bodyA), hardB = HARD_BODIES.has(bodyB);
+  const kind: CrossingKind = (softA || softB) && !(hardA || hardB) ? 'thrive' : (hardA || hardB) && !(softA || softB) ? 'clash' : 'charged';
+  const score = (BODY_VALENCE[bodyA] ?? 0) + (BODY_VALENCE[bodyB] ?? 0);
+  const parts: string[] = [];
+  parts.push(`**Your ${PERSON_FORCE[bodyA] || bodyA} meets ${theirs} ${PERSON_FORCE[bodyB] || bodyB} here.** For you it lands ${ANGLE_FOR_ME[angleA]}. For ${them} it lands ${ANGLE_FOR_THEM[angleB]}.`);
+  const gifts = [softA && SOFT_GIFT[bodyA], softB && SOFT_GIFT[bodyB]].filter(Boolean) as string[];
+  const risks = [hardA && HARD_RISK[bodyA], hardB && HARD_RISK[bodyB]].filter(Boolean) as string[];
+  if (kind === 'thrive') {
+    parts.push(`This is the easy place. ${cap(gifts.join(' and '))} feed each other here, and you'll feel like a team soon after you land. The only risk is coasting: easy places make people stop trying.`);
+  } else if (kind === 'charged') {
+    parts.push(`This place cuts both ways. ${cap(gifts.join(' and '))} are real here, and so is ${risks.join(' and ')}. It rewards you if you name problems early and punishes silence.`);
+  } else {
+    parts.push(`Be honest with yourselves: this is a hard place for the two of you. Expect ${risks.join(' and ')}. Visit short rather than long, and don't make big decisions here.`);
+  }
+  const headline = `${bodyA} ${angleA} × ${bodyB} ${angleB} · ${kind === 'thrive' ? 'Where you thrive' : kind === 'charged' ? 'Charged, handle with care' : 'Where you clash'}`;
+  return { headline, narrative: parts.join('\n\n'), kind, score };
+}
+
+// ── Solar Return: the year ahead, place by place ────────────────────────────
+const YEAR_THEME: Record<string, string> = {
+  Sun: 'a year to be seen and to lead', Moon: 'a year about home, family, and your emotional needs',
+  Mercury: 'a year of learning, deals, and conversations', Venus: 'a year of love, money, and pleasure',
+  Mars: 'a year of drive, conflict, and bold moves', Jupiter: 'a year of luck, growth, and opportunity',
+  Saturn: 'a year of responsibility, limits, and hard-earned progress', Uranus: 'a year of sudden change and breaking free',
+  Neptune: 'a year of dreams, confusion, and spiritual pull', Pluto: 'a year of upheaval, power, and transformation',
+};
+const YEAR_ANGLE: Record<Angle, string> = {
+  MC: 'It shows up in your career and reputation.', ASC: 'It reshapes how you present yourself.',
+  DSC: 'It arrives through other people: partners, clients, rivals.', IC: 'It plays out at home and with family.',
+};
+
+export function composeYearPlace(opts: {
+  body: string; angle: Angle; distanceMiles: number; year: number;
+}): SoulPlaceReading {
+  const { body, angle, distanceMiles, year } = opts;
+  const miles = Math.max(1, Math.round(distanceMiles));
+  const parts: string[] = [];
+  parts.push(`**Spend your ${year} birthday here and your year becomes ${YEAR_THEME[body] || 'about ' + body}.** ${YEAR_ANGLE[angle]} You'd be ${miles <= 20 ? 'right on the line' : `about ${miles} miles from the line`}.`);
+  if (SOFT_BODIES.has(body)) parts.push(`This is a good bet: ${SOFT_GIFT[body]} get a push for the next twelve months. Lean into it on purpose, because luck does less for people who don't move.`);
+  else if (HARD_BODIES.has(body)) parts.push(`This is the demanding choice: the year brings ${HARD_RISK[body]}. Pick it only if you want to be tested. Otherwise celebrate somewhere kinder.`);
+  else parts.push('This one is neutral: it sharpens the mind and the message, for better or worse depending on what you say.');
+  return {
+    headline: `${body} ${angle} · ${cap(YEAR_THEME[body] || body)}`,
+    narrative: parts.join('\n\n'),
+    whatCouldHaveBeen: SOFT_BODIES.has(body) ? 'Birthday verdict: go.' : HARD_BODIES.has(body) ? 'Birthday verdict: only if you’re ready for a hard year.' : 'Birthday verdict: fine, with open eyes.',
+  };
+}
+
+// ── Relocated chart: what your chart becomes in a place ─────────────────────
+const HOUSE_PLAIN: Record<number, string> = {
+  1: 'who you are and how you come across', 2: 'money and what you own', 3: 'daily life, siblings, and learning',
+  4: 'home and family', 5: 'romance, joy, and creativity', 6: 'work routines and health',
+  7: 'partnerships and one-on-one bonds', 8: 'shared money, intimacy, and crisis', 9: 'travel, belief, and big ideas',
+  10: 'career and public standing', 11: 'friends and the future you hope for', 12: 'solitude, secrets, and what you can’t see coming',
+};
+
+export interface RelocatedPlacement { body: string; sign: string; house: number; natalHouse: number; }
+export interface RelocatedReading { headline: string; narrative: string; shifts: string[]; verdict: 'lift' | 'mixed' | 'strain'; score: number; }
+
+/** Verdict-first reading of a relocated chart vs. the natal one. */
+export function composeRelocation(opts: {
+  placeName: string; ascSign: string; mcSign: string; natalAscSign: string;
+  placements: RelocatedPlacement[]; angular: Array<{ body: string; angle: Angle }>;
+}): RelocatedReading {
+  const { placeName, ascSign, mcSign, natalAscSign, placements, angular } = opts;
+  const place = placeName || 'this place';
+  // Score: favourable bodies in angular / strong houses lift; hard ones strain.
+  const STRONG = new Set([1, 4, 7, 10]);
+  let score = 0;
+  for (const p of placements) {
+    const v = BODY_VALENCE[p.body];
+    if (v == null) continue;
+    score += v * (STRONG.has(p.house) ? 1 : 0.4) * (p.house !== p.natalHouse ? 1.2 : 0.6);
+  }
+  for (const a of angular) score += (BODY_VALENCE[a.body] ?? 0) * 0.8;
+  score = Math.round(score * 10) / 10;
+  const verdict: RelocatedReading['verdict'] = score >= 1.5 ? 'lift' : score <= -1.5 ? 'strain' : 'mixed';
+
+  const moved = placements
+    .filter((p) => BODY_VALENCE[p.body] != null && p.house !== p.natalHouse)
+    .sort((a, b) => Math.abs(BODY_VALENCE[b.body]) * (STRONG.has(b.house) ? 2 : 1) - Math.abs(BODY_VALENCE[a.body]) * (STRONG.has(a.house) ? 2 : 1))
+    .slice(0, 4);
+  const shifts = moved.map((p) => {
+    const v = BODY_VALENCE[p.body];
+    const area = HOUSE_PLAIN[p.house] || 'this area of life';
+    return v >= 0.5
+      ? `${p.body} moves into ${area}: this part of life gets help here.`
+      : v <= -0.3
+        ? `${p.body} moves into ${area}: expect pressure in this part of life (${HARD_RISK[p.body] || 'friction'}).`
+        : `${p.body} moves into ${area}: this part of life gets louder.`;
+  });
+
+  const parts: string[] = [];
+  const head = verdict === 'lift' ? `${place} tends to lift you.` : verdict === 'strain' ? `${place} tends to strain you.` : `${place} is a mixed bag for you.`;
+  parts.push(`**${head}** Your chart rebuilt for this spot rises in ${ascSign}${ascSign !== natalAscSign ? ` instead of ${natalAscSign}` : ''}, with ${mcSign} on top. That changes how people read you here and what you're pushed toward.`);
+  if (angular.length) {
+    parts.push(`${angular.map((a) => `${a.body} on your ${a.angle === 'ASC' ? 'rising point' : a.angle === 'MC' ? 'career point' : a.angle === 'DSC' ? 'partnership point' : 'home point'}`).join(', ')}: ${angular.length > 1 ? 'these are' : 'this is'} the loudest thing about living here.`);
+  }
+  if (shifts.length === 0) parts.push('Almost nothing changes house here, so life would feel familiar.');
+  return { headline: head, narrative: parts.join('\n\n'), shifts, verdict, score };
+}
