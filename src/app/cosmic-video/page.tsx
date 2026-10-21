@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 import { buildBirthData } from '@/lib/api';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
+import { useAudioLibrary } from '@/lib/musicLibrary';
+import { loadVideoAstroPayload } from '@/lib/cosmicVideoData';
+import { TemplateArt } from '@/components/cosmic-video/TemplateArt';
 import {
   TEMPLATES,
-  MUSIC_TRACKS,
   COLOR_THEMES,
   AR_FILTERS,
   FREE_MONTHLY_VIDEO_LIMIT,
@@ -21,7 +23,6 @@ import {
   type RenderJob,
   type CosmicVideo,
   type AudioOption,
-  type MusicTrack,
   type TextOverlayConfig,
   type ColorThemeOption,
   type ARFilterOption,
@@ -29,7 +30,7 @@ import {
 import {
   Video, ChevronLeft, Play, Download, Share2, Scissors,
   Sparkles, Clock, Loader2, AlertCircle, Check,
-  Volume2, VolumeX, RefreshCw, Music, Type, Palette, Plus, X, Sliders, Wand2,
+  Volume2, VolumeX, RefreshCw, Music, Type, Palette, Plus, X, Wand2, ChevronDown,
 } from 'lucide-react';
 
 // -- Zodiac signs for the zodiac_personality template -------------------
@@ -37,6 +38,15 @@ const ZODIAC_SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
 ];
+
+// Real length of each server-rendered template (the renderer's fixed timelines).
+const TEMPLATE_SECONDS: Record<string, number> = {
+  chart_reveal: 30,
+  daily_forecast: 30,
+  transit_alert: 20,
+  compatibility_check: 33,
+  zodiac_personality: 15,
+};
 
 type View = 'templates' | 'customize' | 'rendering' | 'ready' | 'my-videos';
 
@@ -60,6 +70,9 @@ export default function CosmicVideoPage() {
   const [durationSeconds, setDurationSeconds] = useState(30);
   const [textOverlays, setTextOverlays] = useState<TextOverlayConfig[]>([]);
   const [arFilter, setArFilter] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const { music: libraryMusic } = useAudioLibrary();
+  const astroCache = useRef<{ key: string; promise: Promise<Record<string, unknown>> } | null>(null);
 
   // -- Render state -----------------------------------------------------
   const [currentJob, setCurrentJob] = useState<RenderJob | null>(null);
@@ -80,18 +93,34 @@ export default function CosmicVideoPage() {
 
   // -- Helpers ----------------------------------------------------------
 
-  const buildAstroData = useCallback(() => {
+  // Base identity fields + REAL chart/sky data for the template (natal planets,
+  // today's transits, moon phase…). Cached per template so script generation and
+  // the render submit don't hit the ephemeris twice.
+  const buildAstroData = useCallback(async (templateId: TemplateId): Promise<Record<string, unknown>> => {
     if (!profile) return {};
-    const bd = buildBirthData(profile);
-    return {
-      sunSign: profile.sun_sign || '',
-      moonSign: profile.moon_sign || '',
-      risingSign: profile.rising_sign || '',
-      displayName: profile.display_name || '',
-      planets: [],
-      aspects: [],
-      ...bd,
-    };
+    const key = `${templateId}|${profile.id}|${new Date().toDateString()}`;
+    if (astroCache.current?.key === key) return astroCache.current.promise;
+    const promise = (async () => {
+      const bd = buildBirthData(profile);
+      let real: Record<string, unknown> = {};
+      try {
+        real = (await loadVideoAstroPayload(profile as unknown as Record<string, unknown>, templateId)) as unknown as Record<string, unknown>;
+      } catch {
+        // renderer falls back to its honest "quiet skies" scenes
+      }
+      return {
+        sunSign: profile.sun_sign || '',
+        moonSign: profile.moon_sign || '',
+        risingSign: profile.rising_sign || '',
+        displayName: profile.display_name || '',
+        planets: [],
+        aspects: [],
+        ...bd,
+        ...real,
+      };
+    })();
+    astroCache.current = { key, promise };
+    return promise;
   }, [profile]);
 
   // -- Template selection -----------------------------------------------
@@ -105,7 +134,8 @@ export default function CosmicVideoPage() {
     setSelectedMusic(null);
     setMusicVolume(0.3);
     setColorTheme('default');
-    setDurationSeconds(tmpl.durationRange[0]);
+    setDurationSeconds(TEMPLATE_SECONDS[tmpl.id] ?? tmpl.durationRange[0]);
+    setShowAdvanced(false);
     setTextOverlays([]);
     setArFilter(null);
     if (tmpl.id === 'zodiac_personality') {
@@ -122,7 +152,7 @@ export default function CosmicVideoPage() {
     setIsGeneratingScript(true);
     setRenderError('');
     try {
-      const astroData = buildAstroData();
+      const astroData = await buildAstroData(selectedTemplate.id);
       const script = await generateScript(selectedTemplate.id, astroData);
       setGeneratedScript(script);
     } catch (err: any) {
@@ -145,7 +175,7 @@ export default function CosmicVideoPage() {
     setRenderError('');
 
     try {
-      const astroData = buildAstroData();
+      const astroData = await buildAstroData(selectedTemplate.id);
 
       const audioOption: AudioOption = audioType === 'tts'
         ? { type: 'tts', tts_voice: ttsVoice, tts_text: generatedScript }
@@ -268,7 +298,7 @@ export default function CosmicVideoPage() {
           </h1>
           {view === 'templates' && (
             <p className="text-text-tertiary text-sm mt-1">
-              Create shareable astrology videos ({FREE_MONTHLY_VIDEO_LIMIT} free/month)
+              Cinematic astrology videos with a full soundtrack, made from your real chart ({FREE_MONTHLY_VIDEO_LIMIT} free/month)
             </p>
           )}
         </div>
@@ -306,40 +336,35 @@ export default function CosmicVideoPage() {
             </div>
           </Link>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {TEMPLATES.map((tmpl) => (
+        <div className="grid gap-5 sm:grid-cols-2">
+          {TEMPLATES.filter((tmpl) => !tmpl.requiresPartner).map((tmpl) => (
             <button
               key={tmpl.id}
               onClick={() => handleSelectTemplate(tmpl)}
-              className="text-left bg-bg-card border border-border-primary rounded-2xl p-5 hover:border-accent-primary/40 transition-all group"
+              className="group text-left bg-bg-card border border-border-primary rounded-2xl p-3 hover:border-accent-primary/50 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent-primary/10 transition-all"
             >
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">{tmpl.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-text-primary group-hover:text-accent-primary transition-colors">
-                      {tmpl.name}
-                    </h3>
-                    {tmpl.premium && (
-                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-accent-primary/20 text-accent-primary">
-                        {t('common.premium')}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-text-tertiary text-sm mt-1 line-clamp-2">
-                    {tmpl.description}
-                  </p>
-                  <div className="flex items-center gap-2 mt-3 text-xs text-text-muted">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{tmpl.durationRange[0]}-{tmpl.durationRange[1]}s</span>
-                    {tmpl.requiresPartner && (
-                      <>
-                        <span className="text-border-primary">|</span>
-                        <span>Requires 2 charts</span>
-                      </>
-                    )}
-                  </div>
+              <div className="relative">
+                <TemplateArt id={tmpl.id} />
+                <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-semibold text-white/90">
+                  <Clock className="w-3 h-3" />
+                  {TEMPLATE_SECONDS[tmpl.id] ?? tmpl.durationRange[0]}s
+                </span>
+                <span className="absolute right-2.5 top-2.5 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/90">
+                  Cinematic
+                </span>
+              </div>
+              <div className="px-2 pb-2 pt-3.5">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-text-primary group-hover:text-accent-primary transition-colors">
+                    {tmpl.name}
+                  </h3>
+                  {tmpl.premium && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-accent-primary/20 text-accent-primary">
+                      {t('common.premium')}
+                    </span>
+                  )}
                 </div>
+                <p className="text-text-tertiary text-sm mt-1 line-clamp-2">{tmpl.description}</p>
               </div>
             </button>
           ))}
@@ -352,6 +377,9 @@ export default function CosmicVideoPage() {
         <div className="space-y-6">
           {/* Template summary */}
           <div className="bg-bg-card border border-border-primary rounded-2xl p-5">
+            <div className="mb-4">
+              <TemplateArt id={selectedTemplate.id} />
+            </div>
             <div className="flex items-center gap-3 mb-3">
               <span className="text-3xl">{selectedTemplate.emoji}</span>
               <div>
@@ -525,35 +553,11 @@ export default function CosmicVideoPage() {
             )}
           </div>
 
-          {/* Duration slider */}
-          <div className="bg-bg-card border border-border-primary rounded-2xl p-5">
-            <h4 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">
-              <Sliders className="w-4 h-4 inline mr-2" />
-              Duration
-            </h4>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-text-muted w-6">{selectedTemplate.durationRange[0]}s</span>
-              <input
-                type="range"
-                min={selectedTemplate.durationRange[0]}
-                max={selectedTemplate.durationRange[1]}
-                step={1}
-                value={durationSeconds}
-                onChange={(e) => setDurationSeconds(parseInt(e.target.value))}
-                className="flex-1 accent-accent-primary h-1.5"
-              />
-              <span className="text-xs text-text-muted w-6">{selectedTemplate.durationRange[1]}s</span>
-              <span className="text-sm font-medium text-accent-primary w-10 text-right">
-                {durationSeconds}s
-              </span>
-            </div>
-          </div>
-
           {/* Color theme */}
           <div className="bg-bg-card border border-border-primary rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">
               <Palette className="w-4 h-4 inline mr-2" />
-              Color Theme
+              Look
             </h4>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {COLOR_THEMES.map((theme) => (
@@ -581,6 +585,7 @@ export default function CosmicVideoPage() {
           </div>
 
           {/* Text overlays */}
+          {showAdvanced && (
           <div className="bg-bg-card border border-border-primary rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
@@ -715,6 +720,8 @@ export default function CosmicVideoPage() {
             )}
           </div>
 
+          )}
+
           {/* Background music */}
           <div className="bg-bg-card border border-border-primary rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">
@@ -731,10 +738,15 @@ export default function CosmicVideoPage() {
                     : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80'
                 }`}
               >
-                <VolumeX className="w-4 h-4" />
-                None
+                <Sparkles className="w-4 h-4" />
+                <div className="text-left min-w-0">
+                  <div className="truncate">Align Score</div>
+                  <div className={`text-[10px] ${!selectedMusic ? 'text-white/70' : 'text-text-muted'}`}>
+                    composed for you
+                  </div>
+                </div>
               </button>
-              {MUSIC_TRACKS.map((track) => (
+              {libraryMusic.map((track) => (
                 <button
                   key={track.id}
                   onClick={() => setSelectedMusic(track.id)}
@@ -777,6 +789,7 @@ export default function CosmicVideoPage() {
           </div>
 
           {/* AR Filters */}
+          {showAdvanced && (
           <div className="bg-bg-secondary rounded-2xl p-5 border border-border-primary">
             <div className="flex items-center gap-2 mb-3">
               <Wand2 className="w-4 h-4 text-accent-primary" />
@@ -815,6 +828,16 @@ export default function CosmicVideoPage() {
               ))}
             </div>
           </div>
+
+          )}
+
+          <button
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-text-muted hover:text-text-secondary transition-colors"
+          >
+            {showAdvanced ? 'Hide' : 'More options'} · captions &amp; AR overlays
+            <ChevronDown className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+          </button>
 
           {/* Error */}
           {renderError && (

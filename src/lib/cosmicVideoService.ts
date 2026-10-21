@@ -93,8 +93,8 @@ export const TEMPLATES: TemplateInfo[] = [
     id: 'chart_reveal',
     name: 'Chart Reveal',
     description:
-      'Animated zodiac wheel with your planets dropping in. Reveals your Sun, Moon & Rising.',
-    durationRange: [25, 35],
+      'Your Sun, Moon & Rising drawn as living constellations, then your full birth chart wheel with every planet landing in place.',
+    durationRange: [30, 30],
     requiresChart: true,
     requiresPartner: false,
     emoji: '\u{1F30C}',
@@ -104,8 +104,8 @@ export const TEMPLATES: TemplateInfo[] = [
     id: 'daily_forecast',
     name: 'Daily Forecast',
     description:
-      "Today's moon phase, active transits, and a personalized cosmic weather report.",
-    durationRange: [30, 45],
+      "Today's real moon phase, the strongest transit to your chart and the sky right now — your daily cosmic weather.",
+    durationRange: [30, 30],
     requiresChart: true,
     requiresPartner: false,
     emoji: '\u{1F52E}',
@@ -115,8 +115,8 @@ export const TEMPLATES: TemplateInfo[] = [
     id: 'transit_alert',
     name: 'Transit Alert',
     description:
-      'Spotlight a specific transit hitting your chart right now with animated aspect lines.',
-    durationRange: [20, 30],
+      'The biggest planetary hit on your chart right now — animated aspect, how exact it is, and what it means for you.',
+    durationRange: [20, 20],
     requiresChart: true,
     requiresPartner: false,
     emoji: '⚡',
@@ -137,8 +137,8 @@ export const TEMPLATES: TemplateInfo[] = [
     id: 'zodiac_personality',
     name: 'Zodiac Personality',
     description:
-      'Pick any sign — animated glyph, element effects, and key personality traits.',
-    durationRange: [15, 20],
+      'Pick any sign — a glowing constellation, element-tinted world and its four defining traits.',
+    durationRange: [15, 15],
     requiresChart: false,
     requiresPartner: false,
     emoji: '♈',
@@ -169,7 +169,7 @@ export interface ColorThemeOption {
 }
 
 export const COLOR_THEMES: ColorThemeOption[] = [
-  { id: 'default', name: 'Cosmic Purple', preview: ['#1E1B4B', '#7C3AED'] },
+  { id: 'default', name: 'Signature', preview: ['#1E1B4B', '#7C3AED'] },
   { id: 'midnight_blue', name: 'Midnight Blue', preview: ['#0C1445', '#2563EB'] },
   { id: 'aurora', name: 'Aurora', preview: ['#064E3B', '#10B981'] },
   { id: 'rose_gold', name: 'Rose Gold', preview: ['#4A044E', '#F472B6'] },
