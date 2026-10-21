@@ -13,6 +13,7 @@ import {
   getReelComments,
   addReelComment,
   deleteReelComment,
+  editReelComment,
   reportReel,
   REEL_CATEGORIES,
   type Reel,
@@ -39,6 +40,7 @@ import {
   MoreHorizontal,
   Flag,
   Trash2,
+  Pencil,
   Plus,
   Download,
 } from 'lucide-react';
@@ -444,6 +446,9 @@ function CommentPanel({
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -483,7 +488,26 @@ function CommentPanel({
     }
   }
 
+  async function handleSaveEdit() {
+    if (!editingId || !editText.trim() || savingEdit) return;
+    setSavingEdit(true);
+    try {
+      const result = await editReelComment(editingId, editText);
+      if (result.success) {
+        setComments((prev) =>
+          prev.map((c) => (c.id === editingId ? { ...c, text: result.text!, is_edited: true } : c)),
+        );
+        setEditingId(null);
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   async function handleDelete(commentId: string) {
+    if (!window.confirm('Delete this comment?')) return;
     try {
       const ok = await deleteReelComment(commentId);
       if (ok) {
@@ -551,17 +575,62 @@ function CommentPanel({
                       {timeAgo(comment.created_at)}
                     </span>
                   </div>
-                  <p className="text-white/80 text-sm leading-5 mt-0.5">
-                    {comment.text}
-                  </p>
+                  {editingId === comment.id ? (
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        autoFocus
+                        value={editText}
+                        maxLength={500}
+                        onChange={(e) => setEditText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveEdit();
+                          if (e.key === 'Escape') setEditingId(null);
+                        }}
+                        className="w-full bg-white/10 text-white text-sm rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-[#9B6FF6]"
+                      />
+                      <div className="flex gap-3 mt-1.5 text-xs">
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={!editText.trim() || savingEdit}
+                          className="text-[#9B6FF6] font-semibold disabled:opacity-40"
+                        >
+                          {savingEdit ? 'Saving…' : 'Save'}
+                        </button>
+                        <button onClick={() => setEditingId(null)} className="text-white/50">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-white/80 text-sm leading-5 mt-0.5">
+                      {comment.text}
+                      {comment.is_edited && (
+                        <span className="text-white/30 text-[10px] italic ml-1.5">edited</span>
+                      )}
+                    </p>
+                  )}
                 </div>
-                {user?.id === comment.user_id && (
-                  <button
-                    onClick={() => handleDelete(comment.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 text-white/40 hover:text-red-400" />
-                  </button>
+                {user?.id === comment.user_id && editingId !== comment.id && (
+                  <div className="flex items-start gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => {
+                        setEditingId(comment.id);
+                        setEditText(comment.text);
+                      }}
+                      aria-label="Edit comment"
+                      className="p-1"
+                    >
+                      <Pencil className="w-3.5 h-3.5 text-white/40 hover:text-white" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(comment.id)}
+                      aria-label="Delete comment"
+                      className="p-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-white/40 hover:text-red-400" />
+                    </button>
+                  </div>
                 )}
               </div>
             ))

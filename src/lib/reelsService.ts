@@ -108,6 +108,7 @@ export interface ReelComment {
   likes_count: number;
   is_liked: boolean;
   is_deleted: boolean;
+  is_edited?: boolean;
   created_at: string;
 }
 
@@ -529,10 +530,38 @@ export async function getReelComments(reelId: string, limit = 50): Promise<ReelC
       likes_count: c.likes_count || 0,
       is_liked: likedCommentIds.has(c.id),
       is_deleted: false,
+      is_edited: !!c.is_edited,
       created_at: c.created_at,
     }));
   } catch {
     return [];
+  }
+}
+
+/**
+ * Edit own comment.
+ */
+export async function editReelComment(
+  commentId: string,
+  text: string,
+): Promise<{ success: boolean; text?: string; error?: string }> {
+  const userId = currentUserId();
+  if (!userId) return { success: false, error: 'Not signed in' };
+  const trimmed = text.trim();
+  if (!trimmed) return { success: false, error: 'Comment is empty' };
+
+  try {
+    const supabase = createClient();
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('reel_comments')
+      .update({ text: trimmed, is_edited: true, edited_at: now, updated_at: now })
+      .eq('id', commentId)
+      .eq('user_id', userId);
+    if (error) return { success: false, error: error.message };
+    return { success: true, text: trimmed };
+  } catch (err: any) {
+    return { success: false, error: err.message };
   }
 }
 
