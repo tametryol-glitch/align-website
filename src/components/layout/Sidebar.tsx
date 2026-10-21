@@ -13,7 +13,7 @@ import {
   Home, Star, BookOpen, MessageCircle, User,
   CreditCard, Settings, Sparkles, Globe, Compass, Search,
   Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
-  Bookmark, BarChart3, Palette, Orbit, DollarSign, Eye,
+  Bookmark, BarChart3, Palette, Orbit, DollarSign, Eye, Plus,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -57,6 +57,17 @@ export function Sidebar() {
         <Link href="/dashboard" className="flex items-center gap-3">
           <Image src="/logo.png" alt="Align logo" width={40} height={40} className="w-10 h-10 rounded-xl" />
           <span className="text-xl font-display font-bold text-text-primary">Align</span>
+        </Link>
+      </div>
+
+      {/* One-click create: opens the video editor (import or drop a clip). */}
+      <div className="px-3 pb-3">
+        <Link
+          href="/cosmic-video/edit"
+          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-accent-primary text-white hover:opacity-90 transition-opacity"
+        >
+          <Plus className="w-5 h-5" />
+          {t('components.sidebar.create', 'Create')}
         </Link>
       </div>
 

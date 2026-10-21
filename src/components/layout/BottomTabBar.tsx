@@ -14,13 +14,14 @@ import {
   Home, Newspaper, Sun, MessageCircle, Menu, X,
   Search, Globe, Compass, Star, Zap, Sparkles,
   Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit, Eye,
+  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit, Eye, Plus,
 } from 'lucide-react';
 
 const TABS = [
   { href: '/feed', labelKey: 'components.sidebar.feed', icon: Newspaper },
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Sun },
+  { href: '/cosmic-video/edit', labelKey: 'components.sidebar.create', icon: Plus },
   { href: '/messages', labelKey: 'components.sidebar.chat', icon: MessageCircle },
   { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '#more', labelKey: 'components.sidebar.more', icon: Menu },
@@ -180,6 +181,25 @@ export function BottomTabBar() {
                   {showMore ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                   <span className="text-[11px] font-medium">{showMore ? t('components.sidebar.close') : t(labelKey)}</span>
                 </button>
+              );
+            }
+
+            // Center create button: a filled pill, no label (TikTok-style).
+            if (href === '/cosmic-video/edit') {
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  role="tab"
+                  aria-selected={active}
+                  aria-label={t(labelKey, 'Create')}
+                  onClick={() => setShowMore(false)}
+                  className="flex items-center justify-center px-3 py-2 min-w-[56px]"
+                >
+                  <span className="flex items-center justify-center w-11 h-8 rounded-[10px] bg-accent-primary text-white">
+                    <Plus className="w-5 h-5" strokeWidth={3} />
+                  </span>
+                </Link>
               );
             }
 
