@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
+import { BackButton } from '@/components/ui/BackButton';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase';
 import { isBuildAMatchEnabled } from '@/config/featureFlags';
@@ -320,6 +321,7 @@ export default function BuildAMatchPage() {
   if (!enabled) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <BackButton />
         <h1 className="text-xl font-display font-bold text-text-primary">Build-A-Match isn&apos;t available yet</h1>
         <p className="text-text-tertiary text-sm mt-2">It&apos;s still in closed testing. Check back soon.</p>
       </div>
@@ -329,6 +331,7 @@ export default function BuildAMatchPage() {
   if (!indexed) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <BackButton />
         <p className="text-4xl mb-3">🜛</p>
         <h1 className="text-xl font-display font-bold text-text-primary">We need your chart first</h1>
         <p className="text-text-tertiary text-sm mt-2">
@@ -341,6 +344,7 @@ export default function BuildAMatchPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
+      <BackButton />
       <header className="text-center mb-6">
         <h1 className="text-2xl font-display font-bold text-text-primary tracking-wide">BUILD-A-MATCH</h1>
         <p className="text-accent-primary text-sm font-medium mt-1">Build your type. Let Align find them.</p>

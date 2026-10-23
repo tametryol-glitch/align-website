@@ -14,6 +14,7 @@ import { Search, X, Users, FileText, Globe, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { BackButton } from '@/components/ui/BackButton';
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -225,6 +226,7 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton />
       {/* Search Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-display font-bold text-text-primary mb-4">{t('search.title')}</h1>

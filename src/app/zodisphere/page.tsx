@@ -43,6 +43,7 @@ import {
   type AreaMember,
 } from '@/lib/zodisphereService';
 import { getGlobalSky, getSkyOverPlace, signGlyph, type SkyReading } from '@/lib/zodisphereSky';
+import { BackButton } from '@/components/ui/BackButton';
 
 const INTRO_SEEN_KEY = 'zodisphere_intro_seen_v1';
 
@@ -265,6 +266,7 @@ export default function ZodispherePage() {
       {/* ── Header ── */}
       <header className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-2">
+          <BackButton fallbackHref="/dashboard" label="" className="p-2 -ml-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 inline-flex items-center" />
           <Globe2 className="w-6 h-6 text-accent-primary" />
           <div>
             <h1 className="text-lg font-semibold text-white leading-tight">{t('zodisphere.title')}</h1>

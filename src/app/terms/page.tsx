@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { BackButton } from '@/components/ui/BackButton';
 
 export const metadata: Metadata = {
   title: 'Terms of Service — Align',
@@ -12,6 +13,7 @@ const UPDATED = 'July 2026';
 export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 text-text-secondary">
+      <BackButton fallbackHref="/" />
       <h1 className="text-3xl font-display font-bold text-text-primary mb-1">Terms of Service</h1>
       <p className="text-sm text-text-muted mb-8">Last updated: {UPDATED}</p>
 

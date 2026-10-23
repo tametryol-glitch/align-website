@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BackButton } from '@/components/ui/BackButton';
 
 export const metadata: Metadata = {
   title: 'Support — Align',
@@ -12,6 +13,7 @@ const SUPPORT_EMAIL = 'support@aligncosmic.com';
 export default function SupportPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 text-text-secondary">
+      <BackButton fallbackHref="/" />
       <h1 className="text-3xl font-display font-bold text-text-primary mb-1">Support</h1>
       <p className="text-sm text-text-muted mb-8">
         We read every message and aim to reply within two business days.

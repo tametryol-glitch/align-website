@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { BackButton } from '@/components/ui/BackButton';
 import { createClient } from '@/lib/supabase';
 import {
   FlaskConical, ShieldCheck, Loader2, CheckCircle2, XCircle, Orbit,
@@ -93,6 +94,7 @@ export default function ResearchLabPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <BackButton fallbackHref="/admin" />
       {/* Header */}
       <div className="flex items-center gap-3 mb-1">
         <div className="w-10 h-10 rounded-xl bg-accent-muted grid place-items-center">

@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { api, buildBirthData } from '@/lib/api';
 import { SIGNS, INDEXABLE_PLANETS } from '@/lib/cosmicIndexService';
 import { useTranslation } from 'react-i18next';
+import { BackButton } from '@/components/ui/BackButton';
 import AffiliateDashboardView, {
   type AffiliateData as AffiliateDashData,
   type Conversion as AffiliateConversionData,
@@ -140,6 +141,7 @@ function AdminPageContent() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      <BackButton />
       <div className="flex items-center gap-3 mb-6">
         <Shield className="w-8 h-8 text-accent-primary" />
         <h1 className="text-2xl font-display font-bold text-text-primary">{t('settings.admin.title')}</h1>

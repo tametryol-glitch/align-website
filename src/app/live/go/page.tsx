@@ -93,6 +93,7 @@ import { mentionMarkup } from '@/lib/mentions';
 import { LiveChatMessage } from '@/components/live/LiveChatMessage';
 import { LiveComposer, type LiveComposerHandle } from '@/components/live/LiveComposer';
 import { CornerUpLeft } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 import { hideLiveMessage, ejectFromLive } from '@/lib/liveSafety';
 
 type Stage = 'setup' | 'starting' | 'live' | 'ended';
@@ -720,6 +721,7 @@ export default function GoLivePage() {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-5">
         <div className="w-full max-w-md">
+          <BackButton fallbackHref="/feed" className="inline-flex items-center gap-1 mb-4 text-sm text-white/60 hover:text-white" />
           <div className="flex items-center gap-2 mb-6">
             <Radio className="w-5 h-5 text-red-500" />
             <h1 className="text-2xl font-semibold">Go live</h1>

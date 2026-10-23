@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BackButton } from '@/components/ui/BackButton';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
@@ -88,6 +89,7 @@ export default function DatingLikesPage() {
 
   return (
     <div className="max-w-3xl mx-auto" style={{ minHeight: '100vh' }}>
+      <BackButton fallbackHref="/dating" />
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
