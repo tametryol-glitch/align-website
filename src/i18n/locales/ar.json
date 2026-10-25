@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ سنوات",
       "tapToRead": "انقر لقراءة رؤيتك الكاملة",
       "failedToLoadStorylines": "فشل تحميل القصص",
-      "hiddenLayer": "ما يلمسه هذا حقًا"
+      "hiddenLayer": "ما يلمسه هذا حقًا",
+      "gateHeadsUp": "تنبيه: ابتداءً من {{date}}، سترى الحسابات المجانية دورة واحدة فقط كاملة. قم بالترقية للاحتفاظ بكل الدورات والقراءات وStorylines.",
+      "seePlans": "عرض الخطط",
+      "storylinesLockedTitle": "اطّلع على الأشهر الـ12 القادمة",
+      "storylinesLockedBody": "تعرض Storylines كل قوس دورة كبير أمامك مع التواريخ الدقيقة.",
+      "unlockButton": "افتح كل الدورات",
+      "moreCycles": "{{count}} دورات أخرى تؤثر فيك الآن",
+      "moreCyclesBody": "افتح القراءة الكاملة والنصيحة والتوقيت لكل واحدة منها."
     },
     "tarotPage": {
       "title": "قراءة التاروت",

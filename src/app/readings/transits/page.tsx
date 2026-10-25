@@ -8,6 +8,7 @@ import {
   useSubscriptionStore,
   FREE_TRANSIT_EVENTS,
   TRANSIT_GATE_STARTS,
+  isTransitGateLive,
 } from '@/stores/subscriptionStore';
 import Link from 'next/link';
 import { ArrowLeft, Lock } from 'lucide-react';
@@ -421,7 +422,7 @@ export default function TransitsPage() {
   const hasAccess = useSubscriptionStore((s) => s.hasAccess);
   const subLoading = useSubscriptionStore((s) => s.loading);
   const isFree = !subLoading && !hasAccess('transits_full');
-  const gateLive = Date.now() >= TRANSIT_GATE_STARTS.getTime();
+  const gateLive = isTransitGateLive(profile?.created_at);
   const gated = isFree && gateLive;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -518,6 +519,7 @@ export default function TransitsPage() {
   useEffect(() => {
     if (viewMode !== 'storylines') return;
     if (!profile) return;
+    if (subLoading || gated) return; // locked: don't fetch the 12-month data
     if (storylinesLoadedRef.current) return;
 
     let cancelled = false;
@@ -563,11 +565,12 @@ export default function TransitsPage() {
 
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, profile]);
+  }, [viewMode, profile, subLoading, gated]);
 
   // ── Render ─────────────────────────────────────────────────────────────
 
-  if (loading) {
+  // Wait for the tier too, so paid members never see the lock flash by.
+  if (loading || subLoading) {
     return <LoadingCosmic label={t('readings.transitsPage.loadingLabel')} />;
   }
 

@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}年以上",
       "tapToRead": "タップしてインサイト全文を読む",
       "failedToLoadStorylines": "ストーリーラインの読み込みに失敗しました",
-      "hiddenLayer": "これが本当に触れているもの"
+      "hiddenLayer": "これが本当に触れているもの",
+      "gateHeadsUp": "お知らせ：{{date}}以降、無料アカウントで全文を読めるサイクルは1つのみになります。すべてのサイクル、リーディング、ストーリーラインを使い続けるにはアップグレードしてください。",
+      "seePlans": "プランを見る",
+      "storylinesLockedTitle": "今後12か月を見る",
+      "storylinesLockedBody": "ストーリーラインは、これから訪れる大きなサイクルの流れを正確な日付とともに示します。",
+      "unlockButton": "すべてのサイクルを解除",
+      "moreCycles": "今あなたに影響しているサイクルがあと{{count}}件あります",
+      "moreCyclesBody": "それぞれの完全なリーディング、アドバイス、タイミングを解除しましょう。"
     },
     "tarotPage": {
       "title": "タロットリーディング",

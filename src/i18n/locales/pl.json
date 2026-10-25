@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ lat",
       "tapToRead": "Dotknij, aby przeczytać pełny wgląd",
       "failedToLoadStorylines": "Nie udało się załadować wątków",
-      "hiddenLayer": "Czego to tak naprawdę dotyka"
+      "hiddenLayer": "Czego to tak naprawdę dotyka",
+      "gateHeadsUp": "Uwaga: od {{date}} darmowe konta zobaczą w całości tylko jeden cykl. Przejdź na płatny plan, aby zachować wszystkie cykle, odczyty i Storylines.",
+      "seePlans": "Zobacz plany",
+      "storylinesLockedTitle": "Zobacz najbliższe 12 miesięcy",
+      "storylinesLockedBody": "Storylines pokazują każdy wielki łuk cyklu, który jest przed Tobą, z dokładnymi datami.",
+      "unlockButton": "Odblokuj wszystkie cykle",
+      "moreCycles": "Jeszcze {{count}} cykli wpływa na Ciebie w tej chwili",
+      "moreCyclesBody": "Odblokuj pełny odczyt, wskazówki i wyczucie czasu dla każdego z nich."
     },
     "tarotPage": {
       "title": "Odczyt tarota",

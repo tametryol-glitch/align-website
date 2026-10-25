@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ år",
       "tapToRead": "Trykk for å lese hele innsikten",
       "failedToLoadStorylines": "Kunne ikke laste historielinjer",
-      "hiddenLayer": "Hva dette egentlig berører"
+      "hiddenLayer": "Hva dette egentlig berører",
+      "gateHeadsUp": "Obs: fra {{date}} ser gratiskontoer bare én syklus i sin helhet. Oppgrader for å beholde alle sykluser, tolkninger og Storylines.",
+      "seePlans": "Se planer",
+      "storylinesLockedTitle": "Se de neste 12 månedene",
+      "storylinesLockedBody": "Storylines viser hver store syklusbue foran deg, med nøyaktige datoer.",
+      "unlockButton": "Lås opp alle sykluser",
+      "moreCycles": "{{count}} sykluser til påvirker deg akkurat nå",
+      "moreCyclesBody": "Lås opp hele tolkningen, rådene og timingen for hver enkelt."
     },
     "tarotPage": {
       "title": "Tarot-tolkning",

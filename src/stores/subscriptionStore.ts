@@ -15,6 +15,16 @@ export const FREE_ZODISPHERE_3D_VIEWS = 3;
  *  heads-up banner, so existing members aren't cut off without warning. */
 export const FREE_TRANSIT_EVENTS = 1;
 export const TRANSIT_GATE_STARTS = new Date('2026-11-08T00:00:00Z');
+/** Accounts created on/after this are gated immediately; older ones get the
+ *  grace period. A missing created_at counts as an existing account. */
+export const TRANSIT_GATE_ANNOUNCED = new Date('2026-10-25T00:00:00Z');
+
+export function isTransitGateLive(createdAt?: string | null): boolean {
+  if (Date.now() >= TRANSIT_GATE_STARTS.getTime()) return true;
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  return !Number.isNaN(created) && created >= TRANSIT_GATE_ANNOUNCED.getTime();
+}
 
 export const AI_LIMITS: Record<TierLevel, number> = {
   free: 3,

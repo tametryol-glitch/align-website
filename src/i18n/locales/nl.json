@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ jaar",
       "tapToRead": "Tik om je volledige inzicht te lezen",
       "failedToLoadStorylines": "Verhaallijnen konden niet worden geladen",
-      "hiddenLayer": "Wat dit werkelijk raakt"
+      "hiddenLayer": "Wat dit werkelijk raakt",
+      "gateHeadsUp": "Let op: vanaf {{date}} zien gratis accounts nog maar één cyclus volledig. Upgrade om alle cycli, lezingen en Storylines te behouden.",
+      "seePlans": "Bekijk abonnementen",
+      "storylinesLockedTitle": "Bekijk de komende 12 maanden",
+      "storylinesLockedBody": "Storylines tonen elke grote cyclusboog die voor je ligt, met exacte data.",
+      "unlockButton": "Ontgrendel alle cycli",
+      "moreCycles": "Nog {{count}} cycli beïnvloeden je op dit moment",
+      "moreCyclesBody": "Ontgrendel de volledige lezing, het advies en de timing van elk van hen."
     },
     "tarotPage": {
       "title": "Tarotlezing",

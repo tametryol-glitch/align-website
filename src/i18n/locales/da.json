@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ ar",
       "tapToRead": "Tryk for at laese din fulde indsigt",
       "failedToLoadStorylines": "Kunne ikke indlaese historielinier",
-      "hiddenLayer": "Hvad dette i virkeligheden rører ved"
+      "hiddenLayer": "Hvad dette i virkeligheden rører ved",
+      "gateHeadsUp": "Bemærk: fra {{date}} ser gratis konti kun én cyklus i fuld længde. Opgrader for at beholde alle cyklusser, læsninger og Storylines.",
+      "seePlans": "Se planer",
+      "storylinesLockedTitle": "Se de næste 12 måneder",
+      "storylinesLockedBody": "Storylines viser hver stor cyklusbue foran dig, med præcise datoer.",
+      "unlockButton": "Lås op for alle cyklusser",
+      "moreCycles": "{{count}} cyklusser mere påvirker dig lige nu",
+      "moreCyclesBody": "Lås op for den fulde læsning, rådene og timingen for hver enkelt."
     },
     "tarotPage": {
       "title": "Tarot-laesning",

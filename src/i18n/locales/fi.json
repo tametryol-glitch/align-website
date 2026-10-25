@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ vuotta",
       "tapToRead": "Napauta lukeaksesi koko oivalluksesi",
       "failedToLoadStorylines": "Tarinakaaria ei voitu ladata",
-      "hiddenLayer": "Mitä tämä oikeasti koskettaa"
+      "hiddenLayer": "Mitä tämä oikeasti koskettaa",
+      "gateHeadsUp": "Huomio: {{date}} alkaen ilmaistilit näkevät yhden syklin kokonaan. Päivitä säilyttääksesi kaikki syklit, tulkinnat ja Storylinet.",
+      "seePlans": "Katso suunnitelmat",
+      "storylinesLockedTitle": "Katso seuraavat 12 kuukautta",
+      "storylinesLockedBody": "Storylinet näyttävät jokaisen edessäsi olevan suuren syklikaaren tarkkoine päivämäärineen.",
+      "unlockButton": "Avaa kaikki syklit",
+      "moreCycles": "{{count}} sykliä vaikuttaa sinuun juuri nyt",
+      "moreCyclesBody": "Avaa jokaisen koko tulkinta, neuvot ja ajoitus."
     },
     "tarotPage": {
       "title": "Tarot-lukeminen",

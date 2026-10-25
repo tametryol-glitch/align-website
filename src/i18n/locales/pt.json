@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ anos",
       "tapToRead": "Toque para ler seu insight completo",
       "failedToLoadStorylines": "Falha ao carregar narrativas",
-      "hiddenLayer": "O Que Isso Realmente Toca"
+      "hiddenLayer": "O Que Isso Realmente Toca",
+      "gateHeadsUp": "Aviso: a partir de {{date}}, as contas gratuitas verão apenas um ciclo completo. Faça upgrade para manter todos os ciclos, leituras e Storylines.",
+      "seePlans": "Ver planos",
+      "storylinesLockedTitle": "Veja os próximos 12 meses",
+      "storylinesLockedBody": "As Storylines mostram cada grande arco de ciclo à sua frente, com datas exatas.",
+      "unlockButton": "Desbloquear todos os ciclos",
+      "moreCycles": "Mais {{count}} ciclos estão influenciando você agora",
+      "moreCyclesBody": "Desbloqueie a leitura completa, os conselhos e o momento de cada um."
     },
     "tarotPage": {
       "title": "Leitura de Tarot",

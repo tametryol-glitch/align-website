@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ år",
       "tapToRead": "Tryck för att läsa din fullständiga insikt",
       "failedToLoadStorylines": "Kunde inte ladda berättelser",
-      "hiddenLayer": "Vad detta verkligen berör"
+      "hiddenLayer": "Vad detta verkligen berör",
+      "gateHeadsUp": "Observera: från och med {{date}} ser gratiskonton bara en cykel i sin helhet. Uppgradera för att behålla alla cykler, tolkningar och Storylines.",
+      "seePlans": "Se planer",
+      "storylinesLockedTitle": "Se de kommande 12 månaderna",
+      "storylinesLockedBody": "Storylines visar varje stor cykelbåge framför dig, med exakta datum.",
+      "unlockButton": "Lås upp alla cykler",
+      "moreCycles": "{{count}} cykler till påverkar dig just nu",
+      "moreCyclesBody": "Lås upp hela tolkningen, råden och tidpunkten för var och en."
     },
     "tarotPage": {
       "title": "Tarotläsning",

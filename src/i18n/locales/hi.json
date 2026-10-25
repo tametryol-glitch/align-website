@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ साल",
       "tapToRead": "पूरी अंतर्दृष्टि पढ़ने के लिए टैप करो",
       "failedToLoadStorylines": "कथाएँ लोड करने में विफल",
-      "hiddenLayer": "यह वास्तव में किसे छू रहा है"
+      "hiddenLayer": "यह वास्तव में किसे छू रहा है",
+      "gateHeadsUp": "सूचना: {{date}} से मुफ़्त खाते केवल एक चक्र पूरा देख पाएँगे। सभी चक्र, रीडिंग और Storylines बनाए रखने के लिए अपग्रेड करें।",
+      "seePlans": "प्लान देखें",
+      "storylinesLockedTitle": "अगले 12 महीने देखें",
+      "storylinesLockedBody": "Storylines आपके सामने आने वाले हर बड़े चक्र को सटीक तारीख़ों के साथ दिखाती हैं।",
+      "unlockButton": "सभी चक्र अनलॉक करें",
+      "moreCycles": "अभी {{count}} और चक्र आप पर असर डाल रहे हैं",
+      "moreCyclesBody": "हर चक्र की पूरी रीडिंग, सलाह और समय अनलॉक करें।"
     },
     "tarotPage": {
       "title": "टैरो रीडिंग",

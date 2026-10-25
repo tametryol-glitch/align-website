@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ yil",
       "tapToRead": "Tam icgoruyu okumak icin dokun",
       "failedToLoadStorylines": "Hikaye hatlari yuklenemedi",
-      "hiddenLayer": "Bunun Gerçekte Dokunduğu Yer"
+      "hiddenLayer": "Bunun Gerçekte Dokunduğu Yer",
+      "gateHeadsUp": "Bilgi: {{date}} tarihinden itibaren ücretsiz hesaplar yalnızca bir döngüyü tam olarak görecek. Tüm döngüleri, yorumları ve Storyline'ları korumak için planını yükselt.",
+      "seePlans": "Planları gör",
+      "storylinesLockedTitle": "Önümüzdeki 12 ayı gör",
+      "storylinesLockedBody": "Storyline'lar önündeki her büyük döngü yayını kesin tarihleriyle gösterir.",
+      "unlockButton": "Tüm döngülerin kilidini aç",
+      "moreCycles": "Şu anda seni etkileyen {{count}} döngü daha var",
+      "moreCyclesBody": "Her biri için tam yorumun, tavsiyenin ve zamanlamanın kilidini aç."
     },
     "tarotPage": {
       "title": "Tarot Okumasi",

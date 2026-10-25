@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ 年",
       "tapToRead": "点击阅读完整洞察",
       "failedToLoadStorylines": "加载故事线失败",
-      "hiddenLayer": "这真正触及的是什么"
+      "hiddenLayer": "这真正触及的是什么",
+      "gateHeadsUp": "提示：自 {{date}} 起，免费账户只能完整查看一个周期。升级即可继续使用所有周期、解读和 Storyline。",
+      "seePlans": "查看方案",
+      "storylinesLockedTitle": "查看未来 12 个月",
+      "storylinesLockedBody": "Storyline 会以精确日期呈现你面前每一段重要的周期弧线。",
+      "unlockButton": "解锁全部周期",
+      "moreCycles": "还有 {{count}} 个周期正在影响你",
+      "moreCyclesBody": "解锁每个周期的完整解读、建议和时机。"
     },
     "tarotPage": {
       "title": "塔罗牌解读",

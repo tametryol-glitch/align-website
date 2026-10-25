@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ anni",
       "tapToRead": "Tocca per leggere il tuo insight completo",
       "failedToLoadStorylines": "Impossibile caricare le trame",
-      "hiddenLayer": "Ciò Che Questo Tocca Davvero"
+      "hiddenLayer": "Ciò Che Questo Tocca Davvero",
+      "gateHeadsUp": "Attenzione: dal {{date}} gli account gratuiti vedranno un solo ciclo per intero. Passa a un piano a pagamento per mantenere tutti i cicli, le letture e le Storylines.",
+      "seePlans": "Vedi i piani",
+      "storylinesLockedTitle": "Guarda i prossimi 12 mesi",
+      "storylinesLockedBody": "Le Storylines mostrano ogni grande arco di ciclo che hai davanti, con date precise.",
+      "unlockButton": "Sblocca tutti i cicli",
+      "moreCycles": "Altri {{count}} cicli ti stanno influenzando in questo momento",
+      "moreCyclesBody": "Sblocca la lettura completa, i consigli e i tempi di ciascuno."
     },
     "tarotPage": {
       "title": "Lettura dei tarocchi",

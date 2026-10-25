@@ -245,7 +245,14 @@
       "monthsLeft": "~{{count}} months left",
       "yearsLeft": "{{count}}+ years",
       "tapToRead": "Tap to read your full insight",
-      "failedToLoadStorylines": "Failed to load storylines"
+      "failedToLoadStorylines": "Failed to load storylines",
+      "gateHeadsUp": "Heads up: from {{date}}, free accounts see one cycle in full. Upgrade to keep every cycle, reading and Storyline.",
+      "seePlans": "See plans",
+      "storylinesLockedTitle": "See the next 12 months",
+      "storylinesLockedBody": "Storylines map every major cycle arc ahead of you, with exact dates.",
+      "unlockButton": "Unlock all cycles",
+      "moreCycles": "{{count}} more cycles are influencing you right now",
+      "moreCyclesBody": "Unlock the full reading, advice and timing for every one."
     },
     "tarotPage": {
       "title": "Tarot Reading",

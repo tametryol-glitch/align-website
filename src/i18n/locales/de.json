@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ Jahre",
       "tapToRead": "Tippe, um deine vollständige Einsicht zu lesen",
       "failedToLoadStorylines": "Handlungsstränge konnten nicht geladen werden",
-      "hiddenLayer": "Was das wirklich berührt"
+      "hiddenLayer": "Was das wirklich berührt",
+      "gateHeadsUp": "Hinweis: Ab dem {{date}} sehen kostenlose Konten nur noch einen Zyklus vollständig. Upgrade, um alle Zyklen, Deutungen und Storylines zu behalten.",
+      "seePlans": "Pläne ansehen",
+      "storylinesLockedTitle": "Sieh die nächsten 12 Monate",
+      "storylinesLockedBody": "Storylines zeigen jeden großen Zyklusbogen, der vor dir liegt, mit genauen Daten.",
+      "unlockButton": "Alle Zyklen freischalten",
+      "moreCycles": "{{count}} weitere Zyklen beeinflussen dich gerade",
+      "moreCyclesBody": "Schalte die vollständige Deutung, Ratschläge und das Timing für jeden frei."
     },
     "tarotPage": {
       "title": "Tarot-Lesung",

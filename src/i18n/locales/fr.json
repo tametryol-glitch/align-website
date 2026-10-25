@@ -245,7 +245,14 @@
       "yearsLeft": "{{count}}+ ans",
       "tapToRead": "Appuyez pour lire votre apercu complet",
       "failedToLoadStorylines": "Echec du chargement des recits",
-      "hiddenLayer": "Ce Que Cela Touche Vraiment"
+      "hiddenLayer": "Ce Que Cela Touche Vraiment",
+      "gateHeadsUp": "À savoir : à partir du {{date}}, les comptes gratuits verront un seul cycle en entier. Passez à un abonnement pour garder tous les cycles, lectures et Storylines.",
+      "seePlans": "Voir les offres",
+      "storylinesLockedTitle": "Voir les 12 prochains mois",
+      "storylinesLockedBody": "Les Storylines tracent chaque grand arc de cycle à venir, avec les dates exactes.",
+      "unlockButton": "Débloquer tous les cycles",
+      "moreCycles": "{{count}} autres cycles vous influencent en ce moment",
+      "moreCyclesBody": "Débloquez la lecture complète, les conseils et le timing de chacun."
     },
     "tarotPage": {
       "title": "Tirage de Tarot",
