@@ -4,8 +4,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, buildBirthData } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  useSubscriptionStore,
+  FREE_TRANSIT_EVENTS,
+  TRANSIT_GATE_STARTS,
+} from '@/stores/subscriptionStore';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lock } from 'lucide-react';
 import { BirthDataPrompt } from '@/components/ui/BirthDataPrompt';
 import { LoadingCosmic } from '@/components/ui/LoadingCosmic';
 import StorylineView from '@/components/transits/StorylineView';
@@ -413,6 +418,11 @@ function TransitCard({
 export default function TransitsPage() {
   const { t } = useTranslation();
   const { profile } = useAuthStore();
+  const hasAccess = useSubscriptionStore((s) => s.hasAccess);
+  const subLoading = useSubscriptionStore((s) => s.loading);
+  const isFree = !subLoading && !hasAccess('transits_full');
+  const gateLive = Date.now() >= TRANSIT_GATE_STARTS.getTime();
+  const gated = isFree && gateLive;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<TransitEvent[]>([]);
@@ -610,8 +620,38 @@ export default function TransitsPage() {
         </button>
       </div>
 
+      {/* Heads-up for free members before the gate goes live */}
+      {isFree && !gateLive && (
+        <div className="card mb-5 border border-accent-muted text-sm text-text-secondary">
+          {t('readings.transitsPage.gateHeadsUp', {
+            defaultValue:
+              'Heads up: from {{date}}, free accounts see one cycle in full. Upgrade to keep every cycle, reading and Storyline.',
+            date: TRANSIT_GATE_STARTS.toLocaleDateString('en-GB'),
+          })}{' '}
+          <Link href="/pricing" className="text-accent-primary font-semibold">
+            {t('readings.transitsPage.seePlans', { defaultValue: 'See plans' })}
+          </Link>
+        </div>
+      )}
+
       {/* ── Storylines View ────────────────────────────────────────── */}
-      {viewMode === 'storylines' && (
+      {viewMode === 'storylines' && gated && (
+        <div className="card text-center py-12">
+          <Lock className="w-7 h-7 text-accent-primary mx-auto mb-3" />
+          <h2 className="text-lg font-display font-bold text-text-primary mb-2">
+            {t('readings.transitsPage.storylinesLockedTitle', { defaultValue: 'See the next 12 months' })}
+          </h2>
+          <p className="text-text-muted text-sm mb-5">
+            {t('readings.transitsPage.storylinesLockedBody', {
+              defaultValue: 'Storylines map every major cycle arc ahead of you, with exact dates.',
+            })}
+          </p>
+          <Link href="/pricing" className="btn-primary inline-flex px-8">
+            {t('readings.transitsPage.unlockButton', { defaultValue: 'Unlock all cycles' })}
+          </Link>
+        </div>
+      )}
+      {viewMode === 'storylines' && !gated && (
         <StorylineView
           storylines={storylines}
           loading={storylinesLoading}
@@ -640,14 +680,49 @@ export default function TransitsPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {events.map((event, index) => (
-                <TransitCard
-                  key={`${event.transiting_planet}-${event.aspect_type}-${event.natal_planet}`}
-                  event={event}
-                  firstName={firstName}
-                  onClick={() => setDetailIndex(index)}
-                />
-              ))}
+              {events.map((event, index) =>
+                gated && index >= FREE_TRANSIT_EVENTS ? (
+                  <Link
+                    key={`${event.transiting_planet}-${event.aspect_type}-${event.natal_planet}`}
+                    href="/pricing"
+                    className="card flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity"
+                  >
+                    <Lock className="w-5 h-5 text-accent-primary shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-text-primary truncate">
+                        {event.title ||
+                          getTransitCycleTitle(event.transiting_planet, event.natal_planet, event.aspect_type)}
+                      </p>
+                      <div className="h-2 w-40 rounded bg-bg-tertiary mt-2" />
+                    </div>
+                  </Link>
+                ) : (
+                  <TransitCard
+                    key={`${event.transiting_planet}-${event.aspect_type}-${event.natal_planet}`}
+                    event={event}
+                    firstName={firstName}
+                    onClick={() => setDetailIndex(index)}
+                  />
+                ),
+              )}
+              {gated && events.length > FREE_TRANSIT_EVENTS && (
+                <div className="card text-center py-6">
+                  <p className="text-sm font-semibold text-text-primary mb-1">
+                    {t('readings.transitsPage.moreCycles', {
+                      defaultValue: '{{count}} more cycles are influencing you right now',
+                      count: events.length - FREE_TRANSIT_EVENTS,
+                    })}
+                  </p>
+                  <p className="text-xs text-text-muted mb-4">
+                    {t('readings.transitsPage.moreCyclesBody', {
+                      defaultValue: 'Unlock the full reading, advice and timing for every one.',
+                    })}
+                  </p>
+                  <Link href="/pricing" className="btn-primary inline-flex px-8">
+                    {t('readings.transitsPage.unlockButton', { defaultValue: 'Unlock all cycles' })}
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </>

@@ -8,6 +8,14 @@ export type TierLevel = 'free' | 'starter' | 'light' | 'premium' | 'pro';
  *  switching device doesn't reset it. */
 export const FREE_ZODISPHERE_3D_VIEWS = 3;
 
+/** Transits: free sees this many cycle cards in full, the rest are a locked
+ *  teaser (titles visible). Full list, detail readings and the 12-month
+ *  Storylines need any paid plan (FEATURE_TIER.transits_full). Until
+ *  TRANSIT_GATE_STARTS everyone keeps full access and free users see a
+ *  heads-up banner, so existing members aren't cut off without warning. */
+export const FREE_TRANSIT_EVENTS = 1;
+export const TRANSIT_GATE_STARTS = new Date('2026-11-08T00:00:00Z');
+
 export const AI_LIMITS: Record<TierLevel, number> = {
   free: 3,
   starter: 10,
@@ -22,6 +30,7 @@ export const FEATURE_TIER: Record<string, TierLevel> = {
   tarot_single: 'free',
   planetary_hours: 'free',
   transits_basic: 'free',
+  transits_full: 'starter',
   galactic_clock: 'free',
   // Starter — i.e. ANY paying subscriber (rank >= starter) gets these
   zodisphere_3d: 'starter', // 3D globe: unlimited on any paid plan; free tier is capped at FREE_ZODISPHERE_3D_VIEWS
