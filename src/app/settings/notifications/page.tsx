@@ -433,7 +433,7 @@ export default function NotificationSettingsPage() {
               <ToggleRow icon={UserPlus} label="New Followers" description="When someone starts following you" enabled={prefs.social.newFollowers} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, newFollowers: !p.social.newFollowers } }))} />
               <ToggleRow icon={Sparkles} label="Posts From People You Follow" description="When someone you follow shares a post or reel" enabled={prefs.social.followedPosts} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedPosts: !p.social.followedPosts } }))} />
               <ToggleRow icon={Radio} label="Live From People You Follow" description="When someone you follow starts a live stream" enabled={prefs.social.followedLive} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, followedLive: !p.social.followedLive } }))} />
-              <ToggleRow icon={Eye} label={t('views.settings.label', 'View Milestones')} description={t('views.settings.description', 'When your posts, photos, videos, reels or stories reach a view milestone')} enabled={prefs.social.viewMilestones} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, viewMilestones: !p.social.viewMilestones } }))} />
+              <ToggleRow icon={Eye} label={t('views.settings.label', 'Daily Views Summary')} description={t('views.settings.description', 'One morning summary of who viewed your posts, photos, videos, reels or stories')} enabled={prefs.social.viewMilestones} onToggle={() => updatePrefs(p => ({ ...p, social: { ...p.social, viewMilestones: !p.social.viewMilestones } }))} />
             </div>
           )}
         </SectionCard>
