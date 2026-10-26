@@ -26,6 +26,7 @@ export interface DispatchPage {
   ai_ok?: number;
   ai_failed?: number;
   ai_errors?: string[];
+  ai_reason?: string;
   failures?: string[];
   next_offset?: number | null;
 }

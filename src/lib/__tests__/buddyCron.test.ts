@@ -136,14 +136,14 @@ describe('GET /api/cron/buddy', () => {
   it('writes the counters to the runtime log (Vercel shows no response body) and nothing private', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({
-      considered: 1, processed: 1, messages: 1, ai_ok: 1, next_offset: null,
+      considered: 1, processed: 1, messages: 1, ai_ok: 1, ai_reason: 'on', next_offset: null,
       pairs: [{ preview: [{ body: 'PRIVATE TEXT about Alex' }] }],
     })));
     await GET(req('Bearer s3cret'));
     const lines = log.mock.calls.map((c) => String(c[0]));
     log.mockRestore();
     const summary = lines.find((l) => l.startsWith('[buddy-cron-summary] '));
-    expect(summary).toBe('[buddy-cron-summary] aiOk=1 aiFailed=0 failed=0 processed=1 messages=1 aiErrors=[]');
+    expect(summary).toBe('[buddy-cron-summary] ai=on aiOk=1 aiFailed=0 failed=0 processed=1 messages=1 aiErrors=[]');
     expect(summary!.length).toBeLessThan(160);                           // short enough that a log viewer will not cut it
     const line = lines.find((l) => l.startsWith('[buddy-cron] '));
     expect(line).toBeTruthy();
@@ -152,6 +152,20 @@ describe('GET /api/cron/buddy', () => {
     const everything = lines.join(' | ');
     expect(everything).not.toContain('PRIVATE TEXT');
     expect(everything).not.toContain('s3cret');
+  });
+
+  it('says WHY the model was not used, and flags an API that has not redeployed', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ considered: 1, processed: 1, ai_reason: 'no_key', next_offset: null })));
+    const a = await (await GET(req('Bearer s3cret'))).json();
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ considered: 1, processed: 1, next_offset: null })));
+    const b = await (await GET(req('Bearer s3cret'))).json();
+    const lines = log.mock.calls.map((c) => String(c[0]));
+    log.mockRestore();
+    expect(a.aiReason).toBe('no_key');
+    expect(b.aiReason).toBe('api_too_old');
+    expect(lines.some((l) => l.startsWith('[buddy-cron-summary] ai=no_key '))).toBe(true);
+    expect(lines.some((l) => l.startsWith('[buddy-cron-summary] ai=api_too_old '))).toBe(true);
   });
 
   it('stops on a stalled offset instead of looping', async () => {

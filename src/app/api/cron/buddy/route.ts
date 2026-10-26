@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
     let totals = emptyTotals();
     const failures: string[] = [];
     const aiErrors: string[] = [];
+    const aiReasons = new Set<string>();
     let offset = 0;
     let pages = 0;
 
@@ -56,6 +57,7 @@ export async function GET(request: NextRequest) {
       totals = addPage(totals, r);
       if (Array.isArray(r.failures)) failures.push(...r.failures);
       if (Array.isArray(r.ai_errors)) aiErrors.push(...r.ai_errors);
+      aiReasons.add(typeof r.ai_reason === 'string' ? r.ai_reason : 'api_too_old');   // a missing field = the API has not redeployed yet
       const next = nextOffset(offset, r);
       if (next === null) break;
       offset = next;
@@ -68,13 +70,14 @@ export async function GET(request: NextRequest) {
       ...totals,
       failures: failures.slice(0, 10),
       aiErrors: aiErrors.slice(0, 5),
+      aiReason: [...aiReasons].join(',') || 'no_pages',
       startedAt: started.toISOString(),
       processedAt: new Date().toISOString(),
     };
     // Vercel's "Run" button and cron history show no response body, so write the counters to the runtime
     // logs. Counters only: never message text, names or chart data.
     // A short line first: log viewers cut long lines, and these are the numbers that matter.
-    console.log(`[buddy-cron-summary] aiOk=${result.aiOk} aiFailed=${result.aiFailed} failed=${result.failed} ` +
+    console.log(`[buddy-cron-summary] ai=${result.aiReason} aiOk=${result.aiOk} aiFailed=${result.aiFailed} failed=${result.failed} ` +
       `processed=${result.processed} messages=${result.wouldWriteMessages} aiErrors=${JSON.stringify(result.aiErrors)}`);
     console.log('[buddy-cron] ' + JSON.stringify(result));
     return NextResponse.json(result);
