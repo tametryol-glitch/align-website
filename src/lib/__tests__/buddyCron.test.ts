@@ -142,6 +142,9 @@ describe('GET /api/cron/buddy', () => {
     await GET(req('Bearer s3cret'));
     const lines = log.mock.calls.map((c) => String(c[0]));
     log.mockRestore();
+    const summary = lines.find((l) => l.startsWith('[buddy-cron-summary] '));
+    expect(summary).toBe('[buddy-cron-summary] aiOk=1 aiFailed=0 failed=0 processed=1 messages=1 aiErrors=[]');
+    expect(summary!.length).toBeLessThan(160);                           // short enough that a log viewer will not cut it
     const line = lines.find((l) => l.startsWith('[buddy-cron] '));
     expect(line).toBeTruthy();
     const logged = JSON.parse(line!.slice('[buddy-cron] '.length));

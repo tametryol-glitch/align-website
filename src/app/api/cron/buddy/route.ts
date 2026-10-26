@@ -73,6 +73,9 @@ export async function GET(request: NextRequest) {
     };
     // Vercel's "Run" button and cron history show no response body, so write the counters to the runtime
     // logs. Counters only: never message text, names or chart data.
+    // A short line first: log viewers cut long lines, and these are the numbers that matter.
+    console.log(`[buddy-cron-summary] aiOk=${result.aiOk} aiFailed=${result.aiFailed} failed=${result.failed} ` +
+      `processed=${result.processed} messages=${result.wouldWriteMessages} aiErrors=${JSON.stringify(result.aiErrors)}`);
     console.log('[buddy-cron] ' + JSON.stringify(result));
     return NextResponse.json(result);
   } catch (err) {
