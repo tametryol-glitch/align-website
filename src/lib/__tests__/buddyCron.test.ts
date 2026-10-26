@@ -133,6 +133,25 @@ describe('GET /api/cron/buddy', () => {
     expect(text).not.toContain('preview');
   });
 
+  it('writes the counters to the runtime log (Vercel shows no response body) and nothing private', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({
+      considered: 1, processed: 1, messages: 1, ai_ok: 1, next_offset: null,
+      pairs: [{ preview: [{ body: 'PRIVATE TEXT about Alex' }] }],
+    })));
+    await GET(req('Bearer s3cret'));
+    const lines = log.mock.calls.map((c) => String(c[0]));
+    log.mockRestore();
+    const line = lines.find((l) => l.startsWith('[buddy-cron] '));
+    expect(line).toBeTruthy();
+    const logged = JSON.parse(line!.slice('[buddy-cron] '.length));
+    expect(logged).toMatchObject({ ok: true, dryRun: true, aiOk: 1, wouldWriteMessages: 1 });
+    expect(lines.join('
+')).not.toContain('PRIVATE TEXT');
+    expect(lines.join('
+')).not.toContain('s3cret');
+  });
+
   it('stops on a stalled offset instead of looping', async () => {
     fetchMock.mockImplementation(async () => new Response(JSON.stringify({ considered: 1, next_offset: 0 })));
     const body = await (await GET(req('Bearer s3cret'))).json();

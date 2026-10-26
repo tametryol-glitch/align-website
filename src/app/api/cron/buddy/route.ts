@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       offset = next;
     }
 
-    return NextResponse.json({
+    const result = {
       ok: true,
       dryRun: BUDDY_DRY_RUN,
       pages,
@@ -70,8 +70,13 @@ export async function GET(request: NextRequest) {
       aiErrors: aiErrors.slice(0, 5),
       startedAt: started.toISOString(),
       processedAt: new Date().toISOString(),
-    });
+    };
+    // Vercel's "Run" button and cron history show no response body, so write the counters to the runtime
+    // logs. Counters only: never message text, names or chart data.
+    console.log('[buddy-cron] ' + JSON.stringify(result));
+    return NextResponse.json(result);
   } catch (err) {
+    console.log('[buddy-cron] failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 },
