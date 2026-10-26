@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Video, Square, Loader2 } from 'lucide-react';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { DevicePicker } from '@/components/video/DevicePicker';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ export function VideoNoteRecorderModal({ defaultOnce, onSend, onClose }: VideoNo
   const [sendError, setSendError] = useState('');
   const elapsedRef = useRef(0);
 
-  const { canRecord, recording, elapsed, error, liveVideoRef, start, stop, maxSeconds } = useVideoRecorder({
+  const { canRecord, recording, elapsed, error, liveVideoRef, start, stop, maxSeconds, deviceControls } = useVideoRecorder({
     maxSeconds: 60,
     onClip: (file) => {
       setClip({ file, url: URL.createObjectURL(file), duration: Math.max(1, elapsedRef.current) });
@@ -108,6 +109,8 @@ export function VideoNoteRecorderModal({ defaultOnce, onSend, onClose }: VideoNo
 
           {error && <p className="text-xs text-red-400">{error}</p>}
           {sendError && <p className="text-xs text-red-400">{sendError}</p>}
+
+          {!clip && !recording && canRecord && <DevicePicker controls={deviceControls} disabled={sending} />}
 
           <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer select-none">
             <input
