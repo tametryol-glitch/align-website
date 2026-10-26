@@ -41,6 +41,10 @@
       "schedule": "30 12 * * *"
     },
     {
+      "path": "/api/cron/buddy",
+      "schedule": "15 6 * * *"
+    },
+    {
       "path": "/api/cron/call-sweep",
       "schedule": "10 * * * *"
     },
