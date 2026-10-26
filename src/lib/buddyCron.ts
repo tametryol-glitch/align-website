@@ -23,6 +23,9 @@ export interface DispatchPage {
   messages?: number;
   blocked?: number;
   pushed?: number;
+  ai_ok?: number;
+  ai_failed?: number;
+  ai_errors?: string[];
   failures?: string[];
   next_offset?: number | null;
 }
@@ -37,17 +40,21 @@ export interface BuddyTotals {
   wouldWriteMessages: number;
   blocked: number;
   pushed: number;
+  aiOk: number;
+  aiFailed: number;
 }
 
 export function emptyTotals(): BuddyTotals {
   return {
     considered: 0, processed: 0, skipped: 0, failed: 0,
     wouldInsertSignals: 0, wouldUpdateSignals: 0, wouldWriteMessages: 0, blocked: 0, pushed: 0,
+    aiOk: 0, aiFailed: 0,
   };
 }
 
 export function dispatchBody(offset: number) {
-  return { offset, limit: BUDDY_PAGE, dry_run: BUDDY_DRY_RUN };
+  // ai_probe: a dry run still exercises the model (counters only) so a broken key or model shows up here.
+  return { offset, limit: BUDDY_PAGE, dry_run: BUDDY_DRY_RUN, ai_probe: true };
 }
 
 /** Add one API page to the running totals. Only counters are kept: the API's per-pair preview
@@ -63,6 +70,8 @@ export function addPage(t: BuddyTotals, r: DispatchPage): BuddyTotals {
     wouldWriteMessages: t.wouldWriteMessages + (r.messages ?? 0),
     blocked: t.blocked + (r.blocked ?? 0),
     pushed: t.pushed + (r.pushed ?? 0),
+    aiOk: t.aiOk + (r.ai_ok ?? 0),
+    aiFailed: t.aiFailed + (r.ai_failed ?? 0),
   };
 }
 

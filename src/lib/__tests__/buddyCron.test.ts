@@ -10,7 +10,7 @@ describe('buddyCron helpers', () => {
   it('is hard-wired to dry run (turning it on must be a reviewed code change)', () => {
     expect(BUDDY_DRY_RUN).toBe(true);
     expect(dispatchBody(0).dry_run).toBe(true);
-    expect(dispatchBody(75)).toEqual({ offset: 75, limit: BUDDY_PAGE, dry_run: true });
+    expect(dispatchBody(75)).toEqual({ offset: 75, limit: BUDDY_PAGE, dry_run: true, ai_probe: true });
   });
 
   it('adds pages into counters and renames them as "would" numbers', () => {
@@ -20,7 +20,14 @@ describe('buddyCron helpers', () => {
     expect(t).toEqual({
       considered: 28, processed: 27, skipped: 1, failed: 1,
       wouldInsertSignals: 12, wouldUpdateSignals: 5, wouldWriteMessages: 8, blocked: 0, pushed: 0,
+      aiOk: 0, aiFailed: 0,
     });
+  });
+
+  it('counts the model probe', () => {
+    const t = addPage(addPage(emptyTotals(), { ai_ok: 2, ai_failed: 1 }), { ai_ok: 1 });
+    expect(t.aiOk).toBe(3);
+    expect(t.aiFailed).toBe(1);
   });
 
   it('tolerates missing fields', () => {
@@ -104,8 +111,15 @@ describe('GET /api/cron/buddy', () => {
       expect(url).toMatch(/\/buddy\/dispatch$/);
       expect(init.method).toBe('POST');
       expect((init.headers as Record<string, string>)['X-Cron-Secret']).toBe('s3cret');
-      expect(JSON.parse(init.body as string)).toEqual({ offset: i === 0 ? 0 : 25, limit: BUDDY_PAGE, dry_run: true });
+      expect(JSON.parse(init.body as string)).toEqual({ offset: i === 0 ? 0 : 25, limit: BUDDY_PAGE, dry_run: true, ai_probe: true });
     });
+  });
+
+  it('reports model errors as short codes only', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ considered: 1, ai_ok: 0, ai_failed: 2, ai_errors: ['call failed: RuntimeError'], next_offset: null })));
+    const body = await (await GET(req('Bearer s3cret'))).json();
+    expect(body.aiFailed).toBe(2);
+    expect(body.aiErrors).toEqual(['call failed: RuntimeError']);
   });
 
   it('never copies per-pair previews (message text, names) into its response', async () => {

@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
   try {
     let totals = emptyTotals();
     const failures: string[] = [];
+    const aiErrors: string[] = [];
     let offset = 0;
     let pages = 0;
 
@@ -54,6 +55,7 @@ export async function GET(request: NextRequest) {
       pages++;
       totals = addPage(totals, r);
       if (Array.isArray(r.failures)) failures.push(...r.failures);
+      if (Array.isArray(r.ai_errors)) aiErrors.push(...r.ai_errors);
       const next = nextOffset(offset, r);
       if (next === null) break;
       offset = next;
@@ -65,6 +67,7 @@ export async function GET(request: NextRequest) {
       pages,
       ...totals,
       failures: failures.slice(0, 10),
+      aiErrors: aiErrors.slice(0, 5),
       startedAt: started.toISOString(),
       processedAt: new Date().toISOString(),
     });
