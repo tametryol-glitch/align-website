@@ -541,11 +541,17 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
 
   const addMusic = (mt: MusicTrack) => {
     const trackId = ensureAudioTrack('Music');
-    const len = mt.durationSeconds > 0 ? mt.durationSeconds : Math.min(sourceDuration, 30);
-    const start = freeStartOnTrack(trackId, playhead, len);
+    const songLen = mt.durationSeconds > 0 ? mt.durationSeconds : Math.min(sourceDuration, 30);
+    // Fit the song to the video (like TikTok): start at the playhead, stop where
+    // the picture ends. The right edge can still be dragged out to the full song.
+    const total = projectDuration(useTimelineStore.getState().data);
+    const wantStart = total > 0 && playhead >= total - 0.5 ? 0 : playhead;
+    const room = total > 0 ? Math.max(1, total - wantStart) : songLen;
+    const len = Math.min(songLen, room);
+    const start = freeStartOnTrack(trackId, wantStart, len);
     const clip: MediaClip = {
       id: nextId('clip'), trackId, kind: 'audio', start, duration: len,
-      sourceUrl: trackUrl(mt), sourceStart: 0, sourceEnd: len, sourceDuration: len, speed: 1, volume: 0.7,
+      sourceUrl: trackUrl(mt), sourceStart: 0, sourceEnd: len, sourceDuration: songLen, speed: 1, volume: 0.7,
       label: mt.name,
     };
     addClip(clip);
