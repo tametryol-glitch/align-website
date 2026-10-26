@@ -14,7 +14,10 @@ import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
-import { Loader2, Upload, Film, Smartphone, HardDrive, Circle, Square } from 'lucide-react';
+import { MusicPicker } from '@/components/music/MusicPicker';
+import { useAudioLibrary } from '@/lib/musicLibrary';
+import type { AttachedMusic } from '@/lib/postMusic';
+import { Loader2, Upload, Film, Smartphone, HardDrive, Circle, Square, Music2, X } from 'lucide-react';
 
 /**
  * Parse MP4 moov/mvhd atom to extract video duration.
@@ -244,11 +247,27 @@ function EditorPageInner() {
     [handleFile],
   );
 
+  // ── Song picked before editing (plays while recording, lands on the Music lane) ──
+  const [music, setMusic] = useState<AttachedMusic | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const library = useAudioLibrary();
+  const initialMusic = music
+    ? { url: music.url, startSec: music.startSec || 0, durationSec: library.music.find((m) => m.id === music.trackId)?.durationSeconds || 0 }
+    : null;
+
   // ── Record from the camera (same recorder as Reels / Feed) ────────
+  // With a song chosen the mic is off: the song is the only sound.
   const elapsedRef = useRef(0);
   const { canRecord, recording, elapsed, error: recorderError, liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds } =
-    useVideoRecorder({ maxSeconds: 60, onClip: (file) => handleFile(file, elapsedRef.current) });
+    useVideoRecorder({ maxSeconds: 60, muteMic: !!music, onClip: (file) => handleFile(file, elapsedRef.current) });
   useEffect(() => { elapsedRef.current = elapsed; }, [elapsed]);
+
+  useEffect(() => {
+    if (!recording || !music) return;
+    const a = new Audio(music.url);
+    a.onloadedmetadata = () => { a.currentTime = music.startSec || 0; a.play().catch(() => {}); };
+    return () => { a.onloadedmetadata = null; a.pause(); };
+  }, [recording, music]);
 
   // ── Error state (only for URL-based load failures) ────────────
   if (error && videoUrl) {
@@ -283,7 +302,7 @@ function EditorPageInner() {
     if (classic) {
       return <EditorLayout videoId={videoId} />;
     }
-    return <MultiTrackEditor sourceUrl={sourceVideoUrl} sourceDuration={videoDuration} />;
+    return <MultiTrackEditor sourceUrl={sourceVideoUrl} sourceDuration={videoDuration} initialMusic={initialMusic} />;
   }
 
   // ── Import screen (no video loaded yet) ───────────────────────
@@ -319,6 +338,26 @@ function EditorPageInner() {
           </div>
         ) : (
         <>
+        {/* Add sound (before recording or importing) */}
+        <div className="mb-3 flex items-center justify-center gap-2">
+          <button
+            onClick={() => setShowPicker(true)}
+            className="flex items-center gap-2 max-w-full px-4 py-2 rounded-full bg-white/10 text-text-primary text-sm font-semibold hover:bg-white/15 transition-colors"
+          >
+            <Music2 className="w-4 h-4 shrink-0" />
+            <span className="truncate">{music ? music.title : 'Add sound'}</span>
+          </button>
+          {music && (
+            <button
+              onClick={() => setMusic(null)}
+              aria-label="Remove sound"
+              className="p-2 rounded-full bg-white/10 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
         {/* Record from the camera */}
         {canRecord && (
           <button
@@ -377,6 +416,8 @@ function EditorPageInner() {
 
         </>
         )}
+
+        {showPicker && <MusicPicker value={music} onChange={setMusic} onClose={() => setShowPicker(false)} />}
 
         {/* Error */}
         {(error || recorderError) && (

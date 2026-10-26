@@ -31,9 +31,11 @@ export interface UseVideoRecorderOptions {
   maxSeconds?: number;
   /** Called once with the finished clip. */
   onClip: (file: File) => void;
+  /** Record picture only (e.g. a song is playing and must not be picked up by the mic). */
+  muteMic?: boolean;
 }
 
-export function useVideoRecorder({ maxSeconds = 60, onClip }: UseVideoRecorderOptions) {
+export function useVideoRecorder({ maxSeconds = 60, onClip, muteMic = false }: UseVideoRecorderOptions) {
   const [canRecord, setCanRecord] = useState(false);
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -98,7 +100,7 @@ export function useVideoRecorder({ maxSeconds = 60, onClip }: UseVideoRecorderOp
           height: { ideal: 1280 },
           frameRate: { ideal: 30, max: 30 },
         },
-        audio: true,
+        audio: !muteMic,
       });
       streamRef.current = stream;
       if (liveVideoRef.current) {
@@ -129,7 +131,7 @@ export function useVideoRecorder({ maxSeconds = 60, onClip }: UseVideoRecorderOp
     } catch {
       setError('Could not access your camera. Check your browser permissions and try again.');
     }
-  }, []);
+  }, [muteMic]);
 
   // Timer, which also enforces the cap.
   useEffect(() => {

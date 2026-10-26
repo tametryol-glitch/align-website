@@ -248,7 +248,11 @@ function initialTimeline(sourceUrl: string, duration: number): TimelineState {
   return { tracks: [track], clips: [clip] };
 }
 
-export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: string; sourceDuration: number }) {
+/** A song chosen before editing (the + page); dropped onto the Music lane at 0:00. */
+export interface InitialMusic { url: string; startSec: number; durationSec: number }
+
+export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { sourceUrl: string; sourceDuration: number; initialMusic?: InitialMusic | null }) {
+  const initialMusicRef = useRef(initialMusic);
   const setData = useTimelineStore((s) => s.setData);
   const data = useTimelineStore((s) => s.data);
   const addTrack = useTimelineStore((s) => s.addTrack);
@@ -442,6 +446,21 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration }: { sourceUrl: str
     // Mute the source in render if it has no audio track (else the server render crashes).
     const vClip = initial.clips.find((c) => c.kind === 'video');
     if (vClip) probeHasAudio(sourceUrl).then((has) => { if (!has) useTimelineStore.getState().updateClip(vClip.id, { volume: 0 }); });
+    // Song picked before editing: lay it on the Music lane from 0:00.
+    const im = initialMusicRef.current;
+    if (im?.url) {
+      const trackId = ensureAudioTrack('Music');
+      const startSec = Math.max(0, im.startSec || 0);
+      const videoLen = Math.max(0.1, sourceDuration);
+      const avail = im.durationSec > 0 ? im.durationSec - startSec : videoLen;
+      const len = Math.min(videoLen, avail > 0.5 ? avail : videoLen);
+      addClip({
+        id: nextId('clip'), trackId, kind: 'audio', start: 0, duration: len,
+        sourceUrl: im.url, sourceStart: startSec, sourceEnd: startSec + len,
+        sourceDuration: im.durationSec > 0 ? im.durationSec : startSec + len, speed: 1, volume: 0.7,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceUrl, sourceDuration, setData]);
 
   // Auto-save the edit to localStorage (debounced) so nothing is lost.
