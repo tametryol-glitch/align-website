@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Player, type PlayerRef } from '@remotion/player';
 import { MultiTrackComposition } from './MultiTrackComposition';
-import { timelineDuration, type TimelineState } from '@/lib/editor/timelineModel';
+import { projectDuration, type TimelineState } from '@/lib/editor/timelineModel';
 import { useTimelineStore } from '@/lib/editor/timelineStore';
 
 const FPS = 30;
@@ -18,7 +18,7 @@ const PLAYER_STYLE: React.CSSProperties = { width: '100%', height: '100%', borde
  * playback moves the playhead; clicking the ruler seeks the player.
  */
 export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920 }: { timeline: TimelineState; width?: number; height?: number }) {
-  const durationInFrames = Math.max(1, Math.round(Math.max(0.1, timelineDuration(timeline)) * FPS));
+  const durationInFrames = Math.max(1, Math.round(Math.max(0.1, projectDuration(timeline)) * FPS));
   const ref = useRef<PlayerRef>(null);
   const playhead = useTimelineStore((s) => s.playhead);
   const setPlayhead = useTimelineStore((s) => s.setPlayhead);
@@ -59,6 +59,7 @@ export default function MultiTrackPlayer({ timeline, width = 1080, height = 1920
       compositionHeight={height}
       style={PLAYER_STYLE}
       controls
+      alwaysShowControls
     />
   );
 }

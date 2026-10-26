@@ -293,7 +293,7 @@ function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
   const width = Math.max(6, clip.duration * pxPerSec);
   const label = clip.kind === 'text' ? (clip as { text: string }).text || 'Text'
     : clip.kind === 'video' ? 'Video'
-    : clip.kind === 'audio' ? 'Audio'
+    : clip.kind === 'audio' ? ((clip as MediaClip).label || 'Audio')
     : (clip as { emoji?: string }).emoji || 'Overlay';
   const media = clip.kind === 'video' || clip.kind === 'audio' ? (clip as MediaClip) : null;
   const wave = useWaveform(media?.sourceUrl);

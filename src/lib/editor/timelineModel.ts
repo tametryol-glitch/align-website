@@ -44,6 +44,8 @@ interface ClipBase {
 export interface MediaClip extends ClipBase {
   kind: 'video' | 'audio';
   sourceUrl: string;
+  /** Display name on the timeline (e.g. the song title). */
+  label?: string;
   /** In/out points within the source file, seconds. */
   sourceStart: number;
   sourceEnd: number;
@@ -197,6 +199,18 @@ export function clipsOnTrack(state: TimelineState, trackId: string): TimelineCli
 /** Furthest clip end across all tracks — the timeline's total length. */
 export function timelineDuration(state: TimelineState): number {
   return state.clips.reduce((max, c) => Math.max(max, clipEnd(c)), 0);
+}
+
+/**
+ * Length of the finished video: where the picture ends. A song or sound effect
+ * that runs past the last video/text/sticker is cut off there (like TikTok and
+ * CapCut) instead of stretching the export with black frames. Falls back to the
+ * full extent when there is no picture at all (audio-only projects).
+ */
+export function projectDuration(state: TimelineState): number {
+  const visual = state.clips.filter((c) => c.kind !== 'audio');
+  if (visual.length === 0) return timelineDuration(state);
+  return visual.reduce((max, c) => Math.max(max, clipEnd(c)), 0);
 }
 
 /** Would a clip at [start, start+duration) overlap any OTHER clip on the track? */

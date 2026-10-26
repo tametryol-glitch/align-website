@@ -260,7 +260,7 @@ function EditorPageInner() {
     : null);
   const waitingForSong = !!urlTrackId && library.loading;
   const initialMusic = effectiveMusic
-    ? { url: effectiveMusic.url, startSec: effectiveMusic.startSec || 0, durationSec: library.music.find((m) => m.id === effectiveMusic.trackId)?.durationSeconds || 0 }
+    ? { url: effectiveMusic.url, title: effectiveMusic.title, startSec: effectiveMusic.startSec || 0, durationSec: library.music.find((m) => m.id === effectiveMusic.trackId)?.durationSeconds || 0 }
     : null;
 
   // ── Record from the camera (same recorder as Reels / Feed) ────────
