@@ -26,6 +26,8 @@ import { X, Plus, Globe, Users, Image as ImageIcon, BarChart3, FileText, Video, 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { useRecordingSong, musicEditParams } from '@/hooks/useRecordingSong';
+import { AddSoundChip } from '@/components/music/AddSoundChip';
 import { useTranslation } from 'react-i18next';
 import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
 import { buildShareTemplatePost, canPersonalize, signGlyph, type ShareTemplateId } from '@/lib/feedCosmicTemplates';
@@ -224,6 +226,12 @@ function CreatePostModal({
   // Song under a photo post (music library).
   const [music, setMusic] = useState<AttachedMusic | null>(null);
   const [showMusicPicker, setShowMusicPicker] = useState(false);
+  // Song for a VIDEO post: plays while recording and is mixed in by the editor
+  // (separate from `music`, which clearImage() resets for photo posts).
+  const [videoMusic, setVideoMusic] = useState<AttachedMusic | null>(null);
+  const videoMusicRef = useRef<AttachedMusic | null>(null);
+  videoMusicRef.current = videoMusic;
+  const [autoEdit, setAutoEdit] = useState(false);
 
   // Video state
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -320,13 +328,15 @@ function CreatePostModal({
     setPostMode('video');
     setError('');
     clearImage();
+    setAutoEdit(!!videoMusicRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const {
     canRecord, recording, elapsed, error: recorderError,
     liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds,
-  } = useVideoRecorder({ maxSeconds: 60, onClip: acceptVideoClip });
+  } = useVideoRecorder({ maxSeconds: 60, muteMic: !!videoMusic, onClip: acceptVideoClip });
+  useRecordingSong(recording, videoMusic);
 
   function handleVideoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -344,12 +354,18 @@ function CreatePostModal({
     setError('');
     try {
       const url = await uploadPostMedia(userId, videoFile);
-      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=feed`);
+      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=feed${musicEditParams(videoMusic)}`);
     } catch (err: any) {
       setError(err?.message || 'Could not open the editor. Try again.');
       setOpeningEditor(false);
     }
   }
+
+  // A clip recorded/uploaded with a song chosen opens the editor right away.
+  useEffect(() => {
+    if (autoEdit && videoFile) { setAutoEdit(false); handleEditFirst(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoEdit, videoFile]);
 
   function addPollOption() {
     if (pollOptions.length < 4) setPollOptions([...pollOptions, '']);
@@ -362,6 +378,8 @@ function CreatePostModal({
 
   async function handlePost() {
     if (posting) return;
+    // The song only exists in the editor's render: never post a clip without it.
+    if (postMode === 'video' && videoMusic && videoFile && !hostedVideoUrl) { handleEditFirst(); return; }
 
     if (postMode === 'poll') {
       if (!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2) {
@@ -708,6 +726,11 @@ function CreatePostModal({
                     <Square className="w-3.5 h-3.5" /> Stop
                   </button>
                 </div>
+              )}
+
+              {/* Add sound (video mode, before recording / uploading) */}
+              {postMode === 'video' && !recording && !hostedVideoUrl && (
+                <AddSoundChip value={videoMusic} onChange={setVideoMusic} disabled={openingEditor} />
               )}
 
               {/* Record / upload (for video mode) */}

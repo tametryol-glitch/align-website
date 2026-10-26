@@ -14,10 +14,11 @@ import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
-import { MusicPicker } from '@/components/music/MusicPicker';
-import { useAudioLibrary } from '@/lib/musicLibrary';
+import { AddSoundChip } from '@/components/music/AddSoundChip';
+import { useRecordingSong } from '@/hooks/useRecordingSong';
+import { useAudioLibrary, trackUrl } from '@/lib/musicLibrary';
 import type { AttachedMusic } from '@/lib/postMusic';
-import { Loader2, Upload, Film, Smartphone, HardDrive, Circle, Square, Music2, X } from 'lucide-react';
+import { Loader2, Upload, Film, Smartphone, HardDrive, Circle, Square } from 'lucide-react';
 
 /**
  * Parse MP4 moov/mvhd atom to extract video duration.
@@ -249,10 +250,16 @@ function EditorPageInner() {
 
   // ── Song picked before editing (plays while recording, lands on the Music lane) ──
   const [music, setMusic] = useState<AttachedMusic | null>(null);
-  const [showPicker, setShowPicker] = useState(false);
   const library = useAudioLibrary();
-  const initialMusic = music
-    ? { url: music.url, startSec: music.startSec || 0, durationSec: library.music.find((m) => m.id === music.trackId)?.durationSeconds || 0 }
+  // A song handed over by the Reels / Feed composers (?musicTrack=<id>&musicStart=<sec>).
+  const urlTrackId = searchParams.get('musicTrack');
+  const urlTrack = urlTrackId ? library.music.find((m) => m.id === urlTrackId) : undefined;
+  const effectiveMusic: AttachedMusic | null = music ?? (urlTrack
+    ? { trackId: urlTrack.id, title: urlTrack.name, url: trackUrl(urlTrack), startSec: Math.max(0, parseFloat(searchParams.get('musicStart') || '0') || 0) }
+    : null);
+  const waitingForSong = !!urlTrackId && library.loading;
+  const initialMusic = effectiveMusic
+    ? { url: effectiveMusic.url, startSec: effectiveMusic.startSec || 0, durationSec: library.music.find((m) => m.id === effectiveMusic.trackId)?.durationSeconds || 0 }
     : null;
 
   // ── Record from the camera (same recorder as Reels / Feed) ────────
@@ -262,12 +269,7 @@ function EditorPageInner() {
     useVideoRecorder({ maxSeconds: 60, muteMic: !!music, onClip: (file) => handleFile(file, elapsedRef.current) });
   useEffect(() => { elapsedRef.current = elapsed; }, [elapsed]);
 
-  useEffect(() => {
-    if (!recording || !music) return;
-    const a = new Audio(music.url);
-    a.onloadedmetadata = () => { a.currentTime = music.startSec || 0; a.play().catch(() => {}); };
-    return () => { a.onloadedmetadata = null; a.pause(); };
-  }, [recording, music]);
+  useRecordingSong(recording, music);
 
   // ── Error state (only for URL-based load failures) ────────────
   if (error && videoUrl) {
@@ -288,7 +290,7 @@ function EditorPageInner() {
   }
 
   // ── Loading state ─────────────────────────────────────────────
-  if (loading) {
+  if (loading || (sourceVideoUrl && waitingForSong)) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
@@ -339,24 +341,7 @@ function EditorPageInner() {
         ) : (
         <>
         {/* Add sound (before recording or importing) */}
-        <div className="mb-3 flex items-center justify-center gap-2">
-          <button
-            onClick={() => setShowPicker(true)}
-            className="flex items-center gap-2 max-w-full px-4 py-2 rounded-full bg-white/10 text-text-primary text-sm font-semibold hover:bg-white/15 transition-colors"
-          >
-            <Music2 className="w-4 h-4 shrink-0" />
-            <span className="truncate">{music ? music.title : 'Add sound'}</span>
-          </button>
-          {music && (
-            <button
-              onClick={() => setMusic(null)}
-              aria-label="Remove sound"
-              className="p-2 rounded-full bg-white/10 text-text-muted hover:text-text-primary transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <div className="mb-3"><AddSoundChip value={music} onChange={setMusic} /></div>
 
         {/* Record from the camera */}
         {canRecord && (
@@ -416,8 +401,6 @@ function EditorPageInner() {
 
         </>
         )}
-
-        {showPicker && <MusicPicker value={music} onChange={setMusic} onClose={() => setShowPicker(false)} />}
 
         {/* Error */}
         {(error || recorderError) && (

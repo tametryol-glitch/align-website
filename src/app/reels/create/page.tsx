@@ -24,6 +24,9 @@ import {
   type AstrologyMetadata,
 } from '@/lib/reelsService';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { useRecordingSong, musicEditParams } from '@/hooks/useRecordingSong';
+import { AddSoundChip } from '@/components/music/AddSoundChip';
+import type { AttachedMusic } from '@/lib/postMusic';
 import {
   Upload, Video as VideoIcon, X, Loader2, ArrowLeft, Circle, Square, Globe, Users, Lock, Scissors,
 } from 'lucide-react';
@@ -71,18 +74,27 @@ export default function CreateReelPage() {
     return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
   }, [previewUrl]);
 
+  // Song for the reel: plays while recording and is mixed in by the editor, so
+  // a clip that arrives with a song goes straight to the editor.
+  const [music, setMusic] = useState<AttachedMusic | null>(null);
+  const musicRef = useRef<AttachedMusic | null>(null);
+  musicRef.current = music;
+  const [autoEdit, setAutoEdit] = useState(false);
+
   const acceptClip = useCallback((f: File) => {
     setPreviewUrl((old) => { if (old?.startsWith('blob:')) URL.revokeObjectURL(old); return URL.createObjectURL(f); });
     setFile(f);
     setHostedUrl(null);
     setDurationSeconds(0);
     setError(null);
+    setAutoEdit(!!musicRef.current);
   }, []);
 
   const {
     canRecord, recording, elapsed, error: recorderError,
     liveVideoRef, start: startRecording, stop: stopRecording,
-  } = useVideoRecorder({ maxSeconds: MAX_RECORD_SECONDS, onClip: acceptClip });
+  } = useVideoRecorder({ maxSeconds: MAX_RECORD_SECONDS, muteMic: !!music, onClip: acceptClip });
+  useRecordingSong(recording, music);
 
   // Returning from the editor: /reels/create?editedVideoUrl=<url> adopts the
   // finished render as the reel's video. window.location (not useSearchParams)
@@ -122,12 +134,17 @@ export default function CreateReelPage() {
         }
         url = res.url;
       }
-      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=reel`);
+      router.push(`/cosmic-video/edit?url=${encodeURIComponent(url)}&returnTo=reel${musicEditParams(music)}`);
     } catch (err: any) {
       setError(err?.message || t('reels.create.errorOpenEditor'));
       setOpeningEditor(false);
     }
-  }, [openingEditor, hostedUrl, file, router, t]);
+  }, [openingEditor, hostedUrl, file, router, t, music]);
+
+  // A clip recorded/uploaded with a song chosen opens the editor right away.
+  useEffect(() => {
+    if (autoEdit && file) { setAutoEdit(false); handleEdit(); }
+  }, [autoEdit, file, handleEdit]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -148,6 +165,8 @@ export default function CreateReelPage() {
   // ─── Publish ───
   const handlePublish = async () => {
     if (publishing || (!file && !hostedUrl)) return;
+    // The song only exists in the editor's render: never post a clip without it.
+    if (music && !hostedUrl) { handleEdit(); return; }
     setError(null);
     setPublishing(true);
 
@@ -257,6 +276,8 @@ export default function CreateReelPage() {
 
         {/* ─── Video ─── */}
         <h2 className="text-white text-sm font-bold mb-2">{t('reels.create.videoHeading')}</h2>
+
+        {!recording && !hostedUrl && <div className="mb-3"><AddSoundChip value={music} onChange={setMusic} disabled={openingEditor} /></div>}
 
         {previewUrl ? (
           <div className="relative rounded-xl overflow-hidden bg-black border border-white/10">
