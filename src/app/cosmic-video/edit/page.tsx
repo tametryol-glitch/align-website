@@ -13,7 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { useVideoEditorStore } from '@/stores/videoEditorStore';
 import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
-import { Loader2, Upload, Film, Smartphone, HardDrive } from 'lucide-react';
+import { useVideoRecorder } from '@/hooks/useVideoRecorder';
+import { Loader2, Upload, Film, Smartphone, HardDrive, Circle, Square } from 'lucide-react';
 
 /**
  * Parse MP4 moov/mvhd atom to extract video duration.
@@ -136,7 +137,7 @@ function EditorPageInner() {
 
   // ── Handle file import ────────────────────────────────────────
   const handleFile = useCallback(
-    (file: File) => {
+    (file: File, knownSeconds?: number) => {
       // Validate type
       if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(mp4|mov|webm|mkv)$/i)) {
         setError('Please select a video file (MP4, MOV, WebM, or MKV).');
@@ -158,23 +159,39 @@ function EditorPageInner() {
       vid.preload = 'metadata';
       vid.muted = true;
 
-      vid.onloadedmetadata = () => {
+      const useProbedDuration = () => {
         const duration = vid.duration;
         if (duration && isFinite(duration) && duration > 0) {
           init(blobUrl, duration);
         } else {
-          // Fallback: try MP4 header parse
+          // Fallback: try MP4 header parse (recorded clips: the recorder's own timer)
           const reader = new FileReader();
+          const fallback = knownSeconds && knownSeconds > 0 ? knownSeconds : 30;
           reader.onload = () => {
             const buf = new DataView(reader.result as ArrayBuffer);
             const parsed = parseMp4Duration(buf);
-            init(blobUrl, parsed && parsed > 0 ? parsed : 30);
+            init(blobUrl, parsed && parsed > 0 ? parsed : fallback);
           };
-          reader.onerror = () => init(blobUrl, 30);
+          reader.onerror = () => init(blobUrl, fallback);
           reader.readAsArrayBuffer(file.slice(0, 65536));
         }
         setLoading(false);
         vid.remove();
+      };
+
+      vid.onloadedmetadata = () => {
+        if (vid.duration === Infinity) {
+          // Browser-recorded WebM has no duration header; seeking far past the
+          // end makes the browser work it out. Don't hang if it never does.
+          vid.onloadedmetadata = null;
+          let settled = false;
+          const settle = () => { if (!settled) { settled = true; vid.ontimeupdate = null; useProbedDuration(); } };
+          vid.ontimeupdate = settle;
+          setTimeout(settle, 2500);
+          vid.currentTime = 1e101;
+          return;
+        }
+        useProbedDuration();
       };
 
       vid.onerror = () => {
@@ -227,6 +244,12 @@ function EditorPageInner() {
     [handleFile],
   );
 
+  // ── Record from the camera (same recorder as Reels / Feed) ────────
+  const elapsedRef = useRef(0);
+  const { canRecord, recording, elapsed, error: recorderError, liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds } =
+    useVideoRecorder({ maxSeconds: 60, onClip: (file) => handleFile(file, elapsedRef.current) });
+  useEffect(() => { elapsedRef.current = elapsed; }, [elapsed]);
+
   // ── Error state (only for URL-based load failures) ────────────
   if (error && videoUrl) {
     return (
@@ -276,9 +299,35 @@ function EditorPageInner() {
             Edit Your Video
           </h1>
           <p className="text-text-muted text-sm">
-            Import a video from your device to trim, add text, stickers, filters, and more.
+            Record or import a video to trim, add text, stickers, filters, and more.
           </p>
         </div>
+
+        {recording ? (
+          <div className="relative rounded-2xl overflow-hidden bg-black border border-red-500/50">
+            <video ref={liveVideoRef} className="w-full max-h-[480px] object-contain bg-black" muted playsInline />
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded bg-black/70">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-white text-xs font-semibold">{elapsed}s / {maxSeconds}s</span>
+            </div>
+            <button
+              onClick={stopRecording}
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full bg-red-500 text-white text-sm font-bold"
+            >
+              <Square className="w-4 h-4" /> Stop &amp; edit
+            </button>
+          </div>
+        ) : (
+        <>
+        {/* Record from the camera */}
+        {canRecord && (
+          <button
+            onClick={startRecording}
+            className="w-full mb-3 flex items-center justify-center gap-2 py-4 rounded-2xl bg-accent-primary text-white font-semibold hover:bg-accent-primary/90 transition-colors"
+          >
+            <Circle className="w-5 h-5" /> Record with camera
+          </button>
+        )}
 
         {/* Drop zone */}
         <div
@@ -326,10 +375,13 @@ function EditorPageInner() {
           </div>
         </div>
 
+        </>
+        )}
+
         {/* Error */}
-        {error && (
+        {(error || recorderError) && (
           <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
-            <p className="text-sm text-red-300">{error}</p>
+            <p className="text-sm text-red-300">{error || recorderError}</p>
           </div>
         )}
 
