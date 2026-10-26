@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       ...totals,
       failures: failures.slice(0, 10),
       aiErrors: aiErrors.slice(0, 5),
-      aiReason: [...aiReasons].join(',') || 'no_pages',
+      aiReason: Array.from(aiReasons).join(',') || 'no_pages',
       startedAt: started.toISOString(),
       processedAt: new Date().toISOString(),
     };
