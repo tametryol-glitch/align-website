@@ -146,10 +146,9 @@ describe('GET /api/cron/buddy', () => {
     expect(line).toBeTruthy();
     const logged = JSON.parse(line!.slice('[buddy-cron] '.length));
     expect(logged).toMatchObject({ ok: true, dryRun: true, aiOk: 1, wouldWriteMessages: 1 });
-    expect(lines.join('
-')).not.toContain('PRIVATE TEXT');
-    expect(lines.join('
-')).not.toContain('s3cret');
+    const everything = lines.join(' | ');
+    expect(everything).not.toContain('PRIVATE TEXT');
+    expect(everything).not.toContain('s3cret');
   });
 
   it('stops on a stalled offset instead of looping', async () => {
