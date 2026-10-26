@@ -26,6 +26,7 @@ import {
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { useRecordingSong, musicEditParams } from '@/hooks/useRecordingSong';
 import { AddSoundChip } from '@/components/music/AddSoundChip';
+import { DevicePicker } from '@/components/video/DevicePicker';
 import type { AttachedMusic } from '@/lib/postMusic';
 import {
   Upload, Video as VideoIcon, X, Loader2, ArrowLeft, Circle, Square, Globe, Users, Lock, Scissors,
@@ -92,7 +93,7 @@ export default function CreateReelPage() {
 
   const {
     canRecord, recording, elapsed, error: recorderError,
-    liveVideoRef, start: startRecording, stop: stopRecording,
+    liveVideoRef, start: startRecording, stop: stopRecording, deviceControls,
   } = useVideoRecorder({ maxSeconds: MAX_RECORD_SECONDS, muteMic: !!music, onClip: acceptClip });
   useRecordingSong(recording, music);
 
@@ -278,6 +279,7 @@ export default function CreateReelPage() {
         <h2 className="text-white text-sm font-bold mb-2">{t('reels.create.videoHeading')}</h2>
 
         {!recording && !hostedUrl && <div className="mb-3"><AddSoundChip value={music} onChange={setMusic} disabled={openingEditor} /></div>}
+        {!recording && !hostedUrl && !previewUrl && canRecord && <DevicePicker controls={deviceControls} showMic={!music} />}
 
         {previewUrl ? (
           <div className="relative rounded-xl overflow-hidden bg-black border border-white/10">

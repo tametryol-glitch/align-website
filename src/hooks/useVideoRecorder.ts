@@ -26,6 +26,22 @@ export function pickRecorderMime(): string | null {
   return candidates.find((c) => MediaRecorder.isTypeSupported(c)) ?? null;
 }
 
+const CAMERA_KEY = 'align.recorder.cameraId';
+const MIC_KEY = 'align.recorder.micId';
+
+/** Camera / microphone choices, for <DevicePicker />. */
+export interface DeviceControls {
+  cams: MediaDeviceInfo[];
+  mics: MediaDeviceInfo[];
+  cameraId: string;
+  micId: string;
+  setCameraId: (id: string) => void;
+  setMicId: (id: string) => void;
+  refreshDevices: (askPermission?: boolean) => Promise<void>;
+  /** False until the browser has granted access once (names are hidden before that). */
+  labelsKnown: boolean;
+}
+
 export interface UseVideoRecorderOptions {
   /** Hard cap on recording length; the recorder stops itself at the limit. */
   maxSeconds?: number;
@@ -40,6 +56,58 @@ export function useVideoRecorder({ maxSeconds = 60, onClip, muteMic = false }: U
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
+
+  // Which camera / microphone to use. '' = the browser's default.
+  const [cams, setCams] = useState<MediaDeviceInfo[]>([]);
+  const [mics, setMics] = useState<MediaDeviceInfo[]>([]);
+  const [cameraId, setCameraIdState] = useState('');
+  const [micId, setMicIdState] = useState('');
+  const [labelsKnown, setLabelsKnown] = useState(false);
+
+  const setCameraId = useCallback((id: string) => {
+    setCameraIdState(id);
+    try { localStorage.setItem(CAMERA_KEY, id); } catch { /* storage blocked */ }
+  }, []);
+  const setMicId = useCallback((id: string) => {
+    setMicIdState(id);
+    try { localStorage.setItem(MIC_KEY, id); } catch { /* storage blocked */ }
+  }, []);
+
+  /**
+   * List the cameras and mics. Browsers hide device names until the user has
+   * granted access once, so `askPermission` opens (and immediately closes) a
+   * stream to unlock them.
+   */
+  const refreshDevices = useCallback(async (askPermission = false) => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.enumerateDevices) return;
+    if (askPermission) {
+      for (const c of [{ video: true, audio: true }, { video: true }, { audio: true }]) {
+        try {
+          const s = await navigator.mediaDevices.getUserMedia(c);
+          s.getTracks().forEach((t) => t.stop());
+          break;
+        } catch { /* try the next combination */ }
+      }
+    }
+    try {
+      const all = await navigator.mediaDevices.enumerateDevices();
+      setCams(all.filter((d) => d.kind === 'videoinput'));
+      setMics(all.filter((d) => d.kind === 'audioinput'));
+      setLabelsKnown(all.some((d) => !!d.label));
+    } catch { /* leave the lists as they were */ }
+  }, []);
+
+  useEffect(() => {
+    try {
+      setCameraIdState(localStorage.getItem(CAMERA_KEY) || '');
+      setMicIdState(localStorage.getItem(MIC_KEY) || '');
+    } catch { /* storage blocked */ }
+    refreshDevices(false);
+    const md = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
+    const onChange = () => { refreshDevices(false); };
+    md?.addEventListener?.('devicechange', onChange);
+    return () => md?.removeEventListener?.('devicechange', onChange);
+  }, [refreshDevices]);
 
   const liveVideoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -95,14 +163,16 @@ export function useVideoRecorder({ maxSeconds = 60, onClip, muteMic = false }: U
       // plenty for portrait reels.
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'user',
+          // The user's own pick wins; otherwise the front camera.
+          ...(cameraId ? { deviceId: { exact: cameraId } } : { facingMode: 'user' }),
           width: { ideal: 720 },
           height: { ideal: 1280 },
           frameRate: { ideal: 30, max: 30 },
         },
-        audio: !muteMic,
+        audio: muteMic ? false : micId ? { deviceId: { exact: micId } } : true,
       });
       streamRef.current = stream;
+      refreshDevices(false); // names are available now that access is granted
       if (liveVideoRef.current) {
         liveVideoRef.current.srcObject = stream;
         await liveVideoRef.current.play().catch(() => {});
@@ -128,10 +198,18 @@ export function useVideoRecorder({ maxSeconds = 60, onClip, muteMic = false }: U
       rec.start();
       setRecording(true);
       setElapsed(0);
-    } catch {
-      setError('Could not access your camera. Check your browser permissions and try again.');
+    } catch (e) {
+      const name = (e as { name?: string } | null)?.name;
+      if ((cameraId || micId) && (name === 'OverconstrainedError' || name === 'NotFoundError')) {
+        // The saved device was unplugged: forget it so the user can choose again.
+        setCameraId('');
+        setMicId('');
+        setError('That camera or microphone is no longer available. Pick one again and retry.');
+      } else {
+        setError('Could not access your camera. Check your browser permissions and try again.');
+      }
     }
-  }, [muteMic]);
+  }, [muteMic, cameraId, micId, refreshDevices, setCameraId, setMicId]);
 
   // Timer, which also enforces the cap.
   useEffect(() => {
@@ -145,5 +223,6 @@ export function useVideoRecorder({ maxSeconds = 60, onClip, muteMic = false }: U
     return () => clearInterval(id);
   }, [recording, maxSeconds, stop]);
 
-  return { canRecord, recording, elapsed, error, setError, liveVideoRef, start, stop, maxSeconds };
+  const deviceControls: DeviceControls = { cams, mics, cameraId, micId, setCameraId, setMicId, refreshDevices, labelsKnown };
+  return { canRecord, recording, elapsed, error, setError, liveVideoRef, start, stop, maxSeconds, deviceControls };
 }

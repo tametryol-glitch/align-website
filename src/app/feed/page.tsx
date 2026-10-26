@@ -28,6 +28,7 @@ import { useRouter } from 'next/navigation';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { useRecordingSong, musicEditParams } from '@/hooks/useRecordingSong';
 import { AddSoundChip } from '@/components/music/AddSoundChip';
+import { DevicePicker } from '@/components/video/DevicePicker';
 import { useTranslation } from 'react-i18next';
 import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
 import { buildShareTemplatePost, canPersonalize, signGlyph, type ShareTemplateId } from '@/lib/feedCosmicTemplates';
@@ -334,7 +335,7 @@ function CreatePostModal({
 
   const {
     canRecord, recording, elapsed, error: recorderError,
-    liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds,
+    liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds, deviceControls,
   } = useVideoRecorder({ maxSeconds: 60, muteMic: !!videoMusic, onClip: acceptVideoClip });
   useRecordingSong(recording, videoMusic);
 
@@ -731,6 +732,9 @@ function CreatePostModal({
               {/* Add sound (video mode, before recording / uploading) */}
               {postMode === 'video' && !recording && !hostedVideoUrl && (
                 <AddSoundChip value={videoMusic} onChange={setVideoMusic} disabled={openingEditor} />
+              )}
+              {postMode === 'video' && !recording && !videoPreview && canRecord && (
+                <DevicePicker controls={deviceControls} showMic={!videoMusic} />
               )}
 
               {/* Record / upload (for video mode) */}

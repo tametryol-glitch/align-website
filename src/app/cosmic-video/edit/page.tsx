@@ -15,6 +15,7 @@ import { EditorLayout } from '@/components/video-editor/EditorLayout';
 import { MultiTrackEditor } from '@/components/video-editor/multitrack/MultiTrackEditor';
 import { useVideoRecorder } from '@/hooks/useVideoRecorder';
 import { AddSoundChip } from '@/components/music/AddSoundChip';
+import { DevicePicker } from '@/components/video/DevicePicker';
 import { useRecordingSong } from '@/hooks/useRecordingSong';
 import { useAudioLibrary, trackUrl } from '@/lib/musicLibrary';
 import type { AttachedMusic } from '@/lib/postMusic';
@@ -265,7 +266,7 @@ function EditorPageInner() {
   // ── Record from the camera (same recorder as Reels / Feed) ────────
   // With a song chosen the mic is off: the song is the only sound.
   const elapsedRef = useRef(0);
-  const { canRecord, recording, elapsed, error: recorderError, liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds } =
+  const { canRecord, recording, elapsed, error: recorderError, liveVideoRef, start: startRecording, stop: stopRecording, maxSeconds, deviceControls } =
     useVideoRecorder({ maxSeconds: 60, muteMic: !!music, onClip: (file) => handleFile(file, elapsedRef.current) });
   useEffect(() => { elapsedRef.current = elapsed; }, [elapsed]);
 
@@ -342,6 +343,7 @@ function EditorPageInner() {
         <>
         {/* Add sound (before recording or importing) */}
         <div className="mb-3"><AddSoundChip value={music} onChange={setMusic} /></div>
+        {canRecord && <DevicePicker controls={deviceControls} showMic={!music} />}
 
         {/* Record from the camera */}
         {canRecord && (
