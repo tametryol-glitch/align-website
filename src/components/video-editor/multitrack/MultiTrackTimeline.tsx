@@ -20,6 +20,9 @@ import {
   Volume2, Video, Type, Sparkles, VolumeX, Eye, EyeOff,
 } from 'lucide-react';
 import { getPeaks, getCachedPeaks, type WaveData } from '@/lib/editor/waveform';
+import { getClipThumbs, getCachedThumbs } from '@/lib/editor/clipThumbs';
+
+const THUMB_TILE_PX = 36; // on-screen width of one filmstrip frame
 
 const MAX_VOL = 2; // 200% — top of the on-clip volume line
 
@@ -85,6 +88,29 @@ export function MultiTrackTimeline() {
 
   const lanesRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
+
+  // Keyboard shortcuts: S split, Delete remove, ←/→ step (Shift = 1s), Esc deselect, Ctrl/⌘+Z undo.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      const st = useTimelineStore.getState();
+      const sel = st.data.clips.find((c) => c.id === st.selectedClipId);
+      const k = e.key.toLowerCase();
+      if (e.metaKey || e.ctrlKey) {
+        if (k === 'z') { e.preventDefault(); if (e.shiftKey) st.redo(); else st.undo(); }
+        else if (k === 'y') { e.preventDefault(); st.redo(); }
+        return;
+      }
+      if ((k === 'delete' || k === 'backspace') && sel) { e.preventDefault(); st.removeClip(sel.id); }
+      else if (k === 's' && sel) { e.preventDefault(); st.splitAtPlayhead(sel.trackId); }
+      else if (k === 'arrowleft') { e.preventDefault(); st.setPlayhead(st.playhead - (e.shiftKey ? 1 : 1 / 30)); }
+      else if (k === 'arrowright') { e.preventDefault(); st.setPlayhead(st.playhead + (e.shiftKey ? 1 : 1 / 30)); }
+      else if (k === 'escape') st.selectClip(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   // Snap a candidate start so the clip's start OR end lands on a nearby edge.
   const snapStart = useCallback((clipId: string, candidate: number, duration: number): number => {
@@ -166,7 +192,7 @@ export function MultiTrackTimeline() {
         <span className="text-xs font-mono text-text-secondary w-20">{fmt(playhead)}</span>
         <button onClick={() => selectedClip && splitAtPlayhead(selectedClip.trackId)}
           disabled={!selectedClip}
-          className="px-2 py-1 rounded-md text-xs flex items-center gap-1 bg-white/5 text-text-secondary hover:bg-white/10 disabled:opacity-30" title="Split at playhead">
+          className="px-2 py-1 rounded-md text-xs flex items-center gap-1 bg-white/5 text-text-secondary hover:bg-white/10 disabled:opacity-30" title="Split at playhead (S)">
           <Scissors className="w-3.5 h-3.5" /> Split
         </button>
         <button onClick={() => selectedClip && closeGapBefore(selectedClip.id)}
@@ -176,12 +202,12 @@ export function MultiTrackTimeline() {
         </button>
         <button onClick={() => selectedClip && removeClip(selectedClip.id)}
           disabled={!selectedClip}
-          className="px-2 py-1 rounded-md text-xs flex items-center gap-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 disabled:opacity-30" title="Delete clip">
+          className="px-2 py-1 rounded-md text-xs flex items-center gap-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 disabled:opacity-30" title="Delete clip (Delete)">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
         <div className="w-px h-4 bg-white/10 mx-1" />
-        <button onClick={undo} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Undo"><Undo2 className="w-3.5 h-3.5" /></button>
-        <button onClick={redo} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Redo"><Redo2 className="w-3.5 h-3.5" /></button>
+        <button onClick={undo} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Undo (Ctrl+Z)"><Undo2 className="w-3.5 h-3.5" /></button>
+        <button onClick={redo} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Redo (Ctrl+Shift+Z)"><Redo2 className="w-3.5 h-3.5" /></button>
         <div className="w-px h-4 bg-white/10 mx-1" />
         <button onClick={() => setPxPerSec(pxPerSec / 1.4)} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Zoom out"><ZoomOut className="w-3.5 h-3.5" /></button>
         <button onClick={() => setPxPerSec(pxPerSec * 1.4)} className="p-1 rounded-md text-text-secondary hover:bg-white/10" title="Zoom in"><ZoomIn className="w-3.5 h-3.5" /></button>
@@ -243,6 +269,11 @@ export function MultiTrackTimeline() {
               </div>
               <div className="relative border-b border-white/5" style={{ width: contentW, height: LANE_H }}
                 onPointerDown={(e) => { if (e.target === e.currentTarget) { selectClip(null); seekFromClientX(e.clientX, e.currentTarget); } }}>
+                {!data.clips.some((c) => c.trackId === t.id) && (
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-text-muted/70 pointer-events-none whitespace-nowrap">
+                    {EMPTY_LANE_HINT[t.kind]}
+                  </span>
+                )}
                 {data.clips.filter((c) => c.trackId === t.id).map((c) => (
                   <ClipBlock key={c.id} clip={c} pxPerSec={pxPerSec}
                     selected={c.id === selectedClipId}
@@ -281,6 +312,31 @@ function useWaveform(url?: string): WaveData | null {
   return wave;
 }
 
+// Filmstrip frames for a video clip: regenerated (debounced) when the clip's
+// source range or on-screen width changes, bucketed so zooming doesn't thrash.
+function useFilmstrip(url: string | undefined, enabled: boolean, widthPx: number, from: number, to: number): string[] {
+  const count = Math.max(1, Math.min(24, Math.ceil(widthPx / THUMB_TILE_PX / 2) * 2));
+  const [thumbs, setThumbs] = useState<string[]>(() => (url && enabled ? getCachedThumbs(url, count, from, to) ?? [] : []));
+  useEffect(() => {
+    if (!url || !enabled) { setThumbs([]); return; }
+    const cached = getCachedThumbs(url, count, from, to);
+    if (cached) { setThumbs(cached); return; }
+    let alive = true;
+    const t = setTimeout(() => {
+      getClipThumbs(url, count, from, to).then((r) => { if (alive && r.length) setThumbs(r); }).catch(() => {});
+    }, 350);
+    return () => { alive = false; clearTimeout(t); };
+  }, [url, enabled, count, from, to]);
+  return thumbs;
+}
+
+const EMPTY_LANE_HINT: Record<TrackKind, string> = {
+  video: 'Add a video to start',
+  audio: 'Add music or a voiceover — use the buttons above',
+  text: 'Text you add appears here',
+  overlay: 'Stickers and overlay clips appear here',
+};
+
 function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
   clip: TimelineClip;
   pxPerSec: number;
@@ -297,6 +353,10 @@ function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
     : (clip as { emoji?: string }).emoji || 'Overlay';
   const media = clip.kind === 'video' || clip.kind === 'audio' ? (clip as MediaClip) : null;
   const wave = useWaveform(media?.sourceUrl);
+  const thumbs = useFilmstrip(
+    media?.sourceUrl, clip.kind === 'video' && width > 60, width,
+    Math.round((media?.sourceStart ?? 0) * 10) / 10, Math.round((media?.sourceEnd ?? 0) * 10) / 10,
+  );
   const vol = media?.volume ?? 1;
   // What the clip actually plays at = its own level × the lane master. The
   // waveform is drawn at this height so it shrinks/grows with the volume.
@@ -328,6 +388,16 @@ function ClipBlock({ clip, pxPerSec, selected, trackVolume, onPointerDown }: {
       style={{ left, width }}
       title={`${label} — ${clip.duration.toFixed(2)}s${media ? ` · ${Math.round(vol * 100)}% vol` : ''}`}
     >
+      {/* filmstrip: frames of the footage behind the waveform */}
+      {thumbs.length > 0 && (
+        <div className="absolute inset-0 flex pointer-events-none opacity-60">
+          {thumbs.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={i} src={src} alt="" draggable={false} className="h-full min-w-0 flex-1 object-cover" />
+          ))}
+        </div>
+      )}
+
       {/* waveform — sliced by the REAL decoded duration so it stays aligned
           with the audio; height scales with the effective volume (Filmora). */}
       {media && wave && (

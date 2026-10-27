@@ -20,6 +20,8 @@ import {
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
 import { ClipInspector, InspectorHint } from './ClipInspector';
+import { ExportDialog } from './ExportDialog';
+import { EditorTour } from './EditorTour';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
 import { EFFECTS, TRANSITIONS, MOTIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
@@ -31,7 +33,7 @@ import { EMOJI_CATEGORIES } from '@/lib/editor/emojiData';
 import { FACE_FILTERS } from '@/lib/editor/faceFilters';
 import { EXPRESSION_FX } from '@/lib/editor/expressionFx';
 import { AVATARS } from '@/lib/editor/avatar3d';
-import { Music, Type, X, Plus, Wand2, Download, Loader2, Check, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2, Orbit } from 'lucide-react';
+import { Music, Type, X, Plus, Wand2, Download, Loader2, Activity, Zap, Sparkles, Mic, Film, Smile, Layers, Volume2, Orbit } from 'lucide-react';
 
 const MultiTrackPlayer = dynamic(() => import('@/remotion/editor/MultiTrackPlayer'), { ssr: false });
 
@@ -457,6 +459,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
   // Seed once from the loaded video, capturing any prior draft to offer restore.
   const [restoreDraft, setRestoreDraft] = useState<EditorDraft | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [tourOpen, setTourOpen] = useState(false);
   useEffect(() => {
     const d = loadDraft();
     if (d && d.sourceUrl === sourceUrl && (d.data?.clips?.length ?? 0) > 1) setRestoreDraft(d);
@@ -649,15 +652,28 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
         <h1 className="text-base font-semibold text-text-primary">Edit video</h1>
         {savedAt && <span className="text-xs text-text-muted">Auto-saved</span>}
         <span className="text-xs text-text-muted ml-1">{projectDuration(data).toFixed(1)}s</span>
+        <button onClick={() => setTourOpen(true)} aria-label="How the editor works" title="How the editor works"
+          className="ml-auto w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-text-secondary bg-white/5 hover:bg-white/10 transition-colors">
+          ?
+        </button>
         <button onClick={handleExport} disabled={exporting || data.clips.length === 0}
-          className="ml-auto flex items-center gap-2 px-5 py-2 rounded-full bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40 transition-colors">
+          className="flex items-center gap-2 px-5 py-2 rounded-full bg-accent-primary text-white text-sm font-semibold hover:bg-accent-primary/90 disabled:opacity-40 transition-colors">
           {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
           {exporting ? `Exporting… ${progress}%` : 'Export'}
         </button>
       </div>
-      <div className="flex gap-5 items-start">
+      <ExportDialog
+        exporting={exporting} progress={progress} error={exportError} resultUrl={resultUrl}
+        postLabel={returnTo === 'reel' ? 'Continue to reel' : 'Post to Cosmic Feed'}
+        onPost={() => resultUrl && postToComposer(resultUrl)}
+        onRetry={handleExport}
+        onClose={() => { setResultUrl(null); setExportError(null); }}
+      />
+      <EditorTour forceOpen={tourOpen} onClosed={() => setTourOpen(false)} />
+      {/* Phones: preview on top, tools below. Desktop: side by side. */}
+      <div className="flex flex-col md:flex-row gap-5 md:items-start">
         {/* Preview */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 w-full md:w-auto">
           <div data-testid="mt-preview" className="relative rounded-xl overflow-hidden bg-black mx-auto shadow-lg shadow-black/40"
             style={aspect.h >= aspect.w
               ? { height: 'min(540px, 58vh)', aspectRatio: `${aspect.w} / ${aspect.h}` }
@@ -682,115 +698,118 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
         {/* Add tools */}
         <div className="flex-1 min-w-0 space-y-3">
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => videoInputRef.current?.click()}
+            <span aria-hidden style={{ order: 5 }} className="hidden sm:block w-px h-6 bg-white/10 self-center mx-1" />
+            <span aria-hidden style={{ order: 9 }} className="hidden sm:block w-px h-6 bg-white/10 self-center mx-1" />
+            <span aria-hidden style={{ order: 15 }} className="hidden sm:block w-px h-6 bg-white/10 self-center mx-1" />
+            <button style={{ order: 1 }} onClick={() => videoInputRef.current?.click()}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
               title="Import a second video as a B-roll / overlay clip">
               <Film className="w-4 h-4 text-accent-primary" /> Add video
             </button>
             <input ref={videoInputRef} type="file" accept="video/*,.mp4,.mov,.webm,.mkv" onChange={onPickOverlayVideo} className="hidden" />
-            <button onClick={() => setSheet('music')}
+            <button style={{ order: 2 }} onClick={() => setSheet('music')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Music className="w-4 h-4 text-accent-primary" /> Add music
             </button>
-            <button onClick={() => setSheet('sfx')}
+            <button style={{ order: 3 }} onClick={() => setSheet('sfx')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Zap className="w-4 h-4 text-accent-primary" /> Sound FX
             </button>
-            <button onClick={() => setSheet('looks')}
+            <button style={{ order: 8 }} onClick={() => setSheet('looks')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Sparkles className="w-4 h-4 text-accent-primary" /> Templates
             </button>
-            <button onClick={() => setSheet('voiceover')}
+            <button style={{ order: 4 }} onClick={() => setSheet('voiceover')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Mic className="w-4 h-4 text-accent-primary" /> Voiceover
             </button>
-            <button onClick={() => setSheet('text')}
+            <button style={{ order: 6 }} onClick={() => setSheet('text')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Type className="w-4 h-4 text-accent-primary" /> Add text
             </button>
-            <button onClick={() => setSheet('stickers')}
+            <button style={{ order: 7 }} onClick={() => setSheet('stickers')}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
               <Smile className="w-4 h-4 text-accent-primary" /> Stickers
             </button>
-            <button onClick={() => setSheet('filters')} disabled={!selectedVideo}
+            <button style={{ order: 10 }} onClick={() => setSheet('filters')} disabled={!selectedVideo}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors disabled:opacity-30"
               title={selectedVideo ? 'Filters & effects for the selected clip' : 'Select a video clip first'}>
               <Wand2 className="w-4 h-4 text-accent-primary" /> Filters &amp; FX
             </button>
-            <button onClick={() => setSheet('background')} disabled={!selectedVideo}
+            <button style={{ order: 11 }} onClick={() => setSheet('background')} disabled={!selectedVideo}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors disabled:opacity-30"
               title={selectedVideo ? 'Remove background: AI cut-out or green screen' : 'Select a video clip first'}>
               <Layers className="w-4 h-4 text-accent-primary" /> Background
             </button>
-            <button onClick={() => setSheet('facefx')} disabled={!selectedVideo}
+            <button style={{ order: 12 }} onClick={() => setSheet('facefx')} disabled={!selectedVideo}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors disabled:opacity-30"
               title={selectedVideo ? 'Face filters — glasses, crowns, ears, that track your face' : 'Select a video clip first'}>
               <Smile className="w-4 h-4 text-accent-primary" /> Face FX
             </button>
             {selectedVideo && (
-              <button onClick={() => updateClip(selectedVideo.id, { stylize: selectedVideo.stylize === 'toon' ? undefined : 'toon' } as Partial<TimelineClip>)}
+              <button style={{ order: 20 }} onClick={() => updateClip(selectedVideo.id, { stylize: selectedVideo.stylize === 'toon' ? undefined : 'toon' } as Partial<TimelineClip>)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border ${selectedVideo.stylize === 'toon' ? 'border-accent-primary bg-accent-primary/20 text-text-primary' : 'border-white/[0.06] bg-white/[0.06] text-text-primary hover:bg-white/[0.12]'}`}
                 title="Turn the clip into a cartoon (free — no AI credits)">
                 <Zap className="w-4 h-4 text-accent-primary" /> {selectedVideo.stylize === 'toon' ? 'Cartoon ✓' : 'Cartoon'}
               </button>
             )}
             {selectedVideo && (
-              <button onClick={() => setSheet('morph')}
+              <button style={{ order: 20 }} onClick={() => setSheet('morph')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Reshape your face — alien, big eyes, chipmunk">
                 <Orbit className="w-4 h-4 text-accent-primary" /> Morph
               </button>
             )}
             {selectedVideo && (
-              <button onClick={() => setSheet('reactions')}
+              <button style={{ order: 20 }} onClick={() => setSheet('reactions')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Effects that fire off your expressions — smile, open mouth, blink">
                 <Sparkles className="w-4 h-4 text-accent-primary" /> Reactions
               </button>
             )}
             {selectedVideo && (
-              <button onClick={() => setSheet('avatar')}
+              <button style={{ order: 20 }} onClick={() => setSheet('avatar')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Replace your head with a 3D character that copies your expressions">
                 <Orbit className="w-4 h-4 text-accent-primary" /> 3D Avatar
               </button>
             )}
             {selectedVideo && (
-              <button onClick={() => setSheet('keyframes')}
+              <button style={{ order: 20 }} onClick={() => setSheet('keyframes')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Animate scale/position/opacity with keyframes">
                 <Activity className="w-4 h-4 text-accent-primary" /> Keyframes
               </button>
             )}
             {selectedText && (
-              <button onClick={() => setSheet('edittext')}
+              <button style={{ order: 20 }} onClick={() => setSheet('edittext')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors">
                 <Type className="w-4 h-4 text-accent-primary" /> Edit text
               </button>
             )}
             {selectedMedia && (
-              <button onClick={() => setSheet('volume')}
+              <button style={{ order: 20 }} onClick={() => setSheet('volume')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Adjust the volume of the selected clip">
                 <Volume2 className="w-4 h-4 text-accent-primary" /> Volume
               </button>
             )}
             {selectedAudio && (
-              <button onClick={() => syncToBeat(selectedAudio)} disabled={beatBusy}
+              <button style={{ order: 20 }} onClick={() => syncToBeat(selectedAudio)} disabled={beatBusy}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors disabled:opacity-40"
                 title="Cut the video to this song's beats">
                 {beatBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity className="w-4 h-4 text-accent-primary" />} Beat sync
               </button>
             )}
             {selectedAudio && (
-              <button onClick={() => autoCaptions(selectedAudio)} disabled={capBusy}
+              <button style={{ order: 20 }} onClick={() => autoCaptions(selectedAudio)} disabled={capBusy}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors disabled:opacity-40"
                 title="Transcribe this clip into karaoke captions (free, local)">
                 {capBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4 text-accent-primary" />} Auto-captions
               </button>
             )}
             {selectedAudio && (
-              <button onClick={() => setSheet('voicefx')}
+              <button style={{ order: 20 }} onClick={() => setSheet('voicefx')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-text-primary text-sm font-medium hover:bg-white/[0.12] transition-colors"
                 title="Pitch / speed voice effects">
                 <Mic className="w-4 h-4 text-accent-primary" /> Voice FX
@@ -800,21 +819,6 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
 
           {beatMsg && <p className="text-xs text-emerald-300 bg-emerald-500/10 px-3 py-2 rounded-lg">{beatMsg}</p>}
           {capMsg && <p className="text-xs text-sky-300 bg-sky-500/10 px-3 py-2 rounded-lg">{capMsg}</p>}
-          {exportError && <p className="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{exportError}</p>}
-          {resultUrl && (
-            <div className="flex items-center flex-wrap gap-2 text-xs bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg">
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-300">Export ready.</span>
-              <button onClick={() => postToComposer(resultUrl)}
-                className="ml-auto px-2.5 py-1 rounded-md bg-accent-primary text-white font-semibold hover:bg-accent-primary/90">
-                {returnTo === 'reel' ? 'Continue to reel' : 'Post to Cosmic Feed'}
-              </button>
-              <a href={resultUrl} target="_blank" rel="noopener noreferrer" download
-                className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-200 font-medium hover:bg-emerald-500/30">
-                Download
-              </a>
-            </div>
-          )}
           {/* Properties of the selected clip (or a hint when nothing is selected) */}
           {!sheet && selectedClip && (
             <ClipInspector
