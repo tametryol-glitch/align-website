@@ -13,7 +13,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
-import { getConversations, type Conversation } from '@/lib/messagingService';
+import { getConversations, previewLabel, type Conversation } from '@/lib/messagingService';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -228,7 +228,7 @@ export function ForwardMessageModal({
                       </p>
                       {convo.last_message_preview && (
                         <p className="text-xs text-text-muted truncate">
-                          {convo.last_message_preview}
+                          {previewLabel(convo.last_message_preview)}
                         </p>
                       )}
                     </div>

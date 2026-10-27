@@ -8,7 +8,7 @@ import {
   MessageCircle, Search, Plus, Users, MoreVertical,
   Pin, BellOff, Archive, Trash2,
 } from 'lucide-react';
-import type { Conversation } from '@/lib/messagingService';
+import { previewLabel, type Conversation } from '@/lib/messagingService';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -99,7 +99,7 @@ function ConversationItem({
               <p className={`text-xs truncate ${
                 isTyping ? 'text-accent-primary italic' : hasUnread ? 'text-text-secondary font-medium' : 'text-text-muted'
               }`}>
-                {isTyping ? t('messages.typing', 'typing...') : (conversation.last_message_preview || t('messages.startNewChat', 'Start a conversation'))}
+                {isTyping ? t('messages.typing', 'typing...') : (previewLabel(conversation.last_message_preview) || t('messages.startNewChat', 'Start a conversation'))}
               </p>
             </div>
             {hasUnread && (

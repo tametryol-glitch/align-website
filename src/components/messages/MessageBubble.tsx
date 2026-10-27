@@ -99,6 +99,12 @@ function BubbleLinkPreview({ text, isMine }: { text: string; isMine: boolean }) 
 
 // ── Inline Image Preview (detects image URLs in text messages) ──────
 
+/** Text with the inline-previewed image URL removed (empty when the message was only the URL). */
+function stripMediaUrl(text: string): string {
+  const match = text.match(IMAGE_URL_RE) || text.match(SUPABASE_MEDIA_RE);
+  return match ? text.replace(match[0], '').trim() : text;
+}
+
 function InlineImagePreview({ text }: { text: string }) {
   const imageUrl = useMemo(() => {
     const match = text.match(IMAGE_URL_RE) || text.match(SUPABASE_MEDIA_RE);
@@ -393,8 +399,12 @@ export function MessageBubble({
           {/* Text content */}
           {msg.content && !once && msg.type !== 'call' && msg.type !== 'image' && msg.type !== 'voice_note' && msg.type !== 'file' && msg.type !== 'location' && msg.type !== 'poll' && (
             <>
-              <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-              <BubbleLinkPreview text={msg.content} isMine={isMine} />
+              {/* The inline preview above already shows the image, so drop its raw URL from the text */}
+              {(() => {
+                const shown = msg.type === 'text' ? stripMediaUrl(msg.content) : msg.content;
+                return shown ? <p className="text-sm whitespace-pre-wrap break-words">{shown}</p> : null;
+              })()}
+              {!(msg.type === 'text' && !stripMediaUrl(msg.content)) && <BubbleLinkPreview text={msg.content} isMine={isMine} />}
             </>
           )}
 

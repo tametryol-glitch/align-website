@@ -43,6 +43,16 @@ export interface Message {
   reply_message?: Message | null;
 }
 
+/** Conversation-list preview text: a bare media URL becomes a friendly label. */
+export function previewLabel(preview?: string | null): string {
+  if (!preview) return '';
+  const t = preview.trim();
+  if (/^https?:\/\/\S+$/i.test(t) && /supabase|chat-media|\.(?:jpg|jpeg|png|gif|webp)(?:\?|$)/i.test(t)) {
+    return /\.(?:mp4|mov|webm)(?:\?|$)/i.test(t) ? '🎥 Video' : '📷 Photo';
+  }
+  return preview;
+}
+
 export interface Conversation {
   id: string;
   created_at: string;
