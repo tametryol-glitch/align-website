@@ -19,6 +19,7 @@ import {
   type TimelineState, type TimelineClip, type MediaClip, type TextClip, type StickerClip, type TimelineTrack,
 } from '@/lib/editor/timelineModel';
 import { useAudioLibrary, trackUrl, type MusicTrack } from '@/lib/musicLibrary';
+import { ClipInspector, InspectorHint } from './ClipInspector';
 import { FILTER_PRESETS } from '@/lib/videoFilters';
 import { EFFECTS, TRANSITIONS, MOTIONS } from '@/lib/editor/effects';
 import { createClient } from '@/lib/supabase';
@@ -259,6 +260,7 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
   const addClip = useTimelineStore((s) => s.addClip);
   const updateClip = useTimelineStore((s) => s.updateClip);
   const setClipSpeed = useTimelineStore((s) => s.setClipSpeed);
+  const removeClip = useTimelineStore((s) => s.removeClip);
   const aspect = useTimelineStore((s) => s.aspect);
   const setAspect = useTimelineStore((s) => s.setAspect);
   const playhead = useTimelineStore((s) => s.playhead);
@@ -813,6 +815,17 @@ export function MultiTrackEditor({ sourceUrl, sourceDuration, initialMusic }: { 
               </a>
             </div>
           )}
+          {/* Properties of the selected clip (or a hint when nothing is selected) */}
+          {!sheet && selectedClip && (
+            <ClipInspector
+              clip={selectedClip}
+              onChange={(patch) => updateClip(selectedClip.id, patch)}
+              onSpeed={(rate) => setClipSpeed(selectedClip.id, rate)}
+              onDelete={() => removeClip(selectedClip.id)}
+              onMore={selectedText ? () => setSheet('edittext') : undefined}
+            />
+          )}
+          {!sheet && !selectedClip && !resultUrl && <InspectorHint />}
           {sheet === 'music' && <MusicSheet kind="music" onPick={addMusic} onClose={() => setSheet(null)} />}
           {sheet === 'sfx' && <MusicSheet kind="sfx" onPick={addSfx} onClose={() => setSheet(null)} />}
           {sheet === 'voiceover' && <VoiceoverSheet onGenerate={addVoiceover} onClose={() => setSheet(null)} />}
