@@ -1454,44 +1454,82 @@ function TextEditSheet({ clip, onChange, onClose }: {
   );
 }
 
+// Order the sound-effect tabs by what short-video editors reach for first.
+const SFX_TAB_ORDER = ['Meme & Comedy', 'Whooshes & Transitions', 'Impacts & Hits', 'UI & Pops', 'Risers & Builds', 'Magic & Sparkle', 'Drums & Beats', 'Sci-Fi & Cosmic', 'Retro & Gaming', 'Glitch & Digital', 'Ambience & Nature'];
+
 function MusicSheet({ kind, onPick, onClose }: { kind: 'music' | 'sfx'; onPick: (t: MusicTrack) => void; onClose: () => void }) {
   const lib = useAudioLibrary();
   const items = kind === 'sfx' ? lib.sfx : lib.music;
   const loading = lib.loading;
   const [genre, setGenre] = useState('all');
-  const genres = Array.from(new Set(items.map((m) => m.category).filter(Boolean))).sort();
-  const shown = genre === 'all' ? items : items.filter((m) => m.category === genre);
+  const [query, setQuery] = useState('');
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // One preview at a time; stop it when the sheet closes.
+  useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, []);
+  const preview = (m: MusicTrack) => {
+    if (playingId === m.id) { audioRef.current?.pause(); setPlayingId(null); return; }
+    audioRef.current?.pause();
+    const a = new Audio(trackUrl(m));
+    a.onended = () => setPlayingId((cur) => (cur === m.id ? null : cur));
+    a.play().catch(() => setPlayingId(null));
+    audioRef.current = a;
+    setPlayingId(m.id);
+  };
+
+  const found = Array.from(new Set(items.map((m) => m.category).filter(Boolean)));
+  const genres = kind === 'sfx'
+    ? [...SFX_TAB_ORDER.filter((g) => found.includes(g)), ...found.filter((g) => !SFX_TAB_ORDER.includes(g)).sort()]
+    : found.sort();
+  const q = query.trim().toLowerCase();
+  const shown = items.filter((m) =>
+    (genre === 'all' || m.category === genre) &&
+    (!q || m.name.toLowerCase().includes(q) || m.mood.toLowerCase().includes(q) || m.category.toLowerCase().includes(q)));
+  const tab = (active: boolean) =>
+    `px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-colors ${active ? 'border-accent-primary bg-accent-primary/15 text-text-primary' : 'border-white/10 bg-white/5 text-text-secondary hover:bg-white/10'}`;
 
   return (
-    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3">
-      <div className="flex items-center gap-2 mb-2">
+    <div className="rounded-xl border border-white/10 bg-bg-tertiary p-3 space-y-2">
+      <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-text-secondary">{kind === 'sfx' ? 'Sound effects' : 'Music library'}</span>
-        {genres.length > 0 && (
-          <select value={genre} onChange={(e) => setGenre(e.target.value)}
-            className="ml-auto text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-text-secondary">
-            <option value="all">All genres</option>
-            {genres.map((g) => <option key={g} value={g}>{g}</option>)}
-          </select>
-        )}
-        <button onClick={onClose} className="text-text-muted hover:text-text-primary"><X className="w-4 h-4" /></button>
+        <span className="text-[11px] text-text-muted">{shown.length} {shown.length === 1 ? 'sound' : 'sounds'}</span>
+        <button onClick={onClose} className="ml-auto text-text-muted hover:text-text-primary" aria-label="Close"><X className="w-4 h-4" /></button>
       </div>
+      <input
+        value={query} onChange={(e) => setQuery(e.target.value)}
+        placeholder={kind === 'sfx' ? 'Search sounds (whoosh, boom, airhorn…)' : 'Search songs'}
+        className="w-full px-3 py-2 rounded-lg bg-bg-primary border border-border-primary text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+      />
+      {genres.length > 0 && (
+        <div className="flex gap-1.5 overflow-x-auto pb-1">
+          <button onClick={() => setGenre('all')} className={tab(genre === 'all')}>All</button>
+          {genres.map((g) => <button key={g} onClick={() => setGenre(g)} className={tab(genre === g)}>{g}</button>)}
+        </div>
+      )}
       {loading ? (
         <p className="text-xs text-text-muted py-4 text-center">Loading library…</p>
       ) : shown.length === 0 ? (
-        <p className="text-xs text-text-muted py-4 text-center">No tracks yet — upload songs in /admin/audio.</p>
+        <p className="text-xs text-text-muted py-4 text-center">{items.length === 0 ? 'No tracks yet — upload them in /admin/audio.' : 'Nothing matches that search.'}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-auto">
+        <div className="max-h-72 overflow-auto space-y-1 pr-1">
           {shown.map((m) => (
-            <button key={m.id} onClick={() => onPick(m)}
-              className="flex items-center gap-2 px-2.5 py-2 rounded-md text-left border border-white/10 bg-white/5 hover:bg-white/10">
-              <Plus className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-              <span className="min-w-0">
+            <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10">
+              <button onClick={() => preview(m)} aria-label={playingId === m.id ? 'Stop preview' : 'Play preview'}
+                className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-[11px] ${playingId === m.id ? 'bg-accent-primary text-white' : 'bg-white/10 text-text-primary hover:bg-white/20'}`}>
+                {playingId === m.id ? '❚❚' : '▶'}
+              </button>
+              <span className="min-w-0 flex-1">
                 <span className="block text-xs font-medium text-text-primary truncate">{m.name}</span>
                 <span className="block text-[10px] text-text-muted truncate">
-                  {m.category || 'Music'}{m.durationSeconds ? ` · ${Math.round(m.durationSeconds)}s` : ''}
+                  {m.category || 'Music'}{m.durationSeconds ? ` · ${m.durationSeconds < 10 ? m.durationSeconds.toFixed(1) : Math.round(m.durationSeconds)}s` : ''}
                 </span>
               </span>
-            </button>
+              <button onClick={() => { audioRef.current?.pause(); onPick(m); }}
+                className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent-primary/15 text-accent-primary text-[11px] font-semibold hover:bg-accent-primary/25">
+                <Plus className="w-3 h-3" /> Add
+              </button>
+            </div>
           ))}
         </div>
       )}
