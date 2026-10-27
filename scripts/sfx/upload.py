@@ -31,7 +31,7 @@ def req(method, url, key, data=None, headers=None):
         return e.code, e.read()
 
 
-def main(out_dir, dry=False):
+def main(out_dir, dry=False, sort_base=0):
     env = load_env()
     base = env["NEXT_PUBLIC_SUPABASE_URL"].rstrip("/")
     key = env["SUPABASE_SERVICE_KEY"]
@@ -51,7 +51,7 @@ def main(out_dir, dry=False):
                 continue
         rows.append({
             "name": m["name"], "mood": m["mood"], "kind": "sfx", "storage_path": path,
-            "duration_seconds": m["duration"], "sort_order": (i + 1) * 10, "is_active": True, "category": m["category"],
+            "duration_seconds": m["duration"], "sort_order": sort_base + (i + 1) * 10, "is_active": True, "category": m["category"],
         })
     print(f"uploaded {len(rows)} / {len(manifest)}; failed {len(failed)}")
     for f in failed:
@@ -70,4 +70,5 @@ def main(out_dir, dry=False):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], dry="--dry" in sys.argv)
+    base = int(sys.argv[sys.argv.index("--sort-base") + 1]) if "--sort-base" in sys.argv else 0
+    main(sys.argv[1], dry="--dry" in sys.argv, sort_base=base)
