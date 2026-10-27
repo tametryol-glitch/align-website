@@ -8,10 +8,12 @@ import sys
 import wave
 from pathlib import Path
 
-sys.path.insert(0, r"C:\Users\tamet\tts-lab")
+import os  # noqa: E402
+
+sys.path.insert(0, os.environ.get("TTS_LAB", r"C:\Users\tamet\tts-lab"))
 import tts_engine as tts  # noqa: E402
 
-FFMPEG = r"C:\Users\tamet\OneDrive\Documents\Desktop\AstroEinsteinSoftware\align-video-renderer\node_modules\ffmpeg-static\ffmpeg.exe"
+FFMPEG = os.environ.get("FFMPEG", "ffmpeg")  # or the path to ffmpeg-static
 
 # (display name, spoken text, voice, speed, ffmpeg fx chain or None)
 DEEP = "asetrate=24000*0.82,aresample=24000,atempo=1.22,aecho=0.8:0.6:90:0.35"
