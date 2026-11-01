@@ -38,39 +38,50 @@ export function CoachmarkOverlay({
     setMounted(true);
   }, []);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Rects are VIEWPORT coordinates: the overlay is position:fixed, so adding
+  // scrollY/scrollX (as before) pushed the spotlight and tooltip off-screen.
   const measureTarget = useCallback(() => {
+    setIsMobile(window.innerWidth < 640);
     if (!currentStep) {
       setTargetRect(null);
       return;
     }
     const el = document.querySelector(currentStep.targetSelector);
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      setTargetRect({
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-        height: rect.height,
-      });
-      // Scroll into view if needed
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
+    if (!el) {
       setTargetRect(null);
+      return;
     }
+    const rect = el.getBoundingClientRect();
+    // Hidden targets (e.g. desktop sidebar items on a phone) measure as 0x0
+    if (rect.width < 1 || rect.height < 1) {
+      setTargetRect(null);
+      return;
+    }
+    setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
   }, [currentStep]);
 
   useEffect(() => {
     if (!active || !currentStep) return;
-    // Small delay to allow DOM to settle
-    const timer = setTimeout(measureTarget, 100);
+    const el = document.querySelector(currentStep.targetSelector);
+    if (el && el.getBoundingClientRect().width > 0) {
+      el.scrollIntoView({ behavior: 'auto', block: 'center' });
+    }
+    // Measure after the DOM has settled and the scroll has applied
+    const timer = setTimeout(measureTarget, 120);
     return () => clearTimeout(timer);
   }, [active, currentStep, measureTarget]);
 
   useEffect(() => {
     if (!active) return;
-    const handleResize = () => measureTarget();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handle = () => measureTarget();
+    window.addEventListener('resize', handle);
+    window.addEventListener('scroll', handle, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handle);
+      window.removeEventListener('scroll', handle);
+    };
   }, [active, measureTarget]);
 
   // Keyboard navigation
@@ -96,56 +107,69 @@ export function CoachmarkOverlay({
       }
     : null;
 
-  // Calculate tooltip position
+  // Tooltip position (viewport coordinates). On phones it is a bottom sheet
+  // pinned to the viewport so it can never land off-screen.
   const getTooltipStyle = (): React.CSSProperties => {
-    if (!spotlightRect) {
+    if (isMobile || !spotlightRect) {
+      if (isMobile) {
+        return {
+          position: 'fixed',
+          left: 12,
+          right: 12,
+          bottom: 'max(12px, env(safe-area-inset-bottom))',
+        };
+      }
       return {
+        position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
+        width: 320,
+        maxWidth: 'calc(100vw - 32px)',
       };
     }
 
     const gap = 16;
-    const tooltipWidth = 320;
+    const tooltipWidth = Math.min(320, window.innerWidth - 32);
     const pos = currentStep.position;
+    const clampLeft = (l: number) => Math.max(16, Math.min(l, window.innerWidth - tooltipWidth - 16));
+    const clampTop = (t: number) => Math.max(16, Math.min(t, window.innerHeight - 200));
 
     if (pos === 'bottom') {
       return {
-        position: 'absolute',
-        top: spotlightRect.top + spotlightRect.height + gap,
-        left: Math.max(16, Math.min(spotlightRect.left + spotlightRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16)),
+        position: 'fixed',
+        top: clampTop(spotlightRect.top + spotlightRect.height + gap),
+        left: clampLeft(spotlightRect.left + spotlightRect.width / 2 - tooltipWidth / 2),
         width: tooltipWidth,
       };
     }
     if (pos === 'top') {
       return {
-        position: 'absolute',
-        top: spotlightRect.top - gap - 160,
-        left: Math.max(16, Math.min(spotlightRect.left + spotlightRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16)),
+        position: 'fixed',
+        top: clampTop(spotlightRect.top - gap - 160),
+        left: clampLeft(spotlightRect.left + spotlightRect.width / 2 - tooltipWidth / 2),
         width: tooltipWidth,
       };
     }
     if (pos === 'right') {
       return {
-        position: 'absolute',
-        top: spotlightRect.top + spotlightRect.height / 2 - 60,
-        left: spotlightRect.left + spotlightRect.width + gap,
+        position: 'fixed',
+        top: clampTop(spotlightRect.top + spotlightRect.height / 2 - 60),
+        left: clampLeft(spotlightRect.left + spotlightRect.width + gap),
         width: tooltipWidth,
       };
     }
-    // left
     return {
-      position: 'absolute',
-      top: spotlightRect.top + spotlightRect.height / 2 - 60,
-      left: spotlightRect.left - tooltipWidth - gap,
+      position: 'fixed',
+      top: clampTop(spotlightRect.top + spotlightRect.height / 2 - 60),
+      left: clampLeft(spotlightRect.left - tooltipWidth - gap),
       width: tooltipWidth,
     };
   };
 
   // Arrow direction (points toward the target)
   const getArrowClass = () => {
-    if (!spotlightRect) return '';
+    if (!spotlightRect || isMobile) return '';
     const pos = currentStep.position;
     if (pos === 'bottom') return 'coachmark-arrow-up';
     if (pos === 'top') return 'coachmark-arrow-down';
@@ -182,7 +206,7 @@ export function CoachmarkOverlay({
         <rect
           width="100%"
           height="100%"
-          fill="rgba(0,0,0,0.7)"
+          fill={spotlightRect ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.45)'}
           mask="url(#coachmark-mask)"
         />
       </svg>
