@@ -645,6 +645,7 @@ export interface LiveHostClient {
   removeSecondarySource(): Promise<void>;
   hasSecondarySource(): boolean;
   /** Layout, inset size, split ratio, corner, and which source leads. */
+  setFaceFilter(id: string | null): Promise<void>;
   setStage(options: Partial<LiveStageOptions>): Promise<void>;
   getStage(): LiveStageOptions;
   /**
@@ -770,7 +771,7 @@ export async function createLiveHostClient(
 
   /** Compositing is needed for a background OR a second source. */
   function needsCompositor(): boolean {
-    return stage.background.mode !== 'none' || secondaryTrack !== null;
+    return stage.background.mode !== 'none' || secondaryTrack !== null || stage.faceFilter !== null;
   }
 
   /** Mixing is only needed once there is a second audio source. */
@@ -1085,6 +1086,10 @@ export async function createLiveHostClient(
 
     async setBackground(next: LiveBackgroundOptions) {
       await applyStage({ background: next });
+    },
+
+    async setFaceFilter(id: string | null) {
+      await applyStage({ faceFilter: id });
     },
 
     async setStage(next: Partial<LiveStageOptions>) {

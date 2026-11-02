@@ -20,7 +20,8 @@
 // to the raw camera rather than showing a hole where the host was.
 // ═══════════════════════════════════════════════════════════════════
 
-import { ImageSegmenter, FilesetResolver } from '@mediapipe/tasks-vision';
+import { ImageSegmenter, FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
+import { FACE_FILTERS, drawFaceFilter } from './editor/faceFilters';
 
 export type LiveBackgroundMode = 'none' | 'blur' | 'image';
 export type LiveLayout = 'solo' | 'pip' | 'split';
@@ -44,9 +45,12 @@ export interface LiveStageOptions {
   splitRatio: number;
   /** Swap which physical source is treated as the main one. */
   swapped: boolean;
+  /** A FACE_FILTERS id drawn on the main source's face, or null for none. */
+  faceFilter: string | null;
 }
 
 export const DEFAULT_STAGE: LiveStageOptions = {
+  faceFilter: null,
   background: { mode: 'none' },
   layout: 'solo',
   pipScale: 0.28,
@@ -86,6 +90,39 @@ function loadSegmenter(): Promise<ImageSegmenter> {
     });
   }
   return segmenterPromise;
+}
+
+// Face tracking runs on a small copy of the frame and only every other
+// frame; the last landmarks are held in between. Segmentation already
+// spends most of the 33ms frame budget, so tracking cannot also run at
+// full rate on the same thread.
+const FACE_LONG_EDGE = 320;
+const FACE_DETECT_EVERY = 2;
+const FACE_LOST_AFTER = 6; // detections without a face before the effect hides
+
+let faceLandmarkerPromise: Promise<FaceLandmarker> | null = null;
+
+function loadFaceLandmarker(): Promise<FaceLandmarker> {
+  if (!faceLandmarkerPromise) {
+    faceLandmarkerPromise = (async () => {
+      const vision = await FilesetResolver.forVisionTasks('/mp-wasm');
+      const make = (delegate: 'GPU' | 'CPU') =>
+        FaceLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: '/face_landmarker.task', delegate },
+          runningMode: 'VIDEO',
+          numFaces: 1,
+        });
+      try {
+        return await make('GPU');
+      } catch {
+        return await make('CPU');
+      }
+    })().catch((err) => {
+      faceLandmarkerPromise = null;
+      throw err;
+    });
+  }
+  return faceLandmarkerPromise;
 }
 
 function makeVideo(track: MediaStreamTrack): HTMLVideoElement {
@@ -139,6 +176,16 @@ export class LiveStageCompositor {
   private personCanvas: HTMLCanvasElement;
   private personCtx: CanvasRenderingContext2D;
 
+  private faceCanvas: HTMLCanvasElement;
+  private faceCtx: CanvasRenderingContext2D;
+  private faceLandmarker: FaceLandmarker | null = null;
+  private faceLoading = false;
+  private faceLoadFailed = false;
+  private faceLandmarks: Array<{ x: number; y: number }> | null = null;
+  private faceFrame = 0;
+  private faceMissed = 0;
+  private lastFaceTs = -1;
+
   private segmenter: ImageSegmenter | null = null;
   private bgImage: HTMLImageElement | null = null;
   private bgImageUrl: string | null = null;
@@ -176,6 +223,13 @@ export class LiveStageCompositor {
       Math.max(2, Math.round(h * scale)),
       true,
     ) as any;
+
+    const faceScale = FACE_LONG_EDGE / Math.max(w, h);
+    [this.faceCanvas, this.faceCtx] = mk(
+      Math.max(2, Math.round(w * faceScale)),
+      Math.max(2, Math.round(h * faceScale)),
+      true,
+    ) as any;
   }
 
   get outputTrack(): MediaStreamTrack | null {
@@ -194,9 +248,10 @@ export class LiveStageCompositor {
       this.segmenter = null;
     }
     await this.loadBackgroundImage();
+    if (this.options.faceFilter) await this.ensureFaceTracker();
     await this.videoA.play().catch(() => {});
 
-    this.stream = this.outCanvas.captureStream(OUTPUT_FPS);
+    this.stream =this.outCanvas.captureStream(OUTPUT_FPS);
     this.running = true;
     this.loop();
 
@@ -242,6 +297,55 @@ export class LiveStageCompositor {
       this.options.layout = 'solo';
     }
     if (this.options.background.imageUrl !== prevUrl) await this.loadBackgroundImage();
+    if (!this.options.faceFilter) this.faceLandmarks = null;
+  }
+
+  /** Load the tracker once. A failure leaves the stream running without
+   *  the effect rather than breaking the broadcast. */
+  private async ensureFaceTracker(): Promise<void> {
+    if (this.faceLandmarker || this.faceLoading || this.faceLoadFailed) return;
+    this.faceLoading = true;
+    try {
+      this.faceLandmarker = await loadFaceLandmarker();
+    } catch {
+      this.faceLoadFailed = true;
+    } finally {
+      this.faceLoading = false;
+    }
+  }
+
+  /** Draw the selected face filter onto the composed main frame. */
+  private applyFaceFilter(): void {
+    const id = this.options.faceFilter;
+    if (!id) return;
+    const filter = FACE_FILTERS.find((f) => f.id === id);
+    if (!filter) return;
+    if (!this.faceLandmarker) {
+      void this.ensureFaceTracker();
+      return;
+    }
+
+    if (this.faceFrame++ % FACE_DETECT_EVERY === 0) {
+      this.faceCtx.drawImage(this.mainCanvas, 0, 0, this.faceCanvas.width, this.faceCanvas.height);
+      let ts = performance.now();
+      if (ts <= this.lastFaceTs) ts = this.lastFaceTs + 1;
+      this.lastFaceTs = ts;
+      try {
+        const lm = this.faceLandmarker.detectForVideo(this.faceCanvas, ts).faceLandmarks?.[0];
+        if (lm) {
+          this.faceLandmarks = lm;
+          this.faceMissed = 0;
+        } else if (++this.faceMissed > FACE_LOST_AFTER) {
+          this.faceLandmarks = null;
+        }
+      } catch {
+        this.faceLandmarks = null;
+      }
+    }
+
+    if (this.faceLandmarks) {
+      drawFaceFilter(this.mainCtx, this.faceLandmarks, this.mainCanvas.width, this.mainCanvas.height, filter);
+    }
   }
 
   getOptions(): LiveStageOptions {
@@ -379,6 +483,7 @@ export class LiveStageCompositor {
     if (!this.mainVideo.videoWidth) return;
 
     this.composeMain();
+    this.applyFaceFilter();
 
     const sub = this.subVideo;
     const layout = sub ? this.options.layout : 'solo';

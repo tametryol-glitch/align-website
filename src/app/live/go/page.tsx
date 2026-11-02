@@ -74,7 +74,9 @@ import {
   UserX,
   Pin,
   Heart,
+  Smile,
 } from 'lucide-react';
+import { FACE_FILTERS } from '@/lib/editor/faceFilters';
 import { FloatingHearts, useFloatingHearts } from '@/components/live/FloatingHearts';
 import { MilestoneToast, useMilestones } from '@/components/live/MilestoneToast';
 import { GiftBurst, useGiftBursts } from '@/components/live/GiftBurst';
@@ -142,6 +144,8 @@ export default function GoLivePage() {
   const [pipCorner, setPipCorner] = useState<PipCorner>('br');
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [showStage, setShowStage] = useState(false);
+  const [showFx, setShowFx] = useState(false);
+  const [faceFx, setFaceFx] = useState<string | null>(null);
   const [busySource, setBusySource] = useState(false);
   const [screenHasAudio, setScreenHasAudio] = useState(false);
   const [pickingCamera, setPickingCamera] = useState(false);
@@ -662,6 +666,17 @@ export default function GoLivePage() {
     [],
   );
 
+  /** Face effects apply mid-broadcast, with no republish flicker once the
+   *  compositor is running. */
+  const applyFaceFx = useCallback(async (id: string | null) => {
+    setFaceFx(id);
+    try {
+      await clientRef.current?.setFaceFilter(id);
+    } catch (err: any) {
+      setNotice(err?.message || 'Could not change the face effect.');
+    }
+  }, []);
+
   const addSource = useCallback(
     async (kind: 'camera' | 'screen', deviceId?: string) => {
       setBusySource(true);
@@ -1037,6 +1052,46 @@ export default function GoLivePage() {
           </div>
         )}
 
+        {/* Face effects */}
+        {showFx && (
+          <div className="absolute bottom-24 inset-x-0 px-5">
+            <div className="mx-auto max-w-md bg-black/80 backdrop-blur border border-white/10
+                            rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-white/80">Face effects</span>
+                <button
+                  onClick={() => setShowFx(false)}
+                  aria-label="Close"
+                  className="text-white/40 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => applyFaceFx(null)}
+                  className={`px-3 py-1.5 rounded-full text-xs ${
+                    faceFx === null ? 'bg-white/25 text-white' : 'bg-white/10 text-white/60 hover:bg-white/15'
+                  }`}
+                >
+                  None
+                </button>
+                {FACE_FILTERS.map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => applyFaceFx(f.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs ${
+                      faceFx === f.id ? 'bg-white/25 text-white' : 'bg-white/10 text-white/60 hover:bg-white/15'
+                    }`}
+                  >
+                    {f.icon} {f.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Views & layout */}
         {showStage && (
           <div className="absolute bottom-24 inset-x-0 px-5">
@@ -1325,7 +1380,17 @@ export default function GoLivePage() {
             <Sparkles className="w-5 h-5" />
           </button>
           <button
-            onClick={() => setShowStage((v) => !v)}
+            onClick={() => { setShowFx((v) => !v); setShowStage(false); }}
+            aria-label="Face effects"
+            title="Face effects"
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              faceFx ? 'bg-white/25 hover:bg-white/35' : 'bg-white/10 hover:bg-white/20'
+            }`}
+          >
+            <Smile className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => { setShowStage((v) => !v); setShowFx(false); }}
             aria-label="Views and layout"
             title="Views and layout"
             className={`w-12 h-12 rounded-full flex items-center justify-center ${
