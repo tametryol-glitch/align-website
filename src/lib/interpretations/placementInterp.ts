@@ -240,29 +240,29 @@ export const SIGN_IN_CHART: Record<string, string> = {
 };
 
 export const HOUSE_IN_CHART: Record<number, string> = {
-  1: 'This is the energy people feel the moment you walk into a room. It lives in your body, your face, your walk — the part of you that\'s impossible to hide because it IS the way you show up. Before you say a word, this placement is already introducing you. It shapes your instincts, your physical vitality, and the mask you\'re not even aware you\'re wearing.',
+  1: "People form their opinion of you in the first ten seconds, and you have spent years either living up to it or correcting it. How you walk into a room, how you start things, how fast you react when startled, what your face does before you decide what it should do: all of it runs through here, which is why you are a worse liar than you think.",
 
-  2: 'This energy weaves itself into your relationship with what you own and what owns you. It shapes not just how you earn money, but what money means to you — the security you\'re building, the values you\'d never sell, the quiet question of whether you believe you\'re worth what you have. Your self-worth and your bank account are connected here in ways that run deeper than anyone sees.',
+  2: "Money is never just money to you. What you earn, what you refuse to spend on, and what you would go broke for all track how much you believe you are worth, and the people around you can tell. When your income drops your confidence drops with it, and the first time you charge what you should, something in your posture changes.",
 
-  3: 'This colors every conversation you have, every text you send, every thought that keeps you up at night. It\'s the rhythm of your daily mind — how you process, how you speak, how you learn things. Your relationships with siblings, neighbors, and the person at the coffee shop all carry this energy. It\'s in the way your brain works when nobody\'s testing it.',
+  3: "You think out loud, rehearse conversations you will never have, and lie awake rewriting a text you already sent. How you learn, how fast you pick things up, and how you get along with siblings, neighbors and the people you pass every day all run through this wiring. The cost is a mind that never takes a day off.",
 
-  4: 'This lives at the absolute foundation of who you are — the emotional bedrock, the family patterns, the atmosphere you need in your most private space. This is the part of your chart nobody sees unless you let them all the way in. It shapes what home means to you, what childhood taught you, and the emotional inheritance you carry whether you want to or not.',
+  4: "The house you grew up in still has a vote in how you live. The mood at the dinner table, who was allowed to be angry, what nobody ever mentioned: you either rebuild that atmosphere or run from it, and you cannot relax anywhere that does not feel at least a little like it. Almost nobody sees this side of you until they have been inside your actual home.",
 
-  5: 'This is where you come alive — where play, romance, and creation meet and the world stops being a responsibility and starts being a joy. It\'s the energy you bring to falling in love, making art, taking risks that make your heart race. Children, creativity, and pleasure are all colored by this placement. When you\'re expressing this energy, you remember what it feels like to be fully, unapologetically yourself.',
+  5: "This is where you stop being useful and start being alive: the crush that makes you reckless, the hobby you would do for free, the kids or the creative project you would cancel plans for. You light up here in a way you rarely do at work, and your most you moments have probably come from this part of your life.",
 
-  6: 'This shapes the unsexy, essential machinery of your daily life — the routines, the rituals, the quiet discipline of taking care of your body and your responsibilities. It\'s how you serve, how you heal, how you show up for the work that nobody applauds. Your relationship with health, with coworkers, with the daily grind of being human lives here. This is where devotion meets discipline.',
+  6: "Your daily routine is the real verdict on your life, and it gets written here: the sleep you skip, the body you ignore until it complains, the coworkers you quietly carry. You are the person who keeps things running, and the cost shows up as burnout when nobody notices the work.",
 
-  7: 'This defines the face of the person you keep choosing — in love, in business, in the mirror of every significant one-on-one relationship. This is who you attract and who you become when you\'re standing next to someone. The patterns in your partnerships, the qualities you admire and the ones that drive you insane, the way you lose yourself or find yourself in another person — it all traces back here.',
+  7: "You keep meeting the same person wearing different faces, whether partner, business partner or rival. What you tolerate from them, what you lose of yourself standing next to them, and what you admire in them but will not claim for yourself are all on display in your closest one-to-one relationships.",
 
-  8: 'This operates in the depths — the parts of life most people avoid because they require too much vulnerability. Intimacy, shared finances, psychological transformation, the merging of your resources with someone else\'s — it all lives here. This is where power dynamics play out in silence, where sexual energy and emotional intensity intersect, and where the versions of you that die make room for the versions that are waiting to be born.',
+  8: "This is the part of life most people avoid: shared money, debt, inheritance, sex that actually means something, and the secrets and grief other people hand to you. You get close to people faster and deeper than is comfortable, you are the one they confide in, and the times you were rebuilt from scratch started here.",
 
-  9: 'This is the part of you that needs to believe in something bigger. It drives your search for meaning — the philosophy you live by, the spiritual questions you can\'t stop asking, the hunger for experiences that expand your understanding of what\'s possible. Higher education, foreign travel, publishing, the mentor who changed your life — they\'re all colored by this placement. This is where your worldview lives and breathes.',
+  9: "You need to believe in something bigger than your to-do list, and you get restless and bitter when you cannot. Your worldview, the teacher who changed your mind, the trip you take to find yourself and the argument you cannot let drop all start here. You outgrow beliefs the way other people outgrow shoes.",
 
-  10: 'This is your legacy — the reputation you\'re building, the career you\'re shaping, the answer to the question: what will they say about you when you\'re not in the room? This is the most visible part of your chart: the authority you command, the achievements the world recognizes, the public version of your purpose. What you build here outlives you. Choose carefully.',
+  10: "Strangers have an opinion about what you do for a living, and it shapes your life more than you admit. Your career, your reputation, the authority you are working toward and the boss you answer to all sit here. You will be remembered for what you built, which may not be what you most wanted to be known for.",
 
-  11: 'This connects you to your tribe — the friendships, the communities, the collective dreams that remind you that some things can only be built together. It\'s the energy you bring to groups, the causes that light you up, and the vision of the future you\'re quietly working toward. The people who share your wavelength, the networks that sustain you, the hope you carry for something bigger than yourself — it all gathers here.',
+  11: "Your friends, your groups and your online circles say more about your future than your plans do. You are loyal to the people who share your goals and you drift from the ones who do not. The causes you join, the audience you build and the favors you owe all start here.",
 
-  12: 'This operates in the parts of yourself you can\'t easily see — the subconscious patterns, the spiritual undercurrent, the quiet voice that speaks loudest when you\'re alone. This is your hidden life: the dreams, the fears, the secret griefs, the connection to something infinite that you can feel but never fully explain. Solitude, meditation, hospitals, monasteries — the places where the boundary between you and the universe dissolves. What lives here is sacred.',
+  12: "This is the hidden part of your life: what you do when nobody is looking, what you will not admit you fear, the grief you handle alone, and the pull toward rest, prayer or escape. You need real solitude to function, and the times you disappeared, burned out or suddenly just knew something came from here.",
 };
 
 // -----------------------------------------------------------------
@@ -273,37 +273,37 @@ export const ASPECT_MEANINGS: Record<string, { label: string; nature: string; de
   conjunction: {
     label: 'Conjunction',
     nature: 'Fusion',
-    description: 'These two parts of you are fused at the core — they don\'t take turns, they speak at the same time, in the same breath. You can\'t express one without the other showing up uninvited. This is amplification: everything these planets share gets louder, more intense, more inseparable from who you are. The gift is power. The challenge is that you can\'t turn either one off.',
+    description: "These two parts of you fire together every time, so you cannot use one without the other jumping in. People get both at once, whether they asked for it or not. It makes you intense about whatever this pair covers, and the hard part is that you cannot switch either one off, even when the moment calls for it.",
   },
   opposition: {
     label: 'Opposition',
     nature: 'Tension',
-    description: 'These two energies live on opposite sides of you, pulling in directions that feel mutually exclusive. You may spend years swinging between them — or projecting one onto the people closest to you, convinced it\'s their issue and not yours. The tension is real, but so is the breakthrough: the moment you stop choosing sides and learn to hold both at once, you become someone who understands contradiction as a form of wholeness.',
+    description: "These two sides of you want opposite things, so you swing between them or hand one of them to the people around you and then complain about them. You have probably picked a side, regretted it, and flipped. It only settles when you stop choosing and start doing both on purpose.",
   },
   trine: {
     label: 'Trine',
     nature: 'Flow',
-    description: 'This is the gift you almost forget you have. These two energies harmonize so naturally that their cooperation feels like breathing — effortless, instinctive, always available. The beauty is that you never have to work for this connection. The danger is that you never do. Trines are talents that can go their entire lives undeveloped because nothing ever forced them to grow. The magic is real, but only effort makes it extraordinary.',
+    description: "This comes so easily that you barely register it as a talent, which is why it is the thing you have done the least with. Nobody ever made you work for it, so it never got sharpened. People envy it and you shrug. Put real effort in and it turns from a gift into a reputation.",
   },
   square: {
     label: 'Square',
     nature: 'Friction',
-    description: 'This is the friction that makes diamonds. These two energies clash — constantly, stubbornly, in ways that force you to grow whether you want to or not. Squares are the aspects that wake you up at 3am, that make you question everything, that push you to the breaking point and then ask if you\'re ready to be rebuilt. They\'re the hardest aspects to live with and the most rewarding to master. Every achievement you\'re genuinely proud of has a square behind it.',
+    description: "These two fight, and the fight shows up as the thing you keep running into: the argument that repeats, the habit that cuts you off from what you want, the 3am conversation with yourself. It is also where you have grown the most, because it never lets you coast.",
   },
   sextile: {
     label: 'Sextile',
     nature: 'Opportunity',
-    description: 'These two energies get along beautifully — but they won\'t do the work for you. Think of this as an open door that stays open, patiently waiting for you to walk through. The cooperation is real, the talent is genuine, but unlike a trine, this aspect rewards initiative. When you actively engage these two parts of yourself, the results feel almost magical. When you ignore them, nothing happens. The opportunity is always there. The question is whether you\'ll take it.',
+    description: "These two work well together, but only if you start it. Left alone, nothing happens, which is why it can look like a talent you never used. Make the first move, make the call, apply for the thing, and it pays back far more than the effort you put in.",
   },
   quincunx: {
     label: 'Quincunx (Inconjunct)',
     nature: 'Adjustment',
-    description: 'These two parts of you genuinely don\'t understand each other — like two languages that share no common root. There\'s no clean resolution here, no moment where it all clicks into harmony. Instead, this aspect asks for something harder: ongoing adjustment, patient compromise, the willingness to accept that some internal tensions can\'t be solved, only managed with increasing grace. The mastery isn\'t in fixing it. It\'s in learning to live with the itch.',
+    description: "These two do not speak the same language, and nothing you try quite translates. You feel it as a small constant itch: one part of your life always needs adjusting to make room for the other, and each fix lasts a few months. It does not resolve. You manage it, and you get good at managing it.",
   },
   semisextile: {
     label: 'Semisextile',
     nature: 'Subtle Adjustment',
-    description: 'This is the pebble in your shoe — the low-grade friction between two energies that don\'t quite speak the same language. It\'s not dramatic enough to force a crisis, but it\'s persistent enough that you can\'t completely ignore it. These subtle irritations are actually gentle nudges toward awareness — small adjustments that, over time, build a more nuanced and integrated version of who you are.',
+    description: "A small, steady mismatch between two parts of you. It is not a crisis, just a pebble in the shoe, and you tend to ignore it until it irritates someone else. Notice it early and it stays small.",
   },
 };
 
@@ -319,7 +319,7 @@ export const PLANET_PAIR_INSIGHTS: Record<string, Record<string, string>> = {
     trine: 'Your inner life and your outer life are in quiet agreement. There is an ease to you that other people find calming — you are not at war with yourself in the way that many people are. What you feel and what you project align naturally, and this gives you an emotional confidence that anchors everyone around you.',
     square: 'There is an ongoing friction between what you want and what you need, and it shows up in moments where your ambitions and your emotions feel like they are working against each other. You may push yourself past your emotional limits, or your feelings may sabotage your goals at the worst possible moments. This tension is exhausting, but it is also what makes you so driven — you are never complacent because something inside you always demands more.',
     sextile: 'Your identity and your emotional life cooperate easily, but the cooperation is something you have to actively cultivate rather than take for granted. When you pay attention to how your feelings inform your goals, you make better decisions than almost anyone around you. The opportunity here is emotional intelligence that translates into real-world power.',
-    quincunx: 'Something about your emotional needs and your sense of self never quite align, and no amount of adjustment fully resolves it. You may feel emotionally out of step with your own ambitions, or find that what makes you feel safe is oddly disconnected from who you are trying to become. This is not a flaw to fix — it is a tension to learn to live with gracefully.',
+    quincunx: 'Something about your emotional needs and your sense of self never quite align, and no amount of adjustment fully resolves it. You may feel emotionally out of step with your own ambitions, or find that what makes you feel safe is oddly disconnected from who you are trying to become. It never fully resolves, and you get better at living with it every year.',
   },
   'Sun/Venus': {
     conjunction: 'Love and identity are fused in you. You need to feel beautiful, valued, and desired — not out of vanity, but because your sense of self is woven into how you connect with others. You radiate warmth when you feel loved, and you dim when you do not. Learning to generate your own light, independent of anyone else\'s admiration, is your deepest work.',
@@ -528,21 +528,10 @@ export function getAspectInterpretation(planet1: string, planet2: string, type: 
     return `**${planet1} ${info.label.toLowerCase()} ${planet2}** *(${info.nature})*\n\n${pairInsight}`;
   }
 
-  // Fallback: name each force cleanly, then describe the wiring — no sentence
-  // stitching (the old lowercase-splice produced broken grammar).
-  const p1Lead = PLANET_LEADS[planet1] || firstSentence(PLANET_MEANINGS[planet1] || '');
-  const p2Lead = PLANET_LEADS[planet2] || firstSentence(PLANET_MEANINGS[planet2] || '');
-
-  let interp = `**${planet1} ${info.label.toLowerCase()} ${planet2}** *(${info.nature})*\n\n`;
-  interp += `${info.description}\n\n`;
-
-  if (p1Lead && p2Lead) {
-    interp += `The two forces wired together here:\n\n**${planet1}:** ${p1Lead}\n\n**${planet2}:** ${p2Lead}\n\nEvery time one of these activates, the other wakes up with it — you cannot use one cleanly without the other's fingerprints on the result.`;
-  } else if (p1Lead || p2Lead) {
-    interp += `${p1Lead || p2Lead} In you, that force never operates alone — ${p1Lead ? planet2 : planet1} is wired into it, coloring everything it produces.`;
-  }
-
-  return interp;
+  // Fallback for pairs without a hand-written reading: the aspect itself, in
+  // the reader's voice. The planets are named in the heading above, so they
+  // are not defined again here.
+  return `**${planet1} ${info.label.toLowerCase()} ${planet2}** *(${info.nature})*\n\n${info.description}`;
 }
 
 export function getHouseInterpretation(houseNum: number, sign: string, cuspDegree?: number): string {
@@ -551,10 +540,10 @@ export function getHouseInterpretation(houseNum: number, sign: string, cuspDegre
 
   const sections: string[] = [houseMeaning];
 
-  const signMeaning = SIGN_IN_CHART[sign];
-  if (signMeaning) {
-    sections.push(`With ${sign} coloring this whole territory, ${signMeaning}`);
-  }
+  // The fused sign x house portrait speaks to this exact area of life. Fall
+  // back to the plain sign line only if a portrait is missing.
+  const signLayer = SIGN_HOUSE_FUSION[sign]?.[houseNum] || (SIGN_IN_CHART[sign] ? `Here, ${SIGN_IN_CHART[sign]}` : '');
+  if (signLayer) sections.push(signLayer);
 
   // The exact cusp degree carries its own hidden texture — different from any
   // planet inside the house, so this never duplicates a placement reading.
