@@ -4,9 +4,22 @@
 // what to do, what to avoid, and when. Built from today's real planetary
 // positions against the user's natal chart (see lib/todayEngine.ts).
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Check, X, Clock, ChevronRight } from 'lucide-react';
+import { Check, X, Clock, ChevronRight, Bell } from 'lucide-react';
+import ShareButtonWithCard from '@/components/share/ShareButton';
+import TodayShareCard from '@/components/share/TodayShareCard';
+import {
+  getPermissionStatus,
+  isPushSupported,
+  needsIosInstallForPush,
+  registerPushSubscription,
+} from '@/lib/pushService';
+import {
+  DEFAULT_SEND_HOUR,
+  loadDailyBriefPrefs,
+  saveDailyBriefPrefs,
+} from '@/lib/dailyBriefPrefs';
 import {
   buildTodayAnswer,
   computeTodayAspects,
@@ -21,6 +34,8 @@ export interface TodayData {
 }
 
 interface Props {
+  /** Signed-in member; enables the morning reminder. */
+  userId?: string;
   hasBirthData: boolean;
   birthTimeKnown: boolean;
   data: TodayData | null;
@@ -39,9 +54,58 @@ function clock(d: Date): string {
   return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 }
 
+const REMINDER_HOURS = [6, 7, 8, 9, 10];
+
+function hourLabel(h: number): string {
+  const d = new Date();
+  d.setHours(h, 0, 0, 0);
+  return d.toLocaleTimeString(undefined, { hour: 'numeric' });
+}
+
 export function TodayCard({
-  hasBirthData, birthTimeKnown, data, loading, latitude, longitude, moonPhase,
+  userId, hasBirthData, birthTimeKnown, data, loading, latitude, longitude, moonPhase,
 }: Props) {
+  // Morning reminder. `available` stays false until the table exists, so the
+  // control never offers something that cannot be saved.
+  const [reminder, setReminder] = useState<{ available: boolean; enabled: boolean; hour: number }>({
+    available: false, enabled: false, hour: DEFAULT_SEND_HOUR,
+  });
+  const [reminderBusy, setReminderBusy] = useState(false);
+  const [reminderNote, setReminderNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!userId || !hasBirthData) return;
+    let cancelled = false;
+    loadDailyBriefPrefs(userId).then(({ available, prefs }) => {
+      if (!cancelled) setReminder({ available, enabled: prefs.enabled, hour: prefs.sendHour });
+    });
+    return () => { cancelled = true; };
+  }, [userId, hasBirthData]);
+
+  async function updateReminder(enabled: boolean, hour: number) {
+    if (!userId || reminderBusy) return;
+    setReminderBusy(true);
+    setReminderNote(null);
+    try {
+      if (enabled) {
+        // A click is the user gesture the browser needs to show its prompt.
+        if (needsIosInstallForPush()) {
+          setReminderNote('On iPhone, add Align to your Home Screen first, then turn this on.');
+        } else if (isPushSupported() && getPermissionStatus() !== 'granted') {
+          await registerPushSubscription(userId).catch(() => false);
+          if (getPermissionStatus() === 'denied') {
+            setReminderNote('Notifications are blocked in your browser settings, so the reminder will only reach you in the app.');
+          }
+        }
+      }
+      const ok = await saveDailyBriefPrefs(userId, { enabled, sendHour: hour });
+      if (ok) setReminder((r) => ({ ...r, enabled, hour }));
+      else setReminderNote('Could not save that. Please try again.');
+    } finally {
+      setReminderBusy(false);
+    }
+  }
+
   const answer = useMemo(() => {
     if (!data) return null;
     return buildTodayAnswer(computeTodayAspects(data.transits, data.natal, birthTimeKnown));
@@ -154,6 +218,64 @@ export function TodayCard({
           )}
         </div>
       )}
+
+      {/* Habit hooks: share today's answer, and get it every morning. */}
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <ShareButtonWithCard
+          variant="compact"
+          label="Share today"
+          shareTitle="Today for me on Align"
+          shareText={`${answer.headline}. Do: ${answer.doText} Avoid: ${answer.avoidText}`}
+          shareUrl="https://www.aligncosmic.com"
+          cardElement={
+            <TodayShareCard
+              headline={answer.headline}
+              area={answer.area}
+              doText={answer.doText}
+              avoidText={answer.avoidText}
+              date={new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+            />
+          }
+        />
+
+        {userId && reminder.available && (
+          reminder.enabled ? (
+            <div className="flex items-center gap-2 text-xs text-text-secondary">
+              <Bell className="w-3.5 h-3.5 text-accent-primary" />
+              <span>Daily reminder at</span>
+              <select
+                aria-label="Reminder time"
+                value={reminder.hour}
+                disabled={reminderBusy}
+                onChange={(e) => updateReminder(true, Number(e.target.value))}
+                className="bg-bg-tertiary border border-border-primary rounded-md px-1.5 py-0.5 text-xs text-text-primary"
+              >
+                {REMINDER_HOURS.map((h) => (
+                  <option key={h} value={h}>{hourLabel(h)}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={reminderBusy}
+                onClick={() => updateReminder(false, reminder.hour)}
+                className="text-text-muted hover:text-text-primary underline underline-offset-2"
+              >
+                Turn off
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              disabled={reminderBusy}
+              onClick={() => updateReminder(true, reminder.hour)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-accent-primary hover:underline"
+            >
+              <Bell className="w-3.5 h-3.5" /> Remind me each morning
+            </button>
+          )
+        )}
+      </div>
+      {reminderNote && <p className="mt-2 text-[11px] text-amber-300 leading-snug">{reminderNote}</p>}
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-[11px] text-text-muted leading-snug">

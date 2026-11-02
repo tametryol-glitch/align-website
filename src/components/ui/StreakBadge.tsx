@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useStreakStore } from '@/stores/streakStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
+import { shareCard } from '@/lib/shareCardUtils';
+
+// Streak lengths worth a moment of their own.
+const MILESTONES = [3, 7, 14, 30, 60, 100, 365];
 
 export function StreakBadge() {
   const { t } = useTranslation();
@@ -11,6 +15,7 @@ export function StreakBadge() {
   const { currentStreak, longestStreak, checkedInToday, loading, performCheckIn, recovery, performRecovery } =
     useStreakStore();
   const [celebrating, setCelebrating] = useState(false);
+  const [milestone, setMilestone] = useState<number | null>(null);
   const canRecover = recovery.recoverable && recovery.can_recover;
 
   const handleRecover = async () => {
@@ -35,10 +40,45 @@ ${t('streakRecovery.body', { days: recovery.days_left ?? 1 })}`,
     // Trigger celebration animation
     setCelebrating(true);
     setTimeout(() => setCelebrating(false), 1200);
+    // A milestone gets its own banner. Read the store, not the render's
+    // `currentStreak`, which is still the value from before this check-in.
+    const reached = useStreakStore.getState().currentStreak;
+    if (MILESTONES.includes(reached)) {
+      setMilestone(reached);
+      setTimeout(() => setMilestone(null), 8000);
+    }
   };
 
   return (
     <div className="flex flex-col items-center gap-1">
+    {milestone !== null && (
+      <div
+        role="status"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] w-[min(92vw,22rem)] rounded-2xl border border-amber-400/40 bg-bg-elevated px-4 py-3 shadow-xl text-center"
+      >
+        <p className="text-2xl mb-0.5">🔥</p>
+        <p className="text-sm font-semibold text-text-primary">{milestone}-day streak!</p>
+        <p className="text-xs text-text-secondary mt-0.5">
+          {milestone} days in a row. Your chart is glad you keep showing up.
+        </p>
+        <div className="mt-2 flex justify-center gap-3 text-xs">
+          <button
+            type="button"
+            onClick={() => shareCard(
+              `${milestone}-day streak on Align`,
+              `I'm on a ${milestone}-day cosmic streak on Align 🔥`,
+              'https://www.aligncosmic.com',
+            )}
+            className="font-medium text-accent-primary hover:underline"
+          >
+            Share
+          </button>
+          <button type="button" onClick={() => setMilestone(null)} className="text-text-muted hover:text-text-primary">
+            Close
+          </button>
+        </div>
+      </div>
+    )}
     <button
       onClick={handleCheckIn}
       disabled={checkedInToday || loading}

@@ -362,6 +362,7 @@ export default function DashboardPage() {
 
       {/* ─── Today for you: the one answer ───────────────── */}
       <TodayCard
+        userId={user?.id}
         hasBirthData={hasBirthData}
         birthTimeKnown={!!profile?.birth_time}
         data={todayData}
