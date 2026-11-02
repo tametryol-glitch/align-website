@@ -113,6 +113,12 @@ function ordinal(n: number): string {
   return `${n}th`;
 }
 
+function asSentence(s: string): string {
+  const t = s.trim();
+  if (!t) return '';
+  return t.charAt(0).toUpperCase() + t.slice(1) + (/[.!?]$/.test(t) ? '' : '.');
+}
+
 // -- Main prediction generator --------
 
 export function generateSolarReturnPrediction(
@@ -135,7 +141,7 @@ export function generateSolarReturnPrediction(
 
   let r = `## ${name}, Here Is What ${year} Holds For You\n\n`;
 
-  r += `I have studied your solar return chart — the chart cast for the precise moment the Sun returns to the exact degree it occupied when you took your first breath — and what I see is not vague. It is pointed. It is personal. Every planet in this chart has landed in a specific room of your life, and beneath each visible placement are hidden layers that reveal motivations, hungers, and turning points that will not make sense until you are living them. This is not a horoscope you could hand to anyone born under your sign. This is yours.\n\n`;
+  r += `Your year starts the moment the Sun comes back to the exact degree it held when you were born, and the chart for that moment decides which parts of your life get loud. Every planet lands in a specific room of your life, and under each one sit two more layers: what you show, what really drives you, and a third that only makes sense once you are living it. None of this fits everyone born under your sign. It fits you.\n\n`;
 
   // -- ASC — The Year's Mask --------
   if (asc) {
@@ -148,12 +154,13 @@ export function generateSolarReturnPrediction(
     const compE = SIGN_ENERGY[comp];
 
     r += `### How The World Will See You This Year\n\n`;
-    r += `The moment people encounter you this year, they will feel something they cannot quite name. On the surface, you come across as ${ascE?.surface || asc.sign + ' energy'}. There is ${ascE?.deep || 'a shift in your presence'} radiating off you, whether you intend it or not. But beneath that visible layer, something more private is pulling the strings. `;
-    r += `There is a quieter force at work — ${duadE?.drive || 'something deeper'} — shaping your choices in ways you will only recognize in hindsight. `;
-    if (duadH) r += `This undercurrent expresses itself most powerfully through ${HOUSE_LIFE[duadH]?.area || 'a key life area'}. `;
-    r += `And buried even deeper, at the level where instinct overrides logic, there is ${compE?.deep || 'a current so fundamental it barely has words'} — `;
-    if (compH) r += `reaching into ${HOUSE_LIFE[compH]?.area || 'the most hidden dimension of your life'}. `;
-    r += `This is why your year will feel layered — why you will sometimes act in ways that surprise you, drawn toward things that do not match your conscious plans. The chart is saying: trust those instincts. They know where you need to go.\n\n`;
+    r += `Within minutes of meeting you this year, people have an opinion, and it is hard to say where it came from. You come across as ${ascE?.surface || 'shaped by ' + asc.sign}. Underneath that sits ${ascE?.deep || 'a shift in how you carry yourself'}, and it shows even when you try to hide it. `;
+    r += `What actually pushes your choices is quieter: ${duadE?.drive || 'something deeper than your plans'}, and you only see it in hindsight. `;
+    if (duadH) r += `It plays out mostly in ${HOUSE_LIFE[duadH]?.area || 'a key area of your life'}. `;
+    r += `Below that, where instinct beats logic, sits ${compE?.deep || 'a pull so basic it barely has words'}`;
+    if (compH) r += `, and it drags you toward ${HOUSE_LIFE[compH]?.area || 'the most hidden part of your life'}`;
+    r += `. `;
+    r += `So your year feels layered. You do things that do not match your plans, and a month later you find out why. When a pull keeps coming back, follow it.\n\n`;
   }
 
   // -- SUN — Central Focus --------
@@ -167,13 +174,13 @@ export function generateSolarReturnPrediction(
     const boldPred = BOLD_PREDICTIONS.Sun?.[sun.house] || '';
 
     r += `### The Central Theme of Your Year\n\n`;
-    r += `Your Sun has landed in the **${ordinal(sun.house)} house** — ${houseInfo?.area || 'a part of your life demanding your full, undivided attention'}. This is not background noise. This is the room of your life where the lights are brightest, where the stakes are highest, where you will pour your energy whether you planned to or not. `;
-    r += `The way you move through this territory is ${sunE?.surface || sun.sign} — but the hidden engine driving you is ${SIGN_ENERGY[duad]?.drive || 'something far more primal than what the surface reveals'}. `;
+    r += `Your Sun lands in your **${ordinal(sun.house)} house**: ${houseInfo?.area || 'a part of your life that demands your full attention'}. That is where you spend your energy whether you planned to or not, and where the stakes are highest. `;
+    r += `You go at it ${sunE?.surface || 'in a way shaped by ' + sun.sign}, but what keeps you going is ${SIGN_ENERGY[duad]?.drive || 'something more basic than the surface shows'}. `;
     if (duadH && duadH !== sun.house) {
-      r += `This deeper motivation is tangled with ${HOUSE_LIFE[duadH]?.area || 'another part of your existence'} — two seemingly separate areas of your life are secretly feeding each other, and the connection will reveal itself at a moment that makes everything click. `;
+      r += `That drive is tied to ${HOUSE_LIFE[duadH]?.area || 'another part of your life'}, so a push in one of those areas moves the other, and the link becomes obvious at one specific moment when everything clicks. `;
     }
     if (compH && compH !== sun.house && compH !== duadH) {
-      r += `And at the most instinctive level — the place where decisions are made before your conscious mind even knows a choice was available — your energy is being pulled toward ${HOUSE_LIFE[compH]?.area || 'territory you may not consciously recognize yet'}. When you feel an inexplicable urge to do something that makes no logical sense, that is this layer speaking. Listen to it. `;
+      r += `And below your decisions, in the part of you that acts before you have thought, you get pulled toward ${HOUSE_LIFE[compH]?.area || 'territory you do not recognise yet'}. When you feel an urge that makes no sense on paper, look there first. `;
     }
     r += `\n\n`;
     if (boldPred) r += `**Here is what I predict:** ${boldPred}\n\n`;
@@ -189,13 +196,13 @@ export function generateSolarReturnPrediction(
     const boldPred = moon.house ? (BOLD_PREDICTIONS.Moon?.[moon.house] || '') : '';
 
     r += `### Your Emotional Reality This Year\n\n`;
-    r += `Your Moon is in **${moon.sign}**${moon.house ? ` in your **${ordinal(moon.house)} house**` : ''}, and this placement tells me something intimate about the emotional weather of your coming year. At the level you are aware of, you feel ${moonE?.surface || 'deeply affected by ' + moon.sign + ' themes'}. `;
-    r += `What you need in order to feel genuinely safe — not just functioning, but held — is ${moonE?.deep || 'something woven into ' + moon.sign + ' energy'}. `;
-    r += `But beneath that visible emotional landscape, there is a quieter hunger — one connected to ${SIGN_ENERGY[duad]?.drive || 'a longing you may struggle to articulate even to yourself'}`;
-    if (duadH) r += `, and it surfaces most acutely in the territory of ${HOUSE_LIFE[duadH]?.area || 'a part of your life that holds more emotional charge than you realize'}`;
+    r += `Your Moon is in **${moon.sign}**${moon.house ? ` in your **${ordinal(moon.house)} house**` : ''}, so your moods this year are easy to read from outside. On the surface you are ${moonE?.surface || 'deeply affected by ' + moon.sign + ' themes'}. `;
+    r += `Underneath, you are carrying ${moonE?.deep || 'a need you rarely say out loud'}, and until it is met you function but never feel held. `;
+    r += `Below that sits a quieter hunger: ${SIGN_ENERGY[duad]?.drive || 'a longing you struggle to put into words even to yourself'}`;
+    if (duadH) r += `, and it hurts most in ${HOUSE_LIFE[duadH]?.area || 'a part of your life that carries more feeling than you admit'}`;
     r += `. `;
     if (compH) {
-      r += `And at the very root — the place your emotions go when every mask has been removed and every defense has been lowered — there is ${SIGN_ENERGY[comp]?.deep || 'a primal, wordless need'}. This is the feeling that finds you at 3am, the one that surfaces in dreams, the one that makes you ache for something you cannot quite name. It is reaching into ${HOUSE_LIFE[compH]?.area || 'the most tender dimension of your existence'}. `;
+      r += `At the very bottom, the part that finds you at 3am and shows up in dreams, sits ${SIGN_ENERGY[comp]?.deep || 'a wordless need'}, and it leaks into ${HOUSE_LIFE[compH]?.area || 'the most tender part of your life'}. `;
     }
     r += `\n\n`;
     if (boldPred) r += `**Here is what I predict:** ${boldPred}\n\n`;
@@ -210,17 +217,17 @@ export function generateSolarReturnPrediction(
     const compH = findHouseForSign(comp, houseCusps);
 
     r += `### Love, Attraction, and Money\n\n`;
-    r += `Venus in **${venus.sign}**${venus.house ? ` in the **${ordinal(venus.house)} house**` : ''} decides who you fall for and what you spend on this year: what you reach for, who reaches for you, and why certain people feel irresistible while others leave you cold. On the surface, your style of loving is ${venE?.surface || venus.sign + ' flavored'}. You are drawn — almost helplessly — to people and experiences that embody ${venE?.drive || venus.sign + ' qualities'}. `;
-    r += `But the attractions that truly undo you — the ones that bypass your logic entirely — are rooted in ${SIGN_ENERGY[duad]?.deep || 'something far more complex than preference'}`;
-    if (duadH) r += `, and they play out with particular intensity in the realm of ${HOUSE_LIFE[duadH]?.area || 'your closest relationships'}`;
+    r += `With Venus in **${venus.sign}**${venus.house ? ` in the **${ordinal(venus.house)} house**` : ''}, you fall for certain people and spend on certain things this year, and others leave you cold for no reason you can name. In love you are ${venE?.surface || 'shaped by ' + venus.sign}. What keeps pulling you is ${venE?.drive || 'the ' + venus.sign + ' side of things'}, and you pick partners and purchases that feed it. `;
+    r += `The attractions that really undo you skip your logic and come from ${SIGN_ENERGY[duad]?.deep || 'something more complicated than taste'}`;
+    if (duadH) r += `, and they hit hardest in ${HOUSE_LIFE[duadH]?.area || 'your closest relationships'}`;
     r += `. `;
     if (compH) {
-      r += `At the most instinctive, inarticulate level, what makes your pulse quicken this year carries the energy of something ${SIGN_ENERGY[comp]?.surface || 'you could not explain to someone who has not felt it'} — and it surfaces through ${HOUSE_LIFE[compH]?.area || 'a part of your life you would not have expected'}. `;
+      r += `Underneath that, what makes your pulse jump this year is people who are ${SIGN_ENERGY[comp]?.surface || 'hard to explain to anyone who has not felt it'}, and you meet them through ${HOUSE_LIFE[compH]?.area || 'a part of your life you would not have guessed'}. `;
     }
     if (venus.house === 5 || venus.house === 7 || venus.house === 1) {
-      r += `\n\n**Here is what I predict:** Love is not optional this year — it is coming for you whether you feel ready or not. If you are single, someone enters your world who makes your carefully constructed walls feel absurd. If you are partnered, your relationship reaches a depth or a crisis that forces you both to stop performing and start being real. The chart is not whispering about this. It is speaking clearly: ${year} is a year where love demands to be felt.`;
+      r += `\n\n**Here is what I predict:** Love does not wait for you to feel ready this year. If you are single, someone turns up who makes the walls you built look silly by the second dinner. If you are partnered, the relationship hits a crisis or a new depth, and the two of you stop performing and say the real thing. ${year} is the year you feel it.`;
     } else if (venus.house === 2 || venus.house === 8 || venus.house === 10) {
-      r += `\n\n**Here is what I predict:** Your financial reality is about to shift in a way that reflects how you feel about yourself. Money arrives from a direction you did not anticipate, or your earning power increases because you stop undercharging for what you bring to the table. By the end of this year, the number in your account will tell a different story — and more importantly, so will the number you carry in your chest when someone asks what you are worth.`;
+      r += `\n\n**Here is what I predict:** Your money changes shape this year because you finally price yourself differently. Income arrives from a direction you did not plan on, or you stop undercharging and the raise or the higher rate goes through. By December your bank balance and your own answer to what you are worth both say something new.`;
     }
     r += `\n\n`;
   }
@@ -232,18 +239,18 @@ export function generateSolarReturnPrediction(
     const duadH = findHouseForSign(duad, houseCusps);
 
     r += `### Where You Will Fight and What You Will Fight For\n\n`;
-    r += `Mars in **${mars.sign}**${mars.house ? ` in the **${ordinal(mars.house)} house**` : ''} reveals where your fire burns hottest and where your patience runs thinnest. The way you pursue what you want this year is ${marsE?.surface || 'driven and unapologetic'} — and there is nothing polite about it. `;
+    r += `With Mars in **${mars.sign}**${mars.house ? ` in the **${ordinal(mars.house)} house**` : ''}, you lose patience fast this year and you go after what you want without being polite about it. People see you as ${marsE?.surface || 'driven and unapologetic'}. `;
     if (mars.house) {
       const mArea = HOUSE_LIFE[mars.house];
-      r += `The arena where your energy concentrates is ${mArea?.area || 'a critical part of your life'} — this is where you will clash, sweat, push through resistance, and ultimately make the most undeniable progress of your year. ${mArea?.specific || ''} `;
+      r += `Most of that energy goes into ${mArea?.area || 'one key part of your life'}. That is where you clash, sweat and push through resistance, and where you make your clearest progress. ${asSentence(mArea?.specific || '')} `;
     }
-    r += `Beneath the visible aggression, your real fuel source is ${SIGN_ENERGY[duad]?.drive || 'something more complex than simple ambition'}`;
-    if (duadH && duadH !== mars.house) r += `, and it is secretly entangled with ${HOUSE_LIFE[duadH]?.area || 'a part of your life you might not immediately connect to this fight'}`;
+    r += `What actually fuels you is ${SIGN_ENERGY[duad]?.drive || 'something more complicated than ambition'}`;
+    if (duadH && duadH !== mars.house) r += `, and it quietly pulls in ${HOUSE_LIFE[duadH]?.area || 'a part of your life you do not connect to this fight'}`;
     r += `.\n\n`;
     if (mars.house === 1 || mars.house === 10) {
-      r += `**Here is what I predict:** You will take a leap this year that makes the cautious people in your life hold their breath — and it will land. The difference between you and everyone watching from the sidelines in ${year} is that you are willing to move before the guarantee arrives. That is not recklessness. That is instinct. Trust it.\n\n`;
+      r += `**Here is what I predict:** You take a leap this year that makes the careful people around you hold their breath, and it lands. You move before the guarantee shows up, and that is the whole difference between you and everyone watching from the side in ${year}. Trust the instinct.\n\n`;
     } else if (mars.house === 7) {
-      r += `**Here is what I predict:** A confrontation is coming in a relationship that matters to you — and avoiding it will cost you more than facing it ever could. There is a conversation that has been building pressure, and this year it breaks through. What you say in that moment, if you say it from the honest place rather than the defended place, will permanently change the relationship. For the better.\n\n`;
+      r += `**Here is what I predict:** A conversation you have been dodging in a relationship that matters comes due, and avoiding it costs more than having it. If you say the honest version instead of the defended one, the relationship changes for good, and for the better.\n\n`;
     }
   }
 
@@ -254,13 +261,13 @@ export function generateSolarReturnPrediction(
     const duadH = findHouseForSign(duad, houseCusps);
 
     r += `### Where Luck Finds You\n\n`;
-    r += `Jupiter in **${jupiter.sign}**${jupiter.house ? ` in the **${ordinal(jupiter.house)} house**` : ''} is the part of your chart that made me smile. This is your zone of expansion — the area of life where the universe is actively conspiring in your favor, where doors open before you knock, where risks pay off in ways that make skeptics uncomfortable. `;
+    r += `Jupiter in **${jupiter.sign}**${jupiter.house ? ` in the **${ordinal(jupiter.house)} house**` : ''} is where your year goes well, and it made me smile. Doors open before you knock, and risks pay off in ways that make skeptics uncomfortable. `;
     if (jupiter.house) {
-      r += `The growth is concentrated in ${HOUSE_LIFE[jupiter.house]?.area || 'a part of your life that is ready to get bigger'}. ${HOUSE_LIFE[jupiter.house]?.specific || ''} `;
+      r += `The luck lands in ${HOUSE_LIFE[jupiter.house]?.area || 'a part of your life that is ready to get bigger'}. ${asSentence(HOUSE_LIFE[jupiter.house]?.specific || '')} `;
     }
-    r += `The hidden engine behind this luck connects to ${SIGN_ENERGY[duad]?.drive || 'an aspiration so deep you may not even call it a goal — it feels more like a destiny'}`;
-    if (duadH && duadH !== jupiter.house) r += ` — and it threads through ${HOUSE_LIFE[duadH]?.area || 'a related part of your life that benefits from the overflow'}`;
-    r += `. Do not shrink from this. Do not be modest. Do not talk yourself out of the opportunity because it feels too good. Jupiter rewards the people who say yes before they feel ready.\n\n`;
+    r += `What sits behind it is ${SIGN_ENERGY[duad]?.drive || 'an aspiration so big you do not call it a goal'}`;
+    if (duadH && duadH !== jupiter.house) r += `, and it spills into ${HOUSE_LIFE[duadH]?.area || 'a related part of your life that gets the overflow'}`;
+    r += `. Do not be modest, and do not talk yourself out of an offer because it feels too good. This year the yes you give before you feel ready is the one that pays.\n\n`;
   }
 
   // -- SATURN — Tests and Mastery --------
@@ -270,33 +277,33 @@ export function generateSolarReturnPrediction(
     const duadH = findHouseForSign(duad, houseCusps);
 
     r += `### Where You Will Be Tested — And What You Will Master\n\n`;
-    r += `Saturn in **${saturn.sign}**${saturn.house ? ` in the **${ordinal(saturn.house)} house**` : ''} is the part of your chart that does not care about your feelings — and that is exactly why it is the most important. This is the teacher who arrives uninvited, assigns the hardest lesson, and refuses to let you skip the exam. This year demands that you become ${satE?.surface || 'disciplined, mature, and unflinchingly honest with yourself'} in the realm of ${saturn.house ? HOUSE_LIFE[saturn.house]?.area || 'a part of your life that has been operating on borrowed time' : 'your life'}. `;
-    if (saturn.house) r += `${HOUSE_LIFE[saturn.house]?.specific || ''} `;
-    r += `The deeper lesson — the one Saturn is really teaching you — connects to ${SIGN_ENERGY[duad]?.deep || 'an internal pattern you have been avoiding because confronting it requires you to grow up in a way that terrifies you'}`;
-    if (duadH && duadH !== saturn.house) r += `, and it plays out through ${HOUSE_LIFE[duadH]?.area || 'a related dimension of your life that is entangled with this growth'}`;
+    r += `Saturn in **${saturn.sign}**${saturn.house ? ` in the **${ordinal(saturn.house)} house**` : ''} hands you the hardest assignment of your year, and it does not care how you feel about it. It lands in ${saturn.house ? HOUSE_LIFE[saturn.house]?.area || 'a part of your life that has been running on borrowed time' : 'your life'}, and you get through it by being ${satE?.surface || 'disciplined and honest with yourself'}. `;
+    if (saturn.house) r += `${asSentence(HOUSE_LIFE[saturn.house]?.specific || '')} `;
+    r += `Underneath the assignment is a harder one: ${SIGN_ENERGY[duad]?.deep || 'a pattern you have avoided because facing it means growing up in a way that scares you'}`;
+    if (duadH && duadH !== saturn.house) r += `, and it plays out in ${HOUSE_LIFE[duadH]?.area || 'a related part of your life'}`;
     r += `. `;
-    r += `\n\n**Here is what I predict:** There will be a moment this year — probably in the first half — where every part of you wants to quit, to take the shortcut, to choose the comfortable path over the right one. You will feel it in your bones: the temptation to settle. Do not. What Saturn is constructing in your life this year is permanent — it is the foundation that every future version of you will stand on. The heaviness you feel right now is not punishment. It is the weight of something real being built. Stay.\n\n`;
+    r += `\n\n**Here is what I predict:** Probably in the first half of the year, you hit a week where you want to quit, take the shortcut or settle for the comfortable option. Do not. What you build through this stretch holds weight for years, and the heaviness you feel is the cost of it being real. Stay.\n\n`;
   }
 
   // -- URANUS — Surprises --------
   if (uranus && uranus.house) {
     r += `### The Unexpected\n\n`;
-    r += `Uranus in your **${ordinal(uranus.house)} house** is the lightning bolt in your chart — the event you cannot schedule, cannot prepare for, and cannot undo once it arrives. Something in the realm of ${HOUSE_LIFE[uranus.house]?.area || 'your life'} is about to be disrupted by a force that cares nothing for your plans. `;
-    r += `In the moment, it will feel like the ground has been pulled out from under you. But when you look back — and you will — you will see this disruption as the exact thing that freed you from a structure, a pattern, or a commitment that had quietly become a cage. ${HOUSE_LIFE[uranus.house]?.specific || 'This part of your life is about to be liberated in a way you could not have designed yourself'}.\n\n`;
+    r += `Uranus sits in your **${ordinal(uranus.house)} house**, so the jolt lands in ${HOUSE_LIFE[uranus.house]?.area || 'your life'}. You cannot schedule it or prepare for it, and it ignores your plans. `;
+    r += `For a while it feels like the ground is gone. Looking back, you see it freed you from a structure, a habit or a commitment that had turned into a cage. ${asSentence(HOUSE_LIFE[uranus.house]?.specific || 'This part of your life gets freed in a way you could not have designed yourself')}\n\n`;
   }
 
   // -- NEPTUNE — Dreams and Illusions --------
   if (neptune && neptune.house) {
     r += `### Where Dreams Blur With Reality\n\n`;
-    r += `Neptune in your **${ordinal(neptune.house)} house** casts a luminous, intoxicating haze over ${HOUSE_LIFE[neptune.house]?.area || 'a part of your life'} — and it is both the most beautiful and the most dangerous energy in your chart this year. `;
-    r += `In this area of life, you will feel inspired in ways that border on the spiritual. Creativity flows. Intuition sharpens. You sense things you cannot prove. But Neptune also dissolves clarity, and what looks like a dream can be a mirage. The key this year is to honor the vision without abandoning the facts. Let yourself be moved, but do not sign anything without reading the fine print. The breakthroughs available here — artistic, spiritual, emotional — are real. But they require you to stay tethered to the ground even as your soul wants to fly.\n\n`;
+    r += `With Neptune in your **${ordinal(neptune.house)} house**, ${HOUSE_LIFE[neptune.house]?.area || 'a part of your life'} gets hazy this year, and the haze cuts both ways. `;
+    r += `You feel inspired, your work gets more creative and you pick up on things you cannot prove. You also see what you want to see, so a plan that looks like a dream can turn out to be a mirage. Read the fine print before you sign anything. The breakthroughs here, in art, in belief and in feeling, are real, but only the ones you check against the facts hold up.\n\n`;
   }
 
   // -- PLUTO — Power and Transformation --------
   if (pluto && pluto.house) {
     r += `### Where Power Transforms You\n\n`;
-    r += `Pluto in your **${ordinal(pluto.house)} house** is the most quietly devastating force in your chart. It does not ask for permission. In the realm of ${HOUSE_LIFE[pluto.house]?.area || 'a critical part of your existence'}, something is being dismantled — not randomly, not cruelly, but with the precision of a surgeon removing something that would eventually destroy you if it stayed. `;
-    r += `What dies in this area of your life this year needed to die. You may grieve it. You may resist it. But when you see what rises from the ashes — the relationship that replaces the one that was draining you, the version of yourself that emerges from the wreckage of the version that was pretending — you will understand that Pluto was never your enemy. It was the only force in the universe willing to do what needed to be done.\n\n`;
+    r += `With Pluto in your **${ordinal(pluto.house)} house**, something in ${HOUSE_LIFE[pluto.house]?.area || 'a critical part of your life'} gets taken apart this year, and you do not get a vote on the timing. What ends there was draining you, and you can feel that even while you grieve it or fight it. `;
+    r += `What replaces it, the relationship that fits or the self that stops pretending, makes the loss make sense. By the end you stop treating the breakdown as the enemy.\n\n`;
   }
 
   // -- JUNO — Commitment, Partnership Rights, and What You Demand From Love --------
@@ -309,24 +316,24 @@ export function generateSolarReturnPrediction(
     const compH = findHouseForSign(comp, houseCusps);
 
     r += `### What You Demand From Commitment This Year\n\n`;
-    r += `What you will and will not accept from the people closest to you runs through Juno in **${juno.sign}**${juno.house ? ` in your **${ordinal(juno.house)} house**` : ''}. `;
-    r += `This year, the bar you hold for partnership is ${junoE?.surface || juno.sign + '-flavored'} — and it is not negotiable. You are finished tolerating less than you deserve, and the specific territory where that line is being drawn is ${juno.house ? HOUSE_LIFE[juno.house]?.area || 'the heart of your relational world' : 'in the commitments that define your life'}. `;
-    r += `Beneath what you can articulate, there is ${SIGN_ENERGY[duad]?.deep || 'a non-negotiable so deep it lives in your body rather than your mind'} — this is the thing you will never say in words, but you will walk away from anyone who violates it, and you will not be able to explain why except that your entire being said no`;
-    if (duadH) r += `. This invisible standard is woven into ${HOUSE_LIFE[duadH]?.area || 'a part of your life that carries more weight than anyone realizes'}`;
+    r += `This year you hold a firmer line on what you accept from the people closest to you, and Juno in **${juno.sign}**${juno.house ? ` in your **${ordinal(juno.house)} house**` : ''} is where it shows. `;
+    r += `With partners you are ${junoE?.surface || 'shaped by ' + juno.sign}, and you stop putting up with less than you deserve. The line gets drawn in ${juno.house ? HOUSE_LIFE[juno.house]?.area || 'the center of your relationships' : 'the commitments that define your life'}. `;
+    r += `Below what you can put into words sits ${SIGN_ENERGY[duad]?.deep || 'a limit so deep it lives in your body, not your head'}. You will never say it out loud, but you walk away from anyone who crosses it, and the only explanation you can give is that your whole body said no`;
+    if (duadH) r += `. It is tied up with ${HOUSE_LIFE[duadH]?.area || 'a part of your life that carries more weight than anyone sees'}`;
     r += `. `;
     if (compH) {
-      r += `At the most primal level, your loyalty this year belongs to the person who understands ${SIGN_ENERGY[comp]?.drive || 'the thing about you that you have never had to explain'} — and the proving ground is ${HOUSE_LIFE[compH]?.area || 'a part of your life that will surprise both of you'}. `;
+      r += `Your loyalty this year goes to the person who understands ${SIGN_ENERGY[comp]?.drive || 'the thing about you that you never have to explain'}, and the proving ground is ${HOUSE_LIFE[compH]?.area || 'a part of your life that surprises both of you'}. `;
     }
     if (juno.house === 7 || juno.house === 1) {
-      r += `\n\n**Here is what I predict:** A commitment reaches its moment of truth this year — it either solidifies into something permanent or it shatters. There is no more ambiguity. If a relationship has been floating in the gray zone, this is the year the gray burns away. Someone will prove their loyalty to you in a way that removes all doubt — or their failure to do so will tell you everything you need to know. Your body will register the answer before your mind catches up. Trust the body.`;
+      r += `\n\n**Here is what I predict:** A commitment reaches its moment of truth this year: it becomes permanent or it breaks. If a relationship has been sitting in the gray zone, the gray ends. Someone proves their loyalty in a way that removes the doubt, or their failure to show up answers the question for you. Your body gives you the answer before your head agrees.`;
     } else if (juno.house === 5) {
-      r += `\n\n**Here is what I predict:** A romance reaches a crossroads where it either becomes undeniably real or reveals itself as a beautiful distraction. The casual phase has expired. What your heart is demanding now is depth, consistency, and the willingness to be chosen — not just desired, but chosen — every single day. Anything that falls short of that will feel like a betrayal of your own evolution.`;
+      r += `\n\n**Here is what I predict:** A romance hits a crossroads where it either becomes real or turns out to be a nice distraction. The casual phase is over. You want consistency and you want to be chosen every day, not just wanted, and anything less starts to feel like betraying yourself.`;
     } else if (juno.house === 10) {
-      r += `\n\n**Here is what I predict:** A professional partnership becomes one of the defining relationships of your year. Someone you work with earns your trust at a level that goes beyond business — or their betrayal teaches you something about loyalty that changes how you operate forever. Either way, this alliance reshapes your public trajectory in ways neither of you can predict from here.`;
+      r += `\n\n**Here is what I predict:** A work partnership becomes one of the defining relationships of your year. Someone you work with earns your trust well beyond business, or betrays it and teaches you something about loyalty that you carry into every deal after. Either way, this alliance changes your public path in ways neither of you can see yet.`;
     } else if (juno.house === 8) {
-      r += `\n\n**Here is what I predict:** A relationship reaches a depth of intimacy this year that feels almost terrifying — not because it threatens to hurt you, but because it demands that you be more naked, more honest, and more vulnerable than you have ever allowed yourself to be. If you open that door, the bond that forms on the other side will be forged from something unbreakable. If you keep your armor on, the relationship will die slowly — and both of you will know why.`;
+      r += `\n\n**Here is what I predict:** A relationship goes deeper than you have let any relationship go, and it scares you, because it asks for more honesty and less armor than you are used to. Open the door and the bond that forms is the hard-to-break kind. Keep the armor on and the relationship dies slowly, and both of you know why.`;
     } else {
-      r += `\n\n**Here is what I predict:** Your understanding of loyalty undergoes a permanent upgrade this year. Someone in your life will rise to meet the person you are becoming — or they will reveal, through their inability to show up, that the relationship was built for a version of you that no longer exists. For the first time, you will feel peace instead of guilt when you let go of what no longer fits.`;
+      r += `\n\n**Here is what I predict:** Your idea of loyalty changes for good this year. Someone rises to meet who you are becoming, or shows by not turning up that the relationship was built for an earlier you. When you let go of what no longer fits, you feel peace instead of guilt.`;
     }
     r += `\n\n`;
   }
@@ -341,27 +348,27 @@ export function generateSolarReturnPrediction(
     const compH = findHouseForSign(comp, houseCusps);
 
     r += `### Your Sacred Focus — What You Are Devoted To This Year\n\n`;
-    r += `Vesta — the keeper of your inner flame, the part of you that would rather burn out than live a half-committed life — is in **${vesta.sign}**${vesta.house ? ` in your **${ordinal(vesta.house)} house**` : ''}. `;
-    r += `This year, your devotion takes the form of something ${vestE?.surface || vesta.sign + '-flavored'} and it pours itself into ${vesta.house ? HOUSE_LIFE[vesta.house]?.area || 'a mission that chooses you as much as you choose it' : 'something that refuses to share your attention with anything trivial'}. `;
-    r += `This is not interest. This is not a hobby. This is the thing you will stay up until 3am working on without noticing the time, the thing you will protect with a ferocity that surprises the people around you, the thing that makes your life feel like it has a reason. `;
-    r += `The deeper fuel source driving this devotion is ${SIGN_ENERGY[duad]?.drive || 'a motivation that runs far deeper than ambition or discipline'}`;
-    if (duadH) r += `, and it channels itself through ${HOUSE_LIFE[duadH]?.area || 'a part of your life that becomes consecrated by your attention'}`;
+    r += `Vesta in **${vesta.sign}**${vesta.house ? ` in your **${ordinal(vesta.house)} house**` : ''} is where you stop doing things halfway this year. `;
+    r += `You put everything into ${vesta.house ? HOUSE_LIFE[vesta.house]?.area || 'one mission that chooses you as much as you choose it' : 'one thing that will not share your attention with anything trivial'}, and while you do it you are ${vestE?.surface || 'shaped by ' + vesta.sign}. `;
+    r += `It is not a hobby. It is the thing you work on until 3am without noticing the time, the thing you defend harder than the people around you expect, and it gives your days a reason. `;
+    r += `What fuels it is ${SIGN_ENERGY[duad]?.drive || 'a motive deeper than ambition or discipline'}`;
+    if (duadH) r += `, and it runs through ${HOUSE_LIFE[duadH]?.area || 'a part of your life that gets all your attention'}`;
     r += `. `;
     if (compH) {
-      r += `And at the very root of your inner flame — the coal that keeps it burning when everything else goes dark — there is ${SIGN_ENERGY[comp]?.deep || 'something ancient, instinctive, and utterly non-negotiable'} — connected to ${HOUSE_LIFE[compH]?.area || 'the most private, protected dimension of your existence'}. `;
+      r += `Under that, the part that keeps you going when everything else goes dark is ${SIGN_ENERGY[comp]?.deep || 'something old and instinctive that you will not bargain over'}, and it ties to ${HOUSE_LIFE[compH]?.area || 'the most private part of your life'}. `;
     }
     if (vesta.house === 6 || vesta.house === 10) {
-      r += `\n\n**Here is what I predict:** Your work becomes sacred ground this year. Not in the way workaholism numbs you — in the way that a master craftsperson falls so deeply in love with their work that the quality of what they produce becomes a form of prayer. You will pour yourself into something professional with a level of care and precision that makes the result undeniable. People will notice. Opportunities will follow. And you will realize that this was never about productivity — it was about devotion.`;
+      r += `\n\n**Here is what I predict:** Your work becomes the thing you care about most. You put so much care and precision into one project that the result is undeniable, and people notice. Opportunities follow, and you realise it was never about productivity. You simply could not do it badly.`;
     } else if (vesta.house === 1) {
-      r += `\n\n**Here is what I predict:** You will turn the full force of your devotion inward this year — your body, your habits, your identity, the version of yourself you present to the world. You are refining yourself with the precision of a sculptor who can see the finished form inside the marble. The discipline will be intense. The results will be visible to everyone. By the end of this year, the person you have become will be unrecognizable to the person you were twelve months ago — and that is exactly the point.`;
+      r += `\n\n**Here is what I predict:** You aim all that devotion at yourself: your body, your habits, how you present. The discipline is hard and the results are visible to everyone. By the end of the year, people who last saw you twelve months ago do a double take.`;
     } else if (vesta.house === 5) {
-      r += `\n\n**Here is what I predict:** A creative project consumes you this year with the intensity of a love affair. You will produce something that carries a piece of your soul so unmistakably that showing it to the world will feel like confessing a secret. This level of creative fire does something to your magnetism — when you are this devoted to your own expression, you become almost impossibly attractive to the kind of people who are drawn to authenticity over polish.`;
+      r += `\n\n**Here is what I predict:** A creative project eats your year the way a love affair does. What you make has so much of you in it that showing it feels like confessing a secret. Putting that much into your own work also makes you attractive to people who prefer the real thing to the polished one.`;
     } else if (vesta.house === 9) {
-      r += `\n\n**Here is what I predict:** A pursuit of meaning takes over your life this year — a course of study, a spiritual practice, a body of writing, a philosophical framework that rewires how you see everything. This is not casual intellectual curiosity. This is a calling that shows up wearing the disguise of an interest and reveals itself as the thing you were always meant to do.`;
+      r += `\n\n**Here is what I predict:** A pursuit of meaning takes over: a course, a spiritual practice, a book you write, a philosophy that changes how you read everything. It starts out looking like an interest and ends up being what you were meant to do.`;
     } else if (vesta.house === 12) {
-      r += `\n\n**Here is what I predict:** Your inner work becomes the most important work you do this year. Meditation, therapy, journaling, long silences, prayer — whatever form your practice takes, it moves from the margins to the center of your life. You will need more solitude than usual, and that is not isolation or depression. It is the monk in you coming forward to tend the flame that only burns in stillness.`;
+      r += `\n\n**Here is what I predict:** Your inner work moves from the margins to the center of your life. Therapy, journaling, prayer, long silences, whatever form it takes, you need more solitude than usual. That is not depression or hiding. It is you tending something that only grows in quiet.`;
     } else {
-      r += `\n\n**Here is what I predict:** Something will catch fire in you this year — a focus, a calling, a purpose that arrives with such clarity that second-guessing it will feel absurd. You will feel it in your chest before you can name it. When it comes, do not negotiate with it. Do not dilute it with other obligations. Follow the flame. It knows exactly where it is taking you.`;
+      r += `\n\n**Here is what I predict:** Something catches in you this year: a focus or a purpose that arrives so clearly that second-guessing it feels absurd. You feel it in your chest before you can name it. Do not dilute it with other obligations, and follow it.`;
     }
     r += `\n\n`;
   }
@@ -375,16 +382,16 @@ export function generateSolarReturnPrediction(
   if (jupiter?.house && jupiter.house !== sun?.house && jupiter.house !== moon?.house) focusAreas.push(`growth through ${HOUSE_LIFE[jupiter.house]?.area || ''}`);
   const unique = focusAreas.filter(Boolean).slice(0, 3);
 
-  r += `${year} is not a year that happens to you. It is a year that happens because of you — because of decisions you make, thresholds you cross, and truths you finally stop running from. `;
+  r += `${year} does not just happen to you. It happens because of what you decide, which lines you cross and which truths you stop dodging. `;
   if (unique.length > 0) {
-    r += `The forces shaping your life are concentrated around **${unique.join('**, **')}** — and these are not separate storylines. They are threads of the same fabric, pulling on each other in ways that will only become clear as you live them. `;
+    r += `Your year centers on **${unique.join('**, **')}**, and these are one story, not separate ones: each pulls on the others. `;
   }
 
-  r += `\n\nThe hidden layers beneath each placement reveal something important: this year is far more complex than any single prediction can capture. What you think you want and what your chart says you actually need are not always the same thing — and the gap between them is not a problem to solve. It is the space where real transformation lives. `;
+  r += `\n\nWhat you think you want and what you actually need will not match all year. That gap is where the change happens, so do not rush to close it. `;
 
-  r += `\n\nI will tell you this without hedging: **there are at least two moments coming this year that will feel like the hinge the entire year swings on.** You will recognize them not by their drama, but by the way time seems to slow down, the way your body knows something is happening before your mind catches up. When those moments arrive, choose the path that frightens you. Choose the option that asks more of you. That is almost always the one your chart has been pointing you toward since the day you were born. `;
+  r += `\n\n**Expect at least two moments this year when everything turns.** You will know them by how time slows down and your body registers it before your head does. When they come, pick the option that scares you and asks more of you. That is usually the one your chart has been pointing at since you were born. `;
 
-  r += `\n\nThis is your year, ${name}. Not a practice run. Not a holding pattern. Not preparation for something that comes later. This is the year that future-you will point back to and say: that is when everything changed. Move like you believe it.\n`;
+  r += `\n\nThis is your year, ${name}. Not a rehearsal and not a waiting room. Years from now you will point back at it and say that is when everything changed, so move like it.\n`;
 
   return r;
 }
@@ -574,7 +581,7 @@ export function getAngleInterpretation(planet: string, angle: string): string {
     : angle.includes('DSC') || angle.includes('Desc') || angle.includes('Des') ? 'Descendant'
     : angle.includes('IC') || angle.includes('Imum') ? 'IC'
     : angle;
-  return ANGLE_PLANET_INTERPS[normalizedAngle]?.[planet] || `${planet} conjunct the ${normalizedAngle} amplifies ${planet} themes in the most visible and personally defining way possible this year.`;
+  return ANGLE_PLANET_INTERPS[normalizedAngle]?.[planet] || `${planet} sits right on your ${normalizedAngle} this year, so what it stirs up is hard to hide and shows in your choices, your mood and what other people say about you.`;
 }
 
 // -- Retrograde Detection & Meanings --------
@@ -625,6 +632,16 @@ const SHIFT_TEMPLATES: Record<string, (ns: string, ss: string) => string> = {
   Mercury: (ns, ss) => `You usually think and talk the ${ns} way. This year your mind runs on ${ss} lines: you pick different topics, write and speak differently, and get hooked by conversations you would have skipped. Follow what grabs your attention, because it points at the year's main insights.`,
 };
 
+const COMPARISON_AREAS: Record<string, string> = {
+  Sun: 'leading and showing up',
+  Moon: 'what calms you down',
+  Mercury: 'thinking and talking',
+  Venus: 'love and money',
+  Mars: 'anger and ambition',
+  Jupiter: 'risk and what you say yes to',
+  Saturn: 'responsibility and deadlines',
+};
+
 export function buildNatalComparisons(
   natalPlanets: Array<{ name: string; sign: string; house?: number }>,
   srPlanets: Array<{ name: string; sign: string; house?: number }>,
@@ -640,8 +657,8 @@ export function buildNatalComparisons(
     const interp = shifted && template
       ? template(natal.sign, sr.sign)
       : shifted
-        ? `Your ${name} moves from natal ${natal.sign} to solar return ${sr.sign} — the energy you express through ${name} themes takes on a completely different quality this year.`
-        : `Your ${name} stays in ${natal.sign} in both your natal and solar return charts — this area of life operates with familiar energy this year, reinforcing and deepening patterns you already know.`;
+        ? `You usually handle ${COMPARISON_AREAS[name] || 'this part of your life'} the ${natal.sign} way. This year you do it the ${sr.sign} way, and people who know your habits notice the change before you do.`
+        : `You handle ${COMPARISON_AREAS[name] || 'this part of your life'} the ${natal.sign} way this year, same as always. That keeps things steady, and it also means the old pattern repeats unless you break it on purpose.`;
     comparisons.push({ planet: name, natalSign: natal.sign, natalHouse: natal.house, srSign: sr.sign, srHouse: sr.house, shifted, interpretation: interp });
   }
   return comparisons;
@@ -707,14 +724,14 @@ export function generateMonthlyTimeline(
     if (i === 0) {
       themes.push('New solar year begins');
       intensity = 4;
-      desc.push(`Your solar return activates. The themes of this entire year announce themselves in the first few weeks — pay attention to what shows up in ${MONTH_NAMES[monthIdx]}, because it is a preview of the entire year.`);
+      desc.push(`Your year starts here. Whatever turns up in ${MONTH_NAMES[monthIdx]}, whether a new person, a bad week or an offer, previews the rest of the year, so write it down.`);
     }
     if (i === 3) {
       themes.push('First quarter activation');
       intensity = Math.max(intensity, 3);
       if (mars) {
         keyPlanet = 'Mars';
-        desc.push(`Mars themes intensify. The drive and ambition you set in motion at the start of your solar year faces its first real test. Conflicts that have been simmering may surface.`);
+        desc.push(`What you started pushing in the first weeks hits its first real resistance. An argument you have been swallowing comes out now, so raise it on your terms before it comes out sideways.`);
       }
     }
     if (i === 6) {
@@ -722,7 +739,7 @@ export function generateMonthlyTimeline(
       intensity = Math.max(intensity, 4);
       if (saturn) {
         keyPlanet = 'Saturn';
-        desc.push(`The halfway point of your solar return year. Saturn\'s lessons are fully engaged. What you committed to six months ago is now being tested — are you still in? The answer matters.`);
+        desc.push(`You are halfway through your year, and what you committed to six months ago gets checked. You find out whether you are still in, and the honest answer decides the second half.`);
       }
     }
     if (i === 9) {
@@ -730,13 +747,13 @@ export function generateMonthlyTimeline(
       intensity = Math.max(intensity, 3);
       if (jupiter) {
         keyPlanet = 'Jupiter';
-        desc.push(`Jupiter\'s growth cycle reaches its harvest phase. The seeds you planted are showing results — or showing you that a different approach is needed. Course-correct now or double down.`);
+        desc.push(`What you planted earlier pays off now, or shows you the approach was wrong. Either way you double down or change course this month, so pick one.`);
       }
     }
     if (i === 11) {
       themes.push('Solar year closing');
       intensity = Math.max(intensity, 3);
-      desc.push(`The final month before your next solar return. Themes that defined this year are reaching resolution. What you carry forward and what you release here shapes the next twelve months.`);
+      desc.push(`This is your last month before the next year starts. Some storylines wrap up, and you decide what to carry into the next twelve months and what to drop.`);
     }
 
     // Moon emphasis (emotional peaks at months 1, 4, 7, 10)
@@ -745,7 +762,7 @@ export function generateMonthlyTimeline(
       themes.push(HOUSE_MONTH_THEMES[mh] || 'Emotional shifts');
       intensity = Math.max(intensity, 3);
       keyPlanet = 'Moon';
-      desc.push(`Emotional currents run high. Moon in the ${mh ? mh + ordinalSuffix(mh) : ''} house brings feelings about ${HOUSE_MONTH_THEMES[mh] || 'core life themes'} to the surface.`);
+      desc.push(`Feelings run high this month, and they center on ${lcFirst(HOUSE_MONTH_THEMES[mh] || 'what matters most to you right now')}.`);
     }
 
     // Venus peak (months 2, 5)
@@ -753,20 +770,20 @@ export function generateMonthlyTimeline(
       themes.push('Love and finances in focus');
       intensity = Math.max(intensity, 3);
       keyPlanet = 'Venus';
-      desc.push(`Venus themes peak. Relationships, attraction, and financial matters demand attention. What you value — and who values you — becomes unmistakably clear.`);
+      desc.push(`Love and money pull at you this month. It becomes clear what you value and who values you back, and the people who do not stand out.`);
     }
 
     // Hard aspect activation (month 3, 8)
     if (hasHardAspects && (i === 3 || i === 8)) {
       themes.push('Tension and growth');
       intensity = Math.max(intensity, 4);
-      desc.push(`Hard aspects in your solar return chart activate with force. The friction you feel is not random — it is the specific pressure point where this year\'s most important growth happens.`);
+      desc.push(`Friction shows up this month in one specific spot, and it is not random. Pushing through the awkward conversation or the standoff, instead of going around it, is where you make the year\'s biggest gain.`);
     }
 
     if (desc.length === 0) {
       const sunH = sun?.house || 1;
       themes.push(HOUSE_MONTH_THEMES[sunH] || 'Core year themes active');
-      desc.push(`The underlying themes of your ${sunH ? sunH + ordinalSuffix(sunH) : ''} house year continue their steady work. Progress may feel invisible, but the foundation is being built.`);
+      desc.push(`Your year keeps working on ${lcFirst(HOUSE_MONTH_THEMES[sunH] || 'the main storyline')} in the background. Progress feels invisible this month, and what you do now still carries weight later.`);
     }
 
     months.push({
@@ -781,11 +798,8 @@ export function generateMonthlyTimeline(
   return months;
 }
 
-function ordinalSuffix(n: number): string {
-  if (n === 1) return 'st';
-  if (n === 2) return 'nd';
-  if (n === 3) return 'rd';
-  return 'th';
+function lcFirst(t: string): string {
+  return t.charAt(0).toLowerCase() + t.slice(1);
 }
 
 // -- Multi-Year Pattern --------
@@ -798,21 +812,21 @@ export interface YearPattern {
 }
 
 const YEAR_FLOW_NARRATIVES: Record<string, string> = {
-  '12-1': 'Last year was a 12th house year — a period of endings, withdrawal, and deep inner processing. This year, you emerge. The 1st house year that follows a 12th house year is one of the most powerful identity rebirths in astrology. Everything you dissolved last year makes space for who you are becoming now.',
-  '1-2': 'Last year rewrote your identity. This year, you give that new identity material form — through money, possessions, and a completely recalibrated sense of your own worth.',
-  '4-5': 'Last year was about roots, home, and emotional foundations. This year, that inner stability releases you to play, create, and love with a freedom that was not available before.',
-  '5-6': 'Last year lit you up with creativity and romance. This year asks you to ground that fire — to build the daily habits, the health practices, and the work discipline that sustain what inspiration started.',
-  '6-7': 'Last year rebuilt your routines and your relationship with your own body. This year, the focus shifts to the person standing across from you — partnerships, commitments, and the mirror only another person can hold.',
-  '7-8': 'Last year was about partnership. This year deepens it — shared resources, intimacy, and the psychological depths that only true closeness can access.',
-  '9-10': 'Last year expanded your mind through travel, education, or philosophy. This year, that expanded perspective finds its public expression — career, reputation, and the legacy you are building.',
-  '10-11': 'Last year was about professional achievement. This year, the focus shifts to the community that your work serves — friends, groups, and the dreams that connect your personal success to something larger.',
-  '11-12': 'Last year connected you to community and future vision. This year, you withdraw — not from failure, but from fullness. The inner world needs processing time. What you integrate in silence this year will fuel the reinvention that comes next.',
+  '12-1': 'Last year you pulled back, closed things and spent a lot of time alone with your head. This year you come out the other side and people see it: a different look, a new decision, a version of you that stopped waiting for permission. What you let die last year makes room for it.',
+  '1-2': 'Last year you changed who you are. This year you pay for it and profit from it: new income, new spending habits and a different number in your head for what you are worth.',
+  '4-5': 'Last year went to home, family and getting steady on the inside. This year that steadiness lets you go out and play: date, make things and stop treating fun as something you have to earn.',
+  '5-6': 'Last year was romance, creativity and being seen. This year the bill comes in: the sleep, the exercise and the work schedule that keep the excitement from burning out.',
+  '6-7': 'Last year you rebuilt your routines and listened to your body. This year the person across from you takes over: a partner, a business partner or a hard conversation about what you owe each other.',
+  '7-8': 'Last year was about one partner or one commitment. This year it gets serious: shared money, harder conversations about trust and the kind of closeness you cannot fake.',
+  '9-10': 'Last year you traveled, studied or changed what you believe. This year other people see it: a promotion, a new role or a reputation built on what you now say out loud.',
+  '10-11': 'Last year was about work and status. This year you ask who it is for, and friends, groups and a bigger goal pull you away from the desk and toward people.',
+  '11-12': 'Last year you were out with people and making plans. This year you pull back, not because anything failed but because you are full. What you work through alone now decides what you build next.',
 };
 
 export function getYearPattern(lastYearSunHouse: number, thisYearSunHouse: number, nextYearSunHouse?: number): YearPattern {
   const key = `${lastYearSunHouse}-${thisYearSunHouse}`;
   const narrative = YEAR_FLOW_NARRATIVES[key] ||
-    `Last year was a ${lastYearSunHouse}${ordinalSuffix(lastYearSunHouse)} house year focused on ${HOUSE_MONTH_THEMES[lastYearSunHouse] || 'key themes'}. This year shifts to a ${thisYearSunHouse}${ordinalSuffix(thisYearSunHouse)} house year — the energy moves to ${HOUSE_MONTH_THEMES[thisYearSunHouse] || 'new territory'}. Notice how last year\'s work created the platform for what is emerging now.`;
+    `Last year was about ${lcFirst(HOUSE_MONTH_THEMES[lastYearSunHouse] || 'your main storyline')}. This year the weight moves to ${lcFirst(HOUSE_MONTH_THEMES[thisYearSunHouse] || 'new ground')}, and what you built last year is what you stand on while you deal with it.`;
 
   return {
     lastYear: { house: lastYearSunHouse, theme: YEAR_THEME_HEADLINES[lastYearSunHouse]?.headline || '' },

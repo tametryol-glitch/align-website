@@ -192,7 +192,7 @@ export function getInterpretation(date: Date): string {
   const minuteEssence = minuteMeaning.essence;
   const pulseEssence = pulseMeaning.essence;
 
-  return `The day carries ${dayEssence}. This hour channels ${hourEssence}. The current minute refines through ${minuteEssence}, while the pulse vibrates with ${pulseEssence}. Together, this moment favors ${hourMeaning.keywords.split(', ').slice(0, 2).join(' and ')} guided by ${minuteMeaning.keywords.split(', ').slice(0, 2).join(' and ')}.`;
+  return `All day you are pulled toward ${dayEssence}. This hour it is ${hourEssence}. For the next few minutes it comes out as ${minuteEssence}, and the pulse nudges you toward ${pulseEssence}. Spend the hour on ${hourMeaning.keywords.split(', ').slice(0, 2).join(' and ')}, and do it with ${minuteMeaning.keywords.split(', ').slice(0, 2).join(' and ')} in mind.`;
 }
 
 /**

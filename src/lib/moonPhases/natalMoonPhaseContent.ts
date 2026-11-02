@@ -37,295 +37,295 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
   new: {
     headline: 'The Instinctive Beginner',
     summary:
-      'Born when the Moon was new — invisible, merged with the Sun — you are a subjective, spontaneous, instinct-driven soul. Life for you starts from the inside out. You are not here to inherit a blueprint. You are here to begin something that does not yet exist.',
+      'You were born at the New Moon, when the Moon sits hidden in the Sun\'s glare, and it shows in how you live. You decide from the gut, you start before you can explain why, and you would rather build something nobody has seen than polish something everyone already likes.',
     characterLong:
-      'You move from a place most people cannot see. Your choices can look impulsive or half-formed from the outside, but they come from a deep, almost animal certainty — a knowing that this is the direction, even if you cannot yet articulate why.\n\nBecause you were born at the dark of the moon, the external world reflects very little back to you. You have to trust your own signal. This can make you seem self-absorbed, when really you are tuned to a frequency only you can hear.\n\nYou carry raw potential. What you start may not fully bloom in your lifetime — but the very act of starting is your purpose.',
+      'You move from a place most people cannot see. From the outside your choices look impulsive or half-formed. From the inside it is a flat certainty that this is the direction, and you could not defend it in a meeting if you tried.\n\nBecause so little gets reflected back to you, you learn early to trust your own signal. People read that as self-absorption. You are just the one in the room who stopped waiting for a sign.\n\nWhat you start may not finish blooming in your lifetime. You keep starting anyway, because starting is the part you are actually good at.',
     emotionalRhythm:
-      'Your emotions come in waves of pure impulse. You feel strongly in the moment, then the feeling releases and you move on. You are not designed to dwell. What other people call "getting over things quickly" is really your emotional metabolism doing what it is built to do.',
+      'Your feelings hit hard, run their course and leave. You cry on Tuesday and are planning a trip by Thursday. People who need a feeling to be processed together for a week find that cold. For you it is simply how fast your system clears.',
     strengths: [
-      'Fierce originality — you see beginnings everywhere',
-      'Pure instinct that bypasses overthinking',
-      'Ability to launch into something new without external permission',
-      'Magnetic personal energy when aligned',
+      'You launch without waiting for permission, a budget or a second opinion',
+      'You hear your gut before you hear the doubts',
+      'You see where something new could go while everyone else is still reading the manual',
+      'When you are doing what is yours to do, people lean toward you without knowing why',
     ],
     shadow: [
-      'Acting before understanding the consequences',
-      'Losing interest once the novelty fades',
-      'Over-identifying with whatever you just started',
-      'Difficulty building on what others have laid down',
+      'You sign, book and quit before you have read the consequences',
+      'You lose interest the week the novelty wears off',
+      'You become whatever you just started and take every criticism of it personally',
+      'You struggle to build on top of what someone else laid down',
     ],
     beginnings:
-      'Beginnings are your natural state. You start things with less hesitation than almost anyone. The risk is starting so many that none reach completion — the art is learning to commit to one seed through its whole cycle.',
+      'Beginning is the easy part for you. You will have the logo, the website and the group chat by the weekend. The cost shows up in month three, when five half-built projects are waiting and none of them has your full attention. Pick one and give it a whole season.',
     pressure:
-      'Under pressure you tend to act first and process later. This is your superpower in fast-moving situations and your Achilles heel in nuanced ones. Learn to insert a breath between impulse and action for decisions that affect other people.',
+      'In a crisis you move first and think afterward. That makes you excellent in an emergency and a problem in a negotiation, where the other person is still working out what they want. Before any decision that touches other people, take one breath and ask who else this lands on.',
     closure:
-      'Closure can feel foreign. You are built for forward motion. Endings work best when you name them out loud — write the last chapter down, say goodbye to the place, make the farewell real — so the part of you that is already sprinting ahead can leave the old chapter fully behind.',
+      'Endings do not register for you until you do something physical about them. Write the last page, pack the box, say the goodbye out loud. Without a ritual the part of you already sprinting ahead leaves the old chapter standing open behind you.',
     loveWorkInner:
-      'In love, you fall fast and deep on pure magnetism. In work, you thrive as a founder, starter, or first-mover — not as someone refining an existing system. Your inner life is vivid, private, and largely non-verbal: you know things before you can explain them.',
+      'In love you fall fast and on instinct, then wonder why the other person needs three dates to decide. At work you are a founder or a first mover, and you get restless the day the job becomes maintenance. Inside, you know things long before you can say them, and you rarely talk about it.',
     growth:
-      'Your growth edge is finishing. Not every seed you plant is meant to flower, but the ones that resonate deserve your whole arc of care. Pick a few and see them through. The satisfaction of completion will change how you live.',
+      'Your edge is finishing. Not every seed deserves a full season, but the one that still pulls at you in month four does. Choose it, tell someone it is yours, and see it through. The first time you finish something big changes how you spend the next ten years.',
   },
 
   waxing_crescent: {
     headline: 'The Emerging Fighter',
     summary:
-      'You were born when the Moon had just emerged from the darkness — a thin sliver pushing against the memory of the past. You came into life already fighting for your right to exist, and that quiet, persistent forward motion has shaped every corner of you.',
+      'You were born as the Moon first pulled away from the Sun, a thin sliver after the dark, and you have felt like you were pushing off something since childhood. You work for your ground rather than inheriting it, and the effort has made you steadier than you think.',
     characterLong:
-      'There is a faint friction at your core — a sense that you have to earn your ground. You feel the pull of the past (family expectations, old patterns, inherited weight) but also the pull of what you are becoming, and these two pulls do not always agree.\n\nPeople born at this phase often describe feeling like an outsider inside their own origin story. You are building something your ancestors did not imagine. That takes courage, and it takes grit.\n\nYour growth happens through struggle. Not drama for drama\'s sake — just the quiet effort of pushing through resistance until you are through it.',
+      'There is a low, constant friction in you, a sense that nothing is given and everything gets earned. You feel the weight of where you came from, family expectations and old habits, and at the same time a pull toward something nobody around you has done. Those two pulls rarely agree.\n\nYou probably felt like a guest in your own family story. You are building something your parents or grandparents could not have pictured, and that takes more stubbornness than people see.\n\nYou grow through resistance. Not drama, just the daily work of leaning on a door until it opens.',
     emotionalRhythm:
-      'You do not release emotions easily. You tend to hold them inside your body while you decide what to do about them. This makes you resilient but also prone to tension, especially in the jaw, shoulders, and chest. Movement helps; so does giving yourself permission to feel without acting.',
+      'You do not let feelings out quickly. You carry them in your body while you decide what to do, which shows up as a clenched jaw, tight shoulders and a chest that will not drop. A walk or a workout moves it. So does letting yourself feel something for an evening without acting on it.',
     strengths: [
-      'Persistence through resistance — you keep going when others quit',
-      'Clear sense of what you are moving away from',
-      'Growing faith in your own direction',
-      'Quiet courage that builds over time',
+      'You keep going in the month everyone else quits',
+      'You know exactly what you are leaving behind, even before you know where you are headed',
+      'Your confidence in your own direction grows every year, though you rarely notice',
+      'Your courage is quiet and cumulative: nobody sees it until it has already won',
     ],
     shadow: [
-      'Getting stuck in "pushing against" instead of "moving toward"',
-      'Internalizing resistance as a personal flaw',
-      'Underestimating how much you have grown',
-      'Leaving old relationships or environments too late',
+      'You get so used to pushing against something that you forget to move toward anything',
+      'You treat every obstacle as proof that something is wrong with you',
+      'You miss how far you have already come',
+      'You stay in jobs and relationships a year past the point you knew',
     ],
     beginnings:
-      'You start slowly and uncertainly, but you start. The key is to notice when your hesitation is wisdom vs when it is fear dressed up as wisdom. Momentum is medicine for you — small daily actions compound.',
+      'You start slowly and unsure, and you start anyway. The question to ask each time is whether you are hesitating because you have seen a real problem or because you are scared. Ten minutes a day beats a dramatic overhaul for you.',
     pressure:
-      'Under pressure you tend to grit your teeth and push harder. This is admirable and also exhausting. The lesson is that sometimes stepping sideways is faster than powering through.',
+      'Under pressure you clench and push harder. It works, and it leaves you wrecked on Friday. Often the faster route is sideways: ask for help, change the plan, shorten the deadline.',
     closure:
-      'Endings are complicated because some part of you fears returning to the dark of the New Moon. Remember: release is not regression. What you let go of does not pull you backward — it frees you to keep rising.',
+      'You hesitate at endings because leaving feels like sliding back into the dark you came from. It is not a slide back. Whatever you put down is weight off the climb.',
     loveWorkInner:
-      'In love, you test carefully before committing, then commit with stubborn loyalty. In work, you thrive where effort is visible — you do not trust overnight success. Your inner life is full of quiet determination and subtle self-doubt in equal measure.',
+      'In love you test someone for a long time, then stay with stubborn loyalty. At work you trust visible effort and distrust anyone whose success came overnight. Inside, determination and self-doubt run side by side and each makes the other louder.',
     growth:
-      'Your growth edge is learning to trust that the resistance itself is a sign you are headed somewhere real. Ease is not always a red flag, and struggle is not always a badge of honor. Learn which is which.',
+      'Your edge is noticing when the struggle means you are close and when it means you are on the wrong road. Ease is not a trick, and exhaustion is not a medal. Ask yourself every few months which one you are in.',
   },
 
   first_quarter: {
     headline: 'The Decisive Builder',
     summary:
-      'Born at First Quarter — Moon and Sun squared by 90° — you came in wired for action. Your life is built around moments of breakthrough, the kind that require you to push through a wall you did not create. You are here to make things happen, not to wait for permission.',
+      'You were born at First Quarter, with the Moon a quarter of the way around from the Sun, and your life keeps handing you walls to go through. You act, you decide, and you get impatient with anyone who calls a pause careful.',
     characterLong:
-      'You feel the pressure of "there is something I am supposed to do" more keenly than most people. It is not abstract — it is visceral. You can feel the shape of the thing that wants to exist, and you can feel the resistance of what is in the way.\n\nPeople born at this phase are often confrontational in the best sense: they do not flinch from hard conversations, hard decisions, or hard work. You may come across as intense to softer-tempered folks, but the intensity is the engine.\n\nYour whole life will contain repeating "crisis of action" moments — decisive forks where you must act boldly. These are not failures; they are your instrument.',
+      'You feel the pressure of there is something I am supposed to do more sharply than most people. It is physical for you: a tight stomach on a Sunday night, a thing you know has to be built and cannot yet be seen.\n\nYou are confrontational in the useful sense. You raise the hard topic at the dinner, say the number in the meeting and tell the contractor it is not finished. Softer people sometimes flinch at you, and you are often the reason the thing finally got done.\n\nYour life repeats one scene: a fork where you have to choose loudly, in public, with consequences. You will keep ending up there. It is where you work best.',
     emotionalRhythm:
-      'Your emotions come in sharp pulses. You feel things hit fast, you decide what to do, you act. You do not ruminate well — prolonged indecision drains you far more than it drains others. When you are stuck, move your body and your emotions will re-sort themselves.',
+      'Your feelings arrive as sharp hits. Something stings, you decide, you move. Staying in limbo drains you faster than it drains anyone else, and a week of maybe leaves you irritable and sleepless. When you feel stuck, use your body first: lift, run, clean the garage. The feeling sorts itself out afterward.',
     strengths: [
-      'Decisive action under pressure',
-      'Willingness to break through stuck situations',
-      'Honest directness that cuts through fluff',
-      'Ability to rally others toward a goal',
+      'You decide while everyone else is still gathering opinions',
+      'You push through the stuck situation nobody else will touch',
+      'You say the blunt thing that clears the room of fog',
+      'People follow you into a goal because you plainly intend to reach it',
     ],
     shadow: [
-      'Impatience with slower-paced people',
-      'Creating conflict to generate momentum',
-      'Pushing past nuance in the name of progress',
-      'Burning out from relentless forward gear',
+      'You get impatient with slower people and show it on your face',
+      'You start a fight to get a project moving',
+      'You steamroll the detail that mattered because speed felt like progress',
+      'You run on full for months and then crash with no warning',
     ],
     beginnings:
-      'You start with force. This is usually a strength, occasionally a liability. When a beginning needs finesse more than momentum, slow down deliberately — you have the drive either way.',
+      'You start with force, and force opens most doors. It also breaks a few that needed a gentle push. When a beginning is delicate, such as a new hire, a new friendship or a reconciliation, slow your voice and your pace on purpose. You will still arrive.',
     pressure:
-      'Pressure is your natural medium. You often perform BEST in crisis. The danger is manufacturing pressure when life gets quiet, because you mistake ease for stagnation.',
+      'Pressure is where you work best, and you know it. The risk is that when life goes quiet you create a crisis to feel normal: the argument, the sudden move, the project nobody asked for. A calm month is not a failing one.',
     closure:
-      'Closure is usually a decision, not a fade-out. You tend to end chapters with a clear line — "we are done here" — and you rarely look back. The challenge is making sure the ending is wise, not just decisive.',
+      'You end things with a decision and a clean line. We are done here, and you rarely look back. The thing to check is whether the ending is wise or just fast. Give a big one twenty-four hours before you announce it.',
     loveWorkInner:
-      'In love, you are ardent, sometimes combustible — chemistry matters, but so does your partner\'s capacity to meet your directness. In work, you excel at breaking deadlocks and driving projects over the line. Your inner life has a quiet intensity: you always know what you want to do next.',
+      'In love you are ardent and sometimes combustible. Chemistry gets you in, but only a partner who can take your bluntness without going quiet keeps you. At work you break deadlocks and carry projects over the line. Inside, you always know the next move, even on days you wish you did not.',
     growth:
-      'Your growth edge is letting outcomes breathe. Not every situation is a wall to break through. Some are gardens to tend. Learn to tell which is which, and save your force for the moments that need it.',
+      'Your edge is letting some things grow on their own clock. Not every problem is a wall. Some are gardens, and force kills a garden. Spend your power on the two or three things a year that truly need it.',
   },
 
   waxing_gibbous: {
     headline: 'The Refiner',
     summary:
-      'Born in the Waxing Gibbous phase — past First Quarter but before Full — you came in with a refiner\'s mind. You polish, perfect, analyze, and improve. You are the person who finds the flaw others miss and cares enough to fix it.',
+      'You were born with the Moon swelling toward full, almost there but not yet, and you live in that stretch. You are the one who notices the flaw in the deck, the typo in the contract and the half-inch the shelf is off, and you care enough to fix it.',
     characterLong:
-      'You carry an internal critic with extraordinary resolution. Done well, this makes you magnificent at craft, execution, and quality. Done poorly, it makes you hard to live with — most of all for yourself.\n\nPeople born at this phase are looking toward the coming fullness. You sense that something important is almost ready to arrive, and you want to make sure it arrives in the best possible form. That makes you a perfectionist, yes — but one who serves something larger than ego.\n\nYou are not here to start things or to finish them. You are here to make them better.',
+      'You carry an inner editor with the resolution of a microscope. At its best it makes your work excellent. At its worst it makes you hard to live with, and hardest on yourself.\n\nYou feel that something good is nearly ready, and you will not let it go out half-finished. That is why you rework the email four times and redo the room before guests arrive. It is perfectionism, but it serves the thing itself, not your pride.\n\nYou are rarely the one who starts and rarely the one who finishes. You are the one who makes it better in between.',
     emotionalRhythm:
-      'Your emotions often arrive as analysis. You feel things and immediately start thinking about what to do about them. This is protective — it gives you control — but it can also keep you from just feeling. Schedule time where analysis is off the table and your feelings get to be what they are.',
+      'You feel something and your mind immediately starts working on it. What do I do, what went wrong, what would fix it. That keeps you in control and it also keeps you from simply feeling. Set aside an hour with no fixing and no plan, and let the feeling be as big as it is.',
     strengths: [
-      'Exceptional attention to detail',
-      'Quality-first instinct — you care deeply about how things are made',
-      'Capacity to refine and improve almost anything',
-      'Honest feedback without cruelty',
+      'You catch the detail that would have cost someone money later',
+      'You will not ship sloppy work, and people trust your name on it',
+      'You can take almost anything half-built and make it excellent',
+      'You give honest feedback that stings only a little and helps a lot',
     ],
     shadow: [
-      'Perfectionism that blocks release',
-      'Over-analyzing emotional situations into paralysis',
-      'Criticizing the people you love most',
-      'Anxiety about whether something is ready',
+      'Your standards stop you from releasing anything',
+      'You analyze a feeling until it turns into paralysis',
+      'You criticize the people you love for things they have no plan to change',
+      'You lie awake asking whether it is ready yet',
     ],
     beginnings:
-      'You rarely start from zero. You prefer to take something half-formed and make it excellent. When you DO start fresh, give yourself explicit permission to produce a rough first pass — you can refine it in your next gear.',
+      'You prefer to inherit something half-formed and make it good. When you do have to begin from nothing, decide in advance that the first pass will be rough and that rough is allowed. You can sharpen it tomorrow.',
     pressure:
-      'Under pressure you double down on detail. Sometimes this is the exact right move. Sometimes it is a dodge — polishing the trim while the house is on fire. Know the difference.',
+      'Under pressure you double down on detail. Sometimes that is exactly right. Sometimes you are straightening the trim while the kitchen is on fire. Ask yourself which job is actually burning.',
     closure:
-      'Endings are hard because you almost always feel you could have made it better. Let yourself finish "good enough" sometimes. Perfection postponed becomes perfection abandoned.',
+      'Endings are hard because you can always see one more thing you could have done. Let a project close at good enough now and then. The perfect version you never release helps no one.',
     loveWorkInner:
-      'In love, you are thoughtful, attentive, sometimes fussy — you notice the small things and that noticing is how you express care. In work, you are the person who ships quality. Your inner life is rich, intricate, and constantly humming with observation.',
+      'In love you notice everything: how they take their coffee, the mood they hide, the one remark they made in March. That attention is how you say I care, and it can tip into fussing. At work you are the person whose quality holds. Inside, your head is a busy workshop that never fully shuts.',
     growth:
-      'Your growth edge is learning to release. Your care for quality is a gift; the mistake is believing nothing is ever ready. At some point, shipping it IS the improvement.',
+      'Your edge is releasing. Your standards are a gift, until you decide nothing has ever been ready. At some point sending it is the improvement.',
   },
 
   full: {
     headline: 'The Illuminator',
     summary:
-      'Born at Full Moon — Sun and Moon perfectly opposite — you came into life already in dialogue with the "other." Relationships, partnerships, public visibility, and the tension between self and other are the core axis of your life. You are here to meet, to mirror, to reveal.',
+      'You were born at the Full Moon, with the Sun and Moon on opposite sides of the sky, and your life runs through other people. Partners, audiences, rivals and the gap between what you want and what they want are where you learn who you are.',
     characterLong:
-      'You cannot live fully in isolation. Something in you comes alive in the presence of other people, and something in them is revealed in your presence. This makes you charismatic, relationally gifted, and sometimes emotionally exposed in ways you did not sign up for.\n\nPeople born at Full Moon tend to have a clarity about them — an illumination. They see things others avoid, and they say the quiet part out loud. Not for drama, but because hiding feels unnatural to them.\n\nYour growth arc involves learning to honor the other WITHOUT losing yourself. The Full Moon polarity can dissolve you if you let it.',
+      'You do not do well alone for long. Something in you switches on with another person in the room, and something in them comes out around you. That makes you magnetic and also exposed in ways you did not agree to.\n\nYou see what others avoid and say it before the pause gets awkward. Hiding feels like a lie to you, so you light it up, and some people thank you while others never forgive it.\n\nThe work of your life is honoring the other person without vanishing into them. Lean too far toward the other side and you wake up in a relationship that has your name on it and someone else\'s preferences in it.',
     emotionalRhythm:
-      'Your emotions tend to crest high and then reveal something. You feel a wave building, it breaks in a conversation or a moment, and afterwards you have more clarity than before. You are not designed to hold feelings inside — they want to be expressed.',
+      'Your feelings build toward a peak and break in a conversation. You say it, cry it or fight it, and afterward you can see clearly. Holding a feeling in until the weekend does not work for you. It comes out sideways at the wrong person.',
     strengths: [
-      'Natural charisma and emotional presence',
-      'Gift for partnership, collaboration, and public work',
-      'Ability to see both sides of any situation',
-      'Capacity to illuminate what others keep hidden',
+      'People feel seen when they are with you',
+      'You build real partnerships and keep them alive',
+      'You hold both sides of an argument at the same time',
+      'You name what everyone has been quietly avoiding',
     ],
     shadow: [
-      'Losing yourself inside a strong partner',
-      'Dramatizing tension instead of resolving it',
-      'Over-exposing at the wrong moments',
-      'Mirroring other people\'s moods until you forget yours',
+      'You disappear inside a strong partner\'s plans',
+      'You turn tension into theater instead of solving it',
+      'You say too much, to the wrong person, at the wrong table',
+      'You absorb other people\'s moods until you cannot find your own',
     ],
     beginnings:
-      'You start best in relationship. Pure solo ventures feel incomplete to you — you want a witness, a collaborator, an audience. Seek partnership that calls you forward without absorbing you.',
+      'You begin best with someone beside you. A solo start feels unreal until a person has seen it. Look for a partner who pulls you forward and leaves your decisions yours.',
     pressure:
-      'Under pressure, you often bring the tension INTO THE OPEN. This is courageous and sometimes frightening to the people around you. Done well, it defuses what was silently building. Done poorly, it escalates what could have been managed quietly.',
+      'Under pressure you drag the tension into the open. It can be brave and it can scare the people around you. Said at the right moment it ends a month of silent resentment. Said at the wrong one it turns a small thing into a scene.',
     closure:
-      'Endings for you are revelations. Something comes to light right before the chapter closes. Trust that what is revealed was meant to be seen — it is not failure, it is illumination.',
+      'Your endings come with a reveal. Something is finally said or seen, and then the chapter closes. What came out was always there. It is not the cause of the ending, only the moment you saw it.',
     loveWorkInner:
-      'In love, you are vivid, present, sometimes overwhelming. You need a partner who can match your light without competing with it. In work, you thrive in public-facing or partnership roles. Your inner life is surprisingly private — the people who see all of you are a small, chosen few.',
+      'In love you are vivid, fully present and sometimes too much, and you need someone who can match your light without competing with it. At work you do best with people and partnerships, on stage or in a room. Inside, you are much more private than you look. The few who see all of you have earned it.',
     growth:
-      'Your growth edge is learning to be fully yourself in the presence of others — not diminished, not inflated. The balanced Full Moon holds its own light while meeting someone else\'s.',
+      'Your edge is being fully yourself in front of someone else, neither shrunk nor inflated. You can keep your own light on and still see theirs.',
   },
 
   disseminating: {
     headline: 'The Teacher',
     summary:
-      'Born in the Disseminating phase — past Full Moon, the light is now waning but still bright — you came in to share what you have learned. You are a natural communicator, teacher, and distributor of wisdom. Your life purpose involves passing something on.',
+      'You were born just after the Full Moon, with the light still bright but starting to shrink, and you carry what you learn out to other people. You cannot live a thing without wanting to explain it, and people usually come back for the explanation.',
     characterLong:
-      'You feel the pull to make meaning out of experience. You cannot just live things; you have to articulate them, explain them, weave them into a story that other people can use. This is not ego — it is your native way of processing reality.\n\nPeople born at this phase often become writers, teachers, communicators, or mentors. They are the friend who can explain anything. They are the person whose advice actually lands because they have lived it.\n\nYou have something to say, and people want to hear it — but only if you have done the inner work first. Disseminating without substance is noise. Your power is in the substance.',
+      'You turn experience into meaning almost automatically. A breakup becomes a talk you give your friend, a job becomes a story with a lesson, and you only feel it is finished once you have told it to someone.\n\nYou end up as the writer, the mentor, the friend everyone calls. Your advice lands because you have actually been there, and that is also why people forgive you for the speech.\n\nYou have something to say, and people will listen, but only if you did the private work first. Talking without having lived it is just noise, and you can hear the difference.',
     emotionalRhythm:
-      'Your emotions come in waves that want to be expressed — usually in words. You understand your own feelings by writing, talking, or teaching them. Keep a journal or a trusted listener close.',
+      'Your feelings arrive and want words. You understand yourself by writing it out, talking it through or explaining it to someone patient. Without a journal or a listener, the feeling stays knotted. Keep one of them within reach.',
     strengths: [
-      'Natural teaching and communication gifts',
-      'Ability to extract meaning from experience',
-      'Warm, generous sharing of what you know',
-      'Storytelling that moves people to action',
+      'You explain hard things in a way that makes people feel smart',
+      'You pull a lesson out of experience while it is still warm',
+      'You share what you know without hoarding it',
+      'Your stories move people to change something on Monday',
     ],
     shadow: [
-      'Teaching when you should be listening',
-      'Oversharing before you have integrated',
-      'Getting attached to your own narrative',
-      'Avoiding the harder inner work by staying in teacher mode',
+      'You teach when the other person only needed you to listen',
+      'You share before you have understood it yourself',
+      'You grow attached to the version of your story that makes you the wise one',
+      'You hide in advice-giving to avoid your own unfinished work',
     ],
     beginnings:
-      'You start by telling someone about it. The act of articulating what you are about to do crystallizes it for you. Do not start in silence; start in conversation.',
+      'You begin by telling someone. Once you have said it aloud to a friend, it is real. Do not start in silence. Start in a conversation, a post or a voice note, and let the telling make the commitment.',
     pressure:
-      'Under pressure, you often need to process out loud. Phone a friend, send the voice note, write the post. Locked-in silence is hard on you and usually counterproductive.',
+      'Under pressure you have to talk it out. Call a friend, send the voice note, write the draft. Sitting alone with it makes you worse, not calmer.',
     closure:
-      'Endings come with a story. You want to understand what the chapter meant before you close it. Give yourself time to extract the lesson — that extraction IS the closure.',
+      'Endings come with a story, and you need the story before you can let go. Give yourself time to work out what the chapter taught. That work is the closing.',
     loveWorkInner:
-      'In love, you communicate often and with warmth — silences feel heavy to you. In work, you thrive in teaching, writing, content, mentoring, consulting. Your inner life is rich with observation and a constant gentle narration.',
+      'In love you talk, check in and fill silences, and a quiet partner makes you anxious. At work you do well in teaching, writing, content, mentoring and consulting. Inside, you narrate your own life as it happens, quietly, all day.',
     growth:
-      'Your growth edge is listening more deeply before teaching. The best teachers have usually been the best students, and the gap between you talking and you learning is where your real growth lives.',
+      'Your edge is listening before you teach. The best teachers stay students, and the gap between you talking and you learning is where you will grow next.',
   },
 
   last_quarter: {
     headline: 'The Reorienter',
     summary:
-      'Born at Last Quarter — Sun and Moon squared by 270° — you came in to dismantle and reorient. Your life contains repeated moments where old structures must come down so new ones can rise. You are built to question, deconstruct, and release what no longer serves.',
+      'You were born at Last Quarter, with the Moon three quarters of the way through its cycle and the light halving, and you are the person who knows when something is over. You question, take apart and walk away from what has stopped working, usually before anyone else admits it.',
     characterLong:
-      'You carry a quiet sense that something must change, even when everything looks fine. This is not pessimism — it is a built-in sensor for what has outlived its usefulness. You spot expired ideas, relationships, systems, beliefs.\n\nPeople born at this phase are often the ones who say the thing no one wants to say. They are the first to leave the party, the first to quit the job, the first to walk away from the belief system they were handed. They lead by showing what is NO LONGER true.\n\nThis makes you somewhat misunderstood in conventional contexts. Your gift is only visible when people realize — often years later — that you were right.',
+      'You carry a quiet sense that something has to change, even when everything looks fine. It is not pessimism. You can smell an expired idea, an expired job, an expired friendship, and you cannot unsmell it.\n\nYou are the one who says the thing nobody wanted said. You leave the party first, quit the job first and drop the beliefs you were handed. Your example shows people what is no longer true.\n\nYou will often be misunderstood in the moment. The proof usually arrives years later, when the people who argued with you quietly admit you were right.',
     emotionalRhythm:
-      'Your emotions often arrive with a certainty you did not ask for. "I am done with this" appears fully formed. You are rarely gradual. Trust these decisions even when they look abrupt to others — they are not abrupt to you; they have been brewing.',
+      'Certainty arrives whole. I am done with this shows up already finished, with no gradual build you can point to. Trust it, even though everyone else calls it sudden. It has been forming for months where you could not hear it.',
     strengths: [
-      'Clear sense of what needs to end',
-      'Courage to dismantle what no longer serves',
-      'Honesty that clears space for others\' honesty',
-      'Ability to live without external validation',
+      'You know what needs to end before the meeting starts',
+      'You take apart what no longer works instead of nursing it',
+      'Your honesty gives other people room to be honest',
+      'You can live without applause',
     ],
     shadow: [
-      'Burning bridges you might have wanted later',
-      'Mistaking contrarianism for truth',
-      'Ending things before they have fully taught you',
-      'Loneliness from being the only one who sees it',
+      'You burn a bridge you later wished you had kept',
+      'You confuse disagreeing with being right',
+      'You end things before they have taught you what they came to teach',
+      'You are lonely because you saw it first and nobody saw it with you',
     ],
     beginnings:
-      'You often start by ending something else first. Clear the space. Your clean slate is not philosophical — it is literal. A new beginning lands deeper when the old story has been properly released.',
+      'You usually begin by ending something. Clear the desk, close the account, leave the group. The clean slate is literal for you, and a new start takes root better when the old one has been properly shut.',
     pressure:
-      'Under pressure, you tend to make sudden clear-cut decisions. This is usually wise, sometimes premature. Build a 48-hour delay for major endings — not because your instinct is wrong, but because the follow-through is easier when you are not acting from heat.',
+      'Under pressure you make a sudden, clear-cut call. Often it is right and sometimes it is hot. Put a forty-eight hour wait on any major ending. Your instinct is probably fine, and the follow-through goes better when you are not furious.',
     closure:
-      'Endings are your medium. You do them cleanly, often without fanfare. The lesson is letting yourself grieve even things you chose to end — not everyone knows how to mourn their own decisions.',
+      'Endings are your home ground, and you do them cleanly and without a speech. The part you skip is grief. You can mourn something you chose to end. Nobody taught you that, and it is allowed.',
     loveWorkInner:
-      'In love, you need a partner who can handle honesty, including hard truths delivered quietly. In work, you thrive in roles that require questioning the status quo — consultants, critics, strategists, reformers. Your inner life is deeply reflective, sometimes melancholy, always honest.',
+      'In love you need someone who can hear a hard truth said quietly and not collapse. At work you do well wherever questioning the old way is the job: consultant, critic, strategist, reformer. Inside you are reflective, sometimes melancholy and always honest with yourself.',
     growth:
-      'Your growth edge is making sure you are dismantling the RIGHT things. Sometimes what you want to tear down just needs repair. Ask yourself: am I ending this because it is truly done, or because ending is familiar?',
+      'Your edge is checking that you are tearing down the right thing. Some of what you want to demolish only needs repair. Ask whether this is truly finished or whether leaving is just the move you know best.',
   },
 
   balsamic: {
     headline: 'The Old Soul',
     summary:
-      'Born at Balsamic Moon — the last thin crescent before darkness, the final breath of the lunar cycle — you came in carrying the wisdom of what is passing, and the seeds of what comes next. You are a transitional being, and the most genuinely old-soul phase in the lunar cycle.',
+      'You were born in the last thin crescent before the dark, the final days of the lunar cycle, and you have felt older than your age since you were small. You sense endings early and carry what is passing into what comes next.',
     characterLong:
-      'You often feel slightly out of step with the world. Not behind, not ahead — in a different rhythm entirely. You sense the end of an era before others do, and you carry the quiet grief of things other people are still celebrating.\n\nPeople born at this phase are often described as "old souls" even in childhood. You had adult-weight thoughts at young ages. You felt things most children could not hold. This is not wrong; it is the phase signature.\n\nYour life has a mystical tilt. You are serving something larger than one lifetime — karma, legacy, ancestral threads, collective shift. Your purpose unfolds on a timeline that is not always personal.',
+      'You often feel slightly out of step with everyone else. You are not behind or ahead, just on a different clock. You sense the end of an era before the crowd does, and you grieve things other people are still celebrating.\n\nPeople probably called you an old soul at eight. You had grown-up thoughts at a kitchen table, and you felt things the other kids had no place to put. It is not a defect. It comes with the timing of your birth.\n\nYour life has a mystic slant. You tend to feel you are serving something longer than one lifetime: a family line, a legacy, a shift larger than you. Your purpose runs on a timeline that is not always about you.',
     emotionalRhythm:
-      'Your emotions run deep and slow, like underground rivers. You rarely react in the moment; you process over days, weeks, sometimes years. Give yourself the solitude this rhythm requires — what looks like withdrawal is you doing the work.',
+      'Your feelings run deep and slow, like water under a floor. You rarely react in the moment. You work through it over days, sometimes years. When you go quiet you are not withdrawing, you are working. Give yourself the solitude it takes.',
     strengths: [
-      'Wisdom beyond your years',
-      'Sensitivity to what is ending or shifting',
-      'Mystical, intuitive, often psychic perception',
-      'Ability to hold paradox and complexity',
+      'You carry a patience and perspective that people twice your age lack',
+      'You feel the shift before it is announced',
+      'Your intuition is strong enough that you have stopped explaining it',
+      'You can stay in a complicated situation without needing it to resolve',
     ],
     shadow: [
-      'Chronic weariness you cannot fully explain',
-      'Giving up on this life because the next one calls louder',
-      'Isolation from people who move at faster rhythms',
-      'Avoiding responsibility by claiming "this is not my lifetime for that"',
+      'A tiredness you cannot explain to anyone',
+      'Looking past this life toward the next one',
+      'Pulling away from people who move faster than you',
+      'Skipping responsibilities by telling yourself this is not the lifetime for that',
     ],
     beginnings:
-      'You start slowly and often in secret. Public beginnings feel invasive. Let your new chapters germinate in the dark for a while before you announce them.',
+      'You start slowly and often in secret. Announcing too soon feels like exposure. Let a new chapter grow in private for a few months before anyone hears about it.',
     pressure:
-      'Under pressure, you go inward. This is protective and correct for your nature. The risk is staying so inward that the outer situation deteriorates while you process. Balance inner work with small outward actions.',
+      'Under pressure you go inward, which suits you. The risk is staying in your head so long that the outside situation falls apart while you think. Pair the inner work with one small action each day.',
     closure:
-      'Endings are almost comfortable for you — the cycle is your home. The work is not to END well; it is to begin again from the ashes with any real conviction. The cycle turns, and it needs you on the new side of it too.',
+      'Endings feel almost comfortable, because the cycle is where you live. Your difficulty is the other direction: starting again, and meaning it, from the ashes. The cycle needs you on the new side too.',
     loveWorkInner:
-      'In love, you need depth, slowness, and meaning. Shallow connections exhaust you. In work, you thrive in roles involving transitions, endings, legacy, spiritual work, or service. Your inner life is profound, private, and often mystical.',
+      'In love you need depth and time, and small talk wears you out. At work you suit transitions, endings, legacy, spiritual work and service. Inside, you are private, profound and frequently somewhere else.',
     growth:
-      'Your growth edge is FULLY ARRIVING. Not everything is a transition; some parts of this life are meant to be your actual life. Practice presence — this incarnation counts too.',
+      'Your edge is actually arriving. Not everything is a transition. Parts of this life are simply your life. Be here for dinner, for the people, for the ordinary Tuesday. This lifetime counts.',
   },
 };
 
-// ── Sign overlays -- one sentence each, injected into characterLong ──
+// ── Sign overlays: one sentence each, injected into characterLong ──
 
 const SIGN_OVERLAYS: Record<string, string> = {
-  Aries: 'Your Moon in Aries gives this phase a quick, courageous, sometimes combative emotional edge — you do not ponder for long.',
-  Taurus: 'Your Moon in Taurus grounds this phase in the body — you process emotion through the senses, slowly, and you need comfort to feel safe.',
-  Gemini: 'Your Moon in Gemini turns emotion into words — you understand feelings by talking about them, often to multiple people.',
-  Cancer: 'Your Moon in Cancer makes this phase deeply tender and protective — you feel the emotional temperature of any room and carry it home with you.',
-  Leo: 'Your Moon in Leo makes the emotional dimension of this phase theatrical and generous — you feel things big, and you express them bigger.',
-  Virgo: 'Your Moon in Virgo quietly refines the emotional material of this phase: you check what you feel, fix what you can, and judge yourself harder than anyone else does.',
-  Libra: 'Your Moon in Libra needs this phase to be shared: you work out what you feel by talking it through with someone you trust, and you hate being the only one who is upset.',
-  Scorpio: 'Your Moon in Scorpio deepens this phase into the taboo, the intense, and the transformative — emotion for you is a force that rearranges reality.',
-  Sagittarius: 'Your Moon in Sagittarius opens this phase toward meaning and horizon — you heal by moving, learning, and believing.',
-  Capricorn: 'Your Moon in Capricorn gives this phase structural integrity — you contain your feelings in form, and you often mature emotionally early.',
-  Aquarius: 'Your Moon in Aquarius gives this phase an observing, slightly detached emotional style — you feel for humanity as much as individuals.',
-  Pisces: 'Your Moon in Pisces merges this phase with everything — you feel the collective emotional field and need solitude to separate what is yours.',
+  Aries: 'With your Moon in Aries, you feel something and move the same second. You rarely stew, and you rarely apologize for how fast you went.',
+  Taurus: 'With your Moon in Taurus, you only feel safe when your body is comfortable: good food, a quiet room, no rushing. You work through emotion slowly, and being hurried makes you dig in.',
+  Gemini: 'With your Moon in Gemini, you do not know what you feel until you have said it out loud, usually to more than one person.',
+  Cancer: 'With your Moon in Cancer, you pick up the mood of every room you walk into and carry it home with you in your chest.',
+  Leo: 'With your Moon in Leo, you feel big and you show it big. Being ignored hurts you far more than being criticized.',
+  Virgo: 'With your Moon in Virgo, you check what you feel, fix what you can and judge yourself harder than anyone else does.',
+  Libra: 'With your Moon in Libra, you work out what you feel by talking it through with someone you trust, and you hate being the only one who is upset.',
+  Scorpio: 'With your Moon in Scorpio, you feel everything at full volume and show about a tenth of it. The people who get close find out how deep it goes.',
+  Sagittarius: 'With your Moon in Sagittarius, you heal by moving: a long drive, a new country, a book that rearranges your head.',
+  Capricorn: 'With your Moon in Capricorn, you hold your feelings in order and grew up early. You still check whether you are allowed to need things.',
+  Aquarius: 'With your Moon in Aquarius, you step back from a feeling to look at it before you let yourself have it. Strangers and causes can move you more than your own family.',
+  Pisces: 'With your Moon in Pisces, you soak up other people\'s feelings without noticing, and you need time alone to find out which ones were yours.',
 };
 
-// ── House overlays -- one sentence each ──
+// ── House overlays: one sentence each ──
 
 const HOUSE_OVERLAYS: Record<number, string> = {
-  1:  'With the Moon in your 1st house, this lunar imprint is visible on your face — people read your mood before you speak.',
-  2:  'With the Moon in your 2nd house, your emotional wellbeing is tied to resources, worth, and the body — you feel steady when your foundation is steady.',
-  3:  'With the Moon in your 3rd house, your feelings live in your voice, your writing, your daily conversations — thinking and feeling are the same act.',
-  4:  'With the Moon in your 4th house (its home), this phase is amplified — home, family, and ancestry are where your core emotional life plays out.',
-  5:  'With the Moon in your 5th house, you feel through creativity, romance, and play — joy is how you know you are alive.',
-  6:  'With the Moon in your 6th house, emotion expresses through routine, body, and service — you steady yourself by being useful.',
-  7:  'With the Moon in your 7th house, you come alive emotionally in partnership — relationships are your mirror and your teacher.',
-  8:  'With the Moon in your 8th house, your feelings run deep — intimacy, merging, and hidden truths are where you really live.',
-  9:  'With the Moon in your 9th house, you need meaning to feel well — philosophy, travel, and belief are emotional anchors for you.',
-  10: 'With the Moon in your 10th house, your emotional life is public — your career, reputation, and public face carry your feelings.',
-  11: 'With the Moon in your 11th house, your emotional life flourishes in chosen community — friendships and causes feed you.',
-  12: 'With the Moon in your 12th house, your feelings are vast and private — you process in solitude, dreams, and the unseen.',
+  1:  'With your Moon in the 1st house, your mood is on your face before you speak, and people respond to it whether you meant them to or not.',
+  2:  'With your Moon in the 2nd house, you feel calm when money and your body are steady, and shaky the week the account runs low.',
+  3:  'With your Moon in the 3rd house, your feelings live in your voice, your texts and your daily conversations. You think and feel in the same breath.',
+  4:  'With your Moon in the 4th house, home and family are where your emotional life actually happens. A bad week with your parents ruins your whole month.',
+  5:  'With your Moon in the 5th house, you feel most alive when you are making something, flirting or playing. Joy is how you check that you are okay.',
+  6:  'With your Moon in the 6th house, you settle yourself by being useful. A clean kitchen, a finished list and a body that is looked after calm you down.',
+  7:  'With your Moon in the 7th house, you come alive in a partnership, and you learn who you are from how the other person reacts to you.',
+  8:  'With your Moon in the 8th house, you feel most at home in the heavy conversation: money, secrets, sex, loss. Small talk leaves you cold.',
+  9:  'With your Moon in the 9th house, you need to believe in something to feel well. Travel and big ideas steady you when routine cannot.',
+  10: 'With your Moon in the 10th house, your work is where your feelings show. A bad day at the job is a bad day, full stop, and your reputation holds your mood.',
+  11: 'With your Moon in the 11th house, your friends and your causes feed you. Being cut off from your people hurts more than you let on.',
+  12: 'With your Moon in the 12th house, your feelings are large and private. You sort them out alone, in dreams and long silences, and show others the finished version.',
 };
 
-// ── Aspect overlays -- appended when a tight hard aspect is present ──
+// ── Aspect overlays: appended when a tight aspect to the Moon is present ──
 
 interface AspectOverlay {
   planet: string;
@@ -334,24 +334,24 @@ interface AspectOverlay {
 }
 
 const ASPECT_OVERLAYS: AspectOverlay[] = [
-  { planet: 'Saturn', type: 'conjunction', text: 'Moon-Saturn conjunction adds an old-soul seriousness — you inherited emotional caution and must learn which parts are yours to keep.' },
-  { planet: 'Saturn', type: 'square', text: 'Moon-Saturn square shapes an early wound around emotional permission — you learn to feel freely through deliberate effort.' },
-  { planet: 'Saturn', type: 'opposition', text: 'Moon-Saturn opposition sets emotional need against duty — your adult work is integrating both without abandoning either.' },
-  { planet: 'Pluto', type: 'conjunction', text: 'Moon-Pluto conjunction makes every emotion a potential transformation — you feel with immense depth and power.' },
-  { planet: 'Pluto', type: 'square', text: 'Moon-Pluto square cycles you through emotional intensity — what feels destructive is often renewal in disguise.' },
-  { planet: 'Pluto', type: 'opposition', text: 'Moon-Pluto opposition brings intense emotional encounters with others — they reflect back the buried parts of you.' },
-  { planet: 'Uranus', type: 'conjunction', text: 'Moon-Uranus conjunction makes your emotional life electric and unpredictable — you need space and surprise to feel free.' },
-  { planet: 'Uranus', type: 'square', text: 'Moon-Uranus square creates emotional rebellion — you break patterns suddenly when they confine you.' },
-  { planet: 'Neptune', type: 'conjunction', text: 'Moon-Neptune conjunction dissolves your emotional boundaries — you feel everything, and you must learn to name what is yours.' },
-  { planet: 'Neptune', type: 'square', text: 'Moon-Neptune square blurs the emotional signal — you may idealize, and then wake up — both are part of your path.' },
-  { planet: 'Venus', type: 'conjunction', text: 'Moon-Venus conjunction gives your emotional life grace and softness — relational warmth comes naturally to you.' },
-  { planet: 'Venus', type: 'trine', text: 'Moon-Venus trine lends ease to how you love and receive love — but watch for avoidance of what is uncomfortable.' },
-  { planet: 'Mars', type: 'conjunction', text: 'Moon-Mars conjunction gives your feelings heat and drive — you act when you feel, which is sometimes glorious and sometimes premature.' },
-  { planet: 'Mars', type: 'square', text: 'Moon-Mars square creates inner friction between what you want and what you feel — the work is letting both be true.' },
-  { planet: 'Jupiter', type: 'conjunction', text: 'Moon-Jupiter conjunction expands your emotional generosity and optimism — you are the person who makes a room feel safer.' },
-  { planet: 'Jupiter', type: 'trine', text: 'Moon-Jupiter trine gifts you natural emotional hope — use it well; ease can tip into complacency.' },
-  { planet: 'Chiron', type: 'conjunction', text: 'Moon-Chiron conjunction keeps the emotional wound close to the surface — it is also where your medicine for others lives.' },
-  { planet: 'Chiron', type: 'square', text: 'Moon-Chiron square cycles you through old emotional wounds — each pass builds the compassion that becomes your gift.' },
+  { planet: 'Saturn', type: 'conjunction', text: 'Moon with Saturn: you were serious young and learned to hold your feelings in. Some of that caution was handed to you, and your job is to work out which parts you are allowed to put down.' },
+  { planet: 'Saturn', type: 'square', text: 'Moon square Saturn: asking for comfort felt risky early on. You learn to feel freely as an adult, and it takes deliberate effort, not time alone.' },
+  { planet: 'Saturn', type: 'opposition', text: 'Moon opposite Saturn: what you need keeps colliding with what you owe. You get peace when you stop picking one and build a life that carries both.' },
+  { planet: 'Pluto', type: 'conjunction', text: 'Moon with Pluto: you do not feel half-way. A feeling arrives with the force of a decision, and the people around you can sense it before you speak.' },
+  { planet: 'Pluto', type: 'square', text: 'Moon square Pluto: your emotions come in cycles of intensity, and what feels like a collapse tends to be a clearing. You come out of each one more yourself than before.' },
+  { planet: 'Pluto', type: 'opposition', text: 'Moon opposite Pluto: you meet intense people, and they show you the part of yourself you buried. The relationship that scares you most is the one teaching you something.' },
+  { planet: 'Uranus', type: 'conjunction', text: 'Moon with Uranus: your moods change without warning and you need room to breathe. Anyone who tries to fence you in finds you gone.' },
+  { planet: 'Uranus', type: 'square', text: 'Moon square Uranus: when a situation closes in, you break it suddenly. Quit, move, cut the cord. You regret the method more than the exit.' },
+  { planet: 'Neptune', type: 'conjunction', text: 'Moon with Neptune: you absorb the feelings of everyone nearby, and you have to practice saying which ones belong to you.' },
+  { planet: 'Neptune', type: 'square', text: 'Moon square Neptune: you fall for the version of someone you hoped they were, then wake up. Both halves of that are part of how you learn.' },
+  { planet: 'Venus', type: 'conjunction', text: 'Moon with Venus: warmth comes easily to you, and people relax near you without being sure why.' },
+  { planet: 'Venus', type: 'trine', text: 'Moon trine Venus: loving and being loved come easily. The risk is dodging a hard conversation because everything feels fine.' },
+  { planet: 'Mars', type: 'conjunction', text: 'Moon with Mars: you act the moment you feel. It can be glorious and it can be premature, and you apologize for the second kind.' },
+  { planet: 'Mars', type: 'square', text: 'Moon square Mars: what you want and what you feel pull in different directions. Peace comes when you stop deciding which one is lying.' },
+  { planet: 'Jupiter', type: 'conjunction', text: 'Moon with Jupiter: you are generous with your mood and your time. You are the one who makes a tense room breathe.' },
+  { planet: 'Jupiter', type: 'trine', text: 'Moon trine Jupiter: hope comes to you without effort. The cost is a habit of assuming it will work out, so check the thing that needs checking.' },
+  { planet: 'Chiron', type: 'conjunction', text: 'Moon with Chiron: an old emotional hurt sits close to the surface, and the same spot is where you help other people best.' },
+  { planet: 'Chiron', type: 'square', text: 'Moon square Chiron: old hurts come round again every few years. Each time through you learn to sit with someone else\'s the way no one sat with yours.' },
 ];
 
 /** Look up an aspect-overlay sentence if there's a match among the user's tight Moon aspects. Returns all matching overlays, tightest first. */

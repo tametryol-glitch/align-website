@@ -256,19 +256,19 @@
     },
     "tarotPage": {
       "title": "Tarot Reading",
-      "subtitle": "Receive guidance from the arcana",
+      "subtitle": "Ask a question and pull the cards",
       "chooseSpread": "Choose Your Spread",
       "yourQuestion": "Your Question (Optional)",
-      "questionPlaceholder": "What guidance do you seek?",
+      "questionPlaceholder": "What do you want to know?",
       "drawButton": "Draw {{spread}}",
-      "shuffling": "Shuffling the Cosmic Deck...",
+      "shuffling": "Shuffling...",
       "tapToReveal": "Tap to reveal",
       "revealAll": "Reveal All Cards",
       "newReading": "New Reading",
       "getPersonalReading": "Get Your Personal Reading",
       "regenerateReading": "Regenerate Personal Reading",
       "personalTarotReading": "Personal Tarot Reading",
-      "channeling": "Channeling your chart and cards...",
+      "channeling": "Reading your chart against the cards...",
       "shareReading": "Share Reading",
       "listenToReading": "Listen to Your Reading",
       "stopListening": "Stop Listening",
@@ -411,10 +411,10 @@
     },
     "angelNumbersPage": {
       "title": "Angel Numbers",
-      "subtitle": "Look up the meaning behind the numbers you see",
+      "subtitle": "Type in the number you keep seeing",
       "searchPlaceholder": "Enter a number (e.g. 111, 444)...",
       "popular": "Popular Numbers",
-      "notFound": "Number not found. Try a common angel number.",
+      "notFound": "No entry for that number. Try 111, 222, 333 or 444.",
       "copiedToClipboard": "Copied to clipboard!"
     },
     "humanDesignPage": {
@@ -494,7 +494,7 @@
     },
     "planetaryHoursPage": {
       "title": "Planetary Hours",
-      "subtitle": "Ancient timing wisdom for modern life",
+      "subtitle": "Which hour of today suits the call, the pitch or the rest",
       "currentHour": "Current Hour",
       "daySummary": "Day Summary",
       "hoursTable": "Hours Table"
@@ -608,11 +608,11 @@
     },
     "galacticClockPage": {
       "title": "Galactic Clock",
-      "subtitle": "Your cosmic timing interface"
+      "subtitle": "Where today's sky puts you"
     },
     "galacticForecastPage": {
       "title": "Galactic Forecast",
-      "subtitle": "Deep-space energies influencing your chart"
+      "subtitle": "The slow, long-range sky and where it touches your chart"
     },
     "midpointsPage": {
       "title": "Midpoint Calculator",

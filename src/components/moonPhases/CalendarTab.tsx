@@ -348,32 +348,32 @@ function buildInterpretationSimple(
       : 'Lunar event';
 
   const signQualities: Record<string, { theme: string; lean: string; watch: string }> = {
-    Aries:       { theme: 'initiative and bold beginnings',       lean: 'Start something new with courage',                    watch: 'Impulsiveness or rushing decisions' },
-    Taurus:      { theme: 'stability and material comfort',       lean: 'Build on solid foundations',                           watch: 'Stubbornness or resisting change' },
-    Gemini:      { theme: 'communication and curiosity',          lean: 'Share ideas and make connections',                     watch: 'Scattered energy or superficiality' },
-    Cancer:      { theme: 'emotional depth and nurturing',        lean: 'Honor your feelings and home life',                    watch: 'Moodiness or over-attachment' },
-    Leo:         { theme: 'creativity and self-expression',       lean: 'Shine boldly and inspire others',                     watch: 'Ego conflicts or need for validation' },
-    Virgo:       { theme: 'refinement and practical service',     lean: 'Organize, heal, and improve systems',                 watch: 'Perfectionism or harsh self-criticism' },
-    Libra:       { theme: 'harmony and relationships',            lean: 'Seek balance and deepen partnerships',                watch: 'People-pleasing or indecisiveness' },
-    Scorpio:     { theme: 'transformation and hidden truths',     lean: 'Dive deep and release what no longer serves you',     watch: 'Obsession or power struggles' },
-    Sagittarius: { theme: 'expansion and higher meaning',         lean: 'Explore new horizons and seek wisdom',                watch: 'Over-promising or restlessness' },
-    Capricorn:   { theme: 'ambition and long-term structure',     lean: 'Set goals and commit to your path',                   watch: 'Rigidity or excessive self-pressure' },
-    Aquarius:    { theme: 'innovation and collective vision',     lean: 'Embrace unconventional ideas',                        watch: 'Emotional detachment or rebellion' },
-    Pisces:      { theme: 'intuition and spiritual connection',   lean: 'Trust your inner guidance and create',                watch: 'Escapism or boundary dissolution' },
+    Aries:       { theme: 'starting things and moving fast',                 lean: 'Send the message or book the thing you have been circling',    watch: 'Deciding in a second and defending it for a week' },
+    Taurus:      { theme: 'money, comfort and what you refuse to give up',   lean: 'Fix the budget or the room and keep what works',                watch: 'Digging in just because someone asked you to change' },
+    Gemini:      { theme: 'conversations, messages and loose ends',          lean: 'Reply to the people you owe a reply, then pick one idea',       watch: 'Talking to everyone and finishing nothing' },
+    Cancer:      { theme: 'home, family and who you feel safe with',         lean: 'Call the person you keep meaning to call and be home early',    watch: 'Taking a passing mood as a verdict on the whole relationship' },
+    Leo:         { theme: 'being seen and making something with your name on it', lean: 'Put the work, the post or the performance out in public', watch: 'Sulking when nobody claps' },
+    Virgo:       { theme: 'your routines, your health and what is out of order', lean: 'Clear the backlog and fix the one thing that keeps breaking', watch: 'Correcting everyone, yourself most of all' },
+    Libra:       { theme: 'your partner, your rivals and what is not fair',  lean: 'Have the talk about what each of you is actually getting',       watch: 'Saying yes to keep the peace, then resenting it' },
+    Scorpio:     { theme: 'secrets, shared money and what you will not say', lean: 'Say the thing you have rehearsed and end what is dead',         watch: 'Testing people instead of asking them' },
+    Sagittarius: { theme: 'where you want to go and what you believe',       lean: 'Book the trip, enrol in the course, make the big ask',          watch: 'Promising more than you will deliver' },
+    Capricorn:   { theme: 'your career, your ambitions and your obligations', lean: 'Set one goal with a date on it and start on it',               watch: 'Working through the weekend to avoid a feeling' },
+    Aquarius:    { theme: 'your friends, your causes and your need for space', lean: 'Back the odd idea and call the friend who gets you',          watch: 'Going cold on someone to prove you do not need them' },
+    Pisces:      { theme: 'what you feel before you can explain it',         lean: 'Make something, rest, and write down your dreams',              watch: 'Numbing out and losing track of a deadline' },
   };
 
   const sq = signQualities[moonSign] || {
-    theme: 'change and reflection',
-    lean: 'Stay open to new possibilities',
-    watch: 'Avoid acting on assumptions',
+    theme: 'what is changing in your life',
+    lean: 'Pick one thing you have been avoiding and start it',
+    watch: 'Acting on a story you have not checked',
   };
 
   const summary = isEclipse
-    ? `This ${phaseWord} in ${moonSign} amplifies themes of ${sq.theme}. Eclipse energy accelerates transformation and can bring sudden revelations or shifts that unfold over months.`
-    : `This ${phaseWord} in ${moonSign} highlights themes of ${sq.theme}. ${
+    ? `This ${phaseWord} in ${moonSign} stirs up ${sq.theme}. An eclipse moves faster than your plans, so expect news or a turn in the road, and watch it play out over the next few months.`
+    : `This ${phaseWord} in ${moonSign} stirs up ${sq.theme}. ${
         impact.band === 'transformative' || impact.band === 'high'
-          ? 'This is a powerful moment for intentional action.'
-          : 'A good time for quiet reflection and gentle adjustments.'
+          ? 'It lands on your chart, so do the thing instead of thinking about it.'
+          : 'It barely touches your chart, so use it to tidy up and make small changes.'
       }`;
 
   return {

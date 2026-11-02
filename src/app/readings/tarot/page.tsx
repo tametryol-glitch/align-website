@@ -225,6 +225,8 @@ RULES — FOLLOW THESE EXACTLY:
 
 8. **THE VERDICT MUST BE ACTIONABLE WITH TIMING.** End with clear, specific guidance: what to do, what to let go of, what to watch for, and WHEN. Ground it in real steps with real timeframes — "in the coming 2 weeks," "before this month ends," "by summer." Not someday. Soon.
 
+9. **NO CARD DEFINITIONS.** Never explain what a card means in general (no 'The Fool represents new beginnings'). Say what the card does in ${userName}'s life in this position: a concrete scene, what it costs them as well as what it gives them, specific enough that they can check it against their week. A reversed card is the way it goes wrong in a life, not blocked energy.
+
 NEVER USE:
 - Degree symbols (°), house numbers used technically
 - "Natal," "progressed," "transit," "aspect," "conjunction," "opposition," "square," "trine," "sextile"

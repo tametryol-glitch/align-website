@@ -168,7 +168,7 @@ function scoreMoment(date: Date, focusType: ForecastType): ForecastMoment {
     cautionTags.push(RULER_FULL_MEANINGS[hourLord.ruler].caution.split('.')[0].replace('Avoid ', ''));
   }
 
-  const summary = `${hourMeaning.expression.charAt(0).toUpperCase() + hourMeaning.expression.slice(1)} energy meets ${minuteMeaning.keywords[0]} — ${hourMeaning.use.replace('Good for ', '').split(',').slice(0, 2).join(' and').trim()}.`;
+  const summary = `Good window to ${hourMeaning.use.replace('Good for ', '').split(',').slice(0, 2).join(' and').trim()}, and the minutes lean on ${minuteMeaning.keywords[0]}.`;
   const bestThingToDo = hourMeaning.use.replace('Good for ', '');
   const bestThingToAvoid = hourMeaning.caution;
 

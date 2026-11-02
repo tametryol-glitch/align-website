@@ -176,15 +176,15 @@ export function getSignatureInterpretation(signature: GalacticSignature): Interp
   const signatureLine = `${signature.cycleDay} / ${signature.hourLord} Hour / ${signature.minuteLord} Minute / ${signature.pulseLord} Pulse`;
 
   // Summary: synthesize all four lords
-  const dayAtmosphere = `Your whole day is running on ${dayMeaning.keywords.slice(0, 2).join(' and ')}`;
-  const hourForce = `This hour hands you one job: ${hourMeaning.expression}`;
+  const dayAtmosphere = `All day you are pulled to ${dayMeaning.expression}`;
+  const hourForce = `This hour has one job for you: ${hourMeaning.expression}`;
   const minuteMethod = `The next few minutes are built for this: ${minuteMeaning.use.replace(/^Good for /, '').split(',').slice(0, 2).join(' and').trim()}`;
-  const pulseSpark = `The pulse is firing ${pulseMeaning.keywords.slice(0, 2).join(' and ')} through you right now`;
+  const pulseSpark = `Right now the pulse nudges you to ${pulseMeaning.expression}`;
 
   const summary = `${dayAtmosphere}. ${hourForce}. ${minuteMethod}. ${pulseSpark}.`;
 
   // Focus: built from Hour Lord (dominant) + Minute Lord (method)
-  const focus = `Focus on ${hourMeaning.keywords[0]} through ${minuteMeaning.keywords[0]} — ${hourMeaning.use.replace(/^Good for /, '').split(',')[0].trim()}.`;
+  const focus = `Start here: ${hourMeaning.use.replace(/^Good for /, '').split(',')[0].trim()}.`;
 
   // Caution: combine Hour Lord and Pulse Lord cautions
   const caution = `${hourMeaning.caution}. Also ${pulseMeaning.caution.charAt(0).toLowerCase()}${pulseMeaning.caution.slice(1)}.`;

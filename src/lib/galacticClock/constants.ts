@@ -25,18 +25,18 @@ export const CUSTOM_CYCLE_EPOCH = new Date(2026, 2, 20); // Mar 20, 2026 = Marsd
 
 // Ruler meanings for interpretation
 export const RULER_MEANINGS: Record<RulerName, { keywords: string; essence: string; color: string; glyph: string }> = {
-  Mars:    { keywords: 'action, force, courage, initiation', essence: 'raw initiating power', color: '#EF4444', glyph: '♂' },
-  Venus:   { keywords: 'attraction, beauty, love, harmony, value', essence: 'magnetic creative grace', color: '#F472B6', glyph: '♀' },
-  Mercury: { keywords: 'thought, language, trade, analysis, communication', essence: 'swift mental precision', color: '#6EE7B7', glyph: '☿' },
-  Moon:    { keywords: 'emotion, instinct, memory, receptivity, care', essence: 'deep feeling intelligence', color: '#C4B5FD', glyph: '☽' },
-  Sun:     { keywords: 'vitality, identity, visibility, leadership, creative force', essence: 'radiant sovereign presence', color: '#F59E0B', glyph: '☉' },
-  Vesta:   { keywords: 'devotion, focus, purification, sacred work, discipline', essence: 'sacred concentrated flame', color: '#FB923C', glyph: '\u26B6' },
-  Juno:    { keywords: 'union, commitment, partnership, balance, contracts', essence: 'bonded relational power', color: '#A78BFA', glyph: '⚵' },
-  Pluto:   { keywords: 'power, death-rebirth, depth, transformation, hidden force', essence: 'absolute transformative depth', color: '#991B1B', glyph: '♇' },
-  Jupiter: { keywords: 'growth, wisdom, expansion, opportunity, blessing', essence: 'expansive abundant wisdom', color: '#818CF8', glyph: '♃' },
-  Saturn:  { keywords: 'structure, maturity, discipline, responsibility, time', essence: 'enduring masterful structure', color: '#9CA3AF', glyph: '♄' },
-  Uranus:  { keywords: 'innovation, awakening, disruption, freedom, rebellion', essence: 'electric liberating vision', color: '#38BDF8', glyph: '♅' },
-  Neptune: { keywords: 'spirit, dreams, transcendence, intuition, dissolution', essence: 'transcendent mystical flow', color: '#2DD4BF', glyph: '♆' },
+  Mars:    { keywords: 'starting things, fights, training, nerve', essence: 'the push to start things, and the temper that comes with it', color: '#EF4444', glyph: '♂' },
+  Venus:   { keywords: 'dates, art, spending, making up', essence: 'the pull toward people, pleasure and money', color: '#F472B6', glyph: '♀' },
+  Mercury: { keywords: 'emails, calls, deals, studying', essence: 'talking, writing and deciding fast', color: '#6EE7B7', glyph: '☿' },
+  Moon:    { keywords: 'moods, home, family, gut reads', essence: 'mood, memory and who you need close', color: '#C4B5FD', glyph: '☽' },
+  Sun:     { keywords: 'being seen, leading, pitching, creating', essence: 'being seen and taking the lead', color: '#F59E0B', glyph: '☉' },
+  Vesta:   { keywords: 'focus, ritual, tidying up, craft', essence: 'one task done fully, with no distractions', color: '#FB923C', glyph: '\u26B6' },
+  Juno:    { keywords: 'commitments, contracts, partners, fairness', essence: 'what you owe each other and what you agreed to', color: '#A78BFA', glyph: '⚵' },
+  Pluto:   { keywords: 'hard truths, endings, power, research', essence: 'what you avoid looking at and what has to end', color: '#991B1B', glyph: '♇' },
+  Jupiter: { keywords: 'asking, teaching, travel, generosity', essence: 'saying yes to more, for better and worse', color: '#818CF8', glyph: '♃' },
+  Saturn:  { keywords: 'deadlines, boundaries, planning, duty', essence: 'the slow work and the limits you set', color: '#9CA3AF', glyph: '♄' },
+  Uranus:  { keywords: 'new ideas, tech, breaking routine, surprises', essence: 'the urge to break the routine', color: '#38BDF8', glyph: '♅' },
+  Neptune: { keywords: 'rest, music, prayer, dreams', essence: 'fog, imagination and the wish to escape', color: '#2DD4BF', glyph: '♆' },
 };
 
 // Segment angle: 360° / 12 = 30° per segment

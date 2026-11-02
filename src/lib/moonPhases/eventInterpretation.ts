@@ -26,118 +26,118 @@ export interface EventInterpretation {
 // ── Building blocks ───────────────────────────────────────────────────────
 
 const PHASE_FRAME: Record<string, string> = {
-  new:            'plants a seed',
-  first_quarter:  'demands decisive action',
-  full:           'brings a theme to a head',
-  last_quarter:   'asks for release and review',
-  eclipse:        'accelerates a hidden storyline',
+  new: 'is the day to start the thing you have been circling',
+  first_quarter: 'forces the decision you have been putting off',
+  full: 'brings to a head what has been building for two weeks',
+  last_quarter: 'asks you to drop something and look at what it cost you',
+  eclipse: 'moves a storyline you could not see forward faster than you would choose',
 };
 
 const PHASE_FLAVOR: Record<string, string> = {
-  new:            'a quiet beginning that you may not fully see yet',
-  first_quarter:  'pressure to move from intention into action',
-  full:           'a climax of clarity, visibility, and emotional truth',
-  last_quarter:   'the wisdom phase — integrating, releasing, preparing the next seed',
-  eclipse:        'a fated acceleration that bypasses your usual pacing',
+  new: 'Nothing looks different yet, so write the intention down before you talk yourself out of it',
+  first_quarter: 'Something stalls, and you have to choose between acting and giving up',
+  full: 'What was hidden is visible now, including how you really feel about it',
+  last_quarter: 'You finish, drop or forgive something and clear room for the next start',
+  eclipse: 'Events move faster than your plans, so expect the news instead of arranging it',
 };
 
 const BODY_THEME: Record<string, string> = {
-  Sun:                 'your core identity and direction',
-  Moon:                'your inner emotional world',
-  Mercury:             'how you think, learn, and communicate',
-  Venus:               'love, values, and what you find beautiful',
-  Mars:                'your drive, courage, and the things you fight for',
-  Jupiter:             'expansion, faith, and the bigger story you are living',
-  Saturn:              'structure, responsibility, and the long game',
-  Uranus:              'freedom, breakthrough, and how you break pattern',
-  Neptune:             'dreams, spirituality, and what dissolves boundaries',
-  Pluto:               'deep transformation and the parts of you that want power',
-  Vesta:               'sacred focus and the work you are devoted to',
-  Juno:                'commitment and how you partner with others',
-  Ascendant:           'how you show up and the face you meet the world with',
-  MC:                  'your public life, reputation, and direction in career',
-  Descendant:          'the qualities you draw to yourself through others',
-  IC:                  'your home, roots, and private emotional foundation',
-  'North Node':        'your soul growth edge and future direction',
-  'South Node':        'comfort patterns you are asked to release',
+  Sun: 'who you are and where you are headed',
+  Moon: 'your moods and what you need to feel safe',
+  Mercury: 'how you talk, think and decide',
+  Venus: 'who you love and what you will pay for',
+  Mars: 'your temper, your drive and what you will fight for',
+  Jupiter: 'where you are taking a chance and what you are hoping for',
+  Saturn: 'your obligations and the long project you are holding up',
+  Uranus: 'the part of you that wants out of the routine',
+  Neptune: 'what you dream about and where you fool yourself',
+  Pluto: 'what you are gripping and what you will not admit you want',
+  Vesta: 'the work you give your days to',
+  Juno: 'your closest commitment',
+  Ascendant: 'the first impression you give',
+  MC: 'your work and your reputation',
+  Descendant: 'the people you attract and what they mirror back',
+  IC: 'your home and your family',
+  'North Node': 'the next version of you',
+  'South Node': 'the old habit you keep falling back on',
 };
 
 const ASPECT_VERB: Record<string, string> = {
-  Conjunction: 'merges with',
-  Opposition:  'challenges you to balance',
-  Square:      'puts pressure on',
-  Quincunx:    'asks for an awkward adjustment to',
+  Conjunction: 'sits right on',
+  Opposition: 'pulls against',
+  Square: 'puts pressure on',
+  Quincunx: 'knocks sideways',
 };
 
 const ASPECT_LEAN: Record<string, string> = {
-  Conjunction: 'a clean fresh start in this area — commit to it without overthinking',
-  Opposition:  'honest dialogue with the people or forces on the other side of this',
-  Square:      'taking one concrete action, even a small one, to relieve the pressure',
-  Quincunx:    'adjusting the angle, not the goal — the route needs to change',
+  Conjunction: 'starting fresh here and committing before you overthink it',
+  Opposition: 'a straight talk with the person or the demand pulling the other way',
+  Square: 'one concrete step this week, even a small one, that takes the pressure off',
+  Quincunx: 'changing the route and keeping the goal',
 };
 const ASPECT_WATCH: Record<string, string> = {
-  Conjunction: 'acting so fast you merge with the first idea and miss the better one',
-  Opposition:  'forcing a resolution instead of letting the tension surface truth',
-  Square:      'numbing the pressure with busywork or distraction',
-  Quincunx:    'forcing a square peg round — the discomfort is data, not failure',
+  Conjunction: 'grabbing the first idea and missing the better one',
+  Opposition: 'forcing a verdict before the tension has shown you what it is about',
+  Square: 'burying the pressure in busywork or scrolling',
+  Quincunx: 'jamming it into a shape that does not fit; the discomfort is information, not failure',
 };
 
 const HOUSE_THEME: Record<number, string> = {
-  1:  'how you show up and the version of you people meet',
-  2:  'money, self-worth, and what you truly value',
-  3:  'your daily mind — how you communicate, learn, and move locally',
-  4:  'home, roots, and the private emotional ground you return to',
-  5:  'creativity, romance, play, and what makes you feel alive',
-  6:  'daily routines, health, work habits, and service',
-  7:  'close partnerships and the mirrors other people hold up to you',
-  8:  'intimacy, shared resources, and what you share in the dark',
-  9:  'beliefs, meaning, travel, and the story you are telling yourself',
-  10: 'career, reputation, and how you are known in the world',
-  11: 'friendships, community, and the future you are building toward',
-  12: 'the subconscious — dreams, endings, and what you cannot yet name',
+  1: 'how people first meet you',
+  2: 'money and what you think you are worth',
+  3: 'your daily talk, texts and short trips',
+  4: 'your home and your family',
+  5: 'romance, creative work and play',
+  6: 'your routines, health and workload',
+  7: 'your closest partner and the people who push back',
+  8: 'shared money, sex and what you keep hidden',
+  9: 'what you believe and where you want to go',
+  10: 'your career and how people see you',
+  11: 'your friends and the group you belong to',
+  12: 'what you do alone, your dreams and the endings you have not named',
 };
 
 const PHASE_LEAN_DEFAULT: Record<string, string> = {
-  new:            'naming an intention clearly enough that a friend could repeat it back',
-  first_quarter:  'one concrete, uncomfortable action on the thing you started',
-  full:           'receiving what is being shown to you — even the parts you were avoiding',
-  last_quarter:   'closing a loop, finishing a sentence, letting the old chapter end',
-  eclipse:        'stepping into the story that is trying to begin — do not argue with it',
+  new: 'saying your intention aloud so clearly that a friend could repeat it back',
+  first_quarter: 'one uncomfortable step on the thing you started',
+  full: 'looking at what is shown, including the part you were avoiding',
+  last_quarter: 'finishing the sentence, closing the loop, letting the old chapter end',
+  eclipse: 'walking into the story that is starting instead of arguing with it',
 };
 const PHASE_WATCH_DEFAULT: Record<string, string> = {
-  new:            'over-committing to a vague idea before it has the right shape',
-  first_quarter:  'stalling by polishing the plan when the plan is already good enough',
-  full:           'overreacting in the 24-hour window around peak — sleep on big decisions',
-  last_quarter:   'clinging to what is clearly on its way out',
-  eclipse:        'trying to control an outcome that is being redrawn bigger than you',
+  new: 'promising everything to an idea that has no shape yet',
+  first_quarter: 'revising a plan that is already good enough so you do not have to start',
+  full: 'blowing up at someone in the day either side of the peak; sleep on big decisions',
+  last_quarter: 'holding on to what has already left',
+  eclipse: 'trying to steer an outcome that is being redrawn bigger than you',
 };
 
 const BAND_INTRO: Record<string, string> = {
-  transformative: 'This is a once-in-years event for you. ',
-  high:           'This one lands squarely on your chart. ',
-  moderate:       'Moderate personal activation. ',
-  low:            'A light touch on your chart. ',
-  negligible:     'A quiet lunation in your personal weather. ',
+  transformative: 'You will remember this one. ',
+  high: 'This one lands hard on your chart. ',
+  moderate: 'You will notice this one in a few places. ',
+  low: 'A light touch on your chart. ',
+  negligible: 'A quiet one for you. ',
 };
 
 const NODE_FRAME: Record<'north' | 'south', string> = {
-  north: 'opens a door toward your growth edge — what you are being called to become',
-  south: 'closes a loop on a comfort pattern — what is ready to be released',
+  north: 'pulls you toward the person you are becoming',
+  south: 'closes out a habit you fall back on for comfort',
 };
 const NODE_LEAN: Record<'north' | 'south', string> = {
-  north: 'stepping into the version of you this eclipse is asking for',
-  south: 'letting go cleanly of what no longer fits, without over-narrating the ending',
+  north: 'acting like the person this eclipse is pointing you toward',
+  south: 'letting go cleanly of what no longer fits, without retelling the ending to everyone',
 };
 const NODE_WATCH: Record<'north' | 'south', string> = {
-  north: 'pulling back toward the familiar out of fear of the unknown',
-  south: 'clinging to the story of what you are losing instead of noticing what is freeing up',
+  north: 'retreating to what you know because the new thing scares you',
+  south: 'retelling the story of what you are losing and missing what is opening up',
 };
 
 const ECLIPSE_QUALITY_TAG: Record<string, string> = {
-  total:     'total eclipse — a full reset of this theme',
-  annular:   'annular eclipse — a ring of light around a hidden center',
-  partial:   'partial eclipse — a clear but incomplete turn of the page',
-  penumbral: 'penumbral eclipse — a subtle, dream-like shift under the surface',
+  total: 'total eclipse, so expect a full reset of this area',
+  annular: 'annular eclipse, so the center stays hidden while the edges light up',
+  partial: 'partial eclipse, so the page turns but not all the way',
+  penumbral: 'penumbral eclipse, so the shift is subtle and you notice it later',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -195,10 +195,10 @@ export function buildEventInterpretation(
   if (bodyTheme && aspectVerb) {
     summary =
       `${bandIntro}This ${phaseName} in ${moonSign} ${aspectVerb} ${bodyTheme}` +
-      (houseTheme ? `, activating ${houseTheme}.` : '.');
+      (houseTheme ? `, and the part of your life it hits is ${houseTheme}.` : '.');
   } else {
     summary = `${bandIntro}This ${phaseName} in ${moonSign} ${PHASE_FRAME[event.type] ?? 'moves the cycle forward'}` +
-      (houseTheme ? ` in the part of your life that is about ${houseTheme}.` : ` — ${PHASE_FLAVOR[event.type] ?? ''}.`);
+      (houseTheme ? `, and the part of your life it hits is ${houseTheme}.` : `. ${PHASE_FLAVOR[event.type] ?? ''}.`);
   }
   if (nodeFrame) {
     const quality = event.subtype?.split('_')[1];
