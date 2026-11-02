@@ -40,18 +40,18 @@ function findHouseForSign(sign: string, houseCusps?: number[]): number | null {
 // -- Sign energy descriptions (plain language) --------
 
 const SIGN_ENERGY: Record<string, { surface: string; deep: string; drive: string }> = {
-  Aries:       { surface: 'lit up from the inside — impatient, fearless, and carrying the energy of someone who has already decided they are done waiting', deep: 'a raw, almost primal hunger to prove that you are capable of standing on your own two feet, leading without anyone\'s permission, and igniting something from nothing', drive: 'the burning urgency to begin — to start a chapter so undeniably yours that even you are surprised by your own courage' },
-  Taurus:      { surface: 'steady, unhurried, and radiating the kind of quiet confidence that only comes from someone who knows exactly what they want', deep: 'a bone-deep craving for permanence — for something real you can touch, taste, and trust will still be there tomorrow', drive: 'the slow, deliberate work of building something so solid that no storm, no person, no loss can take it from you' },
-  Gemini:      { surface: 'electric with curiosity — quick-witted, effortlessly social, and always two conversations ahead of everyone in the room', deep: 'a mind that cannot rest — constantly collecting, connecting, and reorganizing information as if the right combination of words could unlock everything', drive: 'the relentless pursuit of stimulation, connection, and intellectual aliveness — because for you, boredom is not just uncomfortable, it is suffocating' },
-  Cancer:      { surface: 'deeply feeling, instinctively protective, and quietly attuned to the emotional undercurrents that everyone else misses', deep: 'an ache for belonging so profound it can disguise itself as anxiety — a need to know that the people you love are safe and that you have somewhere soft to land', drive: 'the fierce, tender work of creating a world — a home, a family, an inner life — where your heart can finally exhale' },
-  Leo:         { surface: 'luminous, generous, and magnetically alive — the kind of presence that makes people look up when you walk in', deep: 'a vulnerability hidden behind all that warmth: the terrifying need to be truly seen, not just admired — loved for the real you, not the performance', drive: 'the courageous act of putting your heart into your work, your art, your love — and letting people witness it without apology' },
-  Virgo:       { surface: 'sharp-eyed, quietly competent, and operating with a precision that makes the complicated look effortless', deep: 'a relentless inner voice that whispers you could be better — not out of cruelty, but out of a genuine devotion to getting things right', drive: 'the quiet dignity of being useful — of mastering the details that hold everything together while others chase glory' },
-  Libra:       { surface: 'graceful, disarming, and carrying an almost gravitational pull toward harmony — people feel more balanced just being around you', deep: 'a profound longing for a true partner — someone who meets you as an equal — and an almost physical discomfort when beauty, justice, or fairness is absent', drive: 'the art of creating equilibrium — in your relationships, your environment, your inner world — because you know that beauty is not decoration, it is medicine' },
-  Scorpio:     { surface: 'intensely present, unnervingly perceptive, and wrapped in a quiet power that makes people either deeply trust you or deeply fear you', deep: 'a compulsion to see beneath every surface — to find the hidden truth, the buried motive, the secret that explains everything — because you cannot rest in a world built on lies', drive: 'the unflinching willingness to walk into the dark places others avoid — grief, desire, power, death — because you know that transformation only happens at the edges' },
-  Sagittarius: { surface: 'restless, blazingly optimistic, and vibrating with the energy of someone who has already mentally booked a one-way ticket somewhere they have never been', deep: 'a hunger for meaning that makes ordinary life feel like a cage — a need to believe that there is something vast and true waiting on the other side of the horizon', drive: 'the expansion of everything — your mind, your geography, your understanding of what is possible — because for you, a small life is not a safe life, it is a slow death' },
-  Capricorn:   { surface: 'composed, strategically brilliant, and carrying the kind of quiet authority that comes from someone who has earned every inch of their position', deep: 'a private fear of being forgotten — of working your entire life and having nothing lasting to show for it — that drives you harder than ambition ever could', drive: 'the patient, unglamorous construction of a legacy — something built so well that it outlasts your name and proves you were here' },
-  Aquarius:    { surface: 'brilliantly unconventional, coolly detached, and wired to see the future that everyone else is still afraid to imagine', deep: 'a paradox that defines you: the ache to belong somewhere, paired with an absolute refusal to shrink yourself to fit — you want connection, but never at the cost of your truth', drive: 'the radical act of thinking for yourself — building systems, ideas, and futures that serve everyone, even if you have to stand alone to do it' },
-  Pisces:      { surface: 'ethereal, emotionally translucent, and carrying a tenderness that makes people feel safe enough to show you their wounds', deep: 'a soul so porous it absorbs the joy and suffering of everyone around you — a connection to something vast and wordless that makes ordinary reality feel thin', drive: 'the dissolution of every wall between you and the divine — surrender, compassion, and the willingness to feel everything, even when it costs you' },
+  Aries:       { surface: 'impatient and already moving while everyone else is still deciding', deep: 'a need to prove you can do it alone, with nobody\'s permission', drive: 'the urge to start things before you feel ready' },
+  Taurus:      { surface: 'steady, slow to move and hard to talk out of what you want', deep: 'a need for something solid you can touch and count on tomorrow', drive: 'the slow work of building something that no bad year can take back' },
+  Gemini:      { surface: 'quick, chatty and two topics ahead of the room', deep: 'a mind that will not switch off and keeps collecting facts as if the right one would settle everything', drive: 'the need for new people and new information, because boredom feels like being locked in' },
+  Cancer:      { surface: 'guarded, protective and tuned in to what everyone in the room is feeling', deep: 'a need to know the people you love are safe and that you have somewhere soft to land, which can look like anxiety', drive: 'making a home, a family or an inner life where you can finally relax' },
+  Leo:         { surface: 'warm, generous and hard to miss when you walk in', deep: 'a need to be loved for the real you and not for the performance', drive: 'putting your heart into your work or your love and letting people watch' },
+  Virgo:       { surface: 'precise, quietly capable and already fixing what is off', deep: 'a nagging voice saying you could have done that better', drive: 'being useful and getting the details right while others chase the credit' },
+  Libra:       { surface: 'smooth, fair-minded and calming to be around', deep: 'a need for a partner who treats you as an equal, and real discomfort when things are unfair or ugly', drive: 'keeping the peace in your relationships and your surroundings, because a balanced room makes you feel better' },
+  Scorpio:     { surface: 'intense, watchful and hard to fool', deep: 'a need to find the hidden motive behind everything, because you cannot relax around lies', drive: 'going into the subjects other people avoid, such as grief, desire, power and loss, because that is where things change for you' },
+  Sagittarius: { surface: 'restless, upbeat and halfway out the door to somewhere new', deep: 'a need for life to mean something bigger, and a feeling of being caged when it does not', drive: 'stretching your world through travel, study and big ideas, because a small life feels like a slow loss' },
+  Capricorn:   { surface: 'composed, strategic and used to being the one in charge', deep: 'a private fear of working for years and having nothing lasting to show for it', drive: 'the patient, unglamorous work of building something that outlasts you' },
+  Aquarius:    { surface: 'independent, cool-headed and years ahead of the people around you', deep: 'a pull to belong that sits next to a flat refusal to shrink yourself to fit', drive: 'thinking for yourself and building ideas that work for everyone, even if you stand alone doing it' },
+  Pisces:      { surface: 'soft, open and easy for people to confide in', deep: 'a sensitivity that soaks up everyone\'s mood and makes ordinary life feel thin', drive: 'letting your guard down, forgiving and feeling everything, even when it costs you' },
 };
 
 // -- House life areas (bold, specific) --------
@@ -397,18 +397,18 @@ export function generateSolarReturnPrediction(
 // -- Year Theme (based on Sun house) --------
 
 export const YEAR_THEME_HEADLINES: Record<number, { headline: string; emoji: string; keyword: string; description: string }> = {
-  1:  { headline: 'The year you reinvent yourself', emoji: '🔥', keyword: 'Identity', description: 'This is a 1st House year — your identity, appearance, and the way the world perceives you are being completely rewritten. You emerge from this year as someone visibly, undeniably different.' },
-  2:  { headline: 'The year your worth is redefined', emoji: '💎', keyword: 'Resources', description: 'This is a 2nd House year — your relationship with money, possessions, and self-worth undergoes a fundamental shift. What you earn and what you believe you deserve are no longer the same number.' },
-  3:  { headline: 'The year a conversation changes everything', emoji: '💬', keyword: 'Communication', description: 'This is a 3rd House year — your mind is on fire. A conversation, a message, or an idea arrives that splits your timeline into before and after. Siblings and neighbors play pivotal roles.' },
-  4:  { headline: 'The year you rebuild your foundation', emoji: '🏠', keyword: 'Home & Roots', description: 'This is a 4th House year — home, family, and your deepest emotional roots are the center of everything. A move, a family reckoning, or an inner excavation changes what "home" means to you permanently.' },
-  5:  { headline: 'The year love and creativity ignite', emoji: '🎨', keyword: 'Creative Fire', description: 'This is a 5th House year — romance, creative expression, children, and joy demand your attention. Something or someone makes you feel more alive than you have in years. Create boldly.' },
-  6:  { headline: 'The year you master the details', emoji: '⚙️', keyword: 'Health & Work', description: 'This is a 6th House year — your health, daily routines, and work life are being rebuilt from the ground up. The small daily choices you make this year compound into something that reshapes your entire reality.' },
-  7:  { headline: 'The year someone defines your path', emoji: '💞', keyword: 'Partnerships', description: 'This is a 7th House year — there is a person at the center of this year. A partnership begins, deepens, or reaches its moment of truth. Your life is defined by who you choose to stand next to.' },
-  8:  { headline: 'The year of death and rebirth', emoji: '🦋', keyword: 'Transformation', description: 'This is an 8th House year — something dies so something truer can live. Shared finances, intimacy, psychological depth, and power dynamics are the territory. You will weigh less inside by December.' },
-  9:  { headline: 'The year the horizon calls you', emoji: '🌍', keyword: 'Expansion', description: 'This is a 9th House year — travel, education, philosophy, and beliefs shape everything. Your entire framework for understanding the world is disassembled and rebuilt with more honest materials.' },
-  10: { headline: 'The year the world learns your name', emoji: '👑', keyword: 'Career & Legacy', description: 'This is a 10th House year — your career, public reputation, and legacy take center stage. A promotion, pivot, or public moment puts you on a level you will still be talking about a decade from now.' },
-  11: { headline: 'The year your dreams show their first signs', emoji: '⭐', keyword: 'Vision & Community', description: 'This is an 11th House year — your social world reshuffles, a community becomes central to your identity, and a dream you have quietly carried begins showing unmistakable signs of becoming real.' },
-  12: { headline: 'The year of sacred solitude', emoji: '🔮', keyword: 'Inner World', description: 'This is a 12th House year — the most important things happen in silence. Spiritual growth, subconscious patterns, vivid dreams, and the invisible world beneath your waking life demand your attention.' },
+  1:  { headline: 'The year you reinvent yourself', emoji: '🔥', keyword: 'Identity', description: 'You change visibly this year. Your look, the way you carry yourself and what people think of you all move, and by December friends will say you seem different. Start the haircut, the job search or the new name before you talk yourself out of it.' },
+  2:  { headline: 'The year your worth is redefined', emoji: '💎', keyword: 'Resources', description: 'Money and self-worth get rewritten this year. What you earn and what you accept no longer match, so you ask for more, drop what undervalues you or learn to spend on yourself. Expect one big money decision that changes how you see your own price.' },
+  3:  { headline: 'The year a conversation changes everything', emoji: '💬', keyword: 'Communication', description: 'One conversation this year splits your life into before and after. A message, a class or a talk with a sibling or neighbour changes your mind about something important. You write, speak and learn more than usual, so say what you have been holding back.' },
+  4:  { headline: 'The year you rebuild your foundation', emoji: '🏠', keyword: 'Home & Roots', description: 'Home takes over this year. You move, renovate, have it out with family or finally deal with where you came from. By December, what home means to you is different, and you stop pretending it is fine where it is not.' },
+  5:  { headline: 'The year love and creativity ignite', emoji: '🎨', keyword: 'Creative Fire', description: 'Romance, creativity and fun demand your time this year. Someone or something makes you feel more alive than you have in a long while, and you want to make things, play and be seen. Stop apologising for enjoying it.' },
+  6:  { headline: 'The year you master the details', emoji: '⚙️', keyword: 'Health & Work', description: 'Your daily routine gets rebuilt this year. Your body sends a message you cannot ignore, your job changes or you drop habits that no longer work. The small daily choices add up to a bigger life by December.' },
+  7:  { headline: 'The year someone defines your path', emoji: '💞', keyword: 'Partnerships', description: 'One person sits at the center of your year. A partnership starts, deepens or reaches the point where you either commit or end it. Who you stand next to this year shapes everything else, so choose on purpose.' },
+  8:  { headline: 'The year of death and rebirth', emoji: '🦋', keyword: 'Transformation', description: 'Something ends this year so something truer can start. Shared money, intimacy and power in your closest bond all come under pressure, and you let go of things you have carried too long. You feel lighter by December.' },
+  9:  { headline: 'The year the horizon calls you', emoji: '🌍', keyword: 'Expansion', description: 'Your view of the world gets taken apart and rebuilt this year. A trip, a course, a legal matter or a big conversation makes you drop a belief that was not really yours. You come out more honest about what you think.' },
+  10: { headline: 'The year the world learns your name', emoji: '👑', keyword: 'Career & Legacy', description: 'Your career and reputation move to the front this year. A promotion, a change of direction or a public moment puts you at a new level, and the decisions you make now are hard to reverse. People start to know your name.' },
+  11: { headline: 'The year your dreams show their first signs', emoji: '⭐', keyword: 'Vision & Community', description: 'Your social world reshuffles this year. Some friends drift off, a group or cause becomes part of who you are, and a dream you have carried quietly shows its first real signs of happening. Say it out loud to the right people.' },
+  12: { headline: 'The year of sacred solitude', emoji: '🔮', keyword: 'Inner World', description: 'The important things happen quietly this year. You need more time alone, old hurts come up to be dealt with, and your dreams carry messages you cannot get any other way. Rest more than you think you should, because something is forming.' },
 };
 
 // -- Critical Aspect Interpretations --------
@@ -580,14 +580,14 @@ export function getAngleInterpretation(planet: string, angle: string): string {
 // -- Retrograde Detection & Meanings --------
 
 export const RETROGRADE_SR_MEANINGS: Record<string, string> = {
-  Mercury: 'Mercury retrograde in your solar return signals a year of reconsidering, revising, and revisiting past decisions. Communication requires extra care — misunderstandings are likely, but so are brilliant insights that only come from looking backward. Old contacts reappear with unfinished business.',
-  Venus: 'Venus retrograde in the solar return is one of the most significant love indicators of the year. Past relationships resurface — an ex, an old flame, or unresolved feelings demand attention. Your values around love and money are being internally audited. What you thought you wanted may not be what you actually need.',
-  Mars: 'Mars retrograde in your solar return means your energy operates differently this year — more internal, more strategic, less impulsive. Anger that has been swallowed may surface unexpectedly. Projects require patience and multiple attempts. The wins come through persistence, not speed.',
-  Jupiter: 'Jupiter retrograde turns growth inward. External expansion slows, but internal wisdom accelerates. The luck this year comes from revisiting opportunities you previously overlooked, not from new ones appearing.',
-  Saturn: 'Saturn retrograde in the solar return means the year\'s lessons are deeply personal and internally driven. The discipline required is not imposed from outside — it comes from your own recognition that a structure in your life needs to be rebuilt from the foundation.',
-  Uranus: 'Uranus retrograde internalizes the revolution. Changes feel more psychological than external. A shift in consciousness precedes any visible life changes. You are being rewired from the inside out.',
-  Neptune: 'Neptune retrograde sharpens spiritual discernment. Illusions you have been carrying are quietly dissolved by an inner knowing that refuses to be fooled any longer. Dreams become more meaningful and less escapist.',
-  Pluto: 'Pluto retrograde deepens the transformation. The power dynamics you confront this year are internal — your own shadow, your own compulsions, your own unconscious patterns. The real power struggle is with yourself.',
+  Mercury: 'You go back over old decisions this year. Messages get misread, so check anything important before you send it. People from your past turn up with unfinished business, and you catch mistakes by looking backward.',
+  Venus: 'Someone from your romantic past comes back this year, in person or in your head, and you cannot ignore it. You also re-examine what you spend and what you want from love. What you thought you wanted turns out not to be what you need.',
+  Mars: 'You move slower this year and think before you act. Anger you swallowed comes out at a bad moment, so deal with it early. Projects take several attempts, and you win through persistence, not speed.',
+  Jupiter: 'Luck comes from going back to opportunities you passed on, not from new ones showing up. You grow through study and reflection more than expansion, and big outward moves are slow to start.',
+  Saturn: 'Nobody forces the hard lesson on you this year. You decide yourself that something in your life has to be rebuilt from the foundation, and you do the work without anyone watching.',
+  Uranus: 'The big change this year happens in your head before it shows on the outside. You change your mind about something you took for granted, and only later do your circumstances catch up.',
+  Neptune: 'You stop believing a story you told yourself for a long time. Your dreams get clearer and you lose patience with escaping into fantasy, because you can tell when something does not add up.',
+  Pluto: 'The power struggle this year is with yourself. You face your own compulsions and the patterns you keep repeating, and no one else can fight that for you.',
 };
 
 export function detectRetrogrades(
@@ -618,11 +618,11 @@ export interface NatalComparison {
 }
 
 const SHIFT_TEMPLATES: Record<string, (ns: string, ss: string) => string> = {
-  Sun: (ns, ss) => `Your natal Sun in ${ns} is your permanent identity — who you are at your core. But this year, your solar return Sun in ${ss} overlays a completely different energy onto that core. You will express yourself through ${ss} themes even though your essential nature remains ${ns}. The contrast between these two energies is where the year's growth lives.`,
-  Moon: (ns, ss) => `Your natal Moon in ${ns} is how you process emotions at the deepest level — it never changes. But this year, the solar return Moon in ${ss} means your emotional needs shift dramatically. What made you feel safe last year will not be enough. You need ${ss}-style nurturing now: different rhythms, different comforts, different people who understand what has changed.`,
-  Venus: (ns, ss) => `Your natal Venus in ${ns} is your permanent love language — how you attract and what you value. This year, with solar return Venus in ${ss}, your taste changes. What you find beautiful, who you find attractive, and what you spend money on will surprise the people who think they know you. Let the shift happen — it is teaching you something about desire you did not know you needed to learn.`,
-  Mars: (ns, ss) => `Your natal Mars in ${ns} is how you fight, chase, and assert yourself — your permanent engine. This year, solar return Mars in ${ss} rewires your drive. Your aggression takes a different form. Your ambition points in a different direction. The things that used to fire you up may leave you cold, while something unexpected lights the match.`,
-  Mercury: (ns, ss) => `Your natal Mercury in ${ns} is how your mind naturally works. This year, solar return Mercury in ${ss} means you think differently — your communication style shifts, your interests change, the conversations that grab you are not the ones you expected. Pay attention to what captures your mind; it is pointing toward the year's most important insights.`,
+  Sun: (ns, ss) => `Your usual way of being comes from ${ns}. This year you lead with ${ss} instincts instead, and people who know you well notice you choosing differently. The pull between the old habit and the new one is where the year's growth comes from.`,
+  Moon: (ns, ss) => `You usually need ${ns} things to feel safe. This year those stop being enough, and what settles you looks more like ${ss}: different routines, different comforts, different people who understand what changed. Last year's way of calming down leaves you restless.`,
+  Venus: (ns, ss) => `Your usual taste in love and money comes from ${ns}. This year it shifts toward ${ss}, so who you find attractive and what you spend on will surprise the people who think they know you. Go with it and see what it shows you about what you want.`,
+  Mars: (ns, ss) => `You usually fight, chase and push the ${ns} way. This year you do it the ${ss} way. Your temper takes a different form, your ambition points somewhere new, and things that used to fire you up leave you cold while something unexpected gets you moving.`,
+  Mercury: (ns, ss) => `You usually think and talk the ${ns} way. This year your mind runs on ${ss} lines: you pick different topics, write and speak differently, and get hooked by conversations you would have skipped. Follow what grabs your attention, because it points at the year's main insights.`,
 };
 
 export function buildNatalComparisons(
@@ -661,18 +661,18 @@ export interface SRMonthData {
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 const HOUSE_MONTH_THEMES: Record<number, string> = {
-  1: 'Self-expression and personal visibility',
-  2: 'Financial decisions and value shifts',
-  3: 'Important communications and learning',
-  4: 'Home and family developments',
-  5: 'Romance, creativity, and joy',
-  6: 'Health, work, and daily routines',
-  7: 'Partnership dynamics and commitments',
-  8: 'Deep transformation and shared resources',
-  9: 'Travel, education, and belief shifts',
-  10: 'Career moves and public recognition',
-  11: 'Community, friendship, and future vision',
-  12: 'Inner work, spirituality, and release',
+  1: 'How you look and come across to people',
+  2: 'Money decisions and what you think you are worth',
+  3: 'Conversations, messages and what you are learning',
+  4: 'Home, family and where you live',
+  5: 'Dating, creative projects and having fun',
+  6: 'Your health, your job and your daily routine',
+  7: 'Your partner and the commitments between you',
+  8: 'Shared money, intimacy and what you are ready to let go of',
+  9: 'Travel, study and what you believe',
+  10: 'Your career and how the public sees you',
+  11: 'Friends, groups and the plans you are working toward',
+  12: 'Time alone, rest and old things you finally let go of',
 };
 
 export function generateMonthlyTimeline(

@@ -6,53 +6,53 @@
 // What each planet means *specifically* in a Lunar Return chart
 // -----------------------------------------------------------------
 export const LUNAR_PLANET_CONTEXT: Record<string, string> = {
-  Sun: 'The Sun in your lunar return shows where your conscious attention is being pulled this month. It lights up a specific area of your life and says: *this is what matters right now.* You may not choose this focus — it chooses you. Events, conversations, and inner urges will keep steering you back to this theme until the next lunar return.',
+  Sun: 'One area of your life keeps pulling you back this month, whether you planned for it or not. Conversations, small events and your own restlessness all circle the same subject until the next lunar return, so the quickest way through is to give it your attention on purpose.',
 
-  Moon: 'The Moon is the heart of the lunar return — it is *you* this month. Its sign and house reveal the emotional lens through which you will experience everything over the next few weeks. Your moods, your cravings, your instinctive reactions — they all flow from here. Pay close attention, because this placement is describing exactly how you need to feel in order to feel like yourself right now.',
+  Moon: 'Your moods this month follow one clear pattern, and it decides how everything else feels. What you crave, what sets you off and what calms you down all trace back to it, so when you feel off, ask what you actually need and stop blaming the day.',
 
-  Mercury: 'Mercury in your lunar return shapes how your mind works this month — what you think about, how you communicate, and what kind of conversations find you. You may notice a shift in what you want to talk about, what you are reading, or who you are texting. Your mental energy has a specific flavor right now, and this placement tells you what it is.',
+  Mercury: 'Your head is busy with one particular subject this month. You find yourself texting, reading and talking about it more than usual, and the conversations that find you will be about it. Say the thing you have been rehearsing.',
 
-  Venus: 'Venus in your lunar return reveals what brings you pleasure this month and how you want to connect with people. Your taste may shift — what you find attractive, what feels beautiful, what kind of affection satisfies you. This is also where money and comfort themes show up. Notice what you are drawn to over the next few weeks; Venus is whispering.',
+  Venus: 'What you find attractive shifts this month, and so does what feels like real affection. You notice different people, different clothes, different places, and you may spend money on comfort without much argument. Pay attention to what you keep reaching for, because it tells you what you are short of.',
 
-  Mars: 'Mars in your lunar return shows where your energy and drive are focused this month. This is where you will feel motivated, where conflicts may arise, and where you have the most physical vitality. If you have been putting something off, check whether Mars is lighting that area up — it might be handing you the fuel you have been waiting for.',
+  Mars: 'Your energy and your temper both go to one area this month. That is where you work hardest, argue fastest and feel strongest in your body. If you have been putting something off there, this is the month you finally have the fuel to do it.',
 
-  Jupiter: 'Jupiter in your lunar return brings a sense of expansion, optimism, or opportunity to one area of your life this month. Something feels bigger, more possible, more generous. This is where good luck lives for the next few weeks — not a guarantee, but an open door. The question is whether you will walk through it.',
+  Jupiter: 'One area of your life feels bigger and more possible this month. Offers, invitations and lucky timing show up there, and you feel more generous than usual. It is an open door, not a guarantee, so you still have to walk through it.',
 
-  Saturn: 'Saturn in your lunar return highlights where you feel the weight of responsibility this month. Something here needs structure, discipline, or a hard conversation. It is not punishment — it is the area of your life asking you to show up as an adult. The reward comes later, but the effort is required now.',
+  Saturn: 'One area of your life gets serious this month. A job needs finishing, a rule needs setting or a hard conversation can no longer wait. It feels heavy while you do it, and you feel lighter once it is done.',
 
-  Uranus: 'Uranus in your lunar return marks where something unexpected may shake things loose this month. Plans change, insights arrive without warning, or you suddenly feel restless in an area of life that was perfectly fine yesterday. This is liberating if you let it be. The less you grip, the more exciting it gets.',
+  Uranus: 'Something in one area of your life breaks the routine this month. A plan falls through, news arrives out of nowhere, or you suddenly cannot stand a situation you tolerated last week. The less you grip your schedule, the better this goes.',
 
-  Neptune: 'Neptune in your lunar return softens and blurs one area of your life this month. Your intuition is heightened here, but so is the potential for confusion. Dreams may be vivid, creative inspiration may flow, and you might romanticize something that needs clearer seeing. Trust your gut, but verify the details.',
+  Neptune: 'One area of your life goes soft around the edges this month. Your intuition runs strong and your dreams are vivid, but you also see what you want to see, so check the facts on anything involving money or promises. Creative work comes easily now.',
 
-  Pluto: 'Pluto in your lunar return intensifies one area of your life this month. Something here is being transformed beneath the surface — old patterns dying, power dynamics shifting, hidden truths surfacing. You may feel a compulsive pull toward this theme. Do not resist it. Pluto does not negotiate; it renovates.',
+  Pluto: 'One area of your life gets stripped down this month. An old habit stops working, someone\'s hidden motive comes out, or you realise you have been tolerating something you can no longer stand. You will feel pulled to dig into it, so let yourself, and expect it to change something permanently.',
 
-  'North Node': 'The North Node in your lunar return points to your growth edge this month. There is something unfamiliar calling you — a behavior, a conversation, a risk that feels slightly uncomfortable but deeply right. Lean toward it. This month has a lesson, and the North Node is showing you the classroom.',
+  'North Node': 'There is one uncomfortable thing you should do this month: the call you are avoiding, the risk you keep postponing, the new person you hesitate to approach. It feels slightly wrong because you have never done it before. Do it anyway, and the month goes better.',
 
-  'South Node': 'The South Node in your lunar return shows where you might retreat to old habits this month. It is comfortable but stagnant. You already know how to do this; the question is whether doing it again actually serves you. Notice when you are defaulting to familiar patterns instead of stretching.',
+  'South Node': 'You fall back on an old habit this month, and it feels comfortable. You already know how to do it, so you do it without thinking, even when it is no longer getting you anywhere. Notice when you reach for the familiar answer and try a different one at least once.',
 
-  Chiron: 'Chiron in your lunar return touches a tender spot this month. An old wound may resurface — not to hurt you again, but to show you how far you have come in healing it. You may find yourself unusually empathetic or drawn to helping others through something you once struggled with yourself.',
+  Chiron: 'An old hurt comes back up this month, usually in a moment you did not expect. It is not there to hurt you again. You handle it better than you used to, and you may find yourself comforting someone who is going through what you once went through.',
 
-  Ascendant: 'The Ascendant of your lunar return sets the emotional tone for the entire month. It describes the face you are wearing, the energy you are projecting, and the way the world receives you right now. Think of it as your monthly costume — same person underneath, different presentation.',
+  Ascendant: 'People meet a slightly different version of you this month. The way you come across, how fast you react and how much you show are all adjusted, so the same joke or the same silence lands differently. You are still you, only presented another way.',
 
-  MC: 'The Midheaven of your lunar return highlights your public life and career this month. It shows how you are seen professionally, what ambitions are activated, and where you feel the pull of purpose. If career matters have been simmering, this placement shows where the heat is.',
+  MC: 'Work and public life take up more of your head this month. Who notices what you do, what you are aiming for and whether you are in the right job all come up. If something career-related has been simmering, this month it boils or cools.',
 
-  Juno: 'Juno in your lunar return focuses your attention on commitment and partnership dynamics this month. You may find yourself thinking more carefully about what you need from a partner — or noticing where current relationships are meeting or missing the mark.',
+  Juno: 'You think harder about what you want from a partner this month. You notice where your relationship gives you what you need and where it does not, and a small irritation you ignored becomes something you say out loud.',
 
-  Vesta: 'Vesta in your lunar return reveals what you are devoted to this month — the thing you will pour yourself into with quiet, focused intensity. It might be a project, a spiritual practice, or a cause. Whatever it is, you will feel protective of this flame.',
+  Vesta: 'One thing gets your full focus this month: a project, a practice or a cause. You say no to plans that take you away from it, and you guard your time for it. Others may read this as distance, but you are just committed.',
 
-  Lilith: 'Lilith in your lunar return activates your raw, unapologetic side this month. Something here refuses to be polished or made palatable. You may feel a fierce need for authenticity — a refusal to perform or people-please in this area of your life.',
+  Lilith: 'You stop being polite in one area of your life this month. You are done performing, softening your opinion or pleasing people who never pleased you back. Some people will not like the unfiltered version, and you will care less than you expect.',
 
-  'Part of Fortune': 'The Part of Fortune in your lunar return marks where joy and flow converge this month. It is not about luck falling from the sky — it is about alignment. When you follow this placement naturally, things click into place with surprising ease.',
+  'Part of Fortune': 'Things go easily in one area of your life this month. When you follow what feels natural there, doors open and effort seems smaller than usual. Luck is not dropped on you, but you are in the right place and the timing helps.',
 
-  Vertex: 'The Vertex in your lunar return suggests that a fateful encounter or event may occur this month in a specific area of your life. You cannot plan for it — the Vertex operates through synchronicity. Just stay open to meaningful coincidences.',
+  Vertex: 'A meeting or event this month feels strangely meant to happen. It is in one specific area of your life, you cannot plan it, and it often comes through an unplanned conversation or a last-minute change of plan. Say yes to the invitation you would normally skip.',
 
-  Ceres: 'Ceres in your lunar return shapes how you nurture yourself and others this month. You may feel called to feed, comfort, or tend to someone — or you may realize you are the one who needs tending. Pay attention to what nourishes you right now.',
+  Ceres: 'You end up feeding, comforting or looking after someone this month, or you notice that you are the one who needs it. Cooking, checking in and showing up count. Ask what you need to eat, rest and be told, and then do it.',
 
-  Pallas: 'Pallas in your lunar return sharpens your strategic mind this month. You can see patterns others miss, and your ability to devise solutions is heightened in a specific area of your life. Trust your analytical instincts — they are unusually sharp right now.',
+  Pallas: 'You see the pattern in one area of your life that others miss this month. A tangled problem suddenly has an obvious fix, and your plans hold up well. Trust the strategy you work out, and write it down while it is clear.',
 
-  Eros: 'Eros in your lunar return intensifies your desires this month. There is a passionate pull toward something — or someone — that makes you feel vividly, electrically alive. It goes beyond the physical; this is about the kind of intensity that wakes you up.',
+  Eros: 'You want something badly this month, or someone. The pull is strong enough that it wakes you up, and it is not only physical. Decide whether to act on it, because ignoring it will make it louder.',
 
-  Psyche: 'Psyche in your lunar return brings your psychological vulnerability to the surface this month. You may feel exposed in ways that are both uncomfortable and transformative. The wounds that surface are asking to be witnessed, not fixed.',
+  Psyche: 'You feel exposed this month, and it is uncomfortable. Feelings you usually keep to yourself show on your face, and people notice. You do not need to fix them. Tell one trusted person what is going on and let them see it.',
 };
 
 // -----------------------------------------------------------------

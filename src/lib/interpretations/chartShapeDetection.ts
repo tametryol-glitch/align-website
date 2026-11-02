@@ -107,7 +107,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
       confidence: Math.round(Math.max(50, 100 - (span - 90) * 2)),
       occupiedSpan: span,
       emptySpan: gap,
-      description: 'All planets concentrated within ' + Math.round(span) + ' degrees — intense focus.',
+      description: 'All your planets sit inside ' + Math.round(span) + ' degrees of the wheel, so your whole chart speaks from one small corner.',
     });
   }
 
@@ -120,7 +120,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
       leadingPlanet: lead ? toMember(lead, 'leading') : undefined,
       occupiedSpan: span,
       emptySpan: gap,
-      description: 'Planets fill roughly half the chart (' + Math.round(span) + ' degrees) — self-contained drive.',
+      description: 'Your planets fill one half of the chart (' + Math.round(span) + ' degrees) and the other half is empty.',
     });
   }
 
@@ -137,7 +137,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
           handlePlanet: toMember(handle, 'handle'),
           occupiedSpan: span,
           emptySpan: gap,
-          description: 'Bowl with ' + canonicalBodyName(handle.name) + ' as the handle — a funnel for expression.',
+          description: 'Your planets fill a bowl and ' + canonicalBodyName(handle.name) + ' sits alone across the gap, so everything you hold in comes out through it.',
         });
       }
     }
@@ -152,7 +152,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
       leadingPlanet: lead ? toMember(lead, 'leading') : undefined,
       occupiedSpan: span,
       emptySpan: gap,
-      description: 'Planets span ' + Math.round(span) + ' degrees with a ' + Math.round(gap) + ' degree empty arc — driven momentum.',
+      description: 'Your planets cover ' + Math.round(span) + ' degrees and leave a ' + Math.round(gap) + ' degree stretch empty, so you keep chasing what is missing there.',
     });
   }
 
@@ -166,7 +166,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
         confidence: Math.round(Math.max(50, Math.min(85, bigGaps[0].size + bigGaps[1].size - 120))),
         emptySpan: gap,
         occupiedSpan: span,
-        description: 'Planets form two opposing groups — a life of balancing polarities.',
+        description: 'Your planets split into two camps facing each other, and you keep swinging between them.',
       });
     }
   }
@@ -178,7 +178,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
       confidence: Math.round(Math.max(50, sectors * 8)),
       occupiedSpan: span,
       emptySpan: gap,
-      description: 'Planets spread across ' + sectors + ' signs — wide-ranging interests and versatility.',
+      description: 'Your planets touch ' + sectors + ' signs, so you have a foot in nearly every part of life.',
     });
   }
 
@@ -200,7 +200,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
         confidence: Math.round(Math.max(50, 55 + clusters * 5)),
         occupiedSpan: span,
         emptySpan: gap,
-        description: clusters + ' distinct planet clusters — independent, resistant to categorization.',
+        description: 'Your planets gather in ' + clusters + ' separate clusters that do not line up, so no single label fits you.',
       });
     }
   }
@@ -215,7 +215,7 @@ export function detectChartShape(planets: ChartPlanet[]): DetectedChartShape | n
         handlePlanet: toMember(handle, 'handle'),
         occupiedSpan: span,
         emptySpan: gap,
-        description: 'Tight planetary cluster with ' + canonicalBodyName(handle.name) + ' as singular outlet.',
+        description: 'Your planets crowd one side and ' + canonicalBodyName(handle.name) + ' sits far across the gap as the only way out.',
       });
     }
   }

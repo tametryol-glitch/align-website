@@ -1,3 +1,6 @@
+import { DUAD_TEXTURE, DUAD_PURE, COMPENDIUM_STYLE } from './hiddenLayers';
+import { MIDPOINT_VOICE } from './midpointVoice';
+
 import { analyzeDuadCompendium, RULERS, SIGNS } from '../engines/duadCompendium';
 
 // ─── Glyph maps ─────────────────────────────────────────────────────────────
@@ -289,10 +292,10 @@ export const HOUSE_MIDPOINT_MANIFESTATION: Record<number, string> = {
 
 // ─── Aspect activation descriptions ─────────────────────────────────────────
 const ASPECT_ACTIVATION: Record<string, string> = {
-  Conjunction: 'directly fuses with and amplifies',
-  Square: 'creates friction, tension, and forced action around',
-  Opposition: 'confronts and exposes the other side of',
-  Quincunx: 'creates an awkward, persistent adjustment pressure on',
+  Conjunction: 'is wired straight into this, so it runs through it every time',
+  Square: 'pushes against this, so it keeps forcing the issue',
+  Opposition: 'pulls the other way, so you meet this through other people and contrast',
+  Quincunx: 'never quite fits with it, so you keep adjusting around it',
 };
 
 // ─── Real-life expressions ──────────────────────────────────────────────────
@@ -346,6 +349,16 @@ const HOUSE_LIFE: Record<number, (n: string) => string> = {
   12: n => `${n}, this midpoint manifests through your inner world, spiritual practices, and unconscious patterns.`,
 };
 
+// Reader's-voice text (midpointVoice.ts) replaces the textbook definitions
+// above, which remain only as a fallback for any key the voice file lacks.
+for (const [k, v] of Object.entries(MIDPOINT_VOICE.essence)) {
+  if (MIDPOINT_ESSENCE[k]) MIDPOINT_ESSENCE[k].essence = v;
+}
+Object.assign(SIGN_MIDPOINT_EXPRESSION, MIDPOINT_VOICE.signExpression);
+for (const [k, v] of Object.entries(MIDPOINT_VOICE.houseManifestation)) HOUSE_MIDPOINT_MANIFESTATION[Number(k)] = v;
+for (const [k, v] of Object.entries(MIDPOINT_VOICE.realLife)) REAL_LIFE_EXAMPLES[k] = () => v;
+for (const [k, v] of Object.entries(MIDPOINT_VOICE.houseLife)) HOUSE_LIFE[Number(k)] = () => v;
+
 // ─── Transit activation ─────────────────────────────────────────────────────
 export interface TransitActivation {
   midpointKey: string;
@@ -373,16 +386,16 @@ const TRANSIT_PLANET_SPEED: Record<string, string> = {
 };
 
 const TRANSIT_PLANET_ACTION: Record<string, string> = {
-  Sun: 'illuminates and spotlights',
-  Moon: 'stirs emotions around',
-  Mercury: 'brings conversations and new information about',
-  Venus: 'softens and attracts through',
-  Mars: 'energizes and pushes action on',
-  Jupiter: 'expands opportunities around',
+  Sun: 'puts a spotlight on',
+  Moon: 'stirs up feelings around',
+  Mercury: 'brings conversations and news about',
+  Venus: 'softens and draws love toward',
+  Mars: 'pushes you to act on',
+  Jupiter: 'opens doors around',
   Saturn: 'tests and pressures',
-  Uranus: 'disrupts and liberates',
-  Neptune: 'dissolves boundaries around',
-  Pluto: 'forces deep transformation of',
+  Uranus: 'shakes up',
+  Neptune: 'blurs the edges of',
+  Pluto: 'forces a deep change in',
 };
 
 const ASPECT_FLAVOR: Record<string, string> = {
@@ -397,16 +410,16 @@ function stripLeadingThe(s: string): string {
 }
 
 function buildTransitMeaning(tName: string, aspName: string, essenceData: { title: string; essence: string } | undefined, mpKey: string): string {
-  const action = TRANSIT_PLANET_ACTION[tName] || 'activates';
+  const action = TRANSIT_PLANET_ACTION[tName] || 'touches';
   const flavor = ASPECT_FLAVOR[aspName] || 'activating';
   const title = essenceData ? stripLeadingThe(essenceData.title) : mpKey;
   const essence = essenceData?.essence || '';
   const speed = TRANSIT_PLANET_SPEED[tName] || '';
 
-  const opening = `Transiting ${tName} is ${flavor} your ${title} midpoint — the place ${essence.charAt(0).toLowerCase()}${essence.slice(1)}`;
-  const body = `${tName} ${action} this area of your chart right now.`;
+  const opening = `Transiting ${tName} is ${flavor} your ${title} midpoint.`;
+  const body = `Right now, ${tName} ${action} this part of you.`;
 
-  return `${opening} ${body} ${speed}`;
+  return [opening, essence, body, speed].filter(Boolean).join(' ');
 }
 
 export function findTransitActivations(
@@ -471,50 +484,50 @@ export function generateMidpointInterpretation(mp: MidpointResult, firstName: st
     text += `## ${g1}/${g2} ${mp.body1}/${mp.body2} Midpoint\n\n`;
   }
 
-  text += `**A. Midpoint Essence**\n`;
-  text += essenceData
-    ? `${firstName}, ${essenceData.essence}\n\n`
-    : `${firstName}, this is the point where ${mp.body1} and ${mp.body2} blend into a single combined force. It represents a unique synthesis that neither body alone can produce.\n\n`;
+  // Lead with the person: the heading already names the point, so no definition.
+  text += `**What it does in your life**\n`;
+  if (essenceData) {
+    text += `${firstName}, ${essenceData.essence.replace(/^You\b/, 'you')}\n\n`;
+  } else {
+    text += `${firstName}, you do not get ${mp.body1} or ${mp.body2} separately here: they work as one thing in you, and you will notice it most in the area of life below.\n\n`;
+  }
 
-  text += `**B. Sign Expression** ${signG} ${mp.sign}\n`;
+  text += `**How you go about it** ${signG} ${mp.sign}\n`;
   const signExpr = SIGN_MIDPOINT_EXPRESSION[mp.sign];
-  if (signExpr) text += `This midpoint ${signExpr}\n\n`;
+  if (signExpr) text += `${signExpr}\n\n`;
 
-  text += `**C. House Manifestation** — House ${mp.house}\n`;
+  text += `**Where it shows up** — House ${mp.house}\n`;
   const houseMani = HOUSE_MIDPOINT_MANIFESTATION[mp.house];
   if (houseMani) text += `${houseMani}\n\n`;
 
-  const duadG = ZODIAC_GLYPHS_MP[mp.duadSign] || '';
-  text += `**D. Hidden Layer** ${duadG} ${mp.duadSign}\n`;
-  text += `Beneath the surface, this midpoint carries a secondary filter of ${mp.duadSign} energy. `;
-  const duadExpr = SIGN_MIDPOINT_EXPRESSION[mp.duadSign];
-  if (duadExpr) text += `This hidden layer ${duadExpr} `;
-  text += `${firstName}, this is the subconscious driver that colors how this midpoint operates when no one is watching.\n\n`;
-
-  const compG = ZODIAC_GLYPHS_MP[mp.compendiumSign] || '';
-  text += `**E. Deepest Layer** ${compG} ${mp.compendiumSign}\n`;
-  text += `At the finest karmic level, this midpoint vibrates with ${mp.compendiumSign} energy. `;
-  const compExpr = SIGN_MIDPOINT_EXPRESSION[mp.compendiumSign];
-  if (compExpr) text += `This deepest thread ${compExpr} `;
-  text += `This is the undertone that surfaces only in the most intense or vulnerable moments.\n\n`;
+  // What runs underneath: the same person-focused texture lines the placement
+  // readings use, chosen by the hidden sub-sign layers of this exact degree.
+  const underneath: string[] = [];
+  const duadLine = mp.duadSign === mp.sign ? DUAD_PURE[mp.sign] : DUAD_TEXTURE[mp.duadSign];
+  if (duadLine) underneath.push(mp.duadSign === mp.sign ? `It runs deeper in you than it looks. ${duadLine}` : `Underneath, ${duadLine}`);
+  const styleLine = COMPENDIUM_STYLE[mp.compendiumSign];
+  if (styleLine) underneath.push(`Day to day you can catch it in the small things: ${styleLine}`);
+  if (underneath.length > 0) {
+    text += `**What runs underneath**\n${underneath.join('\n\n')}\n\n`;
+  }
 
   if (mp.aspects.length > 0) {
-    text += `**F. Aspect Activation**\n`;
+    text += `**What sets it off**\n`;
     for (const asp of mp.aspects) {
       const aG = PLANET_GLYPHS_MP[asp.body] || asp.body;
-      const act = ASPECT_ACTIVATION[asp.aspectType] || 'aspects';
+      const act = ASPECT_ACTIVATION[asp.aspectType] || 'touches this';
       const aSign = getSignForLon(asp.bodyLon);
       const aSG = ZODIAC_GLYPHS_MP[aSign] || '';
-      text += `- ${aG} **${asp.body}** in ${aSG} ${aSign} ${act} this midpoint (${asp.aspectType}, orb ${asp.orb}°)\n`;
+      text += `- ${aG} **${asp.body}** in ${aSG} ${aSign} ${act} (${asp.aspectType}, orb ${asp.orb}°)\n`;
     }
     text += '\n';
   } else {
-    text += `**F. Aspect Activation**\nNo natal bodies activate this midpoint within the 1.5° orb. It operates as a latent potential, waiting for transits or progressions to bring it to life.\n\n`;
+    text += `**What sets it off**\nNothing in your chart switches this on directly, so it stays quiet until a transit or a big life moment wakes it up.\n\n`;
   }
 
-  text += `**G. Real-Life Expression**\n`;
+  text += `**What it looks like**\n`;
   const realLife = REAL_LIFE_EXAMPLES[mp.key];
-  text += realLife ? realLife(firstName) : (HOUSE_LIFE[mp.house]?.(firstName) || `${firstName}, this midpoint represents a subtle blending of ${mp.body1} and ${mp.body2} energies in House ${mp.house}.`);
+  text += realLife ? realLife(firstName) : (HOUSE_LIFE[mp.house]?.(firstName) || '');
   text += '\n\n';
 
   text += `---\n**Ruler:** ${mp.signRuler}`;

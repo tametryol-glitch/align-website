@@ -3,6 +3,8 @@
    120 placements: 10 planets x 12 houses.
    ────────────────────────────────────────────────────────────── */
 
+import { PLANET_HOUSE_VOICE } from './planetsInHousesVoice';
+
 export interface PlanetHousePlacement {
   planet: string;
   house: number;
@@ -936,8 +938,9 @@ function buildAllPlacements(): PlanetHousePlacement[] {
         slug,
         symbol: planet.symbol,
         title: `${planet.name} in the ${ordinal(house)} House`,
-        intro: content.intro,
-        sections: content.sections,
+        // Reader's-voice copy wins; the original text stays as a fallback.
+        intro: PLANET_HOUSE_VOICE[slug]?.intro ?? content.intro,
+        sections: PLANET_HOUSE_VOICE[slug]?.sections ?? content.sections,
         keywords: [
           `${planet.name.toLowerCase()} in ${ordinal(house)} house`,
           `${planet.name.toLowerCase()} ${ordinal(house)} house`,

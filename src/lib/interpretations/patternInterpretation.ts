@@ -6,73 +6,91 @@
 import {
   type DetectedPattern, type DetectedChartShape, type InterpretedPattern,
   type PatternMember, type AspectPatternType, type ChartShapeType,
-  SIGN_ELEMENTS, SIGN_MODALITIES, HOUSE_THEMES,
+  SIGN_ELEMENTS, SIGN_MODALITIES,
 } from './patternTypes';
 
 /* -- planet / sign / house helpers ----------------------------------- */
 
+/** Noun phrases that read naturally after "which is" or as a sentence subject. */
 function planetFunction(name: string): string {
   const map: Record<string, string> = {
-    Sun: 'core identity and vitality',
-    Moon: 'emotional instincts and inner needs',
-    Mercury: 'thought patterns and communication style',
-    Venus: 'values, love language, and aesthetic sense',
-    Mars: 'drive, ambition, and assertive energy',
-    Jupiter: 'expansion, faith, and where you seek meaning',
-    Saturn: 'discipline, responsibility, and hard-won mastery',
-    Uranus: 'innovation, liberation, and sudden insight',
-    Neptune: 'imagination, spirituality, and dissolving of boundaries',
-    Pluto: 'deep transformation, power, and regeneration',
-    Chiron: 'core wound and path to healing wisdom',
-    Juno: 'commitment style and partnership ideals',
-    Vesta: 'sacred focus and devotional energy',
-    Pallas: 'strategic intelligence and pattern recognition',
-    Ceres: 'nurturing instinct and cycles of letting go',
-    'North Node': 'soul direction and evolutionary growth edge',
-    'South Node': 'past-life gifts and comfort zone',
-    Vertex: 'fated encounters and turning points',
-    Lilith: 'raw authenticity and reclaimed power',
+    Sun: 'how you show up and what you refuse to stop being',
+    Moon: 'what you need to feel safe and how you react before you think',
+    Mercury: 'how you talk, think and argue',
+    Venus: 'who and what you love, and what you spend on it',
+    Mars: 'how you go after what you want and how you fight',
+    Jupiter: 'where you take big bets and expect things to work out',
+    Saturn: 'where you work hardest and trust yourself least',
+    Uranus: 'where you break routine and cut off anyone who boxes you in',
+    Neptune: 'where you daydream, idealise and lose track of the facts',
+    Pluto: 'where you refuse to stay the same and fight for control',
+    Chiron: 'the old hurt you keep tending and end up helping other people with',
+    Juno: 'what you demand from a partner and what you will actually commit to',
+    Vesta: 'what you protect and give your devotion to',
+    Pallas: 'how you size up a problem and spot the pattern in it',
+    Ceres: 'how you look after people and how you let them go',
+    'North Node': 'the direction life keeps pushing you',
+    'South Node': 'the habits you fall back on when you are tired',
+    Vertex: 'the people and moments that arrive and change your direction',
+    Lilith: 'the part of you that refuses to be polite about it',
   };
-  return map[name] || name.toLowerCase();
+  return map[name] || 'the part of your life that ' + name.toLowerCase() + ' touches';
 }
 
+/** Gerund phrases that read naturally after "good at", "habit of" or "practise". */
 function signTone(sign: string): string {
   const map: Record<string, string> = {
-    Aries: 'bold, pioneering',
-    Taurus: 'grounded, sensual',
-    Gemini: 'curious, versatile',
-    Cancer: 'nurturing, protective',
-    Leo: 'radiant, creative',
-    Virgo: 'analytical, service-oriented',
-    Libra: 'harmonizing, relational',
-    Scorpio: 'intense, penetrating',
-    Sagittarius: 'expansive, truth-seeking',
-    Capricorn: 'structured, ambitious',
-    Aquarius: 'innovative, collective-minded',
-    Pisces: 'intuitive, transcendent',
+    Aries: 'going first without waiting for permission',
+    Taurus: 'slowing down and trusting what you can touch',
+    Gemini: 'asking questions and changing your mind',
+    Cancer: 'looking after your own',
+    Leo: 'being seen and making things with flair',
+    Virgo: 'catching the detail everyone else missed',
+    Libra: 'keeping the peace and weighing both sides',
+    Scorpio: 'digging until you hit the truth',
+    Sagittarius: 'chasing the big picture and the next horizon',
+    Capricorn: 'building slowly toward a result',
+    Aquarius: 'standing apart and thinking for the group',
+    Pisces: 'sensing what nobody said out loud',
   };
   return map[sign] || sign.toLowerCase();
 }
 
+/** Noun phrases that read naturally after "when it comes to" or "around". */
 function houseStory(house: number): string {
-  return HOUSE_THEMES[house] || 'life experiences';
+  const map: Record<number, string> = {
+    1: 'how you come across',
+    2: 'money and what you think you are worth',
+    3: 'talking, siblings and everyday learning',
+    4: 'home and family',
+    5: 'romance, play and making things',
+    6: 'work routines and your health',
+    7: 'close partnerships',
+    8: 'shared money, sex and what you hide',
+    9: 'travel, study and what you believe',
+    10: 'career and reputation',
+    11: 'friends and the groups you belong to',
+    12: 'what you do alone and what you never say',
+  };
+  return map[house] || 'daily life';
 }
 
+/** Noun phrases that read naturally after "what comes easy to you is". */
 function elementNature(sign: string): string {
   const el = SIGN_ELEMENTS[sign];
-  if (el === 'Fire') return 'action, inspiration, and initiative';
-  if (el === 'Earth') return 'material security, pragmatism, and tangible results';
-  if (el === 'Air') return 'ideas, social connection, and intellectual exchange';
-  if (el === 'Water') return 'emotional depth, intuition, and psychic sensitivity';
-  return 'mixed energies';
+  if (el === 'Fire') return 'starting things and acting on a hunch';
+  if (el === 'Earth') return 'getting practical results and turning effort into money';
+  if (el === 'Air') return 'talking, connecting and spotting ideas fast';
+  if (el === 'Water') return 'reading people and feeling the room before anyone speaks';
+  return 'a mix of things that other people have to work at';
 }
 
 function modalityDrive(sign: string): string {
   const m = SIGN_MODALITIES[sign];
-  if (m === 'Cardinal') return 'initiating action';
-  if (m === 'Fixed') return 'sustaining commitment';
-  if (m === 'Mutable') return 'adapting and integrating';
-  return 'dynamic expression';
+  if (m === 'Cardinal') return 'starting things';
+  if (m === 'Fixed') return 'sticking with things long after others quit';
+  if (m === 'Mutable') return 'adjusting on the fly';
+  return 'getting on with it';
 }
 
 function memberLabel(m: PatternMember): string {
@@ -104,9 +122,9 @@ function interpretGrandTrine(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: el + ' Grand Trine',
     involvedBodies: names,
     geometrySummary: 'Three planets in ' + el.toLowerCase() + ' signs form a flowing triangle: ' + bodyList + '.',
-    interpretation: 'This Grand Trine creates a natural circuit of ' + elementNature(p.members[0]?.sign) + '. Energy flows effortlessly between ' + names.join(', ') + ', giving you innate talent in this element. The ' + signTone(p.members[0]?.sign) + ' quality of ' + p.members[0]?.name + ' feeds into the ' + signTone(p.members[1]?.sign) + ' nature of ' + p.members[1]?.name + ', which in turn supports ' + p.members[2]?.name + '. This is a gift you were born with.',
-    lifeManifest: 'You likely find that matters of ' + houseStory(p.members[0]?.house) + ', ' + houseStory(p.members[1]?.house) + ', and ' + houseStory(p.members[2]?.house) + ' work together with surprising ease. Others may envy how naturally these areas come to you.',
-    growthLesson: 'The risk of a Grand Trine is complacency — talent that never gets challenged rarely reaches its peak. Actively push yourself in these areas rather than coasting on natural ability.',
+    interpretation: 'What comes easy to you is ' + elementNature(p.members[0]?.sign) + '. Your ' + p.members[0]?.name + ' is good at ' + signTone(p.members[0]?.sign) + ', your ' + p.members[1]?.name + ' at ' + signTone(p.members[1]?.sign) + ' and your ' + p.members[2]?.name + ' at ' + signTone(p.members[2]?.sign) + ', and each one hands the next a head start. Because it never costs you effort, you tend to undervalue it.',
+    lifeManifest: 'When it comes to ' + houseStory(p.members[0]?.house) + ', ' + houseStory(p.members[1]?.house) + ' and ' + houseStory(p.members[2]?.house) + ', things fall into place for you before other people have finished trying. Friends watch you do in an afternoon what took them a month and ask how.',
+    growthLesson: 'The trap is that nothing here ever hurts, so you stop pushing. You coast, get passed by people with half your talent who practised, and only notice when the gap is wide. Pick one thing you do easily and make it hard on purpose.',
     category: 'major-pattern', score: p.score,
   };
 }
@@ -114,13 +132,14 @@ function interpretGrandTrine(p: DetectedPattern): InterpretedPattern {
 function interpretKite(p: DetectedPattern): InterpretedPattern {
   const apex = p.members.find(m => m.role === 'apex') || p.focalPoint;
   const names = memberNames(p.members);
+  const an = apex?.name || 'the apex planet';
   return {
     type: p.type, title: 'Kite — Directed Grand Trine',
     involvedBodies: names,
     geometrySummary: 'A Grand Trine with ' + focalDescription(apex) + ' as the apex, forming sextiles to two trine members.',
-    interpretation: 'Your Grand Trine gains a productive outlet through ' + (apex?.name || 'the apex planet') + '. While the trine provides effortless flow, the opposition to the apex creates just enough creative tension to motivate action. ' + (apex ? apex.name + ' channels ' + planetFunction(apex.name) + ' as the focal release point.' : ''),
-    lifeManifest: 'You have both the natural talent of the Grand Trine AND a built-in drive to use it. The area of ' + houseStory(apex?.house || 1) + ' is where your gifts find their most purposeful expression.',
-    growthLesson: 'The apex planet carries the weight of expression — attend to its needs and you unlock the full potential of the trine circuit behind it.',
+    interpretation: 'Your easy talent has a job to do. ' + an + ' sits opposite part of that talent, and the pull between them stops you from sitting on the gift. ' + (apex ? 'Everything runs through ' + apex.name + ', which is ' + planetFunction(apex.name) + '.' : ''),
+    lifeManifest: 'You do not just have the knack, you get restless until you use it. Most of that restlessness lands in ' + houseStory(apex?.house || 1) + ', and that is where people see you at your best.',
+    growthLesson: 'If ' + an + ' gets neglected, the whole set-up stalls. When you feel bored or stuck, look at how you have been treating ' + an + ' before you blame anything else.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) : undefined,
     category: 'major-pattern', score: p.score,
   };
@@ -134,9 +153,9 @@ function interpretTSquare(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: mod + ' T-Square',
     involvedBodies: names,
     geometrySummary: 'Two planets in opposition both square ' + focalDescription(apex) + ', creating a triangle of tension.',
-    interpretation: 'This T-Square is an engine of achievement driven by friction. The opposition between the base planets creates an ongoing inner tug-of-war, and all that pressure gets funneled through ' + (apex?.name || 'the apex') + '. ' + (apex ? 'Through ' + planetFunction(apex.name) + ', you are constantly pushed to act, solve, and produce.' : '') + ' This is not comfortable, but it is powerful.',
-    lifeManifest: 'You may feel a persistent restlessness around ' + houseStory(apex?.house || 1) + '. Situations in this area demand your attention repeatedly, and through them you build real competence.',
-    growthLesson: 'The empty leg (the sign opposite the apex) is your release valve. Consciously developing qualities of ' + (p.missingLeg ? signTone(p.missingLeg.sign) : 'the opposite sign') + ' brings balance and relief.',
+    interpretation: 'Two parts of you pull in opposite directions and neither backs down, so the pressure lands on ' + (apex?.name || 'one point') + '. ' + (apex ? 'That is ' + planetFunction(apex.name) + ', and it is why you are always pushed to act, fix or finish something.' : '') + ' It is uncomfortable, and it is also why you get so much done.',
+    lifeManifest: 'You are never fully settled around ' + houseStory(apex?.house || 1) + '. The same problem comes back in new clothes until you handle it, and you end up good at it because you had to be.',
+    growthLesson: 'The way out is the side of the chart that sits empty. Practise ' + (p.missingLeg ? signTone(p.missingLeg.sign) : 'the opposite of your usual move') + ' and the pressure drops, because it finally has somewhere to go.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) : undefined,
     category: 'major-pattern', score: p.score,
   };
@@ -149,9 +168,9 @@ function interpretGrandCross(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: mod + ' Grand Cross',
     involvedBodies: names,
     geometrySummary: 'Four planets form two oppositions that cross each other with four squares: ' + names.join(', ') + '.',
-    interpretation: 'The Grand Cross is one of the most demanding patterns in astrology — and one of the most productive. Four planets in ' + mod.toLowerCase() + ' signs create a closed circuit of tension with no easy escape. Every direction you turn, there is a challenge and an opportunity. ' + names.join(', ') + ' are locked in constant dialogue, forcing integration.',
-    lifeManifest: 'Life feels like you are being pulled in four directions at once across ' + p.members.map(m => houseStory(m.house)).join(', ') + '. But this cross-pressure builds extraordinary resilience and capability.',
-    growthLesson: 'The key is not to resolve the tension but to hold it consciously. Each arm of the cross needs its turn. When you stop fighting it and start working with the rhythm, the Grand Cross becomes your greatest source of strength.',
+    interpretation: 'You are pulled four ways at once and every choice costs you something. ' + names.join(', ') + ' each want a different thing, so you rarely get a day when all four are satisfied. The upside is that you get tested constantly, and you almost never fold.',
+    lifeManifest: 'Across ' + p.members.map(m => houseStory(m.house)).join(', ') + ', the demands clash. The job wants one thing, the family another, and you end up the person who holds it all together. That much practice makes you hard to rattle.',
+    growthLesson: 'Stop waiting for the tension to end. Give each of the four a set slot in your week and you stop feeling like you are failing all of them at once.',
     category: 'major-pattern', score: p.score,
   };
 }
@@ -163,9 +182,9 @@ function interpretYod(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Yod — Finger of God',
     involvedBodies: names,
     geometrySummary: 'Two planets sextile each other and both quincunx ' + focalDescription(apex) + ', forming a narrow triangle.',
-    interpretation: 'The Yod is called the Finger of God because it points with uncanny precision toward a special mission. ' + (apex ? apex.name + ' at the apex carries a sense of fated purpose through ' + planetFunction(apex.name) + '.' : '') + ' The quincunx aspects create an itch that cannot be easily scratched — a persistent feeling that something needs adjustment.',
-    lifeManifest: 'You may experience sudden, redirecting events centered on ' + houseStory(apex?.house || 1) + '. Life seems to keep steering you toward a particular purpose, even when you resist.',
-    growthLesson: 'The Yod asks for surrender to a calling that may not make logical sense. Trust the redirection. The discomfort of the quincunx is the universe course-correcting you toward something only you can do.',
+    interpretation: 'You carry a sense that you are meant for something specific and that you are slightly off course. ' + (apex ? apex.name + ' is where the nag sits, and it concerns ' + planetFunction(apex.name) + '.' : '') + ' You adjust, tweak and rearrange, and it never quite clicks until something forces your hand.',
+    lifeManifest: 'Odd events keep nudging you toward ' + houseStory(apex?.house || 1) + ': a job that ends, a stranger who says the right thing, a move you did not plan. Looking back, every one of them pushed you the same way.',
+    growthLesson: 'Stop waiting for the plan to make sense first. The thing you keep being pushed toward is usually the thing to start before you feel ready.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) : undefined,
     category: 'major-pattern', score: p.score,
   };
@@ -179,9 +198,9 @@ function interpretBoomerangYod(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Boomerang Yod',
     involvedBodies: names,
     geometrySummary: 'A Yod with ' + focalDescription(apex) + ' at the apex, plus ' + (release ? memberLabel(release) : 'a release point') + ' opposite the apex.',
-    interpretation: 'Your Yod gains a crucial release valve. The standard Yod pressure funnels through the apex, but the opposition planet catches and redirects that energy productively. ' + (release ? release.name + ' provides ' + planetFunction(release.name) + ' as a conscious channel for the Yod tension.' : ''),
-    lifeManifest: 'The fated quality of the Yod still operates, but you have a built-in way to process and express it through ' + houseStory(release?.house || 1) + '. This makes the mission more accessible.',
-    growthLesson: 'Honor both the apex and the release point. The boomerang action means energy goes out through the apex and returns through the opposition — use both ends consciously.',
+    interpretation: 'You get the nagging sense of being slightly off course, but you also have somewhere to put it. ' + (release ? release.name + ' sits opposite the apex and takes the strain back, and it concerns ' + planetFunction(release.name) + '. When the nag gets loud, go there first.' : 'The point opposite the apex takes the strain back. When the nag gets loud, go there first.'),
+    lifeManifest: 'When something knocks you off course, you recover faster than most because you have a place to put the pressure, and that place is ' + houseStory(release?.house || 1) + '. It makes the direction you keep being pushed in easier to follow.',
+    growthLesson: 'Use both ends. Act through the apex, then hand the leftover energy to the release point, and you stop swinging between pushing hard and burning out.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) + (release ? ' | Release: ' + focalDescription(release) : '') : undefined,
     category: 'major-pattern', score: p.score,
   };
@@ -193,9 +212,9 @@ function interpretMysticRectangle(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Mystic Rectangle',
     involvedBodies: names,
     geometrySummary: 'Four planets connected by two oppositions, two trines, and two sextiles: ' + names.join(', ') + '.',
-    interpretation: 'The Mystic Rectangle is a rare and harmonious pattern that balances tension with flow. The two oppositions provide awareness and perspective, while the trines and sextiles offer productive channels. ' + names.join(' and ') + ' work together as a balanced system, giving you natural diplomatic ability and inner equilibrium.',
-    lifeManifest: 'Life areas of ' + p.members.map(m => houseStory(m.house)).join(', ') + ' interweave in a way that feels both meaningful and manageable. You can see all sides of a situation.',
-    growthLesson: 'This pattern makes harmony easy but can also make you conflict-avoidant. Sometimes growth requires choosing a side rather than endlessly balancing.',
+    interpretation: 'You hold two opposing views at once and make them work together. ' + names.join(' and ') + ' keep each other in check, so you can listen to both sides of a row and steer it somewhere calm. People bring you their arguments for exactly that reason.',
+    lifeManifest: 'Around ' + p.members.map(m => houseStory(m.house)).join(', ') + ', things connect. What you learn in one place helps in another, and you can see where each person is coming from.',
+    growthLesson: 'The cost is that you keep the peace for years instead of saying what you want. Decide something, say it, and let it disappoint someone.',
     category: 'major-pattern', score: p.score,
   };
 }
@@ -206,9 +225,9 @@ function interpretMinorGrandTrine(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Minor Grand Trine',
     involvedBodies: names,
     geometrySummary: 'A trine between two planets, both sextile a third: ' + names.join(', ') + '.',
-    interpretation: 'This smaller version of the Grand Trine provides a pocket of natural talent. The trine offers easy flow and the two sextiles add opportunities to actively use that flow. ' + names[0] + ' and ' + names[1] + ' support each other effortlessly, and ' + (names[2] || 'the third planet') + ' provides a productive outlet.',
-    lifeManifest: 'Opportunities arise naturally in ' + houseStory(p.members[2]?.house || 1) + ' when you lean into the gifts of this pattern. It works best when you take initiative.',
-    growthLesson: 'Unlike a full Grand Trine, this one requires some effort to activate. The sextiles are opportunities, not guarantees — reach for them.',
+    interpretation: names[0] + ' and ' + names[1] + ' work together without effort, and ' + (names[2] || 'the third planet') + ' gives that ease somewhere to go. It is a small area where you are better than you think.',
+    lifeManifest: 'Chances turn up around ' + houseStory(p.members[2]?.house || 1) + ' if you say yes to them. They will not chase you.',
+    growthLesson: 'Unlike a full Grand Trine, nothing here happens on its own. You have to send the message or show up, or it stays a talent nobody sees.',
     category: 'secondary-pattern', score: p.score,
   };
 }
@@ -221,9 +240,9 @@ function interpretStellium(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: names.length + '-Planet Stellium in ' + sign,
     involvedBodies: names,
     geometrySummary: names.length + ' planets clustered in ' + sign + ' (' + ordinalHouse(house) + '): ' + names.join(', ') + '.',
-    interpretation: 'A stellium concentrates enormous energy in one sign and house. With ' + names.length + ' planets in ' + sign + ', the ' + signTone(sign) + ' qualities are massively amplified in your chart. This area of life dominates your experience — for better and for worse. ' + names.join(', ') + ' all express through the lens of ' + sign + ', creating a powerful but potentially one-sided emphasis.',
-    lifeManifest: 'The ' + ordinalHouse(house) + ' — ' + houseStory(house) + ' — is the central arena of your life. Major events, passions, and challenges cluster here.',
-    growthLesson: 'With so much energy in one place, consciously develop the opposite sign (' + (SIGN_MODALITIES[sign] ? sign : 'the polarity') + ') to maintain balance. Your strength is also your blind spot.',
+    interpretation: names.length + ' planets in ' + sign + ' means one side of you runs the show. Your life keeps coming back to ' + signTone(sign) + ', whatever the subject, because ' + names.join(', ') + ' all pull the same way. People know you for it, and you get tired of being known only for it.',
+    lifeManifest: 'Your ' + ordinalHouse(house) + ' is where it piles up: ' + houseStory(house) + '. Big events, obsessions and arguments gather there, and the rest of your life gets less of you than it deserves.',
+    growthLesson: 'You are strong where ' + sign + ' is strong and blind everywhere else. Ask one person who is nothing like that what you keep missing, and listen to the answer.',
     category: 'major-pattern', score: p.score,
   };
 }
@@ -236,9 +255,9 @@ function interpretBowl(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Bowl Chart Shape',
     involvedBodies: lead ? [lead.name] : [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets occupy roughly one half of the zodiac, creating a container-like energy. You carry a deep sense of self-containment and personal mission. The empty half represents qualities you encounter through others and the world outside you.' + (lead ? ' ' + lead.name + ' leads the bowl, giving ' + planetFunction(lead.name) + ' a pioneering role in your life.' : ''),
-    lifeManifest: 'You tend to be self-reliant and purposeful, with a clear sense of what you bring to the table. Relationships often serve as mirrors for the qualities in your empty half.',
-    growthLesson: 'The empty hemisphere is not a deficit — it is an invitation. Growth comes from engaging with what lies outside your comfort zone.',
+    interpretation: 'Your planets sit on one side of the chart, so you carry your life like something you are holding. You know what you are about, and the empty half is where you rely on other people to show you what you lack.' + (lead ? ' ' + lead.name + ' goes first, so ' + planetFunction(lead.name) + ' is the first thing people meet.' : ''),
+    lifeManifest: 'You are self-reliant and do things your own way. The people closest to you tend to have exactly the traits you lack, which is why they annoy you and why you keep them.',
+    growthLesson: 'Go looking for what you do not already have. Take the invitation you would normally decline.',
     focalLabel: lead ? 'Leading planet: ' + focalDescription(lead) : undefined,
     category: 'chart-shape', score: shape.confidence,
   };
@@ -250,9 +269,9 @@ function interpretBucket(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Bucket Chart Shape',
     involvedBodies: handle ? [handle.name] : [],
     geometrySummary: shape.description,
-    interpretation: 'A bowl of planets with a single handle planet standing apart. All the energy of the bowl pours through this one outlet.' + (handle ? ' ' + handle.name + ' serves as your funnel, channeling ' + planetFunction(handle.name) + ' as the primary mode of expression.' : '') + ' This creates a focused, directed life.',
-    lifeManifest: (handle ? 'The area of ' + houseStory(handle.house) + ' becomes your primary channel for everything you do. ' : '') + 'People may know you primarily through this one mode of expression, even though you have rich depth behind it.',
-    growthLesson: 'The handle planet carries enormous weight. Give it conscious attention and healthy outlets, or it can become a bottleneck.',
+    interpretation: 'Most of your chart is a bowl and one planet sits alone outside it, so everything you hold inside comes out through that one door.' + (handle ? ' ' + handle.name + ' is the door, and it concerns ' + planetFunction(handle.name) + '.' : '') + ' When it works, you are focused. When it is blocked, you feel it everywhere.',
+    lifeManifest: (handle ? 'Your energy runs through ' + houseStory(handle.house) + '. ' : '') + 'People know you for that one thing and miss how much more is going on behind it.',
+    growthLesson: 'Look after that one planet. Give it a regular outlet, because if it clogs, everything else backs up behind it.',
     focalLabel: handle ? 'Handle: ' + focalDescription(handle) : undefined,
     category: 'chart-shape', score: shape.confidence,
   };
@@ -263,9 +282,9 @@ function interpretBundle(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Bundle Chart Shape',
     involvedBodies: [],
     geometrySummary: shape.description,
-    interpretation: 'All your planets cluster within roughly a third of the zodiac. This extreme concentration produces a specialist — someone with intense focus and deep expertise in a narrow range. You know exactly what you care about.',
-    lifeManifest: 'Life revolves around a few core themes. You may struggle to relate to people whose interests are scattered, because your world is concentrated and deeply explored.',
-    growthLesson: 'Your power is focus, but your challenge is perspective. Seek out experiences and people who expose you to the eight signs you do not naturally inhabit.',
+    interpretation: 'Your planets are packed into one corner of the chart, so you go deep on a few things and ignore the rest. You know exactly what you care about, and people who flit between ten hobbies baffle you.',
+    lifeManifest: 'Your life revolves around a handful of subjects. You get bored at parties where nobody talks about them, and you come across as narrow to people who do not share them.',
+    growthLesson: 'Eight of the twelve signs are empty in your chart. Spend time with people whose lives look nothing like yours; they will show you what you would otherwise walk straight past.',
     category: 'chart-shape', score: shape.confidence,
   };
 }
@@ -276,9 +295,9 @@ function interpretLocomotive(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Locomotive Chart Shape',
     involvedBodies: lead ? [lead.name] : [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets span about two-thirds of the zodiac, leaving an empty trine. This creates a powerful drive — like a locomotive engine pulling forward relentlessly.' + (lead ? ' ' + lead.name + ' is the engine, pulling the chart forward through ' + planetFunction(lead.name) + '.' : ''),
-    lifeManifest: 'You are a self-starter with tremendous stamina. The empty trine creates a hunger that motivates your achievements. You may feel like you always need to be moving toward something.',
-    growthLesson: 'The empty arc shows what you are unconsciously driven to acquire or master. Awareness of this blind spot turns compulsive drive into conscious purpose.',
+    interpretation: 'Your planets cover most of the chart with one big empty stretch, so you always feel a step short of something. That gap is what keeps you moving.' + (lead ? ' ' + lead.name + ' goes first, so ' + planetFunction(lead.name) + ' is what pulls the rest along.' : ''),
+    lifeManifest: 'You start early and finish late. Just as you hit one goal you are scanning for the next, and resting feels like falling behind.',
+    growthLesson: 'Work out what the empty stretch says you are chasing. Once you can name it, you get to choose it instead of being dragged after it.',
     focalLabel: lead ? 'Leading planet: ' + focalDescription(lead) : undefined,
     category: 'chart-shape', score: shape.confidence,
   };
@@ -289,9 +308,9 @@ function interpretSeesaw(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Seesaw Chart Shape',
     involvedBodies: [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets form two distinct groups on opposite sides of the chart, like two ends of a balance beam. You experience life as a series of polarities — pulled between two perspectives, two life areas, two modes of being.',
-    lifeManifest: 'Decision-making often involves weighing two fundamentally different options. You can see both sides of any issue with genuine understanding, making you a natural mediator.',
-    growthLesson: 'The lesson is integration, not choosing sides. The two halves of your chart need each other. Alternating awareness between them, rather than collapsing into one, is your path to wholeness.',
+    interpretation: 'Your planets form two camps on opposite sides of the chart, and you spend your life swinging between them. You want the quiet life and the big one, the partner and the freedom, and whichever you have, you miss the other.',
+    lifeManifest: 'Big decisions take you forever because you can see the case for both sides and mean it. That makes you the friend people call to settle a fight.',
+    growthLesson: 'Stop trying to pick a winner. Set aside time for each side on purpose, and the swinging gets smaller.',
     category: 'chart-shape', score: shape.confidence,
   };
 }
@@ -301,9 +320,9 @@ function interpretSplash(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Splash Chart Shape',
     involvedBodies: [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets are distributed broadly across the zodiac, touching many signs and houses. This produces a universal person — someone with genuine interest in a wide range of life areas. You are a renaissance soul.',
-    lifeManifest: 'You dabble in many areas and may resist being pinned down to one identity or career. Variety is not just the spice of your life — it is the main course.',
-    growthLesson: 'Your challenge is depth. With so many interests, you risk being a jack of all trades. Choose a few areas for deep mastery while maintaining your broad perspective.',
+    interpretation: 'Your planets are spread through nearly the whole chart, so you have a foot in everything. You can talk to anyone about almost anything, and you pick up new interests about as fast as you drop them.',
+    lifeManifest: 'You have had more jobs, hobbies and friend groups than most people you know, and you hate being asked what you do in one word.',
+    growthLesson: 'Choose two or three things and stay with them until they get boring. What waits on the other side of boring is what the people who stuck with it have and you do not.',
     category: 'chart-shape', score: shape.confidence,
   };
 }
@@ -313,9 +332,9 @@ function interpretSplay(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Splay Chart Shape',
     involvedBodies: [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets form several distinct clusters scattered irregularly around the chart. This creates an individualist — someone who resists neat categories. You have several strong, somewhat unrelated interests and talents that make you unique.',
-    lifeManifest: 'People find you hard to categorize. You may have a career, a creative passion, and a spiritual practice that seem unrelated to outsiders but make perfect sense to you.',
-    growthLesson: 'Embrace your non-linear nature. Your power comes from unexpected connections between your disparate interests. Do not try to force yourself into someone else\'s box.',
+    interpretation: 'Your planets gather in several separate clusters that do not line up, so the parts of you do not fit one story. You have strong interests that look unrelated, and you are the only one who sees the thread between them.',
+    lifeManifest: 'People cannot place you. You might have a day job, a creative obsession and a spiritual practice that have nothing to do with each other, and each one gets a different version of you.',
+    growthLesson: 'Stop explaining yourself to fit other people\'s boxes. The odd links between your interests are where your best ideas come from.',
     category: 'chart-shape', score: shape.confidence,
   };
 }
@@ -326,9 +345,9 @@ function interpretFan(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Fan Chart Shape',
     involvedBodies: handle ? [handle.name] : [],
     geometrySummary: shape.description,
-    interpretation: 'Similar to a Bucket, but with a tighter cluster and more extreme focus through the handle planet.' + (handle ? ' ' + handle.name + ' is the sole outlet for an intensely concentrated chart, making ' + planetFunction(handle.name) + ' extraordinarily prominent in your life.' : ''),
-    lifeManifest: (handle ? 'Everything in your life seems to funnel through the themes of ' + houseStory(handle.house) + '. ' : '') + 'You have laser focus and the ability to channel enormous energy through a single point.',
-    growthLesson: 'The intensity of the Fan can become obsessive. Build in deliberate rest and diversification to prevent burnout on your focal theme.',
+    interpretation: 'Your planets crowd together and one sits far off by itself as the only way out, so all that stored energy goes through a single gate.' + (handle ? ' ' + handle.name + ' is that gate, it concerns ' + planetFunction(handle.name) + ', and it runs your life more than you admit.' : ''),
+    lifeManifest: (handle ? 'Nearly everything funnels into ' + houseStory(handle.house) + '. ' : '') + 'You focus harder than most people can, and you pay for it when that one thing goes wrong.',
+    growthLesson: 'It is easy to make that one thing your whole identity. Build in a rest day and one interest outside it, so a bad month there does not take you down with it.',
     focalLabel: handle ? 'Handle: ' + focalDescription(handle) : undefined,
     category: 'chart-shape', score: shape.confidence,
   };
