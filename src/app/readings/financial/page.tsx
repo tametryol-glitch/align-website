@@ -113,10 +113,10 @@ function getHouseTheme(house: number): string {
 
 // Outlook pools
 const FAVORABLE_OUTLOOKS = [
-  'Financial energy flows with ease this month. Opportunities for growth present themselves naturally.',
+  'Money moves easily this month. Offers and replies come without you chasing them.',
   'A strong month for financial decisions. Instincts about money land sharper than usual.',
-  'Abundance channels are open. An excellent window for negotiations, raises, or new income streams.',
-  'The cosmic energy supports material growth. Trust the momentum building in your financial world.',
+  'Ask for money this month. Raises, rates and new clients all get a yes more easily than usual.',
+  'Momentum is real this month: the quote you send and the question you ask get answered faster than usual.',
   'Money conversations tilt in your favor. Ask for the thing you have been quietly hoping for.',
   'A generous month. The right yes arrives; the wrong yes loses its shine.',
   'Resources come easier than usual. Notice the channel — it is likely to open again later.',
@@ -124,7 +124,7 @@ const FAVORABLE_OUTLOOKS = [
 ];
 const MIXED_OUTLOOKS = [
   'A month of balancing — some opportunities arrive alongside decisions that require careful thought.',
-  'Mixed signals in the financial landscape. Focus on what you can control.',
+  'Some offers this month are good and some are traps, and they look alike. Focus on what you can control.',
   'There is potential here, but it requires patience. Not every door that opens is meant for you right now.',
   'Financial matters need both intuition and logic this month. Take your time with big decisions.',
   'The math looks different depending on the angle. Run it twice before you commit.',
@@ -133,12 +133,12 @@ const MIXED_OUTLOOKS = [
   'Neutral skies. Money moves forward if you push, stays put if you don\'t. Either is fine.',
 ];
 const CHALLENGING_OUTLOOKS = [
-  'A period of financial recalibration. Focus on building foundations rather than taking risks.',
-  'Financial pressures may surface, but they are teaching real lessons about resource management.',
+  'Cash is tighter this month. Pay the boring bills first and skip any risk.',
+  'A bill or a price rise you ignored shows up, and it teaches you which cost to cut for good.',
   'Tighten the ship this month. Conservative moves serve you better than bold ones.',
   'A month for reflection rather than action. Review, reorganize, and prepare for better windows ahead.',
   'Defensive posture pays. The best offense this month is an audit of what is already working.',
-  'Expect bills, renegotiations, and small reckonings. Handle them early; they compound if ignored.',
+  'Bills, renegotiations and small reckonings land this month. Handle them early; they compound if ignored.',
   'Money feels tight even when it isn\'t. The pressure is asking you to reprice your time.',
   'A holding month. Protect what you have built; the expansion window is not this one.',
 ];
@@ -165,10 +165,10 @@ function analyzeFinancialChart(chart: NatalChart, startMonth: number, startYear:
     strengths.push(`Jupiter in ${jupiter.sign} expands your financial vision through ${getJupiterTheme(jupiter.sign)}.`);
   }
   if (venus && [2, 8, 10, 11].includes(venus.house)) strengths.push(`Venus in your ${ordinal(venus.house)} house attracts resources naturally.`);
-  if ([2, 8, 10, 11].includes(pof.house)) strengths.push(`Your Part of Fortune in ${pof.sign} (${ordinal(pof.house)} house) signals where luck flows most naturally in financial matters.`);
+  if ([2, 8, 10, 11].includes(pof.house)) strengths.push(`Your Part of Fortune in ${pof.sign} (${ordinal(pof.house)} house) is where money reaches you with the least effort, so test your pitches and requests there first.`);
   else strengths.push(`Part of Fortune in ${pof.sign} (${ordinal(pof.house)} house) supports your material success through ${getHouseTheme(pof.house)}.`);
   const beneficsInMoney = chart.planets.filter(p => ['Jupiter', 'Venus'].includes(p.name) && [2, 8].includes(p.house));
-  if (beneficsInMoney.length > 0) strengths.push(`Having ${beneficsInMoney.map(p => p.name).join(' and ')} in your money houses is one of the strongest indicators of financial ease.`);
+  if (beneficsInMoney.length > 0) strengths.push(`Having ${beneficsInMoney.map(p => p.name).join(' and ')} in your money houses means money tends to reach you through other people's goodwill, though it also leaves quickly.`);
   const h2Ruler = SIGN_RULERS[houses[0].sign];
   const h2RulerPlanet = chart.planets.find(p => p.name === h2Ruler);
   if (h2RulerPlanet && !(h2RulerPlanet.retrograde || h2RulerPlanet.is_retrograde)) strengths.push(`Your 2nd house ruler (${h2Ruler} in ${h2RulerPlanet.sign}) is direct, suggesting steady earning momentum.`);
@@ -183,7 +183,7 @@ function analyzeFinancialChart(chart: NatalChart, startMonth: number, startYear:
     const saturnAspects = chart.aspects.filter((a: any) => (a.planet1 === 'Saturn' || a.planet2 === 'Saturn') && (a.type === 'square' || a.type === 'opposition'));
     if (saturnAspects.length > 0) challenges.push(`Saturn's hard aspects suggest areas where financial discipline is being tested.`);
   }
-  if (mars && [2, 8].includes(mars.house)) challenges.push(`Mars in your ${ordinal(mars.house)} house can lead to impulsive spending — channel this energy into decisive action.`);
+  if (mars && [2, 8].includes(mars.house)) challenges.push(`Mars in your ${ordinal(mars.house)} house can lead to impulsive spending: put a 24-hour wait on any purchase you make while angry.`);
   if (pluto && [2, 8].includes(pluto.house)) challenges.push(`Pluto in your ${ordinal(pluto.house)} house brings intense transformation around resources.`);
   const retroInMoney = chart.planets.filter(p => (p.retrograde || p.is_retrograde) && [2, 8, 10, 11].includes(p.house) && p.name !== 'Ascendant' && p.name !== 'MC');
   if (retroInMoney.length > 0) challenges.push(`${retroInMoney.map(p => p.name).join(' and ')} retrograde in your money houses suggests reviewing past financial decisions.`);
@@ -280,11 +280,11 @@ function generateMonthlyForecast(chart: NatalChart, monthIndex: number, year: nu
 function getOverallSummary(rating: string, chart: NatalChart): string {
   const jupiter = chart.planets.find(p => p.name === 'Jupiter');
   switch (rating) {
-    case 'Excellent': return `Your chart shows exceptionally strong financial indicators. With ${jupiter ? jupiter.sign + ' Jupiter energy' : 'favorable planetary alignments'} supporting your money houses, this is a powerful period for wealth building.`;
-    case 'Strong': return 'The financial climate ahead looks encouraging. Your natal chart carries solid earning potential, and upcoming transits are amplifying your ability to attract and grow resources.';
-    case 'Moderate': return 'A balanced financial period lies ahead. There are opportunities available, but they require conscious effort and strategic thinking to fully realize.';
-    case 'Cautious': return 'The coming months call for financial prudence. Focus on protecting what you have built while carefully evaluating new opportunities.';
-    default: return 'This period asks for patience and resilience in financial matters. The challenges you face now are building a stronger financial foundation for the future.';
+    case 'Excellent': return `Money is likely to come to you more easily than to most people you know. With ${jupiter ? jupiter.sign + ' Jupiter' : 'favorable planetary alignments'} behind your money houses, this is the time to ask for the raise, raise your rates or put savings to work, and the cost is that easy money makes you careless, so set a rule for how much you spend.`;
+    case 'Strong': return 'The next months favor you if you act on them. Your chart supports steady earning, and upcoming transits make clients, bosses and lenders easier to persuade, so ask for the thing you have been putting off.';
+    case 'Moderate': return 'No windfall and no disaster is coming. Money moves only when you push: one raise request, one cancelled subscription, one invoice chased.';
+    case 'Cautious': return 'The coming months are for holding cash. You will be tempted by one big purchase or one big pitch; wait a week, read the terms twice and keep three months of costs untouched.';
+    default: return 'Money is tight enough to hurt for now. Cut the two largest avoidable costs, say no to lending, and put any income you control toward the debt with the highest rate first.';
   }
 }
 
@@ -314,7 +314,7 @@ function generateFallbackReading(firstName: string, rpt: FinancialReport, pof: {
     Leo: `you are generous with shared resources but need recognition for your contributions. Financial power dynamics in relationships can become a sensitive issue.`,
     Virgo: `you manage shared finances with precision and a detailed eye. You are the one who reads the fine print, tracks every transaction, and catches the billing errors nobody else notices.`,
     Libra: `fairness in shared finances is non-negotiable for you. You need everything to feel equitable, and financial imbalances in relationships create deep resentment over time.`,
-    Scorpio: `this is Scorpio's natural house, giving you profound instincts for investments, debt management, and understanding hidden financial dynamics. You can smell a bad deal from a mile away.`,
+    Scorpio: `you notice what is hidden in a deal: the fee in the small print, the partner who goes quiet about their debts. You can smell a bad deal from a mile away, and the cost is walking away from good ones because you assumed the worst.`,
     Sagittarius: `you tend to be optimistic about shared finances — sometimes too optimistic. You trust that things will work out, which can be both a strength and a vulnerability.`,
     Capricorn: `you approach shared resources with discipline and long-term thinking. Retirement planning, structured investments, and building generational wealth come naturally.`,
     Aquarius: `you want shared finances to serve a larger purpose. You are more willing to invest in ideas, causes, or unconventional ventures than in traditional savings.`,
@@ -322,32 +322,32 @@ function generateFallbackReading(firstName: string, rpt: FinancialReport, pof: {
   };
 
   let reading = `## ${firstName}, Your Financial Blueprint\n\n`;
-  reading += `I want to walk you through what your chart reveals about your relationship with money — not the surface-level stuff you already know, but the patterns coded into your birth data that explain why you earn the way you earn, spend the way you spend, and sometimes get in your own financial way.\n\n`;
+  reading += `Here are the money habits your chart points at, the ones you already half-know and avoid looking at. They explain why you earn the way you earn, spend the way you spend, and sometimes get in your own financial way.\n\n`;
 
   reading += `### How You Naturally Earn\n\n`;
-  reading += `With **${h2.sign}** on your 2nd house cusp, ruled by **${h2.ruler}**, ${EARNING_STYLE[h2.sign] || `you have a distinctive approach to earning shaped by ${h2.sign} energy.`}\n\n`;
+  reading += `With **${h2.sign}** on your 2nd house cusp, ${EARNING_STYLE[h2.sign] || `you have a distinctive approach to earning shaped by ${h2.sign} energy.`}\n\n`;
   if (h2.planets.length > 0) {
-    reading += `Having **${h2.planets.map(p => p.name).join(' and ')}** in your 2nd house amplifies your earning potential significantly. `;
+    reading += `Having **${h2.planets.map(p => p.name).join(' and ')}** in your 2nd house puts a clear mark on how you earn, for better and for worse. `;
     h2.planets.forEach(p => {
-      if (p.name === 'Jupiter') reading += `Jupiter here is one of the strongest indicators of financial abundance in astrology — money has a way of finding you. `;
-      else if (p.name === 'Saturn') reading += `Saturn here means your wealth builds slowly but solidly — delayed financial success that outlasts everyone else's quick wins. `;
-      else if (p.name === 'Venus') reading += `Venus here gives you an instinct for turning beauty, pleasure, and relationships into revenue streams. `;
-      else if (p.name === 'Mars') reading += `Mars here gives you aggressive earning drive — you hustle harder than most and are willing to fight for what you are worth. `;
-      else if (p.name === 'Pluto') reading += `Pluto here indicates transformative financial experiences — periods of financial death and rebirth that ultimately lead to greater wealth than before. `;
-      else if (p.name === 'Moon') reading += `The Moon here means your income fluctuates with your emotional state. When you feel good, money flows. When you do not, it dries up. Your feelings are literally your financial barometer. `;
-      else if (p.name === 'Sun') reading += `The Sun here means your identity is deeply connected to what you earn. Financial success is not just practical for you — it is personal. You need to feel proud of how you make money, not just how much. `;
-      else if (p.name === 'Mercury') reading += `Mercury here sharpens your financial mind — you are good with numbers, contracts, and spotting the details others miss. `;
-      else if (p.name === 'Uranus') reading += `Uranus here means your income arrives in unexpected bursts rather than steady streams. You may earn through unconventional or technological means. `;
-      else if (p.name === 'Neptune') reading += `Neptune here can blur financial boundaries — you might undercharge, struggle to track spending, or attract unclear financial situations. Clarity is your friend. `;
+      if (p.name === 'Jupiter') reading += `Jupiter here means money tends to arrive through other people's trust: a client who refers three more, a boss who raises you before you ask. The cost is that you spend at the same speed and say yes to loans, favors and big plans you should have priced first. `;
+      else if (p.name === 'Saturn') reading += `Saturn here means you are underpaid early and your first decade of work feels unfairly hard. Then you hold a position or a savings pile that your faster peers do not. The cost is that you distrust spending on yourself even when you can afford it. `;
+      else if (p.name === 'Venus') reading += `Venus here means you earn from how people feel around you: clients who like you, a product that looks good, a partner who shares the bills. The cost is that you discount your price for people you like and avoid chasing late payments. `;
+      else if (p.name === 'Mars') reading += `Mars here means you hustle, and you ask for the raise instead of waiting for it. The cost is impulse spending when you are angry and a habit of burning through a good month in a week. `;
+      else if (p.name === 'Pluto') reading += `Pluto here means your money story has at least one collapse in it, a business, an inheritance, a debt, and you rebuild larger afterwards. The cost is that you either control every cent or avoid looking at it, with little in between. `;
+      else if (p.name === 'Moon') reading += `The Moon here means your income follows your mood. In a good week you invoice, pitch and ask; in a bad one you let things slide for ten days. Set up automatic payments for the months you will not feel like it. `;
+      else if (p.name === 'Sun') reading += `The Sun here means pride is tied to how you earn. You turn down well-paid work that embarrasses you and stay too long in badly paid work you are proud of. Decide the number you need, then judge each job against it. `;
+      else if (p.name === 'Mercury') reading += `Mercury here means you read the contract, spot the odd line on a bill and catch the error in the quote. The cost is that you over-analyze and sit on a good deal for a week while someone else signs. `;
+      else if (p.name === 'Uranus') reading += `Uranus here means income arrives in lumps: a big invoice, then nothing for six weeks. Side projects and tech pay you better than a salary, and a salary feels like a cage. Keep three months of costs in cash for the empty weeks. `;
+      else if (p.name === 'Neptune') reading += `Neptune here means you undercharge, forget to invoice and lose track of what left your account. Write the price down before you talk to the client, and read your statement on the first of every month. `;
     });
     reading += `\n\n`;
   }
 
   reading += `### How You Handle Other People's Money\n\n`;
-  reading += `Your 8th house in **${h8.sign}**, ruled by **${h8.ruler}**: ${SHARED_RESOURCES[h8.sign] || `you have a distinctive approach to shared finances, investments, and financial partnerships.`}\n\n`;
+  reading += `Your 8th house in **${h8.sign}**: ${SHARED_RESOURCES[h8.sign] || `you have a distinctive approach to shared finances, investments, and financial partnerships.`}\n\n`;
 
   reading += `### Your Career and Financial Reputation\n\n`;
-  reading += `**${h10.sign}** on your Midheaven means the world sees your professional value through the lens of ${h10.sign} qualities. Ruled by **${h10.ruler}**, your career success comes through ${EARNING_STYLE[h10.sign]?.split('.')[0]?.toLowerCase() || 'leveraging the unique qualities of ' + h10.sign}.\n\n`;
+  reading += `**${h10.sign}** on your Midheaven is the first impression your colleagues and clients form of your work, and your career success comes through ${EARNING_STYLE[h10.sign]?.split('.')[0]?.toLowerCase() || 'leveraging the unique qualities of ' + h10.sign}.\n\n`;
 
   reading += `### What Is Working For You\n\n`;
   rpt.strengths.forEach(s => { reading += `- ${s}\n`; });
@@ -358,21 +358,21 @@ function generateFallbackReading(firstName: string, rpt: FinancialReport, pof: {
   reading += `\nThese are not weaknesses — they are blind spots. The difference is that blind spots only stay dangerous if you refuse to look at them.\n\n`;
 
   reading += `### Your Prosperity Point\n\n`;
-  reading += `${firstName}, your Part of Fortune sits at ${formatDeg(pof.degree)} **${pof.sign}** in your **${ordinal(pof.house)} house**. This is the exact point where luck, talent, and opportunity converge most powerfully in your chart. Pay close attention to opportunities that arise through ${getHouseTheme(pof.house)} — this area is where fortune flows most naturally toward you, often without you having to force it.\n\n`;
+  reading += `${firstName}, your Part of Fortune sits at ${formatDeg(pof.degree)} **${pof.sign}** in your **${ordinal(pof.house)} house**. Look at where help has turned up for you without being asked: it is usually through ${getHouseTheme(pof.house)}. That is where you get paid for the least effort, so go there first, and notice that you undervalue it because it comes easily.\n\n`;
 
   reading += `### When to Move and When to Wait\n\n`;
   const best = rpt.monthlyForecasts.filter(f => f.rating === 'favorable').slice(0, 3);
   const cautious = rpt.monthlyForecasts.filter(f => f.rating === 'challenging').slice(0, 2);
-  if (best.length) reading += `**Your strongest financial windows:** ${best.map(f => `**${f.month} ${f.year}**`).join(', ')}. These are the months to negotiate raises, launch ventures, make investments, and take calculated financial risks. The cosmic wind is at your back during these periods.\n\n`;
-  if (cautious.length) reading += `**Exercise caution during:** ${cautious.map(f => `**${f.month} ${f.year}**`).join(', ')}. These months favor conservation, review, and strategic planning over bold moves. Do not sign major contracts or make irreversible financial decisions unless you have thoroughly done your homework.\n\n`;
+  if (best.length) reading += `**Your strongest financial windows:** ${best.map(f => `**${f.month} ${f.year}**`).join(', ')}. These are the months to negotiate raises, launch ventures, make investments, and take calculated financial risks. Book the raise conversation and the pitch for these dates now, before the month fills up.\n\n`;
+  if (cautious.length) reading += `**Exercise caution during:** ${cautious.map(f => `**${f.month} ${f.year}**`).join(', ')}. In these months you check the numbers twice, put off the big purchase and read every line before you sign. Do not sign major contracts or make irreversible financial decisions unless you have thoroughly done your homework.\n\n`;
 
   reading += `### The Verdict\n\n`;
   if (rpt.overallScore >= 75) {
-    reading += `${firstName}, your financial chart is genuinely strong. The combination of your ${h2.sign} earning instincts, your ${h10.sign} career energy, and your Part of Fortune in the ${ordinal(pof.house)} house creates a blueprint for real, sustainable wealth. The key is not working harder — it is working in alignment with these natural strengths instead of against them. The timing windows I have highlighted are not suggestions — they are when the universe is most willing to meet your effort halfway. Use them.\n`;
+    reading += `${firstName}, your financial chart is genuinely strong. The combination of your ${h2.sign} earning instincts, your ${h10.sign} career energy, and your Part of Fortune in the ${ordinal(pof.house)} house makes money easier for you than for most people. You gain more by choosing the one kind of work that fits than by working longer hours. The strongest months above are when your prices and pitches land best, so put your biggest requests there.\n`;
   } else if (rpt.overallScore >= 50) {
-    reading += `${firstName}, your chart has solid financial potential that rewards strategic action and patience. You are not going to stumble into wealth accidentally — but the deliberate, intentional version of you is capable of building something significant. Honor your ${h2.sign} earning style, watch the timing I have highlighted, and stop comparing your financial journey to people who are playing a different game with different charts.\n`;
+    reading += `${firstName}, your chart has solid financial potential that rewards strategic action and patience. You will not drift into money; you will build it, one deliberate decision at a time. Work in your ${h2.sign} earning style, use the dates above, and stop comparing your income to friends who earn in a completely different way.\n`;
   } else {
-    reading += `${firstName}, I want to be honest — your financial chart requires more conscious effort than some. That is not a limitation. It is information that saves you from banging your head against approaches that were never designed for your chart. Work WITH your ${h2.sign} 2nd house energy, not against it. Use the favorable timing windows aggressively and the challenging months conservatively. The people who thrive with charts like yours are the ones who stop fighting their nature and start leveraging it.\n`;
+    reading += `${firstName}, I want to be honest: money takes more deliberate effort for you than for some. Quick routes, like get-rich schemes, copying a friend's side hustle or waiting for a windfall, cost you more than they pay. Work in your ${h2.sign} earning style, push hard in the favorable months and hold cash in the challenging ones.\n`;
   }
   return reading;
 }
@@ -456,13 +456,13 @@ function calculateDailyFinancialScore(
   let insight = '';
   let bestFor = '';
   if (score >= 7.5) {
-    insight = `Strong financial energy with Moon in ${moonSign}. Favorable for major money moves.`;
+    insight = `Moon in ${moonSign} today: a good day to ask, sign or buy the thing you have already researched.`;
     bestFor = 'Negotiations, investments, pricing decisions';
   } else if (score >= 6) {
     insight = `Good financial flow with Moon in ${moonSign}. Steady progress available.`;
     bestFor = 'Invoicing, follow-ups, business planning';
   } else if (score >= 4.5) {
-    insight = `Mixed financial energy with Moon in ${moonSign}. Proceed with awareness.`;
+    insight = `Moon in ${moonSign} today: fine for small purchases, but wait on anything you cannot cancel.`;
     bestFor = 'Research, budgeting, minor purchases';
   } else {
     insight = `Quieter financial period with Moon in ${moonSign}. Better for review than action.`;

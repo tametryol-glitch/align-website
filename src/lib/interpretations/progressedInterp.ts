@@ -43,7 +43,7 @@ export function getProgressedInterpretation(
     }
   }
 
-  // Sign change alert — one of the most important signals in the whole chart
+  // Sign change alert — a major signal in the whole chart
   if (changedSign && natalSign) {
     sections.push(
       `**Something fundamental has shifted — ${natalSign} → ${sign}:** Read this carefully. The version of you that operated through ${natalSign} — the way you thought, reacted, wanted, protected yourself — has completed its chapter. You probably already feel it. The things that used to work don\'t work anymore. The instincts you trusted have been replaced by new ones you\'re still learning to follow. This isn\'t a subtle shift. This is you becoming someone genuinely different — and the sooner you stop clinging to who you were, the sooner the new you can fully arrive.`

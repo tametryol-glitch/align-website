@@ -114,37 +114,37 @@ function generatePersonalReading(result: NumerologyResult, firstName: string): s
   const isMaster = (v: number) => [11, 22, 33].includes(v);
 
   let r = '';
-  r += `Hey ${firstName} — I just ran your numbers, and I have to tell you, your chart is really something. Certain combinations just jump off the page. Yours is one of those.\n\n`;
-  r += `Numerology is not about fortune telling. It is about understanding the blueprint you were born with. Your name and your birth date are not accidents. They carry a vibration, a frequency, and that frequency tells a story about who you are, why you are here, and where you are headed.\n\n`;
+  r += `Hey ${firstName} — I just ran your numbers, and below I say where each one shows up in how you work, love and decide.\n\n`;
+  r += `Numerology will not predict your week. It turns your name and birth date into five numbers, and each one is a pattern you can check against how you actually live. Where one does not fit, throw it out.\n\n`;
 
   r += `--- LIFE PATH: ${lp.display} ---\n\n`;
-  r += `This is the single most important number in your entire chart. It reveals the road you are walking in this lifetime.\n\n`;
+  r += `This number comes from your full birth date, and it is the pattern behind your biggest choices: the jobs you stay in too long, the people you keep ending up with, the thing you cannot stop returning to.\n\n`;
   r += `${lp.interpretation}\n\n`;
   if (isMaster(lp.value)) {
-    r += `You carry a Master Number on your Life Path. A Master Number means you came into this life with a higher calling — more potential, but also more pressure. That is your ${lp.value} energy.\n\n`;
+    r += `You carry a Master Number on your Life Path. A Master Number means more pull and more pressure. You will feel it as a sense that you should be doing something bigger than what is on your desk, and the cost is burnout when you try to carry all of it at once. That is your ${lp.value} showing up.\n\n`;
   }
 
   r += `--- EXPRESSION: ${expr.display} ---\n\n`;
-  r += `Your Expression number comes from your full birth name — every letter carries a numerical vibration.\n\n`;
+  r += `Your Expression number is built from every letter of your full birth name, and it is what you are good at when nobody is grading you.\n\n`;
   r += `${expr.interpretation}\n\n`;
 
   r += `--- SOUL URGE: ${soul.display} ---\n\n`;
-  r += `Your Soul Urge reveals the deepest desire of your heart.\n\n`;
+  r += `Your Soul Urge is built from the vowels in your name. It is the want you rarely say out loud, and it sits behind the restless days you cannot explain and the choices that look irrational to everyone else.\n\n`;
   r += `${soul.interpretation}\n\n`;
 
   r += `--- PERSONALITY: ${pers.display} ---\n\n`;
-  r += `Your Personality number reveals how the world sees you.\n\n`;
+  r += `Your Personality number is built from the consonants in your name. It is the first impression you give, and the one people work from when they misjudge you.\n\n`;
   r += `${pers.interpretation}\n\n`;
 
   r += `--- BIRTHDAY: ${bd.display} ---\n\n`;
-  r += `Your Birthday number reveals a special talent you carry.\n\n`;
+  r += `Your Birthday number is the day of the month you were born, reduced. It is one skill you use without effort, so you probably undervalue it and give it away for free.\n\n`;
   r += `${bd.interpretation}\n\n`;
 
   r += `--- PERSONAL YEAR: ${result.personal_year_display} ---\n\n`;
   r += `${result.personal_year_meaning}\n\n`;
 
   r += `--- FINAL THOUGHTS ---\n\n`;
-  r += `${firstName}, your numbers are not a cage — they are a compass. Come back to this reading when life gets noisy and you need a reminder of the truth underneath all the chaos.\n`;
+  r += `${firstName}, none of this forces your hand. Pick the one number that stung a little, change one habit around it this month, and drop any number that did not fit you.\n`;
 
   const lpM = NUMBER_MEANINGS[lp.value];
   const exprM = NUMBER_MEANINGS[expr.value];

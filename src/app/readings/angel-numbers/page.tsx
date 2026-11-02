@@ -156,7 +156,7 @@ export default function AngelNumbersPage() {
 
           {/* Core Meaning */}
           <p className="text-text-primary italic text-sm mb-3">
-            {firstName}, here is why you are seeing this number:
+            {firstName}, here is what this number is pointing at in your life:
           </p>
           <div className="flex items-start gap-2 mb-6">
             <p className="text-text-secondary text-sm leading-relaxed flex-1">
@@ -201,7 +201,7 @@ export default function AngelNumbersPage() {
           {/* Personal Note */}
           <div className="border-t border-accent-muted pt-4 mt-3">
             <p className="text-text-tertiary text-sm italic leading-relaxed">
-              {firstName}, the fact that you keep seeing {result.number} is not random. The universe does not waste a signal. This number found you because you are ready to receive its message. Pay attention to what you were thinking about or doing the moment you saw it — that context is part of the meaning.
+              {firstName}, you keep seeing {result.number} because you were already carrying a question when your eye caught it. Check what you were thinking about or doing the second you saw it: that moment is the real reading, and the number only points you back at it. The cost is that you will start hunting for it, so notice when you are searching instead of living.
             </p>
           </div>
 
@@ -225,16 +225,16 @@ export default function AngelNumbersPage() {
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-2">What Are Angel Numbers?</h3>
             <p className="text-text-secondary text-sm leading-relaxed mb-2">
-              Angel numbers are repeating number sequences that carry messages from the spiritual realm. When you see the same number over and over — on clocks, license plates, receipts, phone numbers — it is not a coincidence. It is a form of divine communication.
+              You glance at the clock and it says 11:11, then you see the same digits on a receipt, then on a licence plate. Once you start counting, you notice them far more often, and the sightings bunch up on the days your mind is stuck on one decision or one person.
             </p>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Each number carries its own vibration and meaning. By understanding what these numbers represent, you can decode the guidance the universe is constantly sending you.
+              Every number comes with a set of themes. Read yours, name the one situation in your week that it fits, and do the small thing it points at. If nothing in your life fits, let it go instead of forcing it.
             </p>
           </div>
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-2">How to Use This</h3>
             <p className="text-text-secondary text-sm leading-relaxed">
-              Type in the number you keep seeing and tap &quot;Decode&quot; to receive a personalized interpretation covering what it means for your love life, career, and spiritual growth.
+              Type in the number you keep seeing and tap &quot;Decode&quot;, and you get what it says about your love life, your work and money, and the one thing it asks you to do next.
             </p>
           </div>
         </div>

@@ -207,7 +207,7 @@ WRITING RULES:
 - Be direct, emotional, spiritual, and personal
 - Do NOT use generic horoscope language
 - Do NOT diagnose medical/mental health conditions
-- Use language like "your scan suggests", "your energy may be carrying", "your aura pattern reflects"
+- Use direct language like "your scan shows", "your energy is carrying", "your aura pattern reflects"
 - Do NOT define colors — interpret what they MEAN for THIS person right now
 - Make the reading feel like the app is reading their energy and life situation
 - Be powerful but compassionate
@@ -350,12 +350,12 @@ function buildSummary(
   const outerDef = AURA_COLORS[outer.color];
   const innerDef = AURA_COLORS[inner.color];
 
-  let text = `Your scan suggests a ${outerDef.label.toLowerCase()}-${innerDef.label.toLowerCase()} energy pattern. `;
+  let text = `Your scan reads a ${outerDef.label.toLowerCase()}-${innerDef.label.toLowerCase()} energy pattern. `;
 
   if (outer.color === inner.color) {
-    text += `Your outer and inner fields are aligned — what you show to the world matches what you carry inside. This is a moment of energetic coherence.`;
+    text += `Your outer and inner fields are aligned — what you show to the world matches what you carry inside. You are not performing right now.`;
   } else {
-    text += `Your outer field radiates ${outerDef.keywords[0]}, but your inner energy is carrying something different — ${innerDef.keywords[0]}. There may be a gap between what you present and what you feel.`;
+    text += `Your outer field radiates ${outerDef.keywords[0]}, but your inner energy is carrying something different — ${innerDef.keywords[0]}. You are showing one thing and feeling another, and the people closest to you can tell.`;
   }
 
   if (input.mood && input.mood !== 'unknown') {
@@ -369,10 +369,10 @@ function buildSummary(
 function buildOuterAuraText(outer: AuraColorScore, input: AuraInput): string {
   const def = AURA_COLORS[outer.color];
   let text = `Your outer aura is ${def.label.toLowerCase()}. This is the energy others feel when they are around you right now. `;
-  text += `Your field appears to be projecting ${def.keywords.slice(0, 3).join(', ')}. `;
+  text += `Your field is projecting ${def.keywords.slice(0, 3).join(', ')}. `;
 
   if (input.astroContext?.sunSign) {
-    text += `As a ${input.astroContext.sunSign}, this ${def.label.toLowerCase()} energy may be amplified or modulated by your natural solar expression.`;
+    text += `As a ${input.astroContext.sunSign}, your ${def.label.toLowerCase()} energy runs through your ${input.astroContext.sunSign} habits, so it shows in how you decide, how you speak and how you rest.`;
   }
   return text;
 }
@@ -386,9 +386,9 @@ function buildInnerAuraText(
   let text = `Your inner aura is ${innerDef.label.toLowerCase()}. This is the energy you carry beneath what you show the world. `;
 
   if (inner.color !== outer.color) {
-    text += `The contrast between your outer ${AURA_COLORS[outer.color].label.toLowerCase()} and inner ${innerDef.label.toLowerCase()} suggests you may be holding something back or processing privately.`;
+    text += `The contrast between your outer ${AURA_COLORS[outer.color].label.toLowerCase()} and inner ${innerDef.label.toLowerCase()} means you are holding something back and working it out in private.`;
   } else {
-    text += `Your inner and outer fields match, suggesting emotional transparency and alignment.`;
+    text += `Your inner and outer fields match, so what people see in you is what you actually feel.`;
   }
   return text;
 }
@@ -400,7 +400,7 @@ function buildEmotionalCoreText(core: AuraColorScore, input: AuraInput): string 
 
   if (input.lifeArea) {
     const area = input.lifeArea.replace('_', ' ');
-    text += `Since you identified ${area} as where this energy is showing up, your core may be processing unresolved patterns in that area.`;
+    text += `Since you identified ${area} as where this energy is showing up, something there is still unresolved, and it is draining you more than you admit.`;
   }
   return text;
 }
@@ -421,7 +421,7 @@ function buildEnergyCarryingText(
   }
 
   if (inner.color !== outer.color) {
-    text += `The split between your outer ${AURA_COLORS[outer.color].label.toLowerCase()} and inner ${AURA_COLORS[inner.color].label.toLowerCase()} suggests emotional complexity — you are holding more than one truth right now.`;
+    text += `The split between your outer ${AURA_COLORS[outer.color].label.toLowerCase()} and inner ${AURA_COLORS[inner.color].label.toLowerCase()} is real: you are holding two truths at once and offering whichever one the room can handle.`;
   }
 
   return text;
@@ -495,17 +495,17 @@ function buildForecastText(outer: AuraColorScore, input: AuraInput): string {
   let text = '';
 
   if (ac?.currentMoonPhase?.includes('Waxing')) {
-    text += 'The waxing Moon suggests your energy will build over the next few days. ';
+    text += 'The waxing Moon builds your energy over the next few days. ';
   } else if (ac?.currentMoonPhase?.includes('Waning')) {
-    text += 'The waning Moon suggests this energy will gradually release over the next few days. ';
+    text += 'The waning Moon lets this energy drain off gradually over the next few days. ';
   } else if (ac?.currentMoonPhase === 'Full Moon') {
     text += 'The Full Moon amplifies everything. Expect heightened emotions and clarity over the next 48 hours. ';
   } else if (ac?.currentMoonPhase === 'New Moon') {
-    text += 'The New Moon invites a fresh start. Your aura may shift significantly in the next 72 hours. ';
+    text += 'The New Moon invites a fresh start. Your aura will shift noticeably in the next 72 hours. ';
   }
 
   const outerDef = AURA_COLORS[outer.color];
-  text += `Your ${outerDef.label.toLowerCase()} aura energy may soften or deepen depending on how you engage with it. `;
+  text += `Your ${outerDef.label.toLowerCase()} aura energy will soften or deepen depending on how you engage with it. `;
   text += 'Check back in 24-72 hours to see how your field responds to the choices you make today.';
 
   return text;
@@ -521,7 +521,7 @@ function buildSpiritualMessage(
     orange: 'Your soul wants to create. Something inside you is ready to be born. Let it move through you.',
     yellow: 'You are being asked to trust your own knowing. The answer you seek is already inside you.',
     green: 'Healing is happening whether you feel it or not. Your energy is composting old pain into new growth.',
-    blue: 'Your truth is ready to be spoken. The words may be uncomfortable, but they are necessary.',
+    blue: 'Your truth is ready to be spoken. The words will be uncomfortable, but they are necessary.',
     indigo: 'The veil is thin for you right now. Pay attention to what shows up in the quiet moments.',
     violet: 'You are in a spiritual expansion. Something larger than your daily life is moving through you.',
     white: 'You are being cleansed. Let go of what no longer serves your highest self.',
