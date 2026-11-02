@@ -344,7 +344,7 @@ function buildInterpretationSimple(
       : event.type === 'last_quarter'
       ? 'Last Quarter'
       : isEclipse
-      ? 'Eclipse'
+      ? 'eclipse'
       : 'Lunar event';
 
   const signQualities: Record<string, { theme: string; lean: string; watch: string }> = {

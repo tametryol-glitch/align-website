@@ -43,7 +43,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         paragraphs: [
           'You act first and strategize later. Your instinct when confronted with a challenge is to charge directly at it, and this primal directness is often your greatest asset. While others are still planning, you have already started. While others are debating options, you have already committed to a path.',
           'Your ambition is fierce but short-cycled. You are brilliant at initiating projects, leading charges, and generating momentum, but maintaining focus on long-term goals requires conscious effort. You excel in environments that demand quick thinking, bold action, and a willingness to take risks.',
-          'Competition fuels you. Whether in sports, business, or personal challenges, you perform best when there is something at stake and someone to beat. You are not motivated by abstract goals — you need a tangible target and the adrenaline of real-time performance.',
+          'Competition fuels you. Whether in sports, business, or personal challenges, you perform best when there is something at stake and someone to beat. You are not motivated by abstract goals: you need a tangible target and the adrenaline of real-time performance.',
         ],
       },
       {
@@ -72,25 +72,25 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Drive & Ambition',
         icon: '🌿',
         paragraphs: [
-          'You pursue goals with methodical, unwavering determination. You set your sights on what you want and work toward it with a patience that would exhaust more impulsive signs. Your results may take longer to materialize, but they are invariably solid, lasting, and worth the wait.',
-          'Your ambition is oriented toward tangible, material outcomes. You want security, comfort, and beautiful things, and you are willing to work incredibly hard to acquire them. Abstract goals do not motivate you — you need to see, touch, and feel the fruits of your labor.',
-          'You excel in environments that reward persistence over speed. While others burn out or lose interest, you keep going, steady and unshakable, until the job is done to your exacting standards.',
+          'You pursue goals with methodical, unwavering determination. You set your sights on what you want and work toward it with a patience that would exhaust more impulsive people. Your results may take longer to materialize, but they are invariably solid, lasting, and worth the wait.',
+          'Your ambition is oriented toward tangible, material outcomes. You want security, comfort, and beautiful things, and you are willing to work incredibly hard to acquire them. Abstract goals do not motivate you; you need to see, touch, and feel the fruits of your labor.',
+          'Persistence beats speed in your world. While others burn out or lose interest, you keep going, steady and unshakable, until the job is done to your exacting standards.',
         ],
       },
       {
         title: 'Anger Style & Conflict',
         icon: '⚔️',
         paragraphs: [
-          'Your fuse is very long, and the blast at the end of it is one people remember. You tolerate frustration for far longer than most signs, absorbing provocations that would send other people into orbit. But when you finally reach your breaking point, the eruption is seismic and memorable.',
-          'You prefer to avoid conflict entirely, resolving tensions through patience and practical compromise. But when pushed beyond your considerable limits, your anger is a force of nature — thunderous, righteous, and impossible to dismiss.',
+          'Your fuse is very long, and the blast at the end of it is one people remember. You tolerate frustration for far longer than most people, absorbing provocations that would send other people into orbit. But when you finally reach your breaking point, the eruption is seismic and memorable.',
+          'You prefer to avoid conflict entirely, resolving tensions through patience and practical compromise. But when pushed beyond your considerable limits, your anger is a force of nature, thunderous and impossible to dismiss.',
         ],
       },
       {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is steady and enduring. You prefer sustained activity over burst exertion — long hikes, weight training, and outdoor labor suit you better than sprint-style workouts. Your body thrives on consistency and responds well to gradual, progressive challenge.',
-          'In bed you are sensual and unhurried. You value quality over quantity, preferring extended, deeply physical encounters to quick or impulsive connections. Touch, comfort, and leisurely exploration are your specialties.',
+          'Your physical energy is steady and enduring. You prefer sustained activity over burst exertion: long hikes, weight training, and outdoor labor suit you better than sprint-style workouts. Your body thrives on consistency and responds well to gradual, progressive challenge.',
+          'Between the sheets you are sensual and unhurried. You value quality over quantity, preferring extended, deeply physical encounters to quick or impulsive connections. Touch, comfort, and leisurely exploration are your specialties.',
         ],
       },
     ],
@@ -105,7 +105,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         paragraphs: [
           'You chase several goals at once and thrive on variety. You become restless when focused on a single task for too long, and your ideal work environment allows you to juggle multiple projects, switch between different challenges, and engage your quick mind.',
           'Your ambition is driven by curiosity rather than conquest. You want to know, to learn, to understand, and to communicate. Careers that involve writing, speaking, teaching, selling, or any form of information exchange wake you up.',
-          'You excel at pivoting. When a plan stops working, you do not stubbornly persist — you adapt, finding new angles and alternative approaches with impressive speed. This mental flexibility is one of your greatest competitive advantages.',
+          'You excel at pivoting. When a plan stops working, you do not stubbornly persist; you adapt, finding new angles and alternative approaches with impressive speed. This mental flexibility is one of your greatest competitive advantages.',
         ],
       },
       {
@@ -120,8 +120,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is nervous and variable. You need activities that engage both mind and body — dance, martial arts, tennis, or any sport that requires strategy and quick reflexes. Pure endurance exercise bores you unless it comes with mental engagement.',
-          'In bed you are playful and inventive. Talking is foreplay for you — dirty talk, verbal teasing, and intellectual connection heighten physical experience. You need variety and novelty to stay engaged over time.',
+          'Your physical energy is nervous and variable. You need activities that engage both mind and body: dance, martial arts, tennis, or any sport that requires strategy and quick reflexes. Pure endurance exercise bores you unless it comes with mental engagement.',
+          'In bed you are playful and inventive. Talking is foreplay for you: dirty talk, verbal teasing, and intellectual connection heighten physical experience. You need variety and novelty to stay engaged over time.',
         ],
       },
     ],
@@ -134,8 +134,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Drive & Ambition',
         icon: '🌊',
         paragraphs: [
-          'You run on emotional purpose. You are most motivated when your actions protect, nurture, or provide for someone you care about. Working just for yourself feels hollow — you need a personal, emotional reason to push yourself.',
-          'Your ambition is oriented toward security and family. You want to build a home, provide for your loved ones, and create an environment where the people you care about can thrive. Financial security is not about luxury — it is about the safety of your family.',
+          'You run on emotional purpose. You are most motivated when your actions protect, nurture, or provide for someone you care about. Working just for yourself feels hollow, because you need a personal, emotional reason to push yourself.',
+          'Your ambition is about security and family. You want to build a home, provide for your loved ones, and create an environment where the people you care about can thrive. Financial security is not about luxury for you, it is about the safety of your family.',
           'You work in emotional cycles, with periods of intense productivity followed by retreats into rest and reflection. Trying to maintain constant output drains you. Your best work happens in focused bursts driven by genuine emotional investment.',
         ],
       },
@@ -143,7 +143,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Anger Style & Conflict',
         icon: '⚔️',
         paragraphs: [
-          'You express anger sideways. You rarely confront someone head-on with raw fury. Instead, your anger manifests as moodiness, withdrawal, passive-aggressive behavior, or emotional manipulation when you feel threatened.',
+          'You express anger sideways. You rarely confront someone head-on with raw fury. Instead, your anger manifests as moodiness, withdrawal, passive-aggressive behavior, or pointed silences when you feel threatened.',
           'But when someone you love is threatened, a different person shows up: fierce, primal and surprisingly aggressive. People who have seen you defend your family do not pick that fight twice.',
         ],
       },
@@ -174,16 +174,16 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Anger Style & Conflict',
         icon: '⚔️',
         paragraphs: [
-          'Your anger roars and nobody misses it. When you are angry, the temperature in the room rises. Your fury is theatrical and commanding — you do not whisper your displeasure, you announce it with the authority of a monarch addressing the court.',
-          'Your anger is triggered most powerfully by disrespect. Being dismissed, humiliated, or treated as insignificant ignites your Mars like nothing else. However, once you have expressed your outrage and received an appropriate acknowledgment, you are remarkably generous about forgiving.',
+          'Your anger roars and nobody misses it. When you are angry, the temperature in the room rises. Your fury is theatrical and commanding: you do not whisper your displeasure, you announce it with the authority of a monarch addressing the court.',
+          'Your anger is triggered most powerfully by disrespect. Being dismissed, humiliated, or treated as insignificant ignites you like nothing else. However, once you have expressed your outrage and received an appropriate acknowledgment, you are remarkably generous about forgiving.',
         ],
       },
       {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is warm, sustained, and impressive. You are drawn to activities that allow you to shine — performance arts, competitive sports, and anything that combines physical exertion with creative expression. You enjoy being watched and admired while in action.',
-          'In bed you are generous and a little theatrical. You bring flair and romance to physical connection, and you want your partner to feel like the most desired person in the world. Praise and admiration from your partner fuels your passion intensely.',
+          'Your physical energy is warm, sustained, and impressive. You are drawn to activities that allow you to shine: performance arts, competitive sports, and anything that combines physical exertion with creative expression. You enjoy being watched and admired while in action.',
+          'With a lover you are generous and a little theatrical. You bring flair and romance to physical connection, and you want your partner to feel like the most desired person in the world. Praise and admiration from your partner fuels your passion intensely.',
         ],
       },
     ],
@@ -198,7 +198,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         paragraphs: [
           'You pursue goals through careful planning, steady effort and constant refinement. You break large objectives into manageable components and execute each one with precision. Your approach may lack flash, but it produces consistently excellent results.',
           'You treat your work like a practice, with monk-like focus on whatever you commit to. Half-measures annoy you, and when you do something, you do it properly.',
-          'You excel in environments that reward expertise, precision, and continuous improvement. Medicine, engineering, craft, analysis, and any field that demands meticulous attention to detail fits you perfectly.',
+          'Expertise and precision are your currency. Medicine, engineering, craft, analysis, and any field that demands meticulous attention to detail fits you perfectly.',
         ],
       },
       {
@@ -213,7 +213,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is steady, detailed, and health-conscious. You are drawn to exercise routines that are systematic and progressive — tracking your performance, optimizing your nutrition, and treating your body as a precision instrument that requires proper maintenance.',
+          'Your physical energy is steady, detailed, and health-conscious. You are drawn to exercise routines that are systematic and progressive: tracking your performance, optimizing your nutrition, and treating your body as a precision instrument that requires proper maintenance.',
           'In bed you are attentive and focused on technique. You study your partner\'s responses with the same analytical care you bring to everything else, learning exactly what works and refining your approach over time. Cleanliness and health are important components of your physical expression.',
         ],
       },
@@ -229,7 +229,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         paragraphs: [
           'You pursue goals through collaboration and diplomacy. You are most effective when working with others, and you have a gift for assembling teams, brokering agreements, and creating win-win outcomes. Lone-wolf ambition feels unnatural to you.',
           'Unfairness gets you moving. You fight for equality and the rights of others, and law, advocacy, mediation or social justice work tends to pull you in.',
-          'Your ambition is oriented toward creating harmony and beauty in the world. You want your work to be aesthetically pleasing, socially beneficial, and fundamentally fair. You struggle to invest your energy in anything that feels unjust or inelegant.',
+          'Your ambition runs toward harmony and beauty. You want your work to be aesthetically pleasing, socially beneficial, and fundamentally fair. You struggle to invest your energy in anything that feels unjust or inelegant.',
         ],
       },
       {
@@ -244,8 +244,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy thrives in partnership activities. Couples workouts, dance, tennis, and any activity that involves graceful movement with another person energizes you. Solo exercise can feel unmotivating — you perform best with a companion.',
-          'In bed you are romantic and focused on mutual pleasure. You approach physical connection as a collaborative art form, prioritizing your partner\'s experience as much as your own. Beauty, atmosphere, and emotional connection enhance your desire.',
+          'Your physical energy thrives in partnership activities. Couples workouts, dance, tennis, and any activity that involves graceful movement with another person energizes you. Solo exercise can feel unmotivating, and you perform best with a companion.',
+          'As a lover you are romantic and focused on mutual pleasure. You approach physical connection as a collaborative art form, prioritizing your partner\'s experience as much as your own. Beauty, atmosphere, and emotional connection enhance your desire.',
         ],
       },
     ],
@@ -258,9 +258,9 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Drive & Ambition',
         icon: '🦅',
         paragraphs: [
-          'You pursue goals with singular, obsessive focus. When you decide you want something, you commit every fiber of your being to achieving it. Obstacles do not deter you — they merely redirect your approach. You will find a way, no matter how long it takes or how many detours you must navigate.',
-          'Your ambition is fueled by emotional intensity and a deep desire for power — not power over others, but the power to shape your own destiny. You are drawn to complex, high-stakes environments where your psychological insight and strategic thinking give you a decisive advantage.',
-          'You excel in environments that require investigation, transformation, and depth. Psychology, surgery, detective work, research, finance, and any field that rewards penetrating beneath the surface fits you.',
+          'You pursue goals with singular, obsessive focus. When you decide you want something, you commit every fiber of your being to achieving it. Obstacles do not deter you, they redirect you. You will find a way, no matter how long it takes or how many detours you must navigate.',
+          'Your ambition is fueled by emotional intensity and a deep desire for power, not over others but over your own destiny. You are drawn to complex, high-stakes environments where your psychological insight and strategic thinking give you a decisive advantage.',
+          'You are built for work that means investigating and digging. Psychology, surgery, detective work, research, finance, and any field that rewards penetrating beneath the surface fits you.',
         ],
       },
       {
@@ -275,7 +275,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is intense, sustained, and deeply connected to your emotional state. You are drawn to challenging, transformative physical practices — intense training, martial arts, distance running, or any activity that pushes you past your perceived limits.',
+          'Your physical energy is intense, sustained, and deeply connected to your emotional state. You are drawn to challenging, transformative physical practices: intense training, martial arts, distance running, or any activity that pushes you past your perceived limits.',
           'In bed your desire is deep and consuming, and it changes people. Physical connection is a gateway to emotional and spiritual merger for you, and you bring a primal intensity to intimacy that is both thrilling and overwhelming.',
         ],
       },
@@ -289,16 +289,16 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Drive & Ambition',
         icon: '🏹',
         paragraphs: [
-          'You pursue goals with big enthusiasm and a sense of purpose. You need your ambitions to mean something — you cannot invest your energy in pursuits that feel pointless or small. You want your work to expand horizons, spread truth, or contribute to human understanding.',
+          'You pursue goals with big enthusiasm and a sense of purpose. You need your ambitions to mean something; you cannot invest your energy in pursuits that feel pointless or small. You want your work to expand horizons, spread truth, or contribute to human understanding.',
           'Your approach is big-picture and visionary. You are better at setting grand goals than managing the details of execution, and you thrive when you can delegate the minutiae to someone more detail-oriented while you focus on the overarching mission.',
-          'You excel in environments that involve travel, education, publishing, philosophy, or cross-cultural exchange. Any work that broadens perspectives and challenges narrow thinking lights you up.',
+          'Travel, education, publishing, philosophy and cross-cultural work suit you. Any work that broadens perspectives and challenges narrow thinking lights you up.',
         ],
       },
       {
         title: 'Anger Style & Conflict',
         icon: '⚔️',
         paragraphs: [
-          'Your anger is explosive and short-lived. You flare up dramatically, saying exactly what you think with blunt, unfiltered honesty. Your anger is righteous and principled — you are most triggered by hypocrisy, dishonesty, and willful ignorance.',
+          'Your anger is explosive and short-lived. You flare up dramatically, saying exactly what you think with blunt, unfiltered honesty. Your anger is righteous and principled: you are most triggered by hypocrisy, dishonesty, and willful ignorance.',
           'You fight for ideals rather than personal grievances. Injustice, closed-mindedness, and the suppression of truth provoke your warrior spirit. After the explosion, you cool down quickly and are often surprised by how hurt others are by your blunt words.',
         ],
       },
@@ -306,8 +306,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is abundant, restless, and needs wide-open spaces. Outdoor activities — hiking, horseback riding, mountain biking, adventure sports — suit you perfectly. You need room to roam and challenges that take you out of your comfort zone.',
-          'In bed you are enthusiastic and playful. You approach physical connection with humor, openness, and a genuine sense of fun. You value honesty and directness in sexual communication and are attracted to partners who share your adventurous spirit.',
+          'Your physical energy is abundant, restless, and needs wide-open spaces. Outdoor activities such as hiking, horseback riding, mountain biking and adventure sports suit you perfectly. You need room to roam and challenges that take you out of your comfort zone.',
+          'Sexually you are enthusiastic and playful. You approach physical connection with humor, openness, and a genuine sense of fun. You value honesty and directness in sexual communication and are attracted to partners who share your adventurous spirit.',
         ],
       },
     ],
@@ -321,15 +321,15 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You are the strategist in the room. Your ambition is not impulsive or emotional, it is architectural. You see the endpoint clearly, map out every step required to reach it, and then execute with the patience and discipline of a master builder constructing a cathedral.',
-          'You are motivated by legacy, achievement, and the respect of people you admire. You want to build something that lasts — a career, a company, a reputation — that stands as evidence of your dedication and competence. You measure success in decades, not days.',
-          'You excel in hierarchical environments where hard work and competence are rewarded with advancement. Business, government, military, and institutional leadership roles suit you perfectly. You understand power structures and know how to climb them.',
+          'You are motivated by legacy, achievement, and the respect of people you admire. You want to build something that lasts, whether a career, a company or a reputation, as evidence of your dedication and competence. You measure success in decades, not days.',
+          'You do well in hierarchical environments where hard work and competence are rewarded with advancement. Business, government, military, and institutional leadership roles suit you perfectly. You understand power structures and know how to climb them.',
         ],
       },
       {
         title: 'Anger Style & Conflict',
         icon: '⚔️',
         paragraphs: [
-          'Your anger is controlled and authoritative, and it gets immediate respect. You do not waste energy on petty conflicts — when you engage in battle, it is because something genuinely important is at stake, and your measured, strategic response makes your displeasure land with significant weight.',
+          'Your anger is controlled and authoritative, and it gets immediate respect. You do not waste energy on petty conflicts. When you engage in battle, it is because something genuinely important is at stake, and your measured, strategic response makes your displeasure land with significant weight.',
           'You prefer to win through outperformance rather than confrontation. The best revenge, in your estimation, is massive success. You channel anger into productivity, using frustration as fuel for even greater achievement.',
         ],
       },
@@ -337,8 +337,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Physical Energy & Sexuality',
         icon: '⚡',
         paragraphs: [
-          'Your physical energy is disciplined, enduring, and goal-oriented. You approach fitness the same way you approach career — with clear objectives, structured programs, and measurable progress. Mountain climbing, long-distance running, and any physically demanding sport that rewards perseverance suits you.',
-          'In bed you are more sensual than your reserved exterior suggests. You take your time, you are thorough, and you bring the same dedication to physical pleasure that you bring to everything else. Trust and exclusivity are important to your sexual expression.',
+          'Your physical energy is disciplined, enduring, and goal-oriented. You approach fitness the same way you approach your career: with clear objectives, structured programs, and measurable progress. Mountain climbing, long-distance running, and any physically demanding sport that rewards perseverance suits you.',
+          'Your reserved exterior hides a more sensual lover than people expect. You take your time, you are thorough, and you bring the same dedication to physical pleasure that you bring to everything else. Trust and exclusivity are important to your sexual expression.',
         ],
       },
     ],
@@ -351,9 +351,9 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         title: 'Drive & Ambition',
         icon: '⚡',
         paragraphs: [
-          'You pursue goals through unconventional methods and collective action. You are not interested in climbing existing ladders — you want to build entirely new structures. Your ambition is social as much as personal, driven by a genuine desire to improve the systems that shape human life.',
+          'You pursue goals through unconventional methods and collective action. You are not interested in climbing existing ladders; you want to build entirely new structures. Your ambition is social as much as personal, driven by a genuine desire to improve the systems that shape human life.',
           'You are motivated by intellectual challenge and social impact. Routine work drains you, but give you an impossible problem to solve or a broken system to redesign, and your energy becomes tireless. You thrive in technology, social enterprise, activism, and any field that involves innovation.',
-          'You excel when working within groups and communities that share your vision. Your leadership style is collaborative and egalitarian — you inspire through ideas rather than authority, and you genuinely believe that the best solutions emerge from diverse, empowered teams.',
+          'You excel when working within groups and communities that share your vision. Your leadership style is collaborative and egalitarian: you inspire through ideas rather than authority, and you genuinely believe that the best solutions emerge from diverse, empowered teams.',
         ],
       },
       {
@@ -383,8 +383,8 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         icon: '🌊',
         paragraphs: [
           'You pursue goals through intuition and emotional connection. You are motivated by vision and meaning rather than competition or material reward. Your best work is done when you feel emotionally and spiritually aligned with your purpose.',
-          'Your ambition is subtle and often unconscious. You may not set explicit goals the way other Mars signs do, but you are drawn toward your destiny by something deeper than willpower. Your greatest achievements often happen when you surrender control and let your intuition guide your actions.',
-          'You excel in creative, healing, and spiritual fields. Music, film, therapy, social work, and any career that allows you to channel emotion into meaningful expression brings out your best.',
+          'Your ambition is subtle and often unconscious. You may not set explicit goals the way other people do, but you are drawn toward your destiny by something deeper than willpower. Your greatest achievements often happen when you surrender control and let your intuition guide your actions.',
+          'You do your best work in creative, healing and spiritual fields. Music, film, therapy, social work, and any career that allows you to channel emotion into meaningful expression brings out your best.',
         ],
       },
       {
@@ -400,7 +400,7 @@ const MARS_CONTENT: Record<ZodiacSign, Omit<MarsSignContent, 'sign'>> = {
         icon: '⚡',
         paragraphs: [
           'Your physical energy is fluid and heavily influenced by your emotional state. Water activities, dance, yoga, tai chi, and any movement that feels like flowing rather than fighting suits you. You need physical practices that honor your emotional sensitivity rather than overriding it.',
-          'In bed you are romantic and intuitive. Physical connection is an act of spiritual union for you, and you bring an almost transcendent quality to intimate moments. You need to feel emotionally safe and spiritually connected to fully express yourself.',
+          'As a lover you are romantic and intuitive. Physical connection is an act of spiritual union for you, and you bring an almost transcendent quality to intimate moments. You need to feel emotionally safe and spiritually connected to fully express yourself.',
         ],
       },
     ],

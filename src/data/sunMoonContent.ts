@@ -80,7 +80,7 @@ const SIGN_THEMES: Record<ZodiacSign, SignTheme> = {
     bodyLanguage: 'grounded stillness, warm touch, unhurried presence',
     innerChild: 'to be held, fed, and told everything will be okay',
     decisionStyle: 'slow deliberation, weighing sensory and practical factors',
-    stressResponse: 'retreats into comfort — food, sleep, familiar routines',
+    stressResponse: 'retreats into comfort: food, sleep, familiar routines',
   },
   gemini: {
     archetype: 'The Messenger',
@@ -121,7 +121,7 @@ const SIGN_THEMES: Record<ZodiacSign, SignTheme> = {
   virgo: {
     archetype: 'The Analyst',
     innerVerb: 'refines',
-    emotionalNeed: 'to feel useful and that their efforts are noticed',
+    emotionalNeed: 'to feel useful and that your efforts are noticed',
     identityDrive: 'to improve, to serve, to make things right',
     shadowTrigger: 'chaos, incompetence, or being criticized for trying to help',
     superpower: 'finding the one thread that unravels the entire problem',
@@ -169,7 +169,7 @@ const SIGN_THEMES: Record<ZodiacSign, SignTheme> = {
   capricorn: {
     archetype: 'The Architect',
     innerVerb: 'structures',
-    emotionalNeed: 'to feel respected and that their sacrifices matter',
+    emotionalNeed: 'to feel respected and that your sacrifices matter',
     identityDrive: 'to achieve mastery, to build legacy, to earn authority',
     shadowTrigger: 'failure, disrespect, or feeling like their effort was wasted',
     superpower: 'turning long-term discipline into achievements others call impossible',
@@ -181,7 +181,7 @@ const SIGN_THEMES: Record<ZodiacSign, SignTheme> = {
   aquarius: {
     archetype: 'The Visionary',
     innerVerb: 'disrupts',
-    emotionalNeed: 'to feel accepted for their weirdness without having to conform',
+    emotionalNeed: 'to feel accepted for your weirdness without having to conform',
     identityDrive: 'to innovate, to liberate, to reimagine what\'s possible',
     shadowTrigger: 'conformity pressure, emotional demands, or being called ordinary',
     superpower: 'seeing the future that nobody else believes in yet',
@@ -260,27 +260,27 @@ function generateSoulTagline(sun: ZodiacSign, moon: ZodiacSign): string {
   const harmony = getElementHarmony(sunData.element, moonData.element);
 
   if (sun === moon) {
-    return `${sunTheme.archetype} doubled — everything ${sunData.name} is, amplified to its fullest expression.`;
+    return `${sunData.name} all the way through: what people see is what you feel, with nobody inside to argue.`;
   }
 
   if (harmony === 'Mirror Energy') {
     const templates = [
-      `${sunData.element.charAt(0).toUpperCase() + sunData.element.slice(1)} on fire: ${sunData.traits[0]} on the outside, ${moonData.traits[0]} at the core.`,
-      `Two expressions of ${sunData.element} — ${sunData.name}'s ${sunData.traits[0]} drive powered by ${moonData.name}'s ${moonData.traits[0]} instincts.`,
+      `${sunData.name} out front, ${moonData.name} underneath, and both halves pull the same way.`,
+      `Your ${sunData.name} Sun and ${moonData.name} Moon want the same things, so you rarely have to explain yourself to yourself.`,
     ];
     return templates[(sun.length + moon.length) % templates.length];
   }
 
   if (harmony === 'Harmonious Blend') {
-    return `${sunData.name}'s ${sunData.traits[0]} ambition flows naturally into ${moonData.name}'s ${moonData.traits[0]} inner world.`;
+    return `${sunData.name} in public, ${moonData.name} at home, and the two of them get along better than most.`;
   }
 
   if (harmony === 'Dynamic Tension') {
-    return `The tension between ${sunData.name}'s ${sunData.traits[0]} exterior and ${moonData.name}'s ${moonData.traits[0]} depths creates something extraordinary.`;
+    return `${sunData.name} out front, ${moonData.name} underneath, and you spend years deciding which one gets to drive.`;
   }
 
   // Creative Friction
-  return `${sunTheme.archetype} meets ${moonTheme.archetype} — what you show the world and what you feel are beautifully at odds.`;
+  return `${sunData.name} in public, ${moonData.name} in private, and the two of them barely want the same things.`;
 }
 
 // ── "You might relate to this if..." generator ──────────────
@@ -351,7 +351,7 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
     );
   } else if (harmony === 'Mirror Energy' && sun !== moon) {
     bullets.push(
-      `People assume they know you because your outside matches your inside — but the ${sunData.name} version and the ${moonData.name} version of ${sunData.element} are not the same thing at all`
+      `People assume they know you because your outside matches your inside, but your ${sunData.name} side and your ${moonData.name} side want different things when it counts`
     );
   } else if (sun === moon) {
     bullets.push(
@@ -359,7 +359,7 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
     );
   } else {
     bullets.push(
-      `Your ${sunData.name} confidence comes naturally in public, but alone you default to ${moonData.name}'s need for ${moonData.traits[0]} spaces`
+      `Your ${sunData.name} Sun leads in public and your ${moonData.name} Moon takes over when you are alone, and the handover is smoother than most people get`
     );
   }
 
@@ -370,7 +370,7 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
     );
   } else if (moonData.element === 'fire') {
     bullets.push(
-      'You process emotions by doing something — cleaning, running, starting a project at midnight — because sitting with feelings feels like drowning'
+      'You process emotions by doing something, like cleaning, running or starting a project at midnight, because sitting with feelings feels like drowning'
     );
   } else if (moonData.element === 'earth') {
     bullets.push(
@@ -443,7 +443,7 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
 
   // Bullet 4: Stress / coping pattern
   const moonStressMap: Record<Element, string> = {
-    water: 'When you\'re overwhelmed, you don\'t want advice — you want someone to sit in the dark with you and say nothing',
+    water: 'When you\'re overwhelmed, you don\'t want advice. You want someone to sit in the dark with you and say nothing',
     fire: 'Your coping mechanism for sadness is anger, and your coping mechanism for anger is doing something reckless',
     earth: 'When life feels chaotic, you reorganize your entire physical space as if cleaning your room can clean your mind',
     air: 'You deal with pain by detaching from it so completely that people think you don\'t care, when really you care too much to function',
@@ -456,11 +456,11 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
       fire: 'You secretly fear that your confidence is just performance and one day everyone will see through it',
       earth: 'You project wild independence but secretly dream about a life so stable it would bore your friends to tears',
       air: 'You act on instinct and then lie awake at 3 AM wondering if you made the right choice',
-      water: 'The bravest thing you do isn\'t charging forward — it\'s letting someone see you cry',
+      water: 'The bravest thing you do isn\'t charging forward, it\'s letting someone see you cry',
     },
     earth: {
       fire: 'You pretend to be practical but your secret fantasy life would shock everyone who thinks they know you',
-      earth: 'Your greatest fear isn\'t failure — it\'s that you\'ll build everything perfectly and still feel empty',
+      earth: 'Your greatest fear isn\'t failure, it\'s that you\'ll build everything perfectly and still feel empty',
       air: 'You build walls that look like boundaries, but really you\'re just terrified of being known',
       water: 'You keep your emotions locked in a vault, and the person who gets the combination has you for life',
     },
@@ -471,7 +471,7 @@ function generateRelatableBullets(sun: ZodiacSign, moon: ZodiacSign): string[] {
       water: 'You have an entire emotional life you\'ve never let anyone see because showing it would mean giving up control',
     },
     water: {
-      fire: 'You feel everything but you\'ve learned to turn pain into fuel — and you\'re not sure if that\'s strength or self-destruction',
+      fire: 'You feel everything but you\'ve learned to turn pain into fuel, and you\'re not sure if that\'s strength or self-destruction',
       earth: 'You sense things about people that would scare them if you said it out loud, so you never do',
       air: 'You understand everyone else\'s emotions perfectly but your own feelings are a mystery you\'ve been avoiding',
       water: 'You\'ve been told you\'re too sensitive your whole life and you\'ve almost started to believe it',
@@ -689,7 +689,7 @@ function generateGrowthEdge(
     same: 'Your danger is that nothing in you objects. Ask someone very different from you what they see, and take the answer seriously for a full week before you argue with it.',
     easy: 'Because this combination comes easily, the danger is coasting. Pick one thing a year that is hard on purpose, and do not let comfort choose it for you.',
     tension: `Do not settle the argument between your ${sunData.name} Sun and your ${moonData.name} Moon by always picking the same winner. Alternate on purpose, and tell the people around you which side is driving.`,
-    friction: `Stop treating your ${sunData.name} Sun and your ${moonData.name} Moon as enemies. Give each one a real slot in the week: one evening that is entirely for the ${moonData.name} side, one project that is entirely for the ${sunData.name} side, and nobody apologising for either.`,
+    friction: `Stop treating your ${sunData.name} Sun and your ${moonData.name} Moon as enemies. Give each one a real slot in the week: one evening that is entirely for the ${moonData.name} side, one project that is entirely for the ${sunData.name} side, and nobody apologizing for either.`,
   };
   paragraphs.push(close[rel]);
   if (sun === moon) {

@@ -41,8 +41,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with a speed and directness that can be either exhilarating or overwhelming. You get to the point immediately, often interrupting or finishing other people\'s sentences because your mind has already leapt ahead. Diplomacy takes conscious effort for you — your default is raw, unfiltered truth.',
-          'You are a compelling speaker who energizes audiences with your enthusiasm and conviction. Your words carry the weight of action — when you say something, people know you mean it and that you are prepared to back it up. Wishy-washy language genuinely irritates you.',
+          'You communicate with a speed and directness that can be either exhilarating or overwhelming. You get to the point immediately, often interrupting or finishing other people\'s sentences because your mind has already leapt ahead. Diplomacy takes conscious effort for you; your default is raw, unfiltered truth.',
+          'You are a compelling speaker who energizes audiences with your enthusiasm and conviction. Your words carry the weight of action: when you say something, people know you mean it and that you are prepared to back it up. Wishy-washy language genuinely irritates you.',
           'Your written messages are short and direct. You prefer bullet points to paragraphs, action items to abstract discussions, and brevity to elaboration.',
         ],
       },
@@ -50,7 +50,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind works in rapid bursts of insight. You are an intuitive rather than analytical thinker, arriving at conclusions through instinct rather than methodical analysis. This makes you an excellent starter of ideas but sometimes a poor finisher — your attention moves on before the details are worked out.',
+          'Your mind works in rapid bursts of insight. You are an intuitive rather than analytical thinker, arriving at conclusions through instinct rather than methodical analysis. This makes you an excellent starter of ideas but sometimes a poor finisher: your attention moves on before the details are worked out.',
           'You learn best through active engagement. Reading a textbook puts you to sleep, but participating in a debate, solving a hands-on problem, or competing in an academic context lights you up. Your mind needs the stimulation of challenge and competition to function at its best.',
         ],
       },
@@ -72,9 +72,9 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with measured deliberation. You choose your words carefully, speak at a comfortable pace, and refuse to be rushed into hasty statements. Your voice tends to be pleasant and soothing, and people find your unhurried communication style reassuring.',
+          'You speak with measured deliberation. You choose your words carefully, speak at a comfortable pace, and refuse to be rushed into hasty statements. Your voice tends to be pleasant and soothing, and people find your unhurried communication style reassuring.',
           'You prefer concrete, practical language over abstract theories. You communicate best when you can use examples, analogies rooted in physical experience, and plain language that everyone can understand. Academic jargon and unnecessary complexity irritate you.',
-          'Once you have formed an opinion, you express it with quiet, immovable conviction. Changing your mind is a slow process that requires compelling, tangible evidence. This gives your positions enormous weight — people know that your conclusions are thoroughly considered.',
+          'Once you have formed an opinion, you express it with quiet, immovable conviction. Changing your mind is a slow process that requires compelling, tangible evidence. This gives your positions enormous weight: people know that your conclusions are thoroughly considered.',
         ],
       },
       {
@@ -89,7 +89,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'How You Argue',
         icon: '⚔️',
         paragraphs: [
-          'You argue with stubborn persistence and practical common sense. You do not get swept up in emotional arguments or theoretical abstractions. You stick to facts, repeat your position with unwavering calm, and wear down opponents through sheer determination.',
+          'In an argument you bring stubborn persistence and practical common sense. You do not get swept up in emotional arguments or theoretical abstractions. You stick to facts, repeat your position with unwavering calm, and wear down opponents through sheer determination.',
           'You never lose your cool in an argument, and your steady, practical stance is hard to beat with emotional appeals. The price is inflexibility: you can be so committed to your position that you miss a valid alternative.',
         ],
       },
@@ -103,24 +103,24 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with extraordinary versatility and speed. You can adjust your communication style to match any audience, switching between formal and casual, technical and accessible, serious and humorous with ease. You can talk to anyone.',
+          'You talk with extraordinary versatility and speed. You can adjust your communication style to match any audience, switching between formal and casual, technical and accessible, serious and humorous with ease. You can talk to anyone.',
           'Your verbal agility makes you a natural storyteller, teacher, and entertainer. You can explain complex concepts in simple terms, weave engaging narratives from ordinary events, and keep any conversation lively with your quick wit and broad knowledge.',
-          'You communicate across multiple channels simultaneously — texting while talking, reading while listening, processing multiple conversations in parallel. Others may see this as distraction, but for you it is simply how your mind operates at its natural speed.',
+          'You communicate across multiple channels simultaneously: texting while talking, reading while listening, running several conversations in parallel. Others may see this as distraction, but for you it is simply how your mind operates at its natural speed.',
         ],
       },
       {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind is an information processing machine. You absorb data voraciously, make rapid connections between disparate ideas, and synthesize information from multiple sources faster than most people. Your intelligence is lateral rather than linear — you see connections that others miss.',
-          'You learn through exploration and variety. Studying one subject exclusively bores you — you need to jump between topics, follow tangential threads, and approach knowledge as a web rather than a ladder. Cross-disciplinary thinking is your superpower.',
+          'Your mind is an information processing machine. You absorb data voraciously, make rapid connections between disparate ideas, and synthesize information from multiple sources faster than most people. Your intelligence is lateral rather than linear: you see connections that others miss.',
+          'You learn through exploration and variety. Studying one subject exclusively bores you, so you jump between topics, follow tangential threads, and approach knowledge as a web rather than a ladder. Crossing subjects is where your best ideas come from.',
         ],
       },
       {
         title: 'How You Argue',
         icon: '⚔️',
         paragraphs: [
-          'You argue with dazzling rhetorical skill. You can argue any side of any debate with equal conviction, shifting positions with a speed that can be disorienting for opponents. You genuinely enjoy the intellectual exercise of debate, sometimes caring more about the quality of the argument than the truth of the conclusion.',
+          'Rhetoric is your weapon. You can argue any side of any debate with equal conviction, shifting positions with a speed that can be disorienting for opponents. You genuinely enjoy the intellectual exercise of debate, sometimes caring more about the quality of the argument than the truth of the conclusion.',
           'You can counter any argument on the spot, find the flaw in any position and steer the conversation away when the ground turns bad. The cost is credibility: people start to suspect you do not truly believe anything.',
         ],
       },
@@ -134,7 +134,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with emotional depth and intuitive accuracy. You read between the lines effortlessly, hearing not just what someone says but what they feel. Your responses are attuned to emotional nuance in a way that makes people feel deeply understood.',
+          'You speak with emotional depth and intuitive accuracy. You read between the lines effortlessly, hearing not just what someone says but what they feel. Your responses are attuned to emotional nuance in a way that makes people feel deeply understood.',
           'You prefer intimate, one-on-one conversations to group debates or public speaking. Your communication is most powerful in private settings where trust has been established. In these contexts, your ability to express emotional truths is unmatched.',
           'Your words carry emotional weight. When you express your feelings, there is a vulnerability and sincerity that moves people profoundly. You may struggle to articulate your thoughts in formal or impersonal contexts, but in matters of the heart, your expression is eloquent.',
         ],
@@ -151,7 +151,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'How You Argue',
         icon: '⚔️',
         paragraphs: [
-          'You argue with emotional appeal and personal testimony. You are less interested in winning on logical points than in making your opponent feel what you feel. You share personal stories, appeal to empathy, and frame arguments in terms of their emotional impact.',
+          'Your arguments run on emotional appeal and personal testimony. You are less interested in winning on logical points than in making your opponent feel what you feel. You share personal stories, appeal to empathy, and frame arguments in terms of their emotional impact.',
           'When you speak from the heart, your sincerity is hard to counter with cold logic. But a harsh word or a dismissive reply can shut you down completely, and then you lose the argument you were winning.',
         ],
       },
@@ -165,8 +165,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with dramatic flair and natural charisma. Your speech has a performative quality — you are a natural storyteller who turns ordinary anecdotes into compelling narratives. You have a gift for making people feel like they are part of something important and exciting.',
-          'You speak with conviction and warmth that makes your ideas feel not just interesting but vital. Your communication style is generous — you encourage others, celebrate their ideas, and create an atmosphere of enthusiasm that makes collaboration genuinely enjoyable.',
+          'You talk with dramatic flair and natural charisma. Your speech has a performative quality: you are a natural storyteller who turns ordinary anecdotes into compelling narratives. You have a gift for making people feel like they are part of something important and exciting.',
+          'You speak with conviction and warmth that makes your ideas feel not just interesting but vital. Your communication style is generous: you encourage others, celebrate their ideas, and create an atmosphere of enthusiasm that makes collaboration genuinely enjoyable.',
           'You prefer to be the main speaker in any exchange. Not because you do not value others\' input, but because your mind is most active when you are expressing, and you genuinely believe your perspective adds value. You need an audience, even if that audience is one person.',
         ],
       },
@@ -174,7 +174,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks in big pictures and grand narratives. You are drawn to ideas that are bold, visionary, and personally meaningful. Details bore you unless they serve a larger creative or strategic purpose. You think best when you are inspired.',
+          'You think in big pictures and grand narratives. You are drawn to ideas that are bold, visionary, and personally meaningful. Details bore you unless they serve a larger creative or strategic purpose. You think best when you are inspired.',
           'You learn through creative engagement and performance. Teaching others what you have learned, presenting ideas dramatically, or creating projects that showcase your understanding embeds knowledge more effectively than passive study. You need to own your learning in a personal way.',
         ],
       },
@@ -196,7 +196,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with precision and clarity and a dedication to accuracy. You choose your words with the care of a surgeon selecting instruments — every word serves a purpose, and unnecessary embellishment is stripped away in favor of clean, effective expression.',
+          'You speak with precision, clarity and a dedication to accuracy. You choose your words with the care of a surgeon selecting instruments: every word serves a purpose, and embellishment is stripped away.',
           'You are an excellent editor, proofreader, and technical communicator. You notice grammatical errors, logical inconsistencies, and factual inaccuracies that others miss entirely. Your written communication is typically polished, organized, and impeccably structured.',
           'You treat getting it right as a duty. Saying something incorrect or misleading feels wrong to you, and you will check three sources before you send the email.',
         ],
@@ -227,7 +227,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with grace and diplomacy and a feel for social harmony. You have a gift for saying difficult things in ways that are easy to hear, and for framing criticism as constructive feedback. Your words are chosen as much for their aesthetic quality as their informational content.',
+          'You speak with grace and diplomacy and a feel for social harmony. You have a gift for saying difficult things in ways that are easy to hear, and for framing criticism as constructive feedback. Your words are chosen as much for their aesthetic quality as their informational content.',
           'You are a natural mediator, able to present both sides of any argument with equal fairness and find compromise solutions that satisfy everyone. You speak to connect, not to dominate.',
           'Indecisiveness is your communication challenge. You can see validity in every perspective, which makes choosing a definitive position genuinely difficult. You may equivocate, hedge, or defer to others\' opinions rather than commit to your own.',
         ],
@@ -236,7 +236,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks comparatively, constantly weighing options, perspectives, and possibilities against each other. You understand concepts best when you can see them from multiple angles, and you are naturally drawn to subjects that involve ethics, aesthetics, and interpersonal dynamics.',
+          'You think comparatively, constantly weighing options, perspectives, and possibilities against each other. You understand concepts best when you can see them from multiple angles, and you are naturally drawn to subjects that involve ethics, aesthetics, and interpersonal dynamics.',
           'You learn best through dialogue and collaboration. Studying alone is less effective for you than discussing ideas with others. Hearing different perspectives helps you refine your own thinking, and the give-and-take of intellectual exchange is where your mind does its best work.',
         ],
       },
@@ -244,7 +244,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'How You Argue',
         icon: '⚔️',
         paragraphs: [
-          'You argue with fairness, charm and persuasive logic. You present both sides of an issue before making your case, which gives your eventual position enormous credibility. You often win an argument by being so reasonable that opposing it feels unreasonable.',
+          'Fairness and charm are how you argue. You present both sides of an issue before making your case, which gives your eventual position enormous credibility. You often win an argument by being so reasonable that opposing it feels unreasonable.',
           'You disarm opponents with fairness and win allies with graciousness. Where it backfires is when a moment calls for a hard position and your wish to be fair keeps you from taking one.',
         ],
       },
@@ -258,8 +258,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with intensity and strategic intention. You say exactly what you mean to say — no more, no less. Your words are carefully measured, and you reveal information only when it serves your purpose. This gives your communication a powerful, almost hypnotic quality.',
-          'You are an exceptional listener who processes not just words but subtext, body language, and emotional undercurrents. People often feel exposed around you, sensing that you can see through their social masks. This perceptiveness makes you an extraordinary psychologist, investigator, or counselor.',
+          'You speak with intensity and strategic intention. You say exactly what you mean to say, no more and no less. Your words are carefully measured, and you reveal information only when it serves your purpose. This makes you hard to look away from when you speak.',
+          'You are an exceptional listener who processes not just words but subtext, body language, and emotional undercurrents. People often feel exposed around you, sensing that you can see through their social masks. This perceptiveness suits you for psychology, investigation or counseling.',
           'You prefer depth to breadth in communication. Small talk bores you, and you quickly steer conversations toward subjects of genuine psychological or emotional significance. You want to know what people really think and feel, not what they think they should say.',
         ],
       },
@@ -289,16 +289,16 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with big enthusiasm and philosophical depth. You are the person who turns a simple question into an hour-long discussion about the meaning of life. Your speech is peppered with references to diverse cultures, philosophical traditions, and personal adventures.',
-          'You are brutally honest in your communication — sometimes more honest than the situation requires. You say what you think, even when diplomacy would be wiser, because you believe truth is always better than comfortable lies. This bluntness is refreshing to some and devastating to others.',
-          'Humor is central to your communication style. You have a gift for finding the absurd in any situation and expressing it in a way that makes people think while they laugh. Your wit is philosophical rather than sarcastic — you illuminate rather than wound.',
+          'You talk with big enthusiasm and philosophical depth. You are the person who turns a simple question into an hour-long discussion about the meaning of life. Your speech is peppered with references to diverse cultures, philosophical traditions, and personal adventures.',
+          'You are brutally honest, sometimes more honest than the situation requires. You say what you think, even when diplomacy would be wiser, because you believe truth is always better than comfortable lies. This bluntness is refreshing to some and devastating to others.',
+          'Humor is central to your communication style. You have a gift for finding the absurd in any situation and expressing it in a way that makes people think while they laugh. Your wit is philosophical rather than sarcastic: you illuminate rather than wound.',
         ],
       },
       {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks in patterns, paradigms, and big pictures. You are less interested in individual facts than in the theories that organize them. You see the forest rather than the trees, and you are drawn to subjects that offer sweeping, unifying explanations of how the world works.',
+          'You think in patterns and big pictures. You are less interested in individual facts than in the theories that organize them. You see the forest rather than the trees, and you are drawn to subjects that offer sweeping, unifying explanations of how the world works.',
           'You learn through exploration, cross-cultural exposure, and philosophical inquiry. Travel, reading widely, and engaging with perspectives radically different from your own are your primary learning tools. Formal education can feel constraining unless it allows intellectual freedom.',
         ],
       },
@@ -320,8 +320,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with authority and economy. You do not speak unless you have something worth saying, and when you do speak, your words carry the weight of careful consideration. You are not interested in idle chatter — every communication serves a strategic purpose.',
-          'You excel at formal, professional communication. Reports, presentations, and structured arguments are your natural format. Your written work is thorough, well-organized, and free of unnecessary embellishment. You respect your audience enough to be clear and direct.',
+          'You speak with authority and economy. You do not speak unless you have something worth saying, and when you do speak, your words carry the weight of careful consideration. You are not interested in idle chatter; every word serves a purpose.',
+          'Formal, professional communication is where you shine. Reports, presentations, and structured arguments are your natural format. Your written work is thorough, well-organized, and free of unnecessary embellishment. You respect your audience enough to be clear and direct.',
           'Your dry, understated humor is a secret weapon. People who mistake your seriousness for humorlessness are surprised by the wit that emerges when you are comfortable. Your humor is observational and perfectly timed.',
         ],
       },
@@ -329,8 +329,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks hierarchically and structurally. You naturally organize information into systems, categories, and chains of command. You understand complex organizations, power structures, and long-term strategic planning intuitively.',
-          'You learn through structured study, mentorship, and practical application. You respect tradition and expertise, preferring to learn from established authorities rather than reinventing the wheel. Your learning is cumulative — you build knowledge systematically, with each new piece adding to a solid foundation.',
+          'You think hierarchically and structurally. You naturally organize information into systems, categories, and chains of command. You understand complex organizations, power structures, and long-term strategic planning intuitively.',
+          'You learn through structured study, mentorship, and practical application. You respect tradition and expertise, preferring to learn from established authorities rather than reinventing the wheel. Your learning is cumulative: you build knowledge systematically, with each new piece adding to a solid foundation.',
         ],
       },
       {
@@ -351,7 +351,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate with intellectual independence and clarity. You say what you think regardless of social pressure, and your ideas are often too progressive or unconventional for mainstream audiences. You would rather be accurate than popular.',
+          'You speak with intellectual independence and clarity. You say what you think regardless of social pressure, and your ideas are often too progressive or unconventional for mainstream audiences. You would rather be accurate than popular.',
           'You are drawn to communication technologies, social media, and any medium that allows ideas to reach wide audiences quickly. Your communication style is more comfortable with groups and networks than with intimate one-on-one exchanges.',
           'Your language tends toward the conceptual and systemic. You speak in terms of trends, patterns, and collective dynamics rather than personal anecdotes or emotional appeals. This can make you seem detached, but your intellectual passion is genuine and often inspiring.',
         ],
@@ -360,8 +360,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks in networks, systems, and emergent patterns. You see connections between seemingly unrelated phenomena and can predict trends before they become visible to others. Your thinking is non-linear, jumping between ideas in ways that eventually reveal brilliant insights.',
-          'You learn through experimentation, cross-pollination of ideas, and exposure to diverse perspectives. Traditional educational structures can feel constraining — you learn best when you are free to follow your curiosity wherever it leads, even if that means an unconventional path.',
+          'You think in networks, systems and emerging patterns. You see connections between seemingly unrelated phenomena and can predict trends before they become visible to others. Your thinking is non-linear, jumping between ideas in ways that eventually reveal brilliant insights.',
+          'You learn through experimentation, cross-pollination of ideas, and exposure to diverse perspectives. Traditional educational structures can feel constraining; you learn best when you are free to follow your curiosity wherever it leads, even if that means an unconventional path.',
         ],
       },
       {
@@ -382,8 +382,8 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Communication Style',
         icon: '🗣',
         paragraphs: [
-          'You communicate through feeling, metaphor and artistic expression. Your words carry emotional resonance that moves people on a level deeper than rational persuasion. You are a natural poet, musician, or artist because you express what others feel but cannot articulate.',
-          'You often struggle with precise, technical communication because your mind does not naturally think in discrete categories. Your ideas emerge as impressions, images, and feelings that must be translated into words — and something is always lost in translation.',
+          'You speak through feeling, metaphor and artistic expression. Your words carry emotional resonance that moves people on a level deeper than rational persuasion. You are a natural poet, musician, or artist because you express what others feel but cannot articulate.',
+          'You often struggle with precise, technical communication because your mind does not naturally think in discrete categories. Your ideas emerge as impressions, images, and feelings that must be translated into words, and something is always lost in translation.',
           'Your listening skills are extraordinary. You hear not just words but the emotions, fears, and unspoken desires beneath them. People feel deeply understood in your presence, and you have a gift for saying exactly the right thing at the right moment to comfort or inspire.',
         ],
       },
@@ -391,7 +391,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'Thinking Patterns & Learning Style',
         icon: '🧠',
         paragraphs: [
-          'Your mind thinks associatively and symbolically. You connect ideas through feeling-tone and imagery rather than logical sequence. This gives you extraordinary creative and spiritual insight, but it can make structured, linear thinking effortful.',
+          'You think associatively and symbolically. You connect ideas through feeling-tone and imagery rather than logical sequence. This gives you extraordinary creative and spiritual insight, but it can make structured, linear thinking effortful.',
           'You learn through immersion, imagination, and emotional engagement. Reading fiction, watching films, listening to music, and absorbing information through atmosphere and mood are more effective for you than memorization or systematic study.',
         ],
       },
@@ -399,7 +399,7 @@ const MERCURY_CONTENT: Record<ZodiacSign, Omit<MercurySignContent, 'sign'>> = {
         title: 'How You Argue',
         icon: '⚔️',
         paragraphs: [
-          'You argue with emotional appeal, moral vision and a knack for sensing the truth beneath any debate. You may not have the sharpest logical arguments, but your empathic insight often cuts to the heart of what is really being discussed.',
+          'You argue on emotional appeal, moral vision and a knack for sensing the truth beneath any debate. You may not have the sharpest logical arguments, but your empathic insight often cuts to the heart of what is really being discussed.',
           'You often sense the right answer before you can explain why, and you see sides of a problem that purely logical thinkers miss. What hurts you is vagueness, because formal debate wants crisp terms and your insights arrive as impressions.',
         ],
       },

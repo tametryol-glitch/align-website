@@ -350,12 +350,13 @@ function buildSummary(
   const outerDef = AURA_COLORS[outer.color];
   const innerDef = AURA_COLORS[inner.color];
 
-  let text = `Your scan reads a ${outerDef.label.toLowerCase()}-${innerDef.label.toLowerCase()} energy pattern. `;
+  const outerWord = outerDef.label.toLowerCase();
+  let text = `Your scan reads ${/^[aeiou]/.test(outerWord) ? 'an' : 'a'} ${outerWord}-${innerDef.label.toLowerCase()} energy pattern. `;
 
   if (outer.color === inner.color) {
-    text += `Your outer and inner fields are aligned — what you show to the world matches what you carry inside. You are not performing right now.`;
+    text += `Your outer and inner fields are aligned: what you show to the world matches what you carry inside. You are not performing right now.`;
   } else {
-    text += `Your outer field radiates ${outerDef.keywords[0]}, but your inner energy is carrying something different — ${innerDef.keywords[0]}. You are showing one thing and feeling another, and the people closest to you can tell.`;
+    text += `Your outer field radiates ${outerDef.keywords[0]}, but your inner energy is carrying something different: ${innerDef.keywords[0]}. You are showing one thing and feeling another, and the people closest to you can tell.`;
   }
 
   if (input.mood && input.mood !== 'unknown') {
@@ -372,7 +373,7 @@ function buildOuterAuraText(outer: AuraColorScore, input: AuraInput): string {
   text += `Your field is projecting ${def.keywords.slice(0, 3).join(', ')}. `;
 
   if (input.astroContext?.sunSign) {
-    text += `As a ${input.astroContext.sunSign}, your ${def.label.toLowerCase()} energy runs through your ${input.astroContext.sunSign} habits, so it shows in how you decide, how you speak and how you rest.`;
+    text += `As ${/^[AEIOU]/.test(input.astroContext.sunSign) ? 'an' : 'a'} ${input.astroContext.sunSign}, your ${def.label.toLowerCase()} energy runs through your ${input.astroContext.sunSign} habits, so it shows in how you decide, how you speak and how you rest.`;
   }
   return text;
 }
@@ -415,7 +416,7 @@ function buildEnergyCarryingText(
   let text = `Your energy field is carrying themes of ${coreThemes.slice(0, 3).join(', ')}. `;
 
   if (input.mood === 'heavy' || input.mood === 'drained' || input.mood === 'anxious') {
-    text += 'Your check-in confirms that your system is under load. This is not a sign of weakness — it means your energy is processing something real. ';
+    text += 'Your check-in confirms that your system is under load. This is not a sign of weakness: it means your energy is processing something real. ';
   } else if (input.mood === 'inspired' || input.mood === 'powerful' || input.mood === 'excited') {
     text += 'Your check-in matches the vitality in your field. This is a window where action, expression, and creation will feel aligned with your deeper current. ';
   }
@@ -457,11 +458,11 @@ function buildActionText(outer: AuraColorScore, inner: AuraColorScore, input: Au
     red: 'Move your body. Express what is building up inside. Confront what you have been avoiding. Channel this fire into something physical or creative.',
     orange: 'Create something. Connect with someone. Let yourself feel pleasure without guilt. This energy wants to flow outward.',
     yellow: 'Journal your thoughts. Organize what feels scattered. Speak up about what you know. Trust your intellect but give your mind a rest tonight.',
-    green: 'Practice forgiveness — toward yourself first. Spend time in nature if you can. Let healing happen at its own pace.',
+    green: 'Practice forgiveness: toward yourself first. Spend time in nature if you can. Let healing happen at its own pace.',
     blue: 'Say what you need to say. Write the message you have been holding back. Let yourself feel sad without trying to fix it.',
     indigo: 'Trust your intuition today. Pay attention to dreams, symbols, and quiet knowing. Do not override your gut feeling with logic.',
     violet: 'This is a spiritual activation moment. Meditate, pray, or sit in stillness. Something is trying to reach you from a deeper place.',
-    white: 'Rest. Cleanse your space. Let go of something you have been carrying. This is a reset period — honor it.',
+    white: 'Rest. Cleanse your space. Let go of something you have been carrying. This is a reset period: honor it.',
     gold: 'Step into visibility. Lead. Speak with authority. This is your moment to show what you are capable of.',
     pink: 'Open your heart. Be tender with yourself and others. This energy heals through softness, not strength.',
     gray: 'Do not push. Fog is temporary. Give yourself permission to not have all the answers right now. Rest is productive.',
@@ -479,7 +480,7 @@ function buildWatchForText(outer: AuraColorScore, core: AuraColorScore, input: A
     green: 'Watch for giving too much while receiving too little. Healing is not the same as self-sacrifice.',
     blue: 'Watch for emotional withdrawal disguised as calm. Silence can be wisdom, but it can also be avoidance.',
     indigo: 'Watch for psychic overwhelm, absorbing others\' emotions, or mistaking anxiety for intuition.',
-    violet: 'Watch for spiritual bypassing — using higher meaning to avoid dealing with real-world emotions or responsibilities.',
+    violet: 'Watch for spiritual bypassing: using higher meaning to avoid dealing with real-world emotions or responsibilities.',
     white: 'Watch for detachment. Purity is powerful, but disconnecting from messy human feelings is not the same as transcending them.',
     gold: 'Watch for ego inflation, overwork, or tying your self-worth to external achievement.',
     pink: 'Watch for people-pleasing, emotional over-attachment, or ignoring red flags because you want to believe in love.',
@@ -524,9 +525,9 @@ function buildSpiritualMessage(
     blue: 'Your truth is ready to be spoken. The words will be uncomfortable, but they are necessary.',
     indigo: 'The veil is thin for you right now. Pay attention to what shows up in the quiet moments.',
     violet: 'You are in a spiritual expansion. Something larger than your daily life is moving through you.',
-    white: 'You are being cleansed. Let go of what no longer serves your highest self.',
+    white: 'You are being cleared out. Let go of what you have been carrying out of habit.',
     gold: 'You are being called to lead. Your light is needed by others, but shine for yourself first.',
-    pink: 'Love is not just something you give — it is something you deserve to receive without earning it.',
+    pink: 'Love is not just something you give: it is something you deserve to receive without earning it.',
     gray: 'This fog is not permanent. Sometimes the soul needs to rest before the next revelation.',
     black: 'You are in the underworld phase. Trust the darkness. It is where transformation lives.',
   };

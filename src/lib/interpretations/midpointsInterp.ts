@@ -487,7 +487,7 @@ export function generateMidpointInterpretation(mp: MidpointResult, firstName: st
   // Lead with the person: the heading already names the point, so no definition.
   text += `**What it does in your life**\n`;
   if (essenceData) {
-    text += `${firstName}, ${essenceData.essence.replace(/^You\b/, 'you')}\n\n`;
+    text += `${firstName}, ${essenceData.essence.replace(/^[A-Z](?![A-Z])/, c => c.toLowerCase())}\n\n`;
   } else {
     text += `${firstName}, you do not get ${mp.body1} or ${mp.body2} separately here: they work as one thing in you, and you will notice it most in the area of life below.\n\n`;
   }
@@ -496,7 +496,7 @@ export function generateMidpointInterpretation(mp: MidpointResult, firstName: st
   const signExpr = SIGN_MIDPOINT_EXPRESSION[mp.sign];
   if (signExpr) text += `${signExpr}\n\n`;
 
-  text += `**Where it shows up** — House ${mp.house}\n`;
+  text += `**Where it shows up:** House ${mp.house}\n`;
   const houseMani = HOUSE_MIDPOINT_MANIFESTATION[mp.house];
   if (houseMani) text += `${houseMani}\n\n`;
 
@@ -504,7 +504,7 @@ export function generateMidpointInterpretation(mp: MidpointResult, firstName: st
   // readings use, chosen by the hidden sub-sign layers of this exact degree.
   const underneath: string[] = [];
   const duadLine = mp.duadSign === mp.sign ? DUAD_PURE[mp.sign] : DUAD_TEXTURE[mp.duadSign];
-  if (duadLine) underneath.push(mp.duadSign === mp.sign ? `It runs deeper in you than it looks. ${duadLine}` : `Underneath, ${duadLine}`);
+  if (duadLine) underneath.push(mp.duadSign === mp.sign ? duadLine : `Underneath, ${duadLine}`);
   const styleLine = COMPENDIUM_STYLE[mp.compendiumSign];
   if (styleLine) underneath.push(`Day to day you can catch it in the small things: ${styleLine}`);
   if (underneath.length > 0) {

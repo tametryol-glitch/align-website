@@ -41,38 +41,38 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through action and initiative. Your greatest opportunities come when you charge ahead without waiting for permission or consensus. You are lucky when you are brave — the more boldly you act, the more the universe conspires to support you.',
-          'Your growth philosophy is rooted in self-reliance and pioneering spirit. You believe that you create your own luck through effort, courage, and the willingness to go where others fear to tread. This conviction is not just philosophical — it is consistently confirmed by your experience.',
+          'You grow through action and initiative. Your greatest opportunities come when you charge ahead without waiting for permission or consensus. You are lucky when you are brave: the more boldly you act, the more doors open.',
+          'Your growth philosophy is rooted in self-reliance and pioneering spirit. You believe that you create your own luck through effort, courage, and the willingness to go where others fear to tread. Your own experience keeps confirming it.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is optimistic, individualistic, and action-oriented. You believe that the universe rewards initiative and that obstacles exist to be overcome. Your philosophy emphasizes personal responsibility, direct experience over secondhand knowledge, and the idea that life is an adventure meant to be seized.',
-          'You are drawn to philosophies and spiritual traditions that emphasize personal empowerment, warrior traditions, and the heroic journey. Passive, fatalistic worldviews repel you — you need a philosophy that validates action and celebrates courage.',
+          'You see life as an adventure meant to be seized. You believe the universe rewards initiative and that obstacles exist to be overcome. You take responsibility for your own results and trust direct experience over secondhand advice.',
+          'Warrior traditions, personal empowerment and the heroic journey speak to you. Passive, fatalistic worldviews repel you; you need a belief system that backs action and celebrates courage.',
         ],
       },
     ],
   },
   taurus: {
     headline: 'Jupiter in Taurus: Abundant Prosperity',
-    intro: 'Your luck arrives slowly and then stays. You buy the good thing once, keep the skill you spent years on, and wait out the market while others panic, and over time the money and comfort pile up.',
+    intro: 'Your luck arrives slowly and then stays. You buy the good thing once, keep the skill you spent years on, and wait out the market while others panic, and over time money and comfort tend to build.',
     sections: [
       {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
           'You grow through steady accumulation and appreciation of the physical world. Your greatest opportunities come through investments that grow over time, ventures built on solid foundations, and the patient development of valuable skills and resources.',
-          'Money comes naturally to you. You have an instinct for value — knowing what is worth investing in, when to hold, and how to grow wealth steadily over time. Your prosperity is not about windfalls but about compound growth.',
+          'You have an instinct for value: what is worth buying, when to hold, and how to build slowly. Your prosperity comes from compounding, not windfalls.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is grounded, abundant, and deeply connected to the natural world. You believe that the earth provides generously for those who work with its rhythms. Your philosophy emphasizes gratitude, sensory pleasure, and the sacred value of material creation.',
-          'You are drawn to earth-based spirituality, philosophies of abundance, and traditions that honor the physical body and natural cycles. You find wisdom in simplicity and believe that contentment is the highest form of wealth.',
+          'You trust the earth and its rhythms. You believe it provides for people who work with it, and you hold gratitude, sensory pleasure and well-made things sacred.',
+          'Earth-based spirituality and traditions that honor the body and natural cycles appeal to you. You find wisdom in simplicity and believe contentment is the highest form of wealth.',
         ],
       },
     ],
@@ -93,8 +93,8 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is curious, adaptable, and fundamentally oriented toward learning. You believe that knowledge is the greatest form of wealth and that staying mentally active is the key to a fulfilling life. Your philosophy embraces multiple perspectives rather than claiming a single truth.',
-          'You are drawn to diverse philosophical traditions, enjoying the cross-pollination of ideas from different cultures and disciplines. You may change your philosophical framework several times in your life, and each iteration enriches your understanding.',
+          'You stay curious and adaptable, and you treat learning as the point of life. You believe knowledge is the greatest wealth and that a busy mind keeps you well. You collect perspectives instead of claiming a single truth.',
+          'You borrow from many traditions and enjoy mixing ideas from different cultures and fields. You may change your whole framework several times in your life, and each version adds something.',
         ],
       },
     ],
@@ -108,15 +108,15 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         icon: '🌟',
         paragraphs: [
           'You grow through emotional connection, family bonds, and the creation of safe, nurturing environments. Your greatest opportunities come through real estate, food, family business, or any venture that serves people\'s fundamental need for belonging and security.',
-          'Your abundance is intimately connected to your home and family life. When your domestic world is thriving, everything else prospers. Investing in your home, maintaining close family ties, and creating environments of emotional safety are not just personal preferences — they are prosperity strategies.',
+          'Your abundance is intimately connected to your home and family life. When your domestic world is thriving, everything else prospers. Investing in your home, maintaining close family ties, and creating environments of emotional safety are not just personal preferences, they are how you prosper.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is nurturing, family-centered, and rooted in the belief that love is the most powerful force in the universe. You believe that caring for others is not just a moral good but a cosmic law — what you give emotionally returns to you multiplied.',
-          'You are drawn to ancestral wisdom, family traditions, and spiritual practices rooted in the home and hearth. Your philosophy honors the past, values emotional intelligence, and sees the family unit as a microcosm of divine love.',
+          'You believe love is the strongest force there is. Caring for others is more than a moral good to you; it feels like a law of life, and what you give emotionally comes back to you multiplied.',
+          'Ancestral wisdom, family traditions and spiritual practice at the home and hearth pull you in. You honor the past, trust feeling over theory, and see your family as the place where the divine is most real.',
         ],
       },
     ],
@@ -130,15 +130,15 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         icon: '🌟',
         paragraphs: [
           'You grow through creativity, leadership, and generous self-expression. Your greatest opportunities come when you step into the spotlight, share your unique talents, and inspire others with your enthusiasm and warmth. You are lucky when you are being your most authentic, expressive self.',
-          'Abundance flows to you through entertainment, children, creative ventures, and leadership positions. Your natural charisma attracts opportunities, and your generosity creates a positive cycle — the more you give, the more returns to you.',
+          'Abundance flows to you through entertainment, children, creative ventures, and leadership positions. Your natural charisma attracts opportunities, and your generosity creates a positive cycle: the more you give, the more returns to you.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is optimistic, creative, and celebratory. You believe that life is meant to be enjoyed, that creativity is a divine gift, and that every person has a unique light to share with the world. Your philosophy emphasizes joy, self-expression, and the transformative power of love.',
-          'You are drawn to spiritual traditions that celebrate the divine spark in every individual and that encourage creative expression as a form of worship. You find God in art, music, performance, and the joyful experience of being alive.',
+          'You believe life is meant to be enjoyed, that creativity is a divine gift, and that every person has a light to share. Joy, self-expression and love are your answer to most things.',
+          'Spiritual traditions that celebrate the divine spark in every person, and treat creative expression as worship, feel like home. You find God in art, music, performance, and the joyful experience of being alive.',
         ],
       },
     ],
@@ -151,7 +151,7 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through service, health, and meticulous improvement. Your greatest opportunities come when you focus on being genuinely useful — solving real problems, improving existing systems, and offering practical help that makes a tangible difference in people\'s lives.',
+          'You grow through service, health, and meticulous improvement. Your greatest opportunities come when you focus on being genuinely useful: solving real problems, improving existing systems, and offering practical help that makes a tangible difference in people\'s lives.',
           'Your prosperity comes from dedication, not charm. When you commit fully to your craft and treat the work as something that matters, resources flow in to support what you are building.',
         ],
       },
@@ -159,8 +159,8 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is practical, health-conscious, and oriented toward continuous improvement. You believe that small, consistent efforts compound into extraordinary results, and that the universe rewards those who serve with humility and precision.',
-          'You are drawn to philosophies of mindful living, health-based spiritual practices, and traditions that honor the sacred in the everyday. You find wisdom in routine, growth in self-improvement, and abundance in the satisfaction of work well done.',
+          'You believe small, consistent efforts compound into extraordinary results, and that life rewards people who serve with humility and precision.',
+          'Mindful living, health-based spiritual practice and traditions that find the sacred in the everyday suit you. You find wisdom in routine and satisfaction in work done well.',
         ],
       },
     ],
@@ -173,7 +173,7 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through collaboration, partnership, and the creation of fair, beautiful systems. Your greatest opportunities come through relationships — business partnerships, marriage, and collaborative ventures where your diplomatic gifts create mutual benefit.',
+          'You grow through collaboration, partnership, and the creation of fair, beautiful systems. Your greatest opportunities come through relationships: business partnerships, marriage and collaborations where your diplomacy creates mutual benefit.',
           'Your luck is tied to committed partnership. You do best when you invest in equal, mutually supportive relationships. Solo ventures can work, but you flourish next to a partner who covers what you lack.',
         ],
       },
@@ -181,8 +181,8 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is relational, justice-oriented, and deeply committed to fairness. You believe that the universe is fundamentally balanced and that harmony is the natural state of things. Your philosophy emphasizes cooperation over competition and beauty as evidence of truth.',
-          'You are drawn to legal philosophy, aesthetic traditions, and spiritual practices that emphasize partnership with the divine. You find wisdom in balance, growth through relationship, and meaning in the pursuit of justice and beauty.',
+          'You believe the universe is fundamentally balanced and that harmony is the natural state of things. You put cooperation ahead of competition and treat beauty as evidence of truth.',
+          'Legal philosophy, aesthetic traditions and a spiritual life lived as partnership with the divine appeal to you. You find wisdom in balance and meaning in the pursuit of justice and beauty.',
         ],
       },
     ],
@@ -195,16 +195,16 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through transformation, shared resources, and the mastery of hidden knowledge. Your greatest opportunities come during times of crisis and change — when others retreat in fear, you advance, finding treasure in the ruins.',
-          'Financial abundance often comes through inheritance, investments, shared resources, or fields that deal with transformation — psychology, surgery, investigation, finance, or the management of other people\'s assets. You have an instinct for finding value where others see only darkness.',
+          'You grow through transformation, shared resources, and the mastery of hidden knowledge. Your greatest opportunities come during times of crisis and change: when others retreat in fear, you advance, finding treasure in the ruins.',
+          'Money tends to reach you through shared resources, investments or work that deals with transformation: psychology, surgery, investigation, finance, or managing other people\'s assets. You have an instinct for finding value where others see only darkness.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is depth-oriented, transformative, and unflinching in its acceptance of life\'s shadow side. You believe that true growth requires confronting uncomfortable truths, that power comes from self-knowledge, and that the deepest wisdom is found in the darkest places.',
-          'You are drawn to esoteric traditions, depth psychology, and spiritual practices that emphasize death and rebirth. You find meaning in transformation, growth through shadow work, and the alchemical process of turning lead into gold.',
+          'You do not look away from life\'s shadow side. You believe that true growth requires confronting uncomfortable truths, that power comes from self-knowledge, and that the deepest wisdom is found in the darkest places.',
+          'Esoteric traditions, depth psychology and practices built around death and rebirth pull you in. You find meaning in shadow work and in the alchemical turning of lead into gold.',
         ],
       },
     ],
@@ -218,15 +218,15 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         icon: '🌟',
         paragraphs: [
           'You grow through adventure, education, and the relentless pursuit of truth. Your greatest opportunities come through travel, higher education, publishing, philosophy, and cross-cultural exchange. The wider your world, the greater your abundance.',
-          'Your natural luck is extraordinary. Opportunities seem to find you, often arriving from unexpected directions and foreign sources. Your faith in positive outcomes functions as a self-fulfilling prophecy — because you expect good things, you take the risks that bring them into being.',
+          'You are lucky in ways other people notice. Opportunities seem to find you, often arriving from unexpected directions and foreign sources. Your faith in positive outcomes functions as a self-fulfilling prophecy: because you expect good things, you take the risks that bring them into being.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is expansive, optimistic, and genuinely philosophical. You believe that life is a grand adventure, that truth exists and is worth pursuing, and that every experience — even painful ones — contributes to the soul\'s evolution. Your faith in meaning gives you remarkable resilience.',
-          'You are drawn to diverse religious and philosophical traditions, world travel, and the pursuit of higher education. You are a natural teacher and philosopher, capable of inspiring others with your vision of what life can be.',
+          'You believe life is a grand adventure, that truth exists and is worth chasing, and that every experience, even the painful ones, adds to the soul\'s growth. Your faith in meaning gives you remarkable resilience.',
+          'Religions, philosophies, world travel and higher education all pull you in. You are a natural teacher, and people leave your company with a bigger idea of what life can be.',
         ],
       },
     ],
@@ -239,16 +239,16 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through structure, discipline, and institutional achievement. Your greatest opportunities come through established channels — traditional career advancement, strategic investments, and the methodical building of professional reputation.',
-          'Your abundance is earned rather than gifted. You attract prosperity through competence, reliability, and a track record of excellence. This may mean slower initial growth, but the empire you build has unshakeable foundations and extraordinary longevity.',
+          'You grow through structure, discipline, and institutional achievement. Your greatest opportunities come through established channels: career advancement, strategic investments and the slow building of a professional reputation.',
+          'Your abundance is earned rather than gifted. You attract prosperity through competence, reliability, and a track record of excellence. Growth starts slower for you, but what you build has solid foundations and lasts.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is pragmatic, responsible, and focused on legacy. You believe that success is built through effort, that character is revealed through adversity, and that the most meaningful achievements are those that benefit future generations.',
-          'You are drawn to stoic philosophy, traditional wisdom, and spiritual practices that emphasize duty, discipline, and the long view. You find meaning in responsibility and growth through the patient mastery of your chosen craft.',
+          'You believe success is built through effort, that character is revealed through adversity, and that the most meaningful achievements are the ones that benefit future generations.',
+          'Stoic philosophy, traditional wisdom and spiritual practice built on duty and the long view suit you. You find meaning in responsibility and in patiently mastering your craft.',
         ],
       },
     ],
@@ -261,7 +261,7 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through innovation, technology, and community action. Your greatest opportunities come through group ventures, humanitarian projects, and fields that are shaping the future — technology, social enterprise, and systemic reform.',
+          'You grow through innovation, technology, and community action. Your greatest opportunities come through group ventures, humanitarian projects, and fields that are shaping the future: technology, social enterprise and systemic reform.',
           'Your abundance is tied to your network and your ideas. You attract prosperity when you connect with communities that share your vision and when you apply your innovative thinking to real-world problems. Your luck increases as your network grows.',
         ],
       },
@@ -269,8 +269,8 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is progressive, humanitarian, and fundamentally optimistic about human potential. You believe that collective action can solve even the most intractable problems and that technology and innovation are forces for liberation rather than control.',
-          'You are drawn to futurism, humanitarian philosophy, and spiritual traditions that emphasize universal consciousness and collective evolution. You find meaning in service to humanity and growth through the expansion of social consciousness.',
+          'You are optimistic about human potential. You believe collective action can solve even the most intractable problems and that technology and innovation can free people instead of controlling them.',
+          'Futurism, humanitarian philosophy and traditions about collective evolution speak to you. You find meaning in serving humanity.',
         ],
       },
     ],
@@ -283,16 +283,16 @@ const JUPITER_CONTENT: Record<ZodiacSign, Omit<JupiterSignContent, 'sign'>> = {
         title: 'Growth & Abundance',
         icon: '🌟',
         paragraphs: [
-          'You grow through faith, compassion, and creative surrender. Your greatest opportunities come when you trust the flow of life, follow your intuition, and open yourself to possibilities that defy rational planning. Your luck is mystical — it arrives through synchronicity, dreams, and moments of grace.',
-          'Abundance flows to you through the arts, healing professions, spiritual service, and any work that connects you to the transcendent. Your generosity and compassion create a positive karmic cycle — the more you give from the heart, the more the universe provides.',
+          'You grow through faith, compassion, and creative surrender. Your greatest opportunities come when you trust the flow of life, follow your intuition, and open yourself to possibilities that defy rational planning. Your luck arrives through synchronicity, dreams and moments of grace.',
+          'Abundance flows to you through the arts, healing professions, spiritual service, and any work that connects you to the transcendent. Your generosity and compassion create a positive cycle: the more you give from the heart, the more comes back.',
         ],
       },
       {
         title: 'Philosophy & Worldview',
         icon: '🔮',
         paragraphs: [
-          'Your worldview is mystical, compassionate, and fundamentally trusting. You believe that the universe is benevolent, that all beings are connected, and that love is the fundamental force that holds reality together. This faith gives you a serenity and resilience that others find deeply comforting.',
-          'You are drawn to mystical traditions, contemplative practices, and philosophies that emphasize unity, compassion, and the dissolution of ego. You find God in the ocean, in music, in dreams, and in the eyes of those who are suffering.',
+          'You trust life. You believe the universe is kind, that all beings are connected, and that love holds reality together. This faith gives you a serenity and resilience that others find deeply comforting.',
+          'Mystical traditions and contemplative practices that dissolve the ego appeal to you. You find God in the ocean, in music, in dreams, and in the eyes of people who are suffering.',
         ],
       },
     ],

@@ -163,7 +163,7 @@ function phaseNameOf(event: LunarEvent): string {
   if (event.type === 'eclipse') {
     if (!event.subtype) return 'Eclipse';
     const parts = event.subtype.split('_');
-    return `${parts[0].charAt(0).toUpperCase()}${parts[0].slice(1)} ${parts[1]} eclipse`;
+    return `${parts[1]} ${parts[0]} eclipse`;
   }
   switch (event.type) {
     case 'new':           return 'New Moon';
@@ -205,7 +205,7 @@ export function buildEventInterpretation(
     const qualityTag = quality && ECLIPSE_QUALITY_TAG[quality];
     summary += ` On the ${event.nodeSide === 'north' ? 'North' : 'South'} Node axis, it ${nodeFrame}.`;
     if (qualityTag) {
-      summary += ` A ${qualityTag}.`;
+      summary += ` ${/^[aeiou]/i.test(qualityTag) ? 'An' : 'A'} ${qualityTag}.`;
     }
   }
 

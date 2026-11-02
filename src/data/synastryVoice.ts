@@ -16,7 +16,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is being understood without performing. You can come home flat and be left alone, or come home wired and be met, and you never have to explain which. The hard part is that the Moon's moods become the Sun's problem very quickly. One of you gets quiet and the other starts scanning their own behaviour for what they did wrong, even when the answer is just a bad day at work. You also share blind spots, so when you're both wrong about something you're wrong with total confidence and nobody in the house corrects you."
+        "body": "What you get is being understood without performing. You can come home flat and be left alone, or come home wired and be met, and you never have to explain which. The hard part is that whoever has the Moon hands their moods straight to the other, who takes them on as their own problem. One of you gets quiet and the other starts scanning their own behaviour for what they did wrong, even when the answer is just a bad day at work. You also share blind spots, so when you're both wrong about something you're wrong with total confidence and nobody in the house corrects you."
       },
       {
         "heading": "Long-Term Potential",
@@ -33,7 +33,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you make each other's lives smoother without noticing. The Moon softens the Sun's rushing, and the Sun gives the Moon a reason to leave the house on a night they'd rather stay in. The challenge is that nothing forces you to grow. You can coast for years on being nice to each other, and the first real argument feels disproportionate because you never practised having small ones. If you want this to turn into more than a good friendship, say the slightly awkward true thing early, while it's still cheap."
+        "body": "What works is that you make each other's lives smoother without noticing. The one with the Moon softens the other's rushing, and the one with the Sun gives them a reason to leave the house on a night they'd rather stay in. The challenge is that nothing forces you to grow. You can coast for years on being nice to each other, and the first real argument feels disproportionate because you never practised having small ones. If you want this to turn into more than a good friendship, say the slightly awkward true thing early, while it's still cheap."
       }
     ]
   },
@@ -42,11 +42,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "Whoever has the Sun makes a decision and announces it. The one with the Moon wanted to be asked, and says fine in a voice that means the opposite. Then the Sun takes fine at face value, gets on with the day, and the Moon's silence grows until it comes out sideways over something about the dishwasher. You fight about tone far more than facts: you weren't listening, you don't ever slow down, you make everything about your feelings. Make-up is quick but you rarely resolve why it happened, so the same scene returns every few weeks in a new costume."
+        "body": "Whoever has the Sun makes a decision and announces it. The one with the Moon wanted to be asked, and says fine in a voice that means the opposite. Then the one with the Sun takes fine at face value, gets on with the day, and the other's silence grows until it comes out sideways over something about the dishwasher. You fight about tone far more than facts: you weren't listening, you don't ever slow down, you make everything about your feelings. Make-up is quick but you rarely resolve why it happened, so the same scene returns every few weeks in a new costume."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you keep each other honest. The Sun can't coast on charm with someone who can read the mood underneath it, and the Moon can't hide in comfort with someone who keeps pushing forward. The challenge is that every need of one reads as pressure from the other. A request for reassurance feels like a cage, a request for space feels like rejection, and you both take it personally. It helps enormously to agree on a signal for I'm not angry, I just need an hour, and to actually use it."
+        "body": "You keep each other honest. The one with the Sun can't coast on charm with someone who reads the mood underneath it, and the one with the Moon can't hide in comfort with someone who keeps pushing forward. The challenge is that every need of one reads as pressure from the other. A request for reassurance feels like a cage, a request for space feels like rejection, and you both take it personally. It helps enormously to agree on a signal for I'm not angry, I just need an hour, and to actually use it."
       }
     ]
   },
@@ -59,7 +59,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is real emotional safety. The Moon can say the soft, embarrassing thing and the Sun hears it as a compliment, not a weakness. The Sun, in return, gets someone who actually believes in what they're building. The challenge is complacency. With so little friction, small resentments get swallowed instead of said, and they pile up behind the politeness. Plan something that scares you a little each year, and have one honest conversation a month that isn't about logistics."
+        "body": "You get real emotional safety. The one with the Moon can say the soft, embarrassing thing and the other hears it as a compliment, not a weakness. The one with the Sun, in return, gets someone who actually believes in what they're building. The challenge is complacency. With so little friction, small resentments get swallowed instead of said, and they pile up behind the politeness. Plan something that scares you a little each year, and have one honest conversation a month that isn't about logistics."
       }
     ]
   },
@@ -68,11 +68,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "Whoever has the Sun wants to go out, do things, be seen. The one with the Moon wants to stay in, be close, be asked how they feel. You trade the same two arguments: why can't we just stay home, and why do you always need to be doing something. Each of you ends up playing the extreme because the other is playing theirs, so the Sun gets louder and the Moon gets quieter. In the good weeks you borrow from each other, and the Sun learns to sit still while the Moon learns to show up at the party and enjoy it."
+        "body": "Whoever has the Sun wants to go out, do things, be seen. The one with the Moon wants to stay in, be close, be asked how they feel. You trade the same two arguments: why can't we just stay home, and why do you always need to be doing something. Each of you ends up playing the extreme because the other is playing theirs, so the one with the Sun gets louder and the one with the Moon gets quieter. In the good weeks you borrow from each other, and the one with the Sun learns to sit still while the other learns to show up at the party and enjoy it."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you each see something the other is missing. The Moon notices the mood in the room that the Sun walked straight past, and the Sun spots the opportunity the Moon would have talked themselves out of. The challenge is that you tend to cast each other as the problem. One of you becomes cold and always busy, the other becomes needy and always upset, and neither is the whole truth. The fix is boring and works: say what you actually need before you're resentful, and compromise on the calendar before it becomes a referendum on the relationship."
+        "body": "Each of you sees something the other is missing. The one with the Moon notices the mood in the room that the other walked straight past, and the one with the Sun spots the opportunity the first would have talked themselves out of. What goes wrong is that you tend to cast each other as the problem. One of you becomes cold and always busy, the other becomes needy and always upset, and neither is the whole truth. The fix is boring and works: say what you actually need before you're resentful, and compromise on the calendar before it becomes a referendum on the relationship."
       }
     ]
   },
@@ -85,7 +85,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a connection where wanting and tenderness feel like the same thing, which is rare. The challenge is that it runs on heat, and heat needs fuel. When you're stressed, the one with Venus wants to be wooed and the one with Mars wants to be left to fix things, and sex becomes the place you both try to make up. Learn to fight without going straight to bed. If you can have a real argument and a real repair that doesn't involve the bedroom, the chemistry stops carrying a load it was never built for."
+        "body": "You get a connection where wanting and tenderness feel like the same thing, which is rare. The challenge is that it runs on heat, and heat needs fuel. When you're stressed, the one with Venus wants to be wooed and the one with Mars wants to be left to fix things, and sex becomes the place you both try to make up. Learn to fight without going straight to bed. If you can have a real argument and a real repair that doesn't involve the bedroom, the chemistry stops carrying a load it was never built for."
       }
     ]
   },
@@ -98,7 +98,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you bring out each other's best manners and best nerve. The Venus side gets braver about asking for what it wants, and the Mars side gets better at being kind in the pursuit. The challenge is that low friction can mean low urgency. Nobody throws a plate, but nobody plans the trip either. If you want heat, schedule it: a proper date, a late night, an actual conversation about what you each want, instead of waiting for the spark to demand it."
+        "body": "You bring out each other's best manners and best nerve. The Venus side gets braver about asking for what it wants, and the Mars side gets better at being kind in the pursuit. The snag is that low friction can mean low urgency. Nobody throws a plate, but nobody plans the trip either. If you want heat, schedule it: a proper date, a late night, an actual conversation about what you each want, instead of waiting for the spark to demand it."
       }
     ]
   },
@@ -111,7 +111,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is real heat and a refusal to be bored. Nobody in this pairing is sleepwalking. The challenge is that desire and affection keep coming apart: the Mars side shows love by doing, the Venus side by being appreciated, and each feels unseen by the other's version. Ask for what you want in words instead of hints. Learn what affection actually looks like to the other, and give that, even when it isn't how you'd say I love you."
+        "body": "What you get is real heat and a refusal to be bored. Nobody in this pairing is sleepwalking. The trouble is that desire and affection keep coming apart: the Mars side shows love by doing, the Venus side by being appreciated, and each feels unseen by the other's version. Ask for what you want in words instead of hints. Learn what affection actually looks like to the other, and give that, even when it isn't how you'd say I love you."
       }
     ]
   },
@@ -124,7 +124,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is chemistry that doesn't require upkeep to survive, and a relationship where desire isn't a battleground. The challenge is how easy it all is. Because nothing breaks, nothing prompts you to look at whether you actually want the same life, the same city, the same number of kids. You can drift for two years on a great connection and discover you never discussed money. Put the unsexy topics on the table while you still like each other that much."
+        "body": "What you get is chemistry that doesn't require upkeep to survive, and a relationship where desire isn't a battleground. The challenge is how easy it all is. Because nothing breaks, nothing prompts you to look at whether you actually want the same life, the same city, the same number of kids. You can drift for two years on a great connection and discover you never discussed money. Put the unsexy topics on the table while you still like each other that much."
       }
     ]
   },
@@ -137,7 +137,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you each carry a quality the other secretly wants. The Mars side learns that tenderness can be strong, and the Venus side learns that wanting something out loud isn't rude. The challenge is polarisation: you each become more extreme to counter the other, so the Mars side gets harder and the Venus side gets clingier or colder. The way out is naming it as it happens. Say I'm pulling away and I don't want to, or I'm getting needy and I know it, and the spell loses some of its grip."
+        "body": "Each of you carries a quality the other secretly wants. The Mars side learns that tenderness can be strong, and the Venus side learns that wanting something out loud isn't rude. What goes wrong is polarisation: you each become more extreme to counter the other, so the Mars side gets harder and the Venus side gets clingier or colder. The way out is naming it as it happens. Say I'm pulling away and I don't want to, or I'm getting needy and I know it, and the spell loses some of its grip."
       }
     ]
   },
@@ -146,11 +146,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "Whoever has Venus gives affection easily and in the exact flavour the one with the Moon needs. Tea gets made, a hand lands on a shoulder, a favourite song appears on a playlist unprompted. The Moon relaxes in ways they don't with anyone else, and starts telling the truth about small things. You build a home together quickly, with shared jokes and routines that other people find a bit much. It's gentle, but it's also sticky: leaving the house together after a hard week can feel like betraying the sofa."
+        "body": "Whoever has Venus gives affection easily and in the exact flavour the one with the Moon needs. Tea gets made, a hand lands on a shoulder, a favourite song appears on a playlist unprompted. The one with the Moon relaxes in ways they don't with anyone else, and starts telling the truth about small things. You build a home together quickly, with shared jokes and routines that other people find a bit much. It's gentle, but it's also sticky: leaving the house together after a hard week can feel like betraying the sofa."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a love that makes both of you softer and more generous, and people notice. The challenge is that comfort can squeeze out everything else. You skip friends, you avoid conflict, and you start saying yes to keep the peace, so resentment hides inside the sweetness. One of you also tends to over-give to prevent any sadness in the other. Keep an honest line open for I'd rather not tonight, because a relationship that can't say no is one where the yes means less."
+        "body": "What you get is a love that makes both of you softer and more generous, and people notice. The trouble is that comfort can squeeze out everything else. You skip friends, you avoid conflict, and you start saying yes to keep the peace, so resentment hides inside the sweetness. One of you also tends to over-give to prevent any sadness in the other. Keep an honest line open for I'd rather not tonight, because a relationship that can't say no is one where the yes means less."
       }
     ]
   },
@@ -163,7 +163,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a relationship that feels like a soft place to land and still has a spark of affection in it. The Moon feels cared for, and Venus feels appreciated. The challenge is that sextiles need someone to act. Neither of you is likely to force the issue, so the trip stays an idea and the deeper conversation stays unscheduled. Make the first move more often than feels necessary, and say the affectionate thing out loud, since it will almost always be received well."
+        "body": "You get a relationship that feels like a soft place to land and still has a spark of affection in it. The one with the Moon feels cared for, and the one with Venus feels appreciated. The catch is that this easy kind of pairing needs someone to act. Neither of you is likely to force the issue, so the trip stays an idea and the deeper conversation stays unscheduled. Make the first move more often than feels necessary, and say the affectionate thing out loud, since it will almost always be received well."
       }
     ]
   },
@@ -189,7 +189,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you feel safe, and safe is rarer than people admit. The risk is that nothing forces you to grow. Because you rarely fight, you can drift for years without ever saying the harder thing, like the trip you want or the habit that bothers you. Pick one real conversation a month that is not pleasant and have it anyway, and the ease stays a strength instead of turning into a rut."
+        "body": "You feel safe, and safe is rarer than people admit. The risk is that nothing forces you to grow. Because you rarely fight, you can drift for years without ever saying the harder thing, like the trip you want or the habit that bothers you. Pick one real conversation a month that is not pleasant and have it anyway, and the ease stays a strength instead of turning into a rut."
       }
     ]
   },
@@ -211,11 +211,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "Whoever has the Venus makes the other feel worth looking at: they compliment, they touch, they notice the haircut and the new job. Whoever has the Sun lights up under that attention and gets more confident, funnier and warmer by the week. You flirt for years, buy each other silly presents and enjoy being seen as a couple. Disagreements get smoothed over with a joke or a kiss before they have time to harden."
+        "body": "Whoever has Venus makes the other feel worth looking at: they compliment, they touch, they notice the haircut and the new job. Whoever has the Sun lights up under that attention and gets more confident, funnier and warmer by the week. You flirt for years, buy each other silly presents and enjoy being seen as a couple. Disagreements get smoothed over with a joke or a kiss before they have time to harden."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you each feel chosen. The weak spot is that you both like harmony so much that you swallow irritation and let it pile up. The one with the Sun can start taking the admiration for granted, and the one with Venus can start performing sweetness they no longer feel. Be willing to be a little less charming and a little more honest, and the warmth lasts."
+        "body": "Each of you feels chosen. The weak spot is that you both like harmony so much that you swallow irritation and let it pile up. The one with the Sun can start taking the admiration for granted, and the one with Venus can start performing sweetness they no longer feel. Be willing to be a little less charming and a little more honest, and the warmth lasts."
       }
     ]
   },
@@ -228,7 +228,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a relationship with no drama attached. The cost of that is that it can stay at a pleasant simmer if neither of you takes a risk. Plan the trip, say the I love you first, ask the real question about the future. Once one of you moves, the other follows with obvious relief."
+        "body": "What you get is a relationship with no drama attached. The cost of that is that it can stay at a pleasant simmer if neither of you takes a risk. Plan the trip, say the I love you first, ask the real question about the future. Once one of you moves, the other follows with obvious relief."
       }
     ]
   },
@@ -250,11 +250,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "Whoever has the Venus is generous with warmth and the one with the Sun soaks it up and gives back confidence, so each of you gets better at the thing you were already good at. You enjoy the same evenings, spend money in similar ways and rarely need to translate. When you disagree it stays small, and you make up with a hug or a joke before bedtime. Other couples ask you how you do it, and you honestly do not have a method."
+        "body": "Whoever has Venus is generous with warmth and the one with the Sun soaks it up and gives back confidence, so each of you gets better at the thing you were already good at. You enjoy the same evenings, spend money in similar ways and rarely need to translate. When you disagree it stays small, and you make up with a hug or a joke before bedtime. Other couples ask you how you do it, and you honestly do not have a method."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is genuine contentment. The risk is that a relationship with so little friction lets you both avoid the uncomfortable talks, about money, about the future, about the habit that irritates you. Because things feel fine, you put off the decisions that would make it permanent. Name a goal you both want, like a move or a project, so the comfort has somewhere to go."
+        "body": "What you get is genuine contentment. The risk is that a relationship with so little friction lets you both avoid the uncomfortable talks, about money, about the future, about the habit that irritates you. Because things feel fine, you put off the decisions that would make it permanent. Name a goal you both want, like a move or a project, so the comfort has somewhere to go."
       }
     ]
   },
@@ -263,11 +263,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "The one with the Sun wants to be admired and followed, and the one with Venus wants to be wooed and met halfway. So one of you pushes forward and the other waits to be asked, and you spend a few evenings each month sulking over who was supposed to make the first move. Your tastes can differ, in spending, in how much you socialize, in how affectionate you are in public. Each of you sees in the other something you partly lack, which is why you were so interested at the start."
+        "body": "The one with the Sun wants to be admired and followed, and the one with Venus wants to be wooed and met halfway. So one of you pushes forward and the other waits to be asked, and you spend a few evenings each month sulking over who was supposed to make the first move. Your tastes can differ, in spending, in how much you socialise, in how affectionate you are in public. Each of you sees in the other something you partly lack, which is why you were so interested at the start."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you balance each other: boldness meets grace, and both of you grow a little. The wear comes from taking turns being the one who gives in. Decide together how to split the compromises so neither of you is quietly keeping a tally. When the balance is fair, the opposition feels like a partnership instead of a tug of war."
+        "body": "You balance each other: boldness meets grace, and both of you grow a little. The wear comes from taking turns being the one who gives in. Decide together how to split the compromises so neither of you is quietly keeping a tally. When the balance is fair, the opposition feels like a partnership instead of a tug of war."
       }
     ]
   },
@@ -293,7 +293,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a partnership that actually builds something. The risk is that you treat the relationship like a shared job and forget the play. Schedule the dates, the sex and the dumb fun the way you schedule the rest, and you will keep that spark. If you do, you get a pair that works well and still wants to come home."
+        "body": "You get a partnership that actually builds something. The risk is that you treat the relationship like a shared job and forget the play. Schedule the dates, the sex and the dumb fun the way you schedule the rest, and you will keep that spark. If you do, you get a pair that works well and still wants to come home."
       }
     ]
   },
@@ -302,11 +302,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "The one with Mars acts first and asks later, and the one with Saturn comes down hard on the mess that results. So one of you says you are always criticizing me and the other says you never think before you do things, and both of you are right about the other. Sex can turn into a power question, with one pushing and one withholding, and you can end up resentful over who is in control. You say things in anger that sound like rules, and then stay quiet for days."
+        "body": "The one with Mars acts first and asks later, and the one with Saturn comes down hard on the mess that results. So one of you says you are always criticising me and the other says you never think before you do things, and both of you are right about the other. Sex can turn into a power question, one of you pushing and the other withholding. A no has to be heard as a full answer, not as a move in the argument. You say things in anger that sound like rules, and then stay quiet for days."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The truth is that this aspect wears people out when the cold war becomes normal. Slowly the one with Mars stops suggesting things and the one with Saturn stops trusting, and from the outside it looks like a quiet marriage. What makes it last is clear agreements about decisions, a fixed time to discuss money and chores, and the habit of taking a break instead of finishing the fight. If you each respect the other's pace, you build real strength, because few couples are tested this early."
+        "body": "It wears you both out when the cold war becomes normal. Slowly the one with Mars stops suggesting things and the one with Saturn stops trusting, and from the outside it looks like a quiet marriage. What makes it last is clear agreements about decisions, a fixed time to discuss money and chores, and the habit of taking a break instead of finishing the fight. If you each respect the other's pace, you build real strength, and it is strength you earned instead of inherited."
       }
     ]
   },
@@ -315,11 +315,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "The one with Mars starts and the one with Saturn finishes, so errands, renovations, trips and training plans go smoothly, with little shouting about who forgot what. You know what the other is going to say before they say it, because you both honor your commitments. Arguments are short and practical: here is the problem, here is what we do. In bed there is a steady confidence, nobody is performing and nobody is pushed."
+        "body": "The one with Mars starts and the one with Saturn finishes, so errands, renovations, trips and training plans go smoothly, with little shouting about who forgot what. You know what the other is going to say before they say it, because you both honour your commitments. Arguments are short and practical: here is the problem, here is what we do. In bed there is a steady confidence, nobody is performing and nobody is pushed."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is reliability, which you take for granted until you see how rare it is. The weak spot is that you can get stuck in routine and let the heat fade without noticing. Do something that scares you both a little, like a new city or a new skill, so the dependable partnership has something exciting to carry."
+        "body": "What you get is reliability, which you take for granted until you see how rare it is. The weak spot is that you can get stuck in routine and let the heat fade without noticing. Do something that scares you both a little, like a new city or a new skill, so the dependable partnership has something exciting to carry."
       }
     ]
   },
@@ -332,12 +332,12 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you each hold what the other lacks: one of you finishes nothing without a push, the other starts nothing without a plan, and together things can actually get built and actually get started. The cost is that the Mars side feels policed and the Saturn side feels run over. Sex can go cold when one of you reads every advance as pressure or every refusal as rejection. It gets better the day the faster one says what they need by when, and the slower one says yes or no instead of a vague maybe that stalls everything for a week."
+        "body": "You each hold what the other lacks: one of you finishes nothing without a push, the other starts nothing without a plan, and together things can actually get built and actually get started. The cost is that the Mars side feels policed and the Saturn side feels run over. Sex can go cold when one of you reads every advance as pressure or every refusal as rejection. It gets better the day the faster one says what they need by when, and the slower one says yes or no instead of a vague maybe that stalls everything for a week."
       }
     ]
   },
   "moon-conjunct-pluto": {
-    "intro": "You two feel each other all the way down, and you can never quite get comfortable with how much. One mood in the house sets the mood for both of you. Closeness here is total or it is not safe.",
+    "intro": "You two feel each other all the way down, and you can never quite get comfortable with how much. One mood in the house sets the mood for both of you. Closeness here feels total or it doesn't feel safe.",
     "sections": [
       {
         "heading": "Relationship Dynamics",
@@ -345,11 +345,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is repair that goes deeper than an apology: after a real blow-up you actually understand each other better than before. The danger is control dressed as love, where one of you checks the phone, tracks the whereabouts, or goes silent for days as punishment. Whoever has the Moon learns to hide the feeling instead of showing it, and the one with Pluto learns to squeeze harder when they sense distance. Jealousy and old wounds from other relationships get pulled in, and arguments are rarely about the dishes."
+        "body": "What you get is repair that goes deeper than an apology: after a real blow-up you actually understand each other better than before. The danger is control dressed as love, where one of you checks the phone, tracks the whereabouts, or goes silent for days as punishment. That is control, not depth, and nobody owes it to the other. Whoever has the Moon learns to hide the feeling instead of showing it, and the one with Pluto learns to squeeze harder when they sense distance. Jealousy and old wounds from other relationships get pulled in, and arguments are rarely about the dishes."
       },
       {
         "heading": "Long-Term Potential",
-        "body": "This pairing tends to last either for decades or only a few ferocious years, with little in between. The wear comes from emotional intensity that never gets a day off: you can't have a casual evening because every look carries weight, and eventually one of you needs air and the other treats that as abandonment. It holds when you give each other real privacy, say the control out loud when you catch yourself doing it, and stop saving up grievances for the big night. If you do the work, you end up with a bond that few other couples will ever understand. If you don't, you end up with a very loyal, very tired standoff."
+        "body": "This pairing tends to last either for decades or only a few ferocious years, with little in between. The wear comes from emotional intensity that never gets a day off: you can't have a casual evening because every look carries weight, and eventually one of you needs air and the other treats that as abandonment. It holds when you give each other real privacy, say the control out loud when you catch yourself doing it, and stop saving up grievances for the big night. If you do the work, the intensity settles into something steady. If you don't, you end up with a very loyal, very tired standoff."
       }
     ]
   },
@@ -362,7 +362,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you can handle the hard subjects, like family wounds, money fears and old exes, without it exploding. The catch is that nothing forces you to do it, so you can coast on pleasant surface for months and miss that something has gone unsaid. The one with Pluto quietly decides how things will go and the other goes along because it is easier than a scene. Open the heavy topic on purpose now and then, and this pairing quietly pays you back."
+        "body": "You can handle the hard subjects, like family wounds, money fears and old exes, without it exploding. The catch is that nothing forces you to do it, so you can coast on pleasant surface for months and miss that something has gone unsaid. The one with Pluto quietly decides how things will go and the other goes along because it is easier than a scene. Open the heavy topic on purpose now and then, and this pairing quietly pays you back."
       }
     ]
   },
@@ -375,7 +375,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that nothing important stays buried, because this pair cannot leave a wound alone, and some of those wounds really do heal. The cost is power games about who gives in first, who apologises, and who decides the mood of the house. Control shows up as silent treatment, guilt, checking up, or threats to leave that nobody means. If one of you has ever been betrayed, expect them to test you, and expect to be tested more than once for the same thing."
+        "body": "Nothing important stays buried, because you cannot leave a wound alone, and some of those wounds really do heal. The cost is power games about who gives in first, who apologises, and who decides the mood of the house. Control shows up as silent treatment, guilt, checking up, or threats to leave that nobody means. If one of you has ever been betrayed, the fear comes out as tests. Testing does not build trust: say the fear in words and skip the traps."
       }
     ]
   },
@@ -388,7 +388,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a loyalty that survives bad stretches, because you don't panic when the other is at their worst. The cost is that the ease makes you lazy about the things that aren't emotional: bills, chores, dates that need planning. The one with Pluto can also take over the emotional agenda without either of you noticing, and the other lets it happen because it feels like being understood. Check now and then that you are both choosing this, not just sinking into it."
+        "body": "What you get is a loyalty that survives bad stretches, because you don't panic when the other is at their worst. The cost is that the ease makes you lazy about the things that aren't emotional: bills, chores, dates that need planning. The one with Pluto can also take over the emotional agenda without either of you noticing, and the other lets it happen because it feels like being understood. Check now and then that you are both choosing this, not just sinking into it."
       }
     ]
   },
@@ -401,7 +401,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a mirror that does not lie, so if you can stay in the room, you both learn things about your own patterns very fast. The problem is projection: the Moon side accuses the Pluto side of manipulation, and the Pluto side accuses the Moon side of using feelings as leverage, and both accusations are partly true. Power moves look like withholding affection, going quiet at dinner, bringing up old mistakes, and getting friends on your side. It goes better when you say what you want plainly instead of testing whether the other will guess."
+        "body": "You get a mirror that does not lie, so if you can stay in the room, you both learn things about your own patterns very fast. The problem is projection: the Moon side accuses the Pluto side of manipulation, and the Pluto side accuses the Moon side of using feelings as leverage, and both accusations are partly true. Power moves look like withholding affection, going quiet at dinner, bringing up old mistakes, and getting friends on your side. None of that is intensity, it is moves to win, and each of you can stop making them. It goes better when you say what you want plainly instead of testing whether the other will guess."
       }
     ]
   },
@@ -410,11 +410,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "You think about each other constantly, you reread messages, and you show up everywhere the other one is. The one with Venus feels chosen in a way that is thrilling, and the one with Pluto feels something almost frightening about how much they want it. Early on, plans, friends and sleep get dropped without much discussion. Then the first small cooling, a slow text or a night out alone, sets off a panic that looks like love and acts like control."
+        "body": "You think about each other constantly, you reread messages, and you plan your week around where the other one will be. The one with Venus feels chosen in a way that is thrilling, and the one with Pluto feels something almost frightening about how much they want it. Early on, plans, friends and sleep get dropped without much discussion. Then the first small cooling, a slow text or a night out alone, sets off a panic that looks like love and acts like control."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a bond that goes far beyond ordinary attraction, and when it is good, being wanted this fully changes how both of you see yourselves. The cost is jealousy, possessiveness and the habit of testing loyalty with small traps. The one with Pluto tries to run the relationship through intensity, and the one with Venus gives in to keep the peace and resents it later. Deal-breakers show up fast: one affair, one lie, one threat to leave, and it never fully goes back to how it was. Keeping your own friends, money and evenings is not betrayal here, it is what keeps this from swallowing you."
+        "body": "What you get is a bond that goes far beyond ordinary attraction, and when it is good, being wanted this fully changes how both of you see yourselves. The cost is jealousy, possessiveness and the habit of testing loyalty with small traps. Those are control, not passion, and calling them passion is how they last. The one with Pluto tries to run the relationship through intensity, and the one with Venus gives in to keep the peace and resents it later. Deal-breakers show up fast: one affair, one lie, one threat to leave, and it never fully goes back to how it was. Keeping your own friends, money and evenings is not betrayal here, it is what keeps this from swallowing you."
       }
     ]
   },
@@ -427,7 +427,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is that you grow more attached rather than less, because the more you learn, the more interesting the other becomes. The weakness is that nothing here forces action, so a pleasant pull can stay a pleasant pull for years if neither of you makes a move or a commitment. Occasional jealousy shows up, but you can usually talk it down before it sets. Say the serious thing out loud instead of waiting for the other to guess it, and this pairing rewards you."
+        "body": "You grow more attached rather than less, because the more you learn, the more interesting the other becomes. The weakness is that nothing here forces action, so a pleasant pull can stay a pleasant pull for years if neither of you makes a move or a commitment. Occasional jealousy shows up, but you can usually talk it down before it sets. Say the serious thing out loud instead of waiting for the other to guess it, and this pairing rewards you."
       }
     ]
   },
@@ -436,11 +436,11 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
     "sections": [
       {
         "heading": "Relationship Dynamics",
-        "body": "One of you wants affection and ease, the other wants total honesty and total commitment, and neither is willing to settle for less. The attraction is immediate and a bit uncomfortable, like you shouldn't be this interested. A friendly chat with an ex or a coworker becomes a three hour interrogation. You make up passionately, which makes it harder to notice that you have made up the same fight six times."
+        "body": "One of you wants affection and ease, the other wants total honesty and total commitment, and neither is willing to settle for less. The attraction is immediate and a bit uncomfortable, like you shouldn't be this interested. A friendly chat with an ex or a coworker becomes a three hour interrogation, and the interrogation is the thing to fix, not the chat. You make up passionately, which makes it harder to notice that you have made up the same fight six times."
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is raw desire that few couples ever feel, and the pair of you do not do boring. The cost is control: the one with Pluto goes through the phone, rewrites the story, or threatens to disappear, while the one with Venus smiles, lies about small things to avoid scenes, and builds resentment. Money, exes and loyalty are where it blows up. If you ever hit the point where one of you is afraid to say what they did today, that is the signal to stop and reset, not push through."
+        "body": "What you get is raw desire that few couples ever feel, and the pair of you do not do boring. The cost is control: the one with Pluto goes through the phone, rewrites the story, or threatens to disappear, while the one with Venus smiles, lies about small things to avoid scenes, and builds resentment. Money, exes and loyalty are where it blows up. If you ever hit the point where one of you is afraid to say what they did today, that is the signal to stop and reset, not push through."
       }
     ]
   },
@@ -453,7 +453,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is a bond that gets stronger under pressure and a physical connection that does not fade on schedule. The risk is how easily it all flows: you stop having the hard conversations because nothing seems broken, and one of you slowly takes over the decisions. The Pluto one can go possessive without raising their voice, and the Venus one lets it pass because it feels like being cherished. Notice when closeness has turned into being each other's whole world, and keep a few things outside it."
+        "body": "What you get is a bond that gets stronger under pressure and a physical connection that does not fade on schedule. The risk is how easily it all flows: you stop having the hard conversations because nothing seems broken, and one of you slowly takes over the decisions. The Pluto one can go possessive without raising their voice, and the Venus one lets it pass because it feels like being cherished. Possessive is not cherished, and it grows when nobody names it. Notice when closeness has turned into being each other's whole world, and keep a few things outside it."
       }
     ]
   },
@@ -466,7 +466,7 @@ export const SYNASTRY_VOICE: Record<string, SynastryVoice> = {
       },
       {
         "heading": "Gifts & Challenges",
-        "body": "The gift is chemistry that does not need a reason and a willingness to look at what you each avoid. The trouble is a power struggle disguised as romance: who texts first, who needs whom more, who is allowed to look at someone else. Gifts, favours and affection can become currency, and sooner or later someone calls in a debt. It improves if you stop trying to win and say plainly what you want, even when that sounds needy."
+        "body": "What you get is chemistry that does not need a reason, plus a willingness to look at what you each avoid. The trouble is a power struggle disguised as romance: who texts first, who needs whom more, who is allowed to look at someone else. Gifts, favours and affection can become currency, and sooner or later someone calls in a debt. It improves if you stop trying to win and say plainly what you want, even when that sounds needy."
       }
     ]
   },

@@ -95,7 +95,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     loveWorkInner:
       'In love you test someone for a long time, then stay with stubborn loyalty. At work you trust visible effort and distrust anyone whose success came overnight. Inside, determination and self-doubt run side by side and each makes the other louder.',
     growth:
-      'Your edge is noticing when the struggle means you are close and when it means you are on the wrong road. Ease is not a trick, and exhaustion is not a medal. Ask yourself every few months which one you are in.',
+      'The skill to build is noticing when the struggle means you are close and when it means you are on the wrong road. Ease is not a trick, and exhaustion is not a medal. Ask yourself every few months which one you are in.',
   },
 
   first_quarter: {
@@ -103,7 +103,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     summary:
       'You were born at First Quarter, with the Moon a quarter of the way around from the Sun, and your life keeps handing you walls to go through. You act, you decide, and you get impatient with anyone who calls a pause careful.',
     characterLong:
-      'You feel the pressure of there is something I am supposed to do more sharply than most people. It is physical for you: a tight stomach on a Sunday night, a thing you know has to be built and cannot yet be seen.\n\nYou are confrontational in the useful sense. You raise the hard topic at the dinner, say the number in the meeting and tell the contractor it is not finished. Softer people sometimes flinch at you, and you are often the reason the thing finally got done.\n\nYour life repeats one scene: a fork where you have to choose loudly, in public, with consequences. You will keep ending up there. It is where you work best.',
+      'You feel the pressure of an unfinished job more sharply than most people. It is physical for you: a tight stomach on a Sunday night, a thing you know has to be built and cannot yet be seen.\n\nYou are confrontational in the useful sense. You raise the hard topic at the dinner, say the number in the meeting and tell the contractor it is not finished. Softer people sometimes flinch at you, and you are often the reason the thing finally got done.\n\nYour life repeats one scene: a fork where you have to choose loudly, in public, with consequences. You will keep ending up there. It is where you work best.',
     emotionalRhythm:
       'Your feelings arrive as sharp hits. Something stings, you decide, you move. Staying in limbo drains you faster than it drains anyone else, and a week of maybe leaves you irritable and sleepless. When you feel stuck, use your body first: lift, run, clean the garage. The feeling sorts itself out afterward.',
     strengths: [
@@ -123,11 +123,11 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     pressure:
       'Pressure is where you work best, and you know it. The risk is that when life goes quiet you create a crisis to feel normal: the argument, the sudden move, the project nobody asked for. A calm month is not a failing one.',
     closure:
-      'You end things with a decision and a clean line. We are done here, and you rarely look back. The thing to check is whether the ending is wise or just fast. Give a big one twenty-four hours before you announce it.',
+      'You end things with a decision and a clean line: we are done here. You rarely look back. The thing to check is whether the ending is wise or just fast. Give a big one twenty-four hours before you announce it.',
     loveWorkInner:
       'In love you are ardent and sometimes combustible. Chemistry gets you in, but only a partner who can take your bluntness without going quiet keeps you. At work you break deadlocks and carry projects over the line. Inside, you always know the next move, even on days you wish you did not.',
     growth:
-      'Your edge is letting some things grow on their own clock. Not every problem is a wall. Some are gardens, and force kills a garden. Spend your power on the two or three things a year that truly need it.',
+      'What you need to learn is letting some things grow on their own clock. Not every problem is a wall. Some are gardens, and force kills a garden. Spend your power on the two or three things a year that truly need it.',
   },
 
   waxing_gibbous: {
@@ -137,7 +137,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     characterLong:
       'You carry an inner editor with the resolution of a microscope. At its best it makes your work excellent. At its worst it makes you hard to live with, and hardest on yourself.\n\nYou feel that something good is nearly ready, and you will not let it go out half-finished. That is why you rework the email four times and redo the room before guests arrive. It is perfectionism, but it serves the thing itself, not your pride.\n\nYou are rarely the one who starts and rarely the one who finishes. You are the one who makes it better in between.',
     emotionalRhythm:
-      'You feel something and your mind immediately starts working on it. What do I do, what went wrong, what would fix it. That keeps you in control and it also keeps you from simply feeling. Set aside an hour with no fixing and no plan, and let the feeling be as big as it is.',
+      'You feel something and your mind immediately starts working on it: what do I do, what went wrong, what would fix it. That keeps you in control and it also keeps you from simply feeling. Set aside an hour with no fixing and no plan, and let the feeling be as big as it is.',
     strengths: [
       'You catch the detail that would have cost someone money later',
       'You will not ship sloppy work, and people trust your name on it',
@@ -153,13 +153,13 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     beginnings:
       'You prefer to inherit something half-formed and make it good. When you do have to begin from nothing, decide in advance that the first pass will be rough and that rough is allowed. You can sharpen it tomorrow.',
     pressure:
-      'Under pressure you double down on detail. Sometimes that is exactly right. Sometimes you are straightening the trim while the kitchen is on fire. Ask yourself which job is actually burning.',
+      'Stress sends you into detail. Sometimes that is exactly right. Sometimes you are straightening the trim while the kitchen is on fire. Ask yourself which job is actually burning.',
     closure:
       'Endings are hard because you can always see one more thing you could have done. Let a project close at good enough now and then. The perfect version you never release helps no one.',
     loveWorkInner:
-      'In love you notice everything: how they take their coffee, the mood they hide, the one remark they made in March. That attention is how you say I care, and it can tip into fussing. At work you are the person whose quality holds. Inside, your head is a busy workshop that never fully shuts.',
+      'In love you notice everything: how they take their coffee, the mood they hide, the one remark they made in March. That attention is how you say you care, and it can tip into fussing. At work you are the person whose quality holds. Inside, your head is a busy workshop that never fully shuts.',
     growth:
-      'Your edge is releasing. Your standards are a gift, until you decide nothing has ever been ready. At some point sending it is the improvement.',
+      'The move you keep skipping is releasing. Your standards are a gift, until you decide nothing has ever been ready. At some point sending it is the improvement.',
   },
 
   full: {
@@ -191,7 +191,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     loveWorkInner:
       'In love you are vivid, fully present and sometimes too much, and you need someone who can match your light without competing with it. At work you do best with people and partnerships, on stage or in a room. Inside, you are much more private than you look. The few who see all of you have earned it.',
     growth:
-      'Your edge is being fully yourself in front of someone else, neither shrunk nor inflated. You can keep your own light on and still see theirs.',
+      'The work is being fully yourself in front of someone else, neither shrunk nor inflated. You can keep your own light on and still see theirs.',
   },
 
   disseminating: {
@@ -217,7 +217,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     beginnings:
       'You begin by telling someone. Once you have said it aloud to a friend, it is real. Do not start in silence. Start in a conversation, a post or a voice note, and let the telling make the commitment.',
     pressure:
-      'Under pressure you have to talk it out. Call a friend, send the voice note, write the draft. Sitting alone with it makes you worse, not calmer.',
+      'When it gets hard you have to talk it out. Call a friend, send the voice note, write the draft. Sitting alone with it makes you worse, not calmer.',
     closure:
       'Endings come with a story, and you need the story before you can let go. Give yourself time to work out what the chapter taught. That work is the closing.',
     loveWorkInner:
@@ -233,7 +233,7 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     characterLong:
       'You carry a quiet sense that something has to change, even when everything looks fine. It is not pessimism. You can smell an expired idea, an expired job, an expired friendship, and you cannot unsmell it.\n\nYou are the one who says the thing nobody wanted said. You leave the party first, quit the job first and drop the beliefs you were handed. Your example shows people what is no longer true.\n\nYou will often be misunderstood in the moment. The proof usually arrives years later, when the people who argued with you quietly admit you were right.',
     emotionalRhythm:
-      'Certainty arrives whole. I am done with this shows up already finished, with no gradual build you can point to. Trust it, even though everyone else calls it sudden. It has been forming for months where you could not hear it.',
+      'Certainty arrives whole. The feeling of being done shows up already finished, with no gradual build you can point to. Trust it, even though everyone else calls it sudden. It has been forming for months where you could not hear it.',
     strengths: [
       'You know what needs to end before the meeting starts',
       'You take apart what no longer works instead of nursing it',
@@ -281,13 +281,13 @@ const PHASE_BASE: Record<LunarPhaseKey, NatalPhaseReading> = {
     beginnings:
       'You start slowly and often in secret. Announcing too soon feels like exposure. Let a new chapter grow in private for a few months before anyone hears about it.',
     pressure:
-      'Under pressure you go inward, which suits you. The risk is staying in your head so long that the outside situation falls apart while you think. Pair the inner work with one small action each day.',
+      'When it gets hard you go inward, which suits you. The risk is staying in your head so long that the outside situation falls apart while you think. Pair the inner work with one small action each day.',
     closure:
       'Endings feel almost comfortable, because the cycle is where you live. Your difficulty is the other direction: starting again, and meaning it, from the ashes. The cycle needs you on the new side too.',
     loveWorkInner:
       'In love you need depth and time, and small talk wears you out. At work you suit transitions, endings, legacy, spiritual work and service. Inside, you are private, profound and frequently somewhere else.',
     growth:
-      'Your edge is actually arriving. Not everything is a transition. Parts of this life are simply your life. Be here for dinner, for the people, for the ordinary Tuesday. This lifetime counts.',
+      'The hard part is actually arriving. Not everything is a transition. Parts of this life are simply your life. Be here for dinner, for the people, for the ordinary Tuesday. This lifetime counts.',
   },
 };
 
@@ -303,7 +303,7 @@ const SIGN_OVERLAYS: Record<string, string> = {
   Libra: 'With your Moon in Libra, you work out what you feel by talking it through with someone you trust, and you hate being the only one who is upset.',
   Scorpio: 'With your Moon in Scorpio, you feel everything at full volume and show about a tenth of it. The people who get close find out how deep it goes.',
   Sagittarius: 'With your Moon in Sagittarius, you heal by moving: a long drive, a new country, a book that rearranges your head.',
-  Capricorn: 'With your Moon in Capricorn, you hold your feelings in order and grew up early. You still check whether you are allowed to need things.',
+  Capricorn: 'With your Moon in Capricorn, you keep your feelings in order because you grew up early. You still check whether you are allowed to need things.',
   Aquarius: 'With your Moon in Aquarius, you step back from a feeling to look at it before you let yourself have it. Strangers and causes can move you more than your own family.',
   Pisces: 'With your Moon in Pisces, you soak up other people\'s feelings without noticing, and you need time alone to find out which ones were yours.',
 };

@@ -123,7 +123,7 @@ function interpretGrandTrine(p: DetectedPattern): InterpretedPattern {
     involvedBodies: names,
     geometrySummary: 'Three planets in ' + el.toLowerCase() + ' signs form a flowing triangle: ' + bodyList + '.',
     interpretation: 'What comes easy to you is ' + elementNature(p.members[0]?.sign) + '. Your ' + p.members[0]?.name + ' is good at ' + signTone(p.members[0]?.sign) + ', your ' + p.members[1]?.name + ' at ' + signTone(p.members[1]?.sign) + ' and your ' + p.members[2]?.name + ' at ' + signTone(p.members[2]?.sign) + ', and each one hands the next a head start. Because it never costs you effort, you tend to undervalue it.',
-    lifeManifest: 'When it comes to ' + houseStory(p.members[0]?.house) + ', ' + houseStory(p.members[1]?.house) + ' and ' + houseStory(p.members[2]?.house) + ', things fall into place for you before other people have finished trying. Friends watch you do in an afternoon what took them a month and ask how.',
+    lifeManifest: 'Things fall into place for you before other people have finished trying, especially around ' + houseStory(p.members[0]?.house) + '; ' + houseStory(p.members[1]?.house) + '; and ' + houseStory(p.members[2]?.house) + '. Friends watch you do in an afternoon what took them a month and ask how.',
     growthLesson: 'The trap is that nothing here ever hurts, so you stop pushing. You coast, get passed by people with half your talent who practised, and only notice when the gap is wide. Pick one thing you do easily and make it hard on purpose.',
     category: 'major-pattern', score: p.score,
   };
@@ -134,10 +134,10 @@ function interpretKite(p: DetectedPattern): InterpretedPattern {
   const names = memberNames(p.members);
   const an = apex?.name || 'the apex planet';
   return {
-    type: p.type, title: 'Kite — Directed Grand Trine',
+    type: p.type, title: 'Kite: Directed Grand Trine',
     involvedBodies: names,
     geometrySummary: 'A Grand Trine with ' + focalDescription(apex) + ' as the apex, forming sextiles to two trine members.',
-    interpretation: 'Your easy talent has a job to do. ' + an + ' sits opposite part of that talent, and the pull between them stops you from sitting on the gift. ' + (apex ? 'Everything runs through ' + apex.name + ', which is ' + planetFunction(apex.name) + '.' : ''),
+    interpretation: 'Your easy talent has a job to do. ' + (apex ? 'Your ' + an : 'The apex planet') + ' sits opposite part of that talent, and the pull between them stops you from sitting on the gift. ' + (apex ? 'Everything runs through ' + apex.name + ', which is ' + planetFunction(apex.name) + '.' : ''),
     lifeManifest: 'You do not just have the knack, you get restless until you use it. Most of that restlessness lands in ' + houseStory(apex?.house || 1) + ', and that is where people see you at your best.',
     growthLesson: 'If ' + an + ' gets neglected, the whole set-up stalls. When you feel bored or stuck, look at how you have been treating ' + an + ' before you blame anything else.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) : undefined,
@@ -168,8 +168,8 @@ function interpretGrandCross(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: mod + ' Grand Cross',
     involvedBodies: names,
     geometrySummary: 'Four planets form two oppositions that cross each other with four squares: ' + names.join(', ') + '.',
-    interpretation: 'You are pulled four ways at once and every choice costs you something. ' + names.join(', ') + ' each want a different thing, so you rarely get a day when all four are satisfied. The upside is that you get tested constantly, and you almost never fold.',
-    lifeManifest: 'Across ' + p.members.map(m => houseStory(m.house)).join(', ') + ', the demands clash. The job wants one thing, the family another, and you end up the person who holds it all together. That much practice makes you hard to rattle.',
+    interpretation: 'You are pulled four ways at once and every choice costs you something. ' + names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ' each want a different thing, so you rarely get a day when all four are satisfied. The upside is that you get tested constantly, and you almost never fold.',
+    lifeManifest: 'The demands clash around ' + p.members.map(m => houseStory(m.house)).join('; ') + '. The job wants one thing, the family another, and you end up the person who holds it all together. That much practice makes you hard to rattle.',
     growthLesson: 'Stop waiting for the tension to end. Give each of the four a set slot in your week and you stop feeling like you are failing all of them at once.',
     category: 'major-pattern', score: p.score,
   };
@@ -179,10 +179,10 @@ function interpretYod(p: DetectedPattern): InterpretedPattern {
   const apex = p.members.find(m => m.role === 'apex') || p.focalPoint;
   const names = memberNames(p.members);
   return {
-    type: p.type, title: 'Yod — Finger of God',
+    type: p.type, title: 'Yod: Finger of God',
     involvedBodies: names,
     geometrySummary: 'Two planets sextile each other and both quincunx ' + focalDescription(apex) + ', forming a narrow triangle.',
-    interpretation: 'You carry a sense that you are meant for something specific and that you are slightly off course. ' + (apex ? apex.name + ' is where the nag sits, and it concerns ' + planetFunction(apex.name) + '.' : '') + ' You adjust, tweak and rearrange, and it never quite clicks until something forces your hand.',
+    interpretation: 'You carry a sense that you are meant for something specific and that you are slightly off course. ' + (apex ? 'Your ' + apex.name + ' is where the nag sits, and it concerns ' + planetFunction(apex.name) + '.' : '') + ' You adjust, tweak and rearrange, and it never quite clicks until something forces your hand.',
     lifeManifest: 'Odd events keep nudging you toward ' + houseStory(apex?.house || 1) + ': a job that ends, a stranger who says the right thing, a move you did not plan. Looking back, every one of them pushed you the same way.',
     growthLesson: 'Stop waiting for the plan to make sense first. The thing you keep being pushed toward is usually the thing to start before you feel ready.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) : undefined,
@@ -198,7 +198,7 @@ function interpretBoomerangYod(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Boomerang Yod',
     involvedBodies: names,
     geometrySummary: 'A Yod with ' + focalDescription(apex) + ' at the apex, plus ' + (release ? memberLabel(release) : 'a release point') + ' opposite the apex.',
-    interpretation: 'You get the nagging sense of being slightly off course, but you also have somewhere to put it. ' + (release ? release.name + ' sits opposite the apex and takes the strain back, and it concerns ' + planetFunction(release.name) + '. When the nag gets loud, go there first.' : 'The point opposite the apex takes the strain back. When the nag gets loud, go there first.'),
+    interpretation: 'You get the nagging sense of being slightly off course, but you also have somewhere to put it. ' + (release ? 'Your ' + release.name + ' sits opposite the apex and takes the strain back, and it concerns ' + planetFunction(release.name) + '. When the nag gets loud, go there first.' : 'The point opposite the apex takes the strain back. When the nag gets loud, go there first.'),
     lifeManifest: 'When something knocks you off course, you recover faster than most because you have a place to put the pressure, and that place is ' + houseStory(release?.house || 1) + '. It makes the direction you keep being pushed in easier to follow.',
     growthLesson: 'Use both ends. Act through the apex, then hand the leftover energy to the release point, and you stop swinging between pushing hard and burning out.',
     focalLabel: apex ? 'Apex: ' + focalDescription(apex) + (release ? ' | Release: ' + focalDescription(release) : '') : undefined,
@@ -212,8 +212,8 @@ function interpretMysticRectangle(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: 'Mystic Rectangle',
     involvedBodies: names,
     geometrySummary: 'Four planets connected by two oppositions, two trines, and two sextiles: ' + names.join(', ') + '.',
-    interpretation: 'You hold two opposing views at once and make them work together. ' + names.join(' and ') + ' keep each other in check, so you can listen to both sides of a row and steer it somewhere calm. People bring you their arguments for exactly that reason.',
-    lifeManifest: 'Around ' + p.members.map(m => houseStory(m.house)).join(', ') + ', things connect. What you learn in one place helps in another, and you can see where each person is coming from.',
+    interpretation: 'You hold two opposing views at once and make them work together. ' + names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ' keep each other in check, so you can listen to both sides of a row and steer it somewhere calm. People bring you their arguments for exactly that reason.',
+    lifeManifest: 'Things connect around ' + p.members.map(m => houseStory(m.house)).join('; ') + '. What you learn in one place helps in another, and you can see where each person is coming from.',
     growthLesson: 'The cost is that you keep the peace for years instead of saying what you want. Decide something, say it, and let it disappoint someone.',
     category: 'major-pattern', score: p.score,
   };
@@ -240,9 +240,9 @@ function interpretStellium(p: DetectedPattern): InterpretedPattern {
     type: p.type, title: names.length + '-Planet Stellium in ' + sign,
     involvedBodies: names,
     geometrySummary: names.length + ' planets clustered in ' + sign + ' (' + ordinalHouse(house) + '): ' + names.join(', ') + '.',
-    interpretation: names.length + ' planets in ' + sign + ' means one side of you runs the show. Your life keeps coming back to ' + signTone(sign) + ', whatever the subject, because ' + names.join(', ') + ' all pull the same way. People know you for it, and you get tired of being known only for it.',
+    interpretation: names.length + ' planets in ' + sign + ' means one side of you runs the show. Your life keeps coming back to ' + signTone(sign) + ', whatever the subject, because ' + names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ' all pull the same way. People know you for it, and you get tired of being known only for it.',
     lifeManifest: 'Your ' + ordinalHouse(house) + ' is where it piles up: ' + houseStory(house) + '. Big events, obsessions and arguments gather there, and the rest of your life gets less of you than it deserves.',
-    growthLesson: 'You are strong where ' + sign + ' is strong and blind everywhere else. Ask one person who is nothing like that what you keep missing, and listen to the answer.',
+    growthLesson: 'You are sharpest at ' + signTone(sign) + ' and blind to nearly everything else. Ask one person who is nothing like that what you keep missing, and listen to the answer.',
     category: 'major-pattern', score: p.score,
   };
 }
@@ -255,7 +255,7 @@ function interpretBowl(shape: DetectedChartShape): InterpretedPattern {
     type: shape.type, title: 'Bowl Chart Shape',
     involvedBodies: lead ? [lead.name] : [],
     geometrySummary: shape.description,
-    interpretation: 'Your planets sit on one side of the chart, so you carry your life like something you are holding. You know what you are about, and the empty half is where you rely on other people to show you what you lack.' + (lead ? ' ' + lead.name + ' goes first, so ' + planetFunction(lead.name) + ' is the first thing people meet.' : ''),
+    interpretation: 'Your planets sit on one side of the chart, so you carry your life like a full cup, carefully. You know what you are about, and the empty half is where you rely on other people to show you what you lack.' + (lead ? ' ' + lead.name + ' goes first, so ' + planetFunction(lead.name) + ' is the first thing people meet.' : ''),
     lifeManifest: 'You are self-reliant and do things your own way. The people closest to you tend to have exactly the traits you lack, which is why they annoy you and why you keep them.',
     growthLesson: 'Go looking for what you do not already have. Take the invitation you would normally decline.',
     focalLabel: lead ? 'Leading planet: ' + focalDescription(lead) : undefined,
@@ -284,7 +284,7 @@ function interpretBundle(shape: DetectedChartShape): InterpretedPattern {
     geometrySummary: shape.description,
     interpretation: 'Your planets are packed into one corner of the chart, so you go deep on a few things and ignore the rest. You know exactly what you care about, and people who flit between ten hobbies baffle you.',
     lifeManifest: 'Your life revolves around a handful of subjects. You get bored at parties where nobody talks about them, and you come across as narrow to people who do not share them.',
-    growthLesson: 'Eight of the twelve signs are empty in your chart. Spend time with people whose lives look nothing like yours; they will show you what you would otherwise walk straight past.',
+    growthLesson: 'Most of the zodiac is empty in your chart. Spend time with people whose lives look nothing like yours; they will show you what you would otherwise walk straight past.',
     category: 'chart-shape', score: shape.confidence,
   };
 }

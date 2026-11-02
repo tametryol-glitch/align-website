@@ -17,7 +17,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "You two never had a slow start. One of you said let's go and the other was already in the car, and three weeks later you were talking about moving in or quitting jobs. Neither of you waited to be sure, because waiting is the thing you both hate most.",
-          "You pick each other because nobody else keeps up. Other partners ask you to slow down, explain yourself or think about it overnight. This person just says yes, and the relief of not being the fast one for once is huge.",
+          "Nobody else keeps up with either of you, and that is why you picked each other. Other partners ask you to slow down, explain yourself or think about it overnight. This person just says yes, and the relief of not being the fast one for once is huge.",
           "The catch is that there is only one steering wheel and you both grab it. Who picks the restaurant, who decides the route, who gets to be right in the argument: it turns into a race every time, and you each assume you would win.",
           "Fights are loud and short. You say the worst thing you can think of, slam something, and an hour later one of you is asking what you want for dinner as if nothing happened. This confuses everyone around you and suits the two of you fine.",
           "What holds you together is that you both mean it when you say you're in. There is no game-playing, no hot and cold. If this is going wrong you will both know by Tuesday, and if it is going right you will both know by Monday."
@@ -158,7 +158,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Give Taurus warning. Instead of let's go in five minutes, try Saturday we're doing this, so there is time to get used to it. A day's notice turns a flat refusal into a yes.",
           "Give Aries a window of freedom. One evening a week with no explanation, no check-in, no plan negotiated in advance. The person who gets that space comes back more affectionate, not less.",
           "Fight at the right time. Aries, wait until the heat has dropped before bringing something up. Taurus, say it the same day instead of storing it. If both of you do that, the quarrels shrink to a third of their size.",
-          "Agree on money rules early. A spending limit each, a joint account for the big stuff, and no surprise purchases over an amount you both name. This one practical document prevents more resentment than years of therapy.",
+          "Agree on money rules early. A spending limit each, a joint account for the big stuff, and no surprise purchases over an amount you both name. This one practical agreement prevents more resentment than most heart-to-hearts do.",
           "Learn each other's gestures. When Taurus cooks, say thank you in a way that shows you know what it meant. When Aries plans a spontaneous trip, say yes to at least the first half of it. Love in this pairing is mostly translation."
         ]
       }
@@ -171,7 +171,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "Nobody gets bored in this pairing. Aries brings the dare, Gemini brings the next three ideas, and by the end of a first date you've already planned a trip neither of you will actually take. The pace feels like the first good conversation you've had in years.",
-          "You pick each other because you finally get to move at your real speed. Aries is tired of being told to slow down, Gemini is tired of being told to pick one thing. Here, nobody asks.",
+          "What draws you together is finally getting to move at your real speed. Aries is tired of being told to slow down, Gemini is tired of being told to pick one thing. Here, nobody asks.",
           "The thing that keeps the spark is that you are friends before you are anything else. You laugh at the same stupid things, you can sit in a car for six hours and talk, and you never feel you have to put on a show.",
           "What's missing, if anything, is weight. Both of you can drift into a relationship that is a great time and little else, then wake up two years later realising nobody ever said what you were building.",
           "If you commit on purpose, you can have something rare: a couple who remain curious about each other at fifty. If you drift, you remain wonderful company and slowly become a very good friendship that someone else ends up dating."
@@ -248,7 +248,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Overview",
         "icon": "✨",
         "paragraphs": [
-          "One of you charges and the other retreats into a shell, and then you wonder why dinner is silent. Aries moves toward what it wants in a straight line. Cancer moves sideways, checks who is safe and decides later, and the first fight often is about the difference between those two ways of walking.",
+          "One of you charges and the other retreats into a shell, and then you wonder why dinner is silent. Aries moves toward what it wants in a straight line. Cancer moves sideways, checks who is safe and decides later, and the first fight is usually about the difference between those two ways of walking.",
           "You pick each other for what you can't do alone. Aries finds in Cancer the first person who makes them feel looked after rather than managed. Cancer finds in Aries someone who will stand in front of them when the world gets rough.",
           "It starts with protection. Aries defends, Cancer feeds, and it feels like a small tribe of two. Then the first time Aries snaps at a waiter or forgets to call, Cancer reads it as proof that they were fooled.",
           "The danger is the pattern where one of you attacks and the other withdraws. Aries doesn't mean to wound, Cancer remembers every time anyway, and the distance grows quietly until one of you says I don't feel safe here.",
@@ -260,7 +260,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💖",
         "paragraphs": [
           "Cancer needs reassurance. Texts that say I'm thinking of you, a hand on the shoulder when they come through the door, proof that nothing has changed. Aries gives affection by doing, and doesn't understand why the words matter.",
-          "Aries needs space to be loud and imperfect without it being filed away. A bad mood is just a bad mood, and Cancer who treats it as a verdict on the relationship makes Aries feel smothered.",
+          "Aries needs space to be loud and imperfect without it being filed away. A bad mood is just a bad mood, and a Cancer who treats it as a verdict on the relationship makes Aries feel smothered.",
           "When Cancer's need is missing, they get clingy and then bitter, and the sulking starts. When Aries's need is missing, they pick a fight, which is exactly what makes Cancer feel less safe, which feeds the loop.",
           "The emotional breakthrough is usually small. One day Aries says I wasn't angry at you, I was angry at my day, and Cancer actually believes it. That sentence, repeated for a year, rebuilds more trust than any gift."
         ]
@@ -326,7 +326,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "You two walk into a room and the room rearranges itself. Aries lights up the energy, Leo gives it a stage, and people look over without being sure what they're watching. The first weeks feel like a film you are both starring in and both enjoying.",
-          "You pick each other because neither of you has to shrink. Aries doesn't have to apologise for wanting things now, Leo doesn't have to downplay wanting to be adored. Finally, someone who thinks big and takes it as a compliment.",
+          "Neither of you has to shrink here, and that is the whole draw. Aries doesn't have to apologise for wanting things now, Leo doesn't have to downplay wanting to be adored. Finally, someone who thinks big and takes it as a compliment.",
           "It's generous from the start. Presents, trips, loud toasts at dinner, plans for a future that gets more ambitious each week. You encourage each other to go further than you would on your own.",
           "The trouble is that there are two leads and one spotlight. A party where one of you gets the attention and the other stands holding drinks is a bad night for the second one, however well they hide it.",
           "If you share the stage on purpose, this is one of the most fun and loyal combinations in the zodiac. If you compete for it, you can burn bright and short, and half your friends will see the end coming before you do."
@@ -403,7 +403,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "Aries books the flight and Virgo checks the weather, the baggage fees and whether the hotel has a bad review from 2019. You two see the same situation from opposite ends, and for the first few months it feels like you've found the missing half of your brain.",
-          "You pick each other because the other one seems capable of something you can't do. Aries admires how Virgo can make a mess into a system. Virgo is drawn to how Aries can walk into a problem without waiting for a manual.",
+          "Each of you looks capable of something the other can't do, and that is what pulls you in. Aries admires how Virgo can make a mess into a system. Virgo is drawn to how Aries can walk into a problem without waiting for a manual.",
           "The first friction is small and constant. A cup left on the counter, a decision made without asking, a sigh that says more than a sentence. Individually nothing, but added up they feel like being edited all day.",
           "Aries thinks Virgo is nitpicking. Virgo thinks Aries is careless. Both are right about the facts and wrong about the intent, since Aries isn't trying to cause chaos and Virgo isn't trying to criticise.",
           "If this works, it's because you stop seeing each other's style as a flaw. Aries learns that details protect people, Virgo learns that some risks are worth taking without a spreadsheet, and the two of you become a hard team to beat."
@@ -481,7 +481,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "You two are opposites, and everyone can tell. Aries walks in and says what they want, Libra walks in and works out what the room wants, and somehow the two of you end up at the same table having the best night of the week.",
-          "You pick each other because you each carry what the other is missing. Aries finds in Libra someone charming, graceful and calm, who makes the world feel less sharp. Libra finds in Aries someone who finally makes a decision and means it.",
+          "Each of you carries what the other is missing, and you can feel it from the first dinner. Aries finds in Libra someone charming, graceful and calm, who makes the world feel less sharp. Libra finds in Aries someone who finally makes a decision and means it.",
           "The attraction is quick and a bit dizzy. Aries is dazzled by how easy Libra makes everything look, Libra is dazzled by how certain Aries seems. For a while, it feels like each of you has found your better half.",
           "Then the pattern shows. Aries wants an answer and Libra wants everyone to be okay, so a simple question like where do we eat takes forty minutes and ends with Aries picking and Libra saying whatever you like in a flat voice.",
           "This pairing works when Aries stops mistaking Libra's diplomacy for weakness and Libra stops mistaking Aries's directness for aggression. When that happens, you are a couple who can start things and keep the peace."
@@ -525,7 +525,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Libra softens Aries's edges. After enough evenings of watching someone handle a conflict with grace, Aries starts to try it, and finds that people listen more when they aren't braced.",
           "Aries gives Libra spine. The person who has said yes for years when they meant no starts saying no, because someone supported them and said it's allowed.",
           "You make a great social pair. People like you both, you host well, and you connect different groups. Your calendar is full for good reasons.",
-          "You are fair to each other. Libra's sense of justice and Aries's honesty mean that when a fight is over, it's usually settled in a way both accept."
+          "You are fair to each other. Libra cares about fairness and Aries tells the truth, so when a fight is over, it's usually settled in a way both accept."
         ]
       },
       {
@@ -558,7 +558,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "This one starts with a stare. Aries is used to being the most intense person in the room and Scorpio is the first to match it without blinking. Within a week you are either in love or in a fight, and often both.",
-          "You pick each other because nobody else can take what you dish out. Aries finds in Scorpio someone who isn't scared of anger, and Scorpio finds in Aries someone who isn't scared of intensity. Everyone before felt like a lesser version.",
+          "Nobody else can take what you dish out, so you keep coming back to each other. Aries finds in Scorpio someone who isn't scared of anger, and Scorpio finds in Aries someone who isn't scared of intensity. Everyone before felt like a lesser version.",
           "The two of you fight differently. Aries explodes, says it, and is finished. Scorpio goes quiet, watches, files everything and strikes later and more precisely. So Aries ends the fight and Scorpio thinks it's just beginning.",
           "Trust is the real subject. Aries is open, almost naive about who they let in. Scorpio tests people for a long time before believing anything. Aries takes the testing as an insult, Scorpio takes the openness as carelessness.",
           "If you get through the first year of power struggles, you can have something very few couples reach: a bond where nothing needs to be performed. You've both seen the worst of each other and are still there."
@@ -635,7 +635,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "You two are on the road within a month. Aries says let's go and Sagittarius says where, and neither of you checks whether you can afford it. The relationship feels like a long weekend that keeps getting extended.",
-          "You pick each other because nobody else is as hungry for life. Aries is used to partners who slow things down, Sagittarius is used to partners who want to know where this is going. Here, the answer is somewhere new.",
+          "Nobody else is as hungry for life as the two of you, and you both noticed. Aries is used to partners who slow things down, Sagittarius is used to partners who want to know where this is going. Here, the answer is somewhere new.",
           "Honesty is the glue. Neither of you hides much, and neither of you is hurt by what the other says as easily as people in other relationships would be. You can say anything and mostly be forgiven by morning.",
           "What's missing, sometimes, is depth. You can have years of adventure, laughter and big plans without ever being sure what the other is afraid of. A comfortable pattern of fun can cover a lot of unsaid things.",
           "This is one of the easier pairings in the zodiac, and it stays easy as long as both of you keep moving. It struggles when life demands you stay put, with a mortgage, a sick relative or a quiet winter."
@@ -713,7 +713,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "Aries wants to win today and Capricorn wants to win in ten years, and you two sometimes sit at the same table pretending you're on the same team. You are, but the clocks on your wrists run at different speeds.",
-          "You pick each other because you're both driven and finally someone gets it. Aries admires how Capricorn can hold a plan for years without wobbling. Capricorn admires how Aries can start without asking permission.",
+          "Both of you are driven, and finally someone gets it. Aries admires how Capricorn can hold a plan for years without wobbling. Capricorn admires how Aries can start without asking permission.",
           "The first stretch looks like a power couple. Work gets done, goals get set, and there is a steady sense of two people building something. Friends call you intimidating, and you take it as a compliment.",
           "Underneath, you want different things from effort. Aries wants the thrill of the move and Capricorn wants the structure it will become. Aries feels slowed down by caution, Capricorn feels endangered by impulse.",
           "If you learn to use each other's pace, this becomes a long-term success story. If you don't, you spend years each thinking the other is the obstacle to the life you could have had."
@@ -880,7 +880,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Pisces feels everything, including what Aries has not admitted to feeling. That is a gift until Aries snaps, I'm fine, and Pisces keeps absorbing the mood anyway.",
           "Aries needs to be admired and needs a fight to end quickly. Pisces needs time to cry or go quiet, so Aries keeps pushing for a resolution while Pisces slips further inward.",
           "Aries is the one who makes Pisces feel safe, because Aries will actually do something about the problem. Pisces is the one who makes Aries feel understood, because Pisces never needs the anger explained.",
-          "When this goes unmet, Pisces retreats into fantasy, sleep or a bottle, and Aries goes looking for excitement somewhere that does not hurt. You can be unfaithful in spirit long before either of you is in practice."
+          "When this goes unmet, Pisces retreats into fantasy, sleep or avoidance, and Aries goes looking for excitement somewhere that does not hurt. You can be unfaithful in spirit long before either of you is in practice."
         ]
       },
       {
@@ -945,7 +945,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You both like the same chair, the same soup and the same Sunday. Two Taurus together feels like coming home to a place nobody had to decorate, because you already had the same taste.",
           "Nothing about you is in a hurry. You take three dates to decide you like each other and three years to decide you are staying, and once you decide, it is done.",
-          "You pick each other for the calm. Nobody pushes, nobody performs, and nobody asks you to be more spontaneous than you are.",
+          "The calm is why you chose each other. Nobody pushes, nobody performs, and nobody asks you to be more spontaneous than you are.",
           "The surprise is how stubborn the peace is. When you are both comfortable, nothing can move you, and that includes the good changes you need to make.",
           "This is a solid, loyal pairing. The risk is not conflict, it is that you will never leave the couch."
         ]
@@ -1084,7 +1084,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💡",
         "paragraphs": [
           "Split the week. Two nights are Taurus's way, slow and at home, and two nights are Gemini's way, out and unplanned, with the rest left open.",
-          "Gemini, finish what you start telling Taurus. If you said you would call at six, call at six, because reliability is what Taurus hears as love.",
+          "Gemini, do what you tell Taurus you will do. If you said you would call at six, call at six, because reliability is what Taurus hears as love.",
           "Taurus, ask a question before you say no. Often Gemini is just thinking aloud, and a no too early shuts down a conversation that would have ended in your favour.",
           "Name the jealousy plainly when it arrives. A calm, I felt weird when you were flirting, gets a reassurance in thirty seconds, while silence gets a week of tension.",
           "Travel together to places neither of you knows. Gemini gets stimulation, Taurus gets the pleasure of good food and a bed, and you both get a story to tell afterward."
@@ -1109,7 +1109,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Emotional Compatibility",
         "icon": "💖",
         "paragraphs": [
-          "Cancer feels first and explains later. Taurus does not need the explanation, only the warmth, which is exactly what Cancer needs to be given without a fight.",
+          "Cancer feels first and explains later. Taurus does not need the explanation, only the warmth, which is exactly what Cancer needs, and gets without a fight.",
           "Taurus is the one who stays calm when Cancer cries. That calm is worth more than any advice, and Cancer will remember it years later.",
           "Cancer is the one who notices when Taurus is quietly tired or stressed. A cup of tea appears before Taurus realised they needed it.",
           "When this goes missing, Cancer goes sulky and withdrawn and Taurus goes stubborn and silent. You can sit in the same room for two days with a wall between you, each waiting to be comforted first."
@@ -1254,7 +1254,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You two are the couple who actually does the dishes. Taurus wants things to feel good and Virgo wants things to work, and between you the house is clean, the fridge is stocked and nobody forgot the appointment.",
           "The attraction is quiet and it sneaks up. Taurus notices Virgo's care, Virgo notices Taurus's calm, and one day you realise you have been together for months without a single dramatic night.",
-          "You pick each other for steadiness. Virgo is tired of people who flake, Taurus is tired of people who rush, and you both find relief in someone who shows up.",
+          "Steadiness is what you each went looking for. Virgo is tired of people who flake, Taurus is tired of people who rush, and you both find relief in someone who shows up.",
           "Neither of you needs a lot of words. A coffee made the way the other likes it says more than a poem.",
           "This is an easy, practical pairing, and the daily life backs it up: you tend to build things that last because you both finish what you start."
         ]
@@ -1332,7 +1332,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You both love beautiful things and you bond over them first. A good restaurant, a well-lit room and a piece of music is enough for you to decide you belong together.",
           "Libra brings charm and an eye for how things look. Taurus brings substance and a hand on the bill, and between you the evenings are lovely and the apartment is gorgeous.",
-          "You pick each other because the other is comfortable to be around. Libra needs someone who does not demand a performance, and Taurus needs someone who makes them smile without trying.",
+          "Being around each other is comfortable, and that is what keeps you coming back. Libra needs someone who does not demand a performance, and Taurus needs someone who makes them smile without trying.",
           "The difference shows up in decisions. Libra weighs everything and Taurus decides once, so one of you needs forty minutes to choose a restaurant and the other wants to know why.",
           "This is a workable pairing with a shared love of pleasure and a gap in style, and the gap is smaller than it looks when you both stay kind."
         ]
@@ -1407,11 +1407,11 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Overview",
         "icon": "✨",
         "paragraphs": [
-          "This one starts with a stare and does not let go. Scorpio and Taurus sit opposite each other in the zodiac, and the pull between you is hard to explain and impossible to ignore.",
-          "You pick each other because the other is not shallow. Scorpio wants someone who can take the full depth, and Taurus wants someone who will not leave.",
+          "This one starts with a stare and does not let go. You two are zodiac opposites, and the pull between you is hard to explain and impossible to ignore.",
+          "Neither of you is shallow, and that is what you each wanted. Scorpio wants someone who can take the full depth, and Taurus wants someone who will not leave.",
           "It is intense and also oddly calm. Scorpio sees everything and Taurus does not flinch, and for the first time in a while neither of you has to be careful.",
           "The bond runs on loyalty. Neither of you gives your heart casually, so once it is given, it is guarded.",
-          "This is a magnetic, powerful pairing, and what goes with that is stubbornness at full strength: two people who both know they are right."
+          "This pairing pulls hard, and what goes with that is stubbornness at full strength: two people who both know they are right."
         ]
       },
       {
@@ -1497,7 +1497,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "Taurus needs reliability and Sagittarius needs room. A promise of I will be back for dinner is a gift to Taurus and a trap to Sagittarius.",
           "Sagittarius laughs off a hurt and moves on, which looks to Taurus like not caring. Taurus holds the hurt and goes quiet, which looks to Sagittarius like punishment.",
-          "What they give each other is real. Taurus offers a place to land, and Sagittarius offers optimism that things will be fine.",
+          "What you give each other is real. Taurus offers a place to land, and Sagittarius offers optimism that things will be fine.",
           "When this goes unmet, Taurus clings and Sagittarius bolts. The harder one holds, the faster the other pulls away, and soon you are both lonely in the same house."
         ]
       },
@@ -1564,7 +1564,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You two recognise each other fast. Neither of you is impressed by noise, and both of you check the price before you fall in love with the thing. This is one of the easy pairings, and the reason shows up in the first month: nobody has to explain why they won't be rushed.",
           "Capricorn builds the plan and Taurus builds the nest. One of you asks where this is going in five years, the other asks whether the sofa is comfortable enough to still love in five years. Both questions are about staying, so neither of you hears the other as a threat.",
-          "You pick each other because you finally meet someone who does what they said they would do. Capricorn has been the reliable one in too many rooms, and Taurus has been tired of people who cancel. Here the reliability is returned.",
+          "Finally you meet someone who does what they said they would do. Capricorn has been the reliable one in too many rooms, and Taurus has been tired of people who cancel. Here the reliability is returned.",
           "The early dates are slow on purpose. A good dinner, a long walk, a second dinner, and somewhere around week six you realise you already have a routine and neither of you resents it.",
           "The risk is that the routine hardens before the romance has had a chance to be wild. You two can drift into being excellent business partners who share a bed, and nobody notices until a Tuesday when the house is perfect and the silence is too."
         ]
@@ -1716,7 +1716,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Overview",
         "icon": "✨",
         "paragraphs": [
-          "This is one of the gentlest pairings in the zodiac, and you feel it within an hour of meeting. Pisces brings the dreams and Taurus brings the table to put them on. It rates high, and the reason is simple: each of you has what the other keeps losing.",
+          "This is one of the gentlest pairings in the zodiac, and you feel it within an hour of meeting. Pisces brings the dreams and Taurus brings the table to put them on. It is an easy match, and the reason is simple: each of you has what the other keeps losing.",
           "Pisces drifts, forgets the appointment, loses the keys and feels everything. Taurus is the person who finds the keys, makes the call and stays calm while Pisces cries on the sofa. In return Pisces softens a Taurus who had gotten too practical to remember why it was working so hard.",
           "You choose each other because you are both tired of being the one who has to perform. Neither of you needs a witty line or a show of success on a date. A shared meal and a movie is a perfect night.",
           "Taurus loves the way Pisces notices what is unsaid. Pisces loves the way Taurus does not flinch at big emotions and does not need them explained.",
@@ -1771,7 +1771,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Pisces avoids confrontation and Taurus digs in when pushed, so problems get postponed instead of solved. The bill, the family decision, the question of whether to move all sit for months, and each month the issue is a little more expensive to touch.",
           "Money drifts into an argument. Taurus is careful and wants security, Pisces gives to everyone, forgets to check the balance and buys the thing because it felt beautiful. Taurus can be sharp about it, and Pisces goes off to cry.",
           "Taurus's stubbornness meets Pisces's elusiveness. Taurus says it once and expects it done, Pisces nods, drifts and does not do it, and neither of you says what actually happened.",
-          "You can enable each other. Pisces escapes into wine, a screen or a fantasy and Taurus, who values comfort, goes along rather than raising it. Be the one who asks if this is the third night this week."
+          "You can enable each other. Pisces escapes into sleep, a screen or a fantasy and Taurus, who values comfort, goes along rather than raising it. Be the one who asks if this is the third night this week."
         ]
       },
       {
@@ -1794,7 +1794,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "Two Geminis together means the conversation never really ends. You start talking at dinner, continue in the car, send voice notes at 1am, and wake up with the next installment. Nobody else in your life keeps up with you like this, and that is why you two stuck.",
-          "You pick each other because you finally have a partner who does not ask you to slow down. You can change topic six times in a minute, start a sentence and drop it, and be understood. It is a relief to be with someone who finds your mind quick instead of tiring.",
+          "Finally you have a partner who does not ask you to slow down. You can change topic six times in a minute, start a sentence and drop it, and be understood. It is a relief to be with someone who finds your mind quick instead of tiring.",
           "Each of you is a bit of a double act. There is the sparkling version you show at parties and the quieter, more anxious one you show at 3am, and in this pairing both of them get seen. That is more intimate than it looks.",
           "This is a good match with a catch: it is easy to start and harder to anchor. Two people who both love the new thing have to decide who stays with the old one.",
           "It feels like best friends who also kiss. The risk is that it stays at that level of play until a real problem arrives and neither of you has practised being serious."
@@ -1846,7 +1846,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "⚡",
         "paragraphs": [
           "Nobody finishes anything. Two people who both love starting leave half-built shelves, abandoned business plans and a list of courses that were going to change your life. The house shows it.",
-          "Both of you can be two-faced in small ways, telling each person what they want to hear. When it turns out one of you said different things to the other and to a friend, trust takes a hit, and you both know exactly how it happened because you do it too.",
+          "Both of you bend the story in small ways, telling each person what they want to hear. When it turns out one of you said different things to the other and to a friend, trust takes a hit, and you both know exactly how it happened because you do it too.",
           "Mood and mind change fast, and the other person has to keep up. One day you want a baby, the next you want to move to Lisbon. It is exciting until one of you needs an actual answer for a lease.",
           "Nobody holds the heavy emotional load. Grief, money problems and ill parents need one person to be steady, and when both of you reach for a joke or a distraction, the weight sits unlifted. Take turns being the adult, and say so out loud."
         ]
@@ -1895,7 +1895,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Texting is a flashpoint. Gemini sends rapid messages, memes and half-thoughts, and goes quiet for hours without meaning anything by it. Cancer sees the gap and writes a story about it, then replies in one cold word, and Gemini wonders what happened.",
           "Cancer remembers everything said in a past argument, including the exact words. Gemini has forgotten the whole fight and sincerely says that was ages ago. Cancer does not experience it as ages ago.",
           "The fix is for Gemini to say things once and mean them, and for Cancer to ask directly instead of testing. Gemini, when you promise a call, make the call. Cancer, when something stings, say it that evening rather than three weeks later.",
-          "You do enjoy each other's minds when the pressure is off. Late-night talk on the sofa, stories about family, absurd shared jokes. Keep a lot of that in the diet."
+          "You do enjoy each other's minds when the pressure is off. Late-night talk on the sofa, stories about family, absurd shared jokes. Make room for a lot of that."
         ]
       },
       {
@@ -2206,7 +2206,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "Gemini asks twenty questions and Scorpio answers two. The two it answers are true, and Gemini learns to treasure them. Meanwhile Scorpio is reading Gemini's every word for what it did not say.",
           "Scorpio cannot stand being given a light answer on a serious subject. When Gemini jokes in the middle of something that matters, Scorpio hears contempt, files it, and brings it up three months later in exact detail.",
-          "Gemini cannot stand being interrogated. When Scorpio asks where were you with that edge in its voice, Gemini hears an accusation and either lies smoothly or gets sarcastic. Both make Scorpio more certain that something is being hidden.",
+          "Gemini cannot stand being interrogated. When Scorpio asks where were you with that edge in its voice, Gemini hears an accusation and either dodges smoothly or gets sarcastic. Both make Scorpio more certain that something is being hidden.",
           "What each hears is the opposite of what is said. Scorpio says I'm fine and means it is not fine, and Gemini takes it literally. Gemini says it's nothing and means it is a passing thing, and Scorpio hears something big.",
           "You do share a love of secrets, mysteries and psychology. Late nights discussing why people do what they do, true crime, or the hidden story of a friend are some of the best hours you will spend."
         ]
@@ -2343,7 +2343,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "One of you has a five-year plan taped inside a notebook. The other has five browser tabs open on five obsessions and no idea which one will matter in March. You two meet at the exact spot where discipline looks like a cage to one of you and chaos looks like a fire hazard to the other.",
           "Capricorn picks Gemini because Gemini turns work into a game. Dinner with Gemini is the first time in a month Capricorn laughs out loud before nine at night. Gemini picks Capricorn because here, finally, is someone who finishes things, and standing next to that is calming and a little humbling.",
           "Nothing about this pairing is handed to you. You run on different clocks: Capricorn measures time in years, Gemini measures it in conversations, and you notice the gap inside the first month.",
-          "Early on you split the labor without discussing it. Capricorn books, pays and remembers. Gemini invents, talks and spots what is funny. It feels like a perfect fit for about six months.",
+          "Early on you split the labour without discussing it. Capricorn books, pays and remembers. Gemini invents, talks and spots what is funny. It feels like a perfect fit for about six months.",
           "Whether it lasts depends on two readings. Capricorn has to stop taking Gemini's lightness as a lack of commitment, and Gemini has to stop taking Capricorn's seriousness as a verdict on them."
         ]
       },
@@ -2365,7 +2365,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Capricorn's questions land as audits: what are you going to do about it, how much will it cost. Gemini hears a cross-examination in a conversation that was meant to be fun.",
           "In arguments Gemini wins on speed and wordplay and can defend the opposite of yesterday's position without blinking. Capricorn wins with one dry sentence that ends the room, and Gemini carries that sentence around for days.",
           "Texting shows it fastest. Gemini sends six messages in a row, memes and half-thoughts included. Capricorn answers at lunch with one full sentence and a period. Gemini decides Capricorn is angry, Capricorn decides Gemini is bored, and both are wrong.",
-          "Where you click is the dry humor Gemini adores and the ideas Capricorn would never have had alone. Give Gemini ten minutes to brainstorm before Capricorn asks for the budget, and the ideas get better and the budget gets realistic."
+          "Where you click is the dry humour Gemini adores and the ideas Capricorn would never have had alone. Give Gemini ten minutes to brainstorm before Capricorn asks for the budget, and the ideas get better and the budget gets realistic."
         ]
       },
       {
@@ -2396,7 +2396,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Money is the first fight. Capricorn saves, Gemini buys the course, the gadget, the ticket. Capricorn sees a leak and Gemini sees a life, and each is sure the other is the reckless or the stingy one.",
           "Capricorn says we need to talk, Gemini's stomach drops and out comes a joke, and now Capricorn feels unheard. The joke was panic, not contempt, but it lands as contempt every time.",
           "Capricorn wants to know where this is going by month three. Gemini feels cornered and gets chatty with everyone else. Capricorn takes the flirting as betrayal when it is mostly restlessness.",
-          "Capricorn criticizes in a flat tone, and Gemini keeps a mental list of every time they were called unreliable. Gemini quietly drops commitments, Capricorn quietly lowers expectations, and soon neither of you is surprised and neither is happy."
+          "Capricorn criticises in a flat tone, and Gemini keeps a mental list of every time they were called unreliable. Gemini quietly drops commitments, Capricorn quietly lowers expectations, and soon neither of you is surprised and neither is happy."
         ]
       },
       {
@@ -2655,7 +2655,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Cancer picks Leo for the warmth and the confidence, the feeling that this person will take up space in the world and shelter you inside it. Leo picks Cancer because Cancer is the first person who makes Leo feel safe enough to put the performance down.",
           "The first months are generous. Leo spoils, Cancer nurtures, and both feel seen.",
           "The trouble is that each of you gives what you yourself need, not what the other needs. Leo gives praise and big gestures. Cancer gives care and quiet constancy. Neither gets recognized as love.",
-          "It is mid-range, and the reason is the same one: real heat and real loyalty, with sensitivity and pride taking turns being wounded."
+          "It lands mid-range: real heat and real loyalty, with sensitivity and pride taking turns being wounded."
         ]
       },
       {
@@ -2817,7 +2817,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Emotional Compatibility",
         "icon": "💖",
         "paragraphs": [
-          "Cancer needs depth and constancy. Libra needs harmony and the freedom to see other people and keep the peace. Cancer reads Libra's sociability as a lack of need, and Libra reads Cancer's need as pressure.",
+          "Cancer needs depth and constancy. Libra needs harmony and the freedom to be out with friends and keep the peace. Cancer reads Libra's sociability as a lack of need, and Libra reads Cancer's need as pressure.",
           "Libra's diplomacy is the problem. Libra smooths over what Cancer needs said. Cancer asks, are you upset, and Libra answers, no, I just want everyone to be happy, and Cancer knows that is not an answer.",
           "When needs go missing, Cancer goes into the shell and cooks pointedly. Libra goes charming and distant and makes plans with other people, keeping things pleasant on the surface.",
           "What helps: Libra gives a straight answer even when it is uncomfortable, and Cancer asks for what they need before they are already hurt."
@@ -2917,7 +2917,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "It is deep, private and intense. Scorpio brings the heat and the focus. Cancer brings the emotional openness that lets it go further than Scorpio usually allows.",
           "Trust is the aphrodisiac. When it is there, sex is the closest either of you gets to being fully known. When it cracks, neither of you can pretend.",
           "Jealousy lives in the bedroom too. A glance at someone else becomes a long night. Say it early and plainly, and it dissolves.",
-          "Afterward, both of you want to be held and neither wants to ask first. One of you ask. That is the whole trick."
+          "Afterward, both of you want to be held and neither wants to ask first. One of you asks. That is the whole trick."
         ]
       },
       {
@@ -2949,7 +2949,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Scorpio, when you need to go quiet, name a time: I need until tomorrow morning. Cancer can survive a stated gap. Cancer cannot survive an unexplained one.",
           "Cancer, when you feel jealous, say it as a feeling in the moment, kindly. Do not save it for a fight.",
           "Apologize completely and quickly, with no but and no reasons. Both of you hold on to half-apologies for years.",
-          "Get out into the light with friends, trips, a hobby with other people. Two deep-water signs left alone can dive too far, and you need something to bring you back up."
+          "Get out into the light with friends, trips, a hobby with other people. Two people this deep, left alone, can dive too far, and you need something to bring you back up."
         ]
       }
     ]
@@ -3269,7 +3269,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Overview",
         "icon": "✨",
         "paragraphs": [
-          "Two Leos in one room means two people who both walk in expecting to be noticed. The first date is spectacular: dinner somewhere with good lighting, big laughs, each of you delighted by how generous the other one is. You feel, finally, someone who matches the volume.",
+          "Two Leos in one room means two people who both walk in expecting to be noticed. The first date is spectacular: dinner somewhere with good lighting, big laughs, each of you delighted by how generous the other one is. You finally feel what it is like to be matched on volume.",
           "You pick each other because nobody else gets it. Other partners ask you to tone it down, to stop making a scene out of a birthday, to be less. A Leo across the table cheers when you take the stage.",
           "Then the question arrives, usually around month three. Who gets the spotlight at the party, whose career gets the sacrifice, whose idea becomes the plan for the holiday? Both of you assumed it was you.",
           "The ones that last are the Leos who decide early that there are two thrones. One of you leads the evening, the other lights it, and next time you swap. Pride is the entry fee, and you have to pay it every week.",
@@ -3312,7 +3312,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You are the most generous pair in the zodiac. Parties at your place are legendary, gifts are thoughtful and excessive, and friends feel looked after. You each love giving, so nobody is stuck with the role of provider.",
           "You believe in each other out loud. When one of you says I'm going to start the business, the other does not say are you sure, but says what do you need. That belief gets real things built.",
-          "You make fun of the ordinary. A Tuesday errand run turns into a small adventure, with a long lunch, a silly purchase and a story for dinner. The relationship has a pulse.",
+          "You make fun out of the ordinary. A Tuesday errand run turns into a small adventure, with a long lunch, a silly purchase and a story for dinner. The relationship has a pulse.",
           "You are loyal to the point of ferocity. If someone insults your partner at a party, you are there before the sentence ends. Your partner knows without doubt that you are in their corner.",
           "You raise each other's standards. Neither of you wants to be seen sliding, so you get fit together, dress well together and chase ambitions side by side. A little vanity, used well, builds a good life."
         ]
@@ -3522,7 +3522,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Intellectual & Communication",
         "icon": "🧠",
         "paragraphs": [
-          "Leo says what it thinks and Scorpio says what it thinks you think. Conversation between you is a game where one plays open cards and the other counts them. Leo finds it exhausting and Scorpio finds it normal.",
+          "Leo says what they think and Scorpio says what they think you think. Conversation between you is a game where one plays open cards and the other counts them. Leo finds it exhausting and Scorpio finds it normal.",
           "Fights are formidable. Leo goes big, with volume, drama and a dramatic exit. Scorpio goes precise, with one cold sentence that targets exactly what you were afraid of. You both remember every word.",
           "Neither of you backs down in the moment, so most real talks happen the next day. Leo returns warm and wanting to move on. Scorpio returns having thought about it all night and wanting an actual answer.",
           "Texts are a minor battlefield. Leo sends something expressive and expects the same. Scorpio sends three words and lets the silence work, and Leo spends the afternoon decoding it."
@@ -3591,7 +3591,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "Leo needs warmth, loyalty and applause. Sagittarius needs air, honesty and the sense that nothing is a trap. Both of you are generous, and both of you give from a big heart.",
           "Leo shows love in large, visible gestures. Sagittarius shows love by including you in the adventure and telling you the truth. Leo wants a poem, Sagittarius books the flights. Both are love, and both can be missed.",
-          "When Sagittarius disappears into a plan, a trip, a friend group or a new obsession, Leo feels dropped. Leo does not say so, they get dramatic or very polite. Sagittarius, honestly baffled, says I was just out for the day.",
+          "When Sagittarius disappears into a plan, a trip, a friend group or a new obsession, Leo feels dropped. Leo does not say so and gets dramatic or very polite. Sagittarius, honestly baffled, says I was just out for the day.",
           "What fixes it is a small thing. Sagittarius tells Leo, specifically, that they were missed and thought of. Leo says plainly, I want to be part of this one, instead of performing indifference."
         ]
       },
@@ -3600,7 +3600,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "🧠",
         "paragraphs": [
           "You talk big. Politics, travel, philosophy, the meaning of that film, whether you should both quit and open a restaurant. Conversation is a sport and you both play to win and to enjoy.",
-          "Sagittarius is blunt without knowing it. A line like that outfit is not your best lands on Leo like a slap, and Sagittarius cannot understand why you are upset about a fact. Leo's pride goes quiet and the evening dims.",
+          "Sagittarius is blunt without knowing it. A line like that outfit is not your best lands on Leo like a slap, and Sagittarius cannot understand why Leo is upset about a fact. Leo's pride goes quiet and the evening dims.",
           "Leo is not subtle either, only louder. A grand pronouncement about Sagittarius's plan, with total certainty, can sound like a lecture. Sagittarius rolls their eyes, then does the opposite out of principle.",
           "Texting is quick and joyous, full of plans and jokes. The weak spot is detail. Who is meeting where, at what time, who booked what. You trust it will work out and sometimes you are in two different cities.",
           "When you argue, you argue loudly and recover quickly. A slammed door and a joke an hour later. The one thing that sticks is being laughed at in front of others, so keep that one off the table."
@@ -3831,7 +3831,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Intellectual & Communication",
         "icon": "🧠",
         "paragraphs": [
-          "Leo says exactly what it means in a large voice. Pisces says some of what it means in a soft voice and leaves the rest in the air. Leo hears the first half, assumes the second and is often wrong.",
+          "Leo says exactly what they mean in a large voice. Pisces says some of what they mean in a soft voice and leaves the rest in the air. Leo hears the first half, assumes the second and is often wrong.",
           "Plans are a problem. Leo says Friday at eight, Pisces hears Friday-ish, and Leo is at the restaurant alone with a drink. Leo takes it as disrespect and Pisces is genuinely sorry, and it happens again in a month.",
           "Leo's bluntness wounds more than Leo knows. A fair comment on Pisces's unfinished project lands as the end of the world. Pisces goes quiet, nods, agrees, and says nothing about the hurt.",
           "Pisces avoids confrontation by saying yes and meaning maybe. Leo, who takes yes as yes, builds on it. When the maybe becomes a no, Leo feels betrayed, and Pisces feels cornered."
@@ -3842,7 +3842,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "🔥",
         "paragraphs": [
           "The romance is theatrical and tender at once. Leo brings the grand gesture and Pisces brings the feeling behind it. A night with music, candles and a long talk afterwards suits both of you.",
-          "Pisces is intuitive in bed, and responds to mood more than to technique. Leo, generous and wanting to please, enjoys being read so well. Many Leos have said they felt truly seen for the first time.",
+          "Pisces is intuitive in bed, and responds to mood more than to technique. Leo, generous and wanting to please, enjoys being read so well. A Leo who is rarely read this well feels truly seen, sometimes for the first time.",
           "Leo's confidence is warming to Pisces, who can be shy about wanting things. Leo's direct invitation, I want you, tell me what you like, opens the door that Pisces would not open alone.",
           "Affection is not always in sync. Leo wants to be adored in daylight and Pisces wants to be held in the dark. Meeting in the middle, with some public warmth and some private quiet, gives both of you what you came for."
         ]
@@ -4088,7 +4088,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "You are a formidable team on money and projects. Virgo organises and budgets, Scorpio sees the angle and refuses to be swindled. Savings, renovations and long plans tend to go well for you.",
           "You help each other recover. Scorpio can hold Virgo through the anxious spiral without being alarmed by it, and Virgo makes Scorpio's heavy moods manageable with routine, food and sleep. Neither of you has to pretend to be fine.",
           "You respect privacy. Neither of you demands to know every detail of the other's day, and neither tells your business to friends. That discretion is rare, and you both know it.",
-          "You are not easily shocked. Scorpio's darker corners and Virgo's neurotic ones are both met with a shrug and a cup of tea. Being accepted at your worst is the reason you stay."
+          "You are not easily shocked. Scorpio's darker corners and Virgo's anxious ones are both met with a shrug and a cup of tea. Being accepted at your worst is the reason you stay."
         ]
       },
       {
@@ -4242,7 +4242,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "🌟",
         "paragraphs": [
           "You build things that last. Savings accounts, homes, careers and reputations all grow steadily because neither of you wastes the other's effort. After ten years, you will have more to show than couples twice as flashy.",
-          "You are reliable to each other. If one of you is ill, bankrupted or overwhelmed, the other quietly takes over without making it a speech. That kind of safety is rarer than passion.",
+          "You are reliable to each other. If one of you is ill, broke or overwhelmed, the other quietly takes over without making it a speech. That kind of safety is rarer than passion.",
           "You think alike about money. You agree on saving, on not buying the thing twice, and on not letting a friend borrow what you can't lose. There is little to fight about, and that frees up energy for other things.",
           "You respect each other's competence. Capricorn trusts Virgo's judgment on details, and Virgo trusts Capricorn's on direction. Neither of you has to do the other's job.",
           "You get better with time. Early on you may seem cautious and stiff, but a few years in the dryness gives way to a private tenderness and a shared sense of humour."
@@ -4263,7 +4263,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💡",
         "paragraphs": [
           "Put rest on the calendar the way you put meetings there. A weekend with no plans, a holiday with no itinerary, an evening with nothing to improve. Treat it as seriously as a deadline, since for you it is the only way it happens.",
-          "Say the warm thing out loud. You show love constantly through action, but hearing I'm proud of you or I'm glad it's you matters. A sentence a day takes five seconds.",
+          "Give the warm sentence a voice. You show love constantly through action, but hearing I'm proud of you or I'm glad it's you matters. A sentence a day takes five seconds.",
           "When one of you is stressed, ask what kind of help is wanted before offering a solution. Half the time the answer is just stay with me. That one question will save you years of misfires.",
           "Rotate who sets the tone. Let Virgo choose the plan for a weekend and Capricorn choose the next, and agree not to critique the choices. Control is a habit you can both loosen.",
           "Make a rule that money talks happen monthly, at a set time, over a good meal. Fix what needs fixing, then close the laptop and talk about anything else. Your finances will take care of themselves; the rest of your life needs the attention."
@@ -4301,7 +4301,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "This is your strongest zone. You enjoy the same podcasts, argue about the same articles, and send each other links with a single line of commentary. A walk can turn into a three-hour debate on policy, design or the ethics of something small.",
           "Aquarius thinks in big patterns and future possibilities. Virgo thinks in details and workable steps. Done well, the pair of you can take an idea from a napkin to an operating plan.",
           "Done badly, Aquarius waves off Virgo's details as pettiness and Virgo dismisses Aquarius's vision as unrealistic. One of you says that will never work, the other says you lack imagination, and the evening goes sour.",
-          "Aquarius can be stubborn about opinions while insisting to be open-minded, which Virgo finds irritating and eventually says so, precisely. Virgo's corrections are accurate and can feel like a classroom to Aquarius. Neither enjoys being told they are rigid.",
+          "Aquarius can be stubborn about opinions while insisting on being open-minded, which Virgo finds irritating and eventually says so, precisely. Virgo's corrections are accurate and can feel like a classroom to Aquarius. Neither enjoys being told they are rigid.",
           "Texting suits you both. Short, witty, informative, with a gap of hours that neither takes personally. You rarely misread silence as rejection, which saves you a lot of grief."
         ]
       },
@@ -4355,8 +4355,8 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Overview",
         "icon": "✨",
         "paragraphs": [
-          "Pisces feels everything in the room, and Virgo notices everything in the room. One of you picks up the mood, the other picks up the details, and together you miss almost nothing. Many people in this pairing describe a first meeting where it felt like the other had been waiting.",
-          "Opposites sit across from each other on the wheel, which is why you recognise each other so quickly. Pisces is drawn to Virgo's steadiness and the sense that this person will actually remember, show up and fix things. Virgo is drawn to Pisces's softness and the sense of permission to stop being so careful.",
+          "Pisces feels everything in the room, and Virgo notices everything in the room. One of you picks up the mood, the other picks up the details, and together you miss almost nothing. The first meeting can feel as if the other had been waiting for you.",
+          "You recognise each other quickly, because each of you carries what the other is missing. Pisces is drawn to Virgo's steadiness and the sense that this person will actually remember, show up and fix things. Virgo is drawn to Pisces's softness and the sense of permission to stop being so careful.",
           "At home it looks like one of you cooking while the other plays music, one of you forgetting the keys while the other has a spare set. You complete each other's gaps almost automatically. Friends find it both sweet and a little comic.",
           "The relationship deepens through care. Virgo does the practical things that make Pisces feel safe, and Pisces does the emotional things that make Virgo feel cherished. You both feel needed, and for both of you that is love.",
           "This is a strong pairing because each of you has what the other lacks. The work is in not turning the difference into a job description."
@@ -4728,7 +4728,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💡",
         "paragraphs": [
           "Schedule a weekly sit-down that is neither a date nor a business meeting. Libra raises the thing that is actually bugging them, Capricorn listens to the end without fixing it, and you decide together what to do about it.",
-          "Capricorn, say the warm thing out loud, and say it in the morning, not as a reward at the end of a good week. A one-line text at lunch does more for Libra than a gift that took two months to plan.",
+          "Capricorn, say the warm thing, and say it in the morning, not as a reward at the end of a good week. A one-line text at lunch does more for Libra than a gift that took two months to plan.",
           "Libra, give Capricorn a straight answer when asked a straight question. If the answer is I do not want to go, say so; Capricorn can take no, and cannot take yes followed by a sulk.",
           "Agree a fixed amount each month that is nobody's business. Libra spends theirs on whatever is beautiful and Capricorn saves theirs without comment, and the money argument loses most of its fuel.",
           "Plan something that has no productive purpose. A weekend away with no itinerary suits neither of you naturally, and that is exactly why it is worth doing."
@@ -4897,10 +4897,10 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "✨",
         "paragraphs": [
           "Two of you who read people for a living now live with the one person who reads you back. Nothing slips by. A tone, a delay in replying, a changed route home, and each of you has already drawn a conclusion and filed it.",
-          "You pick each other because it is the first time you are not too much. Scorpio usually spends years toning down intensity for other people, and with another Scorpio finally gets to say what is actually on their mind.",
+          "You pick each other because it is the first time you are not too much. You have probably spent years toning down your intensity for other people, and with another Scorpio you finally get to say what is actually on your mind.",
           "The early weeks have a quality of mutual interrogation. Where were you, what did you feel, who was that, and both of you answer, because you can tell if the answer is false.",
           "Trust is the entire game. You will each test the other, often without admitting it, by leaving a phone unlocked, telling a half-truth, or going quiet to see what happens.",
-          "If you pass, this is a bond that does not break. Few couples are as loyal, and almost none keep a secret so well when it matters. If you fail the test, it ends hard and neither of you speaks again."
+          "If you pass, this is a bond that does not break. Few couples are as loyal, and almost none keep a secret so well when it matters. If you fail the test, it ends hard, usually in a silence that neither of you breaks."
         ]
       },
       {
@@ -5096,7 +5096,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Neither of you wastes the other's time. You both do what you say, show up when expected, and treat a promise as binding.",
           "Scorpio sees what Capricorn misses. A colleague with a hidden agenda, a deal that smells wrong, and Capricorn has saved a lot of money by listening.",
           "Capricorn steadies Scorpio. When Scorpio spirals into suspicion, Capricorn's flat, practical response ('what is the evidence?') settles the whole thing.",
-          "You are loyal at a cost. You will stay with the other through illness, bankruptcy and family disasters, and you will remember that the other did the same."
+          "You are loyal at a cost. You would stay with the other through illness, money trouble and family disasters, and you remember that the other did the same."
         ]
       },
       {
@@ -5114,7 +5114,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💡",
         "paragraphs": [
           "Schedule talk time that is not about logistics. Once a week, no phones, and each of you says one thing you have been holding. It will feel forced for the first month.",
-          "Say the warm sentence out loud. Capricorn, tell Scorpio you chose them again today. Scorpio, tell Capricorn you are not testing them, you just want to hear it.",
+          "Put the warm sentence into words. Capricorn, tell Scorpio you chose them again today. Scorpio, tell Capricorn you are not testing them, you just want to hear it.",
           "Divide authority clearly. Capricorn owns money and long-term planning, Scorpio owns people decisions, and you ask before overruling each other.",
           "Break the cold war early. When you notice a day of unusual politeness, one of you says: something is wrong, I would like to know what. That sentence is worth more than any gift.",
           "Do something together with no result. Travel without a schedule, cook a meal that takes six hours, or learn something neither of you is good at. It reminds you that you like each other apart from your joint achievements."
@@ -5131,7 +5131,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "You two collide at the point where detachment meets obsession. Aquarius lives in the head, holds opinions loosely and treats everyone as a fellow citizen. Scorpio lives in the gut, holds opinions like a knife, and picks two people in a lifetime to trust.",
           "The pull is strong because each of you is a mystery to the other. Scorpio cannot get inside Aquarius, which is irresistible. Aquarius cannot figure out why Scorpio cares so much, which is just as fascinating.",
           "The first stretch is intense. Scorpio's attention makes Aquarius feel truly seen, and Aquarius's freedom makes Scorpio want to win it.",
-          "And that is the problem. Scorpio tightens its grip as Aquarius pulls away, and Aquarius pulls away more as Scorpio tightens, a loop that neither of you invented and neither knows how to break.",
+          "And that is the problem. Scorpio tightens the grip as Aquarius pulls away, and Aquarius pulls away more as Scorpio tightens, a loop that neither of you invented and neither knows how to break.",
           "Where this pair works it is because both are stubborn enough to hold on and curious enough to keep learning. Where it fails it is because one of you decided the other was a puzzle to solve, not a person to live with."
         ]
       },
@@ -5450,7 +5450,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "Sagittarius feels things loudly and then moves on. Aquarius feels things quietly and files them for later. When you are upset at the same time, one of you is already laughing about it while the other is still thinking, and neither reaction is wrong.",
           "What Sagittarius needs is enthusiasm: someone who says yes, go, do it, and means it. What Aquarius needs is to be allowed a private inner life without being accused of coldness. Each of you can give the other exactly that, so the basic needs are met before you even discuss them.",
-          "The gap shows up when something hurts. Sagittarius wants to talk it through right now, with feeling. Aquarius goes quiet, analyses it, and comes back an hour later with a neat explanation that sounds like a verdict. Sagittarius hears a lack of care, and Aquarius thinks it was being helpful.",
+          "The gap shows up when something hurts. Sagittarius wants to talk it through right now, with feeling. Aquarius goes quiet, analyses it, and comes back an hour later with a neat explanation that sounds like a verdict. Sagittarius hears a lack of care, and Aquarius thinks they were being helpful.",
           "Say what you feel in plain words, even the awkward ones. You are both good at ideas and poor at admitting you were hurt, and a relationship built on jokes will leave certain things unsaid for years if you let it."
         ]
       },
@@ -5460,7 +5460,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "Your best nights are debates. Sagittarius takes a position because it is true, and Aquarius takes the opposite because the first position was too easy. Nobody storms off, because the point was never to win.",
           "Texting is lopsided in a way that works. Sagittarius sends the voice note, the photo, and the half-formed thought from the airport. Aquarius replies eleven hours later with one precise sentence that was worth the wait. Neither of you keeps score, which saves a hundred stupid fights.",
-          "Sagittarius says what it thinks the moment it thinks it, and sometimes that lands like a slap. Aquarius does not get hurt so much as file the remark and quietly lower the temperature between you. If a conversation suddenly feels cooler, check whether a blunt comment from earlier is the cause.",
+          "Sagittarius says what they think the moment they think it, and sometimes that lands like a slap. Aquarius does not get hurt so much as file the remark and quietly lower the temperature between you. If a conversation suddenly feels cooler, check whether a blunt comment from earlier is the cause.",
           "Aquarius hears Sagittarius as boundless and slightly unreliable. Sagittarius hears Aquarius as brilliant and impossible to pin down. Both impressions are partly right, and it helps to check them out loud instead of letting them harden.",
           "You can talk about anything: politics, the future, how the other person's family is weird. The topic you both dodge is your own relationship, because it feels less interesting than the world. Make a deliberate date for it."
         ]
@@ -5491,7 +5491,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "⚡",
         "paragraphs": [
           "The classic fight is about availability. Sagittarius says come with me, and Aquarius says I will see, and Sagittarius reads that as no. Aquarius is honestly deciding, but it does not announce that, so the invitation hangs in the air and a small resentment starts.",
-          "Sagittarius has a habit of promising more than it delivers: the trip next month, the plan to finally do the thing. Aquarius notices the pattern and says nothing, then quietly stops counting on you. The first you hear of it is a shrug where excitement used to be.",
+          "Sagittarius has a habit of promising more than they deliver: the trip next month, the plan to finally do the thing. Aquarius notices the pattern and says nothing, then quietly stops counting on you. The first you hear of it is a shrug where excitement used to be.",
           "Neither of you chases when something goes wrong. Both can pull back, each waiting for the other to say something first, and a small silence stretches into a long one. Two people who value independence can drift for months while believing they are respecting each other's space.",
           "Aquarius can dig in on a principle even when it costs the relationship, and Sagittarius can dismiss a real worry as negativity. When one of you says this matters to me and the other says you are overthinking it, that is the moment to stop and listen instead."
         ]
@@ -5504,7 +5504,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "When Sagittarius invites, Aquarius, give an answer with a time on it: yes, no, or I will tell you by Thursday. A maybe with no date is the thing that causes the most hurt between you.",
           "Sagittarius, before you say the blunt thing, ask yourself whether it needs to be said today. Aquarius, when something stings, say it in one sentence within the day instead of letting it ferment.",
           "Plan the big trips together, and also plan the ordinary Tuesdays. Spend one evening a month on the question of where this is going, with a bottle of wine and no phones.",
-          "Say the warm thing out loud. You both assume the other knows, and you are both slightly wrong. Fifteen words of plain affection, said now and then, will do more than any grand gesture."
+          "Say the affectionate thing instead of assuming it shows. You both assume the other knows, and you are both slightly wrong. Fifteen words of plain affection, said now and then, will do more than any grand gesture."
         ]
       }
     ]
@@ -5526,9 +5526,9 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Emotional Compatibility",
         "icon": "💖",
         "paragraphs": [
-          "Pisces takes in everything: your mood, the tone of your last text, the thing you did not say. Sagittarius takes in almost none of it and says what it thinks. That mismatch means Pisces is often hurt by something Sagittarius did not know it did.",
+          "Pisces takes in everything: your mood, the tone of your last text, the thing you did not say. Sagittarius takes in almost none of it and says what they think. That mismatch means Pisces is often hurt by something Sagittarius did not know it did.",
           "Sagittarius needs air. A partner who needs reassurance every day feels like a weight to a person built for horizons. Pisces needs the opposite: closeness that does not need to be earned, and a person who stays when the feelings get messy.",
-          "What happens when it is missing is predictable. Pisces gives up asking and drifts into fantasy, or into friends who listen better. Sagittarius, feeling an absence it cannot name, books a trip or starts something new, and the avoidance looks like freedom.",
+          "What happens when it is missing is predictable. Pisces gives up asking and drifts into fantasy, or into friends who listen better. Sagittarius, feeling an absence they cannot name, books a trip or starts something new, and the avoidance looks like freedom.",
           "The best moments come when Sagittarius slows down and just sits with Pisces, no solutions, no advice. The best moments the other way come when Pisces says plainly, I am sad and I do not need you to fix it. That single sentence prevents about half the fights."
         ]
       },
@@ -5537,7 +5537,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "🧠",
         "paragraphs": [
           "Your conversations go to big places: meaning, God, luck, past lives, what you would do if money did not matter. Sagittarius brings the philosophy and the facts, Pisces brings the intuition and the story. At two in the morning you are the best conversation either of you has had all week.",
-          "The trouble starts with plain, practical talk. Sagittarius says what it means in one line. Pisces says it by circling the subject, hoping to be guessed. Sagittarius gets impatient and says just tell me, and Pisces hears a rebuke and retreats.",
+          "The trouble starts with plain, practical talk. Sagittarius says what they mean in one line. Pisces says it by circling the subject, hoping to be guessed. Sagittarius gets impatient and says just tell me, and Pisces hears a rebuke and retreats.",
           "Texting exposes it. Sagittarius sends a fast, cheerful message and moves on. Pisces reads the exclamation mark, the missing emoji, the reply time, and builds a theory. Sagittarius has no idea a theory exists until it is a full argument.",
           "Sagittarius hears Pisces as evasive and sometimes as a person who will not commit to a position. Pisces hears Sagittarius as sharp, tactless, and sure of everything. A good rule: ask what the other meant before deciding what they meant.",
           "Neither of you is great with details. Dates, deposits, and who was supposed to call the landlord slip through, and then each blames the other. Put it in a shared note and stop relying on memory and goodwill."
@@ -5656,7 +5656,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "icon": "💡",
         "paragraphs": [
           "Schedule pleasure with the same seriousness you schedule work. A weekly date, a holiday with nothing planned, a Sunday with no productive goal. If it is in the calendar, you will both turn up.",
-          "Say the warm thing out loud, once a day if you can stand it. I am glad you are here costs nothing and gets heard far better than another practical favour does.",
+          "Tell each other the warm thing, once a day if you can stand it. I am glad you are here costs nothing and gets heard far better than another practical favour does.",
           "When you disagree, name it in the first ten minutes instead of the third day. I am annoyed about the money, can we talk tonight is a sentence that ends a cold war before it starts.",
           "Stop keeping score. Pick one area, whether money, housework, or status, and agree that you will not compare. You are on the same side, and the scoreboard is the only thing that says otherwise.",
           "Do something useless together. Take a class you will be bad at, play a silly game, travel without an itinerary. Failing at something side by side is the best way to see each other without the armour."
@@ -5704,7 +5704,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Chemistry builds slowly and then catches you off guard. Capricorn is sensual once trust is in place, with a patient, dry, steady touch. Aquarius is curious, and a little unpredictable in a way that keeps Capricorn on its toes.",
           "The two of you handle affection differently. Capricorn shows it through effort, like fixing the car or booking the flights. Aquarius shows it through attention to the odd particulars, like remembering a story you told once. Both are real, and neither looks like a movie romance.",
           "Mood differences can make the bedroom uneven. Capricorn is often tired from work and wants predictability, while Aquarius likes surprise and experiment. A bit of negotiation will do more than assuming the other will adjust.",
-          "Make a point of the unplanned. Take the unusual trip, try the strange restaurant, change the routine. Aquarius opens Capricorn up, and Capricorn gives Aquarius a body to come back to."
+          "Make a point of the unplanned. Take the unusual trip, try the strange restaurant, change the routine. Aquarius opens Capricorn up, and Capricorn gives Aquarius a home to come back to."
         ]
       },
       {
@@ -5788,7 +5788,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Strengths & Gifts",
         "icon": "🌟",
         "paragraphs": [
-          "You make dreams practical. Pisces conceives the thing, Capricorn finds the route, and together you finish projects that would have died in either hand alone. Many creative or caring careers owe their survival to a partnership like this.",
+          "You make dreams practical. Pisces conceives the thing, Capricorn finds the route, and together you finish projects that would have died in either hand alone. A creative or caring career can survive on a partnership like this.",
           "You soften each other. Pisces teaches Capricorn that tenderness is not weakness, and Capricorn teaches Pisces that boundaries are not cruelty. Both of you leave the relationship kinder and sturdier.",
           "You give each other stability. Capricorn supplies the schedule and the money sense, while Pisces supplies the emotional intelligence for the whole household, and everything runs better than it did on separate budgets.",
           "You are loyal to the long haul. Neither of you drops people in a bad season, and you both take vows seriously, which makes the couple unusually resilient through illness, job loss, and family drama.",
@@ -5799,7 +5799,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Challenges & Growth Areas",
         "icon": "⚡",
         "paragraphs": [
-          "Pisces avoids what is unpleasant, such as bills, confrontations, and decisions, and Capricorn ends up carrying it. Over a year, that carries a resentment that Capricorn will not voice until it surfaces as a cold fury about something small.",
+          "Pisces avoids what is unpleasant, such as bills, confrontations, and decisions, and Capricorn ends up carrying it. Over a year, that builds a resentment that Capricorn will not voice until it surfaces as a cold fury about something small.",
           "Capricorn criticises, and Pisces absorbs the criticism as a verdict on its worth. A comment about being late or messy lands as you are a disappointment. Capricorn means fix the thing, not fix yourself, and has to say so.",
           "Pisces can disappear into moods, fantasy, or escape, and Capricorn, who cannot disappear, feels left alone with the weight. The argument that results is about the dishes, but the cause is the sense of unequal load.",
           "Capricorn can be pessimistic and dismiss Pisces's hopes. Pisces gets quieter, stops sharing ideas, and the relationship loses its colour. If you want to stay together, Capricorn has to protect the dreams that it cannot yet budget for."
@@ -5879,7 +5879,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "Distance is the main enemy. Two people who both retreat when stressed will retreat in opposite directions. Neither chases, so a small gap turns into a canyon while both of you tell yourselves you are giving the other space.",
           "You can be equally stubborn. When you disagree on principle, neither of you gives an inch. A fight about whose turn it was to organise the trip becomes a contest over who is more reasonable, and the real hurt is never touched.",
           "Both of you avoid dependency, so asking for help feels like losing. Someone is sick or sad, and the other offers an article instead of a meal. You each take care of yourselves so well that the care you could give each other goes unused.",
-          "Aquarius shows a cold streak under pressure: the sudden detachment, the this is not working analysis delivered without a flinch. If both do it at the same time, the relationship can end in a single calm conversation that surprises everyone."
+          "You both have a cold streak under pressure: the sudden detachment, the this is not working analysis delivered without a flinch. If you both do it at the same time, the relationship can end in a single calm conversation that surprises everyone."
         ]
       },
       {
@@ -5924,7 +5924,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "paragraphs": [
           "You both love big, unusual ideas: dreams, theories, causes, odd bits of philosophy. Conversations drift from the political to the mystical without friction, and you can lose a whole evening to them.",
           "The difficulty is when you need to discuss something plain. Aquarius wants a clear statement and a plan, Pisces gives a mood and a hint. Aquarius says what do you actually want, and Pisces hears pressure and goes quiet.",
-          "Texting exposes the gap. Aquarius replies when it has something to say, which can be hours or days. Pisces reads the silence as a message and fills it in, usually pessimistically. A simple heads-up that you are busy, not gone, would remove a lot of grief.",
+          "Texting exposes the gap. Aquarius replies when there is something to say, which can be hours or days. Pisces reads the silence as a message and fills it in, usually pessimistically. A simple heads-up that you are busy, not gone, would remove a lot of grief.",
           "Aquarius can be bluntly rational about things Pisces experiences as sacred, such as a belief, a memory, or a creative project. Pisces can be vague about facts that Aquarius needs to settle. Ask what each of you needs from the conversation before you start it."
         ]
       },
@@ -5982,7 +5982,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
           "You live on atmosphere. The right lighting, a playlist, a rainy day, a long drive with no destination: these are the building blocks of your romance. Nobody else would understand why a Tuesday evening at home felt like a holiday, but you do.",
           "You are generous to a fault. Each of you gives, forgives, and makes allowances, and for a long time that looks like a perfect match. Two people who cannot say no to each other tend to be happy, until a decision is needed.",
           "Underneath is a shared fear: being left, being too much, being unable to cope with the world. You protect each other from it, and sometimes from everything else too, including the problems that need facing.",
-          "Pisces with Pisces is one of the most tender pairings there is, and one of the least practical. The relationship thrives on feeling, and it needs a little structure to stay alive."
+          "Two Pisces together make one of the most tender pairings there is, and one of the least practical. The relationship thrives on feeling, and it needs a little structure to stay alive."
         ]
       },
       {
@@ -6009,7 +6009,7 @@ export const COMPATIBILITY_VOICE: Record<string, { sections: CompatibilityVoiceS
         "title": "Physical & Romantic Chemistry",
         "icon": "🔥",
         "paragraphs": [
-          "Intimacy is soulful and unhurried. You are tuned to each other's body language, and touch tends to carry more meaning than words. Many pairs of Pisces say the physical side feels like a continuation of the emotional one.",
+          "Intimacy is soulful and unhurried. You are tuned to each other's body language, and touch tends to carry more meaning than words. For a lot of you the physical side feels like a continuation of the emotional one.",
           "Fantasy matters. Candlelight, music, the right story, the right mood. You both enjoy creating atmosphere and playing with imagination, and you are generous partners who want the other to feel adored.",
           "The risk is going into it to escape. When life is hard, closeness can become a hiding place from the real problem. That feels lovely at the time and leaves the problem exactly where it was.",
           "Keep the romance grounded in daily life too. Cook together, take a walk, keep a ritual that has nothing to do with escape. Love lasts longer when it also fits an ordinary Wednesday."

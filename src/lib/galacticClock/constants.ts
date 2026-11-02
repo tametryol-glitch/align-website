@@ -25,7 +25,7 @@ export const CUSTOM_CYCLE_EPOCH = new Date(2026, 2, 20); // Mar 20, 2026 = Marsd
 
 // Ruler meanings for interpretation
 export const RULER_MEANINGS: Record<RulerName, { keywords: string; essence: string; color: string; glyph: string }> = {
-  Mars:    { keywords: 'starting things, fights, training, nerve', essence: 'the push to start things, and the temper that comes with it', color: '#EF4444', glyph: '♂' },
+  Mars:    { keywords: 'starting things, fights, training, nerve', essence: 'the push to start things and the temper that comes with it', color: '#EF4444', glyph: '♂' },
   Venus:   { keywords: 'dates, art, spending, making up', essence: 'the pull toward people, pleasure and money', color: '#F472B6', glyph: '♀' },
   Mercury: { keywords: 'emails, calls, deals, studying', essence: 'talking, writing and deciding fast', color: '#6EE7B7', glyph: '☿' },
   Moon:    { keywords: 'moods, home, family, gut reads', essence: 'mood, memory and who you need close', color: '#C4B5FD', glyph: '☽' },

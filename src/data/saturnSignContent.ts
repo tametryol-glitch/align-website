@@ -41,8 +41,8 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that courage is not the absence of fear but the discipline to act wisely in spite of it. You may struggle with assertiveness early in life — either overcompensating with aggression or shrinking from conflict. The way through is the middle path between recklessness and timidity.',
-          'You are learning to take initiative without bulldozing others, to lead without dominating, and to compete without losing your integrity. Every time you act from genuine courage rather than ego, you strengthen the Saturn structure that will eventually become your greatest asset.',
+          'You learn that courage is not the absence of fear but the discipline to act wisely in spite of it. You may struggle with assertiveness early in life, either overcompensating with aggression or shrinking from conflict. The way through is the middle path between recklessness and timidity.',
+          'You are learning to take initiative without bulldozing others, to lead without dominating, and to compete without losing your integrity. Every time you act from genuine courage rather than ego, you strengthen the habit that will eventually become your greatest asset.',
         ],
       },
       {
@@ -50,7 +50,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You mature when you learn strategic patience. When you were younger you rushed headlong into situations that needed more planning. Over time you pair your boldness with preparation, and you become someone both brave and wise.',
-          'The discipline Saturn demands of you is impulse control — not the suppression of your fire, but the mastery of its timing. As you mature, your initiative becomes more targeted, your leadership more effective, and your courage more genuinely heroic because it serves something greater than your ego.',
+          'What you need is impulse control: not putting your fire out, but mastering its timing. Over the years your initiative gets more targeted, your leadership more effective, and your courage more heroic because it serves something bigger than your ego.',
         ],
       },
     ],
@@ -63,16 +63,16 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that true security comes from within. You may experience financial limitations, scarcity, or a deep-seated fear that there is never enough. These challenges are not punishments — they are Saturn\'s way of teaching you to build an unshakeable sense of self-worth that no external circumstance can diminish.',
-          'What you are building is a healthy relationship with material resources — neither hoarding them out of fear nor squandering them through carelessness. You are learning that abundance flows when you trust your ability to create value through consistent, disciplined effort.',
+          'You learn that true security comes from within. You may experience financial limitations, scarcity, or a deep-seated fear that there is never enough. These challenges are not punishments; they push you to build a sense of self-worth that no circumstance can take from you.',
+          'What you are building is a healthy relationship with material resources: neither hoarding them out of fear nor squandering them through carelessness. You are learning that abundance flows when you trust your ability to create value through consistent, disciplined effort.',
         ],
       },
       {
         title: 'Discipline & Maturity Path',
         icon: '🏔',
         paragraphs: [
-          'You mature as your money sense and self-reliance get rock solid. Early struggles with money or resources teach you to budget, plan, and build wealth methodically. Over time, your Saturnian discipline transforms initial scarcity into enduring abundance.',
-          'As you mature, your relationship with material security deepens. You learn to enjoy what you have without anxiety about losing it, to share generously without fear of depletion, and to find security in your own competence rather than in your bank account.',
+          'You mature as your money sense and self-reliance get rock solid. Early struggles with money or resources teach you to budget, plan, and build wealth methodically. Over time, that discipline turns early scarcity into steadier abundance.',
+          'Later on, your relationship with material security softens. You learn to enjoy what you have without anxiety about losing it, to share generously without fear of depletion, and to find security in your own competence rather than in your bank account.',
         ],
       },
     ],
@@ -85,7 +85,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that words carry weight and consequences. You may struggle with communication challenges — difficulty expressing yourself clearly, fear of being misunderstood, or anxiety around intellectual performance. These challenges push you to develop exceptional clarity and precision in your thinking.',
+          'You learn that words carry weight and consequences. You may struggle with communication challenges: difficulty expressing yourself clearly, fear of being misunderstood, or anxiety around intellectual performance. These challenges push you to develop exceptional clarity and precision in your thinking.',
           'The move you are making is from scattered curiosity toward focused mastery. You are learning to think deeply rather than broadly, to speak with authority rather than nervousness, and to use your considerable mental gifts with the discipline and responsibility they deserve.',
         ],
       },
@@ -94,7 +94,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'Your mind sharpens with age as you build real intellectual rigor. Early communication anxieties transform into exceptional precision and authority as you learn to master your mental gifts through study, practice, and the patient development of genuine expertise.',
-          'As you mature, your thinking becomes increasingly structured and powerful. You develop the ability to communicate complex ideas with clarity and impact, and your intellectual contributions carry the weight of someone who has earned their knowledge through disciplined effort.',
+          'With age your thinking gets more structured and sharper. You develop the ability to communicate complex ideas with clarity and impact, and your intellectual contributions carry the weight of someone who has earned their knowledge through disciplined effort.',
         ],
       },
     ],
@@ -107,8 +107,8 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that emotional security must be built from the inside out. You may have experienced early life challenges around family, home, or emotional availability — perhaps a cold or absent parent, frequent moves, or a sense that you had to grow up too fast emotionally.',
-          'You have to become your own nurturing parent. You are learning to provide for yourself the emotional safety that may not have been consistently available in childhood. This is not about suppressing your feelings — it is about developing the emotional maturity to hold your own vulnerability with strength and compassion.',
+          'You learn that emotional security must be built from the inside out. You may have experienced early life challenges around family, home, or emotional availability: perhaps a cold or absent parent, frequent moves, or a sense that you had to grow up too fast emotionally.',
+          'You have to become your own nurturing parent. You are learning to provide for yourself the emotional safety that may not have been consistently available in childhood. This is not about suppressing your feelings; it is about holding your own vulnerability with strength and compassion.',
         ],
       },
       {
@@ -116,7 +116,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You grow up by becoming emotionally self-sufficient and deliberately building your own home and family life. Over time, you transform childhood wounds into extraordinary emotional strength and resilience.',
-          'As you mature, you become a pillar of emotional stability for others. Your hard-won emotional wisdom makes you an exceptional counselor, parent, and friend. The security you build is genuine and lasting because it was forged through real experience rather than inherited through easy circumstances.',
+          'In time you become a pillar of emotional stability for others. Your hard-won wisdom makes you a steady counselor, parent and friend. The security you build is genuine and lasting because it was forged through real experience rather than handed to you.',
         ],
       },
     ],
@@ -129,8 +129,8 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that true confidence comes from within. You may struggle with self-expression — feeling inhibited, blocked creatively, or painfully self-conscious about seeking attention. Early life may have included experiences that made you feel invisible, unspecial, or ashamed of wanting recognition.',
-          'What you are after is self-expression that does not depend on audience approval. You are learning to create for the sake of creation, to lead because it serves others, and to express yourself because your light is genuine — not because you need others to validate your existence.',
+          'You learn that true confidence comes from within. You may struggle with self-expression: feeling inhibited, blocked creatively, or painfully self-conscious about seeking attention. Early life may have included experiences that made you feel invisible, unspecial, or ashamed of wanting recognition.',
+          'What you are after is self-expression that does not depend on audience approval. You are learning to create for the sake of creation, to lead because it serves others, and to express yourself because your light is genuine, not because you need others to validate your existence.',
         ],
       },
       {
@@ -138,7 +138,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You come into your own as your creative mastery and inner confidence become real. Early creative blocks and self-consciousness give way to powerful, disciplined self-expression as you learn to create from authenticity rather than approval-seeking.',
-          'As you mature, your creative output becomes increasingly impressive and authoritative. Your Saturn-tested confidence is real — it does not inflate from praise or deflate from criticism. You become a creative force whose influence endures because it is grounded in substance rather than spectacle.',
+          'Your creative work gets more authoritative with the years. The confidence you earn is real: it does not inflate from praise or deflate from criticism. You become a creative force whose influence endures because it rests on substance rather than spectacle.',
         ],
       },
     ],
@@ -151,7 +151,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn the difference between healthy perfectionism and paralyzing self-criticism. You may struggle with anxiety, health concerns, or a relentless inner critic that tells you nothing is ever good enough. These challenges are Saturn\'s way of refining your already considerable analytical gifts.',
+          'You learn the difference between healthy perfectionism and paralyzing self-criticism. You may struggle with anxiety, health concerns, or a relentless inner critic that tells you nothing is ever good enough. These challenges sharpen an already considerable analytical gift.',
           'Stop obsessing over perfection for its own sake and work because the craft deserves your best. From the outside the two look the same, but one version drains you and the other builds you.',
         ],
       },
@@ -160,7 +160,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'Anxiety turns into expertise as you get older. Early struggles with perfectionism and self-doubt give way to genuine mastery as you learn to channel your analytical gifts into productive, purposeful work rather than corrosive self-criticism.',
-          'As you mature, you become an authority in your field — someone whose attention to detail and devotional work ethic produces results of exceptional quality. Your Saturn-disciplined Virgo precision becomes a competitive advantage rather than a source of suffering.',
+          'Eventually you become an authority in your field, someone whose attention to detail and devoted work ethic produces exceptional results. Your precision turns into an advantage instead of a source of suffering.',
         ],
       },
     ],
@@ -173,8 +173,8 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that real partnership requires discipline, commitment, and the courage to address imbalance. You may experience challenges in relationships — difficulty finding a partner, struggles with fairness, or the painful recognition that keeping the peace is not the same as maintaining genuine harmony.',
-          'You are here to learn committed partnership properly, which means building relationships that are structurally sound — based on genuine equality, mutual respect, and the willingness to do the hard work that lasting love requires.',
+          'You learn that real partnership requires discipline, commitment, and the courage to address imbalance. You may experience challenges in relationships: difficulty finding a partner, struggles with fairness, or the painful recognition that keeping the peace is not the same as maintaining genuine harmony.',
+          'You are here to learn committed partnership properly, which means building relationships that are structurally sound, based on genuine equality, mutual respect, and the willingness to do the hard work that lasting love requires.',
         ],
       },
       {
@@ -182,7 +182,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You learn what makes a relationship work. Early romantic struggles teach you invaluable lessons about commitment, boundaries, and the difference between codependency and genuine partnership.',
-          'As you mature, you become a model of healthy, committed partnership. Your relationships are built to last because they are founded on mutual respect, clear communication, and the Saturn-tested understanding that love is a practice, not just a feeling.',
+          'People start to look at your relationships as the example. They last because they rest on mutual respect, clear communication, and the hard-won understanding that love is a practice, not just a feeling.',
         ],
       },
     ],
@@ -195,16 +195,16 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that emotional intensity is a power that must be handled with responsibility. You may struggle with issues of trust, control, shared resources, or deep psychological patterns that feel impossible to change. These challenges are Saturn\'s crucible, forging emotional resilience from raw material.',
-          'The job is to master transformation — not to avoid crisis but to develop the emotional discipline to walk through it consciously. You are learning that power does not require control, that trust can coexist with vigilance, and that the darkest experiences can produce the most luminous wisdom.',
+          'You learn that emotional intensity is a power that must be handled with responsibility. You may struggle with issues of trust, control, shared resources, or deep psychological patterns that feel impossible to change. These challenges are a crucible that forges emotional resilience.',
+          'The job is to master transformation: not to avoid crisis but to develop the emotional discipline to walk through it consciously. You are learning that power does not require control, that trust can coexist with vigilance, and that the darkest experiences can produce the most luminous wisdom.',
         ],
       },
       {
         title: 'Discipline & Maturity Path',
         icon: '🏔',
         paragraphs: [
-          'You mature through repeated endings and fresh starts — letting go of what no longer serves you with increasing grace and wisdom. Early power struggles and trust issues give way to profound emotional mastery as you learn to channel intensity constructively.',
-          'As you mature, you develop extraordinary psychological insight and emotional resilience. Your Saturn-tested understanding of transformation makes you a powerful healer, therapist, or leader who has genuinely walked through fire and emerged stronger.',
+          'You mature through repeated endings and fresh starts, letting go of what no longer serves you with increasing grace. Early power struggles and trust issues give way to profound emotional mastery as you learn to channel intensity constructively.',
+          'You end up with real psychological insight and resilience. Having come through your own endings makes you a powerful healer, therapist or leader, someone who has genuinely walked through fire and come out stronger.',
         ],
       },
     ],
@@ -217,7 +217,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Life Lessons & Karmic Challenges',
         icon: '📜',
         paragraphs: [
-          'You learn that faith must be earned through genuine inquiry, not adopted as a comfortable escape from reality. You may struggle with questions of meaning, purpose, and belief — experiencing crises of faith, disillusionment with authority figures, or the painful recognition that your inherited worldview needs revision.',
+          'You learn that faith must be earned through genuine inquiry, not adopted as a comfortable escape from reality. You may struggle with questions of meaning, purpose, and belief: experiencing crises of faith, disillusionment with authority figures, or the painful recognition that your inherited worldview needs revision.',
           'The work is to build a philosophy that is both expansive and structurally sound. You are learning to distinguish between blind optimism and genuine faith, between grandiose ambition and meaningful purpose, and between dogmatic certainty and wisdom that has been tested by experience.',
         ],
       },
@@ -226,7 +226,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You mature as your beliefs get tested and what survives turns into wisdom. Early crises of faith give way to a philosophical framework that is deeper, more nuanced, and more resilient than naive optimism could ever be.',
-          'As you mature, you become a genuine teacher and wisdom figure whose philosophical insights carry the weight of real experience. Your faith is unshakeable precisely because it has been tested and refined through Saturn\'s demanding curriculum.',
+          'Eventually you become a genuine teacher whose insights carry the weight of real experience. Your faith holds precisely because it has been tested and refined by hard years.',
         ],
       },
     ],
@@ -247,8 +247,8 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         title: 'Discipline & Maturity Path',
         icon: '🏔',
         paragraphs: [
-          'Your maturity is a lifelong ascent toward genuine mastery. Early life may feel heavy with obligation and delayed gratification, but each year adds to the mountain of achievement you are steadily building. Saturn rewards you handsomely in the second half of life.',
-          'As you mature, you become a genuine authority — respected, accomplished, and possessed of a wisdom that comes only from decades of disciplined effort. Your legacy is the structures, institutions, and standards of excellence you leave behind.',
+          'Your maturity is a lifelong ascent toward genuine mastery. Early life may feel heavy with obligation and delayed gratification, but each year adds to the mountain of achievement you are steadily building. The second half of life tends to pay you back for the first.',
+          'Over the decades you become a genuine authority: respected, accomplished, and wise in the way only years of disciplined effort make you. Your legacy is the structures and standards you leave behind.',
         ],
       },
     ],
@@ -270,7 +270,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You mature by turning big ideas into disciplined, practical action. Early experiences of alienation and idealistic frustration give way to a more effective, structured approach to creating the change you want to see.',
-          'As you mature, you become a builder of new systems — someone who combines visionary thinking with practical execution to create institutions, technologies, or communities that genuinely serve human progress.',
+          'In time you become a builder of new systems, someone who combines visionary thinking with practical execution to create institutions, technologies or communities that genuinely help people.',
         ],
       },
     ],
@@ -292,7 +292,7 @@ const SATURN_CONTENT: Record<ZodiacSign, Omit<SaturnSignContent, 'sign'>> = {
         icon: '🏔',
         paragraphs: [
           'You mature as you build a steady spiritual practice and firmer emotional boundaries. Early struggles with escapism, confusion, or emotional overwhelm give way to a grounded, practical spirituality that channels sensitivity into genuine healing.',
-          'As you mature, you become a powerful bridge between the spiritual and the practical — a grounded mystic, a disciplined healer, or a compassionate leader who translates transcendent wisdom into everyday kindness and service.',
+          'You grow into a bridge between the spiritual and the practical: a grounded mystic, a disciplined healer, or a compassionate leader who turns transcendent wisdom into everyday kindness and service.',
         ],
       },
     ],

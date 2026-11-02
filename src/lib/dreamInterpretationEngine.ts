@@ -24,7 +24,7 @@ const DREAM_ARCHETYPES: Record<string, DreamArchetype> = {
   chase: {
     coreTheme: 'You are racing something you have not named: a conversation, a bill, a decision, a feeling you keep outrunning by staying busy. The pursuer is not the threat; the running is.',
     subconscious: 'Avoidance is your reflex when something gets uncomfortable, so you change the subject, pick up another task, reach for your phone. The dream shows how far you have pushed this thing away, and it keeps closing the gap anyway.',
-    shadowAngle: 'What you are running from is not behind you — it is inside you. The chase will not end until you stop, turn around, and ask the pursuer what it wants.',
+    shadowAngle: 'What you are running from is not behind you: it is inside you. The chase will not end until you stop, turn around, and ask the pursuer what it wants.',
     oracleClose: 'Stop running. The thing chasing you loses its power the moment you face it.',
   },
   teeth: {
@@ -148,6 +148,11 @@ interface MatchedSymbol {
   reflection: string;
 }
 
+function wholeWord(text: string, needle: string): boolean {
+  const safe = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${safe}(s|es)?\\b`).test(text);
+}
+
 function matchSymbolsRich(description: string, userSymbols: string[]): MatchedSymbol[] {
   const matched = new Map<string, MatchedSymbol>();
 
@@ -169,7 +174,7 @@ function matchSymbolsRich(description: string, userSymbols: string[]): MatchedSy
   if (matched.size === 0) {
     const text = description.toLowerCase();
     for (const entry of DREAM_SYMBOLS) {
-      if (text.includes(entry.key.replace('_', ' ')) || text.includes(entry.name.toLowerCase())) {
+      if (wholeWord(text, entry.key.replace('_', ' ')) || wholeWord(text, entry.name.toLowerCase())) {
         matched.set(entry.name, {
           symbol: entry.name,
           meaning: entry.general,
@@ -213,13 +218,13 @@ function detectArchetype(dreamType: string, description: string): DreamArchetype
   if (text.includes('falling') || text.includes('cliff') || text.includes('dropped')) {
     return DREAM_ARCHETYPES.falling;
   }
-  if (text.includes('house') || text.includes('room') || text.includes('building') || text.includes('apartment') || text.includes('basement') || text.includes('attic')) {
+  if (wholeWord(text, 'house') || wholeWord(text, 'room') || text.includes('building') || text.includes('apartment') || text.includes('basement') || text.includes('attic')) {
     return DREAM_ARCHETYPES.house;
   }
-  if (text.includes('ex ') || text.includes('ex-') || text.includes('former partner') || text.includes('ex boyfriend') || text.includes('ex girlfriend') || text.includes('old relationship')) {
+  if (wholeWord(text, 'ex') || text.includes('former partner') || text.includes('ex boyfriend') || text.includes('ex girlfriend') || text.includes('old relationship')) {
     return DREAM_ARCHETYPES.ex;
   }
-  if (text.includes('animal') || text.includes('dog') || text.includes('cat') || text.includes('wolf') || text.includes('bear') || text.includes('lion') || text.includes('spider') || text.includes('bird')) {
+  if (['animal', 'dog', 'cat', 'wolf', 'bear', 'lion', 'spider', 'bird'].some(w => wholeWord(text, w))) {
     return DREAM_ARCHETYPES.animals;
   }
 
@@ -240,7 +245,7 @@ function buildCoreMessage(
     parts.push(archetype.coreTheme);
   } else {
     const emotionAnchor = input.emotions.length > 0
-      ? `The ${input.emotions[0]} you felt is the entry point — everything else in this dream orbits that feeling.`
+      ? `The ${input.emotions[0]} you felt is the entry point: everything else in this dream orbits that feeling.`
       : 'Even without a named emotion, this dream carries weight. The fact that you remembered it means your subconscious flagged it as significant.';
     parts.push(emotionAnchor);
   }
@@ -255,7 +260,8 @@ function buildCoreMessage(
   }
 
   if (input.people.length > 0) {
-    const names = input.people.slice(0, 2).join(' and ');
+    const rawNames = input.people.slice(0, 2).join(' and ');
+    const names = rawNames.charAt(0).toUpperCase() + rawNames.slice(1);
     parts.push(`${names} did not show up in this dream by accident: you are working something out with them, or with what they stand for in your life.`);
   }
 
@@ -284,7 +290,7 @@ function buildSubconsciousMessage(
       }
       parts.push(emotionRead);
     } else {
-      parts.push('Your subconscious constructed this scene with precision — even without a clear emotional label, the imagery itself is the message.');
+      parts.push('Your subconscious constructed this scene with precision, even without a clear emotional label, the imagery itself is the message.');
     }
   }
 
@@ -306,11 +312,11 @@ function buildSubconsciousMessage(
   }
 
   if (input.dreamType === 'nightmare') {
-    parts.push('Nightmares are not punishments — they are alarms. Your psyche is escalating the imagery because something needs immediate conscious attention.');
+    parts.push('Nightmares are not punishments: they are alarms. Your psyche is escalating the imagery because something needs immediate conscious attention.');
   }
 
   if (input.dreamType === 'lucid') {
-    parts.push('Achieving lucidity suggests your consciousness is expanding — you are developing the ability to witness your own depths without being consumed by them.');
+    parts.push('Achieving lucidity suggests your consciousness is expanding: you are developing the ability to witness your own depths without being consumed by them.');
   }
 
   return parts.join(' ');
@@ -322,7 +328,7 @@ function buildSymbolSection(symbols: MatchedSymbol[]): { mainSymbols: { symbol: 
   if (symbols.length === 0) {
     return {
       mainSymbols: [],
-      symbolNarrative: 'No specific symbols were matched in the dictionary, but that does not mean the dream lacks symbolic content. Every image your subconscious chooses is a symbol — even mundane objects carry personal meaning that generic dictionaries cannot capture.',
+      symbolNarrative: 'No specific symbols were matched in the dictionary, but that does not mean the dream lacks symbolic content. Every image your subconscious chooses is a symbol, even mundane objects carry personal meaning that generic dictionaries cannot capture.',
     };
   }
 
@@ -343,7 +349,7 @@ function buildSymbolSection(symbols: MatchedSymbol[]): { mainSymbols: { symbol: 
       layers.push(sym.astrological.split('.')[0] + '.');
     }
 
-    narrativeParts.push(`${sym.symbol} — ${layers.join(' ')}`);
+    narrativeParts.push(`${sym.symbol}: ${layers.join(' ')}`);
   }
 
   return { mainSymbols, symbolNarrative: narrativeParts.join('\n\n') };
@@ -356,7 +362,7 @@ function buildEmotionalUndercurrent(input: DreamInput, symbols: MatchedSymbol[])
   const intensity = input.intensityScore;
 
   if (input.emotions.length === 0) {
-    parts.push('You did not name a specific emotion, but the dream itself carried one. Dreams that linger in memory always have an emotional charge — your body registered it even if your mind did not label it.');
+    parts.push('You did not name a specific emotion, but the dream itself carried one. Dreams that linger in memory always have an emotional charge: your body registered it even if your mind did not label it.');
     parts.push('Sit with the imagery for a moment. What do you feel now, recalling it? That residual feeling is the dream\'s emotional signature.');
     return parts.join(' ');
   }
@@ -364,18 +370,18 @@ function buildEmotionalUndercurrent(input: DreamInput, symbols: MatchedSymbol[])
   const primary = input.emotions[0];
   const secondaries = input.emotions.slice(1);
 
-  parts.push(`The dominant feeling — ${primary} — is not decoration. It is the dream's actual content; the imagery is just the delivery system.`);
+  parts.push(`The dominant feeling, ${primary}, is not decoration. It is the dream's actual content; the imagery is just the delivery system.`);
 
   if (secondaries.length > 0) {
-    parts.push(`Underneath that, ${secondaries.join(' and ')} added complexity. Your psyche was processing multiple emotional threads simultaneously — this is not confusion, it is depth.`);
+    parts.push(`Underneath that, ${secondaries.join(' and ')} added complexity. Your psyche was processing multiple emotional threads simultaneously: this is not confusion, it is depth.`);
   }
 
   if (intensity >= 8) {
     parts.push(`At ${intensity}/10 intensity, your psyche treats this as urgent. High-intensity dreams surface when something has been building pressure and can no longer be contained in the background.`);
   } else if (intensity >= 5) {
-    parts.push(`At ${intensity}/10, this is an active processing dream — significant enough to demand attention, measured enough to suggest you have the capacity to work with what it reveals.`);
+    parts.push(`At ${intensity}/10, this is an active processing dream: significant enough to demand attention, measured enough to suggest you have the capacity to work with what it reveals.`);
   } else {
-    parts.push(`At ${intensity}/10, this is a quieter signal — but do not dismiss it. Low-intensity dreams often carry precise, surgical messages that louder dreams drown out.`);
+    parts.push(`At ${intensity}/10, this is a quieter signal, but do not dismiss it. Low-intensity dreams often carry precise, surgical messages that louder dreams drown out.`);
   }
 
   if (symbols.length > 0) {
@@ -401,7 +407,7 @@ function buildShadowChallenge(
     parts.push(archetype.shadowAngle);
   } else {
     if (input.dreamType === 'nightmare') {
-      parts.push('This nightmare is not trying to hurt you — it is trying to wake you up. The distress matches how long you have been sidestepping the thing it points at.');
+      parts.push('This nightmare is not trying to hurt you: it is trying to wake you up. The distress matches how long you have been sidestepping the thing it points at.');
     } else {
       parts.push('Every dream has a layer you would rather not look at. The interpretation that makes you most uncomfortable is usually the most accurate.');
     }
@@ -415,7 +421,7 @@ function buildShadowChallenge(
   }
 
   if (input.emotions.includes('fear') || input.emotions.includes('anxiety') || input.emotions.includes('dread')) {
-    parts.push('The fear in this dream is a compass. It is pointing directly at the thing you most need to face — not because facing it is dangerous, but because avoiding it is.');
+    parts.push('The fear in this dream is a compass. It is pointing directly at the thing you most need to face. Facing it is not the dangerous part; avoiding it is.');
   }
 
   if (input.emotions.includes('anger')) {
@@ -423,11 +429,11 @@ function buildShadowChallenge(
   }
 
   if (input.emotions.includes('guilt') || input.emotions.includes('shame')) {
-    parts.push('Guilt or shame surfacing in a dream means your psyche is ready to process it. The dream is not punishing you — it is giving you a safe space to confront what you have been carrying.');
+    parts.push('Guilt or shame surfacing in a dream means your psyche is ready to process it. The dream is not punishing you: it is giving you a safe space to confront what you have been carrying.');
   }
 
   if (input.intensityScore >= 7 && !archetype) {
-    parts.push('The intensity level tells you the shadow material is close to the surface — it is pushing through because containment is no longer possible.');
+    parts.push('The intensity level tells you the shadow material is close to the surface: it is pushing through because containment is no longer possible.');
   }
 
   return parts.join(' ');
@@ -448,55 +454,65 @@ function buildOracleMessage(
   }
 
   if (astrology && astrology.natalMoonSign) {
-    parts.push(`With your Moon in ${astrology.natalMoonSign}, your emotional processing naturally gravitates toward these themes — this dream is working with your natal wiring, not against it.`);
+    parts.push(`With your Moon in ${astrology.natalMoonSign}, your emotional processing naturally gravitates toward these themes: this dream is working with your natal wiring, not against it.`);
 
     if (astrology.activeTransits && astrology.activeTransits.length > 0) {
-      parts.push(`Current transits (${astrology.activeTransits.slice(0, 2).join('; ')}) are activating the same territory this dream is exploring. The sky and your subconscious are synchronized.`);
+      parts.push(`Current transits (${astrology.activeTransits.slice(0, 2).join('; ')}) are activating the same territory this dream is exploring. The sky and your inner life are pulling on the same thread.`);
     }
 
     if (astrology.currentMoonPhase) {
       const phase = astrology.currentMoonPhase.toLowerCase();
       if (phase.includes('full')) {
-        parts.push('You dreamed this near a full moon — emotional material surfaces with maximum clarity during full moons. This dream arrived at the right time.');
+        parts.push('You dreamed this near a full moon: emotional material tends to surface more clearly around full moons. Treat this dream as worth your attention.');
       } else if (phase.includes('new')) {
-        parts.push('This dream arrived near a new moon — a seed phase. What it reveals may take weeks to fully unfold.');
+        parts.push('This dream arrived near a new moon: a seed phase. What it reveals may take weeks to fully unfold.');
       }
     }
   }
 
   if (symbols.length > 0) {
-    parts.push(`The symbols in this dream — ${symbols.slice(0, 3).map(s => s.symbol).join(', ')} — are not random selections. Your subconscious curated them specifically for you, from your specific life, at this specific moment.`);
+    parts.push(`The symbols in this dream (${symbols.slice(0, 3).map(s => s.symbol).join(', ')}) are not random selections. Your subconscious curated them specifically for you, from your specific life, at this specific moment.`);
   }
 
   if (!archetype) {
     if (input.dreamType === 'prophetic') {
       parts.push('Dreams that feel prophetic often tap into pattern recognition your conscious mind has not caught up with. Your intuition is reading the trajectory before your logic can.');
     } else if (input.dreamType === 'visitation') {
-      parts.push('Visitation dreams carry a different quality — vivid, emotionally clear, and often more real than waking life. If this felt like a genuine encounter, trust that feeling.');
+      parts.push('Visitation dreams carry a different quality: vivid, emotionally clear, and often more real than waking life. If this felt like a genuine encounter, trust that feeling.');
     }
 
     const emotionClose = input.emotions.length > 0
-      ? `Honor the ${input.emotions[0]} this dream brought up — it is not a symptom to fix, it is information to use.`
+      ? `Honor the ${input.emotions[0]} this dream brought up: it is not a symptom to fix, it is information to use.`
       : 'Sit with what this dream stirred in you. The residual feeling is the message distilled to its purest form.';
     parts.push(emotionClose);
   }
 
   if (parts.length === 0) {
-    parts.push('This dream chose you for a reason. The images will fade, but the feeling it left behind is the part worth keeping — let it guide you.');
+    parts.push('This dream chose you for a reason. The images will fade, but the feeling it left behind is the part worth keeping: let it guide you.');
   }
 
   return parts.join(' ');
+}
+
+function dreamOrdinal(n: number): string {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  const last = n % 10;
+  if (last === 1) return `${n}st`;
+  if (last === 2) return `${n}nd`;
+  if (last === 3) return `${n}rd`;
+  return `${n}th`;
 }
 
 // ── Astrological connection (kept separate for dedicated section) ─
 
 function buildAstrologicalConnection(astrology: DreamAstrologyContext | null): string {
   if (!astrology || !astrology.natalMoonSign) {
-    return 'Your astrological dream profile will appear here once your natal chart is connected. When active, Dream Oracle will cross-reference your dream symbols with your Moon sign, 12th house planets, Neptune placement, current transits, and progressed Moon — revealing why you dream what you dream, when you dream it.';
+    return 'Your astrological dream profile will appear here once your natal chart is connected. When active, Dream Oracle will cross-reference your dream symbols with your Moon sign, 12th house planets, Neptune placement, current transits, and progressed Moon: revealing why you dream what you dream, when you dream it.';
   }
 
   const parts: string[] = [];
-  parts.push(`Your natal Moon in ${astrology.natalMoonSign}${astrology.natalMoonHouse ? ` (${astrology.natalMoonHouse}th house)` : ''} shapes how you process dreams — it filters your unconscious through ${astrology.natalMoonSign} themes.`);
+  parts.push(`Your natal Moon in ${astrology.natalMoonSign}${astrology.natalMoonHouse ? ` (${dreamOrdinal(astrology.natalMoonHouse)} house)` : ''} shapes how you process dreams; it filters your unconscious through ${astrology.natalMoonSign} themes.`);
 
   if (astrology.twelfthHousePlanets && astrology.twelfthHousePlanets.length > 0) {
     parts.push(`Planets in your 12th house (${astrology.twelfthHousePlanets.join(', ')}) are permanent residents of your dream world. They color every dream you have.`);
@@ -505,13 +521,13 @@ function buildAstrologicalConnection(astrology: DreamAstrologyContext | null): s
     parts.push(`With Neptune in ${astrology.neptune.sign} in house ${astrology.neptune.house}, your dreams run vivid and strange, and you often know something before you can explain how.`);
   }
   if (astrology.pluto) {
-    parts.push(`Pluto in ${astrology.pluto.sign} (house ${astrology.pluto.house}) determines the depth and transformative power of your dreams.`);
+    parts.push(`Pluto in ${astrology.pluto.sign} (house ${astrology.pluto.house}) sets how deep and how heavy your dreams run.`);
   }
   if (astrology.currentMoonSign) {
     parts.push(`Tonight's Moon in ${astrology.currentMoonSign}${astrology.currentMoonPhase ? ` (${astrology.currentMoonPhase})` : ''} flavors the emotional texture of what you dreamed.`);
   }
   if (astrology.progressedMoonSign) {
-    parts.push(`Your progressed Moon in ${astrology.progressedMoonSign} reveals the longer emotional chapter you are living through — this dream is part of that arc.`);
+    parts.push(`Your progressed Moon in ${astrology.progressedMoonSign} reveals the longer emotional chapter you are living through: this dream is part of that arc.`);
   }
 
   return parts.join(' ');
@@ -523,28 +539,28 @@ function buildWhyNow(input: DreamInput, astrology: DreamAstrologyContext | null)
   const parts: string[] = [];
 
   if (input.intensityScore >= 8) {
-    parts.push('The intensity of this dream tells you it is not new material — it has been building. Your psyche chose now because the pressure reached a threshold.');
+    parts.push('The intensity of this dream tells you it is not new material: it has been building. Your psyche chose now because the pressure reached a threshold.');
   } else if (input.intensityScore >= 5) {
-    parts.push('This dream arrived because something in your recent waking life activated the pattern it describes — a conversation, a decision, a feeling you brushed past.');
+    parts.push('This dream arrived because something in your recent waking life activated the pattern it describes: a conversation, a decision, a feeling you brushed past.');
   } else {
-    parts.push('Low-intensity dreams are precise rather than loud. Something small but specific in your recent life triggered this — a moment you may have dismissed but your subconscious did not.');
+    parts.push('Low-intensity dreams are precise rather than loud. Something small but specific in your recent life triggered this: a moment you may have dismissed but your subconscious did not.');
   }
 
   if (input.dreamType === 'recurring') {
-    parts.push('A recurring dream means the trigger is not a single event — it is a pattern in your life that keeps recreating the same emotional conditions. The dream will stop when the pattern does.');
+    parts.push('A recurring dream means the trigger is not a single event: it is a pattern in your life that keeps recreating the same emotional conditions. The dream tends to ease when the pattern does.');
   }
 
   if (astrology) {
     if (astrology.currentMoonPhase) {
       const phase = astrology.currentMoonPhase.toLowerCase();
       if (phase.includes('full')) {
-        parts.push('The full moon amplifies emotional intensity and brings hidden material to the surface. Dreams during full moons are more vivid and symbolically concentrated.');
+        parts.push('The full moon amplifies emotional intensity and brings hidden material to the surface. Dreams around a full moon tend to feel more vivid.');
       } else if (phase.includes('new')) {
-        parts.push('New moons are seed phases — this dream may contain the embryo of something that will unfold over the coming lunar cycle.');
+        parts.push('New moons are seed phases: this dream may contain the embryo of something that will unfold over the coming lunar cycle.');
       }
     }
     if (astrology.activeTransits && astrology.activeTransits.length > 0) {
-      parts.push(`Active transits (${astrology.activeTransits.slice(0, 3).join('; ')}) are stirring the same themes this dream explores. The cosmic timing is not coincidental.`);
+      parts.push(`Active transits (${astrology.activeTransits.slice(0, 3).join('; ')}) are stirring the same themes this dream explores. The timing is worth noticing.`);
     }
   }
 
@@ -573,18 +589,18 @@ function buildReflectionQuestions(input: DreamInput, symbols: MatchedSymbol[], a
 
   if (archetype) {
     if (archetype === DREAM_ARCHETYPES.chase) {
-      questions.push('If you stopped running in the dream and turned around — what do you think you would see?');
+      questions.push('If you stopped running in the dream and turned around: what do you think you would see?');
     } else if (archetype === DREAM_ARCHETYPES.teeth) {
-      questions.push('What have you said recently — or failed to say — that is still sitting in your body?');
+      questions.push('What have you said recently, or failed to say, that is still sitting in your body?');
     } else if (archetype === DREAM_ARCHETYPES.ex) {
       questions.push('What version of yourself existed in that relationship that no longer exists now? Do you miss that version, or are you relieved they are gone?');
     } else if (archetype === DREAM_ARCHETYPES.house) {
-      questions.push('If your dream house is a map of your inner world, which room were you drawn to — and which did you avoid?');
+      questions.push('If your dream house is a map of your inner world, which room were you drawn to, and which did you avoid?');
     }
   }
 
   if (input.dreamType === 'nightmare') {
-    questions.push('What is the worst thing that happens if the nightmare scenario comes true — and what is the worst thing that happens if you keep avoiding what it represents?');
+    questions.push('What is the worst thing that happens if the nightmare scenario comes true, and what is the worst thing that happens if you keep avoiding what it represents?');
   }
 
   if (input.dreamType === 'recurring') {
@@ -609,22 +625,22 @@ function buildWatchFor(input: DreamInput, symbols: MatchedSymbol[]): string {
 
   if (symbols.length > 0) {
     const names = symbols.slice(0, 3).map(s => s.symbol.toLowerCase()).join(', ');
-    items.push(`Real-world appearances of ${names} — synchronicities are the waking world echoing what the dream revealed`);
+    items.push(`Real-world appearances of ${names}: synchronicities are the waking world echoing what the dream revealed`);
   }
 
   if (input.emotions.includes('fear') || input.emotions.includes('anxiety')) {
-    items.push('Moments where the same fear surfaces during the day — that is the bridge between your dream self and your waking self');
+    items.push('Moments where the same fear surfaces during the day: that is the bridge between your dream self and your waking self');
   }
 
   if (input.emotions.includes('love') || input.emotions.includes('bliss') || input.emotions.includes('peace')) {
-    items.push('Moments of unexpected warmth or calm — the dream may have opened a channel that continues to flow');
+    items.push('Moments of unexpected warmth or calm: the dream may have opened a channel that continues to flow');
   }
 
   if (input.dreamType === 'prophetic') {
-    items.push('Events that echo the dream\'s scenario — note them when they occur, even if the connection seems loose');
+    items.push('Events that echo the dream\'s scenario: note them when they occur, even if the connection seems loose');
   }
 
-  items.push('Dreams tonight and tomorrow — dreams often arrive in sequences, and the next one may complete what this one started');
+  items.push('Dreams tonight and tomorrow: dreams often arrive in sequences, and the next one may complete what this one started');
 
   return 'In the coming days, pay attention to: ' + items.join('; ') + '.';
 }
@@ -634,22 +650,22 @@ function buildWatchFor(input: DreamInput, symbols: MatchedSymbol[]): string {
 function buildWhatToDo(input: DreamInput): string {
   const actions: string[] = [];
 
-  actions.push('Write this dream down in full detail — the act of writing anchors the message and prevents it from dissolving');
+  actions.push('Write this dream down in full detail: the act of writing anchors the message and prevents it from dissolving');
 
   if (input.intensityScore >= 7) {
-    actions.push('Sit with this dream for a few minutes before starting your day — high-intensity dreams need space before the conscious mind takes over');
+    actions.push('Sit with this dream for a few minutes before starting your day: high-intensity dreams need space before the conscious mind takes over');
   }
 
   if (input.emotions.includes('fear') || input.emotions.includes('anger') || input.emotions.includes('grief') || input.emotions.includes('sadness')) {
-    actions.push('Let yourself feel what the dream brought up without judging it — the emotion is information, not a problem to solve');
+    actions.push('Let yourself feel what the dream brought up without judging it: the emotion is information, not a problem to solve');
   }
 
   if (input.dreamType === 'lucid') {
-    actions.push('Before sleeping tonight, set an intention to return to this dream — your lucid capacity gives you the ability to go deeper');
+    actions.push('Before sleeping tonight, set an intention to return to this dream: your lucid capacity gives you the ability to go deeper');
   }
 
   if (input.dreamType === 'visitation') {
-    actions.push('Speak to the person who visited — out loud, in a journal, or silently. Say what was left unsaid');
+    actions.push('Speak to the person who visited: out loud, in a journal, or silently. Say what was left unsaid');
   }
 
   actions.push('Return to the Dream Oracle before bed tonight and notice if the next dream continues the conversation');

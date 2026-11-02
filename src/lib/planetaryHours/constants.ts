@@ -103,7 +103,7 @@ export const PLANET_MEANINGS: Record<RulerName, PlanetMeaning> = {
     bestFor: ['Family conversations', 'Home-related decisions', 'Cooking and nourishing', 'Journaling and reflection', 'Connecting with women', 'Real estate matters', 'Emotional healing'],
     avoid: ['Making permanent decisions from emotion', 'Confrontation', 'Signing binding contracts'],
     energy: 'Yin: you take things in',
-    guidance: 'Check how you actually feel before you decide anything. Call someone at home, cook, journal, deal with the family thing. Hold off on signing or sending anything final, because tonight\'s mood will not be Thursday\'s.',
+    guidance: 'Check how you actually feel before you decide anything. Call someone at home, cook, journal, deal with the family thing. Hold off on signing or sending anything final, because tonight\'s mood will not be tomorrow\'s.',
     color: '#C4B5FD',
     dayType: 'Reflection',
   },
@@ -111,7 +111,7 @@ export const PLANET_MEANINGS: Record<RulerName, PlanetMeaning> = {
     ruler: 'Mars',
     sign: 'Aries',
     quality: 'You have nerve and a short fuse',
-    bestFor: ['Physical exercise', 'Starting battles you intend to win', 'Surgery', 'Mechanical work', 'Competitive activities', 'Cutting ties', 'Confronting problems head-on'],
+    bestFor: ['Physical exercise', 'Starting battles you intend to win', 'Hard physical jobs', 'Mechanical work', 'Competitive activities', 'Cutting ties', 'Confronting problems head-on'],
     avoid: ['Passive activities', 'Negotiations requiring diplomacy', 'Starting relationships', 'Signing peace agreements'],
     energy: 'Yang: you push, fast and hot',
     guidance: 'Do the thing you keep putting off that takes nerve: the hard workout, the confrontation, the cut. Say it once and plainly. The cost is the sharp reply you will wish you had held back, so do not start a fight you would not finish tomorrow.',
@@ -221,7 +221,7 @@ export const PLANET_MEANINGS: Record<RulerName, PlanetMeaning> = {
 
 // ── Ruler Meanings (from galacticClockConstants.ts - used for clock interpretation) ──
 export const RULER_MEANINGS: Record<RulerName, { keywords: string; essence: string; color: string; glyph: string }> = {
-  Mars:    { keywords: 'starting things, fights, training, nerve', essence: 'the push to start things, and the temper that comes with it', color: '#EF4444', glyph: '♂' },
+  Mars:    { keywords: 'starting things, fights, training, nerve', essence: 'the push to start things and the temper that comes with it', color: '#EF4444', glyph: '♂' },
   Venus:   { keywords: 'dates, art, spending, making up', essence: 'the pull toward people, pleasure and money', color: '#F472B6', glyph: '♀' },
   Mercury: { keywords: 'emails, calls, deals, studying', essence: 'talking, writing and deciding fast', color: '#6EE7B7', glyph: '☿' },
   Moon:    { keywords: 'moods, home, family, gut reads', essence: 'mood, memory and who you need close', color: '#C4B5FD', glyph: '☽' },

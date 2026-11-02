@@ -797,7 +797,7 @@ export const PLANET_HOUSE_VOICE: Record<string, PlanetHouseVoice> = {
     "sections": [
       {
         "heading": "Life Areas & Gifts",
-        "body": "You are lucky in first impressions. Your optimism is real, and people lean in when you describe what is possible. You take chances other people avoid, and more of them land than should. Teaching, selling, travel, public speaking and leadership roles fit you, and your body tends to be big in some way, whether in height, frame or presence."
+        "body": "You are lucky in first impressions. Your optimism is real, and people lean in when you describe what is possible. You take chances other people avoid, and more of them land than should. Teaching, selling, travel, public speaking and leadership roles fit you, and you take up room when you speak."
       },
       {
         "heading": "Challenges & Growth",
@@ -875,7 +875,7 @@ export const PLANET_HOUSE_VOICE: Record<string, PlanetHouseVoice> = {
     "sections": [
       {
         "heading": "Life Areas & Gifts",
-        "body": "You attract capable, kind and often well-off partners and business associates. Marriage and long partnerships tend to raise your standard of living and widen your world. You are fair in negotiation and good at making both sides feel heard, which suits law, counselling and diplomacy. You expect the best from people and often receive it."
+        "body": "You attract capable, kind and often generous partners and business associates. Marriage and long partnerships tend to raise your standard of living and widen your world. You are fair in negotiation and good at making both sides feel heard, which suits law, counselling and diplomacy. You expect the best from people and often receive it."
       },
       {
         "heading": "Challenges & Growth",
@@ -888,7 +888,7 @@ export const PLANET_HOUSE_VOICE: Record<string, PlanetHouseVoice> = {
     "sections": [
       {
         "heading": "Life Areas & Gifts",
-        "body": "Money from other people, such as a partner's income, an inheritance, a loan, an investor or insurance, arrives when you need it. You handle loss and change calmly, and people turn to you in hard times. Finance, research, therapy, medicine and anything involving other people's money fit you. You are open about sex and intimacy and you want a bond that goes beyond surface."
+        "body": "Money from other people, such as a partner's income, an inheritance, a loan, an investor or insurance, has a way of turning up when you need it. You handle loss and change calmly, and people turn to you in hard times. Finance, research, therapy, medicine and anything involving other people's money fit you. You are open about sex and intimacy and you want a bond that goes beyond surface."
       },
       {
         "heading": "Challenges & Growth",
@@ -1048,7 +1048,7 @@ export const PLANET_HOUSE_VOICE: Record<string, PlanetHouseVoice> = {
       },
       {
         "heading": "Challenges & Growth",
-        "body": "Trust has to be earned in installments, which means a partner can feel interrogated about money, exes or the past. You may avoid intimacy or sex until you feel absolutely safe, and that moment keeps moving. You carry fear of loss and control, so you hoard, you plan for disaster and you refuse help from a spouse or family. A debt, an inheritance dispute or a bereavement can sit unresolved for years because you will not talk about it. Say the money number or the fear out loud to one person you trust, and the grip loosens by half."
+        "body": "Trust has to be earned in installments, which means a partner can feel interrogated about money, exes or the past. You may avoid intimacy or sex until you feel absolutely safe, and that moment keeps moving. You carry fear of loss and control, so you hoard, you plan for disaster and you refuse help from a spouse or family. A debt, an inheritance dispute or a bereavement can sit unresolved for years because you will not talk about it. Say the money number or the fear out loud to one person you trust, and the grip loosens."
       }
     ]
   },
@@ -1070,7 +1070,7 @@ export const PLANET_HOUSE_VOICE: Record<string, PlanetHouseVoice> = {
     "sections": [
       {
         "heading": "Life Areas & Gifts",
-        "body": "You climb steadily and get promoted for reliability more than for flash. People see you as the person in charge before you hold the title, and when you finally do hold it you run things well. You are strong in management, public roles, building a business or anything where reputation is built over decades. Your peak comes late, after fifty for many people, and it lasts longer than the quick starters' careers."
+        "body": "You climb steadily and get promoted for reliability more than for flash. People see you as the person in charge before you hold the title, and when you finally do hold it you run things well. You are strong in management, public roles, building a business or anything where reputation is built over decades. Your peak tends to come late, and it lasts longer than the quick starters' careers."
       },
       {
         "heading": "Challenges & Growth",

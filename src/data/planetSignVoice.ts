@@ -42,7 +42,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
       "sections": [
         {
           "paragraphs": [
-            "You change things the slow way. You won't jump on a trend, but once you've decided the old arrangement doesn't work, you move your savings, your diet or your career for good and don't look back. The people around you your age do the same, which is why the changes you lived through stuck instead of fading.",
+            "You change things the slow way. You won't jump on a trend, but once you've decided the old arrangement doesn't work, you move your savings, your diet or your career for good and don't look back. People your age do the same, which is why the changes you lived through stuck instead of fading.",
             "You're drawn to what you can touch and grow: food, soil, cash, your own body. Whatever new way of paying, eating or staying healthy shows up, you test it on yourself first. You'd rather own a small thing outright than rent a big thing.",
             "What shakes you is losing a sense of safety you thought was permanent. A job disappears, prices jump, a savings plan collapses, and you're forced to learn that comfort you can lose is not security. You come out of it more flexible than you wanted to be."
           ]
@@ -549,7 +549,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "Your sense of the sacred shows up in the crowd. A million people feeling the same thing at once, a message from a stranger on another continent, a movement that forms overnight. You feel something bigger than yourself in the network.",
-            "You dream of an awake humanity, of technology that serves attention and not steals it, and of a world where the line between my feelings and ours turns transparent. It is an idealistic picture and you hold it sincerely.",
+            "You dream of an awake humanity, of technology that serves attention instead of stealing it, and of a world where the line between my feelings and ours turns transparent. It is an idealistic picture and you hold it sincerely.",
             "You pick up the mood of the moment before it has a name. You sense where the collective is heading and turn it into something people can use, a project, a post, a cause."
           ]
         },
@@ -797,7 +797,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Your generation has killed and been killed for things people called truth. You have seen a good idea turn ugly the day somebody was told they had to hold it. You are wary of the person who says they have the answer, and sometimes that person is you.",
+            "Your generation has watched people kill and die for things they called truth. You have seen a good idea turn ugly the day somebody was told they had to hold it. You are wary of the person who says they have the answer, and sometimes that person is you.",
             "The better skill is to believe something fully while keeping the door open. You say what you hold, and you say you could be wrong, in the same breath. People trust that more than any speech."
           ]
         },
@@ -858,7 +858,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
       ]
     },
     "pisces": {
-      "intro": "You feel the edge of things where the rest of us stop. Your generation grew up around dissolving certainties, spiritual hunger and a world that is hard to bear while awake, and you have a strong pull to leave it.",
+      "intro": "You feel the edge of things where the rest of us stop. Your generation grew up around dissolving certainties, spiritual hunger and a world that is hard to bear while awake, and you feel a strong pull to escape it.",
       "sections": [
         {
           "paragraphs": [
@@ -1159,7 +1159,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
       ]
     },
     "pisces": {
-      "intro": "You feel too much and have never found a good place to put it. The world seems rough and you have wanted to leave it, one way or another. When you learn to feel everything without drowning, your presence becomes the thing people remember as healing.",
+      "intro": "You feel too much and have never found a good place to put it. The world seems rough and you have wanted to check out of it, one way or another. When you learn to feel everything without drowning, your presence becomes the thing people remember as healing.",
       "sections": [
         {
           "paragraphs": [
@@ -1204,7 +1204,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "The person who holds you is athletic or at least restless, ambitious, and not afraid of your temper. They can take a blunt sentence without crumbling, and they can give one back. Competition at the tennis court or over a board game is part of how you flirt, and you keep flirting for decades.",
-            "You tend to commit early and sometimes too early, starting with a fireworks courtship and a quick yes. If the first partner can't keep up with your pace and your need for space, you leave cleanly and may marry again. The marriages that last are the ones where you are still being courted in year twenty and still doing some of the chasing yourself."
+            "You tend to commit early and sometimes too early, starting with a fireworks courtship and a quick yes. If the first partner can't keep up with your pace and your need for space, you leave cleanly and start again. The marriages that last are the ones where you are still being courted in year twenty and still doing some of the chasing yourself."
           ]
         }
       ]
@@ -1577,7 +1577,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "Your devotion is a calling to create. You do not treat art, performance or playfulness as a hobby; they are your prayer, and you believe a courageous piece of honest work can do more for people than a sermon.",
-            "You do it in the open. You put the light on a pedestal and you tend it with pride. An opening night feels like a ceremony, a finished painting feels like an offering, and a shared laugh in a full room feels like communion.",
+            "You do it in the open. You stand in the light and tend it with pride. An opening night feels like a ceremony, a finished painting feels like an offering, and a shared laugh in a full room feels like communion.",
             "The shadow is the applause. You start adjusting the work to the response, polishing for the crowd, and when the room is quiet you take it as an insult. The fix is to go back to a day when you made something for nobody and remember how that felt."
           ]
         },
@@ -1802,8 +1802,8 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "What frightens you is the flat stretch after a crisis ends. You catch yourself starting an argument, checking someone's phone, or deciding the job is secretly terrible, just to bring the volume back up. Sitting through the quiet without sabotaging it is the work.",
-            "Life tends to cut your supply of drama. The friend who fed on it moves away, the relationship that only worked at full intensity runs out of fuel, money gets tight in a way that only patience can fix. It feels like loss before it feels like relief.",
+            "The flat stretch after a crisis ends is what frightens you. You catch yourself starting an argument, checking someone's phone, or deciding the job is secretly terrible, just to bring the volume back up. Sitting through the quiet without sabotaging it is the work.",
+            "Your supply of drama keeps getting cut. The friend who fed on it moves away, the relationship that only worked at full intensity runs out of fuel, money gets tight in a way that only patience can fix. It feels like loss before it feels like relief.",
             "Money and possessions are part of it. You are used to leaning on other people's resources or emotional energy. Earning your own steady income and learning what you like to spend it on is slower than borrowing, and a lot more yours."
           ]
         },
@@ -1853,7 +1853,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What frightens you is the moment you stop managing and start feeling. You hold it together at the funeral and fall apart at the car wash two weeks later. Letting it show in the room, in front of someone, is the unfamiliar part.",
-            "Life tends to take the armour off for you. A child arrives, a parent gets sick, an injury leaves you relying on others for a month. You hate it at first and later realise those were the weeks you felt closest to anyone.",
+            "Life tends to take the armour off for you. A new baby in the family, a parent who needs care, an injury that leaves you relying on others for a month. You hate it at first and later realise those were the weeks you felt closest to anyone.",
             "Home is part of this too. You are asked to make a place and a family, chosen or born, that you actually return to, instead of a CV that happens to have an address attached."
           ]
         },
@@ -1878,7 +1878,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What scares you is the clap that comes after. Praise makes you deflect, change the subject or credit the team before anyone finishes the sentence. Standing there and saying thank you, I worked hard on that, is harder than the work was.",
-            "Life tends to hand you a stage you did not ask for. A promotion that makes you the lead, a creative project that cannot be delegated, a crush that requires you to say so first. Hiding behind we stops working.",
+            "A stage turns up that you did not ask for. A promotion that makes you the lead, a creative project that cannot be delegated, a crush that requires you to say so first. Hiding behind we stops working.",
             "Play is part of it. You tend to approve of fun once the cause is good enough. Doing something just because it delights you, and letting others watch, is the actual assignment."
           ]
         },
@@ -1902,7 +1902,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "What frightens you is being measured. Vague potential is safe, because nobody can say you failed at it. Handing over a finished report, a plan or a recipe that can be judged is exposing in a way daydreaming never was.",
+            "Being measured is what frightens you. Vague potential is safe, because nobody can say you failed at it. Handing over a finished report, a plan or a recipe that can be judged is exposing in a way daydreaming never was.",
             "Life tends to demand detail. A job that needs accuracy, a body that insists on sleep and decent food, a relationship where the other person needs you to do the dishes, not just understand their feelings.",
             "Boundaries are part of it. You are used to saying yes to every sad story and then disappearing. Learning to help in specific, limited ways, and to say what you can and cannot do this week, feels cold and works much better."
           ]
@@ -1928,7 +1928,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What scares you is depending on someone and being let down. Doing it yourself is safe because the only person who can fail you is you. Leaving a thing half decided so the other person can weigh in feels like handing over a weapon.",
-            "Life tends to put you in two-person situations. A relationship that will not work on your terms alone, a business partner, a friend who says, I need you to listen, not fix. Your usual solo move gets a polite no.",
+            "You keep landing in two-person situations. A relationship that will not work on your terms alone, a business partner, a friend who says, I need you to listen, not fix. Your usual solo move gets a polite no.",
             "Fairness is the real test. You are used to winning arguments by volume or speed. Learning to lose a point gracefully, and to ask what the other person needs before you answer, is slower and strangely satisfying."
           ]
         },
@@ -1953,7 +1953,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What frightens you is not being in charge of the outcome. You like to have the savings, the exit and the plan in your pocket before any feeling is allowed in. Handing someone your trust with no guarantee is the exact thing you avoid.",
-            "Life tends to take things away so you can see what is left. A job goes, a relationship ends, someone dies, money gets complicated with another person. You grieve properly and come out knowing more about yourself than any comfortable year taught you.",
+            "Life tends to take things away so you can see what is left. A job goes, a relationship ends, a loss arrives that you did not plan for, money gets complicated with another person. You grieve properly and come out knowing more about yourself than any comfortable year taught you.",
             "Your own dark moods are part of it. Jealousy, rage, wanting too much. You are used to sanding them off. Admitting them, to yourself first, and watching them lose their grip is the actual work."
           ]
         },
@@ -1966,7 +1966,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
       ]
     },
     "sagittarius": {
-      "intro": "You can tell me the three best sources on any topic and you still will not say what you think. Your life keeps pulling you to pick a side and go live on it.",
+      "intro": "You can name the three best sources on any topic and still not say what you think. Your life keeps pulling you to pick a side and go live on it.",
       "sections": [
         {
           "paragraphs": [
@@ -1978,7 +1978,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What scares you is being pinned down. Keeping every option alive felt like freedom, and it has been a quiet way of never risking a real no. Saying, this is my view, and hearing someone disagree, is a new kind of exposed.",
-            "Life tends to send you far from your usual circle. A trip with no itinerary, a teacher or friend from a completely different culture, a course that requires you to stretch your theories to fit somebody else's world.",
+            "You get sent far from your usual circle. A trip with no itinerary, a teacher or friend from a completely different culture, a course that requires you to stretch your theories to fit somebody else's world.",
             "Trust is part of it. You are used to checking everything twice. Taking a step on a hunch, without the second source, is the practice. Some of the time you will be wrong and the ground will still be there."
           ]
         },
@@ -2002,8 +2002,8 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "What frightens you is the cold. Ambition feels like leaving home, and you worry you will lose the people who loved you for being easy and available. You also fear failing publicly, because nobody has ever seen you in that position.",
-            "Life tends to push you out of the nest. A family move, a parent who can no longer be leaned on, a job offer that is bigger than you feel. The old comfort zone shrinks and the next step is up.",
+            "The cold is what frightens you. Ambition feels like leaving home, and you worry you will lose the people who loved you for being easy and available. You also fear failing publicly, because nobody has ever seen you in that position.",
+            "Something pushes you out of the nest. A family move, a parent who can no longer be leaned on, a job offer that is bigger than you feel. The old comfort zone shrinks and the next step is up.",
             "Discipline is the other half. You are used to acting on how you feel. Doing the thing at the scheduled time, every week, whether or not the mood is right, is a skill you do not have yet and will be proud of."
           ]
         },
@@ -2028,7 +2028,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What scares you is going unnoticed. When you contribute and nobody claps, you feel the old drop in your stomach. Doing the unseen work, and being fine about it, is the exercise.",
-            "Life tends to enrol you in groups. A team where you are not the lead, a cause that matters more than your mood, friends who have strong opinions that do not centre you. You find out who you are when you are not the star.",
+            "You get enrolled in groups. A team where you are not the lead, a cause that matters more than your mood, friends who have strong opinions that do not centre you. You find out who you are when you are not the star.",
             "Your own ideas are part of it. You are used to staying with what is tried and flattering. Offering something odd, early and unfinished, and letting the group pull it apart, is the risk."
           ]
         },
@@ -2053,7 +2053,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         {
           "paragraphs": [
             "What frightens you is not knowing. You want to understand why a friend is upset, what the diagnosis means, how the year will go, and you grip the question tighter as the answer slips. Staying with the mystery feels like negligence.",
-            "Life tends to bring situations no checklist covers. A grief, a sudden intuition that proves right, a creative idea that arrives when you stop pushing. You are asked to follow it before it makes sense.",
+            "Situations turn up that no checklist covers. A grief, a sudden intuition that proves right, a creative idea that arrives when you stop pushing. You are asked to follow it before it makes sense.",
             "Perfectionism is part of it. The inner editor marks every conversation after it ends. Letting a sentence stay clumsy, and a friend see you confused, is the new move."
           ]
         },
@@ -2104,7 +2104,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you retreat into the familiar. The same meal, the same chair, another online order, extra sleep. Comfort works in the moment and then becomes the reason nothing moves.",
+            "When things get hard you retreat into the familiar. The same meal, the same chair, another online order, extra sleep. Comfort works in the moment and then becomes the reason nothing moves.",
             "You like things predictable. A change of plan, a surprise, someone else's feelings landing on you uninvited, all feel like an intrusion. You can dig in so hard that you miss the good thing arriving through the door you refused to open.",
             "You do things on your own resources. You pay for it yourself, fix it yourself and do not like sharing an account or owing a favour. It looks like independence and it often hides a fear of depending on anyone."
           ]
@@ -2129,7 +2129,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you research. You read five articles, ask three friends, make a list of pros and cons and still have not decided. Gathering information feels like progress while it mostly delays the moment you have to choose.",
+            "When pressure hits, you research. You read five articles, ask three friends, make a list of pros and cons and still have not decided. Gathering information feels like progress while it mostly delays the moment you have to choose.",
             "You keep options open. On the other hand is your favourite phrase, because as long as there is another side to consider you do not have to commit. Plans stay tentative, promises stay vague, and people sometimes feel they never got a straight answer.",
             "You are wide and not deep. A hundred tabs, ten half-learned hobbies, a conversation that touches everything and settles on nothing. Going deep on one subject would mean being stuck with it, and that is the part that you avoid."
           ]
@@ -2179,7 +2179,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you look for the audience. A text for reassurance, a post, a dramatic entrance, a big gesture. Being the main character is where you feel safe, and being one of the crowd feels like fading.",
+            "Pressure sends you looking for an audience. A text for reassurance, a post, a dramatic entrance, a big gesture. Being the main character is where you feel safe, and being one of the crowd feels like fading.",
             "You like to be admired. When someone else takes the spotlight, even briefly, something tight goes through you. You steer the conversation back, finish the story for them or take over the project before you have noticed.",
             "You use drama as a way to stay relevant. Not cruelly, but a row, a sulk or a grand apology keeps everyone looking at you. Quiet, ordinary contribution feels like disappearing."
           ]
@@ -2199,7 +2199,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
           "paragraphs": [
             "You notice detail. The error in the contract, the number that does not add up, the thing on the shelf that is slightly out of place. You see it before anyone has finished talking.",
             "You make systems better. A messy spreadsheet, a clunky morning routine, a team that wastes time. You tidy, simplify and improve without being asked, and the whole place runs smoother after you leave.",
-            "You know bodies. You can tell what a symptom needs, which herb or food or stretch to try, when to rest. People ask you what they should do about their back, their sleep, their stomach."
+            "You pay attention to bodies. You notice when someone is run down and what usually helps them: a meal, a stretch, an early night. People ask you about their back, their sleep, their stomach."
           ]
         },
         {
@@ -2229,7 +2229,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you please. You say what people want to hear, hold back your opinion and agree to the plan you dislike. The evening goes well, and you go home a little smaller.",
+            "When it gets tense, you please. You say what people want to hear, hold back your opinion and agree to the plan you dislike. The evening goes well, and you go home a little smaller.",
             "You are most comfortable in a pair. Being single can feel like standing on the edge of something, so you move from one relationship to the next or stay in the wrong one because the alternative is too quiet.",
             "You see every side. It makes you fair and it also makes you slow. Asked what you want for dinner, you say anything, and the habit has spread to bigger questions, so other people end up deciding for you."
           ]
@@ -2247,7 +2247,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
       "sections": [
         {
           "paragraphs": [
-            "You read people. A shift in tone, a pause too long, an answer that does not match the face. You know when someone is lying, usually before they know it themselves.",
+            "You read people. A shift in tone, a pause too long, an answer that does not match the face. You sense when someone is lying, often before they admit it to themselves.",
             "You handle the dark topics. Death, money, sex, betrayal, a family secret. Others change the subject, and you ask the real question and stay for the answer.",
             "You get through crises. When something breaks, the job, a relationship, a diagnosis, you are steady in a way that surprises people, and you come out changed. Rebuilding is something you have done more than once."
           ]
@@ -2279,7 +2279,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you go big. A philosophy, a move abroad, a new plan for the year. Anything to avoid the dull detail of what is in front of you today, the form, the bill, the awkward email.",
+            "When life gets tight you go big. A philosophy, a move abroad, a new plan for the year. Anything to avoid the dull detail of what is in front of you today, the form, the bill, the awkward email.",
             "You like being the one who knows. Giving advice feels natural and asking for it feels like a step down. You have an answer ready, and the other person did not always want one.",
             "You use positivity to skip problems. Look on the bright side comes out so fast that a real worry never gets a hearing. A friend says it hurts, you say it will be fine, and they feel more alone."
           ]
@@ -2304,7 +2304,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you work more. The inbox, the project, the spreadsheet. Anything with a clear task and a result is easier than a feeling, and you disappear into it for weeks.",
+            "Pressure only makes you work more. The inbox, the project, the spreadsheet. Anything with a clear task and a result is easier than a feeling, and you disappear into it for weeks.",
             "You prefer control and clear rules. A boss, a plan, a role. A conversation with no agenda about how everyone is feeling leaves you quietly looking for the exit.",
             "You stay busy so nothing catches up with you. Your calendar is full and your needs are not on it. The tiredness, loneliness and wish to be looked after wait patiently in the background."
           ]
@@ -2354,7 +2354,7 @@ export const PLANET_SIGN_VOICE: Record<PlanetVoiceKey, Record<string, PlanetSign
         },
         {
           "paragraphs": [
-            "Under stress you disappear. Sleep, scrolling, wine, daydreams, a long spiritual retreat in your own head. The world feels too sharp, and fading is an easy option.",
+            "When it gets too much you disappear. Sleep, scrolling, wine, daydreams, a long spiritual retreat in your own head. The world feels too sharp, and fading is an easy option.",
             "You like things loose. No timetable, no inbox, no routine. Deadlines and admin feel like an insult to your soul, so bills pile up and appointments get missed.",
             "You say yes to everyone's pain. You lend money, take people in and listen at three in the morning, and call it love. Saying no feels unkind, even when you are running on empty."
           ]
