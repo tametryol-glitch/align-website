@@ -4,10 +4,12 @@ import type { Metadata } from 'next';
 import { PLANS } from '@/lib/plans';
 import { StoreBadges } from '@/components/marketing/StoreBadges';
 import { HeroChartPreview } from '@/components/marketing/HeroChartPreview';
+import { HeroSunTeaser } from '@/components/marketing/HeroSunTeaser';
 
 export const metadata: Metadata = {
   title: 'Align — AI Astrology, Natal Charts & Cosmic Compatibility',
   description: 'Professional-grade astrology powered by AI. Get your natal chart, check compatibility, explore 26+ readings, and join a cosmic community. Free to start.',
+  alternates: { canonical: 'https://aligncosmic.com' },
 };
 
 const FAQS = [
@@ -107,6 +109,7 @@ export default function LandingPage() {
             ☉ Try the Hidden Zodiac — free, no signup →
           </Link>
         </div>
+        <HeroSunTeaser />
         <StoreBadges className="mt-8" />
         <div className="mt-12">
           <HeroChartPreview />
@@ -271,7 +274,9 @@ export default function LandingPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
           {(Object.keys(PLANS) as Array<keyof typeof PLANS>).map((key) => {
             const plan = PLANS[key];
-            const highlighted = key === 'starter';
+            // Light is the anchor on every page: the cheapest tier that works
+            // end-to-end through checkout (see pricing/page.tsx).
+            const highlighted = key === 'light';
             return (
               <Link
                 key={key}

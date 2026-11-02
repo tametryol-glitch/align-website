@@ -35,6 +35,13 @@ const CHART_LINKS = [
   { href: '/chart/saved', label: 'Saved Charts', icon: Save, desc: 'Friends & family charts' },
 ];
 
+// Points that only exist once the birth time is known. With an unknown
+// time the chart is cast for noon, so these would be invented.
+const TIME_DEPENDENT = new Set([
+  'Ascendant', 'MC', 'Descendant', 'IC', 'Vertex', 'Anti-Vertex',
+  'Part of Fortune', 'Part of Spirit',
+]);
+
 const TABS = ['Positions', 'Aspects', 'Houses', 'Patterns'] as const;
 const TAB_KEYS: Record<string, string> = {
   Positions: 'chart.positions',
@@ -56,6 +63,10 @@ export default function ChartPage() {
 
   const [birthDate, setBirthDate] = useState(profile?.birth_date || '');
   const [birthTime, setBirthTime] = useState(profile?.birth_time || '12:00');
+  // A saved profile without a birth time means the user does not know it.
+  const [timeUnknown, setTimeUnknown] = useState(!profile?.birth_time);
+  // What the chart on screen was actually cast with, fixed at calculation.
+  const [chartTimeUnknown, setChartTimeUnknown] = useState(false);
   const [birthLocation, setBirthLocation] = useState(profile?.birth_location || '');
   const [latitude, setLatitude] = useState<number | null>(profile?.latitude || null);
   const [longitude, setLongitude] = useState<number | null>(profile?.longitude || null);
@@ -69,6 +80,7 @@ export default function ChartPage() {
     if (profile) {
       setBirthDate(profile.birth_date || '');
       setBirthTime(profile.birth_time || '12:00');
+      setTimeUnknown(!profile.birth_time);
       setBirthLocation(profile.birth_location || '');
       setLatitude(profile.latitude || null);
       setLongitude(profile.longitude || null);
@@ -97,11 +109,12 @@ export default function ChartPage() {
         'campanus': 'Campanus', 'regiomontanus': 'Regiomontanus',
         'equal': 'Equal', 'porphyry': 'Porphyry', 'alcabitius': 'Alcabitius',
       };
-      const { offset, label } = resolveTimezoneOffset(timezone, longitude, birthDate, birthTime, latitude);
+      const castTime = timeUnknown ? '12:00' : birthTime;
+      const { offset, label } = resolveTimezoneOffset(timezone, longitude, birthDate, castTime, latitude);
       const data = await api.getNatalChart({
         name: profile?.display_name || '',
         date: birthDate,
-        time: birthTime,
+        time: castTime,
         latitude,
         longitude,
         timezone: label,
@@ -110,12 +123,22 @@ export default function ChartPage() {
         house_system: hsMap[houseSystem] || 'Whole Sign',
       });
       setChart(data);
+      setChartTimeUnknown(timeUnknown);
 
       // Keep the profile's Sun / Moon / Rising in step with the chart the
       // user is looking at — this is their own natal chart, and nothing else
       // in the app writes those columns.
       if (profile?.id) {
-        syncProfileSignsFromChart(profile.id, data, profile)
+        // An unknown time casts a noon chart, so its Ascendant is invented:
+        // strip it so a made-up Rising never lands on the profile.
+        const forSync = timeUnknown
+          ? {
+              ...data,
+              ascendant: undefined,
+              positions: (data.positions || []).filter((p: any) => p.name !== 'Ascendant'),
+            }
+          : data;
+        syncProfileSignsFromChart(profile.id, forSync, profile)
           .then((written) => {
             if (written) useAuthStore.getState().setProfile({ ...profile, ...written } as any);
           })
@@ -220,10 +243,20 @@ export default function ChartPage() {
                 type="time"
                 value={birthTime}
                 onChange={(e) => setBirthTime(e.target.value)}
-                className="input"
+                className="input disabled:opacity-40"
+                disabled={timeUnknown}
               />
             </div>
           </div>
+          <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+            <input
+              type="checkbox"
+              checked={timeUnknown}
+              onChange={(e) => setTimeUnknown(e.target.checked)}
+              className="accent-accent-primary"
+            />
+            I don&apos;t know my birth time
+          </label>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('onboarding.birthPlace')}</label>
             <CitySearch
@@ -243,6 +276,19 @@ export default function ChartPage() {
 
       {chart && wheelProps && (
         <div className="space-y-6">
+          {chartTimeUnknown && (
+            <div className="card border-gold-primary/30 bg-gold-primary/5 text-sm text-text-secondary space-y-1">
+              <p className="font-medium text-text-primary">Birth time unknown: showing a noon chart</p>
+              <p>
+                Your Rising sign, houses and angles depend on the exact time, so they are hidden
+                (the wheel&apos;s house lines are placeholders). Your Moon moves about 13° a day, so
+                its sign could differ if you were born near a sign change.
+              </p>
+              <Link href="/readings/rectification" className="text-accent-primary hover:underline inline-block">
+                Find your birth time &rarr;
+              </Link>
+            </div>
+          )}
           <div className="card flex items-center justify-center p-4">
             <NatalWheel
               planets={wheelProps.planets}
@@ -274,7 +320,11 @@ export default function ChartPage() {
                       </div>
                       <div>
                         <p className="text-xs text-text-muted uppercase tracking-wider">Rising</p>
-                        <p className="text-lg font-semibold text-text-primary">{getZodiacGlyph(asc?.sign)} {asc?.sign}</p>
+                        {chartTimeUnknown ? (
+                          <p className="text-sm text-text-muted pt-1">Needs birth time</p>
+                        ) : (
+                          <p className="text-lg font-semibold text-text-primary">{getZodiacGlyph(asc?.sign)} {asc?.sign}</p>
+                        )}
                       </div>
                     </>
                   );
@@ -284,7 +334,7 @@ export default function ChartPage() {
           )}
 
           <div className="flex border-b border-border-primary overflow-x-auto scrollbar-hide">
-            {TABS.map((tab) => (
+            {TABS.filter((tab) => !(chartTimeUnknown && tab === 'Houses')).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -306,7 +356,7 @@ export default function ChartPage() {
           {activeTab === 'Positions' && (
             <div className="card">
               <div className="divide-y divide-border-primary">
-                {chart.positions?.map((planet: any) => (
+                {chart.positions?.filter((p: any) => !(chartTimeUnknown && TIME_DEPENDENT.has(p.name))).map((planet: any) => (
                   <div key={planet.name}>
                     <div
                       className="flex items-center gap-3 py-3 px-1 cursor-pointer hover:bg-bg-tertiary/50 rounded-lg transition-colors"
@@ -325,7 +375,7 @@ export default function ChartPage() {
                         {planet.sign_degree?.toFixed(2)}°
                       </span>
                       <span className="text-text-muted text-sm w-12 text-right">
-                        H{planet.house}
+                        {chartTimeUnknown ? '' : `H${planet.house}`}
                       </span>
                       {planet.is_retrograde && (
                         <span className="text-xs text-gold-primary font-semibold">&#x211E;</span>
@@ -334,7 +384,7 @@ export default function ChartPage() {
                     </div>
                     {expandedPositions.has(planet.name) && (
                       <div className="px-4 pb-4 pt-1 text-sm text-text-secondary leading-relaxed whitespace-pre-line border-l-2 border-accent-primary/20 ml-4">
-                        <MarkdownText text={getPlacementInterpretation(planet.name, planet.sign, planet.house, planet.sign_degree)} />
+                        <MarkdownText text={getPlacementInterpretation(planet.name, planet.sign, chartTimeUnknown ? 0 : planet.house, planet.sign_degree)} />
                         {(() => {
                           // Null when no page exists, so we never render a link
                           // into the 404 page rather than an explanation.
@@ -360,7 +410,9 @@ export default function ChartPage() {
           {activeTab === 'Aspects' && chart.aspects && (
             <div className="card">
               <div className="divide-y divide-border-primary">
-                {chart.aspects.map((aspect: any, i: number) => (
+                {chart.aspects
+                  .filter((a: any) => !(chartTimeUnknown && (TIME_DEPENDENT.has(a.body1) || TIME_DEPENDENT.has(a.body2))))
+                  .map((aspect: any, i: number) => (
                   <div key={i}>
                     <div
                       className="flex items-center gap-3 py-3 px-1 cursor-pointer hover:bg-bg-tertiary/50 rounded-lg transition-colors"
@@ -390,7 +442,7 @@ export default function ChartPage() {
             </div>
           )}
 
-          {activeTab === 'Houses' && houses.length > 0 && (
+          {activeTab === 'Houses' && !chartTimeUnknown && houses.length > 0 && (
             <div className="card">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-border-primary/50 rounded-xl overflow-hidden">
                 {houses.map((house) => (

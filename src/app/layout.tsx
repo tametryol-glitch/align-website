@@ -50,17 +50,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  alternates: {
-    canonical: 'https://aligncosmic.com',
-    languages: {
-      'en': 'https://aligncosmic.com',
-      'es': 'https://aligncosmic.com/es',
-      'pt': 'https://aligncosmic.com/pt',
-      'fr': 'https://aligncosmic.com/fr',
-      'hi': 'https://aligncosmic.com/hi',
-      'x-default': 'https://aligncosmic.com',
-    },
-  },
+  // No site-wide canonical or hreflang here: a child page without its own
+  // alternates would inherit them and claim to be the homepage, and the
+  // /es /pt /fr /hi paths they pointed at do not exist for the home page.
+  // Pages that need a canonical set their own.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

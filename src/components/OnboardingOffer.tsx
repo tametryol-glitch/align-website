@@ -32,8 +32,8 @@ import { getAffiliateName } from '@/lib/affiliateService';
 /** Plans that go through Stripe Checkout, so the affiliate coupon + the
  *  commission metadata both attach. Order = cheapest first. */
 const OFFER_PLANS = [
-  { key: 'light', icon: Sparkles },
-  { key: 'premium', icon: Zap, highlighted: true },
+  { key: 'light', icon: Sparkles, highlighted: true },
+  { key: 'premium', icon: Zap },
   { key: 'pro', icon: Crown },
 ] as const;
 
@@ -159,10 +159,10 @@ export default function OnboardingOffer({ firstName }: { firstName?: string }) {
           {t('onboarding.offer.seeAllPlans', 'See all plans, including the free one →')}
         </button>
         <button
-          onClick={() => router.push('/feed')}
-          className="btn-ghost w-full text-sm text-text-muted mt-3"
+          onClick={() => router.push('/your-day')}
+          className="btn-secondary w-full mt-3"
         >
-          {t('onboarding.offer.later', 'Maybe later — take me to my feed')}
+          {t('onboarding.offer.later', 'Continue free — show me my day')}
         </button>
         <p className="text-[10px] text-text-muted mt-2">
           {t('onboarding.offer.cancelAnytime', 'Cancel anytime. Your free account keeps working either way.')}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -47,7 +47,9 @@ export default function OnboardingPage() {
   const { t } = useTranslation();
   const { user, setProfile, profile } = useAuthStore();
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  // Starts at the name step: the welcome screen was a pure click-through.
+  const [step, setStep] = useState(1);
+  const nameSkipped = useRef(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
@@ -89,7 +91,13 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || '');
-      setBirthDate(profile.birth_date || '');
+      // A date typed into the landing-page teaser carries over so it is not asked twice.
+      let prefill = '';
+      try {
+        const saved = localStorage.getItem('align_prefill_birth_date') || '';
+        if (isValidBirthDate(saved)) prefill = saved;
+      } catch {}
+      setBirthDate(profile.birth_date || prefill);
       setBirthTime(profile.birth_time || '');
       setBirthLocation(profile.birth_location || '');
       setLatitude(profile.latitude || null);
@@ -97,6 +105,15 @@ export default function OnboardingPage() {
       setTimezone(profile.timezone || '');
     }
   }, [profile]);
+
+  // Signup already collected a name, so do not ask for it a second time. Only
+  // once: going Back from the birth date lets them edit it.
+  useEffect(() => {
+    if (step === 1 && !nameSkipped.current && displayName.trim()) {
+      nameSkipped.current = true;
+      setStep(2);
+    }
+  }, [step, displayName]);
 
   async function saveProfile(): Promise<boolean> {
     if (!user) {
@@ -181,26 +198,39 @@ export default function OnboardingPage() {
 
         if (sun?.sign) setSunSign(sun.sign);
         if (moon?.sign) setMoonSign(moon.sign);
-        if (asc?.sign) setRisingSign(asc.sign);
+        // Without a birth time the chart is cast for noon, so its Ascendant
+        // is invented. Only reveal a Rising sign they can actually trust.
+        if (asc?.sign && birthTime) setRisingSign(asc.sign);
 
         setChartLoading(false);
-        setStep(7);
-
-        // Stagger the reveal animations
-        setTimeout(() => setRevealVisible(v => ({ ...v, title: true })), 200);
-        setTimeout(() => setRevealVisible(v => ({ ...v, sun: true })), 800);
-        setTimeout(() => setRevealVisible(v => ({ ...v, moon: true })), 1600);
-        setTimeout(() => setRevealVisible(v => ({ ...v, rising: true })), 2400);
-        setTimeout(() => setRevealVisible(v => ({ ...v, element: true })), 3200);
-        setTimeout(() => setRevealVisible(v => ({ ...v, cta: true })), 3800);
+        startReveal();
         return;
       } catch (err) {
-        console.warn('[Onboarding] Chart fetch failed, skipping reveal:', err);
+        console.warn('[Onboarding] Chart fetch failed, falling back to Sun sign:', err);
         setChartLoading(false);
+        // Never drop a new user on the paywall without showing them
+        // something first: the Sun sign needs only the date.
+        const fallbackSun = getSunSign(birthDate);
+        if (fallbackSun) {
+          setSunSign(fallbackSun);
+          startReveal();
+          return;
+        }
       }
     }
 
     setStep(9);
+  }
+
+  function startReveal() {
+    setStep(7);
+    // Stagger the reveal animations
+    setTimeout(() => setRevealVisible(v => ({ ...v, title: true })), 200);
+    setTimeout(() => setRevealVisible(v => ({ ...v, sun: true })), 800);
+    setTimeout(() => setRevealVisible(v => ({ ...v, moon: true })), 1600);
+    setTimeout(() => setRevealVisible(v => ({ ...v, rising: true })), 2400);
+    setTimeout(() => setRevealVisible(v => ({ ...v, element: true })), 3200);
+    setTimeout(() => setRevealVisible(v => ({ ...v, cta: true })), 3800);
   }
 
   /** They don't know their time: go get the birth city, then the guide. */
@@ -254,7 +284,7 @@ export default function OnboardingPage() {
       setStep(2);
       return;
     }
-    if (step > 0) setStep(step - 1);
+    if (step > 1) setStep(step - 1);
   }
 
   // Step 6 estimates the Sun sign from the date alone. Step 7 replaces it with
@@ -585,7 +615,8 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Moon Sign Card */}
+              {/* Moon Sign Card (absent when the chart could not be fetched) */}
+              {moonSign && (
               <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.moon ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <div className={`bg-gradient-to-r ${ELEMENT_COLOR[SIGN_ELEMENT[moonSign] || 'Water']} rounded-2xl p-4 border text-left`}>
                   <div className="flex items-center gap-3 mb-2">
@@ -599,8 +630,20 @@ export default function OnboardingPage() {
                   <p className="text-xs text-text-secondary leading-relaxed">{t('onboarding.moonHeart.' + moonSign)}</p>
                 </div>
               </div>
+              )}
 
-              {/* Rising Sign Card */}
+              {/* Rising Sign Card: only with a known birth time */}
+              {!risingSign && (
+                <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.rising ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                  <div className="rounded-2xl p-4 border border-border-primary bg-bg-tertiary/50 text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{t('onboarding.yourRising')}</p>
+                    <p className="text-sm text-text-secondary mt-1">
+                      Your Rising sign needs your exact birth time. You can find it any time from your chart.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {risingSign && (
               <div className={`transition-all duration-700 ease-out mb-3 ${revealVisible.rising ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <div className={`bg-gradient-to-r ${ELEMENT_COLOR[SIGN_ELEMENT[risingSign] || 'Air']} rounded-2xl p-4 border text-left`}>
                   <div className="flex items-center gap-3 mb-2">
@@ -614,6 +657,7 @@ export default function OnboardingPage() {
                   <p className="text-xs text-text-secondary leading-relaxed">{t('onboarding.risingMask.' + risingSign)}</p>
                 </div>
               </div>
+              )}
 
               {/* Element Summary */}
               <div className={`transition-all duration-700 ease-out mb-4 ${revealVisible.element ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
@@ -657,8 +701,8 @@ export default function OnboardingPage() {
                 <BigThreeCard
                   displayName={displayName || 'Stargazer'}
                   sunSign={sunSign}
-                  moonSign={moonSign}
-                  risingSign={risingSign}
+                  moonSign={moonSign || '—'}
+                  risingSign={risingSign || '—'}
                   aspect="square"
                 />
               </div>
@@ -674,7 +718,11 @@ export default function OnboardingPage() {
                     });
                     const result = await shareCard(
                       'My Align Chart',
-                      `${displayName || 'My'} cosmic profile: ${sunSign} Sun, ${moonSign} Moon, ${risingSign} Rising`,
+                      `${displayName || 'My'} cosmic profile: ${[
+                        sunSign && `${sunSign} Sun`,
+                        moonSign && `${moonSign} Moon`,
+                        risingSign && `${risingSign} Rising`,
+                      ].filter(Boolean).join(', ')}`,
                       url,
                     );
                     if (result.copied) {
@@ -715,7 +763,7 @@ export default function OnboardingPage() {
                 See what you unlock
               </button>
               <button
-                onClick={() => router.push('/feed')}
+                onClick={() => router.push('/your-day')}
                 className="btn-ghost w-full text-sm text-text-muted"
               >
                 Skip
