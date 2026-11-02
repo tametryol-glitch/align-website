@@ -9,39 +9,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useMessagesStore } from '@/stores/messagesStore';
 import { useFriendsStore } from '@/stores/friendsStore';
 import { useViewBadge } from '@/hooks/useViewBadge';
-import {
-  Home, Star, BookOpen, MessageCircle, User,
-  CreditCard, Settings, Sparkles, Globe, Compass, Search,
-  Users, Bell, Mail, Zap, Video, Heart, MessagesSquare,
-  Bookmark, BarChart3, Palette, Orbit, DollarSign, Eye, Plus,
-} from 'lucide-react';
-
-const NAV_ITEMS = [
-  { href: '/feed', labelKey: 'components.sidebar.cosmicFeed', icon: Globe, coachmark: 'nav-feed' },
-  { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
-  { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
-  { href: '/search', labelKey: 'components.sidebar.search', icon: Search },
-  { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
-  { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
-  { href: '/zodisphere', labelKey: 'components.sidebar.zodisphere', icon: Orbit },
-  { href: '/chart', labelKey: 'components.sidebar.chart', icon: Star, coachmark: 'nav-chart' },
-  { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
-  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles, coachmark: 'nav-readings' },
-  { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
-  { href: '/polls', labelKey: 'components.sidebar.polls', icon: BarChart3 },
-  { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
-  { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
-  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
-  { href: '/messages', labelKey: 'components.sidebar.messages', icon: Mail },
-  { href: '/bookmarks', labelKey: 'components.sidebar.bookmarks', icon: Bookmark },
-  { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
-  { href: '/views', labelKey: 'views.nav', icon: Eye },
-  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle, coachmark: 'nav-ai-astrologer' },
-  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen, coachmark: 'nav-courses' },
-  { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
-  { href: '/affiliates', labelKey: 'components.sidebar.affiliates', icon: DollarSign },
-  { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
-];
+import { User, Settings, Plus } from 'lucide-react';
+import { NAV_SECTIONS, isActivePath } from './navConfig';
 
 export function Sidebar() {
   const { t } = useTranslation();
@@ -71,44 +40,54 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
-        {NAV_ITEMS.map(({ href, labelKey, icon: Icon, coachmark }) => {
-          const active = pathname === href || pathname.startsWith(href + '/');
-          const showBadge = href === '/messages' && totalUnread > 0;
-          const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
-          const showViewsBadge = href === '/views' && newViewers > 0;
-          return (
-            <Link
-              key={href}
-              href={href}
-              {...(coachmark ? { 'data-coachmark': coachmark } : {})}
-              className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all',
-                active
-                  ? 'bg-accent-muted text-accent-primary'
-                  : 'text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary'
-              )}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="flex-1">{t(labelKey)}</span>
-              {showBadge && (
-                <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
-                  {totalUnread > 99 ? '99+' : totalUnread}
-                </span>
-              )}
-              {showFriendBadge && (
-                <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
-                  {pendingFriendRequests > 99 ? '99+' : pendingFriendRequests}
-                </span>
-              )}
-              {showViewsBadge && (
-                <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold min-w-[18px] text-center">
-                  {newViewers > 98 ? '99+' : newViewers}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+      <nav aria-label="Main navigation" className="flex-1 px-3 overflow-y-auto scrollbar-hide">
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.id} className="mb-3" role="group" aria-label={t(section.labelKey, section.defaultLabel)}>
+            <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              {t(section.labelKey, section.defaultLabel)}
+            </p>
+            <div className="space-y-0.5">
+              {section.items.map(({ href, labelKey, icon: Icon, coachmark }) => {
+                const active = isActivePath(pathname, href);
+                const showBadge = href === '/messages' && totalUnread > 0;
+                const showFriendBadge = href === '/friends' && pendingFriendRequests > 0;
+                const showViewsBadge = href === '/views' && newViewers > 0;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    {...(coachmark ? { 'data-coachmark': coachmark } : {})}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+                      active
+                        ? 'bg-accent-muted text-accent-primary'
+                        : 'text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary'
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="flex-1">{t(labelKey)}</span>
+                    {showBadge && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
+                        {totalUnread > 99 ? '99+' : totalUnread}
+                      </span>
+                    )}
+                    {showFriendBadge && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-accent-primary text-white text-[10px] font-bold min-w-[18px] text-center">
+                        {pendingFriendRequests > 99 ? '99+' : pendingFriendRequests}
+                      </span>
+                    )}
+                    {showViewsBadge && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold min-w-[18px] text-center">
+                        {newViewers > 98 ? '99+' : newViewers}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="px-3 pb-6 space-y-1 border-t border-border-primary pt-4">

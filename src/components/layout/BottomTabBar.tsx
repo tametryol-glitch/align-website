@@ -11,41 +11,27 @@ import { useMessagesStore } from '@/stores/messagesStore';
 import { useFriendsStore } from '@/stores/friendsStore';
 import { useViewBadge } from '@/hooks/useViewBadge';
 import {
-  Home, Newspaper, Sun, MessageCircle, Menu, X,
-  Search, Globe, Compass, Star, Zap, Sparkles,
-  Users, Bell, BookOpen, CreditCard, User, Settings,
-  Mail, Video, Heart, MessagesSquare, Palette, DollarSign, Orbit, Eye, Plus,
+  Home, Newspaper, Sun, MessageCircle, Menu, X, User, Settings, Plus,
 } from 'lucide-react';
+import { NAV_SECTIONS, isActivePath } from './navConfig';
 
+// Six slots: the daily loop (Feed, Home, Chart), Create, Chat (it carries the
+// unread badge) and More, which opens the full map grouped by section.
 const TABS = [
   { href: '/feed', labelKey: 'components.sidebar.feed', icon: Newspaper },
   { href: '/dashboard', labelKey: 'components.sidebar.home', icon: Home },
   { href: '/chart', labelKey: 'components.sidebar.chart', icon: Sun },
   { href: '/cosmic-video/edit', labelKey: 'components.sidebar.create', icon: Plus },
   { href: '/messages', labelKey: 'components.sidebar.chat', icon: MessageCircle },
-  { href: '/readings', labelKey: 'components.sidebar.readings', icon: Sparkles },
   { href: '#more', labelKey: 'components.sidebar.more', icon: Menu },
 ];
 
-const MORE_ITEMS = [
-  { href: '/discover', labelKey: 'components.sidebar.discover', icon: Search },
-  { href: '/zodisphere', labelKey: 'components.sidebar.zodisphere', icon: Orbit },
-  { href: '/world-echo', labelKey: 'components.sidebar.worldEcho', icon: Compass },
-  { href: '/global-intelligence', labelKey: 'components.sidebar.globalIntelligence', icon: Globe },
-  { href: '/cosmic-alerts', labelKey: 'components.sidebar.cosmicWeather', icon: Zap },
-  { href: '/dating', labelKey: 'components.sidebar.dating', icon: Heart },
-  { href: '/cosmic-video', labelKey: 'components.sidebar.videoCreator', icon: Video },
-  { href: '/communities', labelKey: 'components.sidebar.communities', icon: MessagesSquare },
-  { href: '/friends', labelKey: 'components.sidebar.friends', icon: Users },
-  { href: '/notifications', labelKey: 'components.sidebar.notifications', icon: Bell },
-  { href: '/views', labelKey: 'views.nav', icon: Eye },
-  { href: '/ai', labelKey: 'components.sidebar.aiAstrologer', icon: MessageCircle },
-  { href: '/courses', labelKey: 'components.sidebar.learn', icon: BookOpen },
-  { href: '/creator-studio', labelKey: 'components.sidebar.creatorStudio', icon: Palette },
-  { href: '/affiliates', labelKey: 'components.sidebar.affiliates', icon: DollarSign },
-  { href: '/pricing', labelKey: 'components.sidebar.pricing', icon: CreditCard },
-  { href: '/profile', labelKey: 'components.sidebar.profile', icon: User },
-  { href: '/settings', labelKey: 'components.sidebar.settings', icon: Settings },
+// "More" lights up for any page that is not one of the tabs.
+const TAB_HREFS = new Set(TABS.map((t) => t.href));
+const MORE_HREFS = [
+  ...NAV_SECTIONS.flatMap((s) => s.items.map((i) => i.href)).filter((h) => !TAB_HREFS.has(h)),
+  '/profile',
+  '/settings',
 ];
 
 export function BottomTabBar() {
@@ -73,9 +59,7 @@ export function BottomTabBar() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showMore]);
 
-  const isMoreActive = MORE_ITEMS.some(
-    item => pathname === item.href || pathname.startsWith(item.href + '/')
-  );
+  const isMoreActive = MORE_HREFS.some((href) => isActivePath(pathname, href));
 
   return (
     <>
@@ -117,40 +101,62 @@ export function BottomTabBar() {
               </div>
             </Link>
 
-            <div className="grid grid-cols-3 gap-1 px-4 pb-6">
-              {MORE_ITEMS.filter(i => i.href !== '/profile').map(({ href, labelKey, icon: Icon }) => {
-                const active = pathname === href || pathname.startsWith(href + '/');
-                const showBadge = href === '/friends' && pendingFriendRequests > 0;
-                const showNotifBadge = href === '/notifications';
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setShowMore(false)}
-                    className={cn(
-                      'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-colors',
-                      active
-                        ? 'bg-accent-muted text-accent-primary'
-                        : 'text-text-tertiary hover:bg-bg-tertiary hover:text-text-primary'
-                    )}
-                  >
-                    <div className="relative">
-                      <Icon className="w-5 h-5" />
-                      {showBadge && pendingFriendRequests > 0 && (
-                        <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-accent-primary flex items-center justify-center text-[8px] text-white font-bold">
-                          {pendingFriendRequests > 9 ? '9+' : pendingFriendRequests}
-                        </span>
-                      )}
-                      {href === '/views' && newViewers > 0 && (
-                        <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[8px] text-white font-bold">
-                          {newViewers > 9 ? '9+' : newViewers}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] font-medium text-center leading-tight">{t(labelKey)}</span>
-                  </Link>
-                );
-              })}
+            <div className="px-4 pb-6 space-y-3">
+              {NAV_SECTIONS.map((section) => (
+                <div key={section.id} role="group" aria-label={t(section.labelKey, section.defaultLabel)}>
+                  <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                    {t(section.labelKey, section.defaultLabel)}
+                  </p>
+                  <div className="grid grid-cols-3 gap-1">
+                    {section.items.map(({ href, labelKey, icon: Icon }) => {
+                      const active = isActivePath(pathname, href);
+                      const showBadge = href === '/friends' && pendingFriendRequests > 0;
+                      return (
+                        <Link
+                          key={href}
+                          href={href}
+                          onClick={() => setShowMore(false)}
+                          aria-current={active ? 'page' : undefined}
+                          className={cn(
+                            'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-colors',
+                            active
+                              ? 'bg-accent-muted text-accent-primary'
+                              : 'text-text-tertiary hover:bg-bg-tertiary hover:text-text-primary'
+                          )}
+                        >
+                          <div className="relative">
+                            <Icon className="w-5 h-5" />
+                            {href === '/messages' && totalUnread > 0 && (
+                              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-accent-primary flex items-center justify-center text-[8px] text-white font-bold">
+                                {totalUnread > 9 ? '9+' : totalUnread}
+                              </span>
+                            )}
+                            {showBadge && (
+                              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-accent-primary flex items-center justify-center text-[8px] text-white font-bold">
+                                {pendingFriendRequests > 9 ? '9+' : pendingFriendRequests}
+                              </span>
+                            )}
+                            {href === '/views' && newViewers > 0 && (
+                              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[8px] text-white font-bold">
+                                {newViewers > 9 ? '9+' : newViewers}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] font-medium text-center leading-tight">{t(labelKey)}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              <Link
+                href="/settings"
+                onClick={() => setShowMore(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-text-tertiary hover:bg-bg-tertiary hover:text-text-primary"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="text-sm font-medium">{t('components.sidebar.settings')}</span>
+              </Link>
             </div>
           </div>
         </div>
