@@ -210,7 +210,7 @@ export function generateSolarReturnPrediction(
     const compH = findHouseForSign(comp, houseCusps);
 
     r += `### Love, Attraction, and Money\n\n`;
-    r += `Venus in **${venus.sign}**${venus.house ? ` in the **${ordinal(venus.house)} house**` : ''} governs the magnetic field around your heart and your wallet this year — what you reach for, who reaches for you, and why certain people and experiences feel irresistible while others leave you cold. On the surface, your style of loving is ${venE?.surface || venus.sign + ' flavored'}. You are drawn — almost helplessly — to people and experiences that embody ${venE?.drive || venus.sign + ' qualities'}. `;
+    r += `Venus in **${venus.sign}**${venus.house ? ` in the **${ordinal(venus.house)} house**` : ''} decides who you fall for and what you spend on this year: what you reach for, who reaches for you, and why certain people feel irresistible while others leave you cold. On the surface, your style of loving is ${venE?.surface || venus.sign + ' flavored'}. You are drawn — almost helplessly — to people and experiences that embody ${venE?.drive || venus.sign + ' qualities'}. `;
     r += `But the attractions that truly undo you — the ones that bypass your logic entirely — are rooted in ${SIGN_ENERGY[duad]?.deep || 'something far more complex than preference'}`;
     if (duadH) r += `, and they play out with particular intensity in the realm of ${HOUSE_LIFE[duadH]?.area || 'your closest relationships'}`;
     r += `. `;
@@ -309,7 +309,7 @@ export function generateSolarReturnPrediction(
     const compH = findHouseForSign(comp, houseCusps);
 
     r += `### What You Demand From Commitment This Year\n\n`;
-    r += `Juno — the fierce, uncompromising force in your chart that governs what your soul will and will not accept from the people closest to you — is in **${juno.sign}**${juno.house ? ` in your **${ordinal(juno.house)} house**` : ''}. `;
+    r += `What you will and will not accept from the people closest to you runs through Juno in **${juno.sign}**${juno.house ? ` in your **${ordinal(juno.house)} house**` : ''}. `;
     r += `This year, the bar you hold for partnership is ${junoE?.surface || juno.sign + '-flavored'} — and it is not negotiable. You are finished tolerating less than you deserve, and the specific territory where that line is being drawn is ${juno.house ? HOUSE_LIFE[juno.house]?.area || 'the heart of your relational world' : 'in the commitments that define your life'}. `;
     r += `Beneath what you can articulate, there is ${SIGN_ENERGY[duad]?.deep || 'a non-negotiable so deep it lives in your body rather than your mind'} — this is the thing you will never say in words, but you will walk away from anyone who violates it, and you will not be able to explain why except that your entire being said no`;
     if (duadH) r += `. This invisible standard is woven into ${HOUSE_LIFE[duadH]?.area || 'a part of your life that carries more weight than anyone realizes'}`;

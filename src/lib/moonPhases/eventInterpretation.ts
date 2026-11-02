@@ -198,7 +198,7 @@ export function buildEventInterpretation(
       (houseTheme ? `, activating ${houseTheme}.` : '.');
   } else {
     summary = `${bandIntro}This ${phaseName} in ${moonSign} ${PHASE_FRAME[event.type] ?? 'moves the cycle forward'}` +
-      (houseTheme ? ` in the house of ${houseTheme}.` : ` — ${PHASE_FLAVOR[event.type] ?? ''}.`);
+      (houseTheme ? ` in the part of your life that is about ${houseTheme}.` : ` — ${PHASE_FLAVOR[event.type] ?? ''}.`);
   }
   if (nodeFrame) {
     const quality = event.subtype?.split('_')[1];

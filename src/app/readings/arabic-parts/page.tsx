@@ -1059,7 +1059,7 @@ function generateLocalArabicPartsReading(parts: ArabicPart[], firstName: string)
     reading += `${firstName}, **${topSign[0]}** is your most activated sign with ${topSign[1]} Arabic Parts falling there. This means the energy of ${topSign[0]} — its style, its strengths, its challenges — runs through multiple dimensions of your destiny.\n\n`;
   }
   if (topHouse) {
-    reading += `**House ${topHouse[0]}** is your most activated house with ${topHouse[1]} Parts concentrated there. This house is a powerhouse in your chart, ${firstName} — pay special attention to the life areas it governs.\n\n`;
+    reading += `**House ${topHouse[0]}** is your most activated house with ${topHouse[1]} Parts concentrated there. A lot is concentrated in that part of your life, ${firstName}, so expect it to keep coming up.\n\n`;
   }
 
   const remaining = otherPartsList.filter(p => !majorPartNames.includes(p.name));

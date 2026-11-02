@@ -256,7 +256,7 @@ function buildCoreMessage(
 
   if (input.people.length > 0) {
     const names = input.people.slice(0, 2).join(' and ');
-    parts.push(`${names} appearing in this dream is not incidental — they represent a dynamic or quality you are actively processing.`);
+    parts.push(`${names} did not show up in this dream by accident: you are working something out with them, or with what they stand for in your life.`);
   }
 
   return parts.join(' ');
@@ -298,7 +298,7 @@ function buildSubconsciousMessage(
   }
 
   if (input.people.length > 0) {
-    parts.push(`The people in this dream — ${input.people.slice(0, 3).join(', ')} — are not simply themselves. Each one represents a quality you project onto them, or an unresolved dynamic between you.`);
+    parts.push(`The people in this dream, ${input.people.slice(0, 3).join(', ')}, are not only themselves. Each one carries a quality you project onto them or something still unresolved between you and them.`);
   }
 
   if (input.dreamType === 'recurring') {
@@ -401,7 +401,7 @@ function buildShadowChallenge(
     parts.push(archetype.shadowAngle);
   } else {
     if (input.dreamType === 'nightmare') {
-      parts.push('This nightmare is not trying to hurt you — it is trying to wake you up. The distress is proportional to how long you have been sidestepping what it represents.');
+      parts.push('This nightmare is not trying to hurt you — it is trying to wake you up. The distress matches how long you have been sidestepping the thing it points at.');
     } else {
       parts.push('Every dream has a layer you would rather not look at. The interpretation that makes you most uncomfortable is usually the most accurate.');
     }
@@ -419,7 +419,7 @@ function buildShadowChallenge(
   }
 
   if (input.emotions.includes('anger')) {
-    parts.push('Anger in dreams represents boundaries that have been violated or needs that have gone unmet. Something in you is asserting itself.');
+    parts.push('The anger in this dream points at a boundary that was crossed or a need that went unmet. Something in you is finally pushing back.');
   }
 
   if (input.emotions.includes('guilt') || input.emotions.includes('shame')) {
@@ -502,7 +502,7 @@ function buildAstrologicalConnection(astrology: DreamAstrologyContext | null): s
     parts.push(`Planets in your 12th house (${astrology.twelfthHousePlanets.join(', ')}) are permanent residents of your dream world. They color every dream you have.`);
   }
   if (astrology.neptune) {
-    parts.push(`Neptune in ${astrology.neptune.sign} (house ${astrology.neptune.house}) governs your dream frequency and visionary capacity.`);
+    parts.push(`With Neptune in ${astrology.neptune.sign} in house ${astrology.neptune.house}, your dreams run vivid and strange, and you often know something before you can explain how.`);
   }
   if (astrology.pluto) {
     parts.push(`Pluto in ${astrology.pluto.sign} (house ${astrology.pluto.house}) determines the depth and transformative power of your dreams.`);
@@ -568,7 +568,7 @@ function buildReflectionQuestions(input: DreamInput, symbols: MatchedSymbol[], a
   }
 
   if (input.people.length > 0) {
-    questions.push(`What quality does ${input.people[0]} represent to you? Is that quality something you need more of, or something you need to release?`);
+    questions.push(`What quality of ${input.people[0]}'s do you carry, or wish you carried? Is it something you need more of, or something you need to put down?`);
   }
 
   if (archetype) {
