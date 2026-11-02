@@ -13,6 +13,7 @@ import {
   type Modality,
   type SignData,
 } from './compatibilityContent';
+import { SUN_MOON_VOICE } from './sunMoonVoice';
 
 // Re-export for convenience
 export { SIGNS, ALL_SIGN_KEYS, getElementColor, type ZodiacSign, type Element, type SignData };
@@ -501,70 +502,71 @@ export interface SunMoonContent {
   relatableBullets: string[];
 }
 
+// The five sections below are written from SUN_MOON_VOICE (per-sign behaviour
+// lines in the reader's voice). They never define a sign or its element: the
+// element relationship only decides which framing sentence is used.
+
+type Relation = 'same' | 'easy' | 'tension' | 'friction';
+
+function getRelation(sun: ZodiacSign, moon: ZodiacSign, harmony: ElementHarmony): Relation {
+  if (sun === moon) return 'same';
+  if (harmony === 'Mirror Energy' || harmony === 'Harmonious Blend') return 'easy';
+  return harmony === 'Dynamic Tension' ? 'tension' : 'friction';
+}
+
+/** "Your quiet strength is X" -> "Your private strength is X" so a second
+ *  strength can follow the first without repeating the same words. */
+function privateStrength(line: string): string {
+  return line.replace(/^Your quiet strength is/, 'Your private strength is');
+}
+
+/** 'a' or 'an' for a sign name (Aries and Aquarius take 'an'). */
+function an(name: string): string {
+  return /^[AEIOU]/.test(name) ? 'an' : 'a';
+}
+
+function privateEdge(line: string): string {
+  return line.replace(/^Your growth move is/, 'On the private side, your move is');
+}
+
 // Section 1: The Inner Landscape
 function generateInnerLandscape(
   sun: ZodiacSign,
   moon: ZodiacSign,
   sunData: SignData,
   moonData: SignData,
-  sunTheme: SignTheme,
-  moonTheme: SignTheme,
+  _sunTheme: SignTheme,
+  _moonTheme: SignTheme,
   harmony: ElementHarmony
 ): PersonalitySection {
+  const s = SUN_MOON_VOICE[sun];
+  const m = SUN_MOON_VOICE[moon];
+  const rel = getRelation(sun, moon, harmony);
   const paragraphs: string[] = [];
 
-  if (sun === moon) {
-    paragraphs.push(
-      `With both your Sun and Moon in ${sunData.name}, you are ${sunData.name} through and through — what the world sees and what you feel privately are cut from the same cosmic cloth. Your ${sunData.element} nature is undiluted, your ${sunData.modality} energy doubled. There is a purity to this placement that gives you remarkable internal consistency. You don't wear masks because you don't need to — your inner world and outer expression speak the same language. People always know where they stand with you, because there is no hidden layer contradicting what's on the surface.`
-    );
-    paragraphs.push(
-      `This self-coherence is both your greatest strength and a potential blind spot. You move through life with a singular focus that others find either deeply impressive or slightly intimidating. ${sunTheme.archetype} energy defines every dimension of your experience: how you love, how you work, how you fight, how you rest. The challenge is that without an internal counterpoint, you may struggle to understand perspectives that don't align with your own ${sunData.element} way of processing the world. Growth comes from deliberately seeking out the elements you lack — the ${sunData.element === 'fire' ? 'patience of earth, the depth of water, the perspective of air' : sunData.element === 'earth' ? 'spontaneity of fire, the intuition of water, the flexibility of air' : sunData.element === 'air' ? 'groundedness of earth, the passion of fire, the emotional depth of water' : 'direction of fire, the stability of earth, the detachment of air'}.`
-    );
-    paragraphs.push(
-      `At your best, you embody everything ${sunData.name} is meant to be: ${sunData.traits.join(', ')}. You are the purest expression of ${sunData.ruler}'s influence, and when you're aligned with your purpose, you move through the world with an authenticity that is truly rare. The key is ensuring that your doubled ${sunData.name} energy has enough outlets — without them, even the most beautiful qualities can become their own shadow.`
-    );
-  } else if (harmony === 'Mirror Energy') {
-    paragraphs.push(
-      `Your ${sunData.name} Sun and ${moonData.name} Moon share the element of ${sunData.element}, creating an inner landscape where identity and emotion flow in the same current. You are ${sunData.element} through and through, but expressed in two distinct frequencies. Your ${sunData.name} Sun — ${sunData.modality}, ruled by ${sunData.ruler} — ${sunTheme.innerVerb} with ${sunData.traits[0]} conviction. Your ${moonData.name} Moon — ${moonData.modality}, ruled by ${moonData.ruler} — processes feelings through ${moonData.traits[0]} instincts. Same element, different dialects.`
-    );
-    paragraphs.push(
-      `This shared elemental ground gives you a sense of inner coherence that others notice. You don't feel at war with yourself the way some Sun-Moon combinations do. Your public face and private needs align naturally, which creates a grounded confidence. Where ${sunData.name} drives you to ${sunTheme.identityDrive}, your ${moonData.name} Moon ensures your emotional needs — ${moonTheme.emotionalNeed} — are never too far from your conscious awareness.`
-    );
-    paragraphs.push(
-      `The nuance lies in the modality difference. Your ${sunData.modality} Sun and ${moonData.modality} Moon create a rhythm of ${sunData.modality === moonData.modality ? 'doubled intensity — you approach everything with the same energetic style, for better or worse' : `complementary motion — your Sun ${sunData.modality === 'cardinal' ? 'initiates' : sunData.modality === 'fixed' ? 'sustains' : 'adapts'} while your Moon ${moonData.modality === 'cardinal' ? 'initiates' : moonData.modality === 'fixed' ? 'sustains' : 'adapts'}, giving you a broader range than a single modality alone`}.`
-    );
-  } else if (harmony === 'Harmonious Blend') {
-    paragraphs.push(
-      `Your ${sunData.name} Sun and ${moonData.name} Moon form one of astrology's naturally compatible combinations. ${sunData.element.charAt(0).toUpperCase() + sunData.element.slice(1)} and ${moonData.element} ${sunData.element === 'fire' ? 'feed each other — air fans the flame, making your fire burn brighter and reach further' : 'nourish each other — water feeds the earth, creating fertile ground where both your identity and emotions can flourish'}. What you project to the world (${sunData.traits[0]}, ${sunData.traits[1]}) and what you need privately (${moonTheme.emotionalNeed}) exist in natural dialogue rather than conflict.`
-    );
-    paragraphs.push(
-      `This doesn't mean your inner life is simple. Your ${sunData.name} Sun pursues ${sunTheme.identityDrive}, while your ${moonData.name} Moon requires ${moonTheme.emotionalNeed}. These drives are compatible but not identical. Think of it as two instruments in the same key — they harmonize naturally, but each plays its own melody. Your Sun's ruler ${sunData.ruler} and your Moon's ruler ${moonData.ruler} work in concert, giving you an internal support system that many people spend a lifetime trying to build.`
-    );
-    paragraphs.push(
-      `The gift of this blend is emotional fluidity. You can move between your public self and your private self without feeling like you're shapeshifting. The risk is complacency — because things come relatively easily to you internally, you may not develop the resilience that comes from navigating true inner tension. Your growth edge is pushing beyond comfort into the elements you don't carry: ${sunData.element === 'fire' ? 'earth and water' : 'fire and air'}.`
-    );
-  } else if (harmony === 'Dynamic Tension') {
-    paragraphs.push(
-      `Your ${sunData.name} Sun and ${moonData.name} Moon create a dynamic tension between ${sunData.element} and ${moonData.element} that shapes everything about how you move through the world. On the surface, you project ${sunData.name}'s ${sunData.traits.slice(0, 3).join(', ')} energy. But beneath that exterior, your ${moonData.name} Moon craves something fundamentally different: ${moonTheme.emotionalNeed}. This gap between who you appear to be and what you actually need is the central drama of your inner life.`
-    );
-    paragraphs.push(
-      `${sunData.element === 'air' ? `Your ${sunData.name} Sun lives in the realm of ideas, concepts, and social connection. Your ${moonData.name} Moon lives in the realm of tangible reality, material security, and physical sensation.` : `Your ${sunData.name} Sun is grounded in the practical, material world. Your ${moonData.name} Moon floats in the realm of ideas, connection, and abstract possibility.`} You are always negotiating between these two modes of being, and people who only see one side of you are seeing half the picture. The ones who love you best are the ones who understand that your ${sunData.traits[0]} exterior and your ${moonData.traits[0]} interior are not contradictions — they are complements.`
-    );
-    paragraphs.push(
-      `The creative potential in this tension is enormous. ${sunData.element === 'air' ? 'Air conceptualizes, earth materializes' : 'Earth stabilizes, air innovates'} — together, they build things that are both visionary and real. When you learn to honor both sides instead of favoring one, you become someone who can dream practically and execute creatively. This is your superpower, and it comes directly from the productive friction between your Sun and Moon.`
-    );
-  } else {
-    // Creative Friction
-    paragraphs.push(
-      `Your ${sunData.name} Sun and ${moonData.name} Moon are locked in one of astrology's most creatively charged tensions. ${sunData.element.charAt(0).toUpperCase() + sunData.element.slice(1)} and ${moonData.element} don't naturally understand each other — ${sunData.element === 'fire' && moonData.element === 'water' ? 'fire evaporates water, water extinguishes fire' : sunData.element === 'water' && moonData.element === 'fire' ? 'water and fire create steam — powerful but volatile' : sunData.element === 'fire' && moonData.element === 'earth' ? 'fire scorches earth, earth smothers fire' : sunData.element === 'earth' && moonData.element === 'fire' ? 'earth and fire exist at fundamentally different speeds' : `${sunData.element} and ${moonData.element} operate on different wavelengths entirely`}. What you show the world as a ${sunData.name} (${sunData.traits.slice(0, 2).join(', ')}) often feels at odds with what your ${moonData.name} Moon actually needs (${moonTheme.emotionalNeed}).`
-    );
-    paragraphs.push(
-      `This internal friction means you are rarely boring — to yourself or to others. There is a complexity to your personality that people find magnetic precisely because it doesn't resolve into a simple story. Your ${sunData.name} Sun, ruled by ${sunData.ruler}, drives you toward ${sunTheme.identityDrive}. Your ${moonData.name} Moon, ruled by ${moonData.ruler}, pulls you toward ${moonTheme.emotionalNeed}. These are not the same destination, and the journey between them is where your most profound growth happens.`
-    );
-    paragraphs.push(
-      `People who grow up with this Sun-Moon combination often feel like they contain multitudes — because they do. You've spent your life learning to integrate parts of yourself that don't come with an instruction manual. The result, when you do the inner work, is a person of extraordinary depth, range, and empathy. You understand contradiction because you live it. You forgive complexity in others because you know it intimately in yourself.`
-    );
-  }
+  const intro: Record<Relation, string> = {
+    same: `As ${an(sunData.name)} ${sunData.name} with your Sun and Moon both in the same sign, there is no second person hiding behind the first. What people see is what you feel, and that is both your charm and your blind spot.`,
+    easy: `As ${an(sunData.name)} ${sunData.name} Sun with ${an(moonData.name)} ${moonData.name} Moon, the person people meet and the person who goes home are close to the same, with one difference worth knowing.`,
+    tension: `As ${an(sunData.name)} ${sunData.name} Sun with ${an(moonData.name)} ${moonData.name} Moon, the person people meet and the person who goes home want different things, and you have gotten used to keeping the second one quiet.`,
+    friction: `As ${an(sunData.name)} ${sunData.name} Sun with ${an(moonData.name)} ${moonData.name} Moon, the person people meet and the person who goes home barely want the same things, and you have spent years making that look like a personality.`,
+  };
+  paragraphs.push(`${intro[rel]} ${s.sunShow} What you chase is ${s.sunChase}.`);
+
+  const trapTail: Record<Relation, string> = {
+    same: 'Because nothing inside you argues back, that habit can run unchallenged for decades.',
+    easy: 'Because little in you resists it, that habit can run for years before anyone, including you, calls it out.',
+    tension: `The more you perform the ${sunData.name} side, the quieter your ${moonData.name} side gets, and then it gets loud at a bad moment.`,
+    friction: `The harder you lean on the ${sunData.name} side, the more your ${moonData.name} side goes underground, and it comes back as a mood you cannot explain.`,
+  };
+  paragraphs.push(`${s.sunTrap} ${trapTail[rel]}`);
+
+  const settle: Record<Relation, string> = {
+    same: 'Your Sun and Moon agree, so you decide fast and rarely second-guess. The cost is that nobody in your head ever says wait.',
+    easy: 'Your Sun and Moon rarely fight, so big decisions feel simple. The risk is never being pushed past what is comfortable.',
+    tension: 'Your Sun and Moon want different things, so most big decisions are an argument between them. You tend to settle it by picking the same winner every time.',
+    friction: 'Your Sun and Moon do not speak the same language, so you win one argument by ignoring the other for years, until it sends you the bill.',
+  };
+  paragraphs.push(settle[rel]);
 
   return { title: 'The Inner Landscape', icon: '🌌', paragraphs };
 }
@@ -575,47 +577,24 @@ function generateEmotionalWorld(
   moon: ZodiacSign,
   sunData: SignData,
   moonData: SignData,
-  sunTheme: SignTheme,
-  moonTheme: SignTheme,
+  _sunTheme: SignTheme,
+  _moonTheme: SignTheme,
   harmony: ElementHarmony
 ): PersonalitySection {
+  const m = SUN_MOON_VOICE[moon];
+  const rel = getRelation(sun, moon, harmony);
   const paragraphs: string[] = [];
 
-  // Moon sign is the primary driver here
-  paragraphs.push(
-    `Your emotional world is fundamentally shaped by your ${moonData.name} Moon. Regardless of how your ${sunData.name} Sun presents to the world, the Moon is where you retreat when life gets real. ${moonData.name} Moon people need ${moonTheme.emotionalNeed}. This isn't a preference — it's a requirement for your psychological well-being. When this need goes unmet, ${moonTheme.stressResponse.charAt(0).toLowerCase()}${moonTheme.stressResponse.slice(1)}.`
-  );
+  paragraphs.push(`Your ${moonData.name} Moon is the part of you that does not negotiate. ${m.moonNeed} ${m.moonUpset}`);
+  paragraphs.push(m.moonComfort);
 
-  // How the Sun sign modifies emotional expression
-  if (harmony === 'Creative Friction' || harmony === 'Dynamic Tension') {
-    paragraphs.push(
-      `Here's where it gets complicated: your ${sunData.name} Sun doesn't always let your Moon's needs be visible. ${sunData.name} projects ${sunData.traits[0]} energy, which can mask the ${moonData.traits[0]} emotional undercurrent running beneath. You might tell people you're fine when your Moon is screaming for ${moonData.element === 'water' ? 'emotional connection' : moonData.element === 'fire' ? 'action and release' : moonData.element === 'earth' ? 'stability and reassurance' : 'space to process'}. Over time, this disconnect between your presented self and your emotional reality can create a low-grade exhaustion that is hard to name but impossible to ignore.`
-    );
-    paragraphs.push(
-      `The healing path for this combination is learning to let your Moon's needs be seen — even when they don't match your Sun's brand. Your ${sunData.name} identity doesn't have to perform 24/7. In safe relationships, with trusted people, practice leading with your ${moonData.name} Moon. Say what you actually need instead of what ${sunData.name} thinks you should need. The relief will be immediate and profound.`
-    );
-  } else if (harmony === 'Mirror Energy' && sun !== moon) {
-    paragraphs.push(
-      `Because both your Sun and Moon live in ${sunData.element}, your emotional processing and your identity expression share the same elemental language. This makes you emotionally consistent — what you feel and what you show are usually in the same register. ${sunData.element === 'fire' ? 'Your emotions burn hot, express fast, and move through you like weather. You don\'t hold grudges because you don\'t hold anything — it combusts and clears.' : sunData.element === 'earth' ? 'Your emotions are steady, deep, and slow-moving. You don\'t react to every stimulus because you know that most things resolve themselves if you wait.' : sunData.element === 'air' ? 'You process emotions intellectually first and physically second. You need to understand what you\'re feeling before you can feel it fully, which sometimes means there\'s a delay between the event and the emotional response.' : 'Your emotions are oceanic — vast, shifting, and deeply responsive to everything around you. You feel the world so intensely that you need regular time alone to decompress and separate your feelings from everyone else\'s.'}`
-    );
-    paragraphs.push(
-      `The risk of this same-element emotional style is that you may not develop the emotional muscles that come from having to translate between different elements. You process ${sunData.element} emotions beautifully, but ${sunData.element === 'fire' ? 'the slow, deep feelings of water or the patient processing of earth' : sunData.element === 'earth' ? 'the quick intensity of fire or the abstract processing of air' : sunData.element === 'air' ? 'the raw intensity of fire or the wordless depth of water' : 'the directness of fire or the practical grounding of earth'} may feel foreign. Relationships with people who process differently will be your greatest emotional teachers.`
-    );
-  } else if (sun === moon) {
-    paragraphs.push(
-      `With your Moon also in ${sunData.name}, your emotional life is an intensified version of everything this sign represents. ${moonTheme.emotionalNeed} — this isn't just important to you, it is the baseline requirement for your entire sense of self. When you're in an environment that supports this need, you are ${sunData.traits.slice(0, 3).join(', ')} in their purest form. When this need is denied, every shadow quality of ${sunData.name} emerges: ${sunData.shadow}.`
-    );
-    paragraphs.push(
-      `Your emotional body language tells the truth even when your words don't: ${moonTheme.bodyLanguage}. People who pay attention to your physical presence can read you like a book, even when you think you're hiding. Your emotional inner child wants ${moonTheme.innerChild}. Understanding this primal need — and learning to give it to yourself before asking others to provide it — is the deepest emotional work this placement offers.`
-    );
-  } else {
-    paragraphs.push(
-      `Your ${sunData.name} Sun gives you a public emotional style: you appear ${sunData.traits[0]} and ${sunData.traits[1]} in how you handle things. But your ${moonData.name} Moon tells a different story in private. When the door closes and the performance ends, you need ${moonTheme.emotionalNeed}. Your closest people know this, even if the rest of the world doesn't. The partners and friends who last in your life are the ones who see past the ${sunData.name} exterior to the ${moonData.name} heart underneath.`
-    );
-    paragraphs.push(
-      `Emotionally, your ${moonData.name} Moon processes feelings through ${moonData.element}. ${moonData.element === 'water' ? 'You feel everything deeply, absorb the emotions of those around you, and need time to process before you can articulate what you\'re experiencing.' : moonData.element === 'fire' ? 'Your emotions arrive fast and hot. You need to move, act, or express them immediately — holding feelings in makes you feel like you\'re going to explode.' : moonData.element === 'earth' ? 'You process feelings slowly and practically. An emotion isn\'t real to you until you can name it and figure out what to do about it.' : 'You process feelings intellectually, sometimes at the expense of actually feeling them. You can describe your emotions with perfect clarity while remaining strangely disconnected from their intensity.'} This emotional processing style shapes everything — how you fight, how you love, and how you heal.`
-    );
-  }
+  const ask: Record<Relation, string> = {
+    same: 'Because both halves of you want the same thing, you do not hide it, which is why partners who cannot give it find out fast.',
+    easy: `Your ${sunData.name} Sun does not get in the way of this, so asking for it feels natural. The trap is assuming people can already tell.`,
+    tension: `Your ${sunData.name} Sun makes this hard to ask for, because the version of you people count on does not look like someone who needs it. So you say you are fine, and then resent that they believed you.`,
+    friction: `Your ${sunData.name} Sun actively hides this: everything you show the world says you do not need it, so the people closest to you get your performance instead of your need. Say it once out loud to one person you trust, and notice how much lighter the week gets.`,
+  };
+  paragraphs.push(ask[rel]);
 
   return { title: 'Emotional World', icon: '💫', paragraphs };
 }
@@ -626,49 +605,32 @@ function generateRelationships(
   moon: ZodiacSign,
   sunData: SignData,
   moonData: SignData,
-  sunTheme: SignTheme,
-  moonTheme: SignTheme,
+  _sunTheme: SignTheme,
+  _moonTheme: SignTheme,
   harmony: ElementHarmony
 ): PersonalitySection {
+  const s = SUN_MOON_VOICE[sun];
+  const m = SUN_MOON_VOICE[moon];
+  const rel = getRelation(sun, moon, harmony);
   const paragraphs: string[] = [];
 
-  paragraphs.push(
-    `In love, your ${sunData.name} Sun is what attracts people to you. They fall for your ${sunData.traits[0]}, ${sunData.traits[1]} energy — the way you ${sunTheme.innerVerb} and move through the world with ${sunData.name}'s signature style. ${sunData.loveStyle} But what keeps a relationship alive long-term is your ${moonData.name} Moon, and that's where things get interesting.`
-  );
+  paragraphs.push(`${s.loveSun} ${m.loveMoon}`);
 
-  if (harmony === 'Creative Friction') {
-    paragraphs.push(
-      `Your Sun and Moon want different things from love, and your partner has to navigate both. Your ${sunData.name} Sun needs a relationship that ${sunData.element === 'fire' ? 'keeps the excitement alive, with passion, adventure, and a partner who can match your energy' : sunData.element === 'earth' ? 'builds toward something tangible — a home, a future, a life you can point to and say "we built this"' : sunData.element === 'air' ? 'stays intellectually stimulating, with conversation that never grows stale and freedom to grow as individuals' : 'goes deep — surface-level connections bore you and eventually drive you away'}. But your ${moonData.name} Moon privately craves ${moonTheme.emotionalNeed}. The partner who figures out how to feed both your Sun and Moon is the one you'll never let go of.`
-    );
-    paragraphs.push(
-      `You struggle in relationships when a partner only sees one half. If they love your ${sunData.name} fire but can't hold space for your ${moonData.name} needs, you'll eventually feel unseen. If they nurture your Moon but don't engage your Sun, you'll grow restless. The relationship that works is the one flexible enough to dance between both — to adventure with you and also hold you still, to give you freedom and also give you roots.`
-    );
-  } else if (harmony === 'Harmonious Blend') {
-    paragraphs.push(
-      `The good news is that your Sun and Moon want compatible things from love. Your ${sunData.name} Sun's desire for ${sunTheme.identityDrive} and your ${moonData.name} Moon's need for ${moonTheme.emotionalNeed} don't conflict — they support each other. This makes you relatively straightforward in relationships, which your partners appreciate. You know what you want, you communicate it naturally, and you don't send mixed signals (at least not as many as some Sun-Moon combos).`
-    );
-    paragraphs.push(
-      `Where you might struggle is recognizing when a relationship has become too comfortable. Because your inner needs are easily met, you may stay in relationships past their expiration date simply because nothing feels dramatically wrong. Your growth edge in love is learning to want more than just compatibility — to seek the kind of partnership that challenges you to become who you haven't been yet, not just validates who you already are.`
-    );
-  } else if (sun === moon) {
-    paragraphs.push(
-      `As a double ${sunData.name}, what you want in love is clear and unambiguous. You need ${moonTheme.emotionalNeed}, and you need a partner who can handle ${sunData.name}'s full intensity without flinching. Half-measures don't work for you. You'd rather be alone than in a relationship that only engages part of who you are. This all-or-nothing quality can scare off casual partners, but it magnetizes the ones who are ready for something real.`
-    );
-    paragraphs.push(
-      `The challenge in your relationships is that you may unconsciously seek a partner who provides the balance you don't carry internally. You're attracted to people who embody the elements and qualities you lack, which creates intense chemistry but also intense friction. Learning to provide your own balance — rather than outsourcing it to a partner — makes you healthier in love and stops you from overwhelming the people who get close to you.`
-    );
-  } else {
-    paragraphs.push(
-      `Your ${moonData.name} Moon shapes what you actually need from a partner, even when your ${sunData.name} Sun is busy projecting something different. Privately, you need someone who understands that ${moonTheme.emotionalNeed}. Your Moon's body language in intimacy — ${moonTheme.bodyLanguage} — tells your partner more about your real needs than anything you say out loud. The partners who read you best are the ones who watch what you do, not just what you say.`
-    );
-    paragraphs.push(
-      `In conflict, your ${sunData.name} Sun and ${moonData.name} Moon can pull in different directions. Your Sun wants to ${sunData.modality === 'cardinal' ? 'take charge and resolve things immediately' : sunData.modality === 'fixed' ? 'hold your ground until the other person sees your point' : 'adapt and find a compromise'}. Your Moon wants to ${moonData.modality === 'cardinal' ? 'initiate the conversation and set the terms' : moonData.modality === 'fixed' ? 'wait it out because changing your feelings is not an option' : 'go with the flow and avoid confrontation'}. The tension between these approaches is what makes your conflict style unique — and what makes a patient, perceptive partner essential for your long-term happiness.`
-    );
-  }
+  const want: Record<Relation, string> = {
+    same: 'Both halves of you want the same thing from a partner, which makes you easy to read and hard to satisfy halfway. You would rather be alone than half-met.',
+    easy: 'The two halves of you want compatible things from love, so partners rarely have to decode you. The risk is staying with someone comfortable who never asks you to become more.',
+    tension: 'The two halves of you want different things from the same person, so partners keep getting half of you. The ones who last are the ones who notice both.',
+    friction: 'The two halves of you want almost opposite things from love, so you can choose someone who delights one side and starves the other, and the relationship feels incomplete without either of you knowing why.',
+  };
+  paragraphs.push(want[rel]);
 
-  paragraphs.push(
-    `The relationship pattern to watch for: ${sunData.name} Sun with ${moonData.name} Moon tends to ${harmony === 'Creative Friction' ? 'attract partners who represent one half of their nature but not the other, leading to a pattern of intense connections that feel incomplete' : harmony === 'Dynamic Tension' ? 'test partners early on, sometimes unconsciously, to see if they can handle the complexity before fully opening up' : harmony === 'Mirror Energy' ? 'choose partners who feel immediately familiar, which can mean repeating the same relationship dynamics — for better or worse' : 'attract stable relationships but may need to actively inject excitement and growth to prevent the comfort from becoming stagnation'}.`
-  );
+  const watch: Record<Relation, string> = {
+    same: 'Watch for attracting people who offer the balance you do not carry, then resenting them for the friction it creates.',
+    easy: 'Watch for choosing someone who feels immediately familiar and repeating a dynamic you already know by heart.',
+    tension: 'Watch for testing new partners without telling them, to see whether they can handle all of you before you open up.',
+    friction: 'Watch for intense connections that feel enormous for six months and never feel complete.',
+  };
+  paragraphs.push(`The pattern to watch: ${watch[rel].replace(/^Watch for /, '')}`);
 
   return { title: 'In Relationships', icon: '💞', paragraphs };
 }
@@ -679,42 +641,28 @@ function generateHiddenStrengths(
   moon: ZodiacSign,
   sunData: SignData,
   moonData: SignData,
-  sunTheme: SignTheme,
-  moonTheme: SignTheme,
+  _sunTheme: SignTheme,
+  _moonTheme: SignTheme,
   harmony: ElementHarmony
 ): PersonalitySection {
+  const s = SUN_MOON_VOICE[sun];
+  const m = SUN_MOON_VOICE[moon];
+  const rel = getRelation(sun, moon, harmony);
   const paragraphs: string[] = [];
 
-  paragraphs.push(
-    `The hidden superpower of ${sunData.name} Sun with ${moonData.name} Moon is ${sun === moon ? sunTheme.superpower : `the alchemy that happens when ${sunTheme.superpower} meets ${moonTheme.superpower}`}. This isn't something you put on a resume or brag about at parties — it's the quiet capability that emerges when life demands everything you have and you discover you have more than you thought.`
-  );
+  paragraphs.push(s.strength);
+  if (sun !== moon) paragraphs.push(privateStrength(m.strength));
 
-  if (harmony === 'Creative Friction') {
-    paragraphs.push(
-      `Because your Sun and Moon don't naturally agree, you've developed an extraordinary ability to hold paradox. While other people see the world in binaries — strong or sensitive, practical or creative, independent or devoted — you've learned to be both simultaneously. This capacity for contradiction makes you uniquely suited for roles that require ${sunData.element === 'fire' || sunData.element === 'air' ? 'both vision and emotional intelligence' : 'both groundedness and creative intuition'}. You can translate between worlds that don't usually speak to each other.`
-    );
-    paragraphs.push(
-      `Another hidden strength: resilience. You've spent your life navigating the tension between ${sunData.element} and ${moonData.element}, which means you're practiced at sitting with discomfort. Where other people might crumble under internal conflict, you've developed shock absorbers. This makes you extraordinarily steady in crises — not because you don't feel the chaos, but because you've been managing internal chaos since birth and you've gotten remarkably good at it.`
-    );
-  } else if (harmony === 'Harmonious Blend' || harmony === 'Mirror Energy') {
-    paragraphs.push(
-      `Your inner coherence gives you a strength that is easy to underestimate: consistency. People can count on you to be the same person in public and in private, in crisis and in calm. This reliability is rarer than you think, and it builds the kind of deep trust that others spend years trying to earn. You are who you appear to be, and in a world full of performance, that authenticity is magnetic.`
-    );
-    paragraphs.push(
-      `Your ${sunData.element}${sun !== moon && sunData.element === moonData.element ? '' : `-${moonData.element}`} nature, undiluted, gives you depth in your element that mixed-element people simply cannot match. ${sunData.element === 'fire' || moonData.element === 'fire' ? 'Your courage, passion, and ability to inspire others is amplified to a rare degree.' : sunData.element === 'earth' || moonData.element === 'earth' ? 'Your capacity to build, sustain, and see things through is extraordinary.' : sunData.element === 'air' || moonData.element === 'air' ? 'Your intellectual range, communication skills, and ability to connect people is exceptional.' : 'Your emotional intelligence, intuition, and ability to read situations is almost supernatural.'} You have mastered the domain of your element in a way that makes you a natural authority in everything it governs.`
-    );
-  } else {
-    paragraphs.push(
-      `The tension between your ${sunData.element} Sun and ${moonData.element} Moon gives you range. You can operate in the ${sunData.element} world — ${sunData.element === 'fire' ? 'action, leadership, boldness' : sunData.element === 'earth' ? 'structure, planning, execution' : sunData.element === 'air' ? 'ideas, connection, communication' : 'intuition, empathy, emotional depth'} — and then switch to the ${moonData.element} register when the situation demands it. Most people only have one gear; you have two, and the ability to shift between them gives you a strategic advantage in virtually every area of life.`
-    );
-    paragraphs.push(
-      `Your hidden empathy is another gift. Because you've navigated the distance between your Sun and Moon your whole life, you instinctively understand what it means to contain contradictions. This makes you a natural counselor, mediator, or confidant. People open up to you because they sense — correctly — that you won't judge them for being complicated. You know what it's like to be more than one thing, and that knowledge makes you a safe harbor for everyone who feels too complex for the world to understand.`
-    );
+  const range: Record<Relation, string> = {
+    same: 'You are the same person in public and private, in a crisis and in calm. That is rarer than you think, and people build their trust in you on it.',
+    easy: 'You are close to the same person in public and private, in a crisis and in calm. That consistency is rarer than you think, and trust forms around it.',
+    tension: 'Because your two halves disagree, you read people well. You have managed two points of view in your own head for years, so nothing in someone else\'s contradiction surprises you.',
+    friction: 'Because your two halves barely agree, you can hold a contradiction without flinching. You are the person people bring their messiest, most mixed-up situation to, because you will not tell them to pick a side.',
+  };
+  paragraphs.push(range[rel]);
+  if (sun === moon) {
+    paragraphs.push('You never have to keep one version of yourself for work and another for home. That saves you the energy other people spend managing two personas, and it is why you recover faster than they expect.');
   }
-
-  paragraphs.push(
-    `Don't overlook the strength that comes from your ${moonData.name} Moon's decision-making style: ${moonTheme.decisionStyle}. While your ${sunData.name} Sun gets the public credit, your Moon's instincts have quietly saved you from bad choices and guided you toward good ones more often than you realize. Learn to trust this inner compass — it's been calibrated by every experience you've ever had, and it rarely leads you wrong when you listen to it.`
-  );
 
   return { title: 'Hidden Strengths', icon: '🔮', paragraphs };
 }
@@ -725,39 +673,27 @@ function generateGrowthEdge(
   moon: ZodiacSign,
   sunData: SignData,
   moonData: SignData,
-  sunTheme: SignTheme,
-  moonTheme: SignTheme,
+  _sunTheme: SignTheme,
+  _moonTheme: SignTheme,
   harmony: ElementHarmony
 ): PersonalitySection {
+  const s = SUN_MOON_VOICE[sun];
+  const m = SUN_MOON_VOICE[moon];
+  const rel = getRelation(sun, moon, harmony);
   const paragraphs: string[] = [];
 
+  paragraphs.push(s.edge);
+  if (sun !== moon) paragraphs.push(privateEdge(m.edge));
+
+  const close: Record<Relation, string> = {
+    same: 'Your danger is that nothing in you objects. Ask someone very different from you what they see, and take the answer seriously for a full week before you argue with it.',
+    easy: 'Because this combination comes easily, the danger is coasting. Pick one thing a year that is hard on purpose, and do not let comfort choose it for you.',
+    tension: `Do not settle the argument between your ${sunData.name} Sun and your ${moonData.name} Moon by always picking the same winner. Alternate on purpose, and tell the people around you which side is driving.`,
+    friction: `Stop treating your ${sunData.name} Sun and your ${moonData.name} Moon as enemies. Give each one a real slot in the week: one evening that is entirely for the ${moonData.name} side, one project that is entirely for the ${sunData.name} side, and nobody apologising for either.`,
+  };
+  paragraphs.push(close[rel]);
   if (sun === moon) {
-    paragraphs.push(
-      `Your primary growth edge as a double ${sunData.name} is developing the qualities you don't naturally carry. You are a masterclass in ${sunData.element}, but the other three elements hold lessons you need. ${sunData.element === 'fire' ? 'You need earth\'s patience, water\'s emotional depth, and air\'s ability to see things from a distance.' : sunData.element === 'earth' ? 'You need fire\'s willingness to take risks, water\'s emotional vulnerability, and air\'s openness to change.' : sunData.element === 'air' ? 'You need earth\'s follow-through, fire\'s passion and conviction, and water\'s capacity for raw emotional presence.' : 'You need fire\'s courage to act, earth\'s ability to set boundaries, and air\'s objectivity when emotions threaten to overwhelm.'} This isn't about becoming less ${sunData.name} — it's about becoming more complete.`
-    );
-    paragraphs.push(
-      `Watch for the tendency to mistake intensity for depth. Because you experience ${sunData.name} energy at double strength, you may assume that more of the same equals growth. It doesn't. Real growth for you looks like going against your grain — doing the thing that feels uncomfortable, not the thing that comes naturally. If ${sunData.name}'s reflex is to ${sunTheme.stressResponse}, your growth edge is learning to do the opposite: ${sunData.element === 'fire' ? 'sit still, be patient, and let things unfold without forcing them' : sunData.element === 'earth' ? 'take a leap without having every detail figured out' : sunData.element === 'air' ? 'stop analyzing and let yourself feel without understanding why' : 'set a boundary, hold your ground, and resist the urge to merge with everyone else\'s reality'}.`
-    );
-  } else if (harmony === 'Creative Friction') {
-    paragraphs.push(
-      `Your growth edge lives in the space between your ${sunData.name} Sun and ${moonData.name} Moon — in learning to stop treating them as opposing forces and start treating them as collaborative ones. For most of your life, you may have unconsciously favored one over the other: leading with your Sun in public and suppressing your Moon, or privately resenting your Sun for not letting you be who your Moon needs to be. The integration of these two energies is the central developmental task of your life.`
-    );
-    paragraphs.push(
-      `Practically, this means creating space for both. Your ${sunData.name} Sun needs ${sunTheme.identityDrive} — don't deny it. Your ${moonData.name} Moon needs ${moonTheme.emotionalNeed} — don't ignore it. Build a life that has room for both the ${sunData.traits[0]} ambition and the ${moonData.traits[0]} inner world. Schedule time for your Sun's agenda and equally sacred time for your Moon's needs. The people who love you best will learn to do the same.`
-    );
-    paragraphs.push(
-      `The shadow to watch: ${sunTheme.shadowTrigger}. When your ${sunData.name} Sun is triggered, it will try to override your ${moonData.name} Moon, and vice versa when ${moonTheme.shadowTrigger}. Notice these moments. They are not failures — they are invitations to integrate more deeply. Every time you catch yourself suppressing one half to appease the other, you have an opportunity to choose wholeness instead.`
-    );
-  } else {
-    paragraphs.push(
-      `Your growth edge is learning to leverage the ${harmony === 'Harmonious Blend' ? 'ease' : harmony === 'Mirror Energy' ? 'consistency' : 'tension'} of your Sun-Moon combination without becoming complacent. Because your ${sunData.name} Sun and ${moonData.name} Moon ${harmony === 'Harmonious Blend' || harmony === 'Mirror Energy' ? 'work together naturally, the temptation is to stay in your comfort zone' : 'create productive friction, the temptation is to let the tension paralyze you instead of using it as fuel'}. Growth looks like deliberately choosing challenges that stretch the parts of you that don't get exercised daily.`
-    );
-    paragraphs.push(
-      `Your ${sunData.name} Sun's shadow — ${sunData.shadow} — is the pattern to watch in your public life. Your ${moonData.name} Moon's shadow trigger — ${moonTheme.shadowTrigger} — is the vulnerability to protect in your private life. When both shadows activate simultaneously, you may find yourself ${sunData.element === moonData.element ? 'doubling down on your default coping mechanisms instead of trying something new' : 'pulled between your Sun\'s instinct and your Moon\'s need, unsure which voice to trust'}. The answer is almost always to slow down and ask: "What would I do if I weren't afraid?"`
-    );
-    paragraphs.push(
-      `The deepest growth for ${sunData.name} Sun, ${moonData.name} Moon comes from relationship. Not just romantic relationship, but every relationship that mirrors back the parts of yourself you can't see alone. Seek out people whose elements complement yours — ${sunData.element === 'fire' ? 'water and earth' : sunData.element === 'earth' ? 'fire and air' : sunData.element === 'air' ? 'water and earth' : 'fire and air'} people in particular will challenge you in exactly the ways you need. The friction is the lesson. The discomfort is the invitation.`
-    );
+    paragraphs.push('Both halves of you share the same blind spot, so it never feels like one. Ask someone who knows you well which of your habits you have stopped noticing, and write the answer down before you explain it away.');
   }
 
   return { title: 'Growth Edge', icon: '🌱', paragraphs };

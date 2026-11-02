@@ -12,6 +12,7 @@ import {
   ALL_SIGN_KEYS,
   getElementColor,
 } from './compatibilityContent';
+import { ZODIAC_SIGN_VOICE } from './zodiacSignVoice';
 
 export { ALL_SIGN_KEYS, SIGNS, getElementColor };
 export type { ZodiacSign, Element, Modality };
@@ -1035,6 +1036,8 @@ export function getZodiacSignProfile(sign: ZodiacSign): ZodiacSignProfile {
     ruler: base.ruler,
     dates: base.dates,
     ...profile,
+    // Reader's-voice copy replaces the textbook text for these fields.
+    ...ZODIAC_SIGN_VOICE[sign],
   };
 }
 
