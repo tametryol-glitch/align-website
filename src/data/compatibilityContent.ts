@@ -6,6 +6,8 @@
 
 // ── Core sign data ───────────────────────────────────────────
 
+import { COMPATIBILITY_VOICE } from './compatibilityVoice';
+
 export type ZodiacSign =
   | 'aries' | 'taurus' | 'gemini' | 'cancer'
   | 'leo' | 'virgo' | 'libra' | 'scorpio'
@@ -719,7 +721,8 @@ export function getCompatibilityContent(signA: ZodiacSign, signB: ZodiacSign): C
     overallScore,
     elementAffinity: elemAffinity,
     modalityAffinity: modAffinity,
-    sections,
+    // Reader's-voice copy wins; the generated text stays as a fallback.
+    sections: COMPATIBILITY_VOICE[slug]?.sections ?? sections,
     quickFacts,
   };
 }

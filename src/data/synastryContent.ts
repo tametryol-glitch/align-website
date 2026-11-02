@@ -3,6 +3,8 @@
    35 pages: 7 planet pairs x 5 aspects.
    ────────────────────────────────────────────────────────────── */
 
+import { SYNASTRY_VOICE } from './synastryVoice';
+
 export interface SynastryAspect {
   slug: string;
   planet1: string;
@@ -317,8 +319,9 @@ function buildAllAspects(): SynastryAspect[] {
         aspect,
         aspectSymbol: a.symbol,
         title: `${pair.p1} ${aspect.charAt(0).toUpperCase() + aspect.slice(1)} ${pair.p2} in Synastry`,
-        intro: content.intro,
-        sections: content.sections,
+        // Reader's-voice copy wins; the original text stays as a fallback.
+        intro: SYNASTRY_VOICE[slug]?.intro ?? content.intro,
+        sections: SYNASTRY_VOICE[slug]?.sections ?? content.sections,
         keywords: [
           `${pair.p1.toLowerCase()} ${aspect} ${pair.p2.toLowerCase()}`,
           `${pair.p1.toLowerCase()} ${pair.p2.toLowerCase()} synastry`,

@@ -10,6 +10,7 @@ import {
   getElementColor,
   type ZodiacSign,
 } from './compatibilityContent';
+import { applyPlanetVoice } from './planetSignVoice';
 
 export { SIGNS, ALL_SIGN_KEYS, getElementColor, type ZodiacSign };
 
@@ -429,7 +430,7 @@ const NEPTUNE_CONTENT: Record<ZodiacSign, Omit<NeptuneSignContent, 'sign'>> = {
 
 export function getNeptuneSignContent(sign: ZodiacSign): NeptuneSignContent {
   const content = NEPTUNE_CONTENT[sign];
-  return { sign, ...content };
+  return applyPlanetVoice('neptune', sign, { sign, ...content });
 }
 
 export function getAdjacentSigns(sign: ZodiacSign): { prev: ZodiacSign; next: ZodiacSign } {

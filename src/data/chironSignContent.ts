@@ -10,6 +10,7 @@ import {
   getElementColor,
   type ZodiacSign,
 } from './compatibilityContent';
+import { applyPlanetVoice } from './planetSignVoice';
 
 export { SIGNS, ALL_SIGN_KEYS, getElementColor, type ZodiacSign };
 
@@ -441,7 +442,7 @@ const CHIRON_CONTENT: Record<ZodiacSign, Omit<ChironSignContent, 'sign'>> = {
 
 export function getChironSignContent(sign: ZodiacSign): ChironSignContent {
   const content = CHIRON_CONTENT[sign];
-  return { sign, ...content };
+  return applyPlanetVoice('chiron', sign, { sign, ...content });
 }
 
 export function getAdjacentSigns(sign: ZodiacSign): { prev: ZodiacSign; next: ZodiacSign } {
