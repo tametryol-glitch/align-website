@@ -7,7 +7,7 @@ import {
   type FeedPost, type ReactionEmoji, type PostReaction,
   REACTION_OPTIONS, POST_STYLE_PRESETS, reportPost, recordPostVideoView,
 } from '@/lib/feedService';
-import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users, Download, Loader2 } from 'lucide-react';
+import { MessageCircle, Bookmark, MoreHorizontal, Trash2, Share2, Repeat2, Flag, Ban, Pencil, Globe, Users, Download, Loader2, EyeOff, VolumeX } from 'lucide-react';
 import { downloadVideo } from '@/lib/videoDownloadService';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
@@ -894,6 +894,9 @@ export function FeedCard({
   onRepost,
   isBookmarked,
   onBookmark,
+  onHidePost,
+  onMuteUser,
+  onBlockUser,
 }: {
   post: FeedPost;
   currentUserId: string;
@@ -904,6 +907,10 @@ export function FeedCard({
   onRepost: (post: FeedPost) => void;
   isBookmarked: boolean;
   onBookmark: (postId: string) => void;
+  /** Optional: pages that provide them get "Hide", "Mute" and a working "Block" in the menu. */
+  onHidePost?: (postId: string) => void;
+  onMuteUser?: (userId: string, name: string) => void;
+  onBlockUser?: (userId: string, name: string) => void;
 }) {
   const { t } = useTranslation();
   const [showReactions, setShowReactions] = useState(false);
@@ -928,6 +935,26 @@ export function FeedCard({
       setDownloading(false);
     }
   }, [downloading, post.id, post.videoUrl]);
+
+  const [shareCopied, setShareCopied] = useState(false);
+
+  // Shares the post's own page (/p/<id>), not the generic feed: a link that
+  // lands on the exact post is what turns a share into a new visitor.
+  async function handleShare() {
+    const local = /^(localhost|127\.)/.test(window.location.hostname);
+    const url = `${local ? window.location.origin : 'https://www.aligncosmic.com'}/p/${post.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${post.userName} on Align`, text: post.content.slice(0, 100), url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      }
+    } catch {
+      // Share sheet dismissed or clipboard blocked.
+    }
+  }
 
   const downloadLabel = downloadNotice || 'Save video';
   const [showMenu, setShowMenu] = useState(false);
@@ -1022,8 +1049,24 @@ export function FeedCard({
                   >
                     <Flag className="w-4 h-4" /> {t('components.feedCard.report')}
                   </button>
+                  {onHidePost && (
+                    <button
+                      onClick={() => { onHidePost(post.id); setShowMenu(false); }}
+                      className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
+                    >
+                      <EyeOff className="w-4 h-4" /> {t('components.feedCard.hidePost', 'Hide this post')}
+                    </button>
+                  )}
+                  {onMuteUser && (
+                    <button
+                      onClick={() => { onMuteUser(post.userId, post.userName); setShowMenu(false); }}
+                      className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-tertiary flex items-center gap-2"
+                    >
+                      <VolumeX className="w-4 h-4" /> {t('components.feedCard.muteUser', 'Mute {{name}}', { name: post.userName })}
+                    </button>
+                  )}
                   <button
-                    onClick={() => setShowMenu(false)}
+                    onClick={() => { onBlockUser?.(post.userId, post.userName); setShowMenu(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-tertiary flex items-center gap-2"
                   >
                     <Ban className="w-4 h-4" /> {t('friends.actions.blockUser')}
@@ -1265,17 +1308,10 @@ export function FeedCard({
         </button>
         <div className="w-px h-5 bg-border-primary" />
         <button
-          onClick={() => {
-            const shareUrl = `${window.location.origin}/feed`;
-            if (navigator.share) {
-              navigator.share({ title: `${post.userName} on Align`, text: post.content.slice(0, 100), url: shareUrl }).catch(() => {});
-            } else {
-              navigator.clipboard.writeText(shareUrl).catch(() => {});
-            }
-          }}
+          onClick={handleShare}
           className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs text-text-muted hover:text-accent-primary transition-colors"
         >
-          <Share2 className="w-4 h-4" /> {t('components.feedCard.share')}
+          <Share2 className="w-4 h-4" /> {shareCopied ? t('components.feedCard.linkCopied', 'Link copied') : t('components.feedCard.share')}
         </button>
 
         {/* Download — video posts only, and only when the creator allows it.

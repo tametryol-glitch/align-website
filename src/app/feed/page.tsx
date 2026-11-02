@@ -31,6 +31,8 @@ import { AddSoundChip } from '@/components/music/AddSoundChip';
 import { DevicePicker } from '@/components/video/DevicePicker';
 import { useTranslation } from 'react-i18next';
 import { getTrendingHashtags, getPostIdsByHashtag, indexPostHashtags } from '@/lib/hashtagService';
+import { blockUser } from '@/lib/friendService';
+import { loadHidden, hidePost, muteUser, type HiddenState } from '@/lib/feedHidden';
 import { buildShareTemplatePost, canPersonalize, signGlyph, type ShareTemplateId } from '@/lib/feedCosmicTemplates';
 
 // ── Dynamic Cosmic Helpers ────────────────────────────────────────
@@ -211,6 +213,10 @@ function CreatePostModal({
   const router = useRouter();
   const [content, setContent] = useState(initialContent);
   const [visibility, setVisibility] = useState<'public' | 'friends'>('public');
+  // Text drafts survive closing the composer or the tab. Attachments are
+  // files and cannot be kept, so only the words, visibility and poll are.
+  const draftKey = `align_feed_draft_${userId}`;
+  const [draftRestored, setDraftRestored] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState('default');
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState('');
@@ -248,6 +254,66 @@ function CreatePostModal({
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollDuration, setPollDuration] = useState<string>('24h');
+
+  // Restore a saved draft once, unless the composer was opened with content
+  // already (a hashtag prefill or an edited video).
+  useEffect(() => {
+    if (initialContent || initialVideoUrl) return;
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (!d || (!String(d.content || '').trim() && !String(d.pollQuestion || '').trim())) return;
+      if (typeof d.content === 'string') setContent(d.content.slice(0, 2000));
+      if (d.visibility === 'friends') setVisibility('friends');
+      if (d.postMode === 'poll') {
+        setPostMode('poll');
+        if (typeof d.pollQuestion === 'string') setPollQuestion(d.pollQuestion);
+        if (Array.isArray(d.pollOptions) && d.pollOptions.length >= 2) {
+          setPollOptions(d.pollOptions.slice(0, 6).map((o: unknown) => String(o)));
+        }
+      }
+      setDraftRestored(true);
+    } catch {
+      // Storage unavailable or corrupt: start with a blank composer.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Save as they type, debounced; an empty composer removes the draft.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const text = content.trim();
+        const poll = pollQuestion.trim();
+        if (!text && !poll) {
+          localStorage.removeItem(draftKey);
+          return;
+        }
+        localStorage.setItem(
+          draftKey,
+          JSON.stringify({
+            content,
+            visibility,
+            postMode: postMode === 'poll' ? 'poll' : 'text',
+            pollQuestion,
+            pollOptions,
+          }),
+        );
+      } catch {
+        // Quota or private mode: drafts are a convenience, never an error.
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [content, visibility, postMode, pollQuestion, pollOptions, draftKey]);
+
+  function discardDraft() {
+    setContent('');
+    setPollQuestion('');
+    setPollOptions(['', '']);
+    setDraftRestored(false);
+    try { localStorage.removeItem(draftKey); } catch {}
+  }
 
   const preset = POST_STYLE_PRESETS.find((p) => p.id === selectedPreset);
   const hasGradient = preset && preset.id !== 'default' && postMode === 'text';
@@ -427,6 +493,7 @@ function CreatePostModal({
           content: `📊 ${pollQuestion.trim()}`,
           visibility,
         });
+        try { localStorage.removeItem(draftKey); } catch {}
         onCreated(data);
         onClose();
       } else {
@@ -462,6 +529,7 @@ function CreatePostModal({
           ...(videoUrl ? { allowDownload } : {}),
           style: hasGradient ? { preset: selectedPreset } : null,
         });
+        try { localStorage.removeItem(draftKey); } catch {}
         onCreated(data);
         onClose();
       }
@@ -557,6 +625,14 @@ function CreatePostModal({
 
         {/* Content */}
         <div className="px-5 py-4 space-y-4">
+          {draftRestored && (
+            <div className="flex items-center justify-between gap-3 rounded-lg bg-accent-primary/10 border border-accent-primary/20 px-3 py-2 text-xs text-text-secondary">
+              <span>{t('feed.composer.draftRestored', 'Draft restored')}</span>
+              <button type="button" onClick={discardDraft} className="font-medium text-accent-primary hover:underline">
+                {t('feed.composer.discardDraft', 'Discard')}
+              </button>
+            </div>
+          )}
           {postMode !== 'poll' && (
             <>
               {/* Preview area */}
@@ -928,6 +1004,13 @@ export default function FeedPage() {
 
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [feedError, setFeedError] = useState<string | null>(null);
+  // One-line confirmation after hide / mute / block; clears itself.
+  const [feedNotice, setFeedNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!feedNotice) return;
+    const timer = setTimeout(() => setFeedNotice(null), 4000);
+    return () => clearTimeout(timer);
+  }, [feedNotice]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -985,6 +1068,25 @@ export default function FeedPage() {
   }, [userId]);
 
   useEffect(() => { loadFeed(); }, [loadFeed]);
+
+  // Infinite scroll: load the next page when the "Load more" area nears the
+  // viewport. The button stays as a fallback. Off while filtering by hashtag,
+  // where it would page through the whole feed to fill a filtered view.
+  const loadMoreRef = useRef(loadMore);
+  loadMoreRef.current = loadMore;
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMore || posts.length === 0 || activeHashtagFilter) return;
+    const io = new IntersectionObserver(
+      (entries) => { if (entries[0]?.isIntersecting) loadMoreRef.current(); },
+      { rootMargin: '800px 0px' },
+    );
+    io.observe(el);
+    // Re-created after every page (posts.length changes) so a sentinel that is
+    // still in view after loading immediately asks for the next page.
+    return () => io.disconnect();
+  }, [hasMore, posts.length, activeHashtagFilter, loading]);
 
   // Impressions batch on a timer, so send whatever is still buffered when the
   // tab is hidden or the user navigates away — otherwise the last few seconds
@@ -1062,6 +1164,33 @@ export default function FeedPage() {
       // Silently stop loading so the UI doesn't get stuck
     } finally {
       setLoadingMore(false);
+    }
+  }
+
+  // Hidden posts and muted people (this device), loaded after mount so the
+  // server render and first client render match.
+  const [hidden, setHidden] = useState<HiddenState>({ posts: new Set(), users: new Set() });
+  useEffect(() => { setHidden(loadHidden()); }, []);
+  const visiblePosts = posts.filter((p) => !hidden.posts.has(p.id) && !hidden.users.has(p.userId));
+
+  function handleHidePost(postId: string) {
+    setHidden((h) => hidePost(h, postId));
+  }
+
+  function handleMuteUser(targetId: string, name: string) {
+    setHidden((h) => muteUser(h, targetId));
+    setFeedNotice(t('feed.muted', 'Muted {{name}}. You will not see their posts on this device.', { name }));
+  }
+
+  async function handleBlockUser(targetId: string, name: string) {
+    if (!window.confirm(t('feed.blockConfirm', "Block {{name}}? They won't be able to see your profile or contact you.", { name }))) return;
+    const result = await blockUser(targetId);
+    if (result.success) {
+      // Gone from this feed straight away; the server filters them from now on.
+      setPosts((prev) => prev.filter((p) => p.userId !== targetId));
+      setFeedNotice(t('feed.blocked', 'Blocked {{name}}.', { name }));
+    } else {
+      setFeedNotice(result.error || t('feed.blockFailed', 'Could not block that user.'));
     }
   }
 
@@ -1334,11 +1463,11 @@ export default function FeedPage() {
                 const normalizedTag = activeHashtagFilter.startsWith('#')
                   ? activeHashtagFilter.toLowerCase()
                   : `#${activeHashtagFilter.toLowerCase()}`;
-                return posts.filter(p =>
+                return visiblePosts.filter(p =>
                   matchingIds.has(p.id) || p.content.toLowerCase().includes(normalizedTag)
                 );
               })()
-            : posts;
+            : visiblePosts;
 
           if (filteredPosts.length === 0 && activeHashtagFilter) {
             return (
@@ -1369,15 +1498,24 @@ export default function FeedPage() {
               onRepost={handleRepost}
               isBookmarked={bookmarkedIds.has(post.id)}
               onBookmark={handleBookmark}
+              onHidePost={handleHidePost}
+              onMuteUser={handleMuteUser}
+              onBlockUser={handleBlockUser}
             />
             </ImpressionSlot>
           ));
         })()}
       </div>
 
+      {feedNotice && (
+        <div role="status" className="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 z-50 max-w-sm rounded-xl bg-bg-elevated border border-border-primary px-4 py-2.5 text-sm text-text-primary shadow-lg">
+          {feedNotice}
+        </div>
+      )}
+
       {/* Load more */}
       {hasMore && posts.length > 0 && (
-        <div className="text-center py-8">
+        <div ref={sentinelRef} className="text-center py-8">
           <button onClick={loadMore} disabled={loadingMore} className="btn-secondary text-sm">
             {loadingMore ? t('feed.loading') : t('feed.loadMore')}
           </button>
