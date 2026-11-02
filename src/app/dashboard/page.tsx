@@ -79,82 +79,6 @@ function getGreeting(): string {
   return 'Good night 🌙';
 }
 
-function getPlanetaryHour(): { glyph: string; name: string } {
-  const hour = new Date().getHours();
-  const day = new Date().getDay();
-  const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-  const idx = (day * 24 + hour) % 7;
-  return { glyph: CHALDEAN_GLYPHS[planets[idx]] || '☉', name: planets[idx] };
-}
-
-function getDailyMessage(sign: string): string {
-  const pool: Record<string, string[]> = {
-    Aries: [
-      'Your fiery energy is flowing strong today. Take bold action on projects that excite you, but remember to pause before reacting impulsively.',
-      'A competitive edge fuels you. Channel intensity into a workout, creative sprint, or a conversation you have been putting off.',
-      'Courage is your currency today. Speak up for what you believe, but lead with empathy alongside that fire.',
-    ],
-    Taurus: [
-      'Grounding energy surrounds you. Focus on building something lasting — your patience and determination are your superpowers.',
-      'Pleasure and purpose align. Indulge your senses thoughtfully, and invest time in the people who appreciate your steady presence.',
-      'Slow and deliberate wins the day. A financial or creative plan you nurture now will pay off handsomely.',
-    ],
-    Gemini: [
-      'Your mind is buzzing with ideas. Share your thoughts with others and embrace curiosity. Connections made today could prove valuable.',
-      'Words carry extra power now. Write, teach, or just strike up a conversation — your wit opens doors.',
-      'Adaptability is your edge today. Juggle multiple interests guilt-free; variety feeds your spirit.',
-    ],
-    Cancer: [
-      'Nurture yourself and those you love today. Your intuition is heightened — trust those gut feelings about situations and people.',
-      'Home and heart are your anchors. Cook a favorite meal, call a loved one, or create a cozy workspace.',
-      'Emotional wisdom is a superpower today. Let sensitivity guide decisions rather than guarding against it.',
-    ],
-    Leo: [
-      'Your creative fire burns bright. Express yourself boldly and let your natural leadership shine. Others are drawn to your warmth.',
-      'Generosity of spirit defines your day. Celebrate someone else and watch the spotlight find you anyway.',
-      'Playfulness is productive. Let laughter and joy inform how you tackle serious tasks.',
-    ],
-    Virgo: [
-      'Details come into focus today. Your analytical mind can solve complex problems — use this energy for practical improvements.',
-      'Organization creates freedom. Streamline a routine so you reclaim time for the things that feed your soul.',
-      'Service and skill intersect. Helping someone today refines your own abilities in unexpected ways.',
-    ],
-    Libra: [
-      'Harmony and beauty call to you. Seek balance in relationships and create aesthetically pleasing spaces around you.',
-      'Diplomacy is your superpower today. Mediate a disagreement or simply bring grace to a tense situation.',
-      'Collaboration amplifies results. A partnership discussion or joint project thrives under today\'s energy.',
-    ],
-    Scorpio: [
-      'Deep transformation is available today. Dive beneath the surface and explore what truly motivates you. Power comes from self-knowledge.',
-      'Trust your intensity. Focused passion turns ordinary effort into extraordinary results.',
-      'Release what no longer serves you. Letting go today creates space for profound renewal.',
-    ],
-    Sagittarius: [
-      'Adventure and expansion beckon. Explore new philosophies, plan a journey, or simply expand your worldview through learning.',
-      'Optimism is contagious. Share your vision of what\'s possible and inspire the people around you.',
-      'Freedom and focus can coexist. Give your wandering mind a worthy quest today.',
-    ],
-    Capricorn: [
-      'Structure and ambition fuel your day. Take steps toward long-term goals — your discipline and perseverance will be rewarded.',
-      'Legacy thinking serves you. The effort you put in now compounds into future security and respect.',
-      'Practical wisdom shines. Trust your experience over hype, and build on foundations that actually hold.',
-    ],
-    Aquarius: [
-      'Innovation sparks fly. Think outside the box and embrace your unique perspective. Community efforts thrive under this energy.',
-      'Rebellion with purpose is today\'s theme. Question a norm, suggest a better system, and lead change.',
-      'Connection and detachment coexist. Engage deeply with ideas while giving yourself room to observe.',
-    ],
-    Pisces: [
-      'Creativity and compassion flow freely. Trust your artistic impulses and extend kindness to others — the universe returns it tenfold.',
-      'Imagination is a gateway today. Daydreams, music, and art reveal answers that logic cannot reach.',
-      'Boundaries protect your empathy. Give generously, but reserve energy for your own healing.',
-    ],
-  };
-  const arr = pool[sign] || pool['Pisces'];
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-  return arr[dayOfYear % arr.length];
-}
-
 // ── World Echo teaser pool ──────────────────────────────────────
 // Deterministic "today in cosmic history" — rotates daily by day-of-year.
 // Used as fallback when the live API scan is unavailable.
@@ -202,22 +126,6 @@ function getWorldEchoTeaser(): { year: number; event: string } {
   return WORLD_ECHO_TEASERS[dayOfYear % WORLD_ECHO_TEASERS.length];
 }
 
-// Cosmic Weather forecast categories
-const FORECAST_TABS = ['General', 'Money', 'Love', 'Career', 'Spiritual', 'Children', 'Healing'] as const;
-
-function getCosmicForecast(sign: string, tab: string): string {
-  const base: Record<string, string> = {
-    General: `The cosmic currents favor ${sign} today. Trust in the flow of events and remain open to unexpected opportunities. Your ruling energy is well-aspected.`,
-    Money: `Financial awareness is heightened. Look for unconventional income streams or revisit a budget plan. Small, consistent actions build long-term security for ${sign}.`,
-    Love: `Emotional connections deepen today. Whether single or partnered, vulnerability opens doors. ${sign} energy radiates magnetic warmth — let others see the real you.`,
-    Career: `Professional momentum builds. Your natural ${sign} strengths are noticed by those in positions of influence. Take initiative on a project you believe in.`,
-    Spiritual: `Inner wisdom speaks clearly today. Meditation, journaling, or simply quiet reflection reveals insights unique to ${sign}. Pay attention to recurring symbols.`,
-    Children: `Nurturing energy surrounds family bonds. Creative play and heartfelt conversations strengthen connections. ${sign} parents/guardians radiate supportive warmth.`,
-    Healing: `Your body and mind seek balance. Gentle movement, nourishing food, and intentional rest restore ${sign} vitality. Honor what your body asks for today.`,
-  };
-  return base[tab] || base['General'];
-}
-
 // ── Types ────────────────────────────────────────────────────────
 
 interface Friend {
@@ -254,14 +162,11 @@ export default function DashboardPage() {
   const [todayLoading, setTodayLoading] = useState(true);
   const [moonSign, setMoonSign] = useState('');
   const [moonPhase, setMoonPhase] = useState(getMoonPhaseFromSynodic());
-  const [liveSunSign, setLiveSunSign] = useState(sunSign);
-  const [planetaryHour, setPlanetaryHour] = useState(getPlanetaryHour());
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>([]);
-  const [forecastTab, setForecastTab] = useState<string>('General');
   const [echoTeaser, setEchoTeaser] = useState<{ year: number; event: string } | null>(null);
 
   const hasBirthData = !!(profile?.birth_date && profile?.latitude);
@@ -278,10 +183,6 @@ export default function DashboardPage() {
     loadFeedPreview();
     useStreakStore.getState().fetchStreak(user.id);
     loadEchoTeaser();
-
-    // Refresh planetary hour every minute
-    const hourInterval = setInterval(() => setPlanetaryHour(getPlanetaryHour()), 60000);
-    return () => clearInterval(hourInterval);
   }, [user]);
 
   // Load astro data separately — depends on profile being fully loaded
@@ -409,7 +310,6 @@ export default function DashboardPage() {
 
           const sun = mapped.find((t: TransitPosition) => t.name === 'Sun');
           const moon = mapped.find((t: TransitPosition) => t.name === 'Moon');
-          if (sun) setLiveSunSign(sun.sign);
           if (moon) setMoonSign(moon.sign);
           if (sun && moon && sun.longitude && moon.longitude) {
             setMoonPhase(getMoonPhaseFromLongitudes(sun.longitude, moon.longitude));
@@ -510,26 +410,6 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      {/* ─── Your Day Banner ──────────────────────────────── */}
-      <Link href="/your-day" className="block">
-        <div
-          data-coachmark="daily-brief"
-          className="rounded-2xl p-4 border border-accent-primary/30 flex items-center gap-4 hover:border-accent-primary/50 transition-colors"
-          style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.10))' }}
-        >
-          <span className="text-2xl">✨</span>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-text-primary">
-              {t('home.yourDayReady', 'Your Daily Brief is ready')}
-            </p>
-            <p className="text-xs text-text-muted mt-0.5">
-              {t('home.yourDaySubtitle', 'Cosmic card, moon phase, energy forecast & more')}
-            </p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-accent-primary" />
-        </div>
-      </Link>
-
       {/* ─── Soul Age Calculator ──────────────────────────────
           Always FREE — never gate this behind a plan, trial or token check. */}
       <Link href="/soul-age" className="block">
@@ -579,27 +459,6 @@ export default function DashboardPage() {
           </div>
         </Link>
       )}
-
-      {/* ─── Daily Insight Card ─────────────────────────────── */}
-      <Link href="/readings/transits" className="block">
-        <div
-          className="rounded-2xl p-6 border border-purple-500/30 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #1E1145, #2D1B69)' }}
-        >
-          <p className="text-purple-300 text-[10px] font-semibold uppercase tracking-[2px] mb-2">
-            {t('home.dailyInsight')}
-          </p>
-          <h2 className="text-lg font-bold text-white mb-2">
-            ☉ Sun in {liveSunSign || sunSign}
-          </h2>
-          <p className="text-purple-200/80 text-sm leading-relaxed max-w-lg">
-            {getDailyMessage(liveSunSign || sunSign)}
-          </p>
-          <span className="inline-flex items-center gap-1 text-purple-300 text-sm font-medium mt-3 hover:text-purple-200">
-            See full forecast →
-          </span>
-        </div>
-      </Link>
 
       {/* ─── Social Activity ────────────────────────────────── */}
       {(pendingRequests > 0 || friends.length > 0) && (
@@ -764,71 +623,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ─── Cosmic Weather Widget ──────────────────────────── */}
-      <Link href="/cosmic-alerts" className="block">
-        <div className="card rounded-2xl overflow-hidden hover:border-accent-primary/30 transition-colors">
-          <div className="p-4 pb-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                <span className="text-lg">⚡</span> Cosmic Weather
-              </h3>
-              <ChevronRight className="w-4 h-4 text-text-muted" />
-            </div>
-          </div>
-          {/* Tabs */}
-          <div className="flex overflow-x-auto scrollbar-hide px-4 gap-1 pb-2">
-            {FORECAST_TABS.map(tab => (
-              <span
-                key={tab}
-                onClick={(e) => { e.preventDefault(); setForecastTab(tab); }}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                  forecastTab === tab
-                    ? 'bg-accent-primary text-white'
-                    : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
-                }`}
-              >
-                {tab}
-              </span>
-            ))}
-          </div>
-          <div className="px-4 pb-4 pt-2">
-            <p className="text-sm text-text-secondary leading-relaxed">
-              {getCosmicForecast(liveSunSign || sunSign, forecastTab)}
-            </p>
-            <p className="text-xs text-accent-primary mt-2 font-medium">View personalized transit alerts →</p>
-          </div>
-        </div>
-      </Link>
-
-      {/* ─── Moon Phase Card ────────────────────────────────── */}
-      <Link href="/readings/moon-phases" className="block">
-        <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.moonPhase')}</h3>
-          <div className="flex items-center gap-4">
-            <span className="text-5xl">{moonPhase.emoji}</span>
-            <div>
-              <p className="text-base font-medium text-text-primary">{moonPhase.phase}</p>
-              <p className="text-sm text-text-tertiary">
-                {moonSign ? `Moon in ${moonSign}` : 'Calculating...'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </Link>
-
-      {/* ─── Current Transits Card ──────────────────────────── */}
-      <Link href="/readings/transits" className="block">
-        <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.currentTransits')}</h3>
+      {/* ─── Sky right now ──────────────────────────────────────
+          Collapsed: the Today card already answers "what is happening to me",
+          so the raw positions are one tap away rather than three cards deep. */}
+      <details className="card rounded-2xl">
+        <summary className="cursor-pointer select-none list-none p-4 flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-text-primary">Sky right now</span>
+          <span className="text-xs text-text-muted">
+            {moonPhase.emoji} {moonPhase.phase}{moonSign ? ` · Moon in ${moonSign}` : ''}
+          </span>
+        </summary>
+        <div className="px-4 pb-4 space-y-4">
           {liveTransits.length > 0 ? (
-            <div className="space-y-2">
-              {liveTransits.map(t => (
-                <div key={t.name} className="flex items-center gap-2 text-sm">
-                  <span className="text-text-muted w-5">{CHALDEAN_GLYPHS[t.name] || ''}</span>
-                  <span className="text-text-secondary font-medium">{t.name}</span>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {liveTransits.map(tr => (
+                <div key={tr.name} className="flex items-center gap-2 text-sm">
+                  <span className="text-text-muted w-5">{CHALDEAN_GLYPHS[tr.name] || ''}</span>
+                  <span className="text-text-secondary font-medium">{tr.name}</span>
                   <span className="text-accent-secondary text-xs italic">in</span>
-                  <span className="text-text-secondary">{t.sign}</span>
-                  {t.retrograde && (
+                  <span className="text-text-secondary">{tr.sign}</span>
+                  {tr.retrograde && (
                     <span className="text-red-400 text-xs font-bold">℞</span>
                   )}
                 </div>
@@ -839,42 +653,14 @@ export default function DashboardPage() {
               {hasBirthData ? 'Loading planetary positions...' : 'Add birth data to see live transits'}
             </p>
           )}
-        </div>
-      </Link>
-
-      {/* ─── Planetary Hours Card ───────────────────────────── */}
-      <Link href="/readings/planetary-hours" className="block">
-        <div className="card rounded-2xl p-4 hover:border-accent-primary/30 transition-colors">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">{t('home.planetaryHours')}</h3>
-          <div className="flex items-center justify-between">
-            <div className="bg-gold-primary/10 text-gold-primary text-sm font-semibold px-4 py-2 rounded-lg">
-              {planetaryHour.glyph} {planetaryHour.name} Hour
-            </div>
-            <span className="text-xs text-text-muted">Tap for full schedule</span>
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs font-medium text-accent-primary">
+            <Link href="/readings/transits" className="hover:underline">Full transit reading →</Link>
+            <Link href="/readings/moon-phases" className="hover:underline">Moon phases →</Link>
+            <Link href="/readings/planetary-hours" className="hover:underline">Planetary hours →</Link>
+            <Link href="/cosmic-alerts" className="hover:underline">Cosmic alerts →</Link>
           </div>
         </div>
-      </Link>
-
-      {/* ─── Complete Profile CTA ───────────────────────────── */}
-      {!hasBirthData && (
-        <div
-          className="rounded-2xl p-6 border border-purple-500/30 text-center"
-          style={{ background: 'linear-gradient(135deg, #1E1145, #2D1B69)' }}
-        >
-          <span className="text-3xl block mb-3">✨</span>
-          <h3 className="text-lg font-semibold text-white mb-2">Complete Your Cosmic Profile</h3>
-          <p className="text-sm text-purple-200/70 mb-4 max-w-md mx-auto">
-            Add your birth data to unlock personalized readings, transit alerts, and accurate chart calculations.
-          </p>
-          <Link
-            href="/onboarding"
-            className="btn-primary inline-block px-6 py-3 rounded-xl font-medium"
-          >
-            Add Birth Data
-          </Link>
-        </div>
-      )}
-
+      </details>
       {/* ─── Guidance Systems ─────────────────────────────── */}
       <WhatsNewModal
         visible={!!whatsNewEntry}

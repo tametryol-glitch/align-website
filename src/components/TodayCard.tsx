@@ -110,7 +110,7 @@ export function TodayCard({
   }
 
   return (
-    <div className={shell} style={shellStyle} data-coachmark="today-card">
+    <div className={shell} style={shellStyle} data-coachmark="daily-brief">
       <div className="flex items-center justify-between mb-1">
         <p className="text-xs font-semibold uppercase tracking-wider text-accent-secondary">Today for you</p>
         {moonPhase && (
