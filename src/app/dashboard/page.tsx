@@ -21,6 +21,7 @@ import { GettingStartedChecklist } from '@/components/ui/GettingStartedChecklist
 import { PurposeCheckinCard } from '@/components/PurposeCheckinCard';
 import { EarthlyPurposeCard } from '@/components/EarthlyPurposeCard';
 import { SoulPurposeCard } from '@/components/SoulPurposeCard';
+import { TodayCard, type TodayData } from '@/components/TodayCard';
 import { useCoachmarks } from '@/hooks/useCoachmarks';
 import { CoachmarkOverlay } from '@/components/ui/CoachmarkOverlay';
 
@@ -248,6 +249,9 @@ export default function DashboardPage() {
 
   // State
   const [liveTransits, setLiveTransits] = useState<TransitPosition[]>([]);
+  // Raw transit + natal positions for the Today card; null until fetched.
+  const [todayData, setTodayData] = useState<TodayData | null>(null);
+  const [todayLoading, setTodayLoading] = useState(true);
   const [moonSign, setMoonSign] = useState('');
   const [moonPhase, setMoonPhase] = useState(getMoonPhaseFromSynodic());
   const [liveSunSign, setLiveSunSign] = useState(sunSign);
@@ -386,6 +390,11 @@ export default function DashboardPage() {
         const data = await api.getCurrentTransits(buildBirthData(currentProfile));
         const positions = data?.transit_positions || data?.transits || [];
         if (Array.isArray(positions) && positions.length > 0) {
+          const toBody = (p: any) => ({ name: p.name, longitude: p.longitude });
+          setTodayData({
+            transits: positions.map(toBody),
+            natal: (Array.isArray(data?.natal_positions) ? data.natal_positions : []).map(toBody),
+          });
           const showPlanets = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Vesta', 'Juno', 'Pluto', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
           const mapped = positions.map((p: any) => ({
             name: p.name,
@@ -409,6 +418,8 @@ export default function DashboardPage() {
       }
     } catch {
       // Silent — synodic fallback already shown
+    } finally {
+      setTodayLoading(false);
     }
   }
 
@@ -448,6 +459,17 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* ─── Today for you: the one answer ───────────────── */}
+      <TodayCard
+        hasBirthData={hasBirthData}
+        birthTimeKnown={!!profile?.birth_time}
+        data={todayData}
+        loading={todayLoading && hasBirthData}
+        latitude={profile?.latitude}
+        longitude={profile?.longitude}
+        moonPhase={moonPhase}
+      />
 
       {/* ─── Getting Started Checklist ───────────────────── */}
       {!gettingStarted.isDismissed && !gettingStarted.isAllDone && (
