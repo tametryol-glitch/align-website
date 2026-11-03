@@ -35,6 +35,7 @@ const READINGS: ReadingItem[] = [
   { key: 'Cosmic Journal', href: '/readings/cosmic-journal', glyph: '📖', tier: 'starter' },
   { key: 'Dream Oracle', href: '/readings/dream-oracle', glyph: '🔮', tier: 'premium' },
   { key: 'Year Ahead', href: '/readings/year-ahead', glyph: '📅', tier: 'premium' },
+  { key: 'Divine Timing', href: '/divine-timing', glyph: '✦', tier: 'free' },
   { key: 'Galactic Clock', href: '/readings/galactic-clock', glyph: '🕐', tier: 'free' },
   { key: 'Galactic Forecast', href: '/readings/galactic-forecast', glyph: '🌌', tier: 'premium' },
   { key: 'Solar Return', href: '/readings/solar-return', glyph: '☉', tier: 'premium' },
