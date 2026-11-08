@@ -16,6 +16,8 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs'; // needs supabase-js, not edge-compatible
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 const ALIGN_DAILY_ID = 'b15846d4-48db-42b2-bdfd-04abe3ff15d6';
 // 84h (3.5 days) so a daily cron lands on every 4th day without drifting.
@@ -45,7 +47,12 @@ function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
   if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
-  return createClient(url, key, { auth: { persistSession: false } });
+  // Never let Next.js cache these reads: a stale list made the cron think nothing
+  // had been posted since 28-10 and it re-posted Divine Timing daily.
+  return createClient(url, key, {
+    auth: { persistSession: false },
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }) },
+  });
 }
 
 export async function GET(request: NextRequest) {
@@ -79,6 +86,20 @@ export async function GET(request: NextRequest) {
     const urls = (posted || []).map((p) => p.video_url || '');
     const next = QUEUE.find((q) => !urls.some((u) => u.includes(`/promo/${q.key}.mp4`)));
     if (!next) return NextResponse.json({ posted: false, reason: 'queue-empty' });
+
+    // Last-line guard, read fresh right before inserting: never post a video
+    // that already exists, and never post within the gap of the newest one.
+    const { data: guard, error: guardErr } = await admin
+      .from('posts')
+      .select('id')
+      .eq('user_id', ALIGN_DAILY_ID)
+      .eq('type', 'video')
+      .or(`video_url.ilike.%/promo/${next.key}.mp4,created_at.gt.${new Date(Date.now() - MIN_GAP_HOURS * 3_600_000).toISOString()}`)
+      .limit(1);
+    if (guardErr) return NextResponse.json({ error: guardErr.message }, { status: 500 });
+    if (guard && guard.length > 0) {
+      return NextResponse.json({ posted: false, reason: 'guard-blocked', key: next.key });
+    }
 
     const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/post-media/${ALIGN_DAILY_ID}/promo/${next.key}`;
     const { data, error: insErr } = await admin
