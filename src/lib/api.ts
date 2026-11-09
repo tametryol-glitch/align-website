@@ -79,6 +79,48 @@ class AlignAPI {
     return this.request('/transits/events', { method: 'POST', body: JSON.stringify(data) });
   }
 
+  /** Transit Midpoint Radar: live hits, exact dates and readings for the Transits screen. */
+  async getRadarScan(data: any) {
+    return this.request('/radar/scan', { method: 'POST', body: JSON.stringify(data) });
+  }
+
+  /** House-ruler chain data for the hits you picked (no AI). */
+  async getRadarChain(data: any) {
+    return this.request('/radar/chain', { method: 'POST', body: JSON.stringify(data) }, 45000);
+  }
+
+  /** Streams the AI chain reading (paid tiers). Same SSE shape as streamAIInterpretation. */
+  async streamRadarChainReading(data: any, onChunk: (text: string) => void, onDone: () => void) {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+    const res = await fetch('/api/ai/radar-chain', { method: 'POST', headers, body: JSON.stringify(data) });
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '');
+      let detail = errorText.substring(0, 200);
+      try { detail = JSON.parse(errorText)?.detail || detail; } catch { /* plain text */ }
+      throw new Error(`${res.status}: ${detail}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error('No response body');
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const trimmed = line.replace(/\r$/, '');
+        if (!trimmed.startsWith('data: ')) continue;
+        const raw = trimmed.slice(6);
+        if (raw === '[DONE]') { onDone(); return; }
+        try { onChunk(JSON.parse(raw)); } catch { onChunk(raw); }
+      }
+    }
+    onDone();
+  }
+
   async getUpcomingMoonPhases(count = 4) {
     return this.request(`/transits/upcoming-moon-phases?count=${count}`);
   }
