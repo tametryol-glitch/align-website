@@ -44,7 +44,7 @@ function monthKey(iso: string | null): string {
 function TargetGlyphs({ h }: { h: RadarHit }) {
   return (
     <>
-      {h.kind === 'midpoint' ? h.target.split('/').map((n) => glyph(n)).join('/') : glyph(h.target)}
+      {h.kind !== 'planet' ? h.target.split('/').map((n) => glyph(n)).join('/') : glyph(h.target)}
     </>
   );
 }
@@ -91,7 +91,7 @@ function HitCard({
             <h3 className="text-sm font-display font-bold text-text-primary leading-snug">
               {hit.milestone || hit.label ? hitTitle(hit) : (
                 <>
-                  {hit.body} {hit.symbol} <TargetGlyphs h={hit} /> <span className="font-normal text-text-muted">{hit.kind === 'midpoint' ? hit.target : `your ${hit.target}`}</span>
+                  {hit.body} {hit.symbol} <TargetGlyphs h={hit} /> <span className="font-normal text-text-muted">{hit.kind !== 'planet' ? hit.target : `your ${hit.target}`}</span>
                 </>
               )}
             </h3>
@@ -121,7 +121,7 @@ function LockedRow({ hit }: { hit: RadarHit }) {
       <Lock className="w-5 h-5 text-accent-primary shrink-0" />
       <div className="min-w-0">
         <p className="text-sm font-semibold text-text-primary truncate">
-          {hit.body} {hit.symbol} {hit.kind === 'midpoint' ? hit.target : `your ${hit.target}`}
+          {hit.body} {hit.symbol} {hit.kind !== 'planet' ? hit.target : `your ${hit.target}`}
         </p>
         <p className="text-[11px] text-text-muted mt-0.5">{hit.exact ? fmtDate(hit.exact) : ''}</p>
       </div>
@@ -150,6 +150,7 @@ export default function TransitsPage() {
   const [bigOnly, setBigOnly] = useState(false);
   const [areaKey, setAreaKey] = useState<string | null>(null);
   const [chartMode, setChartMode] = useState<'natal' | 'progressed'>('natal');
+  const [radarMode, setRadarMode] = useState<'pictures' | 'all'>('pictures');
 
   const [storylines, setStorylines] = useState<TransitStoryline[]>([]);
   const [storylinesLoading, setStorylinesLoading] = useState(false);
@@ -162,7 +163,7 @@ export default function TransitsPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.getRadarScan({ birth_data: buildBirthData(profile), days: 180, orb: 1.0, chart_mode: chartMode });
+      const res = await api.getRadarScan({ birth_data: buildBirthData(profile), days: 180, orb: 1.0, chart_mode: chartMode, radar_mode: radarMode });
       setRadar(res as RadarResponse);
     } catch (err: any) {
       setError(err?.message || t('readings.transitsPage.errorDefault'));
@@ -170,7 +171,7 @@ export default function TransitsPage() {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile, chartMode]);
+  }, [profile, chartMode, radarMode]);
 
   useEffect(() => {
     load();
@@ -353,6 +354,29 @@ export default function TransitsPage() {
               ? 'Transits against the chart you were born with: who you are.'
               : 'Transits against your progressed chart: the you that is forming now, and what is changing in you.'}
           </p>
+          <div className="inline-flex bg-bg-card rounded-full p-1 mt-3" role="group" aria-label="Which hits to show">
+            {(['pictures', 'all'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => {
+                  setAreaKey(null);
+                  setPinnedId(null);
+                  setRadarMode(m);
+                }}
+                aria-pressed={radarMode === m}
+                className={`py-1.5 px-4 rounded-full text-xs font-medium transition-colors ${
+                  radarMode === m ? 'bg-white/15 text-text-primary' : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                {m === 'pictures' ? 'Pictures' : 'Everything'}
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] text-text-muted mt-2 leading-relaxed">
+            {radarMode === 'pictures'
+              ? 'The radar proper: a transit lands on a planet that sits on a midpoint (within 1\u00b0), which sets off the whole picture. Each one reads as a vivid event.'
+              : 'Everything: the pictures, plus transits straight onto midpoints and onto your planets.'}
+          </p>
         </div>
       )}
 
@@ -488,7 +512,11 @@ export default function TransitsPage() {
 
           {nowHits.length === 0 ? (
             <div className="card text-center py-12">
-              <p className="text-text-muted text-sm">{t('readings.transitsPage.emptyState')}</p>
+              <p className="text-text-muted text-sm">
+                {radarMode === 'pictures'
+                  ? 'No transit is on a planet-on-midpoint picture right now. Check Coming up for the next ones, or switch to Everything for the direct hits.'
+                  : t('readings.transitsPage.emptyState')}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -614,6 +642,7 @@ export default function TransitsPage() {
           asOf={radar.meta.as_of}
           birthData={buildBirthData(profile)}
           chartMode={radar.meta.chart_mode ?? 'natal'}
+          radarMode={radar.meta.radar_mode ?? 'pictures'}
           canAI={hasAccess('transit_reading')}
         />
       )}

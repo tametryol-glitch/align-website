@@ -68,6 +68,7 @@ export default function RadarDetail({
   birthData,
   canAI,
   chartMode = 'natal',
+  radarMode = 'pictures',
 }: {
   hit: RadarHit;
   card: RadarCard;
@@ -76,6 +77,7 @@ export default function RadarDetail({
   birthData: any;
   canAI: boolean;
   chartMode?: 'natal' | 'progressed';
+  radarMode?: 'pictures' | 'all';
 }) {
   const [copied, setCopied] = useState(false);
   const col = bodyColor(hit.body);
@@ -142,8 +144,9 @@ export default function RadarDetail({
             <div className="flex items-center justify-center gap-2 text-2xl mb-1" style={{ color: col }}>
               <span>{glyph(hit.body)}</span>
               <span className="text-base opacity-80">{hit.symbol}</span>
-              {hit.kind === 'midpoint' ? (
+              {hit.kind !== 'planet' ? (
                 <span className="text-lg">
+                  {hit.kind === 'picture' && hit.sits_on ? `${glyph(hit.sits_on.planet)} = ` : ''}
                   {hit.target.split('/').map((n) => glyph(n)).join(' / ')}
                 </span>
               ) : (
@@ -244,13 +247,13 @@ export default function RadarDetail({
           </Section>
 
           <div className="mx-6 border-t border-white/10 mb-5" />
-          <RadarChain hitId={hit.id} asOf={asOf} birthData={birthData} canAI={canAI} chartMode={chartMode} />
+          <RadarChain hitId={hit.id} asOf={asOf} birthData={birthData} canAI={canAI} chartMode={chartMode} radarMode={radarMode} />
 
           <div className="mx-6 border-t border-white/10" />
           <Section title="The details">
             <div className="space-y-2 text-sm">
               {[
-                ['Transit', `${hit.body} ${hit.aspect.toLowerCase()} ${hit.kind === 'midpoint' ? hit.target + ' midpoint' : 'your ' + hit.target}`],
+                ['Transit', `${hit.body} ${hit.aspect.toLowerCase()} ${hit.kind === 'picture' && hit.sits_on ? hit.sits_on.planet + ' (on the ' + hit.target + ' midpoint)' : hit.kind === 'midpoint' ? hit.target + ' midpoint' : 'your ' + hit.target}`],
                 ['Orb now', hit.orb != null ? `${hit.orb.toFixed(2)}°` : 'exact at this moment'],
                 ['Lands in', hit.houses.mid ? `${houseOrd(hit.houses.mid)} house` : '—'],
                 ['Transit sits in', hit.houses.transit ? `${houseOrd(hit.houses.transit)} house` : '—'],

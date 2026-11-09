@@ -32,7 +32,7 @@ export interface RadarCall {
 
 export interface RadarHit {
   id: string;
-  kind: 'midpoint' | 'planet';
+  kind: 'midpoint' | 'planet' | 'picture'; // picture = transit on a planet that sits on a midpoint
   body: string;
   target: string; // "Venus/Mars" for a midpoint, "Venus" for a natal planet
   aspect: string;
@@ -55,6 +55,7 @@ export interface RadarHit {
   orb?: number;
   sits_on?: { planet: string; orb: number; line: string };
   milestone?: string;
+  planet?: string;
   label?: string | null; // set in the progressed chart: 'Saturn □ progressed Venus/Mars'
 }
 
@@ -116,7 +117,7 @@ export interface ChainResponse {
 }
 
 export interface RadarResponse {
-  meta: { as_of: string; days: number; orb: number; house_system: string; midpoints_scanned: number; chart_mode?: 'natal' | 'progressed' };
+  meta: { as_of: string; days: number; orb: number; house_system: string; midpoints_scanned: number; chart_mode?: 'natal' | 'progressed'; radar_mode?: 'pictures' | 'all'; pictures?: number };
   natal: { asc: number; cusps: number[]; points: RadarPoint[] };
   sky: RadarPoint[];
   now: { verdict: RadarVerdict; hits: RadarHit[]; areas: RadarArea[] };
@@ -183,7 +184,7 @@ export function fmtWhen(days: number | null | undefined): string {
 }
 
 export function targetLabel(h: Pick<RadarHit, 'kind' | 'target'>): string {
-  return h.kind === 'midpoint' ? h.target : `your ${h.target}`;
+  return h.kind !== 'planet' ? h.target : `your ${h.target}`;
 }
 
 export function hitTitle(h: RadarHit): string {

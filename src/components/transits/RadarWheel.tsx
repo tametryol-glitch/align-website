@@ -134,7 +134,7 @@ export default function RadarWheel({
         const sel = h.id === selectedId;
         let a: [number, number] | null = null;
         let b: [number, number] | null = null;
-        if (h.kind === 'midpoint') {
+        if (h.kind !== 'planet') {
           const [an, bn] = h.target.split('/');
           if (natalLon[an] != null) a = pt(R_NATAL - 8, natalLon[an], asc);
           if (natalLon[bn] != null) b = pt(R_NATAL - 8, natalLon[bn], asc);
