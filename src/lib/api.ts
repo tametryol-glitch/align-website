@@ -84,6 +84,19 @@ class AlignAPI {
     return this.request('/radar/scan', { method: 'POST', body: JSON.stringify(data) });
   }
 
+  /** Your Day: the progressed radar told as one story. Free members get the opening and the first chapters. */
+  async getDayStory(data: any) {
+    return this.request('/daystory/today', { method: 'POST', body: JSON.stringify(data) }, 90000);
+  }
+
+  async dayStoryFeedback(date: string, rating: 'happened' | 'partly' | 'didnt') {
+    return this.request('/daystory/feedback', { method: 'POST', body: JSON.stringify({ date, rating }) });
+  }
+
+  async dayStoryPaywall(date: string) {
+    return this.request('/daystory/paywall', { method: 'POST', body: JSON.stringify({ date }) });
+  }
+
   /** House-ruler chain data for the hits you picked (no AI). */
   async getRadarChain(data: any) {
     return this.request('/radar/chain', { method: 'POST', body: JSON.stringify(data) }, 45000);

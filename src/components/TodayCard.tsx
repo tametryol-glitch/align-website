@@ -152,8 +152,8 @@ export function TodayCard({
         <p className="text-sm text-text-secondary">
           We couldn&apos;t load today&apos;s planet positions. Check your connection and refresh.
         </p>
-        <Link href="/your-day" className="text-sm font-medium text-accent-primary hover:underline inline-block mt-2">
-          Open your daily brief
+        <Link href="/readings/day" className="text-sm font-medium text-accent-primary hover:underline inline-block mt-2">
+          Read your day
         </Link>
       </div>
     );
@@ -282,8 +282,8 @@ export function TodayCard({
           From today&apos;s real planet positions against your natal chart.
           {!birthTimeKnown && ' Add your birth time to include your Rising and Midheaven.'}
         </p>
-        <Link href="/your-day" className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-accent-primary hover:underline">
-          Full brief <ChevronRight className="w-4 h-4" />
+        <Link href="/readings/day" className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-accent-primary hover:underline">
+          Read your day <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

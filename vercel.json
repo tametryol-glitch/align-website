@@ -58,7 +58,7 @@
     },
     {
       "path": "/api/cron/daily-brief",
-      "schedule": "20 * * * *"
+      "schedule": "*/10 * * * *"
     }
   ]
 }

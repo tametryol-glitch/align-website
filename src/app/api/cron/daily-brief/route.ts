@@ -8,8 +8,10 @@
 // type is 'transit_alert' (present in every version of the type constraint);
 // the discriminator is data.kind = 'daily_brief'.
 //
-// The message is the same answer the Today card shows, computed from today's
-// real transits against the member's natal chart (lib/todayEngine.ts).
+// The message is "Your Day": the member's PROGRESSED radar, its ten hottest life
+// areas fused into one story (align-api-v2 /daystory/build). The API stores the
+// full story once per member per day and returns only the push text; the screen
+// reads the rest, with the paid chapters gated server side.
 //
 // Guarantees worth knowing:
 //   - Opt-in only (daily_brief_prefs.enabled).
@@ -21,17 +23,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { buildTodayAnswer, computeTodayAspects } from '@/lib/todayEngine';
 import { resolveTimezoneOffset } from '@/lib/timezoneOffset';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 /** Most members handled per run; the rest are reported as deferred and are
  *  picked up by the next hourly run inside their catch-up window. */
-const MAX_PER_RUN = 120;
-const CONCURRENCY = 6;
+const MAX_PER_RUN = 40;   // each member is one model call (~20-30s), so a run is kept small; it runs every 10 minutes
+const CONCURRENCY = 8;
 const CATCH_UP_HOURS = 2;
 
 function getAdminClient() {
@@ -56,32 +57,41 @@ function localTime(now: Date, timeZone: string): { date: string; hour: number } 
   }
 }
 
-async function fetchTransits(profile: any): Promise<{ transit_positions: any[]; natal_positions: any[] } | null> {
+async function buildStory(
+  profile: any, userId: string, timeZone: string, localDate: string,
+): Promise<{ title: string; body: string; created: boolean; source: string }> {
   const base = process.env.NEXT_PUBLIC_API_URL;
+  const secret = process.env.CRON_SECRET;
   if (!base) throw new Error('Missing NEXT_PUBLIC_API_URL');
   const { offset, label } = resolveTimezoneOffset(
     profile.timezone, profile.longitude, profile.birth_date, profile.birth_time, profile.latitude,
   );
-  const res = await fetch(`${base}/transits/current`, {
+  const res = await fetch(`${base}/daystory/build`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-cron-secret': secret || '' },
     body: JSON.stringify({
-      name: '',
-      date: profile.birth_date,
-      time: profile.birth_time || '12:00',
-      latitude: profile.latitude,
-      longitude: profile.longitude,
-      timezone: label,
-      tz_offset: offset,
-      location: '',
-      house_system: 'Whole Sign',
+      user_id: userId,
+      timezone: timeZone,
+      local_date: localDate,
+      birth_data: {
+        name: '',
+        date: profile.birth_date,
+        time: profile.birth_time || '12:00',
+        latitude: profile.latitude,
+        longitude: profile.longitude,
+        timezone: label,
+        tz_offset: offset,
+        location: '',
+        house_system: 'Whole Sign',
+      },
     }),
-    signal: AbortSignal.timeout(20_000),
+    // the story is written by a model: give it room, but never stall the whole run
+    signal: AbortSignal.timeout(55_000),
   });
-  if (!res.ok) return null;
+  if (!res.ok) throw new Error(`daystory ${res.status}: ${(await res.text()).slice(0, 160)}`);
   const data = await res.json();
-  if (!Array.isArray(data?.transit_positions) || !Array.isArray(data?.natal_positions)) return null;
-  return data;
+  if (!data?.title || !data?.body) throw new Error('daystory returned no text');
+  return { title: data.title, body: data.body, created: !!data.created, source: data.source };
 }
 
 export async function GET(request: NextRequest) {
@@ -111,14 +121,14 @@ export async function GET(request: NextRequest) {
       .eq('enabled', true);
     if (error) throw error;
 
-    const due: Array<{ user_id: string; localDate: string }> = [];
+    const due: Array<{ user_id: string; localDate: string; tz: string }> = [];
     for (const p of prefs ?? []) {
       considered++;
       const lt = localTime(now, p.timezone || 'UTC');
       if (!lt) { skippedNotDue++; continue; }
       const inWindow = lt.hour >= p.send_hour && lt.hour <= p.send_hour + CATCH_UP_HOURS;
       if (!inWindow || p.last_sent_on === lt.date) { skippedNotDue++; continue; }
-      due.push({ user_id: p.user_id, localDate: lt.date });
+      due.push({ user_id: p.user_id, localDate: lt.date, tz: p.timezone || 'UTC' });
     }
 
     const batch = due.slice(0, MAX_PER_RUN);
@@ -133,26 +143,21 @@ export async function GET(request: NextRequest) {
       .in('id', batch.map((b) => b.user_id));
     const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
 
-    const handle = async (item: { user_id: string; localDate: string }) => {
+    const handle = async (item: { user_id: string; localDate: string; tz: string }) => {
       const profile = profileById.get(item.user_id);
       if (!profile?.birth_date || profile.latitude == null || profile.longitude == null) {
         skippedNoBirthData++;
         return;
       }
       try {
-        const data = await fetchTransits(profile);
-        if (!data) throw new Error('transit API returned no positions');
-        const toBody = (p: any) => ({ name: p.name, longitude: p.longitude });
-        const answer = buildTodayAnswer(
-          computeTodayAspects(data.transit_positions.map(toBody), data.natal_positions.map(toBody), !!profile.birth_time),
-        );
+        const story = await buildStory(profile, item.user_id, item.tz, item.localDate);
 
         const { error: insertError } = await supabase.from('notifications').insert({
           user_id: item.user_id,
           type: 'transit_alert',
-          title: answer.headline,
-          body: answer.doText,
-          data: { kind: 'daily_brief', link: '/dashboard', deep_link: '/(tabs)' },
+          title: story.title,
+          body: story.body,
+          data: { kind: 'daily_story', link: '/readings/day', deep_link: '/readings/day', date: item.localDate },
         });
         if (insertError) throw insertError;
 
