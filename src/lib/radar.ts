@@ -56,6 +56,8 @@ export interface RadarHit {
   sits_on?: { planet: string; orb: number; line: string };
   milestone?: string;
   planet?: string;
+  also?: string[]; // other midpoints the same planet sits on (one transit, several pictures)
+  also_count?: number;
   label?: string | null; // set in the progressed chart: 'Saturn □ progressed Venus/Mars'
 }
 

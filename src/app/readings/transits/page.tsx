@@ -107,6 +107,7 @@ function HitCard({
             <span style={{ color: col }}>{hit.intensity.level}</span>
             <span>{hit.exact ? `${fmtDate(hit.exact)} · ${fmtWhen(hit.days_to_exact)}` : 'no exact date'}</span>
             {hit.orb != null && <span>{hit.orb.toFixed(2)}&deg; orb</span>}
+            {!!hit.also_count && <span>+{hit.also_count} more {hit.also_count === 1 ? 'picture' : 'pictures'}</span>}
             {hit.areas[0] && <span>{hit.areas.slice(0, 2).join(' · ')}</span>}
           </div>
         </div>

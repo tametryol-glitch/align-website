@@ -200,6 +200,13 @@ export default function RadarDetail({
             <Section title="Where it lands">
               <ul className="space-y-2">
                 {hit.sits_on && <li className="text-sm text-text-secondary leading-relaxed">{hit.sits_on.line}</li>}
+                {!!hit.also_count && (
+                  <li className="text-sm text-text-secondary leading-relaxed">
+                    The same transit sets off {hit.also_count} more {hit.also_count === 1 ? 'picture' : 'pictures'} on{' '}
+                    {hit.sits_on?.planet}: {(hit.also ?? []).join(', ')}
+                    {hit.also_count > (hit.also?.length ?? 0) ? ' and more' : ''}.
+                  </li>
+                )}
                 {hit.where.map((w, i) => (
                   <li key={i} className="text-sm text-text-secondary leading-relaxed">{w}</li>
                 ))}
