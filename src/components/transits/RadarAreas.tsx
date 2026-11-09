@@ -84,6 +84,34 @@ export default function RadarAreas({
                       Next big moment for this area: <span className="text-text-secondary">{a.next_peak.title}</span>, {fmtDate(a.next_peak.date)}.
                     </p>
                   )}
+                  {a.timeline && (
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-2">
+                        Heat over the next {a.timeline.weeks.length} weeks
+                      </p>
+                      <div className="flex items-end gap-[3px] h-14" role="img" aria-label="Weekly heat for this area">
+                        {a.timeline.weeks.map((r, i) => {
+                          const top = Math.max(1.5, ...a.timeline!.weeks);
+                          const peak = i === a.timeline!.peak.week;
+                          return (
+                            <div
+                              key={i}
+                              className="flex-1 rounded-sm"
+                              title={`Week ${i + 1}: ${r.toFixed(1)}\u00d7 its usual`}
+                              style={{ height: `${Math.max(6, (r / top) * 100)}%`, background: peak ? '#F59E0B' : r >= 1.2 ? '#8B5CF6' : 'rgba(255,255,255,0.18)' }}
+                            />
+                          );
+                        })}
+                      </div>
+                      <div className="flex justify-between text-[10px] text-text-muted mt-1">
+                        <span>now</span>
+                        <span>{fmtDate(a.timeline.start)} + {a.timeline.weeks.length} weeks</span>
+                      </div>
+                      <p className="text-[11px] text-text-muted mt-1.5">
+                        Peaks {fmtDate(a.timeline.peak.from)} to {fmtDate(a.timeline.peak.to)}, at {a.timeline.peak.ratio.toFixed(1)}&times; its usual week.
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-1">What this area is</p>
                     <p className="text-sm text-text-secondary leading-relaxed">{a.what}</p>

@@ -90,6 +90,7 @@ export interface RadarArea {
   hits: string[];
   drivers: { id: string; title: string; orb: number | null; exact: string | null; body: string }[];
   next_peak: { date: string; title: string; id: string } | null;
+  timeline?: { weeks: number[]; start: string; peak: { week: number; ratio: number; from: string; to: string } } | null;
 }
 
 export interface ChainCard {
