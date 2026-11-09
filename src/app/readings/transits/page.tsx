@@ -35,6 +35,8 @@ type Tab = 'now' | 'upcoming' | 'storylines';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+const RADAR_CACHE = new Map<string, unknown>();
+
 function monthKey(iso: string | null): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -164,7 +166,15 @@ export default function TransitsPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.getRadarScan({ birth_data: buildBirthData(profile), days: 180, orb: 1.0, chart_mode: chartMode, radar_mode: radarMode });
+      const bd = buildBirthData(profile);
+      // one scan per chart, mode and half hour: coming back to the page or flipping a toggle reuses it
+      const ck = `${JSON.stringify(bd)}|${chartMode}|${radarMode}|${Math.floor(Date.now() / 1800000)}`;
+      let res = RADAR_CACHE.get(ck);
+      if (!res) {
+        res = await api.getRadarScan({ birth_data: bd, days: 180, orb: 1.0, chart_mode: chartMode, radar_mode: radarMode });
+        RADAR_CACHE.set(ck, res);
+        if (RADAR_CACHE.size > 12) RADAR_CACHE.delete(RADAR_CACHE.keys().next().value as string);
+      }
       setRadar(res as RadarResponse);
     } catch (err: any) {
       setError(err?.message || t('readings.transitsPage.errorDefault'));
