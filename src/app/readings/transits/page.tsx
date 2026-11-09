@@ -249,7 +249,7 @@ export default function TransitsPage() {
   const shownHits = useMemo(() => {
     if (!areaKey) return nowHits;
     const ids = new Set(radar?.now.areas?.find((a) => a.key === areaKey)?.hits ?? []);
-    return nowHits.filter((h) => ids.has(h.id));
+    return ids.size ? nowHits.filter((h) => ids.has(h.id)) : nowHits;
   }, [nowHits, radar, areaKey]);
 
   // The boldest read worth putting at the top: the best bold call still ahead (or live).
@@ -449,7 +449,15 @@ export default function TransitsPage() {
             )}
           </div>
 
-          <RadarAreas areas={radar.now.areas ?? []} activeKey={areaKey} onPick={setAreaKey} />
+          <RadarAreas
+            areas={radar.now.areas ?? []}
+            activeKey={areaKey}
+            onPick={setAreaKey}
+            onOpenHit={(id) => {
+              const i = nowHits.findIndex((h) => h.id === id);
+              if (i >= 0 && !isLocked(i)) setDetail(nowHits[i]);
+            }}
+          />
 
           {/* the boldest read */}
           {headlineCall && !gated && headlineCall.call && (

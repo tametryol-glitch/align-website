@@ -79,10 +79,17 @@ export interface RadarArea {
   key: string;
   label: string;
   blurb: string;
+  what: string; // what this area is in a life
+  hot: string; // what it means when it runs hot
+  move: string; // what to do
+  level: 'Very hot' | 'Hot' | 'Warm' | 'Normal' | 'Cool' | 'Quiet';
+  summary: string;
   score: number;
   ratio: number; // times a normal day
-  count: number;
+  count: number; // how many transits are hitting it
   hits: string[];
+  drivers: { id: string; title: string; orb: number | null; exact: string | null; body: string }[];
+  next_peak: { date: string; title: string; id: string } | null;
 }
 
 export interface ChainCard {
