@@ -55,6 +55,7 @@ export interface RadarHit {
   orb?: number;
   sits_on?: { planet: string; orb: number; line: string };
   milestone?: string;
+  label?: string | null; // set in the progressed chart: 'Saturn □ progressed Venus/Mars'
 }
 
 export interface RadarPoint {
@@ -107,7 +108,7 @@ export interface ChainResponse {
 }
 
 export interface RadarResponse {
-  meta: { as_of: string; days: number; orb: number; house_system: string; midpoints_scanned: number };
+  meta: { as_of: string; days: number; orb: number; house_system: string; midpoints_scanned: number; chart_mode?: 'natal' | 'progressed' };
   natal: { asc: number; cusps: number[]; points: RadarPoint[] };
   sky: RadarPoint[];
   now: { verdict: RadarVerdict; hits: RadarHit[]; areas: RadarArea[] };
@@ -178,6 +179,7 @@ export function targetLabel(h: Pick<RadarHit, 'kind' | 'target'>): string {
 }
 
 export function hitTitle(h: RadarHit): string {
+  if (h.label) return h.label;
   if (h.milestone) return `${h.milestone.replace(/^./, (c) => c.toUpperCase())}`;
   return `${h.body} ${h.symbol} ${targetLabel(h)}`;
 }

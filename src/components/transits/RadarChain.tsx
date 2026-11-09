@@ -69,11 +69,13 @@ export default function RadarChain({
   asOf,
   birthData,
   canAI,
+  chartMode = 'natal',
 }: {
   hitId: string;
   asOf: string;
   birthData: any;
   canAI: boolean;
+  chartMode?: 'natal' | 'progressed';
 }) {
   const [chain, setChain] = useState<ChainResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,7 @@ export default function RadarChain({
   const [streaming, setStreaming] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  const body = { birth_data: birthData, hit_ids: [hitId], as_of: asOf, days: 180 };
+  const body = { birth_data: birthData, hit_ids: [hitId], as_of: asOf, days: 180, chart_mode: chartMode };
 
   const loadChain = async () => {
     setLoading(true);

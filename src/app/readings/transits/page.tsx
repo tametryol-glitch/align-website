@@ -89,7 +89,7 @@ function HitCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm font-display font-bold text-text-primary leading-snug">
-              {hit.milestone ? hitTitle(hit) : (
+              {hit.milestone || hit.label ? hitTitle(hit) : (
                 <>
                   {hit.body} {hit.symbol} <TargetGlyphs h={hit} /> <span className="font-normal text-text-muted">{hit.kind === 'midpoint' ? hit.target : `your ${hit.target}`}</span>
                 </>
@@ -149,6 +149,7 @@ export default function TransitsPage() {
   const [detail, setDetail] = useState<RadarHit | null>(null);
   const [bigOnly, setBigOnly] = useState(false);
   const [areaKey, setAreaKey] = useState<string | null>(null);
+  const [chartMode, setChartMode] = useState<'natal' | 'progressed'>('natal');
 
   const [storylines, setStorylines] = useState<TransitStoryline[]>([]);
   const [storylinesLoading, setStorylinesLoading] = useState(false);
@@ -161,7 +162,7 @@ export default function TransitsPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.getRadarScan({ birth_data: buildBirthData(profile), days: 180, orb: 1.0 });
+      const res = await api.getRadarScan({ birth_data: buildBirthData(profile), days: 180, orb: 1.0, chart_mode: chartMode });
       setRadar(res as RadarResponse);
     } catch (err: any) {
       setError(err?.message || t('readings.transitsPage.errorDefault'));
@@ -169,7 +170,7 @@ export default function TransitsPage() {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile]);
+  }, [profile, chartMode]);
 
   useEffect(() => {
     load();
@@ -326,6 +327,34 @@ export default function TransitsPage() {
           </button>
         ))}
       </div>
+
+      {tab !== 'storylines' && (
+        <div className="mb-5">
+          <div className="inline-flex bg-bg-card rounded-full p-1" role="group" aria-label="Which chart to measure against">
+            {(['natal', 'progressed'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => {
+                  setAreaKey(null);
+                  setPinnedId(null);
+                  setChartMode(m);
+                }}
+                aria-pressed={chartMode === m}
+                className={`py-1.5 px-4 rounded-full text-xs font-medium transition-colors ${
+                  chartMode === m ? 'bg-white/15 text-text-primary' : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                {m === 'natal' ? 'Natal chart' : 'Progressed chart'}
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] text-text-muted mt-2 leading-relaxed">
+            {chartMode === 'natal'
+              ? 'Transits against the chart you were born with: who you are.'
+              : 'Transits against your progressed chart: the you that is forming now, and what is changing in you.'}
+          </p>
+        </div>
+      )}
 
       {isFree && !gateLive && (
         <div className="card mb-5 border border-accent-muted text-sm text-text-secondary">
@@ -576,6 +605,7 @@ export default function TransitsPage() {
           onClose={() => setDetail(null)}
           asOf={radar.meta.as_of}
           birthData={buildBirthData(profile)}
+          chartMode={radar.meta.chart_mode ?? 'natal'}
           canAI={hasAccess('transit_reading')}
         />
       )}

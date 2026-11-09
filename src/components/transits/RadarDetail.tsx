@@ -67,6 +67,7 @@ export default function RadarDetail({
   asOf,
   birthData,
   canAI,
+  chartMode = 'natal',
 }: {
   hit: RadarHit;
   card: RadarCard;
@@ -74,6 +75,7 @@ export default function RadarDetail({
   asOf: string;
   birthData: any;
   canAI: boolean;
+  chartMode?: 'natal' | 'progressed';
 }) {
   const [copied, setCopied] = useState(false);
   const col = bodyColor(hit.body);
@@ -242,7 +244,7 @@ export default function RadarDetail({
           </Section>
 
           <div className="mx-6 border-t border-white/10 mb-5" />
-          <RadarChain hitId={hit.id} asOf={asOf} birthData={birthData} canAI={canAI} />
+          <RadarChain hitId={hit.id} asOf={asOf} birthData={birthData} canAI={canAI} chartMode={chartMode} />
 
           <div className="mx-6 border-t border-white/10" />
           <Section title="The details">
