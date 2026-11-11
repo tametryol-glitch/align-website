@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/layout/AuthProvider';
 import { GlobalCallListener } from '@/components/GlobalCallListener';
+import { BirthdayGreeting } from '@/components/birthday/BirthdayGreeting';
 import { PresenceBeacon } from '@/components/layout/PresenceBeacon';
 import { ChatBubbleHead } from '@/components/chat/ChatBubbleHead';
 import I18nProvider from '@/i18n/I18nProvider';
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ChatBubbleHead />
             <BadgeEarnedPopup />
             <FounderIntroModal />
+            <BirthdayGreeting />
             <PushEnablePrompt />
             {children}
           </AuthProvider>

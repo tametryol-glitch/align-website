@@ -15,6 +15,7 @@ import { ImpressionSlot } from '@/components/feed/ImpressionSlot';
 import { flushImpressions } from '@/lib/impressionService';
 import { CommentSheet } from '@/components/feed/CommentSheet';
 import { LiveRail } from '@/components/feed/LiveRail';
+import { BirthdayTribeCard } from '@/components/birthday/BirthdayTribeCard';
 import { StoryRail } from '@/components/stories/StoryRail';
 import { getLiveEligibility } from '@/lib/liveService';
 import { MentionInput } from '@/components/feed/MentionInput';
@@ -1362,6 +1363,9 @@ export default function FeedPage() {
 
       {/* Renders nothing unless someone is actually broadcasting. */}
       <LiveRail />
+
+      {/* Everyone's birthdays this month: today + belated, with a wish button. */}
+      <BirthdayTribeCard />
 
       {/* Cosmic Weather Banner */}
       <FeedCosmicBanner />

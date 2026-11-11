@@ -40,7 +40,7 @@ export interface FeedPost {
   userId: string;
   userName: string;
   userAvatar?: string;
-  type: 'chart_share' | 'reading_share' | 'photo' | 'video' | 'text' | 'transit_alert' | 'compatibility_result' | 'cosmic_match';
+  type: 'chart_share' | 'reading_share' | 'photo' | 'video' | 'text' | 'transit_alert' | 'compatibility_result' | 'cosmic_match' | 'birthday';
   content: string;
   imageUrl?: string;
   mediaKind?: 'photo' | 'sticker' | 'gif';

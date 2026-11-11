@@ -1,5 +1,7 @@
 'use client';
 
+import { BirthdayArt } from '@/components/birthday/BirthdayArt';
+import { WishComposer } from '@/components/birthday/WishComposer';
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -87,6 +89,7 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   transit_alert: { label: 'Transit', color: 'bg-green-500/15 text-green-400' },
   compatibility_result: { label: 'Compatibility', color: 'bg-pink-500/15 text-pink-400' },
   cosmic_match: { label: 'Cosmic Match', color: 'bg-accent-muted text-accent-primary' },
+  birthday: { label: 'Birthday', color: 'bg-pink-500/15 text-pink-400' },
 };
 
 // ── Read-more folding ─────────────────────────────────────────────
@@ -745,6 +748,24 @@ export function isGifOrStickerUrl(text: string): boolean {
 // Renders a shared rare-match card: the two tagged people, the overall
 // score, and top positive dimensions + "why". Positive-only by design.
 
+function BirthdayBody({ post, currentUserId }: { post: FeedPost; currentUserId: string }) {
+  const d: any = post.chartData || {};
+  const isMe = d.subject_id === currentUserId;
+  return (
+    <div className="mx-5 mb-3">
+      <BirthdayArt name={d.name || 'Friend'} avatarUrl={d.avatar_url} belated={!!d.belated}
+                   headline={d.headline} emoji={d.emoji} advice={d.advice} action={d.action} />
+      <div className="mt-3">
+        {isMe ? (
+          <p className="text-sm text-center text-text-muted">Your tribe's wishes will appear in the comments below 💛</p>
+        ) : (
+          <WishComposer postId={post.id} userId={currentUserId} name={d.name || ''} belated={!!d.belated} />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CosmicMatchBody({ post }: { post: FeedPost }) {
   const data: any = post.chartData || {};
   const tagged = post.taggedUsers || [];
@@ -1088,8 +1109,11 @@ export function FeedCard({
       {/* Cosmic Match card body (rare shared match) */}
       {post.type === 'cosmic_match' && <CosmicMatchBody post={post} />}
 
+      {/* Birthday card: animated art + solar-return note + wish composer */}
+      {post.type === 'birthday' && <BirthdayBody post={post} currentUserId={currentUserId} />}
+
       {/* Content */}
-      {post.content && post.type !== 'cosmic_match' && (
+      {post.content && post.type !== 'cosmic_match' && post.type !== 'birthday' && (
         <PostRichBody
           content={post.content}
           textClassName={cn('px-5 pb-3 text-sm leading-relaxed', hasGradient ? 'text-lg py-6 text-center font-medium' : '')}
