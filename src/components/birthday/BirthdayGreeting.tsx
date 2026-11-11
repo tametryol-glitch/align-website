@@ -21,14 +21,18 @@ export function BirthdayGreeting() {
   useEffect(() => {
     if (!user || suppressed) return;
     let live = true;
-    (async () => {
+    const check = async () => {
       try {
         const { data } = await createClient().rpc('get_my_birthday_greeting');
         const row = Array.isArray(data) ? data[0] : data;
         if (live && row) setG(row as Greeting);
       } catch { /* greeting is optional */ }
-    })();
-    return () => { live = false; };
+    };
+    check();
+    // Also when they come back to the tab: a card posted while it was in the background.
+    const onVisible = () => { if (document.visibilityState === 'visible') check(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { live = false; document.removeEventListener('visibilitychange', onVisible); };
   }, [user, suppressed]);
 
   if (!g || !user) return null;
