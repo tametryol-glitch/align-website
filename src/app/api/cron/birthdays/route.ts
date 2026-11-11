@@ -1,4 +1,4 @@
-// Cron endpoint — the Birthday Tribe. Runs daily (08:00 UTC) and, for every member
+// Cron endpoint — the Birthday Tribe. Runs hourly and, for every member
 // whose birthday is today OR already passed earlier this month, publishes ONE
 // birthday post (belated for the past ones) from Align Daily with:
 //   * their profile picture snapshot (the feed card shows a soft placeholder if none)
@@ -7,7 +7,7 @@
 // Wishes are normal post_comments (see supabase-migration-birthdays.sql).
 //
 // Idempotent: unique index (subject_id, year) on type='birthday' posts, plus a read
-// check. A capped batch per run drains the backlog over a couple of runs.
+// check. One post per run (hourly) keeps the feed from being flooded.
 //
 //   GET /api/cron/birthdays  (header Authorization: Bearer <CRON_SECRET>)
 
@@ -26,8 +26,12 @@ export const maxDuration = 300;
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://align-api-v2-production.up.railway.app/api/v1';
 const ALIGN_DAILY = OFFICIAL_ACCOUNTS.find((a) => a.handle === 'align_daily')!;
-/** Posts per run; the rest are picked up by the next run (reported, never dropped). */
-const MAX_PER_RUN = 60;
+/**
+ * ONE birthday post per run, and the cron runs hourly, so birthdays are spread
+ * across the day (max 24/day) instead of landing in the feed all at once. Anyone
+ * not posted yet is picked up by a later run (today's birthdays first), never dropped.
+ */
+const MAX_PER_RUN = 1;
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
