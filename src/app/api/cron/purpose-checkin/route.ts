@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
           // Web resolves the route via getNotificationLink; the mobile
           // notifications screen reads data.deep_link. Both are set so the tap
           // lands on the check-in card whichever device opens it.
-          data: { kind: 'purpose_checkin', track, link: '/dashboard', deep_link: '/(tabs)' },
+          data: { kind: 'purpose_checkin', track, link: '/dashboard', deep_link: '/(tabs)/home' },
         });
 
         if (insertError) {
