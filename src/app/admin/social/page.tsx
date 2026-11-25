@@ -38,6 +38,56 @@ export default function AdminSocialPage() {
   const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState('');
 
+  // Direct-message-as-official-account state
+  type DmUser = { id: string; display_name: string | null; username: string | null };
+  const [dmQuery, setDmQuery] = useState('');
+  const [dmResults, setDmResults] = useState<DmUser[]>([]);
+  const [recipients, setRecipients] = useState<DmUser[]>([]);
+  const [dmText, setDmText] = useState('');
+  const [dmSending, setDmSending] = useState(false);
+  const [dmStatus, setDmStatus] = useState('');
+
+  useEffect(() => {
+    if (dmQuery.trim().length < 2) { setDmResults([]); return; }
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/admin/social/dm?q=${encodeURIComponent(dmQuery)}`);
+        const data = await res.json();
+        setDmResults(data.users || []);
+      } catch { setDmResults([]); }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [dmQuery]);
+
+  function addRecipient(u: DmUser) {
+    setRecipients((r) => (r.some((x) => x.id === u.id) ? r : [...r, u]));
+    setDmQuery('');
+    setDmResults([]);
+  }
+
+  async function sendDm() {
+    setDmSending(true);
+    setDmStatus('');
+    try {
+      const res = await fetch('/api/admin/social/dm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId, recipientIds: recipients.map((r) => r.id), content: dmText }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDmStatus(data.error || 'Failed to send.');
+      } else {
+        const failed = (data.results || []).filter((r: { ok: boolean }) => !r.ok);
+        setDmStatus(failed.length ? `Sent ${data.sent}, ${failed.length} failed.` : `Sent to ${data.sent}.`);
+        if (!failed.length) { setDmText(''); setRecipients([]); }
+      }
+    } catch {
+      setDmStatus('Network error.');
+    }
+    setDmSending(false);
+  }
+
   // Admin verification
   useEffect(() => {
     async function verify() {
@@ -267,6 +317,76 @@ export default function AdminSocialPage() {
             >
               {publishing ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               Publish
+            </button>
+          </div>
+        </div>
+
+        {/* Direct message as the selected account */}
+        <div className="bg-bg-card border border-border-primary rounded-xl p-6 space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold text-text-primary">Message members as {accountName(accountId)}</h2>
+            <p className="text-xs text-text-muted mt-1">
+              Sent to each person&apos;s chat inbox (with a push notification) from the account selected above — not your personal account.
+            </p>
+          </div>
+
+          <div className="relative">
+            <input
+              value={dmQuery}
+              onChange={(e) => setDmQuery(e.target.value)}
+              placeholder="Search members by name or username…"
+              className="w-full bg-bg-tertiary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary"
+            />
+            {dmResults.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full bg-bg-secondary border border-border-primary rounded-lg shadow-lg max-h-56 overflow-auto">
+                {dmResults.map((u) => (
+                  <button
+                    key={u.id}
+                    onClick={() => addRecipient(u)}
+                    className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-bg-tertiary"
+                  >
+                    {u.display_name || 'Unnamed'}
+                    {u.username && <span className="text-text-muted ml-1.5 text-xs">@{u.username}</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {recipients.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {recipients.map((u) => (
+                <span
+                  key={u.id}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-primary/10 border border-accent-primary/30 text-xs text-accent-primary"
+                >
+                  {u.display_name || u.username || 'Member'}
+                  <button onClick={() => setRecipients((r) => r.filter((x) => x.id !== u.id))} aria-label="Remove">
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <textarea
+            value={dmText}
+            onChange={(e) => setDmText(e.target.value)}
+            rows={4}
+            maxLength={2000}
+            placeholder="Write your message…"
+            className="w-full bg-bg-tertiary border border-border-primary rounded-lg px-3 py-2 text-sm text-text-primary"
+          />
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-text-muted">{dmStatus}</span>
+            <button
+              onClick={sendDm}
+              disabled={dmSending || recipients.length === 0 || !dmText.trim()}
+              className="btn-primary text-sm px-5 py-2 flex items-center gap-2 disabled:opacity-50"
+            >
+              {dmSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+              Send to {recipients.length || 0}
             </button>
           </div>
         </div>
