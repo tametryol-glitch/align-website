@@ -71,7 +71,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed', '/api/meta-preview', '/api/link-preview', '/api/aasa', '/api/assetlinks', '/api/push'];
+  const PUBLIC_API_ROUTES = ['/api/og', '/api/admin', '/api/cron', '/api/stripe', '/api/tts', '/api/transcribe', '/api/track', '/api/tiktok-oembed', '/api/meta-preview', '/api/link-preview', '/api/aasa', '/api/assetlinks', '/api/push', '/api/circle'];
 
   const pathname = request.nextUrl.pathname;
   const isPublicApi = PUBLIC_API_ROUTES.some(r => pathname.startsWith(r));
@@ -91,6 +91,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/cesium/') ||          // self-hosted CesiumJS engine assets (Workers/Assets/Widgets) — must load unauthenticated or the 3D globe can't initialize
     pathname.startsWith('/mp-wasm') ||          // self-hosted MediaPipe segmentation runtime (wasm loader .js) for the editor's AI background removal — must load unauthenticated
     pathname.startsWith('/rush-nation') ||
+    pathname.startsWith('/fifth-circle') ||  // private invitation page + its images; access is gated by an unguessable per-invitation token, not by login (invitees may only have the app)
     pathname.startsWith('/affiliates') ||
     pathname.startsWith('/ref/') ||
     pathname.startsWith('/join/') ||

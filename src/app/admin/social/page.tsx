@@ -88,6 +88,42 @@ export default function AdminSocialPage() {
     setDmSending(false);
   }
 
+  // Fifth Circle invitations
+  const [invitations, setInvitations] = useState<{ id: string; user_id: string; status: string; profiles?: { display_name: string | null } | null }[]>([]);
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState('');
+
+  const loadInvitations = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/circle-invite');
+      const data = await res.json();
+      if (data.invitations) setInvitations(data.invitations);
+    } catch {}
+  }, []);
+
+  async function sendInvites() {
+    setInviteSending(true);
+    setInviteStatus('');
+    try {
+      const res = await fetch('/api/admin/circle-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId, recipientIds: recipients.map((r) => r.id) }),
+      });
+      const data = await res.json();
+      if (!res.ok) setInviteStatus(data.error || 'Failed to send.');
+      else {
+        const failed = (data.results || []).filter((r: { ok: boolean }) => !r.ok);
+        setInviteStatus(failed.length ? `Sent ${data.sent}. ${failed.map((f: { error?: string }) => f.error).join('; ')}` : `Invited ${data.sent}.`);
+        if (!failed.length) setRecipients([]);
+        loadInvitations();
+      }
+    } catch {
+      setInviteStatus('Network error.');
+    }
+    setInviteSending(false);
+  }
+
   // Admin verification
   useEffect(() => {
     async function verify() {
@@ -111,8 +147,8 @@ export default function AdminSocialPage() {
   }, []);
 
   useEffect(() => {
-    if (verified) fetchPosts();
-  }, [verified, fetchPosts]);
+    if (verified) { fetchPosts(); loadInvitations(); }
+  }, [verified, fetchPosts, loadInvitations]);
 
   // Uploads images AND videos directly from the browser to the public
   // `post-media` Supabase bucket (path `${uid}/${ts}.${ext}`), mirroring the
@@ -389,6 +425,39 @@ export default function AdminSocialPage() {
               Send to {recipients.length || 0}
             </button>
           </div>
+        </div>
+
+        {/* The Fifth Circle invitations */}
+        <div className="bg-bg-card border border-border-primary rounded-xl p-6 space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold text-text-primary">The Fifth Circle invitation</h2>
+            <p className="text-xs text-text-muted mt-1">
+              Sends the emblem + full invitation with Accept / Decline links to the members picked in the box above, from {accountName(accountId)}. You get a personal alert when anyone responds. Each member can only be invited once.
+            </p>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-text-muted">{inviteStatus}</span>
+            <button
+              onClick={sendInvites}
+              disabled={inviteSending || recipients.length === 0}
+              className="btn-primary text-sm px-5 py-2 flex items-center gap-2 disabled:opacity-50"
+            >
+              {inviteSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+              Invite {recipients.length || 0}
+            </button>
+          </div>
+          {invitations.length > 0 && (
+            <div className="space-y-1.5">
+              {invitations.map((inv) => (
+                <div key={inv.id} className="flex items-center justify-between text-sm">
+                  <span className="text-text-secondary">{inv.profiles?.display_name || inv.user_id}</span>
+                  <span className={inv.status === 'accepted' ? 'text-emerald-400' : inv.status === 'declined' ? 'text-red-400' : 'text-text-muted'}>
+                    {inv.status === 'accepted' ? '✅ Accepted' : inv.status === 'declined' ? '❌ Declined' : '⏳ Pending'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Recent posts */}
