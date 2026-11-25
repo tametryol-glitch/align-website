@@ -102,7 +102,7 @@ export default function FifthCirclePage() {
 
             <div style={{ textAlign: 'center', margin: '48px 0 40px', fontFamily: 'Georgia, serif' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/fifth-circle/emblem.jpg" alt="" style={{ width: 150, height: 150, borderRadius: '50%', marginBottom: 20 }} />
+              <img src="/fifth-circle/emblem.png" alt="" style={{ width: 150, height: 150, borderRadius: '50%', marginBottom: 20 }} />
               {CIRCLE_SIGNOFF.map((l, i) => (
                 <div key={l} style={{ color: i === 0 || i === 3 ? GOLD : CREAM, letterSpacing: i === 0 ? 4 : 0, fontStyle: i === 1 || i === 2 ? 'italic' : 'normal', marginBottom: 4 }}>{l}</div>
               ))}

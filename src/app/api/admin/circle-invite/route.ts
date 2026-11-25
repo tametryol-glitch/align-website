@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         conversation_id: convoId, sender_id: accountId, content: CIRCLE_EMBLEM_URL, type: 'image', metadata: {},
       });
       const { error: txtErr } = await admin.from('messages').insert({
-        conversation_id: convoId, sender_id: accountId, content: circleChatText(token), type: 'text', metadata: {},
+        conversation_id: convoId, sender_id: accountId, content: circleChatText(token), type: 'text', metadata: { circle_invite: token },
       });
       const err = imgErr || txtErr;
       if (err) {

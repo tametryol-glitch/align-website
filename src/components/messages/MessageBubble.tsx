@@ -13,6 +13,7 @@ import { FileBubble } from '@/components/chat/FileBubble';
 import { LocationBubble } from '@/components/chat/LocationBubble';
 import { PollBubble } from '@/components/chat/PollBubble';
 import { CallBubble } from '@/components/chat/CallBubble';
+import { CircleInviteButtons } from '@/components/messages/CircleInviteButtons';
 import { OnceMediaBubble } from '@/components/chat/OnceMediaBubble';
 import { isOnceMessage } from '@/lib/onceMediaService';
 import type { ChatTheme } from '@/data/chatThemes';
@@ -401,8 +402,23 @@ export function MessageBubble({
             <>
               {/* The inline preview above already shows the image, so drop its raw URL from the text */}
               {(() => {
-                const shown = msg.type === 'text' ? stripMediaUrl(msg.content) : msg.content;
-                return shown ? <p className="text-sm whitespace-pre-wrap break-words">{shown}</p> : null;
+                let shown = msg.type === 'text' ? stripMediaUrl(msg.content) : msg.content;
+                const inviteToken = typeof msg.metadata?.circle_invite === 'string' ? msg.metadata.circle_invite : null;
+                // Invitation: the Accept/Decline links become real buttons below the text.
+                if (inviteToken) shown = shown.split('— YOUR RESPONSE —')[0].trimEnd();
+                if (!shown) return null;
+                return (
+                  <>
+                    <p className="text-sm whitespace-pre-wrap break-words">
+                      {shown.split(/(https?:\/\/[^\s<>"']+)/g).map((part, i) =>
+                        /^https?:\/\//.test(part) ? (
+                          <a key={i} href={part.replace(/[.,!?;:)]+$/, '')} target="_blank" rel="noopener noreferrer" className="underline break-all">{part}</a>
+                        ) : part,
+                      )}
+                    </p>
+                    {inviteToken && <CircleInviteButtons token={inviteToken} />}
+                  </>
+                );
               })()}
               {!(msg.type === 'text' && !stripMediaUrl(msg.content)) && <BubbleLinkPreview text={msg.content} isMine={isMine} />}
             </>

@@ -3,7 +3,7 @@
 // so both renderings keep clear spacing.
 
 export const CIRCLE_BASE_URL = 'https://www.aligncosmic.com';
-export const CIRCLE_EMBLEM_URL = `${CIRCLE_BASE_URL}/fifth-circle/emblem.jpg`;
+export const CIRCLE_EMBLEM_URL = `${CIRCLE_BASE_URL}/fifth-circle/emblem.png`;
 export const CIRCLE_LOGO_URL = `${CIRCLE_BASE_URL}/fifth-circle/logo.jpg`;
 
 export type CircleBlock =
